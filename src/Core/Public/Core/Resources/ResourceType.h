@@ -26,10 +26,12 @@ namespace core::resources
         Texture,
         Sound,
 
-        Space,
+        SpaceSettings,
         Chunk,
+        ChunkData,
+        LargeObject,
+        LargeObjectData,
         Terrain,
-        CollisionData,
 
         Shader,
         Font

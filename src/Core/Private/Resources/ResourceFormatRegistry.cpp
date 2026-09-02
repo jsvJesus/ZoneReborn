@@ -39,10 +39,11 @@ namespace
         ExtensionMapping{".ogg", core::resources::ResourceType::Sound},
         ExtensionMapping{".mp3", core::resources::ResourceType::Sound},
 
-        ExtensionMapping{".space", core::resources::ResourceType::Space},
         ExtensionMapping{".chunk", core::resources::ResourceType::Chunk},
+        ExtensionMapping{".cdata", core::resources::ResourceType::ChunkData},
+        ExtensionMapping{".vlo", core::resources::ResourceType::LargeObject},
+        ExtensionMapping{".odata", core::resources::ResourceType::LargeObjectData},
         ExtensionMapping{".terrain", core::resources::ResourceType::Terrain},
-        ExtensionMapping{".cdata", core::resources::ResourceType::CollisionData},
 
         ExtensionMapping{".fx", core::resources::ResourceType::Shader},
         ExtensionMapping{".fxh", core::resources::ResourceType::Shader},
@@ -63,17 +64,17 @@ namespace
         return value;
     }
 
-    std::string NormalizeExtension(
-        const std::filesystem::path& path)
+    std::string Normalize(
+        const std::string& value)
     {
-        std::string extension = path.extension().string();
+        std::string result = value;
 
-        for (char& character : extension)
+        for (char& character : result)
         {
             character = ToLowerAscii(character);
         }
 
-        return extension;
+        return result;
     }
 }
 
@@ -82,8 +83,16 @@ namespace core::resources
     ResourceType ResourceFormatRegistry::Detect(
         const std::filesystem::path& path)
     {
+        const std::string fileName =
+            Normalize(path.filename().string());
+
+        if (fileName == "space.settings")
+        {
+            return ResourceType::SpaceSettings;
+        }
+
         const std::string extension =
-            NormalizeExtension(path);
+            Normalize(path.extension().string());
 
         if (extension.empty())
         {
@@ -148,17 +157,23 @@ namespace core::resources
             case ResourceType::Sound:
                 return "Sound";
 
-            case ResourceType::Space:
-                return "Space";
+            case ResourceType::SpaceSettings:
+                return "Space Settings";
 
             case ResourceType::Chunk:
                 return "Chunk";
 
+            case ResourceType::ChunkData:
+                return "Chunk Data";
+
+            case ResourceType::LargeObject:
+                return "Large Object";
+
+            case ResourceType::LargeObjectData:
+                return "Large Object Data";
+
             case ResourceType::Terrain:
                 return "Terrain";
-
-            case ResourceType::CollisionData:
-                return "Collision Data";
 
             case ResourceType::Shader:
                 return "Shader";

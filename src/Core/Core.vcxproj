@@ -14,9 +14,14 @@
 
     <ClInclude Include="Public\Core\Platform\Paths.h" />
 
+    <ClInclude Include="Public\Core\Resources\DataSection.h" />
+    <ClInclude Include="Public\Core\Resources\PackedSectionReader.h" />
     <ClInclude Include="Public\Core\Resources\ResourceType.h" />
     <ClInclude Include="Public\Core\Resources\ResourceFormatRegistry.h" />
     <ClInclude Include="Public\Core\Resources\ResourceFileSystem.h" />
+
+    <ClInclude Include="Public\Core\World\SpaceSettings.h" />
+    <ClInclude Include="Public\Core\World\SpaceLoader.h" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,8 +30,12 @@
 
     <ClCompile Include="Private\Platform\Paths.cpp" />
 
+    <ClCompile Include="Private\Resources\DataSection.cpp" />
+    <ClCompile Include="Private\Resources\PackedSectionReader.cpp" />
     <ClCompile Include="Private\Resources\ResourceFormatRegistry.cpp" />
     <ClCompile Include="Private\Resources\ResourceFileSystem.cpp" />
+
+    <ClCompile Include="Private\World\SpaceLoader.cpp" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">
