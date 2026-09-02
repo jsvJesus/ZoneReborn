@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ZoneReborn", "ZoneReborn.vcxproj", "{02C42AC3-7974-44D6-AA8F-47AF080B4EDB}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Client", "Client\Client.vcxproj", "{78B992AC-8024-49A5-9D3C-8B50C00DD3E3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcxproj", "{3DEAE8D8-779E-46D4-99A8-05D2789AFBED}"
@@ -16,14 +14,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{02C42AC3-7974-44D6-AA8F-47AF080B4EDB}.Debug|Win32.ActiveCfg = Debug|Win32
-		{02C42AC3-7974-44D6-AA8F-47AF080B4EDB}.Debug|Win32.Build.0 = Debug|Win32
-		{02C42AC3-7974-44D6-AA8F-47AF080B4EDB}.Debug|x64.ActiveCfg = Debug|x64
-		{02C42AC3-7974-44D6-AA8F-47AF080B4EDB}.Debug|x64.Build.0 = Debug|x64
-		{02C42AC3-7974-44D6-AA8F-47AF080B4EDB}.Release|Win32.ActiveCfg = Release|Win32
-		{02C42AC3-7974-44D6-AA8F-47AF080B4EDB}.Release|Win32.Build.0 = Release|Win32
-		{02C42AC3-7974-44D6-AA8F-47AF080B4EDB}.Release|x64.ActiveCfg = Release|x64
-		{02C42AC3-7974-44D6-AA8F-47AF080B4EDB}.Release|x64.Build.0 = Release|x64
 		{78B992AC-8024-49A5-9D3C-8B50C00DD3E3}.Debug|Win32.ActiveCfg = Debug|Win32
 		{78B992AC-8024-49A5-9D3C-8B50C00DD3E3}.Debug|Win32.Build.0 = Debug|Win32
 		{78B992AC-8024-49A5-9D3C-8B50C00DD3E3}.Debug|x64.ActiveCfg = Debug|x64
