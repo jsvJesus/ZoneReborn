@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Core/Assets/TextureResource.h"
 #include "Core/Math/BoundingBox.h"
 #include "Core/Math/Transform3x4.h"
 
@@ -23,8 +24,7 @@ namespace core::assets
         std::string name;
         std::vector<std::byte> binaryName;
 
-        std::string textureReference;
-        std::string textureLogicalPath;
+        std::optional<TextureResource> texture;
 
         std::optional<std::array<float, 4>> vector4;
     };

@@ -6,7 +6,7 @@
 
 #include <cstddef>
 #include <string>
-#include <unordered_set>
+#include <unordered_map>
 
 namespace client::diagnostics
 {
@@ -92,7 +92,8 @@ namespace client::diagnostics
                         error))
                 {
                     core::Log::Error(
-                        std::string("Mesh validation failed: ") +
+                        std::string(
+                            "Mesh validation failed: ") +
                         error);
 
                     return false;
@@ -137,8 +138,10 @@ namespace client::diagnostics
             return false;
         }
 
-        std::unordered_set<std::string>
-            textureReferences;
+        std::unordered_map<
+            std::string,
+            core::assets::TextureResource>
+            textures;
 
         for (const core::assets::VisualRenderSet& renderSet :
              bundle.visual.renderSets)
@@ -152,11 +155,17 @@ namespace client::diagnostics
                     for (const core::assets::VisualMaterialProperty& property :
                          group.material.properties)
                     {
-                        if (!property.textureLogicalPath.empty())
+                        if (!property.texture.has_value())
                         {
-                            textureReferences.insert(
-                                property.textureLogicalPath);
+                            continue;
                         }
+
+                        const core::assets::TextureResource& texture =
+                            *property.texture;
+
+                        textures.insert_or_assign(
+                            texture.logicalPath,
+                            texture);
                     }
                 }
             }
@@ -164,23 +173,36 @@ namespace client::diagnostics
 
         std::size_t foundTextures = 0;
 
-        for (const std::string& texture :
-             textureReferences)
+        for (const auto& [path, texture] :
+             textures)
         {
-            if (runtime.Resources().Exists(
-                    texture))
+            if (texture.exists)
             {
                 ++foundTextures;
 
-                core::Log::Info(
-                    std::string("Texture: ") +
-                    texture);
+                if (texture.sourceLogicalPath !=
+                    texture.logicalPath)
+                {
+                    core::Log::Info(
+                        std::string("Texture resolved: ") +
+                        texture.sourceLogicalPath +
+                        " -> " +
+                        texture.logicalPath);
+                }
+                else
+                {
+                    core::Log::Info(
+                        std::string("Texture: ") +
+                        texture.logicalPath);
+                }
             }
             else
             {
                 core::Log::Warning(
                     std::string("Texture not found: ") +
-                    texture);
+                    texture.sourceLogicalPath +
+                    " -> tried " +
+                    texture.logicalPath);
             }
         }
 
@@ -214,7 +236,7 @@ namespace client::diagnostics
             std::to_string(foundTextures) +
             "/" +
             std::to_string(
-                textureReferences.size()));
+                textures.size()));
 
         core::Log::Info(
             "Resource validation succeeded");

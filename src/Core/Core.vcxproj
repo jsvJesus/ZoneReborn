@@ -21,6 +21,8 @@
     <ClInclude Include="Public\Core\Assets\ModelSourceLoader.h" />
     <ClInclude Include="Public\Core\Assets\PrimitivesContainer.h" />
     <ClInclude Include="Public\Core\Assets\PrimitivesLoader.h" />
+    <ClInclude Include="Public\Core\Assets\TextureResolver.h" />
+    <ClInclude Include="Public\Core\Assets\TextureResource.h" />
     <ClInclude Include="Public\Core\Assets\VisualAsset.h" />
     <ClInclude Include="Public\Core\Assets\VisualLoader.h" />
     <ClInclude Include="Public\Core\Log.h" />
@@ -53,6 +55,7 @@
     <ClCompile Include="Private\Assets\ModelSourceLoader.cpp" />
     <ClCompile Include="Private\Assets\PrimitivesContainer.cpp" />
     <ClCompile Include="Private\Assets\PrimitivesLoader.cpp" />
+    <ClCompile Include="Private\Assets\TextureResolver.cpp" />
     <ClCompile Include="Private\Assets\VisualLoader.cpp" />
     <ClCompile Include="Private\Log.cpp" />
     <ClCompile Include="Private\Resources\ResourcePath.cpp" />

@@ -1,4 +1,5 @@
 #include "Core/Assets/VisualLoader.h"
+#include "Core/Assets/TextureResolver.h"
 
 #include "Core/Resources/DataSection.h"
 #include "Core/Resources/PackedSectionReader.h"
@@ -131,12 +132,20 @@ namespace
                 return false;
             }
 
-            output.textureReference =
+            core::assets::TextureResource resource;
+
+            resource.sourceReference =
                 *value;
 
-            output.textureLogicalPath =
+            resource.sourceLogicalPath =
                 core::resources::ResourcePath::ToResPath(
                     *value);
+
+            resource.logicalPath =
+                resource.sourceLogicalPath;
+
+            output.texture =
+                std::move(resource);
         }
 
         if (const auto* vector =
@@ -551,6 +560,46 @@ namespace core::assets
 
             visual.boundingBox =
                 box;
+        }
+
+        TextureResolver textureResolver;
+
+        for (VisualRenderSet& renderSet :
+             visual.renderSets)
+        {
+            for (VisualGeometry& geometry :
+                 renderSet.geometries)
+            {
+                for (VisualPrimitiveGroup& group :
+                     geometry.primitiveGroups)
+                {
+                    for (VisualMaterialProperty& property :
+                         group.material.properties)
+                    {
+                        if (!property.texture.has_value())
+                        {
+                            continue;
+                        }
+
+                        TextureResource resolvedTexture;
+
+                        if (!textureResolver.Resolve(
+                                resources,
+                                property.texture->sourceReference,
+                                resolvedTexture))
+                        {
+                            error =
+                                "Visual contains invalid texture reference: " +
+                                property.texture->sourceReference;
+
+                            return false;
+                        }
+
+                        property.texture =
+                            std::move(resolvedTexture);
+                    }
+                }
+            }
         }
 
         output =
