@@ -9,7 +9,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ClInclude Include="Public\Core\Assets\ModelResolver.h" />
+    <ClInclude Include="Public\Core\Assets\ModelResource.h" />
+    <ClInclude Include="Public\Core\Assets\ModelSource.h" />
+    <ClInclude Include="Public\Core\Assets\ModelSourceLoader.h" />
     <ClInclude Include="Public\Core\Log.h" />
+    <ClInclude Include="Public\Core\Resources\ResourcePath.h" />
     <ClInclude Include="Public\Core\Runtime.h" />
 
     <ClInclude Include="Public\Core\Platform\Paths.h" />
@@ -31,7 +36,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ClCompile Include="Private\Assets\ModelResolver.cpp" />
+    <ClCompile Include="Private\Assets\ModelSourceLoader.cpp" />
     <ClCompile Include="Private\Log.cpp" />
+    <ClCompile Include="Private\Resources\ResourcePath.cpp" />
     <ClCompile Include="Private\Runtime.cpp" />
 
     <ClCompile Include="Private\Platform\Paths.cpp" />
