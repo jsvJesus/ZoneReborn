@@ -1,5 +1,7 @@
 #include "Graphics/Renderer.h"
 
+#include "Core/Log.h"
+
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
@@ -8,7 +10,7 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
-#include <cstring>
+#include <cstdint>
 #include <limits>
 #include <string>
 #include <vector>
@@ -22,87 +24,172 @@ namespace
         float x;
         float y;
         float z;
+
+        float nx;
+        float ny;
+        float nz;
     };
 
     struct SceneConstants final
     {
         DirectX::XMFLOAT4X4 world;
-        DirectX::XMFLOAT4X4 worldViewProjection;
+        DirectX::XMFLOAT4X4 viewProjection;
+
+        DirectX::XMFLOAT4 groupColour;
     };
+
+    DirectX::XMFLOAT3 UnpackNormal(
+        const std::uint32_t packed) noexcept
+    {
+        std::int32_t x =
+            static_cast<std::int32_t>(
+                packed & 0x7FFu);
+
+        std::int32_t y =
+            static_cast<std::int32_t>(
+                (packed >> 11u) & 0x7FFu);
+
+        std::int32_t z =
+            static_cast<std::int32_t>(
+                (packed >> 22u) & 0x3FFu);
+
+        if ((x & 0x400) != 0)
+        {
+            x -= 0x800;
+        }
+
+        if ((y & 0x400) != 0)
+        {
+            y -= 0x800;
+        }
+
+        if ((z & 0x200) != 0)
+        {
+            z -= 0x400;
+        }
+
+        DirectX::XMVECTOR normal =
+            DirectX::XMVectorSet(
+                static_cast<float>(x) / 1023.0f,
+                static_cast<float>(y) / 1023.0f,
+                static_cast<float>(z) / 511.0f,
+                0.0f);
+
+        normal =
+            DirectX::XMVector3Normalize(
+                normal);
+
+        DirectX::XMFLOAT3 result{};
+
+        DirectX::XMStoreFloat3(
+            &result,
+            normal);
+
+        return result;
+    }
+
+    DirectX::XMFLOAT4 PrimitiveGroupColour(
+        const std::size_t index) noexcept
+    {
+        switch (index % 3)
+        {
+            case 0:
+                return
+                {
+                    0.68f,
+                    0.70f,
+                    0.73f,
+                    1.0f
+                };
+
+            case 1:
+                return
+                {
+                    0.48f,
+                    0.31f,
+                    0.18f,
+                    1.0f
+                };
+
+            default:
+                return
+                {
+                    0.48f,
+                    0.20f,
+                    0.10f,
+                    1.0f
+                };
+        }
+    }
 
     constexpr char ShaderSource[] = R"(
 cbuffer SceneConstants : register(b0)
 {
-    float4x4 world;
-    float4x4 worldViewProjection;
+    row_major float4x4 world;
+    row_major float4x4 viewProjection;
+
+    float4 groupColour;
 };
 
 struct VertexInput
 {
     float3 position : POSITION;
+    float3 normal   : NORMAL;
 };
 
 struct PixelInput
 {
     float4 position : SV_POSITION;
-    float3 worldPosition : TEXCOORD0;
+    float3 normal   : NORMAL;
 };
 
 PixelInput VSMain(VertexInput input)
 {
     PixelInput output;
 
-    float4 localPosition =
-        float4(input.position, 1.0f);
+    float4 worldPosition =
+        mul(
+            float4(input.position, 1.0f),
+            world);
 
     output.position =
         mul(
-            worldViewProjection,
-            localPosition);
+            worldPosition,
+            viewProjection);
 
-    output.worldPosition =
-        mul(
-            world,
-            localPosition).xyz;
+    output.normal =
+        normalize(
+            mul(
+                float4(input.normal, 0.0f),
+                world).xyz);
 
     return output;
 }
 
 float4 PSMain(PixelInput input) : SV_TARGET
 {
-    float3 dx =
-        ddx(input.worldPosition);
-
-    float3 dy =
-        ddy(input.worldPosition);
-
     float3 normal =
-        normalize(
-            cross(dx, dy));
+        normalize(input.normal);
 
     float3 lightDirection =
         normalize(
             float3(
-                0.35f,
+                -0.35f,
                 0.85f,
                 -0.40f));
 
-    float lighting =
-        0.20f +
+    float diffuse =
         abs(
             dot(
                 normal,
-                lightDirection)) *
-        0.80f;
+                lightDirection));
 
-    float3 baseColour =
-        float3(
-            0.72f,
-            0.76f,
-            0.82f);
+    float lighting =
+        0.22f +
+        diffuse * 0.78f;
 
     return float4(
-        baseColour * lighting,
+        groupColour.rgb * lighting,
         1.0f);
 }
 )";
@@ -203,6 +290,10 @@ namespace client::graphics
 
         std::uint32_t indexCount = 0;
 
+        std::vector<
+            core::assets::MeshPrimitiveGroup>
+            primitiveGroups;
+
         DirectX::XMFLOAT3 center
         {
             0.0f,
@@ -265,9 +356,6 @@ namespace client::graphics
         swapChainDescription.SampleDesc.Count =
             1;
 
-        swapChainDescription.SampleDesc.Quality =
-            0;
-
         swapChainDescription.BufferUsage =
             DXGI_USAGE_RENDER_TARGET_OUTPUT;
 
@@ -288,8 +376,7 @@ namespace client::graphics
             D3D_FEATURE_LEVEL_11_0
         };
 
-        D3D_FEATURE_LEVEL createdFeatureLevel =
-            D3D_FEATURE_LEVEL_11_0;
+        D3D_FEATURE_LEVEL createdFeatureLevel{};
 
         HRESULT result =
             D3D11CreateDeviceAndSwapChain(
@@ -435,7 +522,7 @@ namespace client::graphics
         if (FAILED(result))
         {
             error =
-                "Unable to create depth stencil state.";
+                "Unable to create depth state.";
 
             return false;
         }
@@ -447,9 +534,6 @@ namespace client::graphics
 
         rasterizerDescription.CullMode =
             D3D11_CULL_NONE;
-
-        rasterizerDescription.FrontCounterClockwise =
-            FALSE;
 
         rasterizerDescription.DepthClipEnable =
             TRUE;
@@ -529,13 +613,22 @@ namespace client::graphics
                 0,
                 D3D11_INPUT_PER_VERTEX_DATA,
                 0
+            },
+            {
+                "NORMAL",
+                0,
+                DXGI_FORMAT_R32G32B32_FLOAT,
+                0,
+                12,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0
             }
         };
 
         result =
             state_->device->CreateInputLayout(
                 inputElements,
-                1,
+                2,
                 vertexShaderCode->GetBufferPointer(),
                 vertexShaderCode->GetBufferSize(),
                 &state_->inputLayout);
@@ -548,20 +641,20 @@ namespace client::graphics
             return false;
         }
 
-        D3D11_BUFFER_DESC constantBufferDescription{};
+        D3D11_BUFFER_DESC constantDescription{};
 
-        constantBufferDescription.ByteWidth =
+        constantDescription.ByteWidth =
             sizeof(SceneConstants);
 
-        constantBufferDescription.Usage =
+        constantDescription.Usage =
             D3D11_USAGE_DEFAULT;
 
-        constantBufferDescription.BindFlags =
+        constantDescription.BindFlags =
             D3D11_BIND_CONSTANT_BUFFER;
 
         result =
             state_->device->CreateBuffer(
-                &constantBufferDescription,
+                &constantDescription,
                 nullptr,
                 &state_->constantBuffer);
 
@@ -643,9 +736,9 @@ namespace client::graphics
 
         DirectX::XMFLOAT3 minimum
         {
-            mesh.vertices[0].position.x,
-            mesh.vertices[0].position.y,
-            mesh.vertices[0].position.z
+            mesh.vertices.front().position.x,
+            mesh.vertices.front().position.y,
+            mesh.vertices.front().position.z
         };
 
         DirectX::XMFLOAT3 maximum =
@@ -654,11 +747,19 @@ namespace client::graphics
         for (const core::assets::MeshVertex& vertex :
              mesh.vertices)
         {
+            const DirectX::XMFLOAT3 normal =
+                UnpackNormal(
+                    vertex.packedNormal);
+
             vertices.push_back(
             {
                 vertex.position.x,
                 vertex.position.y,
-                vertex.position.z
+                vertex.position.z,
+
+                normal.x,
+                normal.y,
+                normal.z
             });
 
             minimum.x =
@@ -692,17 +793,20 @@ namespace client::graphics
                     vertex.position.z);
         }
 
-        D3D11_BUFFER_DESC vertexBufferDescription{};
+        state_->vertexBuffer.Reset();
+        state_->indexBuffer.Reset();
 
-        vertexBufferDescription.ByteWidth =
+        D3D11_BUFFER_DESC vertexDescription{};
+
+        vertexDescription.ByteWidth =
             static_cast<UINT>(
                 vertices.size() *
                 sizeof(GpuVertex));
 
-        vertexBufferDescription.Usage =
+        vertexDescription.Usage =
             D3D11_USAGE_DEFAULT;
 
-        vertexBufferDescription.BindFlags =
+        vertexDescription.BindFlags =
             D3D11_BIND_VERTEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA vertexData{};
@@ -712,7 +816,7 @@ namespace client::graphics
 
         HRESULT result =
             state_->device->CreateBuffer(
-                &vertexBufferDescription,
+                &vertexDescription,
                 &vertexData,
                 &state_->vertexBuffer);
 
@@ -724,17 +828,17 @@ namespace client::graphics
             return false;
         }
 
-        D3D11_BUFFER_DESC indexBufferDescription{};
+        D3D11_BUFFER_DESC indexDescription{};
 
-        indexBufferDescription.ByteWidth =
+        indexDescription.ByteWidth =
             static_cast<UINT>(
                 mesh.indices.size() *
                 sizeof(std::uint16_t));
 
-        indexBufferDescription.Usage =
+        indexDescription.Usage =
             D3D11_USAGE_DEFAULT;
 
-        indexBufferDescription.BindFlags =
+        indexDescription.BindFlags =
             D3D11_BIND_INDEX_BUFFER;
 
         D3D11_SUBRESOURCE_DATA indexData{};
@@ -744,7 +848,7 @@ namespace client::graphics
 
         result =
             state_->device->CreateBuffer(
-                &indexBufferDescription,
+                &indexDescription,
                 &indexData,
                 &state_->indexBuffer);
 
@@ -759,6 +863,9 @@ namespace client::graphics
         state_->indexCount =
             static_cast<std::uint32_t>(
                 mesh.indices.size());
+
+        state_->primitiveGroups =
+            mesh.primitiveGroups;
 
         state_->center =
         {
@@ -779,17 +886,25 @@ namespace client::graphics
             maximum.z -
             minimum.z;
 
-        const float largestSize =
-            std::max(
-                sizeX,
-                std::max(
-                    sizeY,
-                    sizeZ));
+        state_->radius =
+            std::sqrt(
+                sizeX * sizeX +
+                sizeY * sizeY +
+                sizeZ * sizeZ) *
+            0.5f;
 
         state_->radius =
             std::max(
-                largestSize * 0.5f,
+                state_->radius,
                 0.5f);
+
+        core::Log::Info(
+            std::string("Mesh bounds: X=") +
+            std::to_string(sizeX) +
+            ", Y=" +
+            std::to_string(sizeY) +
+            ", Z=" +
+            std::to_string(sizeZ));
 
         return true;
     }
@@ -813,9 +928,9 @@ namespace client::graphics
 
         constexpr float ClearColour[4]
         {
-            0.035f,
-            0.045f,
-            0.060f,
+            0.025f,
+            0.030f,
+            0.040f,
             1.0f
         };
 
@@ -846,12 +961,6 @@ namespace client::graphics
 
         D3D11_VIEWPORT viewport{};
 
-        viewport.TopLeftX =
-            0.0f;
-
-        viewport.TopLeftY =
-            0.0f;
-
         viewport.Width =
             static_cast<float>(
                 state_->width);
@@ -873,6 +982,11 @@ namespace client::graphics
         state_->context->RSSetState(
             state_->rasterizerState.Get());
 
+        using namespace DirectX;
+
+        const XMMATRIX world =
+            XMMatrixIdentity();
+
         const auto now =
             std::chrono::steady_clock::now();
 
@@ -881,33 +995,9 @@ namespace client::graphics
                 now -
                 state_->startTime).count();
 
-        using namespace DirectX;
-
-        const XMVECTOR center =
-            XMLoadFloat3(
-                &state_->center);
-
-        const XMMATRIX moveToOrigin =
-            XMMatrixTranslation(
-                -state_->center.x,
-                -state_->center.y,
-                -state_->center.z);
-
-        const XMMATRIX rotation =
-            XMMatrixRotationY(
-                elapsed *
-                0.30f);
-
-        const XMMATRIX moveBack =
-            XMMatrixTranslation(
-                state_->center.x,
-                state_->center.y,
-                state_->center.z);
-
-        const XMMATRIX world =
-            moveToOrigin *
-            rotation *
-            moveBack;
+        const float angle =
+            elapsed *
+            0.22f;
 
         const float distance =
             std::max(
@@ -915,16 +1005,30 @@ namespace client::graphics
                     2.8f,
                 3.0f);
 
+        const float cameraHeight =
+            state_->radius *
+            0.12f;
+
+        const XMVECTOR target =
+            XMVectorSet(
+                state_->center.x,
+                state_->center.y,
+                state_->center.z,
+                1.0f);
+
         const XMVECTOR eye =
             XMVectorSet(
                 state_->center.x +
-                    state_->radius *
-                    1.15f,
-                state_->center.y +
-                    state_->radius *
-                    0.35f,
-                state_->center.z -
+                    std::sin(angle) *
                     distance,
+
+                state_->center.y +
+                    cameraHeight,
+
+                state_->center.z -
+                    std::cos(angle) *
+                    distance,
+
                 1.0f);
 
         const XMVECTOR up =
@@ -937,7 +1041,7 @@ namespace client::graphics
         const XMMATRIX view =
             XMMatrixLookAtLH(
                 eye,
-                center,
+                target,
                 up);
 
         const float aspect =
@@ -949,16 +1053,16 @@ namespace client::graphics
         const XMMATRIX projection =
             XMMatrixPerspectiveFovLH(
                 XMConvertToRadians(
-                    60.0f),
+                    45.0f),
                 aspect,
                 0.05f,
                 std::max(
                     100.0f,
+                    distance +
                     state_->radius *
-                        20.0f));
+                        10.0f));
 
-        const XMMATRIX worldViewProjection =
-            world *
+        const XMMATRIX viewProjection =
             view *
             projection;
 
@@ -966,21 +1070,11 @@ namespace client::graphics
 
         XMStoreFloat4x4(
             &constants.world,
-            XMMatrixTranspose(
-                world));
+            world);
 
         XMStoreFloat4x4(
-            &constants.worldViewProjection,
-            XMMatrixTranspose(
-                worldViewProjection));
-
-        state_->context->UpdateSubresource(
-            state_->constantBuffer.Get(),
-            0,
-            nullptr,
-            &constants,
-            0,
-            0);
+            &constants.viewProjection,
+            viewProjection);
 
         const UINT stride =
             sizeof(GpuVertex);
@@ -1031,17 +1125,69 @@ namespace client::graphics
             nullptr,
             0);
 
-        state_->context->DrawIndexed(
-            state_->indexCount,
+        state_->context->PSSetConstantBuffers(
             0,
-            0);
+            1,
+            constantBuffers);
 
-        const HRESULT presentResult =
+        if (state_->primitiveGroups.empty())
+        {
+            constants.groupColour =
+            {
+                0.68f,
+                0.70f,
+                0.73f,
+                1.0f
+            };
+
+            state_->context->UpdateSubresource(
+                state_->constantBuffer.Get(),
+                0,
+                nullptr,
+                &constants,
+                0,
+                0);
+
+            state_->context->DrawIndexed(
+                state_->indexCount,
+                0,
+                0);
+        }
+        else
+        {
+            for (std::size_t index = 0;
+                 index <
+                    state_->primitiveGroups.size();
+                 ++index)
+            {
+                const core::assets::MeshPrimitiveGroup& group =
+                    state_->primitiveGroups[index];
+
+                constants.groupColour =
+                    PrimitiveGroupColour(index);
+
+                state_->context->UpdateSubresource(
+                    state_->constantBuffer.Get(),
+                    0,
+                    nullptr,
+                    &constants,
+                    0,
+                    0);
+
+                state_->context->DrawIndexed(
+                    group.primitiveCount *
+                        3u,
+                    group.startIndex,
+                    0);
+            }
+        }
+
+        const HRESULT result =
             state_->swapChain->Present(
                 1,
                 0);
 
-        if (FAILED(presentResult))
+        if (FAILED(result))
         {
             error =
                 "D3D11 Present failed.";
