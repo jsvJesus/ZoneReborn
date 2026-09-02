@@ -11,11 +11,15 @@
   <ItemGroup>
     <ClInclude Include="Public\Core\Log.h" />
     <ClInclude Include="Public\Core\Runtime.h" />
+    <ClInclude Include="Public\Core\Platform\Paths.h" />
+    <ClInclude Include="Public\Core\Resources\ResourceFileSystem.h" />
   </ItemGroup>
 
   <ItemGroup>
     <ClCompile Include="Private\Log.cpp" />
     <ClCompile Include="Private\Runtime.cpp" />
+    <ClCompile Include="Private\Platform\Paths.cpp" />
+    <ClCompile Include="Private\Resources\ResourceFileSystem.cpp" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">
@@ -39,7 +43,6 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
 
   <ImportGroup Label="ExtensionSettings" />
-
   <ImportGroup Label="Shared" />
 
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -52,6 +55,7 @@
   <PropertyGroup Label="UserMacros" />
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
@@ -69,6 +73,7 @@
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
+
   </ItemDefinitionGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
