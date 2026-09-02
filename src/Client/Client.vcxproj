@@ -17,11 +17,13 @@
 
   <ItemGroup>
     <ClInclude Include="Private\Application.h" />
+    <ClInclude Include="Private\Diagnostics\ResourceValidation.h" />
   </ItemGroup>
 
   <ItemGroup>
     <ClCompile Include="Private\Application.cpp" />
     <ClCompile Include="Private\Main.cpp" />
+    <ClCompile Include="Private\Diagnostics\ResourceValidation.cpp" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">
@@ -45,7 +47,6 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
 
   <ImportGroup Label="ExtensionSettings" />
-
   <ImportGroup Label="Shared" />
 
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -58,6 +59,7 @@
   <PropertyGroup Label="UserMacros" />
 
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
@@ -68,7 +70,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;NOMINMAX;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\Core\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Private;$(ProjectDir)..\Core\Public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
 
@@ -79,6 +81,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
+
   </ItemDefinitionGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
