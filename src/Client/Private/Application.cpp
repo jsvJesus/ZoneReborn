@@ -1,8 +1,11 @@
 #include "Application.h"
 
-#include "Diagnostics/ResourceValidation.h"
+#include "Preview/ModelPreviewLoader.h"
 
+#include "Core/Assets/MeshData.h"
 #include "Core/Log.h"
+
+#include <string>
 
 namespace client
 {
@@ -13,22 +16,32 @@ namespace client
             core::Log::Error(
                 "Client initialization failed");
 
+            Shutdown();
+
             return 1;
         }
 
         core::Log::Info(
-            "Client started");
+            "Render loop started");
 
-        if (!diagnostics::RunResourceValidation(
-                runtime_))
+        std::string error;
+
+        while (window_.ProcessMessages())
         {
-            core::Log::Error(
-                "Resource validation failed");
+            if (!renderer_.Render(
+                    error))
+            {
+                core::Log::Error(
+                    error);
 
-            Shutdown();
+                Shutdown();
 
-            return 2;
+                return 2;
+            }
         }
+
+        core::Log::Info(
+            "Render loop stopped");
 
         Shutdown();
 
@@ -37,11 +50,72 @@ namespace client
 
     bool Application::Initialize()
     {
-        return runtime_.Initialize();
+        if (!runtime_.Initialize())
+        {
+            return false;
+        }
+
+        core::assets::MeshData mesh;
+
+        std::string error;
+
+        if (!preview::LoadModelPreview(
+                runtime_,
+                mesh,
+                error))
+        {
+            core::Log::Error(
+                std::string(
+                    "Unable to load preview mesh: ") +
+                error);
+
+            return false;
+        }
+
+        if (!window_.Initialize(
+                1280,
+                720,
+                L"Resource Preview",
+                error))
+        {
+            core::Log::Error(
+                error);
+
+            return false;
+        }
+
+        if (!renderer_.Initialize(
+                window_.NativeHandle(),
+                window_.Width(),
+                window_.Height(),
+                error))
+        {
+            core::Log::Error(
+                error);
+
+            return false;
+        }
+
+        if (!renderer_.SetMesh(
+                mesh,
+                error))
+        {
+            core::Log::Error(
+                error);
+
+            return false;
+        }
+
+        core::Log::Info(
+            "D3D11 renderer initialized");
+
+        return true;
     }
 
     void Application::Shutdown()
     {
+        renderer_.Shutdown();
+        window_.Shutdown();
         runtime_.Shutdown();
     }
 }

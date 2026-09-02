@@ -7,7 +7,7 @@
 
 namespace
 {
-    void WaitForExit()
+    void WaitOnFailure()
     {
         std::cout
             << '\n'
@@ -44,7 +44,10 @@ int main()
         exitCode = 1;
     }
 
-    WaitForExit();
+    if (exitCode != 0)
+    {
+        WaitOnFailure();
+    }
 
     return exitCode;
 }
