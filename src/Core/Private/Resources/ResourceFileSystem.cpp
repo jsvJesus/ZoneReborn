@@ -1,5 +1,7 @@
 #include "Core/Resources/ResourceFileSystem.h"
 
+#include "Core/Resources/ResourceFormatRegistry.h"
+
 #include <fstream>
 #include <limits>
 #include <system_error>
@@ -27,7 +29,9 @@ namespace core::resources
         std::error_code error;
 
         const std::filesystem::path absoluteRoot =
-            std::filesystem::absolute(packsRoot, error);
+            std::filesystem::absolute(
+                packsRoot,
+                error);
 
         if (error)
         {
@@ -40,27 +44,35 @@ namespace core::resources
         const std::filesystem::path sysRoot =
             absoluteRoot / "sys";
 
-        if (!std::filesystem::is_directory(resRoot, error))
+        if (!std::filesystem::is_directory(
+                resRoot,
+                error))
         {
             return false;
         }
 
         error.clear();
 
-        if (!std::filesystem::is_directory(sysRoot, error))
+        if (!std::filesystem::is_directory(
+                sysRoot,
+                error))
         {
             return false;
         }
 
         packsRoot_ = absoluteRoot;
 
-        if (!IndexMount("res", resRoot))
+        if (!IndexMount(
+                "res",
+                resRoot))
         {
             Shutdown();
             return false;
         }
 
-        if (!IndexMount("sys", sysRoot))
+        if (!IndexMount(
+                "sys",
+                sysRoot))
         {
             Shutdown();
             return false;
@@ -75,6 +87,7 @@ namespace core::resources
     {
         index_.clear();
         packsRoot_.clear();
+
         initialized_ = false;
     }
 
@@ -90,7 +103,7 @@ namespace core::resources
     }
 
     const ResourceEntry* ResourceFileSystem::Find(
-        const std::string_view logicalPath) const noexcept
+        const std::string_view logicalPath) const
     {
         const std::string normalized =
             NormalizeLogicalPath(logicalPath);
@@ -100,7 +113,8 @@ namespace core::resources
             return nullptr;
         }
 
-        const auto iterator = index_.find(normalized);
+        const auto iterator =
+            index_.find(normalized);
 
         if (iterator == index_.end())
         {
@@ -116,7 +130,8 @@ namespace core::resources
     {
         output.clear();
 
-        const ResourceEntry* entry = Find(logicalPath);
+        const ResourceEntry* entry =
+            Find(logicalPath);
 
         if (entry == nullptr)
         {
@@ -125,14 +140,16 @@ namespace core::resources
 
         std::ifstream stream(
             entry->physicalPath,
-            std::ios::binary | std::ios::ate);
+            std::ios::binary |
+            std::ios::ate);
 
         if (!stream)
         {
             return false;
         }
 
-        const std::streampos endPosition = stream.tellg();
+        const std::streampos endPosition =
+            stream.tellg();
 
         if (endPosition < 0)
         {
@@ -140,7 +157,8 @@ namespace core::resources
         }
 
         const auto byteCount =
-            static_cast<std::uint64_t>(endPosition);
+            static_cast<std::uint64_t>(
+                endPosition);
 
         if (byteCount >
             static_cast<std::uint64_t>(
@@ -150,9 +168,12 @@ namespace core::resources
         }
 
         output.resize(
-            static_cast<std::size_t>(byteCount));
+            static_cast<std::size_t>(
+                byteCount));
 
-        stream.seekg(0, std::ios::beg);
+        stream.seekg(
+            0,
+            std::ios::beg);
 
         if (!stream)
         {
@@ -163,8 +184,10 @@ namespace core::resources
         if (!output.empty())
         {
             stream.read(
-                reinterpret_cast<char*>(output.data()),
-                static_cast<std::streamsize>(output.size()));
+                reinterpret_cast<char*>(
+                    output.data()),
+                static_cast<std::streamsize>(
+                    output.size()));
 
             if (!stream)
             {
@@ -182,7 +205,8 @@ namespace core::resources
     {
         output.clear();
 
-        const ResourceEntry* entry = Find(logicalPath);
+        const ResourceEntry* entry =
+            Find(logicalPath);
 
         if (entry == nullptr)
         {
@@ -191,14 +215,16 @@ namespace core::resources
 
         std::ifstream stream(
             entry->physicalPath,
-            std::ios::binary | std::ios::ate);
+            std::ios::binary |
+            std::ios::ate);
 
         if (!stream)
         {
             return false;
         }
 
-        const std::streampos endPosition = stream.tellg();
+        const std::streampos endPosition =
+            stream.tellg();
 
         if (endPosition < 0)
         {
@@ -206,7 +232,8 @@ namespace core::resources
         }
 
         const auto byteCount =
-            static_cast<std::uint64_t>(endPosition);
+            static_cast<std::uint64_t>(
+                endPosition);
 
         if (byteCount >
             static_cast<std::uint64_t>(
@@ -216,9 +243,12 @@ namespace core::resources
         }
 
         output.resize(
-            static_cast<std::size_t>(byteCount));
+            static_cast<std::size_t>(
+                byteCount));
 
-        stream.seekg(0, std::ios::beg);
+        stream.seekg(
+            0,
+            std::ios::beg);
 
         if (!stream)
         {
@@ -230,7 +260,8 @@ namespace core::resources
         {
             stream.read(
                 output.data(),
-                static_cast<std::streamsize>(output.size()));
+                static_cast<std::streamsize>(
+                    output.size()));
 
             if (!stream)
             {
@@ -245,6 +276,47 @@ namespace core::resources
     std::size_t ResourceFileSystem::ResourceCount() const noexcept
     {
         return index_.size();
+    }
+
+    std::size_t ResourceFileSystem::ResourceCount(
+        const ResourceType type) const noexcept
+    {
+        std::size_t count = 0;
+
+        for (const auto& [path, entry] : index_)
+        {
+            static_cast<void>(path);
+
+            if (entry.type == type)
+            {
+                ++count;
+            }
+        }
+
+        return count;
+    }
+
+    std::vector<const ResourceEntry*>
+    ResourceFileSystem::FindByType(
+        const ResourceType type) const
+    {
+        std::vector<const ResourceEntry*> result;
+
+        result.reserve(
+            ResourceCount(type));
+
+        for (const auto& [path, entry] : index_)
+        {
+            static_cast<void>(path);
+
+            if (entry.type == type)
+            {
+                result.push_back(
+                    &entry);
+            }
+        }
+
+        return result;
     }
 
     const std::filesystem::path&
@@ -273,42 +345,66 @@ namespace core::resources
 
         while (iterator != end)
         {
-            const std::filesystem::directory_entry& file = *iterator;
+            const std::filesystem::directory_entry& file =
+                *iterator;
 
             error.clear();
 
-            if (file.is_regular_file(error) && !error)
+            if (file.is_regular_file(error) &&
+                !error)
             {
                 const std::filesystem::path relativePath =
-                    file.path().lexically_relative(directory);
+                    file.path().lexically_relative(
+                        directory);
 
                 if (!relativePath.empty())
                 {
                     std::string logicalPath;
+
+                    const std::string relativeString =
+                        relativePath.generic_string();
+
                     logicalPath.reserve(
                         mountName.size() +
                         1 +
-                        relativePath.generic_string().size());
+                        relativeString.size());
 
-                    logicalPath.append(mountName);
-                    logicalPath.push_back('/');
                     logicalPath.append(
-                        relativePath.generic_string());
+                        mountName);
+
+                    logicalPath.push_back('/');
+
+                    logicalPath.append(
+                        relativeString);
 
                     const std::string normalized =
-                        NormalizeLogicalPath(logicalPath);
+                        NormalizeLogicalPath(
+                            logicalPath);
 
                     if (!normalized.empty())
                     {
                         error.clear();
 
                         const std::uintmax_t fileSize =
-                            file.file_size(error);
+                            file.file_size(
+                                error);
 
                         ResourceEntry entry;
-                        entry.logicalPath = logicalPath;
-                        entry.physicalPath = file.path();
-                        entry.size = error ? 0 : fileSize;
+
+                        entry.logicalPath =
+                            logicalPath;
+
+                        entry.physicalPath =
+                            file.path();
+
+                        entry.type =
+                            ResourceFormatRegistry::Detect(
+                                file.path());
+
+                        entry.size =
+                            error
+                                ? 0
+                                : fileSize;
 
                         index_.insert_or_assign(
                             normalized,
@@ -318,7 +414,9 @@ namespace core::resources
             }
 
             error.clear();
-            iterator.increment(error);
+
+            iterator.increment(
+                error);
 
             if (error)
             {
@@ -338,7 +436,9 @@ namespace core::resources
         }
 
         std::string converted;
-        converted.reserve(logicalPath.size());
+
+        converted.reserve(
+            logicalPath.size());
 
         for (const char character : logicalPath)
         {
@@ -348,19 +448,24 @@ namespace core::resources
             }
             else
             {
-                converted.push_back(character);
+                converted.push_back(
+                    character);
             }
         }
 
-        const std::filesystem::path path(converted);
+        const std::filesystem::path path(
+            converted);
 
         std::string normalized;
 
         for (const std::filesystem::path& component : path)
         {
-            std::string part = component.generic_string();
+            std::string part =
+                component.generic_string();
 
-            if (part.empty() || part == "." || part == "/")
+            if (part.empty() ||
+                part == "." ||
+                part == "/")
             {
                 continue;
             }
@@ -377,10 +482,12 @@ namespace core::resources
 
             for (char& character : part)
             {
-                character = ToLowerAscii(character);
+                character =
+                    ToLowerAscii(character);
             }
 
-            normalized.append(part);
+            normalized.append(
+                part);
         }
 
         return normalized;

@@ -11,14 +11,21 @@
   <ItemGroup>
     <ClInclude Include="Public\Core\Log.h" />
     <ClInclude Include="Public\Core\Runtime.h" />
+
     <ClInclude Include="Public\Core\Platform\Paths.h" />
+
+    <ClInclude Include="Public\Core\Resources\ResourceType.h" />
+    <ClInclude Include="Public\Core\Resources\ResourceFormatRegistry.h" />
     <ClInclude Include="Public\Core\Resources\ResourceFileSystem.h" />
   </ItemGroup>
 
   <ItemGroup>
     <ClCompile Include="Private\Log.cpp" />
     <ClCompile Include="Private\Runtime.cpp" />
+
     <ClCompile Include="Private\Platform\Paths.cpp" />
+
+    <ClCompile Include="Private\Resources\ResourceFormatRegistry.cpp" />
     <ClCompile Include="Private\Resources\ResourceFileSystem.cpp" />
   </ItemGroup>
 

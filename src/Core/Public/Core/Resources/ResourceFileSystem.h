@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/Resources/ResourceType.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
@@ -14,6 +16,9 @@ namespace core::resources
     {
         std::string logicalPath;
         std::filesystem::path physicalPath;
+
+        ResourceType type = ResourceType::Unknown;
+
         std::uintmax_t size = 0;
     };
 
@@ -29,7 +34,8 @@ namespace core::resources
         ResourceFileSystem& operator=(ResourceFileSystem&&) = delete;
 
         [[nodiscard]]
-        bool Initialize(const std::filesystem::path& packsRoot);
+        bool Initialize(
+            const std::filesystem::path& packsRoot);
 
         void Shutdown();
 
@@ -37,11 +43,12 @@ namespace core::resources
         bool IsInitialized() const noexcept;
 
         [[nodiscard]]
-        bool Exists(std::string_view logicalPath) const;
+        bool Exists(
+            std::string_view logicalPath) const;
 
         [[nodiscard]]
         const ResourceEntry* Find(
-            std::string_view logicalPath) const noexcept;
+            std::string_view logicalPath) const;
 
         [[nodiscard]]
         bool ReadBinary(
@@ -55,6 +62,14 @@ namespace core::resources
 
         [[nodiscard]]
         std::size_t ResourceCount() const noexcept;
+
+        [[nodiscard]]
+        std::size_t ResourceCount(
+            ResourceType type) const noexcept;
+
+        [[nodiscard]]
+        std::vector<const ResourceEntry*> FindByType(
+            ResourceType type) const;
 
         [[nodiscard]]
         const std::filesystem::path& PacksRoot() const noexcept;
@@ -73,6 +88,7 @@ namespace core::resources
 
         std::filesystem::path packsRoot_;
         ResourceIndex index_;
+
         bool initialized_ = false;
     };
 }
