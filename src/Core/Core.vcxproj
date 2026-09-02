@@ -14,6 +14,10 @@
 
     <ClInclude Include="Public\Core\Platform\Paths.h" />
 
+    <ClInclude Include="Public\Core\Math\Vector3.h" />
+    <ClInclude Include="Public\Core\Math\Transform3x4.h" />
+    <ClInclude Include="Public\Core\Math\BoundingBox.h" />
+
     <ClInclude Include="Public\Core\Resources\DataSection.h" />
     <ClInclude Include="Public\Core\Resources\PackedSectionReader.h" />
     <ClInclude Include="Public\Core\Resources\ResourceType.h" />
@@ -22,6 +26,8 @@
 
     <ClInclude Include="Public\Core\World\SpaceSettings.h" />
     <ClInclude Include="Public\Core\World\SpaceLoader.h" />
+    <ClInclude Include="Public\Core\World\Chunk.h" />
+    <ClInclude Include="Public\Core\World\ChunkLoader.h" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +42,7 @@
     <ClCompile Include="Private\Resources\ResourceFileSystem.cpp" />
 
     <ClCompile Include="Private\World\SpaceLoader.cpp" />
+    <ClCompile Include="Private\World\ChunkLoader.cpp" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">
