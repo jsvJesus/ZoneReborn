@@ -19,8 +19,10 @@
     <ClInclude Include="Private\Application.h" />
     <ClInclude Include="Private\Diagnostics\ResourceValidation.h" />
     <ClInclude Include="Private\Graphics\Renderer.h" />
+    <ClInclude Include="Private\Graphics\SceneRenderData.h" />
     <ClInclude Include="Private\Platform\Window.h" />
     <ClInclude Include="Private\Preview\ModelPreviewLoader.h" />
+    <ClInclude Include="Private\Preview\WorldPreviewLoader.h" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +32,7 @@
     <ClCompile Include="Private\Diagnostics\ResourceValidation.cpp" />
     <ClCompile Include="Private\Platform\Window.cpp" />
     <ClCompile Include="Private\Preview\ModelPreviewLoader.cpp" />
+    <ClCompile Include="Private\Preview\WorldPreviewLoader.cpp" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">

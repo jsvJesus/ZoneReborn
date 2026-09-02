@@ -148,25 +148,37 @@ namespace core::assets
                 box;
         }
 
-        const auto* nodelessVisual =
+        const resources::DataSection* visualSection =
             root.FindChild("nodelessVisual");
 
-        if (nodelessVisual == nullptr)
+        if (visualSection == nullptr)
+        {
+            visualSection =
+                root.FindChild("nodefullVisual");
+        }
+
+        if (visualSection == nullptr)
+        {
+            visualSection =
+                root.FindChild("billboardVisual");
+        }
+
+        if (visualSection == nullptr)
         {
             error =
-                "Model does not contain nodelessVisual.";
+                "Model does not contain a visual reference.";
 
             return false;
         }
 
         const std::string* visualReference =
-            nodelessVisual->AsString();
+            visualSection->AsString();
 
         if (visualReference == nullptr ||
             visualReference->empty())
         {
             error =
-                "Model contains invalid nodelessVisual.";
+                "Model contains invalid visual reference.";
 
             return false;
         }

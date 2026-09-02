@@ -8,6 +8,7 @@
 #include <wrl/client.h>
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
@@ -70,9 +71,12 @@ namespace
 
         DirectX::XMVECTOR normal =
             DirectX::XMVectorSet(
-                static_cast<float>(x) / 1023.0f,
-                static_cast<float>(y) / 1023.0f,
-                static_cast<float>(z) / 511.0f,
+                static_cast<float>(x) /
+                    1023.0f,
+                static_cast<float>(y) /
+                    1023.0f,
+                static_cast<float>(z) /
+                    511.0f,
                 0.0f);
 
         normal =
@@ -88,35 +92,69 @@ namespace
         return result;
     }
 
+    DirectX::XMMATRIX ToMatrix(
+        const core::math::Transform3x4& transform) noexcept
+    {
+        return DirectX::XMMATRIX(
+            transform.values[0],
+            transform.values[1],
+            transform.values[2],
+            0.0f,
+
+            transform.values[3],
+            transform.values[4],
+            transform.values[5],
+            0.0f,
+
+            transform.values[6],
+            transform.values[7],
+            transform.values[8],
+            0.0f,
+
+            transform.values[9],
+            transform.values[10],
+            transform.values[11],
+            1.0f);
+    }
+
     DirectX::XMFLOAT4 PrimitiveGroupColour(
         const std::size_t index) noexcept
     {
-        switch (index % 3)
+        switch (index % 4)
         {
             case 0:
                 return
                 {
-                    0.68f,
-                    0.70f,
-                    0.73f,
+                    0.62f,
+                    0.64f,
+                    0.67f,
                     1.0f
                 };
 
             case 1:
                 return
                 {
-                    0.48f,
+                    0.42f,
                     0.31f,
-                    0.18f,
+                    0.20f,
+                    1.0f
+                };
+
+            case 2:
+                return
+                {
+                    0.38f,
+                    0.42f,
+                    0.32f,
                     1.0f
                 };
 
             default:
                 return
                 {
-                    0.48f,
-                    0.20f,
-                    0.10f,
+                    0.44f,
+                    0.28f,
+                    0.22f,
                     1.0f
                 };
         }
@@ -185,11 +223,12 @@ float4 PSMain(PixelInput input) : SV_TARGET
                 lightDirection));
 
     float lighting =
-        0.22f +
-        diffuse * 0.78f;
+        0.20f +
+        diffuse * 0.80f;
 
     return float4(
-        groupColour.rgb * lighting,
+        groupColour.rgb *
+            lighting,
         1.0f);
 }
 )";
@@ -247,9 +286,26 @@ namespace client::graphics
 {
     struct Renderer::State final
     {
+        struct GpuMesh final
+        {
+            ComPtr<ID3D11Buffer>
+                vertexBuffer;
+
+            ComPtr<ID3D11Buffer>
+                indexBuffer;
+
+            std::uint32_t indexCount = 0;
+
+            std::vector<
+                core::assets::MeshPrimitiveGroup>
+                primitiveGroups;
+
+            DirectX::XMFLOAT3 minimum{};
+            DirectX::XMFLOAT3 maximum{};
+        };
+
         ComPtr<ID3D11Device> device;
         ComPtr<ID3D11DeviceContext> context;
-
         ComPtr<IDXGISwapChain> swapChain;
 
         ComPtr<ID3D11RenderTargetView>
@@ -277,31 +333,18 @@ namespace client::graphics
             inputLayout;
 
         ComPtr<ID3D11Buffer>
-            vertexBuffer;
-
-        ComPtr<ID3D11Buffer>
-            indexBuffer;
-
-        ComPtr<ID3D11Buffer>
             constantBuffer;
+
+        std::vector<GpuMesh> meshes;
+
+        std::vector<SceneInstance>
+            instances;
 
         std::uint32_t width = 0;
         std::uint32_t height = 0;
 
-        std::uint32_t indexCount = 0;
-
-        std::vector<
-            core::assets::MeshPrimitiveGroup>
-            primitiveGroups;
-
-        DirectX::XMFLOAT3 center
-        {
-            0.0f,
-            0.0f,
-            0.0f
-        };
-
-        float radius = 1.0f;
+        DirectX::XMFLOAT3 sceneCenter{};
+        float sceneRadius = 1.0f;
 
         std::chrono::steady_clock::time_point
             startTime =
@@ -414,12 +457,13 @@ namespace client::graphics
         if (FAILED(result))
         {
             error =
-                "Unable to create D3D11 device and swap chain.";
+                "Unable to create D3D11 device.";
 
             return false;
         }
 
-        ComPtr<ID3D11Texture2D> backBuffer;
+        ComPtr<ID3D11Texture2D>
+            backBuffer;
 
         result =
             state_->swapChain->GetBuffer(
@@ -430,7 +474,7 @@ namespace client::graphics
         if (FAILED(result))
         {
             error =
-                "Unable to acquire swap chain back buffer.";
+                "Unable to get back buffer.";
 
             return false;
         }
@@ -444,12 +488,13 @@ namespace client::graphics
         if (FAILED(result))
         {
             error =
-                "Unable to create render target view.";
+                "Unable to create render target.";
 
             return false;
         }
 
-        D3D11_TEXTURE2D_DESC depthDescription{};
+        D3D11_TEXTURE2D_DESC
+            depthDescription{};
 
         depthDescription.Width =
             width;
@@ -498,12 +543,13 @@ namespace client::graphics
         if (FAILED(result))
         {
             error =
-                "Unable to create depth stencil view.";
+                "Unable to create depth view.";
 
             return false;
         }
 
-        D3D11_DEPTH_STENCIL_DESC depthStateDescription{};
+        D3D11_DEPTH_STENCIL_DESC
+            depthStateDescription{};
 
         depthStateDescription.DepthEnable =
             TRUE;
@@ -527,7 +573,8 @@ namespace client::graphics
             return false;
         }
 
-        D3D11_RASTERIZER_DESC rasterizerDescription{};
+        D3D11_RASTERIZER_DESC
+            rasterizerDescription{};
 
         rasterizerDescription.FillMode =
             D3D11_FILL_SOLID;
@@ -546,12 +593,13 @@ namespace client::graphics
         if (FAILED(result))
         {
             error =
-                "Unable to create rasterizer state.";
+                "Unable to create rasterizer.";
 
             return false;
         }
 
-        ComPtr<ID3DBlob> vertexShaderCode;
+        ComPtr<ID3DBlob>
+            vertexShaderCode;
 
         if (!CompileShader(
                 "VSMain",
@@ -562,7 +610,8 @@ namespace client::graphics
             return false;
         }
 
-        ComPtr<ID3DBlob> pixelShaderCode;
+        ComPtr<ID3DBlob>
+            pixelShaderCode;
 
         if (!CompileShader(
                 "PSMain",
@@ -603,7 +652,8 @@ namespace client::graphics
             return false;
         }
 
-        const D3D11_INPUT_ELEMENT_DESC inputElements[] =
+        const D3D11_INPUT_ELEMENT_DESC
+            inputElements[] =
         {
             {
                 "POSITION",
@@ -641,7 +691,8 @@ namespace client::graphics
             return false;
         }
 
-        D3D11_BUFFER_DESC constantDescription{};
+        D3D11_BUFFER_DESC
+            constantDescription{};
 
         constantDescription.ByteWidth =
             sizeof(SceneConstants);
@@ -661,7 +712,7 @@ namespace client::graphics
         if (FAILED(result))
         {
             error =
-                "Unable to create scene constant buffer.";
+                "Unable to create constant buffer.";
 
             return false;
         }
@@ -678,8 +729,8 @@ namespace client::graphics
         return true;
     }
 
-    bool Renderer::SetMesh(
-        const core::assets::MeshData& mesh,
+    bool Renderer::SetScene(
+        const SceneRenderData& scene,
         std::string& error)
     {
         error.clear();
@@ -693,218 +744,406 @@ namespace client::graphics
             return false;
         }
 
-        if (mesh.vertices.empty())
+        if (scene.meshes.empty() ||
+            scene.instances.empty())
         {
             error =
-                "Mesh contains no vertices.";
+                "Scene contains no geometry.";
 
             return false;
         }
 
-        if (mesh.indices.empty())
+        state_->meshes.clear();
+        state_->instances.clear();
+
+        state_->meshes.reserve(
+            scene.meshes.size());
+
+        for (const core::assets::MeshData& mesh :
+             scene.meshes)
         {
-            error =
-                "Mesh contains no indices.";
-
-            return false;
-        }
-
-        if (mesh.vertices.size() >
-            std::numeric_limits<UINT>::max() /
-                sizeof(GpuVertex))
-        {
-            error =
-                "Mesh vertex buffer is too large.";
-
-            return false;
-        }
-
-        if (mesh.indices.size() >
-            std::numeric_limits<UINT>::max() /
-                sizeof(std::uint16_t))
-        {
-            error =
-                "Mesh index buffer is too large.";
-
-            return false;
-        }
-
-        std::vector<GpuVertex> vertices;
-
-        vertices.reserve(
-            mesh.vertices.size());
-
-        DirectX::XMFLOAT3 minimum
-        {
-            mesh.vertices.front().position.x,
-            mesh.vertices.front().position.y,
-            mesh.vertices.front().position.z
-        };
-
-        DirectX::XMFLOAT3 maximum =
-            minimum;
-
-        for (const core::assets::MeshVertex& vertex :
-             mesh.vertices)
-        {
-            const DirectX::XMFLOAT3 normal =
-                UnpackNormal(
-                    vertex.packedNormal);
-
-            vertices.push_back(
+            if (mesh.vertices.empty() ||
+                mesh.indices.empty())
             {
-                vertex.position.x,
-                vertex.position.y,
-                vertex.position.z,
+                error =
+                    "Scene contains empty mesh.";
 
-                normal.x,
-                normal.y,
-                normal.z
-            });
+                return false;
+            }
 
-            minimum.x =
-                std::min(
-                    minimum.x,
-                    vertex.position.x);
+            std::vector<GpuVertex> vertices;
 
-            minimum.y =
-                std::min(
-                    minimum.y,
-                    vertex.position.y);
+            vertices.reserve(
+                mesh.vertices.size());
 
-            minimum.z =
-                std::min(
-                    minimum.z,
-                    vertex.position.z);
+            DirectX::XMFLOAT3 minimum
+            {
+                mesh.vertices.front().position.x,
+                mesh.vertices.front().position.y,
+                mesh.vertices.front().position.z
+            };
 
-            maximum.x =
-                std::max(
-                    maximum.x,
-                    vertex.position.x);
+            DirectX::XMFLOAT3 maximum =
+                minimum;
 
-            maximum.y =
-                std::max(
-                    maximum.y,
-                    vertex.position.y);
+            for (const core::assets::MeshVertex& vertex :
+                 mesh.vertices)
+            {
+                const DirectX::XMFLOAT3 normal =
+                    UnpackNormal(
+                        vertex.packedNormal);
 
-            maximum.z =
-                std::max(
-                    maximum.z,
-                    vertex.position.z);
+                vertices.push_back(
+                {
+                    vertex.position.x,
+                    vertex.position.y,
+                    vertex.position.z,
+
+                    normal.x,
+                    normal.y,
+                    normal.z
+                });
+
+                minimum.x =
+                    std::min(
+                        minimum.x,
+                        vertex.position.x);
+
+                minimum.y =
+                    std::min(
+                        minimum.y,
+                        vertex.position.y);
+
+                minimum.z =
+                    std::min(
+                        minimum.z,
+                        vertex.position.z);
+
+                maximum.x =
+                    std::max(
+                        maximum.x,
+                        vertex.position.x);
+
+                maximum.y =
+                    std::max(
+                        maximum.y,
+                        vertex.position.y);
+
+                maximum.z =
+                    std::max(
+                        maximum.z,
+                        vertex.position.z);
+            }
+
+            if (vertices.size() >
+                std::numeric_limits<UINT>::max() /
+                    sizeof(GpuVertex))
+            {
+                error =
+                    "Scene vertex buffer is too large.";
+
+                return false;
+            }
+
+            if (mesh.indices.size() >
+                std::numeric_limits<UINT>::max() /
+                    sizeof(std::uint16_t))
+            {
+                error =
+                    "Scene index buffer is too large.";
+
+                return false;
+            }
+
+            State::GpuMesh gpuMesh;
+
+            D3D11_BUFFER_DESC
+                vertexDescription{};
+
+            vertexDescription.ByteWidth =
+                static_cast<UINT>(
+                    vertices.size() *
+                    sizeof(GpuVertex));
+
+            vertexDescription.Usage =
+                D3D11_USAGE_DEFAULT;
+
+            vertexDescription.BindFlags =
+                D3D11_BIND_VERTEX_BUFFER;
+
+            D3D11_SUBRESOURCE_DATA
+                vertexData{};
+
+            vertexData.pSysMem =
+                vertices.data();
+
+            HRESULT result =
+                state_->device->CreateBuffer(
+                    &vertexDescription,
+                    &vertexData,
+                    &gpuMesh.vertexBuffer);
+
+            if (FAILED(result))
+            {
+                error =
+                    "Unable to create world vertex buffer.";
+
+                return false;
+            }
+
+            D3D11_BUFFER_DESC
+                indexDescription{};
+
+            indexDescription.ByteWidth =
+                static_cast<UINT>(
+                    mesh.indices.size() *
+                    sizeof(std::uint16_t));
+
+            indexDescription.Usage =
+                D3D11_USAGE_DEFAULT;
+
+            indexDescription.BindFlags =
+                D3D11_BIND_INDEX_BUFFER;
+
+            D3D11_SUBRESOURCE_DATA
+                indexData{};
+
+            indexData.pSysMem =
+                mesh.indices.data();
+
+            result =
+                state_->device->CreateBuffer(
+                    &indexDescription,
+                    &indexData,
+                    &gpuMesh.indexBuffer);
+
+            if (FAILED(result))
+            {
+                error =
+                    "Unable to create world index buffer.";
+
+                return false;
+            }
+
+            gpuMesh.indexCount =
+                static_cast<std::uint32_t>(
+                    mesh.indices.size());
+
+            gpuMesh.primitiveGroups =
+                mesh.primitiveGroups;
+
+            gpuMesh.minimum =
+                minimum;
+
+            gpuMesh.maximum =
+                maximum;
+
+            state_->meshes.push_back(
+                std::move(gpuMesh));
         }
 
-        state_->vertexBuffer.Reset();
-        state_->indexBuffer.Reset();
+        state_->instances =
+            scene.instances;
 
-        D3D11_BUFFER_DESC vertexDescription{};
+        bool hasBounds = false;
 
-        vertexDescription.ByteWidth =
-            static_cast<UINT>(
-                vertices.size() *
-                sizeof(GpuVertex));
+        DirectX::XMFLOAT3 sceneMinimum{};
+        DirectX::XMFLOAT3 sceneMaximum{};
 
-        vertexDescription.Usage =
-            D3D11_USAGE_DEFAULT;
+        for (const SceneInstance& instance :
+             state_->instances)
+        {
+            if (instance.meshIndex >=
+                state_->meshes.size())
+            {
+                error =
+                    "Scene contains invalid mesh index.";
 
-        vertexDescription.BindFlags =
-            D3D11_BIND_VERTEX_BUFFER;
+                return false;
+            }
 
-        D3D11_SUBRESOURCE_DATA vertexData{};
+            const State::GpuMesh& mesh =
+                state_->meshes[
+                    instance.meshIndex];
 
-        vertexData.pSysMem =
-            vertices.data();
+            const DirectX::XMMATRIX world =
+                ToMatrix(
+                    instance.transform);
 
-        HRESULT result =
-            state_->device->CreateBuffer(
-                &vertexDescription,
-                &vertexData,
-                &state_->vertexBuffer);
+            const std::array<
+                DirectX::XMFLOAT3,
+                8>
+                corners
+            {{
+                {
+                    mesh.minimum.x,
+                    mesh.minimum.y,
+                    mesh.minimum.z
+                },
+                {
+                    mesh.maximum.x,
+                    mesh.minimum.y,
+                    mesh.minimum.z
+                },
+                {
+                    mesh.minimum.x,
+                    mesh.maximum.y,
+                    mesh.minimum.z
+                },
+                {
+                    mesh.maximum.x,
+                    mesh.maximum.y,
+                    mesh.minimum.z
+                },
+                {
+                    mesh.minimum.x,
+                    mesh.minimum.y,
+                    mesh.maximum.z
+                },
+                {
+                    mesh.maximum.x,
+                    mesh.minimum.y,
+                    mesh.maximum.z
+                },
+                {
+                    mesh.minimum.x,
+                    mesh.maximum.y,
+                    mesh.maximum.z
+                },
+                {
+                    mesh.maximum.x,
+                    mesh.maximum.y,
+                    mesh.maximum.z
+                }
+            }};
 
-        if (FAILED(result))
+            for (const DirectX::XMFLOAT3& corner :
+                 corners)
+            {
+                DirectX::XMVECTOR point =
+                    DirectX::XMLoadFloat3(
+                        &corner);
+
+                point =
+                    DirectX::XMVector3TransformCoord(
+                        point,
+                        world);
+
+                DirectX::XMFLOAT3 transformed{};
+
+                DirectX::XMStoreFloat3(
+                    &transformed,
+                    point);
+
+                if (!hasBounds)
+                {
+                    sceneMinimum =
+                        transformed;
+
+                    sceneMaximum =
+                        transformed;
+
+                    hasBounds = true;
+
+                    continue;
+                }
+
+                sceneMinimum.x =
+                    std::min(
+                        sceneMinimum.x,
+                        transformed.x);
+
+                sceneMinimum.y =
+                    std::min(
+                        sceneMinimum.y,
+                        transformed.y);
+
+                sceneMinimum.z =
+                    std::min(
+                        sceneMinimum.z,
+                        transformed.z);
+
+                sceneMaximum.x =
+                    std::max(
+                        sceneMaximum.x,
+                        transformed.x);
+
+                sceneMaximum.y =
+                    std::max(
+                        sceneMaximum.y,
+                        transformed.y);
+
+                sceneMaximum.z =
+                    std::max(
+                        sceneMaximum.z,
+                        transformed.z);
+            }
+        }
+
+        if (!hasBounds)
         {
             error =
-                "Unable to create GPU vertex buffer.";
+                "Unable to calculate world bounds.";
 
             return false;
         }
 
-        D3D11_BUFFER_DESC indexDescription{};
-
-        indexDescription.ByteWidth =
-            static_cast<UINT>(
-                mesh.indices.size() *
-                sizeof(std::uint16_t));
-
-        indexDescription.Usage =
-            D3D11_USAGE_DEFAULT;
-
-        indexDescription.BindFlags =
-            D3D11_BIND_INDEX_BUFFER;
-
-        D3D11_SUBRESOURCE_DATA indexData{};
-
-        indexData.pSysMem =
-            mesh.indices.data();
-
-        result =
-            state_->device->CreateBuffer(
-                &indexDescription,
-                &indexData,
-                &state_->indexBuffer);
-
-        if (FAILED(result))
+        state_->sceneCenter =
         {
-            error =
-                "Unable to create GPU index buffer.";
+            (sceneMinimum.x +
+             sceneMaximum.x) *
+                0.5f,
 
-            return false;
-        }
+            (sceneMinimum.y +
+             sceneMaximum.y) *
+                0.5f,
 
-        state_->indexCount =
-            static_cast<std::uint32_t>(
-                mesh.indices.size());
-
-        state_->primitiveGroups =
-            mesh.primitiveGroups;
-
-        state_->center =
-        {
-            (minimum.x + maximum.x) * 0.5f,
-            (minimum.y + maximum.y) * 0.5f,
-            (minimum.z + maximum.z) * 0.5f
+            (sceneMinimum.z +
+             sceneMaximum.z) *
+                0.5f
         };
 
         const float sizeX =
-            maximum.x -
-            minimum.x;
+            sceneMaximum.x -
+            sceneMinimum.x;
 
         const float sizeY =
-            maximum.y -
-            minimum.y;
+            sceneMaximum.y -
+            sceneMinimum.y;
 
         const float sizeZ =
-            maximum.z -
-            minimum.z;
+            sceneMaximum.z -
+            sceneMinimum.z;
 
-        state_->radius =
+        state_->sceneRadius =
             std::sqrt(
                 sizeX * sizeX +
                 sizeY * sizeY +
                 sizeZ * sizeZ) *
             0.5f;
 
-        state_->radius =
+        state_->sceneRadius =
             std::max(
-                state_->radius,
-                0.5f);
+                state_->sceneRadius,
+                10.0f);
 
         core::Log::Info(
-            std::string("Mesh bounds: X=") +
+            std::string("World bounds: X=") +
             std::to_string(sizeX) +
             ", Y=" +
             std::to_string(sizeY) +
             ", Z=" +
             std::to_string(sizeZ));
+
+        core::Log::Info(
+            std::string("GPU meshes created: ") +
+            std::to_string(
+                state_->meshes.size()));
+
+        core::Log::Info(
+            std::string("GPU scene instances: ") +
+            std::to_string(
+                state_->instances.size()));
 
         return true;
     }
@@ -917,20 +1156,19 @@ namespace client::graphics
         if (!state_ ||
             !state_->context ||
             !state_->swapChain ||
-            !state_->vertexBuffer ||
-            !state_->indexBuffer)
+            state_->meshes.empty())
         {
             error =
-                "Renderer has no valid mesh.";
+                "Renderer has no world scene.";
 
             return false;
         }
 
         constexpr float ClearColour[4]
         {
+            0.018f,
             0.025f,
-            0.030f,
-            0.040f,
+            0.035f,
             1.0f
         };
 
@@ -945,7 +1183,8 @@ namespace client::graphics
             1.0f,
             0);
 
-        ID3D11RenderTargetView* renderTargets[] =
+        ID3D11RenderTargetView*
+            renderTargets[] =
         {
             state_->renderTargetView.Get()
         };
@@ -984,9 +1223,6 @@ namespace client::graphics
 
         using namespace DirectX;
 
-        const XMMATRIX world =
-            XMMatrixIdentity();
-
         const auto now =
             std::chrono::steady_clock::now();
 
@@ -997,35 +1233,37 @@ namespace client::graphics
 
         const float angle =
             elapsed *
-            0.22f;
+            0.035f;
 
         const float distance =
             std::max(
-                state_->radius *
-                    2.8f,
-                3.0f);
+                state_->sceneRadius *
+                    1.45f,
+                150.0f);
 
         const float cameraHeight =
-            state_->radius *
-            0.12f;
+            std::max(
+                state_->sceneRadius *
+                    0.65f,
+                100.0f);
 
         const XMVECTOR target =
             XMVectorSet(
-                state_->center.x,
-                state_->center.y,
-                state_->center.z,
+                state_->sceneCenter.x,
+                state_->sceneCenter.y,
+                state_->sceneCenter.z,
                 1.0f);
 
         const XMVECTOR eye =
             XMVectorSet(
-                state_->center.x +
+                state_->sceneCenter.x +
                     std::sin(angle) *
                     distance,
 
-                state_->center.y +
+                state_->sceneCenter.y +
                     cameraHeight,
 
-                state_->center.z -
+                state_->sceneCenter.z -
                     std::cos(angle) *
                     distance,
 
@@ -1053,51 +1291,23 @@ namespace client::graphics
         const XMMATRIX projection =
             XMMatrixPerspectiveFovLH(
                 XMConvertToRadians(
-                    45.0f),
+                    55.0f),
                 aspect,
-                0.05f,
+                0.1f,
                 std::max(
-                    100.0f,
-                    distance +
-                    state_->radius *
+                    5000.0f,
+                    state_->sceneRadius *
                         10.0f));
 
         const XMMATRIX viewProjection =
             view *
             projection;
 
-        SceneConstants constants{};
-
-        XMStoreFloat4x4(
-            &constants.world,
-            world);
-
-        XMStoreFloat4x4(
-            &constants.viewProjection,
-            viewProjection);
-
         const UINT stride =
             sizeof(GpuVertex);
 
         const UINT offset =
             0;
-
-        ID3D11Buffer* vertexBuffers[] =
-        {
-            state_->vertexBuffer.Get()
-        };
-
-        state_->context->IASetVertexBuffers(
-            0,
-            1,
-            vertexBuffers,
-            &stride,
-            &offset);
-
-        state_->context->IASetIndexBuffer(
-            state_->indexBuffer.Get(),
-            DXGI_FORMAT_R16_UINT,
-            0);
 
         state_->context->IASetInputLayout(
             state_->inputLayout.Get());
@@ -1110,7 +1320,13 @@ namespace client::graphics
             nullptr,
             0);
 
-        ID3D11Buffer* constantBuffers[] =
+        state_->context->PSSetShader(
+            state_->pixelShader.Get(),
+            nullptr,
+            0);
+
+        ID3D11Buffer*
+            constantBuffers[] =
         {
             state_->constantBuffer.Get()
         };
@@ -1120,51 +1336,88 @@ namespace client::graphics
             1,
             constantBuffers);
 
-        state_->context->PSSetShader(
-            state_->pixelShader.Get(),
-            nullptr,
-            0);
-
         state_->context->PSSetConstantBuffers(
             0,
             1,
             constantBuffers);
 
-        if (state_->primitiveGroups.empty())
+        SceneConstants constants{};
+
+        XMStoreFloat4x4(
+            &constants.viewProjection,
+            viewProjection);
+
+        for (const SceneInstance& instance :
+             state_->instances)
         {
-            constants.groupColour =
+            const State::GpuMesh& mesh =
+                state_->meshes[
+                    instance.meshIndex];
+
+            ID3D11Buffer*
+                vertexBuffers[] =
             {
-                0.68f,
-                0.70f,
-                0.73f,
-                1.0f
+                mesh.vertexBuffer.Get()
             };
 
-            state_->context->UpdateSubresource(
-                state_->constantBuffer.Get(),
+            state_->context->IASetVertexBuffers(
                 0,
-                nullptr,
-                &constants,
-                0,
+                1,
+                vertexBuffers,
+                &stride,
+                &offset);
+
+            state_->context->IASetIndexBuffer(
+                mesh.indexBuffer.Get(),
+                DXGI_FORMAT_R16_UINT,
                 0);
 
-            state_->context->DrawIndexed(
-                state_->indexCount,
-                0,
-                0);
-        }
-        else
-        {
-            for (std::size_t index = 0;
-                 index <
-                    state_->primitiveGroups.size();
-                 ++index)
+            const XMMATRIX world =
+                ToMatrix(
+                    instance.transform);
+
+            XMStoreFloat4x4(
+                &constants.world,
+                world);
+
+            if (mesh.primitiveGroups.empty())
+            {
+                constants.groupColour =
+                {
+                    0.62f,
+                    0.64f,
+                    0.67f,
+                    1.0f
+                };
+
+                state_->context->UpdateSubresource(
+                    state_->constantBuffer.Get(),
+                    0,
+                    nullptr,
+                    &constants,
+                    0,
+                    0);
+
+                state_->context->DrawIndexed(
+                    mesh.indexCount,
+                    0,
+                    0);
+
+                continue;
+            }
+
+            for (std::size_t groupIndex = 0;
+                 groupIndex <
+                    mesh.primitiveGroups.size();
+                 ++groupIndex)
             {
                 const core::assets::MeshPrimitiveGroup& group =
-                    state_->primitiveGroups[index];
+                    mesh.primitiveGroups[
+                        groupIndex];
 
                 constants.groupColour =
-                    PrimitiveGroupColour(index);
+                    PrimitiveGroupColour(
+                        groupIndex);
 
                 state_->context->UpdateSubresource(
                     state_->constantBuffer.Get(),

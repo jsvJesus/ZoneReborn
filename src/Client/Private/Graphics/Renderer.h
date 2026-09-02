@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Assets/MeshData.h"
+#include "Graphics/SceneRenderData.h"
 
 #include <Windows.h>
 
@@ -27,8 +27,8 @@ namespace client::graphics
             std::string& error);
 
         [[nodiscard]]
-        bool SetMesh(
-            const core::assets::MeshData& mesh,
+        bool SetScene(
+            const SceneRenderData& scene,
             std::string& error);
 
         [[nodiscard]]

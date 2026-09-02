@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod].new
 *.log
+*.tlog
 .vscode/
 .idea/
 
@@ -26,5 +27,7 @@ packs/res/textures/
 *.privkey
 *.pdb
 *.obj
+*.iobj
 *.zip
 *.rar
+*.lib

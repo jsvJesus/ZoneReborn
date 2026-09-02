@@ -45,6 +45,8 @@
     <ClInclude Include="Public\Core\World\SpaceLoader.h" />
     <ClInclude Include="Public\Core\World\Chunk.h" />
     <ClInclude Include="Public\Core\World\ChunkLoader.h" />
+    <ClInclude Include="Public\Core\World\WorldLoader.h" />
+    <ClInclude Include="Public\Core\World\WorldScene.h" />
   </ItemGroup>
 
   <ItemGroup>
@@ -70,6 +72,7 @@
 
     <ClCompile Include="Private\World\SpaceLoader.cpp" />
     <ClCompile Include="Private\World\ChunkLoader.cpp" />
+    <ClCompile Include="Private\World\WorldLoader.cpp" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">

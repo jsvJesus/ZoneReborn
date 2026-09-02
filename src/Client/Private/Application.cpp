@@ -1,8 +1,7 @@
 #include "Application.h"
 
-#include "Preview/ModelPreviewLoader.h"
+#include "Preview/WorldPreviewLoader.h"
 
-#include "Core/Assets/MeshData.h"
 #include "Core/Log.h"
 
 #include <string>
@@ -22,7 +21,7 @@ namespace client
         }
 
         core::Log::Info(
-            "Render loop started");
+            "World render loop started");
 
         std::string error;
 
@@ -41,7 +40,7 @@ namespace client
         }
 
         core::Log::Info(
-            "Render loop stopped");
+            "World render loop stopped");
 
         Shutdown();
 
@@ -55,27 +54,30 @@ namespace client
             return false;
         }
 
-        core::assets::MeshData mesh;
+        graphics::SceneRenderData scene;
 
         std::string error;
 
-        if (!preview::LoadModelPreview(
+        core::Log::Info(
+            "Loading so_origins world");
+
+        if (!preview::LoadWorldPreview(
                 runtime_,
-                mesh,
+                scene,
                 error))
         {
             core::Log::Error(
                 std::string(
-                    "Unable to load preview mesh: ") +
+                    "Unable to load world: ") +
                 error);
 
             return false;
         }
 
         if (!window_.Initialize(
-                1280,
-                720,
-                L"Resource Preview",
+                1600,
+                900,
+                L"so_origins World Preview",
                 error))
         {
             core::Log::Error(
@@ -96,8 +98,8 @@ namespace client
             return false;
         }
 
-        if (!renderer_.SetMesh(
-                mesh,
+        if (!renderer_.SetScene(
+                scene,
                 error))
         {
             core::Log::Error(
@@ -107,7 +109,7 @@ namespace client
         }
 
         core::Log::Info(
-            "D3D11 renderer initialized");
+            "so_origins world initialized");
 
         return true;
     }
