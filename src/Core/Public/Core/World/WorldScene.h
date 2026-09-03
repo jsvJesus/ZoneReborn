@@ -19,6 +19,16 @@ namespace core::world
         bool shell = false;
     };
 
+    struct WorldTerrainInstance final
+    {
+        std::string chunkId;
+
+        std::string resourceReference;
+        std::string cdataLogicalPath;
+
+        math::Transform3x4 transform;
+    };
+
     struct WorldScene final
     {
         std::string spaceName;
@@ -27,6 +37,9 @@ namespace core::world
 
         std::vector<WorldModelInstance>
             modelInstances;
+
+        std::vector<WorldTerrainInstance>
+            terrainInstances;
 
         std::size_t chunkCount = 0;
         std::size_t outdoorChunkCount = 0;

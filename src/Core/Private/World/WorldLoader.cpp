@@ -138,6 +138,76 @@ namespace
         return true;
     }
 
+    bool BuildTerrainCDataPath(
+        const std::string_view spaceName,
+        const std::string_view resourceReference,
+        std::string& output)
+    {
+        output.clear();
+
+        std::string resource =
+            core::resources::ResourcePath::Normalize(
+                resourceReference);
+
+        if (resource.empty())
+        {
+            return false;
+        }
+
+        constexpr std::string_view TerrainSuffix =
+            "/terrain2";
+
+        if (resource.ends_with(
+                TerrainSuffix))
+        {
+            resource.resize(
+                resource.size() -
+                TerrainSuffix.size());
+        }
+
+        if (!resource.ends_with(
+                ".cdata"))
+        {
+            return false;
+        }
+
+        if (resource.starts_with(
+                "res/"))
+        {
+            output =
+                resource;
+
+            return true;
+        }
+
+        if (resource.starts_with(
+                "spaces/"))
+        {
+            output =
+                "res/" +
+                resource;
+
+            return true;
+        }
+
+        const std::string normalizedSpace =
+            core::resources::ResourcePath::Normalize(
+                spaceName);
+
+        if (normalizedSpace.empty())
+        {
+            return false;
+        }
+
+        output =
+            "res/spaces/" +
+            normalizedSpace +
+            "/" +
+            resource;
+
+        return true;
+    }
+
     void AddModelInstance(
         const std::string& chunkId,
         const core::world::ChunkModelInstance& source,
@@ -354,8 +424,51 @@ namespace core::world
             scene.speedTreeInstanceCount +=
                 chunk.speedTrees.size();
 
-            scene.terrainReferenceCount +=
-                chunk.terrains.size();
+            for (const ChunkTerrainReference& terrain :
+                 chunk.terrains)
+            {
+                WorldTerrainInstance instance;
+
+                instance.chunkId =
+                    chunkId;
+
+                instance.resourceReference =
+                    terrain.resource;
+
+                if (!BuildTerrainCDataPath(
+                        spaceName,
+                        terrain.resource,
+                        instance.cdataLogicalPath))
+                {
+                    core::Log::Warning(
+                        std::string(
+                            "Invalid terrain reference in chunk ") +
+                        chunkId +
+                        ": " +
+                        terrain.resource);
+
+                    continue;
+                }
+
+                if (!resources.Exists(
+                        instance.cdataLogicalPath))
+                {
+                    core::Log::Warning(
+                        std::string(
+                            "Terrain cdata not found: ") +
+                        instance.cdataLogicalPath);
+
+                    continue;
+                }
+
+                instance.transform =
+                    chunkTransform;
+
+                scene.terrainInstances.push_back(
+                    std::move(instance));
+
+                ++scene.terrainReferenceCount;
+            }
 
             scene.largeObjectReferenceCount +=
                 chunk.largeObjects.size();
@@ -396,9 +509,9 @@ namespace core::world
                 scene.speedTreeInstanceCount));
 
         core::Log::Info(
-            std::string("Terrain references pending: ") +
+            std::string("Terrain instances: ") +
             std::to_string(
-                scene.terrainReferenceCount));
+                scene.terrainInstances.size()));
 
         if (failedChunks != 0)
         {

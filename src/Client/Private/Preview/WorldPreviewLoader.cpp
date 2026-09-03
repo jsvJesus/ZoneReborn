@@ -5,6 +5,7 @@
 #include "Core/Log.h"
 #include "Core/Resources/ResourcePath.h"
 #include "Core/World/WorldLoader.h"
+#include "Core/World/TerrainLoader.h"
 
 #include <cstddef>
 #include <string>
@@ -192,11 +193,87 @@ namespace client::preview
             }
         }
 
+        core::world::TerrainLoader
+            terrainLoader;
+
+        std::size_t loadedTerrains = 0;
+        std::size_t failedTerrains = 0;
+
+        for (const core::world::WorldTerrainInstance& terrainInstance :
+             world.terrainInstances)
+        {
+            core::world::TerrainAsset terrain;
+
+            std::string terrainError;
+
+            if (!terrainLoader.Load(
+                    runtime.Resources(),
+                    terrainInstance.cdataLogicalPath,
+                    terrain,
+                    terrainError))
+            {
+                ++failedTerrains;
+
+                core::Log::Warning(
+                    std::string(
+                        "Skipping terrain ") +
+                    terrainInstance.chunkId +
+                    ": " +
+                    terrainError);
+
+                continue;
+            }
+
+            const std::size_t meshIndex =
+                scene.meshes.size();
+
+            const std::size_t vertexCount =
+                terrain.mesh.vertices.size();
+
+            const std::size_t triangleCount =
+                terrain.mesh.TriangleCount();
+
+            scene.meshes.push_back(
+                std::move(
+                    terrain.mesh));
+
+            graphics::SceneInstance
+                instance;
+
+            instance.meshIndex =
+                meshIndex;
+
+            instance.transform =
+                terrainInstance.transform;
+
+            scene.instances.push_back(
+                std::move(instance));
+
+            ++loadedTerrains;
+
+            core::Log::Info(
+                std::string(
+                    "Terrain loaded: ") +
+                terrainInstance.chunkId +
+                ", vertices=" +
+                std::to_string(
+                    vertexCount) +
+                ", triangles=" +
+                std::to_string(
+                    triangleCount) +
+                ", min=" +
+                std::to_string(
+                    terrain.heightData.minHeight) +
+                ", max=" +
+                std::to_string(
+                    terrain.heightData.maxHeight));
+        }
+
         if (scene.meshes.empty() ||
             scene.instances.empty())
         {
             error =
-                "World contains no renderable model geometry.";
+                "World contains no renderable geometry.";
 
             return false;
         }
@@ -231,6 +308,18 @@ namespace client::preview
             std::to_string(
                 failedModels.size()));
 
+        core::Log::Info(
+            std::string(
+                "Terrain meshes loaded: ") +
+            std::to_string(
+                loadedTerrains));
+
+        core::Log::Info(
+            std::string(
+                "Terrain meshes failed: ") +
+            std::to_string(
+                failedTerrains));
+        
         output =
             std::move(scene);
 
