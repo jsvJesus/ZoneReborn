@@ -17,6 +17,17 @@ packs/res/models/
 packs/res/spaces/
 packs/res/textures/
 
+!/src/x64/
+/src/x64/*
+!/src/.idea/
+/src/.idea/*
+!/src/server/x64/
+/src/server/x64/*
+!/src/client/x64/
+/src/client/x64/*
+!/src/core/x64/
+/src/core/x64/*
+
 *.dds
 *.fsb
 *.model
