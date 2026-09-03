@@ -3,7 +3,6 @@
 #include "Core/Resources/ResourcePath.h"
 
 #include <cstring>
-#include <limits>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -15,8 +14,7 @@ namespace
         const std::size_t offset,
         std::uint32_t& output) noexcept
     {
-        if (offset >
-            data.size())
+        if (offset > data.size())
         {
             return false;
         }
@@ -140,8 +138,7 @@ namespace core::assets
             data.size() -
             sizeof(std::uint32_t);
 
-        if (tableSize >
-            tableEnd)
+        if (tableSize > tableEnd)
         {
             error =
                 "Primitives table size is invalid.";
@@ -168,18 +165,20 @@ namespace core::assets
         std::size_t contentOffset =
             sizeof(std::uint32_t);
 
-        std::vector<PrimitivesSection> sections;
+        std::vector<PrimitivesSection>
+            sections;
 
-        std::unordered_set<std::string> sectionNames;
+        std::unordered_set<std::string>
+            sectionNames;
 
         while (cursor < tableEnd)
         {
-            constexpr std::size_t HeaderSize =
+            constexpr std::size_t EntryHeaderSize =
                 sizeof(std::uint32_t) +
                 sizeof(std::uint32_t) * 4 +
                 sizeof(std::uint32_t);
 
-            if (HeaderSize >
+            if (EntryHeaderSize >
                 tableEnd - cursor)
             {
                 error =
@@ -195,6 +194,9 @@ namespace core::assets
                     cursor,
                     sectionSize32))
             {
+                error =
+                    "Unable to read primitives section size.";
+
                 return false;
             }
 
@@ -255,7 +257,8 @@ namespace core::assets
             }
 
             const std::size_t paddedNameLength =
-                Align4(nameLength);
+                Align4(
+                    nameLength);
 
             if (paddedNameLength >
                 tableEnd - cursor)
@@ -284,11 +287,29 @@ namespace core::assets
                 return false;
             }
 
+            //
+            // КРИТИЧНО:
+            // каждый binary blob начинается с 4-byte aligned offset.
+            //
+            contentOffset =
+                Align4(
+                    contentOffset);
+
             section.offset =
                 contentOffset;
 
+            if (section.offset >
+                tableStart)
+            {
+                error =
+                    "Primitives section offset exceeds data region.";
+
+                return false;
+            }
+
             if (section.size >
-                tableStart - contentOffset)
+                tableStart -
+                    section.offset)
             {
                 error =
                     "Primitives section exceeds data region: " +
@@ -297,8 +318,22 @@ namespace core::assets
                 return false;
             }
 
-            contentOffset +=
+            contentOffset =
+                section.offset +
                 section.size;
+
+            contentOffset =
+                Align4(
+                    contentOffset);
+
+            if (contentOffset >
+                tableStart)
+            {
+                error =
+                    "Primitives section alignment exceeds data region.";
+
+                return false;
+            }
 
             sections.push_back(
                 std::move(section));
@@ -312,8 +347,7 @@ namespace core::assets
             return false;
         }
 
-        if (Align4(contentOffset) !=
-            tableStart)
+        if (contentOffset != tableStart)
         {
             error =
                 "Primitives data size does not match section table.";

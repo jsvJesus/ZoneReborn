@@ -18,10 +18,14 @@ namespace core::assets
         float u = 0.0f;
         float v = 0.0f;
 
+        float u2 = 0.0f;
+        float v2 = 0.0f;
+
         std::uint32_t packedTangent = 0;
         std::uint32_t packedBinormal = 0;
 
-        std::uint32_t colour = 0xFFFFFFFFu;
+        std::uint32_t colour =
+            0xFFFFFFFFu;
     };
 
     struct MeshPrimitiveGroup final
@@ -37,15 +41,21 @@ namespace core::assets
     {
         std::string vertexFormat;
 
-        std::vector<MeshVertex> vertices;
-        std::vector<std::uint16_t> indices;
+        std::vector<MeshVertex>
+            vertices;
 
-        std::vector<MeshPrimitiveGroup> primitiveGroups;
+        std::vector<std::uint16_t>
+            indices;
+
+        std::vector<MeshPrimitiveGroup>
+            primitiveGroups;
 
         [[nodiscard]]
         std::size_t TriangleCount() const noexcept
         {
-            return indices.size() / 3;
+            return
+                indices.size() /
+                3;
         }
     };
 }

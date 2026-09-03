@@ -292,12 +292,17 @@ namespace
         output.vertexSection =
             vertices->name;
 
-        if (const auto* descriptor =
-                vertices->AsBinary())
+        const std::string* vertexSection =
+            vertices->AsString();
+
+        if (vertexSection == nullptr ||
+            vertexSection->empty())
         {
-            output.vertexDescriptor =
-                *descriptor;
+            return false;
         }
+
+        output.vertexSection =
+            *vertexSection;
 
         for (const auto* stream :
              section.FindChildren("stream"))

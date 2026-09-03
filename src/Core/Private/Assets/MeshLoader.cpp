@@ -1,5 +1,7 @@
 #include "Core/Assets/MeshLoader.h"
 
+#include <algorithm>
+#include <cmath>
 #include <cstring>
 #include <limits>
 #include <span>
@@ -9,11 +11,14 @@
 
 namespace
 {
-    constexpr std::size_t VertexHeaderSize = 68;
-    constexpr std::size_t VertexStride = 32;
+    constexpr std::size_t VertexHeaderSize =
+        68;
 
-    constexpr std::size_t IndexHeaderSize = 72;
-    constexpr std::size_t PrimitiveGroupSize = 16;
+    constexpr std::size_t IndexHeaderSize =
+        72;
+
+    constexpr std::size_t PrimitiveGroupSize =
+        16;
 
     template<typename T>
     bool ReadValue(
@@ -54,31 +59,179 @@ namespace
         }
 
         const std::size_t available =
-            data.size() - offset;
+            data.size() -
+            offset;
 
         const std::size_t limit =
-            maximumLength < available
-                ? maximumLength
-                : available;
+            std::min(
+                maximumLength,
+                available);
 
         for (std::size_t index = 0;
              index < limit;
              ++index)
         {
-            const unsigned char value =
+            const auto value =
                 std::to_integer<unsigned char>(
                     data[offset + index]);
 
             if (value == 0)
             {
-                return !output.empty();
+                return
+                    !output.empty();
             }
 
             output.push_back(
-                static_cast<char>(value));
+                static_cast<char>(
+                    value));
         }
 
         return false;
+    }
+
+    core::math::Vector3 Normalize(
+        const core::math::Vector3 value) noexcept
+    {
+        const float lengthSquared =
+            value.x * value.x +
+            value.y * value.y +
+            value.z * value.z;
+
+        if (lengthSquared <=
+            0.0000001f)
+        {
+            return
+            {
+                0.0f,
+                1.0f,
+                0.0f
+            };
+        }
+
+        const float inverseLength =
+            1.0f /
+            std::sqrt(
+                lengthSquared);
+
+        return
+        {
+            value.x *
+                inverseLength,
+
+            value.y *
+                inverseLength,
+
+            value.z *
+                inverseLength
+        };
+    }
+
+    std::uint32_t PackNormal(
+        const core::math::Vector3 value) noexcept
+    {
+        const core::math::Vector3 normal =
+            Normalize(value);
+
+        const std::int32_t x =
+            static_cast<std::int32_t>(
+                std::clamp(
+                    normal.x,
+                    -1.0f,
+                    1.0f) *
+                1023.0f);
+
+        const std::int32_t y =
+            static_cast<std::int32_t>(
+                std::clamp(
+                    normal.y,
+                    -1.0f,
+                    1.0f) *
+                1023.0f);
+
+        const std::int32_t z =
+            static_cast<std::int32_t>(
+                std::clamp(
+                    normal.z,
+                    -1.0f,
+                    1.0f) *
+                511.0f);
+
+        return
+            (
+                static_cast<std::uint32_t>(x) &
+                0x7FFu
+            ) |
+
+            (
+                (
+                    static_cast<std::uint32_t>(y) &
+                    0x7FFu
+                )
+                << 11u
+            ) |
+
+            (
+                (
+                    static_cast<std::uint32_t>(z) &
+                    0x3FFu
+                )
+                << 22u
+            );
+    }
+
+    const core::assets::PrimitivesSection*
+    ResolveStreamSection(
+        const core::assets::PrimitivesContainer& primitives,
+        const std::string_view vertexSection,
+        const std::string_view streamName)
+    {
+        //
+        // Сначала точное имя.
+        //
+        if (const auto* section =
+                primitives.FindSection(
+                    streamName))
+        {
+            return section;
+        }
+
+        //
+        // Для vertices вида:
+        //
+        // object.vertices
+        //
+        // дополнительные streams называются:
+        //
+        // object.uv2
+        // object.colour
+        //
+        const std::size_t dot =
+            vertexSection.find_last_of('.');
+
+        if (dot ==
+            std::string_view::npos)
+        {
+            return nullptr;
+        }
+
+        std::string resolved;
+
+        resolved.reserve(
+            dot +
+            1 +
+            streamName.size());
+
+        resolved.append(
+            vertexSection.substr(
+                0,
+                dot + 1));
+
+        resolved.append(
+            streamName);
+
+        return
+            primitives.FindSection(
+                resolved);
     }
 
     bool ParseVertices(
@@ -100,7 +253,8 @@ namespace
             return false;
         }
 
-        if (data.size() < VertexHeaderSize)
+        if (data.size() <
+            VertexHeaderSize)
         {
             error =
                 "Vertex section is too small.";
@@ -113,20 +267,11 @@ namespace
         if (!ReadFixedString(
                 data,
                 0,
-                12,
+                64,
                 format))
         {
             error =
                 "Unable to read vertex format.";
-
-            return false;
-        }
-
-        if (format != "xyznuvtb")
-        {
-            error =
-                "Unsupported vertex format: " +
-                format;
 
             return false;
         }
@@ -152,10 +297,39 @@ namespace
             return false;
         }
 
+        std::size_t vertexStride = 0;
+
+        if (format == "xyznuvtb")
+        {
+            vertexStride = 32;
+        }
+        else if (format == "xyznuv")
+        {
+            vertexStride = 32;
+        }
+        else if (format == "xyznuv2tb")
+        {
+            vertexStride = 40;
+        }
+        else if (format == "xyznuv2")
+        {
+            vertexStride = 40;
+        }
+        else
+        {
+            error =
+                "Unsupported vertex format: " +
+                format;
+
+            return false;
+        }
+
         if (vertexCount >
-            (std::numeric_limits<std::size_t>::max() -
-             VertexHeaderSize) /
-                VertexStride)
+            (
+                std::numeric_limits<std::size_t>::max() -
+                VertexHeaderSize
+            ) /
+            vertexStride)
         {
             error =
                 "Vertex count is too large.";
@@ -167,9 +341,10 @@ namespace
             VertexHeaderSize +
             static_cast<std::size_t>(
                 vertexCount) *
-                VertexStride;
+                vertexStride;
 
-        if (data.size() != expectedSize)
+        if (data.size() !=
+            expectedSize)
         {
             error =
                 "Vertex section size does not match vertex count.";
@@ -178,7 +353,7 @@ namespace
         }
 
         output.vertexFormat =
-            std::move(format);
+            format;
 
         output.vertices.clear();
 
@@ -191,7 +366,8 @@ namespace
         {
             const std::size_t offset =
                 VertexHeaderSize +
-                index * VertexStride;
+                index *
+                    vertexStride;
 
             core::assets::MeshVertex& vertex =
                 output.vertices[index];
@@ -207,32 +383,168 @@ namespace
                 !ReadValue(
                     data,
                     offset + 8,
-                    vertex.position.z) ||
-                !ReadValue(
-                    data,
-                    offset + 12,
-                    vertex.packedNormal) ||
-                !ReadValue(
-                    data,
-                    offset + 16,
-                    vertex.u) ||
-                !ReadValue(
-                    data,
-                    offset + 20,
-                    vertex.v) ||
-                !ReadValue(
-                    data,
-                    offset + 24,
-                    vertex.packedTangent) ||
-                !ReadValue(
-                    data,
-                    offset + 28,
-                    vertex.packedBinormal))
+                    vertex.position.z))
             {
                 error =
-                    "Vertex data is truncated.";
+                    "Vertex position data is truncated.";
 
                 return false;
+            }
+
+            if (format == "xyznuvtb")
+            {
+                if (!ReadValue(
+                        data,
+                        offset + 12,
+                        vertex.packedNormal) ||
+                    !ReadValue(
+                        data,
+                        offset + 16,
+                        vertex.u) ||
+                    !ReadValue(
+                        data,
+                        offset + 20,
+                        vertex.v) ||
+                    !ReadValue(
+                        data,
+                        offset + 24,
+                        vertex.packedTangent) ||
+                    !ReadValue(
+                        data,
+                        offset + 28,
+                        vertex.packedBinormal))
+                {
+                    error =
+                        "xyznuvtb vertex is truncated.";
+
+                    return false;
+                }
+
+                continue;
+            }
+
+            if (format == "xyznuv")
+            {
+                core::math::Vector3 normal;
+
+                if (!ReadValue(
+                        data,
+                        offset + 12,
+                        normal.x) ||
+                    !ReadValue(
+                        data,
+                        offset + 16,
+                        normal.y) ||
+                    !ReadValue(
+                        data,
+                        offset + 20,
+                        normal.z) ||
+                    !ReadValue(
+                        data,
+                        offset + 24,
+                        vertex.u) ||
+                    !ReadValue(
+                        data,
+                        offset + 28,
+                        vertex.v))
+                {
+                    error =
+                        "xyznuv vertex is truncated.";
+
+                    return false;
+                }
+
+                vertex.packedNormal =
+                    PackNormal(
+                        normal);
+
+                continue;
+            }
+
+            if (format == "xyznuv2tb")
+            {
+                if (!ReadValue(
+                        data,
+                        offset + 12,
+                        vertex.packedNormal) ||
+                    !ReadValue(
+                        data,
+                        offset + 16,
+                        vertex.u) ||
+                    !ReadValue(
+                        data,
+                        offset + 20,
+                        vertex.v) ||
+                    !ReadValue(
+                        data,
+                        offset + 24,
+                        vertex.u2) ||
+                    !ReadValue(
+                        data,
+                        offset + 28,
+                        vertex.v2) ||
+                    !ReadValue(
+                        data,
+                        offset + 32,
+                        vertex.packedTangent) ||
+                    !ReadValue(
+                        data,
+                        offset + 36,
+                        vertex.packedBinormal))
+                {
+                    error =
+                        "xyznuv2tb vertex is truncated.";
+
+                    return false;
+                }
+
+                continue;
+            }
+
+            if (format == "xyznuv2")
+            {
+                core::math::Vector3 normal;
+
+                if (!ReadValue(
+                        data,
+                        offset + 12,
+                        normal.x) ||
+                    !ReadValue(
+                        data,
+                        offset + 16,
+                        normal.y) ||
+                    !ReadValue(
+                        data,
+                        offset + 20,
+                        normal.z) ||
+                    !ReadValue(
+                        data,
+                        offset + 24,
+                        vertex.u) ||
+                    !ReadValue(
+                        data,
+                        offset + 28,
+                        vertex.v) ||
+                    !ReadValue(
+                        data,
+                        offset + 32,
+                        vertex.u2) ||
+                    !ReadValue(
+                        data,
+                        offset + 36,
+                        vertex.v2))
+                {
+                    error =
+                        "xyznuv2 vertex is truncated.";
+
+                    return false;
+                }
+
+                vertex.packedNormal =
+                    PackNormal(
+                        normal);
+
+                continue;
             }
         }
 
@@ -245,7 +557,8 @@ namespace
         core::assets::MeshData& output,
         std::string& error)
     {
-        std::unordered_set<std::string> processed;
+        std::unordered_set<std::string>
+            processed;
 
         for (const std::string& streamName :
              geometry.streams)
@@ -256,20 +569,13 @@ namespace
                 continue;
             }
 
-            if (streamName != "colour")
-            {
-                error =
-                    "Unsupported vertex stream: " +
-                    streamName;
-
-                return false;
-            }
-
-            const std::span<const std::byte> data =
-                primitives.SectionData(
+            const core::assets::PrimitivesSection* section =
+                ResolveStreamSection(
+                    primitives,
+                    geometry.vertexSection,
                     streamName);
 
-            if (data.empty())
+            if (section == nullptr)
             {
                 error =
                     "Vertex stream was not found: " +
@@ -278,39 +584,104 @@ namespace
                 return false;
             }
 
-            const std::size_t expectedSize =
-                output.vertices.size() *
-                sizeof(std::uint32_t);
+            const std::span<const std::byte> data =
+                primitives.SectionData(
+                    *section);
 
-            if (data.size() != expectedSize)
+            if (data.empty())
             {
                 error =
-                    "Colour stream size does not match vertex count.";
+                    "Vertex stream is empty: " +
+                    streamName;
 
                 return false;
             }
 
-            for (std::size_t index = 0;
-                 index < output.vertices.size();
-                 ++index)
+            if (streamName == "colour")
             {
-                std::uint32_t colour = 0;
+                const std::size_t expectedSize =
+                    output.vertices.size() *
+                    sizeof(std::uint32_t);
 
-                if (!ReadValue(
-                        data,
-                        index *
-                            sizeof(std::uint32_t),
-                        colour))
+                if (data.size() !=
+                    expectedSize)
                 {
                     error =
-                        "Colour stream is truncated.";
+                        "Colour stream size does not match vertex count.";
 
                     return false;
                 }
 
-                output.vertices[index].colour =
-                    colour;
+                for (std::size_t index = 0;
+                     index < output.vertices.size();
+                     ++index)
+                {
+                    if (!ReadValue(
+                            data,
+                            index *
+                                sizeof(std::uint32_t),
+                            output.vertices[index].colour))
+                    {
+                        error =
+                            "Colour stream is truncated.";
+
+                        return false;
+                    }
+                }
+
+                continue;
             }
+
+            if (streamName == "uv2")
+            {
+                constexpr std::size_t UvStride =
+                    sizeof(float) * 2;
+
+                const std::size_t expectedSize =
+                    output.vertices.size() *
+                    UvStride;
+
+                if (data.size() !=
+                    expectedSize)
+                {
+                    error =
+                        "UV2 stream size does not match vertex count.";
+
+                    return false;
+                }
+
+                for (std::size_t index = 0;
+                     index < output.vertices.size();
+                     ++index)
+                {
+                    const std::size_t offset =
+                        index *
+                        UvStride;
+
+                    if (!ReadValue(
+                            data,
+                            offset + 0,
+                            output.vertices[index].u2) ||
+                        !ReadValue(
+                            data,
+                            offset + 4,
+                            output.vertices[index].v2))
+                    {
+                        error =
+                            "UV2 stream is truncated.";
+
+                        return false;
+                    }
+                }
+
+                continue;
+            }
+
+            error =
+                "Unsupported vertex stream: " +
+                streamName;
+
+            return false;
         }
 
         return true;
@@ -335,7 +706,8 @@ namespace
             return false;
         }
 
-        if (data.size() < IndexHeaderSize)
+        if (data.size() <
+            IndexHeaderSize)
         {
             error =
                 "Index section is too small.";
@@ -348,7 +720,7 @@ namespace
         if (!ReadFixedString(
                 data,
                 0,
-                8,
+                64,
                 format))
         {
             error =
@@ -402,35 +774,16 @@ namespace
                 primitiveGroupCount) *
             PrimitiveGroupSize;
 
-        if (indexDataSize >
-            std::numeric_limits<std::size_t>::max() -
-                IndexHeaderSize)
-        {
-            error =
-                "Index count is too large.";
-
-            return false;
-        }
-
         const std::size_t afterIndices =
             IndexHeaderSize +
             indexDataSize;
-
-        if (groupDataSize >
-            std::numeric_limits<std::size_t>::max() -
-                afterIndices)
-        {
-            error =
-                "Primitive group count is too large.";
-
-            return false;
-        }
 
         const std::size_t expectedSize =
             afterIndices +
             groupDataSize;
 
-        if (data.size() != expectedSize)
+        if (data.size() !=
+            expectedSize)
         {
             error =
                 "Index section size does not match header.";
@@ -495,7 +848,8 @@ namespace
             indexDataSize;
 
         for (std::size_t index = 0;
-             index < output.primitiveGroups.size();
+             index <
+                output.primitiveGroups.size();
              ++index)
         {
             const std::size_t offset =
