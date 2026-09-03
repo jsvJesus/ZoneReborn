@@ -25,6 +25,7 @@
     <ClInclude Include="Public\Core\Assets\TextureResource.h" />
     <ClInclude Include="Public\Core\Assets\VisualAsset.h" />
     <ClInclude Include="Public\Core\Assets\VisualLoader.h" />
+    <ClInclude Include="Public\Core\Compression\DeflateDecoder.h" />
     <ClInclude Include="Public\Core\Images\DdsDecoder.h" />
     <ClInclude Include="Public\Core\Images\PngDecoder.h" />
     <ClInclude Include="Public\Core\Images\RgbaImage.h" />
@@ -70,6 +71,7 @@
     <ClCompile Include="Private\Assets\PrimitivesLoader.cpp" />
     <ClCompile Include="Private\Assets\TextureResolver.cpp" />
     <ClCompile Include="Private\Assets\VisualLoader.cpp" />
+    <ClCompile Include="Private\Compression\DeflateDecoder.cpp" />
     <ClCompile Include="Private\Images\DdsDecoder.cpp" />
     <ClCompile Include="Private\Images\PngDecoder.cpp" />
     <ClCompile Include="Private\Images\WicImageDecoder.cpp" />

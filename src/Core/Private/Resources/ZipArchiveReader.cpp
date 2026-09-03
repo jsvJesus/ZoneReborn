@@ -1,7 +1,9 @@
 #include "Core/Resources/ZipArchiveReader.h"
 
+#include "Core/Compression/DeflateDecoder.h"
+
 #include <cstdint>
-#include <limits>
+#include <span>
 #include <string>
 
 namespace
@@ -21,14 +23,22 @@ namespace
     constexpr std::size_t MaximumZipComment =
         65535;
 
+    constexpr std::uint16_t StoredMethod =
+        0;
+
+    constexpr std::uint16_t DeflateMethod =
+        8;
+
     bool ReadUInt16(
         const std::span<const std::byte> data,
         const std::size_t offset,
         std::uint16_t& output) noexcept
     {
-        if (offset > data.size() ||
+        if (offset >
+                data.size() ||
             sizeof(std::uint16_t) >
-                data.size() - offset)
+                data.size() -
+                    offset)
         {
             return false;
         }
@@ -52,9 +62,11 @@ namespace
         const std::size_t offset,
         std::uint32_t& output) noexcept
     {
-        if (offset > data.size() ||
+        if (offset >
+                data.size() ||
             sizeof(std::uint32_t) >
-                data.size() - offset)
+                data.size() -
+                    offset)
         {
             return false;
         }
@@ -122,7 +134,9 @@ namespace
                 signature ==
                     EndSignature)
             {
-                output = offset;
+                output =
+                    offset;
+
                 return true;
             }
 
@@ -331,7 +345,8 @@ namespace core::resources
             if (currentName ==
                 entryName)
             {
-                if ((flags & 0x0001u) != 0)
+                if ((flags &
+                     0x0001u) != 0)
                 {
                     error =
                         "Encrypted ZIP entries are not supported.";
@@ -339,21 +354,15 @@ namespace core::resources
                     return false;
                 }
 
-                if (compression != 0)
+                if (compression !=
+                        StoredMethod &&
+                    compression !=
+                        DeflateMethod)
                 {
                     error =
-                        "Terrain ZIP entry is compressed with unsupported method: " +
+                        "ZIP entry uses unsupported compression method: " +
                         std::to_string(
                             compression);
-
-                    return false;
-                }
-
-                if (compressedSize !=
-                    uncompressedSize)
-                {
-                    error =
-                        "Stored ZIP entry has mismatched sizes.";
 
                     return false;
                 }
@@ -421,14 +430,51 @@ namespace core::resources
                     return false;
                 }
 
-                output.assign(
-                    archive.begin() +
-                        static_cast<std::ptrdiff_t>(
-                            dataOffset),
-                    archive.begin() +
-                        static_cast<std::ptrdiff_t>(
-                            dataOffset +
-                            compressedSize));
+                const std::span<const std::byte>
+                    compressedData(
+                        archive.data() +
+                            dataOffset,
+                        compressedSize);
+
+                if (compression ==
+                    StoredMethod)
+                {
+                    if (compressedSize !=
+                        uncompressedSize)
+                    {
+                        error =
+                            "Stored ZIP entry has mismatched sizes.";
+
+                        return false;
+                    }
+
+                    output.assign(
+                        compressedData.begin(),
+                        compressedData.end());
+
+                    return true;
+                }
+
+                compression::DeflateDecoder
+                    decoder;
+
+                std::string decodeError;
+
+                if (!decoder.Decode(
+                        compressedData,
+                        uncompressedSize,
+                        output,
+                        decodeError))
+                {
+                    error =
+                        "Unable to inflate ZIP entry " +
+                        std::string(
+                            currentName) +
+                        ": " +
+                        decodeError;
+
+                    return false;
+                }
 
                 return true;
             }
@@ -455,7 +501,8 @@ namespace core::resources
 
         error =
             "ZIP entry was not found: " +
-            std::string(entryName);
+            std::string(
+                entryName);
 
         return false;
     }
