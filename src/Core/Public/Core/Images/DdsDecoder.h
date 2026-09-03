@@ -1,0 +1,20 @@
+#pragma once
+
+#include "Core/Images/RgbaImage.h"
+
+#include <cstddef>
+#include <span>
+#include <string>
+
+namespace core::images
+{
+    class DdsDecoder final
+    {
+    public:
+        [[nodiscard]]
+        bool Decode(
+            std::span<const std::byte> data,
+            RgbaImage& output,
+            std::string& error) const;
+    };
+}

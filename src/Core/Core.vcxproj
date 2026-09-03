@@ -25,8 +25,10 @@
     <ClInclude Include="Public\Core\Assets\TextureResource.h" />
     <ClInclude Include="Public\Core\Assets\VisualAsset.h" />
     <ClInclude Include="Public\Core\Assets\VisualLoader.h" />
+    <ClInclude Include="Public\Core\Images\DdsDecoder.h" />
     <ClInclude Include="Public\Core\Images\PngDecoder.h" />
     <ClInclude Include="Public\Core\Images\RgbaImage.h" />
+    <ClInclude Include="Public\Core\Images\WicImageDecoder.h" />
     <ClInclude Include="Public\Core\Log.h" />
     <ClInclude Include="Public\Core\Resources\ResourcePath.h" />
     <ClInclude Include="Public\Core\Resources\ZipArchiveReader.h" />
@@ -50,6 +52,8 @@
     <ClInclude Include="Public\Core\World\ChunkLoader.h" />
     <ClInclude Include="Public\Core\World\TerrainHeightData.h" />
     <ClInclude Include="Public\Core\World\TerrainHeightDecoder.h" />
+    <ClInclude Include="Public\Core\World\TerrainLayerData.h" />
+    <ClInclude Include="Public\Core\World\TerrainLayerDecoder.h" />
     <ClInclude Include="Public\Core\World\TerrainLoader.h" />
     <ClInclude Include="Public\Core\World\TerrainMeshBuilder.h" />
     <ClInclude Include="Public\Core\World\WorldLoader.h" />
@@ -66,7 +70,9 @@
     <ClCompile Include="Private\Assets\PrimitivesLoader.cpp" />
     <ClCompile Include="Private\Assets\TextureResolver.cpp" />
     <ClCompile Include="Private\Assets\VisualLoader.cpp" />
+    <ClCompile Include="Private\Images\DdsDecoder.cpp" />
     <ClCompile Include="Private\Images\PngDecoder.cpp" />
+    <ClCompile Include="Private\Images\WicImageDecoder.cpp" />
     <ClCompile Include="Private\Log.cpp" />
     <ClCompile Include="Private\Resources\ResourcePath.cpp" />
     <ClCompile Include="Private\Resources\ZipArchiveReader.cpp" />
@@ -82,6 +88,7 @@
     <ClCompile Include="Private\World\SpaceLoader.cpp" />
     <ClCompile Include="Private\World\ChunkLoader.cpp" />
     <ClCompile Include="Private\World\TerrainHeightDecoder.cpp" />
+    <ClCompile Include="Private\World\TerrainLayerDecoder.cpp" />
     <ClCompile Include="Private\World\TerrainLoader.cpp" />
     <ClCompile Include="Private\World\TerrainMeshBuilder.cpp" />
     <ClCompile Include="Private\World\WorldLoader.cpp" />

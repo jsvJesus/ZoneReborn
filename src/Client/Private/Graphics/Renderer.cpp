@@ -29,6 +29,9 @@ namespace
         float nx;
         float ny;
         float nz;
+
+        float u;
+        float v;
     };
 
     struct SceneConstants final
@@ -36,7 +39,23 @@ namespace
         DirectX::XMFLOAT4X4 world;
         DirectX::XMFLOAT4X4 viewProjection;
 
+        std::array<
+            DirectX::XMFLOAT4,
+            4>
+            terrainU{};
+
+        std::array<
+            DirectX::XMFLOAT4,
+            4>
+            terrainV{};
+
         DirectX::XMFLOAT4 groupColour;
+
+        std::uint32_t useTerrain = 0;
+        std::uint32_t terrainLayerCount = 0;
+
+        float padding0 = 0.0f;
+        float padding1 = 0.0f;
     };
 
     DirectX::XMFLOAT3 UnpackNormal(
@@ -161,77 +180,316 @@ namespace
     }
 
     constexpr char ShaderSource[] = R"(
-cbuffer SceneConstants : register(b0)
-{
-    row_major float4x4 world;
-    row_major float4x4 viewProjection;
+        cbuffer SceneConstants : register(b0)
+        {
+            row_major float4x4 world;
+            row_major float4x4 viewProjection;
 
-    float4 groupColour;
-};
+            float4 terrainU[4];
+            float4 terrainV[4];
 
-struct VertexInput
-{
-    float3 position : POSITION;
-    float3 normal   : NORMAL;
-};
+            float4 groupColour;
 
-struct PixelInput
-{
-    float4 position : SV_POSITION;
-    float3 normal   : NORMAL;
-};
+            uint useTerrain;
+            uint terrainLayerCount;
 
-PixelInput VSMain(VertexInput input)
-{
-    PixelInput output;
+            float2 constantPadding;
+        };
 
-    float4 worldPosition =
-        mul(
-            float4(input.position, 1.0f),
-            world);
+        Texture2D terrainTexture0 : register(t0);
+        Texture2D terrainTexture1 : register(t1);
+        Texture2D terrainTexture2 : register(t2);
+        Texture2D terrainTexture3 : register(t3);
 
-    output.position =
-        mul(
-            worldPosition,
-            viewProjection);
+        Texture2D terrainBlend : register(t4);
 
-    output.normal =
-        normalize(
-            mul(
-                float4(input.normal, 0.0f),
-                world).xyz);
+        SamplerState terrainTextureSampler : register(s0);
+        SamplerState terrainBlendSampler   : register(s1);
 
-    return output;
-}
+        struct VertexInput
+        {
+            float3 position : POSITION;
+            float3 normal   : NORMAL;
+            float2 texcoord : TEXCOORD0;
+        };
 
-float4 PSMain(PixelInput input) : SV_TARGET
-{
-    float3 normal =
-        normalize(input.normal);
+        struct PixelInput
+        {
+            float4 position      : SV_POSITION;
+            float3 normal        : NORMAL;
+            float3 localPosition : TEXCOORD0;
+            float2 terrainUV     : TEXCOORD1;
+        };
 
-    float3 lightDirection =
-        normalize(
-            float3(
-                -0.35f,
-                0.85f,
-                -0.40f));
+        PixelInput VSMain(VertexInput input)
+        {
+            PixelInput output;
 
-    float diffuse =
-        abs(
-            dot(
-                normal,
-                lightDirection));
+            float4 worldPosition =
+                mul(
+                    float4(input.position, 1.0f),
+                    world);
 
-    float lighting =
-        0.20f +
-        diffuse * 0.80f;
+            output.position =
+                mul(
+                    worldPosition,
+                    viewProjection);
 
-    return float4(
-        groupColour.rgb *
-            lighting,
-        1.0f);
-}
-)";
+            output.normal =
+                normalize(
+                    mul(
+                        float4(input.normal, 0.0f),
+                        world).xyz);
+
+            output.localPosition =
+                input.position;
+
+            output.terrainUV =
+                input.texcoord;
+
+            return output;
+        }
+
+        float2 ProjectTerrainUV(
+            float3 position,
+            float4 uProjection,
+            float4 vProjection)
+        {
+            float4 p =
+                float4(
+                    position,
+                    1.0f);
+
+            return float2(
+                dot(p, uProjection),
+                dot(p, vProjection));
+        }
+
+        float3 SampleTerrain(PixelInput input)
+        {
+            float4 weights =
+                terrainBlend.Sample(
+                    terrainBlendSampler,
+                    input.terrainUV);
+
+            float3 colour =
+                0.0f;
+
+            if (terrainLayerCount >= 1)
+            {
+                colour +=
+                    terrainTexture0.Sample(
+                        terrainTextureSampler,
+                        ProjectTerrainUV(
+                            input.localPosition,
+                            terrainU[0],
+                            terrainV[0])).rgb *
+                    weights.r;
+            }
+
+            if (terrainLayerCount >= 2)
+            {
+                colour +=
+                    terrainTexture1.Sample(
+                        terrainTextureSampler,
+                        ProjectTerrainUV(
+                            input.localPosition,
+                            terrainU[1],
+                            terrainV[1])).rgb *
+                    weights.g;
+            }
+
+            if (terrainLayerCount >= 3)
+            {
+                colour +=
+                    terrainTexture2.Sample(
+                        terrainTextureSampler,
+                        ProjectTerrainUV(
+                            input.localPosition,
+                            terrainU[2],
+                            terrainV[2])).rgb *
+                    weights.b;
+            }
+
+            if (terrainLayerCount >= 4)
+            {
+                colour +=
+                    terrainTexture3.Sample(
+                        terrainTextureSampler,
+                        ProjectTerrainUV(
+                            input.localPosition,
+                            terrainU[3],
+                            terrainV[3])).rgb *
+                    weights.a;
+            }
+
+            return colour;
+        }
+
+        float4 PSMain(PixelInput input) : SV_TARGET
+        {
+            float3 normal =
+                normalize(
+                    input.normal);
+
+            float3 lightDirection =
+                normalize(
+                    float3(
+                        -0.35f,
+                        0.85f,
+                        -0.40f));
+
+            float diffuse =
+                abs(
+                    dot(
+                        normal,
+                        lightDirection));
+
+            float lighting =
+                0.20f +
+                diffuse * 0.80f;
+
+            float3 baseColour =
+                groupColour.rgb;
+
+            if (useTerrain != 0)
+            {
+                baseColour =
+                    SampleTerrain(
+                        input);
+            }
+
+            return float4(
+                baseColour *
+                    lighting,
+                1.0f);
+        }
+    )";
+
+    bool CreateRgbaTexture(
+        ID3D11Device* device,
+        ID3D11DeviceContext* context,
+        const core::images::RgbaImage& image,
+        ComPtr<ID3D11ShaderResourceView>& output,
+        std::string& error)
+    {
+        output.Reset();
+
+        if (device == nullptr ||
+            context == nullptr ||
+            image.width == 0 ||
+            image.height == 0)
+        {
+            error =
+                "Invalid RGBA texture parameters.";
+
+            return false;
+        }
+
+        const std::size_t expectedSize =
+            static_cast<std::size_t>(
+                image.width) *
+            image.height *
+            4;
+
+        if (image.pixels.size() !=
+            expectedSize)
+        {
+            error =
+                "RGBA texture pixel size is invalid.";
+
+            return false;
+        }
+
+        D3D11_TEXTURE2D_DESC description{};
+
+        description.Width =
+            image.width;
+
+        description.Height =
+            image.height;
+
+        description.MipLevels =
+            0;
+
+        description.ArraySize =
+            1;
+
+        description.Format =
+            DXGI_FORMAT_R8G8B8A8_UNORM;
+
+        description.SampleDesc.Count =
+            1;
+
+        description.Usage =
+            D3D11_USAGE_DEFAULT;
+
+        description.BindFlags =
+            D3D11_BIND_SHADER_RESOURCE |
+            D3D11_BIND_RENDER_TARGET;
+
+        description.MiscFlags =
+            D3D11_RESOURCE_MISC_GENERATE_MIPS;
+
+        ComPtr<ID3D11Texture2D>
+            texture;
+
+        HRESULT result =
+            device->CreateTexture2D(
+                &description,
+                nullptr,
+                &texture);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create RGBA texture.";
+
+            return false;
+        }
+
+        context->UpdateSubresource(
+            texture.Get(),
+            0,
+            nullptr,
+            image.pixels.data(),
+            image.width * 4,
+            0);
+
+        D3D11_SHADER_RESOURCE_VIEW_DESC
+            viewDescription{};
+
+        viewDescription.Format =
+            description.Format;
+
+        viewDescription.ViewDimension =
+            D3D11_SRV_DIMENSION_TEXTURE2D;
+
+        viewDescription.Texture2D.MostDetailedMip =
+            0;
+
+        viewDescription.Texture2D.MipLevels =
+            static_cast<UINT>(-1);
+
+        result =
+            device->CreateShaderResourceView(
+                texture.Get(),
+                &viewDescription,
+                &output);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create texture SRV.";
+
+            return false;
+        }
+
+        context->GenerateMips(
+            output.Get());
+
+        return true;
+    }
 
     bool CompileShader(
         const char* entryPoint,
@@ -284,6 +542,35 @@ float4 PSMain(PixelInput input) : SV_TARGET
 
 namespace client::graphics
 {
+    struct GpuTerrainPass final
+    {
+        std::uint32_t layerCount = 0;
+
+        std::array<
+            std::size_t,
+            4>
+            textureIndices{};
+
+        std::array<
+            DirectX::XMFLOAT4,
+            4>
+            uProjection{};
+
+        std::array<
+            DirectX::XMFLOAT4,
+            4>
+            vProjection{};
+
+        ComPtr<ID3D11ShaderResourceView>
+            blendView;
+    };
+
+    struct GpuTerrainMaterial final
+    {
+        std::vector<GpuTerrainPass>
+            passes;
+    };
+    
     struct Renderer::State final
     {
         struct GpuMesh final
@@ -295,6 +582,7 @@ namespace client::graphics
                 indexBuffer;
 
             std::uint32_t indexCount = 0;
+            std::int32_t terrainMaterialIndex = -1;
 
             std::vector<
                 core::assets::MeshPrimitiveGroup>
@@ -320,6 +608,18 @@ namespace client::graphics
         ComPtr<ID3D11DepthStencilState>
             depthState;
 
+        ComPtr<ID3D11DepthStencilState>
+            depthReadState;
+
+        ComPtr<ID3D11BlendState>
+            additiveBlendState;
+
+        ComPtr<ID3D11SamplerState>
+            terrainTextureSampler;
+
+        ComPtr<ID3D11SamplerState>
+            terrainBlendSampler;
+
         ComPtr<ID3D11RasterizerState>
             rasterizerState;
 
@@ -336,6 +636,13 @@ namespace client::graphics
             constantBuffer;
 
         std::vector<GpuMesh> meshes;
+
+        std::vector<
+            ComPtr<ID3D11ShaderResourceView>>
+            textures;
+
+        std::vector<GpuTerrainMaterial>
+            terrainMaterials;
 
         std::vector<SceneInstance>
             instances;
@@ -551,6 +858,29 @@ namespace client::graphics
         D3D11_DEPTH_STENCIL_DESC
             depthStateDescription{};
 
+        D3D11_DEPTH_STENCIL_DESC
+            depthReadDescription =
+                depthStateDescription;
+
+        depthReadDescription.DepthWriteMask =
+            D3D11_DEPTH_WRITE_MASK_ZERO;
+
+        depthReadDescription.DepthFunc =
+            D3D11_COMPARISON_LESS_EQUAL;
+
+        result =
+            state_->device->CreateDepthStencilState(
+                &depthReadDescription,
+                &state_->depthReadState);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create terrain depth read state.";
+
+            return false;
+        }
+
         depthStateDescription.DepthEnable =
             TRUE;
 
@@ -589,6 +919,118 @@ namespace client::graphics
             state_->device->CreateRasterizerState(
                 &rasterizerDescription,
                 &state_->rasterizerState);
+
+        D3D11_BLEND_DESC
+            blendDescription{};
+
+        blendDescription.RenderTarget[0].BlendEnable =
+            TRUE;
+
+        blendDescription.RenderTarget[0].SrcBlend =
+            D3D11_BLEND_ONE;
+
+        blendDescription.RenderTarget[0].DestBlend =
+            D3D11_BLEND_ONE;
+
+        blendDescription.RenderTarget[0].BlendOp =
+            D3D11_BLEND_OP_ADD;
+
+        blendDescription.RenderTarget[0].SrcBlendAlpha =
+            D3D11_BLEND_ONE;
+
+        blendDescription.RenderTarget[0].DestBlendAlpha =
+            D3D11_BLEND_ONE;
+
+        blendDescription.RenderTarget[0].BlendOpAlpha =
+            D3D11_BLEND_OP_ADD;
+
+        blendDescription.RenderTarget[0].RenderTargetWriteMask =
+            D3D11_COLOR_WRITE_ENABLE_ALL;
+
+        result =
+            state_->device->CreateBlendState(
+                &blendDescription,
+                &state_->additiveBlendState);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create terrain additive blend state.";
+
+            return false;
+        }
+
+        D3D11_SAMPLER_DESC
+            textureSamplerDescription{};
+
+        textureSamplerDescription.Filter =
+            D3D11_FILTER_ANISOTROPIC;
+
+        textureSamplerDescription.AddressU =
+            D3D11_TEXTURE_ADDRESS_WRAP;
+
+        textureSamplerDescription.AddressV =
+            D3D11_TEXTURE_ADDRESS_WRAP;
+
+        textureSamplerDescription.AddressW =
+            D3D11_TEXTURE_ADDRESS_WRAP;
+
+        textureSamplerDescription.MaxAnisotropy =
+            16;
+
+        textureSamplerDescription.ComparisonFunc =
+            D3D11_COMPARISON_ALWAYS;
+
+        textureSamplerDescription.MinLOD =
+            0.0f;
+
+        textureSamplerDescription.MaxLOD =
+            D3D11_FLOAT32_MAX;
+
+        result =
+            state_->device->CreateSamplerState(
+                &textureSamplerDescription,
+                &state_->terrainTextureSampler);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create terrain texture sampler.";
+
+            return false;
+        }
+
+        D3D11_SAMPLER_DESC
+            blendSamplerDescription =
+                textureSamplerDescription;
+
+        blendSamplerDescription.Filter =
+            D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+
+        blendSamplerDescription.AddressU =
+            D3D11_TEXTURE_ADDRESS_CLAMP;
+
+        blendSamplerDescription.AddressV =
+            D3D11_TEXTURE_ADDRESS_CLAMP;
+
+        blendSamplerDescription.AddressW =
+            D3D11_TEXTURE_ADDRESS_CLAMP;
+
+        blendSamplerDescription.MaxAnisotropy =
+            1;
+
+        result =
+            state_->device->CreateSamplerState(
+                &blendSamplerDescription,
+                &state_->terrainBlendSampler);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create terrain blend sampler.";
+
+            return false;
+        }
 
         if (FAILED(result))
         {
@@ -672,13 +1114,22 @@ namespace client::graphics
                 12,
                 D3D11_INPUT_PER_VERTEX_DATA,
                 0
+            },
+            {
+                "TEXCOORD",
+                0,
+                DXGI_FORMAT_R32G32_FLOAT,
+                0,
+                24,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0
             }
         };
 
         result =
             state_->device->CreateInputLayout(
                 inputElements,
-                2,
+                3,
                 vertexShaderCode->GetBufferPointer(),
                 vertexShaderCode->GetBufferSize(),
                 &state_->inputLayout);
@@ -759,9 +1210,12 @@ namespace client::graphics
         state_->meshes.reserve(
             scene.meshes.size());
 
-        for (const core::assets::MeshData& mesh :
+        for (const SceneMesh& sceneMesh :
              scene.meshes)
         {
+            const core::assets::MeshData& mesh =
+                sceneMesh.geometry;
+            
             if (mesh.vertices.empty() ||
                 mesh.indices.empty())
             {
@@ -793,15 +1247,17 @@ namespace client::graphics
                     UnpackNormal(
                         vertex.packedNormal);
 
-                vertices.push_back(
-                {
+                vertices.push_back({
                     vertex.position.x,
                     vertex.position.y,
                     vertex.position.z,
 
                     normal.x,
                     normal.y,
-                    normal.z
+                    normal.z,
+
+                    vertex.u,
+                    vertex.v
                 });
 
                 minimum.x =
@@ -938,8 +1394,140 @@ namespace client::graphics
             gpuMesh.maximum =
                 maximum;
 
+            gpuMesh.terrainMaterialIndex =
+                sceneMesh.terrainMaterialIndex;
+
             state_->meshes.push_back(
                 std::move(gpuMesh));
+        }
+
+        state_->textures.clear();
+
+        state_->textures.reserve(
+            scene.textures.size());
+
+        for (const SceneTextureData& texture :
+             scene.textures)
+        {
+            ComPtr<ID3D11ShaderResourceView>
+                view;
+
+            if (!CreateRgbaTexture(
+                    state_->device.Get(),
+                    state_->context.Get(),
+                    texture.image,
+                    view,
+                    error))
+            {
+                error =
+                    texture.logicalPath +
+                    ": " +
+                    error;
+
+                return false;
+            }
+
+            state_->textures.push_back(
+                std::move(view));
+        }
+
+        state_->terrainMaterials.clear();
+
+        state_->terrainMaterials.reserve(
+            scene.terrainMaterials.size());
+
+        for (const SceneTerrainMaterial& sourceMaterial :
+             scene.terrainMaterials)
+        {
+            State::GpuTerrainMaterial
+                material;
+
+            material.passes.reserve(
+                sourceMaterial.passes.size());
+
+            for (const SceneTerrainPass& sourcePass :
+                 sourceMaterial.passes)
+            {
+                State::GpuTerrainPass
+                    pass;
+
+                pass.layerCount =
+                    sourcePass.layerCount;
+
+                for (std::size_t layerIndex = 0;
+                     layerIndex < 4;
+                     ++layerIndex)
+                {
+                    pass.textureIndices[
+                        layerIndex] =
+                        sourcePass.layers[
+                            layerIndex].textureIndex;
+
+                    pass.uProjection[
+                        layerIndex] =
+                    {
+                        sourcePass.layers[
+                            layerIndex].uProjection[0],
+
+                        sourcePass.layers[
+                            layerIndex].uProjection[1],
+
+                        sourcePass.layers[
+                            layerIndex].uProjection[2],
+
+                        sourcePass.layers[
+                            layerIndex].uProjection[3]
+                    };
+
+                    pass.vProjection[
+                        layerIndex] =
+                    {
+                        sourcePass.layers[
+                            layerIndex].vProjection[0],
+
+                        sourcePass.layers[
+                            layerIndex].vProjection[1],
+
+                        sourcePass.layers[
+                            layerIndex].vProjection[2],
+
+                        sourcePass.layers[
+                            layerIndex].vProjection[3]
+                    };
+
+                    if (layerIndex <
+                            pass.layerCount &&
+                        pass.textureIndices[
+                            layerIndex] >=
+                            state_->textures.size())
+                    {
+                        error =
+                            "Terrain material references invalid texture.";
+
+                        return false;
+                    }
+                }
+
+                if (!CreateRgbaTexture(
+                        state_->device.Get(),
+                        state_->context.Get(),
+                        sourcePass.blendMap,
+                        pass.blendView,
+                        error))
+                {
+                    error =
+                        "Unable to create terrain blend texture: " +
+                        error;
+
+                    return false;
+                }
+
+                material.passes.push_back(
+                    std::move(pass));
+            }
+
+            state_->terrainMaterials.push_back(
+                std::move(material));
         }
 
         state_->instances =
@@ -1325,6 +1913,18 @@ namespace client::graphics
             nullptr,
             0);
 
+        ID3D11SamplerState*
+            terrainSamplers[] =
+        {
+            state_->terrainTextureSampler.Get(),
+            state_->terrainBlendSampler.Get()
+        };
+
+        state_->context->PSSetSamplers(
+            0,
+            2,
+            terrainSamplers);
+
         ID3D11Buffer*
             constantBuffers[] =
         {
@@ -1379,6 +1979,159 @@ namespace client::graphics
             XMStoreFloat4x4(
                 &constants.world,
                 world);
+
+            if (mesh.terrainMaterialIndex >= 0)
+            {
+                const std::size_t materialIndex =
+                    static_cast<std::size_t>(
+                        mesh.terrainMaterialIndex);
+
+                if (materialIndex >=
+                    state_->terrainMaterials.size())
+                {
+                    error =
+                        "GPU mesh contains invalid terrain material.";
+
+                    return false;
+                }
+
+                const State::GpuTerrainMaterial& material =
+                    state_->terrainMaterials[
+                        materialIndex];
+
+                constexpr float BlendFactor[4]
+                {
+                    0.0f,
+                    0.0f,
+                    0.0f,
+                    0.0f
+                };
+
+                for (std::size_t passIndex = 0;
+                     passIndex <
+                        material.passes.size();
+                     ++passIndex)
+                {
+                    const State::GpuTerrainPass& pass =
+                        material.passes[
+                            passIndex];
+
+                    constants.useTerrain =
+                        1;
+
+                    constants.terrainLayerCount =
+                        pass.layerCount;
+
+                    for (std::size_t layerIndex = 0;
+                         layerIndex < 4;
+                         ++layerIndex)
+                    {
+                        constants.terrainU[
+                            layerIndex] =
+                            pass.uProjection[
+                                layerIndex];
+
+                        constants.terrainV[
+                            layerIndex] =
+                            pass.vProjection[
+                                layerIndex];
+                    }
+
+                    ID3D11ShaderResourceView*
+                        views[5]
+                    {
+                        nullptr,
+                        nullptr,
+                        nullptr,
+                        nullptr,
+                        pass.blendView.Get()
+                    };
+
+                    for (std::size_t layerIndex = 0;
+                         layerIndex <
+                            pass.layerCount;
+                         ++layerIndex)
+                    {
+                        views[layerIndex] =
+                            state_->textures[
+                                pass.textureIndices[
+                                    layerIndex]].Get();
+                    }
+
+                    state_->context->PSSetShaderResources(
+                        0,
+                        5,
+                        views);
+
+                    if (passIndex == 0)
+                    {
+                        state_->context->OMSetBlendState(
+                            nullptr,
+                            BlendFactor,
+                            0xFFFFFFFFu);
+
+                        state_->context->OMSetDepthStencilState(
+                            state_->depthState.Get(),
+                            0);
+                    }
+                    else
+                    {
+                        state_->context->OMSetBlendState(
+                            state_->additiveBlendState.Get(),
+                            BlendFactor,
+                            0xFFFFFFFFu);
+
+                        state_->context->OMSetDepthStencilState(
+                            state_->depthReadState.Get(),
+                            0);
+                    }
+
+                    state_->context->UpdateSubresource(
+                        state_->constantBuffer.Get(),
+                        0,
+                        nullptr,
+                        &constants,
+                        0,
+                        0);
+
+                    state_->context->DrawIndexed(
+                        mesh.indexCount,
+                        0,
+                        0);
+                }
+
+                ID3D11ShaderResourceView*
+                    emptyViews[5]
+                {
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    nullptr
+                };
+
+                state_->context->PSSetShaderResources(
+                    0,
+                    5,
+                    emptyViews);
+
+                state_->context->OMSetBlendState(
+                    nullptr,
+                    nullptr,
+                    0xFFFFFFFFu);
+
+                state_->context->OMSetDepthStencilState(
+                    state_->depthState.Get(),
+                    0);
+
+                continue;
+            }
+
+            constants.useTerrain =
+                0;
+
+            constants.terrainLayerCount =
+                0;
 
             if (mesh.primitiveGroups.empty())
             {

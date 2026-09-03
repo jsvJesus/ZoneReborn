@@ -1,8 +1,6 @@
 #pragma once
 
-#include "Core/Assets/MeshData.h"
 #include "Core/Resources/ResourceFileSystem.h"
-#include "Core/World/TerrainHeightData.h"
 #include "Core/World/TerrainLayerData.h"
 
 #include <string>
@@ -11,26 +9,14 @@
 
 namespace core::world
 {
-    struct TerrainAsset final
-    {
-        std::string cdataLogicalPath;
-
-        TerrainHeightData heightData;
-
-        std::vector<TerrainLayerData>
-            layers;
-
-        assets::MeshData mesh;
-    };
-
-    class TerrainLoader final
+    class TerrainLayerDecoder final
     {
     public:
         [[nodiscard]]
-        bool Load(
+        bool Decode(
             const resources::ResourceFileSystem& resources,
             std::string_view cdataLogicalPath,
-            TerrainAsset& output,
+            std::vector<TerrainLayerData>& output,
             std::string& error) const;
     };
 }

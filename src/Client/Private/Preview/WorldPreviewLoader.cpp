@@ -1,13 +1,16 @@
 #include "Preview/WorldPreviewLoader.h"
 
+#include "Preview/TerrainRenderDataBuilder.h"
+
 #include "Core/Assets/MeshLoader.h"
 #include "Core/Assets/ModelBundleLoader.h"
 #include "Core/Log.h"
 #include "Core/Resources/ResourcePath.h"
-#include "Core/World/WorldLoader.h"
 #include "Core/World/TerrainLoader.h"
+#include "Core/World/WorldLoader.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -24,9 +27,11 @@ namespace client::preview
         output = {};
         error.clear();
 
-        core::world::WorldLoader worldLoader;
+        core::world::WorldLoader
+            worldLoader;
 
-        core::world::WorldScene world;
+        core::world::WorldScene
+            world;
 
         if (!worldLoader.Load(
                 runtime.Resources(),
@@ -37,7 +42,8 @@ namespace client::preview
             return false;
         }
 
-        graphics::SceneRenderData scene;
+        graphics::SceneRenderData
+            scene;
 
         std::unordered_map<
             std::string,
@@ -83,7 +89,8 @@ namespace client::preview
                     continue;
                 }
 
-                core::assets::ModelBundle bundle;
+                core::assets::ModelBundle
+                    bundle;
 
                 std::string modelError;
 
@@ -97,7 +104,8 @@ namespace client::preview
                         normalizedModel);
 
                     core::Log::Warning(
-                        std::string("Skipping model ") +
+                        std::string(
+                            "Skipping model ") +
                         normalizedModel +
                         ": " +
                         modelError);
@@ -119,7 +127,8 @@ namespace client::preview
                     for (const core::assets::VisualGeometry& geometry :
                          renderSet.geometries)
                     {
-                        core::assets::MeshData mesh;
+                        core::assets::MeshData
+                            mesh;
 
                         if (!meshLoader.Load(
                                 bundle.primitives,
@@ -140,11 +149,17 @@ namespace client::preview
                             continue;
                         }
 
+                        graphics::SceneMesh
+                            sceneMesh;
+
+                        sceneMesh.geometry =
+                            std::move(mesh);
+
                         const std::size_t meshIndex =
                             scene.meshes.size();
 
                         scene.meshes.push_back(
-                            std::move(mesh));
+                            std::move(sceneMesh));
 
                         meshIndices.push_back(
                             meshIndex);
@@ -180,7 +195,8 @@ namespace client::preview
             for (const std::size_t meshIndex :
                  cached->second)
             {
-                graphics::SceneInstance instance;
+                graphics::SceneInstance
+                    instance;
 
                 instance.meshIndex =
                     meshIndex;
@@ -196,13 +212,18 @@ namespace client::preview
         core::world::TerrainLoader
             terrainLoader;
 
+        TerrainRenderDataBuilder
+            terrainRenderBuilder;
+
         std::size_t loadedTerrains = 0;
         std::size_t failedTerrains = 0;
+        std::size_t texturedTerrains = 0;
 
         for (const core::world::WorldTerrainInstance& terrainInstance :
              world.terrainInstances)
         {
-            core::world::TerrainAsset terrain;
+            core::world::TerrainAsset
+                terrain;
 
             std::string terrainError;
 
@@ -224,8 +245,32 @@ namespace client::preview
                 continue;
             }
 
-            const std::size_t meshIndex =
-                scene.meshes.size();
+            std::int32_t materialIndex =
+                -1;
+
+            std::string materialError;
+
+            if (!terrainRenderBuilder.Build(
+                    runtime.Resources(),
+                    terrain,
+                    scene,
+                    materialIndex,
+                    materialError))
+            {
+                core::Log::Warning(
+                    std::string(
+                        "Terrain material fallback for ") +
+                    terrainInstance.chunkId +
+                    ": " +
+                    materialError);
+
+                materialIndex =
+                    -1;
+            }
+            else if (materialIndex >= 0)
+            {
+                ++texturedTerrains;
+            }
 
             const std::size_t vertexCount =
                 terrain.mesh.vertices.size();
@@ -233,9 +278,24 @@ namespace client::preview
             const std::size_t triangleCount =
                 terrain.mesh.TriangleCount();
 
-            scene.meshes.push_back(
+            const std::size_t layerCount =
+                terrain.layers.size();
+
+            graphics::SceneMesh
+                sceneMesh;
+
+            sceneMesh.geometry =
                 std::move(
-                    terrain.mesh));
+                    terrain.mesh);
+
+            sceneMesh.terrainMaterialIndex =
+                materialIndex;
+
+            const std::size_t meshIndex =
+                scene.meshes.size();
+
+            scene.meshes.push_back(
+                std::move(sceneMesh));
 
             graphics::SceneInstance
                 instance;
@@ -261,6 +321,9 @@ namespace client::preview
                 ", triangles=" +
                 std::to_string(
                     triangleCount) +
+                ", layers=" +
+                std::to_string(
+                    layerCount) +
                 ", min=" +
                 std::to_string(
                     terrain.heightData.minHeight) +
@@ -286,7 +349,37 @@ namespace client::preview
 
         core::Log::Info(
             std::string(
-                "Unique GPU meshes: ") +
+                "Terrain meshes loaded: ") +
+            std::to_string(
+                loadedTerrains));
+
+        core::Log::Info(
+            std::string(
+                "Terrain meshes failed: ") +
+            std::to_string(
+                failedTerrains));
+
+        core::Log::Info(
+            std::string(
+                "Textured terrain meshes: ") +
+            std::to_string(
+                texturedTerrains));
+
+        core::Log::Info(
+            std::string(
+                "Unique terrain textures: ") +
+            std::to_string(
+                scene.textures.size()));
+
+        core::Log::Info(
+            std::string(
+                "Terrain materials: ") +
+            std::to_string(
+                scene.terrainMaterials.size()));
+
+        core::Log::Info(
+            std::string(
+                "Total GPU meshes: ") +
             std::to_string(
                 scene.meshes.size()));
 
@@ -308,18 +401,6 @@ namespace client::preview
             std::to_string(
                 failedModels.size()));
 
-        core::Log::Info(
-            std::string(
-                "Terrain meshes loaded: ") +
-            std::to_string(
-                loadedTerrains));
-
-        core::Log::Info(
-            std::string(
-                "Terrain meshes failed: ") +
-            std::to_string(
-                failedTerrains));
-        
         output =
             std::move(scene);
 

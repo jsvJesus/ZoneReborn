@@ -1,6 +1,7 @@
 #include "Core/World/TerrainLoader.h"
 
 #include "Core/World/TerrainHeightDecoder.h"
+#include "Core/World/TerrainLayerDecoder.h"
 #include "Core/World/TerrainMeshBuilder.h"
 
 #include <string>
@@ -30,6 +31,18 @@ namespace core::world
                 resources,
                 cdataLogicalPath,
                 terrain.heightData,
+                error))
+        {
+            return false;
+        }
+
+        TerrainLayerDecoder
+            layerDecoder;
+
+        if (!layerDecoder.Decode(
+                resources,
+                cdataLogicalPath,
+                terrain.layers,
                 error))
         {
             return false;
