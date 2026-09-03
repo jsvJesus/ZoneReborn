@@ -289,20 +289,34 @@ namespace
             return false;
         }
 
-        output.vertexSection =
-            vertices->name;
+        output.vertexSection.clear();
+        output.vertexDescriptor.clear();
 
-        const std::string* vertexSection =
-            vertices->AsString();
+        if (const std::string* vertexSection =
+                vertices->AsString();
+            vertexSection != nullptr &&
+            !vertexSection->empty())
+        {
+            output.vertexSection =
+                *vertexSection;
+        }
+        else
+        {
+            output.vertexSection =
+                vertices->name;
 
-        if (vertexSection == nullptr ||
-            vertexSection->empty())
+            if (const auto* descriptor =
+                    vertices->AsBinary())
+            {
+                output.vertexDescriptor =
+                    *descriptor;
+            }
+        }
+
+        if (output.vertexSection.empty())
         {
             return false;
         }
-
-        output.vertexSection =
-            *vertexSection;
 
         for (const auto* stream :
              section.FindChildren("stream"))
