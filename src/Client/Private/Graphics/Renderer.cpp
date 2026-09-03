@@ -542,37 +542,37 @@ namespace
 
 namespace client::graphics
 {
-    struct GpuTerrainPass final
-    {
-        std::uint32_t layerCount = 0;
-
-        std::array<
-            std::size_t,
-            4>
-            textureIndices{};
-
-        std::array<
-            DirectX::XMFLOAT4,
-            4>
-            uProjection{};
-
-        std::array<
-            DirectX::XMFLOAT4,
-            4>
-            vProjection{};
-
-        ComPtr<ID3D11ShaderResourceView>
-            blendView;
-    };
-
-    struct GpuTerrainMaterial final
-    {
-        std::vector<GpuTerrainPass>
-            passes;
-    };
-    
     struct Renderer::State final
     {
+        struct GpuTerrainPass final
+        {
+            std::uint32_t layerCount = 0;
+
+            std::array<
+                std::size_t,
+                4>
+                textureIndices{};
+
+            std::array<
+                DirectX::XMFLOAT4,
+                4>
+                uProjection{};
+
+            std::array<
+                DirectX::XMFLOAT4,
+                4>
+                vProjection{};
+
+            ComPtr<ID3D11ShaderResourceView>
+                blendView;
+        };
+
+        struct GpuTerrainMaterial final
+        {
+            std::vector<GpuTerrainPass>
+                passes;
+        };
+
         struct GpuMesh final
         {
             ComPtr<ID3D11Buffer>
@@ -858,6 +858,31 @@ namespace client::graphics
         D3D11_DEPTH_STENCIL_DESC
             depthStateDescription{};
 
+        depthStateDescription.DepthEnable =
+            TRUE;
+
+        depthStateDescription.DepthWriteMask =
+            D3D11_DEPTH_WRITE_MASK_ALL;
+
+        depthStateDescription.DepthFunc =
+            D3D11_COMPARISON_LESS;
+
+        depthStateDescription.StencilEnable =
+            FALSE;
+
+        HRESULT depthResult =
+            state_->device->CreateDepthStencilState(
+                &depthStateDescription,
+                &state_->depthState);
+
+        if (FAILED(depthResult))
+        {
+            error =
+                "Unable to create depth state.";
+
+            return false;
+        }
+
         D3D11_DEPTH_STENCIL_DESC
             depthReadDescription =
                 depthStateDescription;
@@ -868,37 +893,15 @@ namespace client::graphics
         depthReadDescription.DepthFunc =
             D3D11_COMPARISON_LESS_EQUAL;
 
-        result =
+        depthResult =
             state_->device->CreateDepthStencilState(
                 &depthReadDescription,
                 &state_->depthReadState);
 
-        if (FAILED(result))
+        if (FAILED(depthResult))
         {
             error =
                 "Unable to create terrain depth read state.";
-
-            return false;
-        }
-
-        depthStateDescription.DepthEnable =
-            TRUE;
-
-        depthStateDescription.DepthWriteMask =
-            D3D11_DEPTH_WRITE_MASK_ALL;
-
-        depthStateDescription.DepthFunc =
-            D3D11_COMPARISON_LESS;
-
-        result =
-            state_->device->CreateDepthStencilState(
-                &depthStateDescription,
-                &state_->depthState);
-
-        if (FAILED(result))
-        {
-            error =
-                "Unable to create depth state.";
 
             return false;
         }
