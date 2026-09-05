@@ -21,6 +21,8 @@
     <ClInclude Include="Public\Core\Assets\ModelSourceLoader.h" />
     <ClInclude Include="Public\Core\Assets\PrimitivesContainer.h" />
     <ClInclude Include="Public\Core\Assets\PrimitivesLoader.h" />
+    <ClInclude Include="Public\Core\Assets\SpeedTree\SpeedTreeResourceInfo.h" />
+    <ClInclude Include="Public\Core\Assets\SpeedTree\SpeedTreeResourceInspector.h" />
     <ClInclude Include="Public\Core\Assets\TextureResolver.h" />
     <ClInclude Include="Public\Core\Assets\TextureResource.h" />
     <ClInclude Include="Public\Core\Assets\VisualAsset.h" />
@@ -72,6 +74,7 @@
     <ClCompile Include="Private\Assets\ModelSourceLoader.cpp" />
     <ClCompile Include="Private\Assets\PrimitivesContainer.cpp" />
     <ClCompile Include="Private\Assets\PrimitivesLoader.cpp" />
+    <ClCompile Include="Private\Assets\SpeedTree\SpeedTreeResourceInspector.cpp" />
     <ClCompile Include="Private\Assets\TextureResolver.cpp" />
     <ClCompile Include="Private\Assets\VisualLoader.cpp" />
     <ClCompile Include="Private\Compression\DeflateDecoder.cpp" />

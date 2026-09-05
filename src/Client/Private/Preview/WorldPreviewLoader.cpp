@@ -5,6 +5,8 @@
 
 #include "Core/Assets/MeshLoader.h"
 #include "Core/Assets/ModelBundleLoader.h"
+#include "Core/Assets/SpeedTree/SpeedTreeResourceInspector.h"
+
 #include "Core/Log.h"
 #include "Core/Resources/ResourcePath.h"
 #include "Core/World/TerrainLoader.h"
@@ -46,6 +48,9 @@ namespace client::preview
         graphics::SceneRenderData
             scene;
 
+        core::assets::speedtree::SpeedTreeResourceInspector
+            speedTreeInspector;
+
         std::unordered_map<
             std::string,
             std::vector<std::size_t>>
@@ -66,6 +71,123 @@ namespace client::preview
         std::size_t skippedInstances = 0;
         std::size_t loadedUniqueModels = 0;
         std::size_t texturedModelGroups = 0;
+
+        std::unordered_set<std::string>
+            inspectedSpeedTrees;
+
+        std::size_t inspectedSpeedTreeCount =
+            0;
+
+        std::size_t speedTreeInspectionFailures =
+            0;
+
+        for (const core::world::WorldSpeedTreeInstance& tree :
+             world.speedTreeInstances)
+        {
+            if (!inspectedSpeedTrees.insert(
+                    tree.sptLogicalPath).second)
+            {
+                continue;
+            }
+
+            core::assets::speedtree::SpeedTreeResourceInfo
+                info;
+
+            std::string inspectionError;
+
+            if (!speedTreeInspector.Inspect(
+                    runtime.Resources(),
+                    tree.sptLogicalPath,
+                    info,
+                    inspectionError))
+            {
+                ++speedTreeInspectionFailures;
+
+                core::Log::Warning(
+                    std::string(
+                        "SpeedTree inspection failed: ") +
+                    inspectionError);
+
+                continue;
+            }
+
+            ++inspectedSpeedTreeCount;
+
+            core::Log::Info(
+                std::string(
+                    "SpeedTree inspect: ") +
+                info.sptLogicalPath);
+
+            core::Log::Info(
+                std::string(
+                    "  SPT bytes: ") +
+                std::to_string(
+                    info.sptSize));
+
+            core::Log::Info(
+                std::string(
+                    "  CTREE: ") +
+                (
+                    info.ctreeExists
+                        ? "yes"
+                        : "no"
+                ) +
+                ", bytes=" +
+                std::to_string(
+                    info.ctreeSize));
+
+            core::Log::Info(
+                std::string(
+                    "  BSP2: ") +
+                (
+                    info.bspExists
+                        ? "yes"
+                        : "no"
+                ) +
+                ", bytes=" +
+                std::to_string(
+                    info.bspSize));
+
+            core::Log::Info(
+                std::string(
+                    "  CTREE header: ") +
+                info.ctreeHeaderHex);
+
+            core::Log::Info(
+                std::string(
+                    "  Possible zlib: ") +
+                (
+                    info.containsPossibleZlibStream
+                        ? "yes"
+                        : "no"
+                ));
+
+            core::Log::Info(
+                std::string(
+                    "  Texture refs: ") +
+                std::to_string(
+                    info.textureReferences.size()));
+
+            for (const std::string& texture :
+                 info.textureReferences)
+            {
+                core::Log::Info(
+                    std::string("    ") +
+                    texture);
+            }
+        }
+
+        core::Log::Info(
+            std::string(
+                "Inspected unique SpeedTrees: ") +
+            std::to_string(
+                inspectedSpeedTreeCount));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree inspection failures: ") +
+            std::to_string(
+                speedTreeInspectionFailures));
 
         for (const core::world::WorldModelInstance& worldInstance :
              world.modelInstances)
