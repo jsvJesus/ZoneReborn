@@ -7,8 +7,13 @@ Z:\SOnline\src\Core\Private\Assets\PrimitivesContainer.cpp;Z:\SOnline\src\Core\x
 Z:\SOnline\src\Core\Private\Assets\PrimitivesLoader.cpp;Z:\SOnline\src\Core\x64\Release\PrimitivesLoader.obj
 Z:\SOnline\src\Core\Private\Assets\TextureResolver.cpp;Z:\SOnline\src\Core\x64\Release\TextureResolver.obj
 Z:\SOnline\src\Core\Private\Assets\VisualLoader.cpp;Z:\SOnline\src\Core\x64\Release\VisualLoader.obj
+Z:\SOnline\src\Core\Private\Compression\DeflateDecoder.cpp;Z:\SOnline\src\Core\x64\Release\DeflateDecoder.obj
+Z:\SOnline\src\Core\Private\Images\DdsDecoder.cpp;Z:\SOnline\src\Core\x64\Release\DdsDecoder.obj
+Z:\SOnline\src\Core\Private\Images\PngDecoder.cpp;Z:\SOnline\src\Core\x64\Release\PngDecoder.obj
+Z:\SOnline\src\Core\Private\Images\WicImageDecoder.cpp;Z:\SOnline\src\Core\x64\Release\WicImageDecoder.obj
 Z:\SOnline\src\Core\Private\Log.cpp;Z:\SOnline\src\Core\x64\Release\Log.obj
 Z:\SOnline\src\Core\Private\Resources\ResourcePath.cpp;Z:\SOnline\src\Core\x64\Release\ResourcePath.obj
+Z:\SOnline\src\Core\Private\Resources\ZipArchiveReader.cpp;Z:\SOnline\src\Core\x64\Release\ZipArchiveReader.obj
 Z:\SOnline\src\Core\Private\Runtime.cpp;Z:\SOnline\src\Core\x64\Release\Runtime.obj
 Z:\SOnline\src\Core\Private\Platform\Paths.cpp;Z:\SOnline\src\Core\x64\Release\Paths.obj
 Z:\SOnline\src\Core\Private\Resources\DataSection.cpp;Z:\SOnline\src\Core\x64\Release\DataSection.obj
@@ -17,3 +22,8 @@ Z:\SOnline\src\Core\Private\Resources\ResourceFormatRegistry.cpp;Z:\SOnline\src\
 Z:\SOnline\src\Core\Private\Resources\ResourceFileSystem.cpp;Z:\SOnline\src\Core\x64\Release\ResourceFileSystem.obj
 Z:\SOnline\src\Core\Private\World\SpaceLoader.cpp;Z:\SOnline\src\Core\x64\Release\SpaceLoader.obj
 Z:\SOnline\src\Core\Private\World\ChunkLoader.cpp;Z:\SOnline\src\Core\x64\Release\ChunkLoader.obj
+Z:\SOnline\src\Core\Private\World\TerrainHeightDecoder.cpp;Z:\SOnline\src\Core\x64\Release\TerrainHeightDecoder.obj
+Z:\SOnline\src\Core\Private\World\TerrainLayerDecoder.cpp;Z:\SOnline\src\Core\x64\Release\TerrainLayerDecoder.obj
+Z:\SOnline\src\Core\Private\World\TerrainLoader.cpp;Z:\SOnline\src\Core\x64\Release\TerrainLoader.obj
+Z:\SOnline\src\Core\Private\World\TerrainMeshBuilder.cpp;Z:\SOnline\src\Core\x64\Release\TerrainMeshBuilder.obj
+Z:\SOnline\src\Core\Private\World\WorldLoader.cpp;Z:\SOnline\src\Core\x64\Release\WorldLoader.obj

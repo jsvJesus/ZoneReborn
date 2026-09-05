@@ -1,6 +1,9 @@
 Z:\SOnline\src\Client\Private\Application.cpp;Z:\SOnline\src\Client\x64\Release\Application.obj
 Z:\SOnline\src\Client\Private\Graphics\Renderer.cpp;Z:\SOnline\src\Client\x64\Release\Renderer.obj
+Z:\SOnline\src\Client\Private\Input\CameraController.cpp;Z:\SOnline\src\Client\x64\Release\CameraController.obj
 Z:\SOnline\src\Client\Private\Main.cpp;Z:\SOnline\src\Client\x64\Release\Main.obj
 Z:\SOnline\src\Client\Private\Diagnostics\ResourceValidation.cpp;Z:\SOnline\src\Client\x64\Release\ResourceValidation.obj
 Z:\SOnline\src\Client\Private\Platform\Window.cpp;Z:\SOnline\src\Client\x64\Release\Window.obj
 Z:\SOnline\src\Client\Private\Preview\ModelPreviewLoader.cpp;Z:\SOnline\src\Client\x64\Release\ModelPreviewLoader.obj
+Z:\SOnline\src\Client\Private\Preview\TerrainRenderDataBuilder.cpp;Z:\SOnline\src\Client\x64\Release\TerrainRenderDataBuilder.obj
+Z:\SOnline\src\Client\Private\Preview\WorldPreviewLoader.cpp;Z:\SOnline\src\Client\x64\Release\WorldPreviewLoader.obj

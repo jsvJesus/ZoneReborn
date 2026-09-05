@@ -4,6 +4,7 @@
 
 #include "Core/Log.h"
 
+#include <chrono>
 #include <string>
 
 namespace client
@@ -25,8 +26,30 @@ namespace client
 
         std::string error;
 
+        auto previousTime =
+            std::chrono::steady_clock::now();
+
         while (window_.ProcessMessages())
         {
+            const auto currentTime =
+                std::chrono::steady_clock::now();
+
+            const float deltaSeconds =
+                std::chrono::duration<float>(
+                    currentTime -
+                    previousTime).count();
+
+            previousTime =
+                currentTime;
+
+            cameraController_.Update(
+                window_.NativeHandle(),
+                window_.ConsumeMouseWheelDelta(),
+                deltaSeconds);
+
+            renderer_.SetCamera(
+                cameraController_.View());
+
             if (!renderer_.Render(
                     error))
             {
@@ -107,6 +130,13 @@ namespace client
 
             return false;
         }
+
+        cameraController_.Reset(
+            renderer_.SceneCenter(),
+            renderer_.SceneRadius());
+
+        renderer_.SetCamera(
+            cameraController_.View());
 
         core::Log::Info(
             "so_origins world initialized");

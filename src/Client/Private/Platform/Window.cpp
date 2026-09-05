@@ -24,9 +24,11 @@ namespace client::platform
         error.clear();
 
         instance_ =
-            GetModuleHandleW(nullptr);
+            GetModuleHandleW(
+                nullptr);
 
-        if (instance_ == nullptr)
+        if (instance_ ==
+            nullptr)
         {
             error =
                 "Unable to obtain application instance.";
@@ -37,7 +39,8 @@ namespace client::platform
         WNDCLASSEXW windowClass{};
 
         windowClass.cbSize =
-            sizeof(windowClass);
+            sizeof(
+                windowClass);
 
         windowClass.style =
             CS_HREDRAW |
@@ -67,12 +70,14 @@ namespace client::platform
             error =
                 "Unable to register render window class.";
 
-            instance_ = nullptr;
+            instance_ =
+                nullptr;
 
             return false;
         }
 
-        classRegistered_ = true;
+        classRegistered_ =
+            true;
 
         const DWORD style =
             WS_OVERLAPPED |
@@ -84,8 +89,10 @@ namespace client::platform
         {
             0,
             0,
-            static_cast<LONG>(width),
-            static_cast<LONG>(height)
+            static_cast<LONG>(
+                width),
+            static_cast<LONG>(
+                height)
         };
 
         if (!AdjustWindowRect(
@@ -122,9 +129,10 @@ namespace client::platform
                 nullptr,
                 nullptr,
                 instance_,
-                nullptr);
+                this);
 
-        if (window_ == nullptr)
+        if (window_ ==
+            nullptr)
         {
             error =
                 "Unable to create render window.";
@@ -134,8 +142,14 @@ namespace client::platform
             return false;
         }
 
-        width_ = width;
-        height_ = height;
+        width_ =
+            width;
+
+        height_ =
+            height;
+
+        mouseWheelDelta_ =
+            0;
 
         ShowWindow(
             window_,
@@ -149,28 +163,39 @@ namespace client::platform
 
     void Window::Shutdown()
     {
-        if (window_ != nullptr)
+        if (window_ !=
+            nullptr)
         {
             DestroyWindow(
                 window_);
 
-            window_ = nullptr;
+            window_ =
+                nullptr;
         }
 
         if (classRegistered_ &&
-            instance_ != nullptr)
+            instance_ !=
+                nullptr)
         {
             UnregisterClassW(
                 WindowClassName,
                 instance_);
 
-            classRegistered_ = false;
+            classRegistered_ =
+                false;
         }
 
-        instance_ = nullptr;
+        instance_ =
+            nullptr;
 
-        width_ = 0;
-        height_ = 0;
+        width_ =
+            0;
+
+        height_ =
+            0;
+
+        mouseWheelDelta_ =
+            0;
     }
 
     bool Window::ProcessMessages()
@@ -215,12 +240,77 @@ namespace client::platform
         return height_;
     }
 
+    float Window::ConsumeMouseWheelDelta() noexcept
+    {
+        const int delta =
+            mouseWheelDelta_;
+
+        mouseWheelDelta_ =
+            0;
+
+        return
+            static_cast<float>(
+                delta) /
+            static_cast<float>(
+                WHEEL_DELTA);
+    }
+
     LRESULT CALLBACK Window::WindowProcedure(
         const HWND window,
         const UINT message,
         const WPARAM wParam,
         const LPARAM lParam)
     {
+        Window* instance =
+            reinterpret_cast<Window*>(
+                GetWindowLongPtrW(
+                    window,
+                    GWLP_USERDATA));
+
+        if (message ==
+            WM_NCCREATE)
+        {
+            const auto* creation =
+                reinterpret_cast<
+                    CREATESTRUCTW*>(
+                        lParam);
+
+            instance =
+                static_cast<Window*>(
+                    creation->lpCreateParams);
+
+            SetWindowLongPtrW(
+                window,
+                GWLP_USERDATA,
+                reinterpret_cast<LONG_PTR>(
+                    instance));
+        }
+
+        if (instance !=
+            nullptr)
+        {
+            switch (message)
+            {
+                case WM_MOUSEWHEEL:
+                {
+                    const auto wheelDelta =
+                        static_cast<short>(
+                            HIWORD(
+                                wParam));
+
+                    instance->mouseWheelDelta_ +=
+                        wheelDelta;
+
+                    return 0;
+                }
+
+                default:
+                {
+                    break;
+                }
+            }
+        }
+
         switch (message)
         {
             case WM_CLOSE:
@@ -233,7 +323,8 @@ namespace client::platform
 
             case WM_DESTROY:
             {
-                PostQuitMessage(0);
+                PostQuitMessage(
+                    0);
 
                 return 0;
             }

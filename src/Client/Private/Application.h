@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Graphics/Renderer.h"
+#include "Input/CameraController.h"
 #include "Platform/Window.h"
 
 #include "Core/Runtime.h"
@@ -21,6 +22,10 @@ namespace client
         core::Runtime runtime_;
 
         platform::Window window_;
+
         graphics::Renderer renderer_;
+
+        input::CameraController
+            cameraController_;
     };
 }

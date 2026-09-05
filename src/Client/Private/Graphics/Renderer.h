@@ -1,6 +1,9 @@
 #pragma once
 
+#include "Graphics/CameraView.h"
 #include "Graphics/SceneRenderData.h"
+
+#include "Core/Math/Vector3.h"
 
 #include <Windows.h>
 
@@ -31,6 +34,15 @@ namespace client::graphics
             const SceneRenderData& scene,
             std::string& error);
 
+        void SetCamera(
+            const CameraView& camera) noexcept;
+
+        [[nodiscard]]
+        core::math::Vector3 SceneCenter() const noexcept;
+
+        [[nodiscard]]
+        float SceneRadius() const noexcept;
+
         [[nodiscard]]
         bool Render(
             std::string& error);
@@ -40,6 +52,7 @@ namespace client::graphics
     private:
         struct State;
 
-        std::unique_ptr<State> state_;
+        std::unique_ptr<State>
+            state_;
     };
 }

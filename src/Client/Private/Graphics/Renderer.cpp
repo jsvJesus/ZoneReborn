@@ -651,11 +651,11 @@ namespace client::graphics
         std::uint32_t height = 0;
 
         DirectX::XMFLOAT3 sceneCenter{};
-        float sceneRadius = 1.0f;
 
-        std::chrono::steady_clock::time_point
-            startTime =
-                std::chrono::steady_clock::now();
+        float sceneRadius =
+            1.0f;
+
+        CameraView camera{};
     };
 
     Renderer::Renderer()
@@ -1176,9 +1176,6 @@ namespace client::graphics
 
         state_->height =
             height;
-
-        state_->startTime =
-            std::chrono::steady_clock::now();
 
         return true;
     }
@@ -1739,6 +1736,45 @@ namespace client::graphics
         return true;
     }
 
+    void Renderer::SetCamera(
+        const CameraView& camera) noexcept
+    {
+        if (!state_)
+        {
+            return;
+        }
+
+        state_->camera =
+            camera;
+    }
+
+    core::math::Vector3
+    Renderer::SceneCenter() const noexcept
+    {
+        if (!state_)
+        {
+            return {};
+        }
+
+        return
+        {
+            state_->sceneCenter.x,
+            state_->sceneCenter.y,
+            state_->sceneCenter.z
+        };
+    }
+
+    float Renderer::SceneRadius() const noexcept
+    {
+        if (!state_)
+        {
+            return 1.0f;
+        }
+
+        return
+            state_->sceneRadius;
+    }
+
     bool Renderer::Render(
         std::string& error)
     {
@@ -1814,58 +1850,39 @@ namespace client::graphics
 
         using namespace DirectX;
 
-        const auto now =
-            std::chrono::steady_clock::now();
+        XMVECTOR eye =
+            XMVectorSet(
+                state_->camera.position.x,
+                state_->camera.position.y,
+                state_->camera.position.z,
+                1.0f);
 
-        const float elapsed =
-            std::chrono::duration<float>(
-                now -
-                state_->startTime).count();
+        XMVECTOR forward =
+            XMVectorSet(
+                state_->camera.forward.x,
+                state_->camera.forward.y,
+                state_->camera.forward.z,
+                0.0f);
 
-        const float angle =
-            elapsed *
-            0.035f;
-
-        const float distance =
-            std::max(
-                state_->sceneRadius *
-                    1.45f,
-                150.0f);
-
-        const float cameraHeight =
-            std::max(
-                state_->sceneRadius *
-                    0.65f,
-                100.0f);
+        forward =
+            XMVector3Normalize(
+                forward);
 
         const XMVECTOR target =
+            XMVectorAdd(
+                eye,
+                forward);
+
+        XMVECTOR up =
             XMVectorSet(
-                state_->sceneCenter.x,
-                state_->sceneCenter.y,
-                state_->sceneCenter.z,
-                1.0f);
-
-        const XMVECTOR eye =
-            XMVectorSet(
-                state_->sceneCenter.x +
-                    std::sin(angle) *
-                    distance,
-
-                state_->sceneCenter.y +
-                    cameraHeight,
-
-                state_->sceneCenter.z -
-                    std::cos(angle) *
-                    distance,
-
-                1.0f);
-
-        const XMVECTOR up =
-            XMVectorSet(
-                0.0f,
-                1.0f,
-                0.0f,
+                state_->camera.up.x,
+                state_->camera.up.y,
+                state_->camera.up.z,
                 0.0f);
+
+        up =
+            XMVector3Normalize(
+                up);
 
         const XMMATRIX view =
             XMMatrixLookAtLH(
@@ -1882,7 +1899,10 @@ namespace client::graphics
         const XMMATRIX projection =
             XMMatrixPerspectiveFovLH(
                 XMConvertToRadians(
-                    55.0f),
+                std::clamp(
+                    state_->camera.fieldOfViewDegrees,
+                    20.0f,
+                    90.0f)),
                 aspect,
                 0.1f,
                 std::max(

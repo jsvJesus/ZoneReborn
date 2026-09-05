@@ -37,6 +37,9 @@ namespace client::platform
         [[nodiscard]]
         std::uint32_t Height() const noexcept;
 
+        [[nodiscard]]
+        float ConsumeMouseWheelDelta() noexcept;
+
     private:
         static LRESULT CALLBACK WindowProcedure(
             HWND window,
@@ -44,12 +47,22 @@ namespace client::platform
             WPARAM wParam,
             LPARAM lParam);
 
-        HINSTANCE instance_ = nullptr;
-        HWND window_ = nullptr;
+        HINSTANCE instance_ =
+            nullptr;
 
-        std::uint32_t width_ = 0;
-        std::uint32_t height_ = 0;
+        HWND window_ =
+            nullptr;
 
-        bool classRegistered_ = false;
+        std::uint32_t width_ =
+            0;
+
+        std::uint32_t height_ =
+            0;
+
+        int mouseWheelDelta_ =
+            0;
+
+        bool classRegistered_ =
+            false;
     };
 }
