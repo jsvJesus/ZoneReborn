@@ -5,7 +5,7 @@
 
 #include "Core/Assets/MeshLoader.h"
 #include "Core/Assets/ModelBundleLoader.h"
-#include "Core/Assets/SpeedTree/SpeedTreeResourceInspector.h"
+#include "Core/Assets/SpeedTree/CTreeLoader.h"
 
 #include "Core/Log.h"
 #include "Core/Resources/ResourcePath.h"
@@ -48,8 +48,8 @@ namespace client::preview
         graphics::SceneRenderData
             scene;
 
-        core::assets::speedtree::SpeedTreeResourceInspector
-            speedTreeInspector;
+        core::assets::speedtree::CTreeLoader
+            ctreeLoader;
 
         std::unordered_map<
             std::string,
@@ -72,122 +72,207 @@ namespace client::preview
         std::size_t loadedUniqueModels = 0;
         std::size_t texturedModelGroups = 0;
 
+        std::unordered_map<
+            std::string,
+            core::assets::speedtree::CTreeAsset>
+            speedTreeCache;
+
         std::unordered_set<std::string>
-            inspectedSpeedTrees;
+            failedSpeedTrees;
 
-        std::size_t inspectedSpeedTreeCount =
+        std::unordered_set<std::string>
+            missingSpeedTreeTextures;
+
+        std::size_t loadedSpeedTrees =
             0;
 
-        std::size_t speedTreeInspectionFailures =
+        std::size_t totalBranchVertices =
             0;
 
-        for (const core::world::WorldSpeedTreeInstance& tree :
+        std::size_t totalFrondVertices =
+            0;
+
+        std::size_t totalLeafVertices =
+            0;
+
+        std::size_t totalBillboardVertices =
+            0;
+
+        const auto validateMaterial =
+            [&runtime,
+             &missingSpeedTreeTextures](
+                const core::assets::speedtree::CTreeMaterial& material)
+            {
+                if (!material.diffuseLogicalPath.empty() &&
+                    !runtime.Resources().Exists(
+                        material.diffuseLogicalPath))
+                {
+                    missingSpeedTreeTextures.insert(
+                        material.diffuseLogicalPath);
+                }
+
+                if (!material.normalLogicalPath.empty() &&
+                    !runtime.Resources().Exists(
+                        material.normalLogicalPath))
+                {
+                    missingSpeedTreeTextures.insert(
+                        material.normalLogicalPath);
+                }
+            };
+
+        for (const core::world::WorldSpeedTreeInstance& treeInstance :
              world.speedTreeInstances)
         {
-            if (!inspectedSpeedTrees.insert(
-                    tree.sptLogicalPath).second)
+            if (speedTreeCache.contains(
+                    treeInstance.sptLogicalPath) ||
+                failedSpeedTrees.contains(
+                    treeInstance.sptLogicalPath))
             {
                 continue;
             }
 
-            core::assets::speedtree::SpeedTreeResourceInfo
-                info;
+            core::assets::speedtree::CTreeAsset
+                tree;
 
-            std::string inspectionError;
+            std::string treeError;
 
-            if (!speedTreeInspector.Inspect(
+            if (!ctreeLoader.Load(
                     runtime.Resources(),
-                    tree.sptLogicalPath,
-                    info,
-                    inspectionError))
+                    treeInstance.sptLogicalPath,
+                    tree,
+                    treeError))
             {
-                ++speedTreeInspectionFailures;
+                failedSpeedTrees.insert(
+                    treeInstance.sptLogicalPath);
 
                 core::Log::Warning(
                     std::string(
-                        "SpeedTree inspection failed: ") +
-                    inspectionError);
+                        "CTREE load failed: ") +
+                    treeInstance.sptLogicalPath +
+                    ": " +
+                    treeError);
 
                 continue;
             }
 
-            ++inspectedSpeedTreeCount;
+            std::size_t billboardVertexCount =
+                0;
 
-            core::Log::Info(
-                std::string(
-                    "SpeedTree inspect: ") +
-                info.sptLogicalPath);
-
-            core::Log::Info(
-                std::string(
-                    "  SPT bytes: ") +
-                std::to_string(
-                    info.sptSize));
-
-            core::Log::Info(
-                std::string(
-                    "  CTREE: ") +
-                (
-                    info.ctreeExists
-                        ? "yes"
-                        : "no"
-                ) +
-                ", bytes=" +
-                std::to_string(
-                    info.ctreeSize));
-
-            core::Log::Info(
-                std::string(
-                    "  BSP2: ") +
-                (
-                    info.bspExists
-                        ? "yes"
-                        : "no"
-                ) +
-                ", bytes=" +
-                std::to_string(
-                    info.bspSize));
-
-            core::Log::Info(
-                std::string(
-                    "  CTREE header: ") +
-                info.ctreeHeaderHex);
-
-            core::Log::Info(
-                std::string(
-                    "  Possible zlib: ") +
-                (
-                    info.containsPossibleZlibStream
-                        ? "yes"
-                        : "no"
-                ));
-
-            core::Log::Info(
-                std::string(
-                    "  Texture refs: ") +
-                std::to_string(
-                    info.textureReferences.size()));
-
-            for (const std::string& texture :
-                 info.textureReferences)
+            for (const core::assets::speedtree::CTreeBillboardGroup& group :
+                 tree.billboard.groups)
             {
-                core::Log::Info(
-                    std::string("    ") +
-                    texture);
+                billboardVertexCount +=
+                    group.vertices.size();
             }
+
+            core::Log::Info(
+                std::string(
+                    "CTREE loaded: ") +
+                treeInstance.sptLogicalPath +
+                ", branches=" +
+                std::to_string(
+                    tree.branches.vertices.size()) +
+                ", branchLODs=" +
+                std::to_string(
+                    tree.branches.lods.size()) +
+                ", fronds=" +
+                std::to_string(
+                    tree.fronds.vertices.size()) +
+                ", frondLODs=" +
+                std::to_string(
+                    tree.fronds.lods.size()) +
+                ", leaves=" +
+                std::to_string(
+                    tree.leaves.vertices.size()) +
+                ", leafLODs=" +
+                std::to_string(
+                    tree.leaves.lods.size()) +
+                ", billboard=" +
+                std::to_string(
+                    billboardVertexCount));
+
+            validateMaterial(
+                tree.branches.material);
+
+            validateMaterial(
+                tree.fronds.material);
+
+            validateMaterial(
+                tree.leaves.material);
+
+            validateMaterial(
+                tree.billboard.material);
+
+            totalBranchVertices +=
+                tree.branches.vertices.size();
+
+            totalFrondVertices +=
+                tree.fronds.vertices.size();
+
+            totalLeafVertices +=
+                tree.leaves.vertices.size();
+
+            totalBillboardVertices +=
+                billboardVertexCount;
+
+            speedTreeCache.emplace(
+                treeInstance.sptLogicalPath,
+                std::move(
+                    tree));
+
+            ++loadedSpeedTrees;
         }
 
         core::Log::Info(
             std::string(
-                "Inspected unique SpeedTrees: ") +
+                "CTREE resources loaded: ") +
             std::to_string(
-                inspectedSpeedTreeCount));
+                loadedSpeedTrees));
 
         core::Log::Info(
             std::string(
-                "SpeedTree inspection failures: ") +
+                "CTREE resources failed: ") +
             std::to_string(
-                speedTreeInspectionFailures));
+                failedSpeedTrees.size()));
+
+        core::Log::Info(
+            std::string(
+                "CTREE branch vertices: ") +
+            std::to_string(
+                totalBranchVertices));
+
+        core::Log::Info(
+            std::string(
+                "CTREE frond vertices: ") +
+            std::to_string(
+                totalFrondVertices));
+
+        core::Log::Info(
+            std::string(
+                "CTREE leaf records: ") +
+            std::to_string(
+                totalLeafVertices));
+
+        core::Log::Info(
+            std::string(
+                "CTREE billboard vertices: ") +
+            std::to_string(
+                totalBillboardVertices));
+
+        core::Log::Info(
+            std::string(
+                "Missing CTREE textures: ") +
+            std::to_string(
+                missingSpeedTreeTextures.size()));
+
+        for (const std::string& texture :
+             missingSpeedTreeTextures)
+        {
+            core::Log::Warning(
+                std::string(
+                    "Missing CTREE texture: ") +
+                texture);
+        }
 
         for (const core::world::WorldModelInstance& worldInstance :
              world.modelInstances)
