@@ -175,6 +175,126 @@ namespace client::preview
 
         if (terrain.layers.empty())
         {
+            if (terrain.auxiliary.lodTextureDds.empty())
+            {
+                return true;
+            }
+
+            const std::string textureKey =
+                terrain.cdataLogicalPath +
+                "#terrain2/lodTexture.dds";
+
+            std::size_t textureIndex =
+                0;
+
+            const auto cached =
+                textureCache_.find(
+                    textureKey);
+
+            if (cached !=
+                textureCache_.end())
+            {
+                textureIndex =
+                    cached->second;
+            }
+            else
+            {
+                core::images::DdsDecoder
+                    decoder;
+
+                core::images::RgbaImage
+                    image;
+
+                if (!decoder.Decode(
+                        std::span<const std::byte>(
+                            terrain.auxiliary.lodTextureDds.data(),
+                            terrain.auxiliary.lodTextureDds.size()),
+                        image,
+                        error))
+                {
+                    error =
+                        "Unable to decode embedded terrain LOD texture: " +
+                        error;
+
+                    return false;
+                }
+
+                graphics::SceneTextureData
+                    texture;
+
+                texture.logicalPath =
+                    textureKey;
+
+                texture.image =
+                    std::move(
+                        image);
+
+                textureIndex =
+                    scene.textures.size();
+
+                scene.textures.push_back(
+                    std::move(
+                        texture));
+
+                textureCache_.emplace(
+                    textureKey,
+                    textureIndex);
+            }
+
+            graphics::SceneTerrainMaterial
+                material;
+
+            graphics::SceneTerrainPass
+                pass;
+
+            pass.layerCount =
+                1;
+
+            pass.layers[0].textureIndex =
+                textureIndex;
+
+            pass.layers[0].uProjection =
+            {
+                0.01f,
+                0.0f,
+                0.0f,
+                0.0f
+            };
+
+            pass.layers[0].vProjection =
+            {
+                0.0f,
+                0.0f,
+                0.01f,
+                0.0f
+            };
+
+            pass.blendMap.width =
+                1;
+
+            pass.blendMap.height =
+                1;
+
+            pass.blendMap.pixels =
+            {
+                std::byte{255},
+                std::byte{0},
+                std::byte{0},
+                std::byte{0}
+            };
+
+            material.passes.push_back(
+                std::move(
+                    pass));
+
+            outputMaterialIndex =
+                static_cast<std::int32_t>(
+                    scene.terrainMaterials.size());
+
+            scene.terrainMaterials.push_back(
+                std::move(
+                    material));
+
             return true;
         }
 

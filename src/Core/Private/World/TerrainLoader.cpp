@@ -1,5 +1,6 @@
 #include "Core/World/TerrainLoader.h"
 
+#include "Core/World/TerrainAuxiliaryDecoder.h"
 #include "Core/World/TerrainHeightDecoder.h"
 #include "Core/World/TerrainLayerDecoder.h"
 #include "Core/World/TerrainMeshBuilder.h"
@@ -48,11 +49,24 @@ namespace core::world
             return false;
         }
 
+        TerrainAuxiliaryDecoder
+            auxiliaryDecoder;
+
+        if (!auxiliaryDecoder.Decode(
+                resources,
+                cdataLogicalPath,
+                terrain.auxiliary,
+                error))
+        {
+            return false;
+        }
+
         TerrainMeshBuilder
             meshBuilder;
 
         if (!meshBuilder.Build(
                 terrain.heightData,
+                terrain.auxiliary.holes,
                 terrain.mesh,
                 error))
         {
@@ -60,7 +74,8 @@ namespace core::world
         }
 
         output =
-            std::move(terrain);
+            std::move(
+                terrain);
 
         return true;
     }

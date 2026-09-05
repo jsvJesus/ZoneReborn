@@ -81,13 +81,15 @@ namespace
 
         return
             (
-                static_cast<std::uint32_t>(x) &
+                static_cast<std::uint32_t>(
+                    x) &
                 0x7FFu
             ) |
 
             (
                 (
-                    static_cast<std::uint32_t>(y) &
+                    static_cast<std::uint32_t>(
+                        y) &
                     0x7FFu
                 )
                 << 11u
@@ -95,11 +97,70 @@ namespace
 
             (
                 (
-                    static_cast<std::uint32_t>(z) &
+                    static_cast<std::uint32_t>(
+                        z) &
                     0x3FFu
                 )
                 << 22u
             );
+    }
+
+    bool IsHoleCell(
+        const core::world::TerrainHoleData& holes,
+        const std::uint32_t terrainX,
+        const std::uint32_t terrainZ,
+        const std::uint32_t terrainCellWidth,
+        const std::uint32_t terrainCellHeight) noexcept
+    {
+        if (!holes.present ||
+            holes.width == 0 ||
+            holes.height == 0 ||
+            terrainCellWidth == 0 ||
+            terrainCellHeight == 0)
+        {
+            return false;
+        }
+
+        const float normalizedX =
+            (
+                static_cast<float>(
+                    terrainX) +
+                0.5f
+            ) /
+            static_cast<float>(
+                terrainCellWidth);
+
+        const float normalizedZ =
+            (
+                static_cast<float>(
+                    terrainZ) +
+                0.5f
+            ) /
+            static_cast<float>(
+                terrainCellHeight);
+
+        const std::uint32_t holeX =
+            std::min(
+                static_cast<std::uint32_t>(
+                    normalizedX *
+                    static_cast<float>(
+                        holes.width)),
+                holes.width -
+                    1);
+
+        const std::uint32_t holeZ =
+            std::min(
+                static_cast<std::uint32_t>(
+                    normalizedZ *
+                    static_cast<float>(
+                        holes.height)),
+                holes.height -
+                    1);
+
+        return
+            holes.IsHole(
+                holeX,
+                holeZ);
     }
 }
 
@@ -107,6 +168,7 @@ namespace core::world
 {
     bool TerrainMeshBuilder::Build(
         const TerrainHeightData& heightData,
+        const TerrainHoleData& holeData,
         assets::MeshData& output,
         std::string& error) const
     {
@@ -145,14 +207,16 @@ namespace core::world
         const float spacingX =
             TerrainBlockSize /
             static_cast<float>(
-                width - 1);
+                width -
+                1);
 
         const float spacingZ =
             TerrainBlockSize /
             static_cast<float>(
-                height - 1);
+                height -
+                1);
 
-        const auto sample =
+        const auto visibleHeight =
             [&heightData](
                 const std::uint32_t x,
                 const std::uint32_t z)
@@ -181,44 +245,62 @@ namespace core::world
                  x < width;
                  ++x)
             {
+                const std::uint32_t sourceX =
+                    x +
+                    heightData.visibleOffset;
+
+                const std::uint32_t sourceZ =
+                    z +
+                    heightData.visibleOffset;
+
                 const std::uint32_t leftX =
-                    x == 0
-                        ? 0
-                        : x - 1;
+                    sourceX >
+                        0
+                        ? sourceX -
+                            1
+                        : sourceX;
 
                 const std::uint32_t rightX =
-                    x + 1 < width
-                        ? x + 1
-                        : x;
+                    sourceX +
+                            1 <
+                        heightData.width
+                        ? sourceX +
+                            1
+                        : sourceX;
 
                 const std::uint32_t downZ =
-                    z == 0
-                        ? 0
-                        : z - 1;
+                    sourceZ >
+                        0
+                        ? sourceZ -
+                            1
+                        : sourceZ;
 
                 const std::uint32_t upZ =
-                    z + 1 < height
-                        ? z + 1
-                        : z;
+                    sourceZ +
+                            1 <
+                        heightData.height
+                        ? sourceZ +
+                            1
+                        : sourceZ;
 
                 const float leftHeight =
-                    sample(
+                    heightData.At(
                         leftX,
-                        z);
+                        sourceZ);
 
                 const float rightHeight =
-                    sample(
+                    heightData.At(
                         rightX,
-                        z);
+                        sourceZ);
 
                 const float downHeight =
-                    sample(
-                        x,
+                    heightData.At(
+                        sourceX,
                         downZ);
 
                 const float upHeight =
-                    sample(
-                        x,
+                    heightData.At(
+                        sourceX,
                         upZ);
 
                 const float distanceX =
@@ -234,7 +316,8 @@ namespace core::world
                     spacingZ;
 
                 const float slopeX =
-                    distanceX > 0.0f
+                    distanceX >
+                            0.0f
                         ? (
                             rightHeight -
                             leftHeight
@@ -243,7 +326,8 @@ namespace core::world
                         : 0.0f;
 
                 const float slopeZ =
-                    distanceZ > 0.0f
+                    distanceZ >
+                            0.0f
                         ? (
                             upHeight -
                             downHeight
@@ -255,14 +339,16 @@ namespace core::world
 
                 vertex.position =
                 {
-                    static_cast<float>(x) *
+                    static_cast<float>(
+                        x) *
                         spacingX,
 
-                    sample(
+                    visibleHeight(
                         x,
                         z),
 
-                    static_cast<float>(z) *
+                    static_cast<float>(
+                        z) *
                         spacingZ
                 };
 
@@ -275,31 +361,43 @@ namespace core::world
                     });
 
                 vertex.u =
-                    static_cast<float>(x) /
                     static_cast<float>(
-                        width - 1);
+                        x) /
+                    static_cast<float>(
+                        width -
+                        1);
 
                 vertex.v =
-                    static_cast<float>(z) /
                     static_cast<float>(
-                        height - 1);
+                        z) /
+                    static_cast<float>(
+                        height -
+                        1);
 
                 vertex.colour =
                     0xFFFFFFFFu;
 
                 mesh.vertices[
-                    static_cast<std::size_t>(z) *
+                    static_cast<std::size_t>(
+                        z) *
                         width +
                     x] =
                     vertex;
             }
         }
 
+        const std::uint32_t terrainCellWidth =
+            width -
+            1;
+
+        const std::uint32_t terrainCellHeight =
+            height -
+            1;
+
         mesh.indices.reserve(
             static_cast<std::size_t>(
-                width - 1) *
-            static_cast<std::size_t>(
-                height - 1) *
+                terrainCellWidth) *
+            terrainCellHeight *
             6);
 
         const auto index =
@@ -309,18 +407,31 @@ namespace core::world
             {
                 return
                     static_cast<std::uint16_t>(
-                        z * width +
+                        z *
+                            width +
                         x);
             };
 
         for (std::uint32_t z = 0;
-             z + 1 < height;
+             z <
+                terrainCellHeight;
              ++z)
         {
             for (std::uint32_t x = 0;
-                 x + 1 < width;
+                 x <
+                    terrainCellWidth;
                  ++x)
             {
+                if (IsHoleCell(
+                        holeData,
+                        x,
+                        z,
+                        terrainCellWidth,
+                        terrainCellHeight))
+                {
+                    continue;
+                }
+
                 const std::uint16_t i00 =
                     index(
                         x,
@@ -329,17 +440,21 @@ namespace core::world
                 const std::uint16_t i01 =
                     index(
                         x,
-                        z + 1);
+                        z +
+                            1);
 
                 const std::uint16_t i10 =
                     index(
-                        x + 1,
+                        x +
+                            1,
                         z);
 
                 const std::uint16_t i11 =
                     index(
-                        x + 1,
-                        z + 1);
+                        x +
+                            1,
+                        z +
+                            1);
 
                 mesh.indices.push_back(
                     i00);
@@ -361,7 +476,8 @@ namespace core::world
             }
         }
 
-        assets::MeshPrimitiveGroup group;
+        assets::MeshPrimitiveGroup
+            group;
 
         group.startIndex =
             0;
@@ -382,7 +498,8 @@ namespace core::world
             group);
 
         output =
-            std::move(mesh);
+            std::move(
+                mesh);
 
         return true;
     }

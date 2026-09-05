@@ -26,6 +26,7 @@
     <ClInclude Include="Public\Core\Assets\VisualAsset.h" />
     <ClInclude Include="Public\Core\Assets\VisualLoader.h" />
     <ClInclude Include="Public\Core\Compression\DeflateDecoder.h" />
+    <ClInclude Include="Public\Core\Compression\ZlibDecoder.h" />
     <ClInclude Include="Public\Core\Images\DdsDecoder.h" />
     <ClInclude Include="Public\Core\Images\PngDecoder.h" />
     <ClInclude Include="Public\Core\Images\RgbaImage.h" />
@@ -51,6 +52,8 @@
     <ClInclude Include="Public\Core\World\SpaceLoader.h" />
     <ClInclude Include="Public\Core\World\Chunk.h" />
     <ClInclude Include="Public\Core\World\ChunkLoader.h" />
+    <ClInclude Include="Public\Core\World\TerrainAuxiliaryData.h" />
+    <ClInclude Include="Public\Core\World\TerrainAuxiliaryDecoder.h" />
     <ClInclude Include="Public\Core\World\TerrainHeightData.h" />
     <ClInclude Include="Public\Core\World\TerrainHeightDecoder.h" />
     <ClInclude Include="Public\Core\World\TerrainLayerData.h" />
@@ -72,6 +75,7 @@
     <ClCompile Include="Private\Assets\TextureResolver.cpp" />
     <ClCompile Include="Private\Assets\VisualLoader.cpp" />
     <ClCompile Include="Private\Compression\DeflateDecoder.cpp" />
+    <ClCompile Include="Private\Compression\ZlibDecoder.cpp" />
     <ClCompile Include="Private\Images\DdsDecoder.cpp" />
     <ClCompile Include="Private\Images\PngDecoder.cpp" />
     <ClCompile Include="Private\Images\WicImageDecoder.cpp" />
@@ -89,6 +93,7 @@
 
     <ClCompile Include="Private\World\SpaceLoader.cpp" />
     <ClCompile Include="Private\World\ChunkLoader.cpp" />
+    <ClCompile Include="Private\World\TerrainAuxiliaryDecoder.cpp" />
     <ClCompile Include="Private\World\TerrainHeightDecoder.cpp" />
     <ClCompile Include="Private\World\TerrainLayerDecoder.cpp" />
     <ClCompile Include="Private\World\TerrainLoader.cpp" />

@@ -136,14 +136,16 @@ namespace core::world
         constexpr std::uint32_t MaximumLayers =
             64;
 
-        for (std::uint32_t layerIndex = 1;
+        for (std::uint32_t layerIndex = 0;
              layerIndex <= MaximumLayers;
              ++layerIndex)
         {
             const std::string sectionName =
-                "terrain2/layer " +
-                std::to_string(
-                    layerIndex);
+                layerIndex == 0
+                    ? "terrain2/layer"
+                    : "terrain2/layer " +
+                        std::to_string(
+                            layerIndex);
 
             std::vector<std::byte>
                 sectionData;
@@ -161,7 +163,7 @@ namespace core::world
                 if (IsMissingEntryError(
                         archiveError))
                 {
-                    break;
+                    continue;
                 }
 
                 error =
