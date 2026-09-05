@@ -2,6 +2,7 @@
 
 #include "Core/Assets/MeshData.h"
 #include "Core/Resources/ResourceFileSystem.h"
+#include "Core/World/TerrainAuxiliaryData.h"
 #include "Core/World/TerrainHeightData.h"
 #include "Core/World/TerrainLayerData.h"
 
@@ -15,12 +16,17 @@ namespace core::world
     {
         std::string cdataLogicalPath;
 
-        TerrainHeightData heightData;
+        TerrainHeightData
+            heightData;
 
         std::vector<TerrainLayerData>
             layers;
 
-        assets::MeshData mesh;
+        TerrainAuxiliaryData
+            auxiliary;
+
+        assets::MeshData
+            mesh;
     };
 
     class TerrainLoader final

@@ -8,6 +8,7 @@ Z:\SOnline\src\Core\Private\Assets\PrimitivesLoader.cpp;Z:\SOnline\src\Core\x64\
 Z:\SOnline\src\Core\Private\Assets\TextureResolver.cpp;Z:\SOnline\src\Core\x64\Release\TextureResolver.obj
 Z:\SOnline\src\Core\Private\Assets\VisualLoader.cpp;Z:\SOnline\src\Core\x64\Release\VisualLoader.obj
 Z:\SOnline\src\Core\Private\Compression\DeflateDecoder.cpp;Z:\SOnline\src\Core\x64\Release\DeflateDecoder.obj
+Z:\SOnline\src\Core\Private\Compression\ZlibDecoder.cpp;Z:\SOnline\src\Core\x64\Release\ZlibDecoder.obj
 Z:\SOnline\src\Core\Private\Images\DdsDecoder.cpp;Z:\SOnline\src\Core\x64\Release\DdsDecoder.obj
 Z:\SOnline\src\Core\Private\Images\PngDecoder.cpp;Z:\SOnline\src\Core\x64\Release\PngDecoder.obj
 Z:\SOnline\src\Core\Private\Images\WicImageDecoder.cpp;Z:\SOnline\src\Core\x64\Release\WicImageDecoder.obj
@@ -22,6 +23,7 @@ Z:\SOnline\src\Core\Private\Resources\ResourceFormatRegistry.cpp;Z:\SOnline\src\
 Z:\SOnline\src\Core\Private\Resources\ResourceFileSystem.cpp;Z:\SOnline\src\Core\x64\Release\ResourceFileSystem.obj
 Z:\SOnline\src\Core\Private\World\SpaceLoader.cpp;Z:\SOnline\src\Core\x64\Release\SpaceLoader.obj
 Z:\SOnline\src\Core\Private\World\ChunkLoader.cpp;Z:\SOnline\src\Core\x64\Release\ChunkLoader.obj
+Z:\SOnline\src\Core\Private\World\TerrainAuxiliaryDecoder.cpp;Z:\SOnline\src\Core\x64\Release\TerrainAuxiliaryDecoder.obj
 Z:\SOnline\src\Core\Private\World\TerrainHeightDecoder.cpp;Z:\SOnline\src\Core\x64\Release\TerrainHeightDecoder.obj
 Z:\SOnline\src\Core\Private\World\TerrainLayerDecoder.cpp;Z:\SOnline\src\Core\x64\Release\TerrainLayerDecoder.obj
 Z:\SOnline\src\Core\Private\World\TerrainLoader.cpp;Z:\SOnline\src\Core\x64\Release\TerrainLoader.obj
