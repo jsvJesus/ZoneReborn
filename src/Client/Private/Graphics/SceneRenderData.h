@@ -19,6 +19,12 @@ namespace client::graphics
         core::images::RgbaImage image;
     };
 
+    struct SceneModelMaterial final
+    {
+        std::int32_t diffuseTextureIndex =
+            -1;
+    };
+
     struct SceneTerrainLayer final
     {
         std::size_t textureIndex = 0;
@@ -53,6 +59,9 @@ namespace client::graphics
     struct SceneMesh final
     {
         core::assets::MeshData geometry;
+
+        std::vector<SceneModelMaterial>
+            modelMaterials;
 
         std::int32_t terrainMaterialIndex =
             -1;

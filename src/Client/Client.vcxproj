@@ -24,6 +24,7 @@
     <ClInclude Include="Private\Input\CameraController.h" />
     <ClInclude Include="Private\Platform\Window.h" />
     <ClInclude Include="Private\Preview\ModelPreviewLoader.h" />
+    <ClInclude Include="Private\Preview\ModelRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\TerrainRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\WorldPreviewLoader.h" />
   </ItemGroup>
@@ -36,6 +37,7 @@
     <ClCompile Include="Private\Diagnostics\ResourceValidation.cpp" />
     <ClCompile Include="Private\Platform\Window.cpp" />
     <ClCompile Include="Private\Preview\ModelPreviewLoader.cpp" />
+    <ClCompile Include="Private\Preview\ModelRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\TerrainRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WorldPreviewLoader.cpp" />
   </ItemGroup>

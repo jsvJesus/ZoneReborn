@@ -1,5 +1,6 @@
 #include "Preview/WorldPreviewLoader.h"
 
+#include "Preview/ModelRenderDataBuilder.h"
 #include "Preview/TerrainRenderDataBuilder.h"
 
 #include "Core/Assets/MeshLoader.h"
@@ -59,8 +60,12 @@ namespace client::preview
         core::assets::MeshLoader
             meshLoader;
 
+        ModelRenderDataBuilder
+            modelRenderBuilder;
+
         std::size_t skippedInstances = 0;
         std::size_t loadedUniqueModels = 0;
+        std::size_t texturedModelGroups = 0;
 
         for (const core::world::WorldModelInstance& worldInstance :
              world.modelInstances)
@@ -154,6 +159,30 @@ namespace client::preview
 
                         sceneMesh.geometry =
                             std::move(mesh);
+
+                        std::size_t texturedGroups =
+                            0;
+
+                        std::string materialError;
+
+                        if (!modelRenderBuilder.Build(
+                                runtime.Resources(),
+                                geometry,
+                                scene,
+                                sceneMesh,
+                                texturedGroups,
+                                materialError))
+                        {
+                            core::Log::Warning(
+                                std::string(
+                                    "Model material fallback in ") +
+                                normalizedModel +
+                                ": " +
+                                materialError);
+                        }
+
+                        texturedModelGroups +=
+                            texturedGroups;
 
                         const std::size_t meshIndex =
                             scene.meshes.size();
@@ -400,6 +429,12 @@ namespace client::preview
                 "Unsupported/missing unique models: ") +
             std::to_string(
                 failedModels.size()));
+
+        core::Log::Info(
+            std::string(
+                "Textured model primitive groups: ") +
+            std::to_string(
+                texturedModelGroups));
 
         output =
             std::move(scene);

@@ -52,10 +52,12 @@ namespace
         DirectX::XMFLOAT4 groupColour;
 
         std::uint32_t useTerrain = 0;
+
         std::uint32_t terrainLayerCount = 0;
 
-        float padding0 = 0.0f;
-        float padding1 = 0.0f;
+        std::uint32_t useModelTexture = 0;
+
+        std::uint32_t paddingFlags = 0;
     };
 
     DirectX::XMFLOAT3 UnpackNormal(
@@ -192,8 +194,8 @@ namespace
 
             uint useTerrain;
             uint terrainLayerCount;
-
-            float2 constantPadding;
+            uint useModelTexture;
+            uint paddingFlags;
         };
 
         Texture2D terrainTexture0 : register(t0);
@@ -202,6 +204,7 @@ namespace
         Texture2D terrainTexture3 : register(t3);
 
         Texture2D terrainBlend : register(t4);
+        Texture2D modelTexture : register(t5);
 
         SamplerState terrainTextureSampler : register(s0);
         SamplerState terrainBlendSampler   : register(s1);
@@ -357,6 +360,13 @@ namespace
                 baseColour =
                     SampleTerrain(
                         input);
+            }
+            else if (useModelTexture != 0)
+            {
+                baseColour =
+                    modelTexture.Sample(
+                        terrainTextureSampler,
+                        input.terrainUV).rgb;
             }
 
             return float4(
@@ -587,6 +597,9 @@ namespace client::graphics
             std::vector<
                 core::assets::MeshPrimitiveGroup>
                 primitiveGroups;
+
+            std::vector<std::int32_t>
+                modelDiffuseTextureIndices;
 
             DirectX::XMFLOAT3 minimum{};
             DirectX::XMFLOAT3 maximum{};
@@ -1388,6 +1401,18 @@ namespace client::graphics
             gpuMesh.primitiveGroups =
                 mesh.primitiveGroups;
 
+            gpuMesh.modelDiffuseTextureIndices.clear();
+
+            gpuMesh.modelDiffuseTextureIndices.reserve(
+                sceneMesh.modelMaterials.size());
+
+            for (const SceneModelMaterial& material :
+                 sceneMesh.modelMaterials)
+            {
+                gpuMesh.modelDiffuseTextureIndices.push_back(
+                    material.diffuseTextureIndex);
+            }
+
             gpuMesh.minimum =
                 minimum;
 
@@ -2042,6 +2067,9 @@ namespace client::graphics
                     constants.useTerrain =
                         1;
 
+                    constants.useModelTexture =
+                        0;
+
                     constants.terrainLayerCount =
                         pass.layerCount;
 
@@ -2156,6 +2184,9 @@ namespace client::graphics
             constants.terrainLayerCount =
                 0;
 
+            constants.useModelTexture =
+                0;
+
             if (mesh.primitiveGroups.empty())
             {
                 constants.groupColour =
@@ -2195,6 +2226,49 @@ namespace client::graphics
                     PrimitiveGroupColour(
                         groupIndex);
 
+                constants.useModelTexture =
+                    0;
+
+                ID3D11ShaderResourceView*
+                    modelTextureView =
+                        nullptr;
+
+                if (groupIndex <
+                    mesh.modelDiffuseTextureIndices.size())
+                {
+                    const std::int32_t textureIndex =
+                        mesh.modelDiffuseTextureIndices[
+                            groupIndex];
+
+                    if (textureIndex >= 0)
+                    {
+                        const std::size_t resolvedTextureIndex =
+                            static_cast<std::size_t>(
+                                textureIndex);
+
+                        if (resolvedTextureIndex >=
+                            state_->textures.size())
+                        {
+                            error =
+                                "Model material references invalid texture.";
+
+                            return false;
+                        }
+
+                        modelTextureView =
+                            state_->textures[
+                                resolvedTextureIndex].Get();
+
+                        constants.useModelTexture =
+                            1;
+                    }
+                }
+
+                state_->context->PSSetShaderResources(
+                    5,
+                    1,
+                    &modelTextureView);
+
                 state_->context->UpdateSubresource(
                     state_->constantBuffer.Get(),
                     0,
@@ -2209,6 +2283,15 @@ namespace client::graphics
                     group.startIndex,
                     0);
             }
+
+            ID3D11ShaderResourceView*
+                emptyModelTexture =
+                    nullptr;
+
+            state_->context->PSSetShaderResources(
+                5,
+                1,
+                &emptyModelTexture);
         }
 
         const HRESULT result =
