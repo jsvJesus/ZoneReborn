@@ -58,6 +58,14 @@ namespace
         std::uint32_t useModelTexture = 0;
 
         std::uint32_t paddingFlags = 0;
+
+        DirectX::XMFLOAT4 modelParameters
+        {
+            0.5f,
+            0.0f,
+            0.0f,
+            0.0f
+        };
     };
 
     DirectX::XMFLOAT3 UnpackNormal(
@@ -196,6 +204,7 @@ namespace
             uint terrainLayerCount;
             uint useModelTexture;
             uint paddingFlags;
+            float4 modelParameters;
         };
 
         Texture2D terrainTexture0 : register(t0);
@@ -355,24 +364,48 @@ namespace
             float3 baseColour =
                 groupColour.rgb;
 
+            float outputAlpha =
+                1.0f;
+
             if (useTerrain != 0)
             {
                 baseColour =
                     SampleTerrain(
                         input);
             }
+
             else if (useModelTexture != 0)
             {
-                baseColour =
+                float4 modelSample =
                     modelTexture.Sample(
                         terrainTextureSampler,
-                        input.terrainUV).rgb;
+                        input.terrainUV);
+
+                const float alphaMode =
+                    modelParameters.y;
+
+                if (alphaMode > 0.5f &&
+                    alphaMode < 1.5f)
+                {
+                    clip(
+                        modelSample.a -
+                        modelParameters.x);
+                }
+
+                if (alphaMode > 1.5f)
+                {
+                    outputAlpha =
+                        modelSample.a;
+                }
+
+                baseColour =
+                    modelSample.rgb;
             }
 
             return float4(
                 baseColour *
                     lighting,
-                1.0f);
+                outputAlpha);
         }
     )";
 
@@ -598,8 +631,8 @@ namespace client::graphics
                 core::assets::MeshPrimitiveGroup>
                 primitiveGroups;
 
-            std::vector<std::int32_t>
-                modelDiffuseTextureIndices;
+            std::vector<SceneModelMaterial>
+                modelMaterials;
 
             DirectX::XMFLOAT3 minimum{};
             DirectX::XMFLOAT3 maximum{};
@@ -626,6 +659,9 @@ namespace client::graphics
 
         ComPtr<ID3D11BlendState>
             additiveBlendState;
+
+        ComPtr<ID3D11BlendState>
+            alphaBlendState;
 
         ComPtr<ID3D11SamplerState>
             terrainTextureSampler;
@@ -972,6 +1008,62 @@ namespace client::graphics
         {
             error =
                 "Unable to create terrain additive blend state.";
+
+            return false;
+        }
+
+        D3D11_BLEND_DESC
+            alphaBlendDescription{};
+
+        alphaBlendDescription
+            .RenderTarget[0]
+            .BlendEnable =
+                TRUE;
+
+        alphaBlendDescription
+            .RenderTarget[0]
+            .SrcBlend =
+                D3D11_BLEND_SRC_ALPHA;
+
+        alphaBlendDescription
+            .RenderTarget[0]
+            .DestBlend =
+                D3D11_BLEND_INV_SRC_ALPHA;
+
+        alphaBlendDescription
+            .RenderTarget[0]
+            .BlendOp =
+                D3D11_BLEND_OP_ADD;
+
+        alphaBlendDescription
+            .RenderTarget[0]
+            .SrcBlendAlpha =
+                D3D11_BLEND_ONE;
+
+        alphaBlendDescription
+            .RenderTarget[0]
+            .DestBlendAlpha =
+                D3D11_BLEND_INV_SRC_ALPHA;
+
+        alphaBlendDescription
+            .RenderTarget[0]
+            .BlendOpAlpha =
+                D3D11_BLEND_OP_ADD;
+
+        alphaBlendDescription
+            .RenderTarget[0]
+            .RenderTargetWriteMask =
+                D3D11_COLOR_WRITE_ENABLE_ALL;
+
+        result =
+            state_->device->CreateBlendState(
+                &alphaBlendDescription,
+                &state_->alphaBlendState);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create model alpha blend state.";
 
             return false;
         }
@@ -1401,17 +1493,8 @@ namespace client::graphics
             gpuMesh.primitiveGroups =
                 mesh.primitiveGroups;
 
-            gpuMesh.modelDiffuseTextureIndices.clear();
-
-            gpuMesh.modelDiffuseTextureIndices.reserve(
-                sceneMesh.modelMaterials.size());
-
-            for (const SceneModelMaterial& material :
-                 sceneMesh.modelMaterials)
-            {
-                gpuMesh.modelDiffuseTextureIndices.push_back(
-                    material.diffuseTextureIndex);
-            }
+            gpuMesh.modelMaterials =
+                sceneMesh.modelMaterials;
 
             gpuMesh.minimum =
                 minimum;
@@ -2229,24 +2312,46 @@ namespace client::graphics
                 constants.useModelTexture =
                     0;
 
+                constants.modelParameters =
+                {
+                    0.5f,
+                    0.0f,
+                    0.0f,
+                    0.0f
+                };
+
                 ID3D11ShaderResourceView*
                     modelTextureView =
                         nullptr;
 
+                SceneAlphaMode alphaMode =
+                    SceneAlphaMode::Opaque;
+
                 if (groupIndex <
-                    mesh.modelDiffuseTextureIndices.size())
+                    mesh.modelMaterials.size())
                 {
-                    const std::int32_t textureIndex =
-                        mesh.modelDiffuseTextureIndices[
+                    const SceneModelMaterial& material =
+                        mesh.modelMaterials[
                             groupIndex];
 
-                    if (textureIndex >= 0)
-                    {
-                        const std::size_t resolvedTextureIndex =
-                            static_cast<std::size_t>(
-                                textureIndex);
+                    alphaMode =
+                        material.alphaMode;
 
-                        if (resolvedTextureIndex >=
+                    constants.modelParameters.x =
+                        material.alphaCutoff;
+
+                    constants.modelParameters.y =
+                        static_cast<float>(
+                            static_cast<std::uint8_t>(
+                                material.alphaMode));
+
+                    if (material.diffuseTextureIndex >= 0)
+                    {
+                        const std::size_t textureIndex =
+                            static_cast<std::size_t>(
+                                material.diffuseTextureIndex);
+
+                        if (textureIndex >=
                             state_->textures.size())
                         {
                             error =
@@ -2257,7 +2362,7 @@ namespace client::graphics
 
                         modelTextureView =
                             state_->textures[
-                                resolvedTextureIndex].Get();
+                                textureIndex].Get();
 
                         constants.useModelTexture =
                             1;
@@ -2268,6 +2373,38 @@ namespace client::graphics
                     5,
                     1,
                     &modelTextureView);
+
+                constexpr float BlendFactor[4]
+                {
+                    0.0f,
+                    0.0f,
+                    0.0f,
+                    0.0f
+                };
+
+                if (alphaMode ==
+                    SceneAlphaMode::Blend)
+                {
+                    state_->context->OMSetBlendState(
+                        state_->alphaBlendState.Get(),
+                        BlendFactor,
+                        0xFFFFFFFFu);
+
+                    state_->context->OMSetDepthStencilState(
+                        state_->depthReadState.Get(),
+                        0);
+                }
+                else
+                {
+                    state_->context->OMSetBlendState(
+                        nullptr,
+                        BlendFactor,
+                        0xFFFFFFFFu);
+
+                    state_->context->OMSetDepthStencilState(
+                        state_->depthState.Get(),
+                        0);
+                }
 
                 state_->context->UpdateSubresource(
                     state_->constantBuffer.Get(),
@@ -2292,6 +2429,15 @@ namespace client::graphics
                 5,
                 1,
                 &emptyModelTexture);
+
+            state_->context->OMSetBlendState(
+                nullptr,
+                nullptr,
+                0xFFFFFFFFu);
+
+            state_->context->OMSetDepthStencilState(
+                state_->depthState.Get(),
+                0);
         }
 
         const HRESULT result =

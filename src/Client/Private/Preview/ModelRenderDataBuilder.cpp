@@ -125,10 +125,6 @@ namespace
 
             Contains(
                 propertyName,
-                "mask") ||
-
-            Contains(
-                propertyName,
                 "height") ||
 
             Contains(
@@ -169,16 +165,14 @@ namespace
                 propertyName,
                 "diffuse"))
         {
-            score +=
-                100;
+            score += 100;
         }
 
         if (Contains(
                 propertyName,
                 "albedo"))
         {
-            score +=
-                100;
+            score += 100;
         }
 
         if (Contains(
@@ -188,35 +182,220 @@ namespace
                 propertyName,
                 "color"))
         {
-            score +=
-                80;
+            score += 80;
         }
 
         if (Contains(
                 propertyName,
                 "base"))
         {
-            score +=
-                60;
+            score += 60;
         }
 
         if (Contains(
                 propertyName,
                 "texture"))
         {
-            score +=
-                20;
+            score += 20;
         }
 
         if (Contains(
                 propertyName,
                 "map"))
         {
-            score +=
-                10;
+            score += 10;
         }
 
         return score;
+    }
+
+    bool LooksLikeBlendMaterial(
+        const core::assets::VisualMaterial& material,
+        const std::string_view texturePath)
+    {
+        const std::string combined =
+            ToLower(
+                material.effect +
+                " " +
+                material.identifier +
+                " " +
+                std::string(
+                    texturePath));
+
+        return
+            Contains(
+                combined,
+                "glass") ||
+
+            Contains(
+                combined,
+                "window") ||
+
+            Contains(
+                combined,
+                "transparent") ||
+
+            Contains(
+                combined,
+                "transparency") ||
+
+            Contains(
+                combined,
+                "alphablend") ||
+
+            Contains(
+                combined,
+                "alpha_blend") ||
+
+            Contains(
+                combined,
+                "blendalpha");
+    }
+
+    bool LooksLikeCutoutMaterial(
+        const core::assets::VisualMaterial& material,
+        const std::string_view texturePath)
+    {
+        const std::string combined =
+            ToLower(
+                material.effect +
+                " " +
+                material.identifier +
+                " " +
+                std::string(
+                    texturePath));
+
+        return
+            Contains(
+                combined,
+                "alphatest") ||
+
+            Contains(
+                combined,
+                "alpha_test") ||
+
+            Contains(
+                combined,
+                "cutout") ||
+
+            Contains(
+                combined,
+                "fence") ||
+
+            Contains(
+                combined,
+                "wire") ||
+
+            Contains(
+                combined,
+                "grid") ||
+
+            Contains(
+                combined,
+                "leaf") ||
+
+            Contains(
+                combined,
+                "leaves") ||
+
+            Contains(
+                combined,
+                "grass") ||
+
+            Contains(
+                combined,
+                "flora");
+    }
+
+    void AnalyzeAlpha(
+        client::graphics::SceneTextureData& texture)
+    {
+        texture.hasTransparentPixels =
+            false;
+
+        texture.hasZeroAlphaPixels =
+            false;
+
+        texture.hasPartialAlphaPixels =
+            false;
+
+        if (texture.image.pixels.empty())
+        {
+            return;
+        }
+
+        for (std::size_t offset = 3;
+             offset <
+                texture.image.pixels.size();
+             offset += 4)
+        {
+            const std::uint8_t alpha =
+                std::to_integer<std::uint8_t>(
+                    texture.image.pixels[
+                        offset]);
+
+            if (alpha == 255)
+            {
+                continue;
+            }
+
+            texture.hasTransparentPixels =
+                true;
+
+            if (alpha == 0)
+            {
+                texture.hasZeroAlphaPixels =
+                    true;
+            }
+            else
+            {
+                texture.hasPartialAlphaPixels =
+                    true;
+            }
+
+            if (texture.hasZeroAlphaPixels &&
+                texture.hasPartialAlphaPixels)
+            {
+                break;
+            }
+        }
+    }
+
+    client::graphics::SceneAlphaMode
+    ResolveAlphaMode(
+        const core::assets::VisualMaterial& material,
+        const client::graphics::SceneTextureData& texture)
+    {
+        if (!texture.hasTransparentPixels)
+        {
+            return
+                client::graphics::SceneAlphaMode::Opaque;
+        }
+
+        if (LooksLikeBlendMaterial(
+                material,
+                texture.logicalPath))
+        {
+            return
+                client::graphics::SceneAlphaMode::Blend;
+        }
+
+        if (LooksLikeCutoutMaterial(
+                material,
+                texture.logicalPath))
+        {
+            return
+                client::graphics::SceneAlphaMode::Cutout;
+        }
+
+        if (texture.hasZeroAlphaPixels)
+        {
+            return
+                client::graphics::SceneAlphaMode::Cutout;
+        }
+
+        return
+            client::graphics::SceneAlphaMode::Opaque;
     }
 }
 
@@ -351,6 +530,9 @@ namespace client::preview
         sceneTexture.image =
             std::move(image);
 
+        AnalyzeAlpha(
+            sceneTexture);
+
         outputTextureIndex =
             scene.textures.size();
 
@@ -431,11 +613,22 @@ namespace client::preview
                 continue;
             }
 
-            sceneMesh.modelMaterials[
-                groupIndex]
-                .diffuseTextureIndex =
-                    static_cast<std::int32_t>(
-                        textureIndex);
+            graphics::SceneModelMaterial& material =
+                sceneMesh.modelMaterials[
+                    groupIndex];
+
+            material.diffuseTextureIndex =
+                static_cast<std::int32_t>(
+                    textureIndex);
+
+            material.alphaMode =
+                ResolveAlphaMode(
+                    visualGroup.material,
+                    scene.textures[
+                        textureIndex]);
+
+            material.alphaCutoff =
+                0.45f;
 
             ++outputTexturedGroups;
         }

@@ -12,17 +12,39 @@
 
 namespace client::graphics
 {
+    enum class SceneAlphaMode : std::uint8_t
+    {
+        Opaque = 0,
+        Cutout = 1,
+        Blend = 2
+    };
+
     struct SceneTextureData final
     {
         std::string logicalPath;
 
         core::images::RgbaImage image;
+
+        bool hasTransparentPixels =
+            false;
+
+        bool hasZeroAlphaPixels =
+            false;
+
+        bool hasPartialAlphaPixels =
+            false;
     };
 
     struct SceneModelMaterial final
     {
         std::int32_t diffuseTextureIndex =
             -1;
+
+        SceneAlphaMode alphaMode =
+            SceneAlphaMode::Opaque;
+
+        float alphaCutoff =
+            0.5f;
     };
 
     struct SceneTerrainLayer final
