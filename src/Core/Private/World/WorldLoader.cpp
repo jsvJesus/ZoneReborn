@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -138,6 +139,44 @@ namespace
         return true;
     }
 
+    bool BuildSpeedTreePath(
+        const std::string_view resourceReference,
+        std::string& output)
+    {
+        output.clear();
+
+        std::string resource =
+            core::resources::ResourcePath::Normalize(
+                resourceReference);
+
+        if (resource.empty())
+        {
+            return false;
+        }
+
+        if (!resource.ends_with(
+                ".spt"))
+        {
+            resource +=
+                ".spt";
+        }
+
+        if (resource.starts_with(
+                "res/"))
+        {
+            output =
+                resource;
+
+            return true;
+        }
+
+        output =
+            "res/" +
+            resource;
+
+        return true;
+    }
+
     bool BuildTerrainCDataPath(
         const std::string_view spaceName,
         const std::string_view resourceReference,
@@ -234,6 +273,61 @@ namespace
         scene.modelInstances.push_back(
             std::move(instance));
     }
+
+    bool AddSpeedTreeInstance(
+        const core::resources::ResourceFileSystem& resources,
+        const std::string& chunkId,
+        const core::world::ChunkSpeedTreeInstance& source,
+        const core::math::Transform3x4& chunkTransform,
+        core::world::WorldScene& scene,
+        std::string& missingResource)
+    {
+        missingResource.clear();
+
+        core::world::WorldSpeedTreeInstance
+            instance;
+
+        instance.chunkId =
+            chunkId;
+
+        instance.resourceReference =
+            source.resource;
+
+        if (!BuildSpeedTreePath(
+                source.resource,
+                instance.sptLogicalPath))
+        {
+            missingResource =
+                source.resource;
+
+            return false;
+        }
+
+        if (!resources.Exists(
+                instance.sptLogicalPath))
+        {
+            missingResource =
+                instance.sptLogicalPath;
+
+            return false;
+        }
+
+        instance.seed =
+            source.seed;
+
+        instance.transform =
+            core::math::Transform3x4::Multiply(
+                source.transform,
+                chunkTransform);
+
+        instance.reflectionVisible =
+            source.reflectionVisible;
+
+        scene.speedTreeInstances.push_back(
+            std::move(instance));
+
+        return true;
+    }
 }
 
 namespace core::world
@@ -314,6 +408,15 @@ namespace core::world
         ChunkLoader chunkLoader;
 
         std::size_t failedChunks = 0;
+
+        std::size_t missingSpeedTrees =
+            0;
+
+        std::unordered_set<std::string>
+            uniqueSpeedTreeResources;
+
+        std::unordered_set<std::string>
+            missingSpeedTreeResources;
 
         for (const resources::ResourceEntry* entry :
              chunks)
@@ -421,8 +524,40 @@ namespace core::world
                     scene);
             }
 
-            scene.speedTreeInstanceCount +=
-                chunk.speedTrees.size();
+            scene.speedTreeInstances.reserve(
+                scene.speedTreeInstances.size() +
+                chunk.speedTrees.size());
+
+            for (const ChunkSpeedTreeInstance& tree :
+                 chunk.speedTrees)
+            {
+                std::string missingResource;
+
+                if (!AddSpeedTreeInstance(
+                        resources,
+                        chunkId,
+                        tree,
+                        chunkTransform,
+                        scene,
+                        missingResource))
+                {
+                    ++missingSpeedTrees;
+
+                    if (!missingResource.empty())
+                    {
+                        missingSpeedTreeResources.insert(
+                            missingResource);
+                    }
+
+                    continue;
+                }
+
+                const WorldSpeedTreeInstance& instance =
+                    scene.speedTreeInstances.back();
+
+                uniqueSpeedTreeResources.insert(
+                    instance.sptLogicalPath);
+            }
 
             for (const ChunkTerrainReference& terrain :
                  chunk.terrains)
@@ -474,6 +609,9 @@ namespace core::world
                 chunk.largeObjects.size();
         }
 
+        scene.speedTreeInstanceCount =
+            scene.speedTreeInstances.size();
+
         if (scene.chunkCount == 0)
         {
             error =
@@ -504,14 +642,51 @@ namespace core::world
                 scene.modelInstances.size()));
 
         core::Log::Info(
-            std::string("SpeedTree instances pending: ") +
+            std::string(
+                "SpeedTree instances: ") +
             std::to_string(
-                scene.speedTreeInstanceCount));
+                scene.speedTreeInstances.size()));
+
+        core::Log::Info(
+            std::string(
+                "Unique SpeedTree resources: ") +
+            std::to_string(
+                uniqueSpeedTreeResources.size()));
+
+        core::Log::Info(
+            std::string(
+                "Missing SpeedTree instances: ") +
+            std::to_string(
+                missingSpeedTrees));
+
+        core::Log::Info(
+            std::string(
+                "Missing unique SpeedTree resources: ") +
+            std::to_string(
+                missingSpeedTreeResources.size()));
 
         core::Log::Info(
             std::string("Terrain instances: ") +
             std::to_string(
                 scene.terrainInstances.size()));
+
+        for (const std::string& resource :
+             uniqueSpeedTreeResources)
+        {
+            core::Log::Info(
+                std::string(
+                    "SpeedTree resource: ") +
+                resource);
+        }
+
+        for (const std::string& resource :
+             missingSpeedTreeResources)
+        {
+            core::Log::Warning(
+                std::string(
+                    "Missing SpeedTree resource: ") +
+                resource);
+        }
 
         if (failedChunks != 0)
         {

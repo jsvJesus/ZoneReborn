@@ -4,6 +4,7 @@
 #include "Core/World/SpaceSettings.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -17,6 +18,20 @@ namespace core::world
         math::Transform3x4 transform;
 
         bool shell = false;
+    };
+
+    struct WorldSpeedTreeInstance final
+    {
+        std::string chunkId;
+
+        std::string resourceReference;
+        std::string sptLogicalPath;
+
+        std::int32_t seed = 0;
+
+        math::Transform3x4 transform;
+
+        bool reflectionVisible = false;
     };
 
     struct WorldTerrainInstance final
@@ -37,6 +52,9 @@ namespace core::world
 
         std::vector<WorldModelInstance>
             modelInstances;
+
+        std::vector<WorldSpeedTreeInstance>
+            speedTreeInstances;
 
         std::vector<WorldTerrainInstance>
             terrainInstances;
