@@ -298,6 +298,9 @@ namespace client::preview
         std::size_t speedTreeFrondTriangles =
             0;
 
+        std::size_t speedTreeLeafTriangles =
+            0;
+
         for (const auto& entry :
              speedTreeCache)
         {
@@ -338,6 +341,9 @@ namespace client::preview
 
             speedTreeFrondTriangles +=
                 renderData.frondTriangles;
+
+            speedTreeLeafTriangles +=
+                renderData.leafTriangles;
 
             speedTreeRenderCache.emplace(
                 resourcePath,
@@ -413,6 +419,12 @@ namespace client::preview
                 "SpeedTree frond triangles LOD0: ") +
             std::to_string(
                 speedTreeFrondTriangles));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree leaf triangles LOD0: ") +
+            std::to_string(
+                speedTreeLeafTriangles));
 
         for (const core::world::WorldModelInstance& worldInstance :
              world.modelInstances)

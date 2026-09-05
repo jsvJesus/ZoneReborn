@@ -6,6 +6,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <limits>
 #include <span>
 #include <string>
@@ -48,6 +49,30 @@ namespace
 
             value.z *
                 inverseLength
+        };
+    }
+
+    core::math::Vector3 Add(
+        const core::math::Vector3& a,
+        const core::math::Vector3& b) noexcept
+    {
+        return
+        {
+            a.x + b.x,
+            a.y + b.y,
+            a.z + b.z
+        };
+    }
+
+    core::math::Vector3 Multiply(
+        const core::math::Vector3& value,
+        const float scalar) noexcept
+    {
+        return
+        {
+            value.x * scalar,
+            value.y * scalar,
+            value.z * scalar
         };
     }
 
@@ -256,6 +281,137 @@ namespace
             output.push_back(
                 static_cast<std::uint16_t>(
                     i2));
+        }
+
+        return true;
+    }
+
+    float ReadLeafFloat(
+        const core::assets::speedtree::CTreeLeafVertex& vertex,
+        const std::size_t index) noexcept
+    {
+        constexpr std::size_t FloatSize =
+            sizeof(float);
+
+        const std::size_t offset =
+            index *
+            FloatSize;
+
+        if (offset >
+                vertex.extra.size() ||
+            FloatSize >
+                vertex.extra.size() -
+                    offset)
+        {
+            return 0.0f;
+        }
+
+        float value =
+            0.0f;
+
+        std::memcpy(
+            &value,
+            vertex.extra.data() +
+                offset,
+            sizeof(value));
+
+        return value;
+    }
+
+    core::math::Vector3 ReadLeafVector(
+        const core::assets::speedtree::CTreeLeafVertex& vertex,
+        const std::size_t firstIndex) noexcept
+    {
+        return
+        {
+            ReadLeafFloat(
+                vertex,
+                firstIndex),
+
+            ReadLeafFloat(
+                vertex,
+                firstIndex +
+                    1),
+
+            ReadLeafFloat(
+                vertex,
+                firstIndex +
+                    2)
+        };
+    }
+
+    std::uint32_t ReadLeafCorner(
+        const core::assets::speedtree::CTreeLeafVertex& vertex,
+        const std::size_t fallback) noexcept
+    {
+        const float value =
+            ReadLeafFloat(
+                vertex,
+                7);
+
+        if (value >=
+                0.0f &&
+            value <=
+                3.0f)
+        {
+            return
+                static_cast<std::uint32_t>(
+                    value +
+                    0.5f);
+        }
+
+        return
+            static_cast<std::uint32_t>(
+                fallback &
+                3u);
+    }
+
+    bool CopyTriangleList(
+        const std::vector<std::uint32_t>& source,
+        const std::size_t vertexCount,
+        std::vector<std::uint16_t>& output,
+        std::string& error)
+    {
+        output.clear();
+
+        if ((source.size() %
+             3u) !=
+            0u)
+        {
+            error =
+                "CTREE leaf LOD is not a triangle list.";
+
+            return false;
+        }
+
+        if (vertexCount >
+            static_cast<std::size_t>(
+                std::numeric_limits<std::uint16_t>::max()))
+        {
+            error =
+                "CTREE leaves require 32-bit indices.";
+
+            return false;
+        }
+
+        output.reserve(
+            source.size());
+
+        for (const std::uint32_t index :
+             source)
+        {
+            if (index >=
+                vertexCount)
+            {
+                error =
+                    "CTREE leaf triangle references invalid vertex.";
+
+                return false;
+            }
+
+            output.push_back(
+                static_cast<std::uint16_t>(
+                    index));
         }
 
         return true;
@@ -527,6 +683,302 @@ namespace client::preview
         return true;
     }
 
+    bool SpeedTreeRenderDataBuilder::BuildLeaves(
+        const core::resources::ResourceFileSystem& resources,
+        const core::assets::speedtree::CTreeLeafGeometry& source,
+        graphics::SceneRenderData& scene,
+        std::size_t& outputMeshIndex,
+        std::size_t& outputTriangleCount,
+        std::string& error)
+    {
+        outputMeshIndex =
+            0;
+
+        outputTriangleCount =
+            0;
+
+        error.clear();
+
+        if (source.vertices.empty())
+        {
+            return true;
+        }
+
+        if ((source.vertices.size() %
+             4u) !=
+            0u)
+        {
+            error =
+                "CTREE leaf vertex count is not divisible by four.";
+
+            return false;
+        }
+
+        if (source.lods.empty())
+        {
+            error =
+                "CTREE leaves contain vertices but no LOD.";
+
+            return false;
+        }
+
+        const core::assets::speedtree::CTreeLod& lod =
+            source.lods.front();
+
+        if (lod.indices.empty())
+        {
+            return true;
+        }
+
+        core::assets::MeshData
+            mesh;
+
+        mesh.vertexFormat =
+            "ctree-leaves";
+
+        mesh.vertices.resize(
+            source.vertices.size());
+
+        for (std::size_t index = 0;
+             index <
+                source.vertices.size();
+             ++index)
+        {
+            const core::assets::speedtree::CTreeLeafVertex&
+                sourceVertex =
+                    source.vertices[
+                        index];
+
+            const std::size_t cardStart =
+                (
+                    index /
+                    4u
+                ) *
+                4u;
+
+            const core::assets::speedtree::CTreeLeafVertex&
+                cardVertex =
+                    source.vertices[
+                        cardStart];
+
+            const core::math::Vector3 tangent =
+                Normalize(
+                    ReadLeafVector(
+                        cardVertex,
+                        13));
+
+            const core::math::Vector3 bitangent =
+                Normalize(
+                    ReadLeafVector(
+                        cardVertex,
+                        16));
+
+            float width =
+                std::abs(
+                    ReadLeafFloat(
+                        sourceVertex,
+                        9));
+
+            float height =
+                std::abs(
+                    ReadLeafFloat(
+                        sourceVertex,
+                        10));
+
+            if (width <
+                0.001f)
+            {
+                width =
+                    1.0f;
+            }
+
+            if (height <
+                0.001f)
+            {
+                height =
+                    width;
+            }
+
+            const std::uint32_t corner =
+                ReadLeafCorner(
+                    sourceVertex,
+                    index -
+                        cardStart);
+
+            float localX =
+                0.0f;
+
+            float localY =
+                0.0f;
+
+            switch (corner)
+            {
+                case 0:
+                    localX =
+                        -0.5f;
+
+                    localY =
+                        0.5f;
+                    break;
+
+                case 1:
+                    localX =
+                        0.5f;
+
+                    localY =
+                        0.5f;
+                    break;
+
+                case 2:
+                    localX =
+                        0.5f;
+
+                    localY =
+                        -0.5f;
+                    break;
+
+                default:
+                    localX =
+                        -0.5f;
+
+                    localY =
+                        -0.5f;
+                    break;
+            }
+
+            core::math::Vector3 position =
+                sourceVertex.position;
+
+            position =
+                Add(
+                    position,
+                    Multiply(
+                        tangent,
+                        localX *
+                            width));
+
+            position =
+                Add(
+                    position,
+                    Multiply(
+                        bitangent,
+                        localY *
+                            height));
+
+            core::assets::MeshVertex
+                vertex;
+
+            vertex.position =
+                position;
+
+            vertex.packedNormal =
+                PackNormal(
+                    sourceVertex.normal);
+
+            vertex.u =
+                ReadLeafFloat(
+                    sourceVertex,
+                    0);
+
+            vertex.v =
+                ReadLeafFloat(
+                    sourceVertex,
+                    1);
+
+            vertex.colour =
+                0xFFFFFFFFu;
+
+            mesh.vertices[
+                index] =
+                vertex;
+        }
+
+        if (!CopyTriangleList(
+                lod.indices,
+                mesh.vertices.size(),
+                mesh.indices,
+                error))
+        {
+            return false;
+        }
+
+        if (mesh.indices.empty())
+        {
+            return true;
+        }
+
+        core::assets::MeshPrimitiveGroup
+            group;
+
+        group.startIndex =
+            0;
+
+        group.primitiveCount =
+            static_cast<std::uint32_t>(
+                mesh.indices.size() /
+                3u);
+
+        group.startVertex =
+            0;
+
+        group.vertexCount =
+            static_cast<std::uint32_t>(
+                mesh.vertices.size());
+
+        mesh.primitiveGroups.push_back(
+            group);
+
+        graphics::SceneMesh
+            sceneMesh;
+
+        sceneMesh.geometry =
+            std::move(
+                mesh);
+
+        sceneMesh.modelMaterials.resize(
+            1);
+
+        graphics::SceneModelMaterial&
+            material =
+                sceneMesh.modelMaterials[
+                    0];
+
+        std::size_t textureIndex =
+            0;
+
+        if (!ResolveTexture(
+                resources,
+                source.material.diffuseLogicalPath,
+                scene,
+                textureIndex,
+                error))
+        {
+            return false;
+        }
+
+        material.diffuseTextureIndex =
+            static_cast<std::int32_t>(
+                textureIndex);
+
+        material.alphaMode =
+            graphics::SceneAlphaMode::Cutout;
+
+        material.alphaCutoff =
+            0.35f;
+
+        outputTriangleCount =
+            sceneMesh.geometry.TriangleCount();
+
+        outputMeshIndex =
+            scene.meshes.size();
+
+        scene.meshes.push_back(
+            std::move(
+                sceneMesh));
+
+        return true;
+    }
+
     bool SpeedTreeRenderDataBuilder::Build(
         const core::resources::ResourceFileSystem& resources,
         const core::assets::speedtree::CTreeAsset& tree,
@@ -613,10 +1065,47 @@ namespace client::preview
             }
         }
 
+        if (!tree.leaves.vertices.empty() &&
+            !tree.leaves.lods.empty() &&
+            !tree.leaves.lods.front().indices.empty())
+        {
+            std::size_t meshIndex =
+                0;
+
+            std::size_t triangleCount =
+                0;
+
+            if (!BuildLeaves(
+                    resources,
+                    tree.leaves,
+                    scene,
+                    meshIndex,
+                    triangleCount,
+                    error))
+            {
+                error =
+                    tree.sptLogicalPath +
+                    " leaves: " +
+                    error;
+
+                return false;
+            }
+
+            if (triangleCount >
+                0)
+            {
+                output.meshIndices.push_back(
+                    meshIndex);
+
+                output.leafTriangles +=
+                    triangleCount;
+            }
+        }
+
         if (output.meshIndices.empty())
         {
             error =
-                "CTREE contains no renderable branch/frond LOD0 geometry: " +
+                "CTREE contains no renderable LOD0 geometry: " +
                 tree.sptLogicalPath;
 
             return false;

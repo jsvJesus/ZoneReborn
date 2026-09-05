@@ -22,6 +22,9 @@ namespace client::preview
 
         std::size_t frondTriangles =
             0;
+
+        std::size_t leafTriangles =
+            0;
     };
 
     class SpeedTreeRenderDataBuilder final
@@ -41,6 +44,15 @@ namespace client::preview
             const core::resources::ResourceFileSystem& resources,
             const core::assets::speedtree::CTreeIndexedGeometry& source,
             bool cutout,
+            graphics::SceneRenderData& scene,
+            std::size_t& outputMeshIndex,
+            std::size_t& outputTriangleCount,
+            std::string& error);
+
+        [[nodiscard]]
+        bool BuildLeaves(
+            const core::resources::ResourceFileSystem& resources,
+            const core::assets::speedtree::CTreeLeafGeometry& source,
             graphics::SceneRenderData& scene,
             std::size_t& outputMeshIndex,
             std::size_t& outputTriangleCount,
