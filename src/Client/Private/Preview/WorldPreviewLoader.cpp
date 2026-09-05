@@ -2,6 +2,7 @@
 
 #include "Preview/ModelRenderDataBuilder.h"
 #include "Preview/TerrainRenderDataBuilder.h"
+#include "Preview/SpeedTreeRenderDataBuilder.h"
 
 #include "Core/Assets/MeshLoader.h"
 #include "Core/Assets/ModelBundleLoader.h"
@@ -50,6 +51,9 @@ namespace client::preview
 
         core::assets::speedtree::CTreeLoader
             ctreeLoader;
+
+        SpeedTreeRenderDataBuilder
+            speedTreeRenderBuilder;
 
         std::unordered_map<
             std::string,
@@ -273,6 +277,142 @@ namespace client::preview
                     "Missing CTREE texture: ") +
                 texture);
         }
+
+        std::unordered_map<
+            std::string,
+            SpeedTreeRenderData>
+            speedTreeRenderCache;
+
+        std::unordered_set<std::string>
+            failedSpeedTreeRenderResources;
+
+        std::size_t speedTreeRenderMeshes =
+            0;
+
+        std::size_t speedTreeRenderInstances =
+            0;
+
+        std::size_t speedTreeBranchTriangles =
+            0;
+
+        std::size_t speedTreeFrondTriangles =
+            0;
+
+        for (const auto& entry :
+             speedTreeCache)
+        {
+            const std::string& resourcePath =
+                entry.first;
+
+            const core::assets::speedtree::CTreeAsset& tree =
+                entry.second;
+
+            SpeedTreeRenderData
+                renderData;
+
+            std::string renderError;
+
+            if (!speedTreeRenderBuilder.Build(
+                    runtime.Resources(),
+                    tree,
+                    scene,
+                    renderData,
+                    renderError))
+            {
+                failedSpeedTreeRenderResources.insert(
+                    resourcePath);
+
+                core::Log::Warning(
+                    std::string(
+                        "SpeedTree render build failed: ") +
+                    renderError);
+
+                continue;
+            }
+
+            speedTreeRenderMeshes +=
+                renderData.meshIndices.size();
+
+            speedTreeBranchTriangles +=
+                renderData.branchTriangles;
+
+            speedTreeFrondTriangles +=
+                renderData.frondTriangles;
+
+            speedTreeRenderCache.emplace(
+                resourcePath,
+                std::move(
+                    renderData));
+        }
+
+        for (const core::world::WorldSpeedTreeInstance& treeInstance :
+             world.speedTreeInstances)
+        {
+            const auto cached =
+                speedTreeRenderCache.find(
+                    treeInstance.sptLogicalPath);
+
+            if (cached ==
+                speedTreeRenderCache.end())
+            {
+                continue;
+            }
+
+            for (const std::size_t meshIndex :
+                 cached->second.meshIndices)
+            {
+                graphics::SceneInstance
+                    instance;
+
+                instance.meshIndex =
+                    meshIndex;
+
+                instance.transform =
+                    treeInstance.transform;
+
+                scene.instances.push_back(
+                    std::move(
+                        instance));
+
+                ++speedTreeRenderInstances;
+            }
+        }
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree render resources: ") +
+            std::to_string(
+                speedTreeRenderCache.size()));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree render resources failed: ") +
+            std::to_string(
+                failedSpeedTreeRenderResources.size()));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree render meshes: ") +
+            std::to_string(
+                speedTreeRenderMeshes));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree render instances: ") +
+            std::to_string(
+                speedTreeRenderInstances));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree branch triangles LOD0: ") +
+            std::to_string(
+                speedTreeBranchTriangles));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree frond triangles LOD0: ") +
+            std::to_string(
+                speedTreeFrondTriangles));
 
         for (const core::world::WorldModelInstance& worldInstance :
              world.modelInstances)
