@@ -4,9 +4,15 @@
 
 #include <exception>
 #include <iostream>
+#include <string>
+#include <utility>
 
 namespace
 {
+    constexpr const char*
+        DefaultSpace =
+            "so_origins";
+
     void WaitOnFailure()
     {
         std::cout
@@ -18,13 +24,32 @@ namespace
     }
 }
 
-int main()
+int main(
+    const int argc,
+    char* argv[])
 {
-    int exitCode = 0;
+    int exitCode =
+        0;
 
     try
     {
-        client::Application application;
+        std::string spaceName =
+            DefaultSpace;
+
+        if (argc >=
+                2 &&
+            argv[1] !=
+                nullptr &&
+            argv[1][0] !=
+                '\0')
+        {
+            spaceName =
+                argv[1];
+        }
+
+        client::Application application(
+            std::move(
+                spaceName));
 
         exitCode =
             application.Run();
@@ -34,17 +59,20 @@ int main()
         core::Log::Error(
             exception.what());
 
-        exitCode = 1;
+        exitCode =
+            1;
     }
     catch (...)
     {
         core::Log::Error(
             "Unhandled client exception");
 
-        exitCode = 1;
+        exitCode =
+            1;
     }
 
-    if (exitCode != 0)
+    if (exitCode !=
+        0)
     {
         WaitOnFailure();
     }

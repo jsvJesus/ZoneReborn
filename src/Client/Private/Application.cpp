@@ -6,9 +6,19 @@
 
 #include <chrono>
 #include <string>
+#include <utility>
 
 namespace client
 {
+    Application::Application(
+        std::string spaceName)
+        :
+        spaceName_(
+            std::move(
+                spaceName))
+    {
+    }
+
     int Application::Run()
     {
         if (!Initialize())
@@ -72,35 +82,56 @@ namespace client
 
     bool Application::Initialize()
     {
+        if (spaceName_.empty())
+        {
+            core::Log::Error(
+                "Space name is empty");
+
+            return false;
+        }
+
         if (!runtime_.Initialize())
         {
             return false;
         }
 
-        graphics::SceneRenderData scene;
+        graphics::SceneRenderData
+            scene;
 
         std::string error;
 
         core::Log::Info(
-            "Loading so_origins world");
+            std::string(
+                "Loading world: ") +
+            spaceName_);
 
         if (!preview::LoadWorldPreview(
                 runtime_,
+                spaceName_,
                 scene,
                 error))
         {
             core::Log::Error(
                 std::string(
-                    "Unable to load world: ") +
+                    "Unable to load world '") +
+                spaceName_ +
+                "': " +
                 error);
 
             return false;
         }
 
+        std::wstring windowTitle(
+            spaceName_.begin(),
+            spaceName_.end());
+
+        windowTitle +=
+            L" World Preview";
+
         if (!window_.Initialize(
                 1600,
                 900,
-                L"so_origins World Preview",
+                windowTitle.c_str(),
                 error))
         {
             core::Log::Error(
@@ -139,7 +170,9 @@ namespace client
             cameraController_.View());
 
         core::Log::Info(
-            "so_origins world initialized");
+            std::string(
+                "World initialized: ") +
+            spaceName_);
 
         return true;
     }

@@ -6,11 +6,16 @@
 
 #include "Core/Runtime.h"
 
+#include <string>
+
 namespace client
 {
     class Application final
     {
     public:
+        explicit Application(
+            std::string spaceName);
+
         int Run();
 
     private:
@@ -19,11 +24,17 @@ namespace client
 
         void Shutdown();
 
-        core::Runtime runtime_;
+        std::string
+            spaceName_;
 
-        platform::Window window_;
+        core::Runtime
+            runtime_;
 
-        graphics::Renderer renderer_;
+        platform::Window
+            window_;
+
+        graphics::Renderer
+            renderer_;
 
         input::CameraController
             cameraController_;

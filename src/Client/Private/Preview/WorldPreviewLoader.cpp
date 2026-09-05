@@ -25,6 +25,7 @@ namespace client::preview
 {
     bool LoadWorldPreview(
         core::Runtime& runtime,
+        const std::string_view spaceName,
         graphics::SceneRenderData& output,
         std::string& error)
     {
@@ -39,7 +40,7 @@ namespace client::preview
 
         if (!worldLoader.Load(
                 runtime.Resources(),
-                "so_origins",
+                spaceName,
                 world,
                 error))
         {
