@@ -11,6 +11,7 @@
 #include "Core/Log.h"
 #include "Core/Resources/ResourcePath.h"
 #include "Core/World/TerrainLoader.h"
+#include "Core/World/Flora/FloraConfigLoader.h"
 #include "Core/World/WorldLoader.h"
 
 #include <array>
@@ -48,6 +49,74 @@ namespace client::preview
         {
             return false;
         }
+
+        core::world::flora::FloraConfigLoader
+            floraConfigLoader;
+
+        core::world::flora::FloraConfig
+            floraConfig;
+
+        if (!floraConfigLoader.Load(
+                runtime.Resources(),
+                floraConfig,
+                error))
+        {
+            error =
+                "Unable to load SO flora system: " +
+                error;
+
+            return false;
+        }
+
+        std::size_t floraTextureRuleCount =
+            0;
+
+        std::size_t floraGeneratorCount =
+            0;
+
+        std::size_t floraVisualRuleCount =
+            0;
+
+        for (const core::world::flora::FloraEcotype& ecotype :
+             floraConfig.ecotypes)
+        {
+            floraTextureRuleCount +=
+                ecotype.textures.size();
+
+            floraGeneratorCount +=
+                ecotype.generators.size();
+
+            for (const core::world::flora::FloraGeneratorRule& generator :
+                 ecotype.generators)
+            {
+                floraVisualRuleCount +=
+                    generator.visuals.size();
+            }
+        }
+
+        core::Log::Info(
+            std::string(
+                "SO flora ecotypes: ") +
+            std::to_string(
+                floraConfig.ecotypes.size()));
+
+        core::Log::Info(
+            std::string(
+                "SO flora terrain texture rules: ") +
+            std::to_string(
+                floraTextureRuleCount));
+
+        core::Log::Info(
+            std::string(
+                "SO flora generators: ") +
+            std::to_string(
+                floraGeneratorCount));
+
+        core::Log::Info(
+            std::string(
+                "SO flora visual rules: ") +
+            std::to_string(
+                floraVisualRuleCount));
 
         graphics::SceneRenderData
             scene;
@@ -730,6 +799,18 @@ namespace client::preview
         std::size_t failedTerrains = 0;
         std::size_t texturedTerrains = 0;
 
+        std::unordered_set<std::string>
+            floraDominantTextures;
+
+        std::unordered_set<std::string>
+            floraMatchedTextures;
+
+        std::unordered_set<std::string>
+            floraUnmatchedTextures;
+
+        std::unordered_set<std::string>
+            activeFloraEcotypes;
+
         for (const core::world::WorldTerrainInstance& terrainInstance :
              world.terrainInstances)
         {
@@ -754,6 +835,90 @@ namespace client::preview
                     terrainError);
 
                 continue;
+            }
+
+            const core::world::TerrainDominantTextureData&
+                dominantTextures =
+                    terrain.auxiliary.dominantTextures;
+
+            if (dominantTextures.present &&
+                !dominantTextures.textureReferences.empty())
+            {
+                std::vector<std::uint8_t>
+                    usedTextures(
+                        dominantTextures.textureReferences.size(),
+                        0);
+
+                for (const std::uint8_t textureIndex :
+                     dominantTextures.indices)
+                {
+                    if (textureIndex <
+                        usedTextures.size())
+                    {
+                        usedTextures[
+                            textureIndex] =
+                            1;
+                    }
+                }
+
+                for (std::size_t textureIndex = 0;
+                     textureIndex <
+                        usedTextures.size();
+                     ++textureIndex)
+                {
+                    if (usedTextures[
+                            textureIndex] ==
+                        0)
+                    {
+                        continue;
+                    }
+
+                    const std::string& textureReference =
+                        dominantTextures.textureReferences[
+                            textureIndex];
+
+                    const std::string normalizedTexture =
+                        core::resources::ResourcePath::Normalize(
+                            textureReference);
+
+                    if (normalizedTexture.empty())
+                    {
+                        continue;
+                    }
+
+                    floraDominantTextures.insert(
+                        normalizedTexture);
+
+                    const std::vector<
+                        const core::world::flora::FloraEcotype*>
+                        ecotypes =
+                            floraConfig.FindEcotypesByTexture(
+                                textureReference);
+
+                    if (ecotypes.empty())
+                    {
+                        floraUnmatchedTextures.insert(
+                            normalizedTexture);
+
+                        continue;
+                    }
+
+                    floraMatchedTextures.insert(
+                        normalizedTexture);
+
+                    for (const core::world::flora::FloraEcotype* ecotype :
+                         ecotypes)
+                    {
+                        if (ecotype ==
+                            nullptr)
+                        {
+                            continue;
+                        }
+
+                        activeFloraEcotypes.insert(
+                            ecotype->name);
+                    }
+                }
             }
 
             std::int32_t materialIndex =
@@ -841,6 +1006,48 @@ namespace client::preview
                 ", max=" +
                 std::to_string(
                     terrain.heightData.maxHeight));
+        }
+
+        core::Log::Info(
+            std::string(
+                "Flora dominant terrain textures: ") +
+            std::to_string(
+                floraDominantTextures.size()));
+
+        core::Log::Info(
+            std::string(
+                "Flora matched terrain textures: ") +
+            std::to_string(
+                floraMatchedTextures.size()));
+
+        core::Log::Info(
+            std::string(
+                "Flora unmatched terrain textures: ") +
+            std::to_string(
+                floraUnmatchedTextures.size()));
+
+        core::Log::Info(
+            std::string(
+                "Active flora ecotypes: ") +
+            std::to_string(
+                activeFloraEcotypes.size()));
+
+        for (const std::string& ecotype :
+             activeFloraEcotypes)
+        {
+            core::Log::Info(
+                std::string(
+                    "Flora ecotype: ") +
+                ecotype);
+        }
+
+        for (const std::string& texture :
+             floraUnmatchedTextures)
+        {
+            core::Log::Warning(
+                std::string(
+                    "No flora ecotype for terrain texture: ") +
+                texture);
         }
 
         if (scene.meshes.empty() ||
