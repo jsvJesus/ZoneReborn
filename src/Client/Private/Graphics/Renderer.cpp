@@ -1762,13 +1762,6 @@ namespace client::graphics
                 return true;
             };
 
-        state_->renderInstances.clear();
-
-        state_->renderInstances.insert(
-            state_->renderInstances.end(),
-            state_->instances.begin(),
-            state_->instances.end());
-
         for (const SceneLodInstance& lodInstance :
              state_->lodInstances)
         {
@@ -2267,8 +2260,138 @@ namespace client::graphics
             &constants.viewProjection,
             viewProjection);
 
+        state_->renderInstances.clear();
+
+        state_->renderInstances.insert(
+            state_->renderInstances.end(),
+            state_->instances.begin(),
+            state_->instances.end());
+
+        for (const SceneLodInstance& lodInstance :
+             state_->lodInstances)
+        {
+            if (lodInstance.levelCount ==
+                0)
+            {
+                continue;
+            }
+
+            const core::math::Vector3 position =
+                lodInstance.transform.Translation();
+
+            const float deltaX =
+                position.x -
+                state_->camera.position.x;
+
+            const float deltaY =
+                position.y -
+                state_->camera.position.y;
+
+            const float deltaZ =
+                position.z -
+                state_->camera.position.z;
+
+            const float distance =
+                std::sqrt(
+                    deltaX * deltaX +
+                    deltaY * deltaY +
+                    deltaZ * deltaZ);
+
+            const float scaleX =
+                std::sqrt(
+                    lodInstance.transform.values[0] *
+                        lodInstance.transform.values[0] +
+                    lodInstance.transform.values[1] *
+                        lodInstance.transform.values[1] +
+                    lodInstance.transform.values[2] *
+                        lodInstance.transform.values[2]);
+
+            const float scaleY =
+                std::sqrt(
+                    lodInstance.transform.values[3] *
+                        lodInstance.transform.values[3] +
+                    lodInstance.transform.values[4] *
+                        lodInstance.transform.values[4] +
+                    lodInstance.transform.values[5] *
+                        lodInstance.transform.values[5]);
+
+            const float scaleZ =
+                std::sqrt(
+                    lodInstance.transform.values[6] *
+                        lodInstance.transform.values[6] +
+                    lodInstance.transform.values[7] *
+                        lodInstance.transform.values[7] +
+                    lodInstance.transform.values[8] *
+                        lodInstance.transform.values[8]);
+
+            const float instanceScale =
+                std::max(
+                    {
+                        scaleX,
+                        scaleY,
+                        scaleZ,
+                        0.001f
+                    });
+
+            const float localDistance =
+                distance /
+                instanceScale;
+
+            std::uint32_t selectedLevel =
+                lodInstance.levelCount -
+                1;
+
+            for (std::uint32_t levelIndex = 0;
+                 levelIndex <
+                    lodInstance.levelCount;
+                 ++levelIndex)
+            {
+                const SceneLodLevel& level =
+                    lodInstance.levels[
+                        levelIndex];
+
+                if (localDistance <=
+                    level.maximumDistance)
+                {
+                    selectedLevel =
+                        levelIndex;
+
+                    break;
+                }
+            }
+
+            const SceneLodLevel& selected =
+                lodInstance.levels[
+                    selectedLevel];
+
+            for (const std::size_t meshIndex :
+                 selected.meshIndices)
+            {
+                if (meshIndex >=
+                    state_->meshes.size())
+                {
+                    error =
+                        "Selected LOD references invalid mesh.";
+
+                    return false;
+                }
+
+                SceneInstance instance;
+
+                instance.meshIndex =
+                    meshIndex;
+
+                instance.transform =
+                    lodInstance.transform;
+
+                state_->renderInstances.push_back(
+                    std::move(
+                        instance));
+            }
+        }
+
         for (const SceneInstance& instance :
-             state_->instances)
+            state_->renderInstances)
         {
             const State::GpuMesh& mesh =
                 state_->meshes[
