@@ -2262,10 +2262,46 @@ namespace client::graphics
 
         state_->renderInstances.clear();
 
-        state_->renderInstances.insert(
-            state_->renderInstances.end(),
-            state_->instances.begin(),
-            state_->instances.end());
+        for (const SceneInstance& instance :
+             state_->instances)
+        {
+            if (instance.maximumDistance >
+                0.0f)
+            {
+                const core::math::Vector3 position =
+                    instance.transform.Translation();
+
+                const float deltaX =
+                    position.x -
+                    state_->camera.position.x;
+
+                const float deltaY =
+                    position.y -
+                    state_->camera.position.y;
+
+                const float deltaZ =
+                    position.z -
+                    state_->camera.position.z;
+
+                const float distanceSquared =
+                    deltaX * deltaX +
+                    deltaY * deltaY +
+                    deltaZ * deltaZ;
+
+                const float maximumDistanceSquared =
+                    instance.maximumDistance *
+                    instance.maximumDistance;
+
+                if (distanceSquared >
+                    maximumDistanceSquared)
+                {
+                    continue;
+                }
+            }
+
+            state_->renderInstances.push_back(
+                instance);
+        }
 
         for (const SceneLodInstance& lodInstance :
              state_->lodInstances)

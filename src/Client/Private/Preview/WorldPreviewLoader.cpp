@@ -15,6 +15,7 @@
 #include "Core/World/Flora/FloraConfigLoader.h"
 #include "Core/World/Flora/FloraVisualLoader.h"
 #include "Core/World/WorldLoader.h"
+#include "Core/World/Flora/FloraInstanceBuilder.h"
 
 #include <array>
 #include <algorithm>
@@ -26,6 +27,7 @@
 #include <utility>
 #include <vector>
 #include <limits>
+#include <iterator>
 
 namespace client::preview
 {
@@ -137,6 +139,16 @@ namespace client::preview
 
         std::unordered_set<std::string>
             failedModels;
+
+        core::world::flora::FloraInstanceBuilder
+            floraInstanceBuilder;
+
+        std::vector<
+            core::world::flora::FloraInstance>
+            floraInstances;
+
+        std::size_t floraPlacementFailures =
+            0;
 
         core::assets::ModelBundleLoader
             bundleLoader;
@@ -840,6 +852,40 @@ namespace client::preview
                 continue;
             }
 
+            std::vector<
+                core::world::flora::FloraInstance>
+                terrainFloraInstances;
+
+            std::string floraPlacementError;
+
+            if (!floraInstanceBuilder.Build(
+                    terrainInstance.chunkId,
+                    terrain.heightData,
+                    terrain.auxiliary,
+                    terrainInstance.transform,
+                    floraConfig,
+                    terrainFloraInstances,
+                    floraPlacementError))
+            {
+                ++floraPlacementFailures;
+
+                core::Log::Warning(
+                    std::string(
+                        "Flora placement failed for terrain ") +
+                    terrainInstance.chunkId +
+                    ": " +
+                    floraPlacementError);
+            }
+            else
+            {
+                floraInstances.insert(
+                    floraInstances.end(),
+                    std::make_move_iterator(
+                        terrainFloraInstances.begin()),
+                    std::make_move_iterator(
+                        terrainFloraInstances.end()));
+            }
+
             const core::world::TerrainDominantTextureData&
                 dominantTextures =
                     terrain.auxiliary.dominantTextures;
@@ -1235,6 +1281,98 @@ namespace client::preview
                 "Flora alpha cutoff: ") +
             std::to_string(
                 floraAlphaCutoff));
+
+        std::size_t floraSceneInstanceCount =
+            0;
+
+        std::size_t floraMissingRenderResources =
+            0;
+
+        std::unordered_map<
+            std::string,
+            std::size_t>
+            floraInstancesPerEcotype;
+
+        for (const core::world::flora::FloraInstance& floraInstance :
+             floraInstances)
+        {
+            const std::string visualKey =
+                core::resources::ResourcePath::Normalize(
+                    floraInstance.visualReference);
+
+            const auto cached =
+                floraRenderCache.find(
+                    visualKey);
+
+            if (cached ==
+                floraRenderCache.end())
+            {
+                ++floraMissingRenderResources;
+
+                continue;
+            }
+
+            ++floraInstancesPerEcotype[
+                floraInstance.ecotypeName];
+
+            for (const std::size_t meshIndex :
+                 cached->second.meshIndices)
+            {
+                graphics::SceneInstance
+                    instance;
+
+                instance.meshIndex =
+                    meshIndex;
+
+                instance.transform =
+                    floraInstance.transform;
+
+                instance.maximumDistance =
+                    floraConfig.alphaTestDistance;
+
+                scene.instances.push_back(
+                    std::move(
+                        instance));
+
+                ++floraSceneInstanceCount;
+            }
+        }
+
+        core::Log::Info(
+            std::string(
+                "Procedural flora instances: ") +
+            std::to_string(
+                floraInstances.size()));
+
+        core::Log::Info(
+            std::string(
+                "Flora scene instances: ") +
+            std::to_string(
+                floraSceneInstanceCount));
+
+        core::Log::Info(
+            std::string(
+                "Flora placement failures: ") +
+            std::to_string(
+                floraPlacementFailures));
+
+        core::Log::Info(
+            std::string(
+                "Flora instances without render resource: ") +
+            std::to_string(
+                floraMissingRenderResources));
+
+        for (const auto& [ecotype, count] :
+             floraInstancesPerEcotype)
+        {
+            core::Log::Info(
+                std::string(
+                    "Flora instances [") +
+                ecotype +
+                "]: " +
+                std::to_string(
+                    count));
+        }
 
         for (const std::string& texture :
              floraUnmatchedTextures)

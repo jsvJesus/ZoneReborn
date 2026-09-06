@@ -53,6 +53,8 @@
     <ClInclude Include="Public\Core\Resources\ResourceFileSystem.h" />
     <ClInclude Include="Public\Core\World\Flora\FloraConfig.h" />
     <ClInclude Include="Public\Core\World\Flora\FloraConfigLoader.h" />
+    <ClInclude Include="Public\Core\World\Flora\FloraInstance.h" />
+    <ClInclude Include="Public\Core\World\Flora\FloraInstanceBuilder.h" />
     <ClInclude Include="Public\Core\World\Flora\FloraVisualAsset.h" />
     <ClInclude Include="Public\Core\World\Flora\FloraVisualLoader.h" />
 
@@ -102,6 +104,7 @@
     <ClCompile Include="Private\Resources\ResourceFileSystem.cpp" />
     <ClCompile Include="Private\World\Flora\FloraConfig.cpp" />
     <ClCompile Include="Private\World\Flora\FloraConfigLoader.cpp" />
+    <ClCompile Include="Private\World\Flora\FloraInstanceBuilder.cpp" />
     <ClCompile Include="Private\World\Flora\FloraVisualLoader.cpp" />
 
     <ClCompile Include="Private\World\SpaceLoader.cpp" />

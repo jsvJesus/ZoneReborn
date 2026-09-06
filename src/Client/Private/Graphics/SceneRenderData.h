@@ -98,6 +98,9 @@ namespace client::graphics
 
         core::math::Transform3x4
             transform;
+
+        float maximumDistance =
+            0.0f;
     };
 
     struct SceneLodLevel final
