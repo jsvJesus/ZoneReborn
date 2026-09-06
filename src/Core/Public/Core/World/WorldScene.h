@@ -44,6 +44,21 @@ namespace core::world
         math::Transform3x4 transform;
     };
 
+    struct WorldLargeObjectReference final
+    {
+        std::string uid;
+        std::string type;
+
+        std::string vloLogicalPath;
+        std::string odataLogicalPath;
+
+        bool vloExists = false;
+        bool odataExists = false;
+
+        std::vector<std::string>
+            chunkIds;
+    };
+
     struct WorldScene final
     {
         std::string spaceName;
@@ -59,12 +74,17 @@ namespace core::world
         std::vector<WorldTerrainInstance>
             terrainInstances;
 
+        std::vector<WorldLargeObjectReference>
+            largeObjects;
+
         std::size_t chunkCount = 0;
         std::size_t outdoorChunkCount = 0;
         std::size_t indoorChunkCount = 0;
 
         std::size_t speedTreeInstanceCount = 0;
         std::size_t terrainReferenceCount = 0;
+
         std::size_t largeObjectReferenceCount = 0;
+        std::size_t missingLargeObjectCount = 0;
     };
 }

@@ -11,6 +11,7 @@
 #include <filesystem>
 #include <string>
 #include <unordered_set>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -247,6 +248,218 @@ namespace
         return true;
     }
 
+    bool BuildLargeObjectPaths(
+        const std::string_view spaceName,
+        const std::string_view uidReference,
+        std::string& vloPath,
+        std::string& odataPath)
+    {
+        vloPath.clear();
+        odataPath.clear();
+
+        std::string space =
+            core::resources::ResourcePath::Normalize(
+                spaceName);
+
+        std::string uid =
+            core::resources::ResourcePath::Normalize(
+                uidReference);
+
+        if (space.empty() ||
+            uid.empty())
+        {
+            return false;
+        }
+
+        if (space.find('/') !=
+            std::string::npos)
+        {
+            return false;
+        }
+
+        if (uid.find('/') !=
+            std::string::npos)
+        {
+            return false;
+        }
+
+        while (!uid.empty() &&
+               uid.front() ==
+                   '_')
+        {
+            uid.erase(
+                uid.begin());
+        }
+
+        constexpr std::string_view VloExtension =
+            ".vlo";
+
+        constexpr std::string_view ODataExtension =
+            ".odata";
+
+        if (uid.ends_with(
+                VloExtension))
+        {
+            uid.resize(
+                uid.size() -
+                VloExtension.size());
+        }
+        else if (uid.ends_with(
+                     ODataExtension))
+        {
+            uid.resize(
+                uid.size() -
+                ODataExtension.size());
+        }
+
+        if (uid.empty())
+        {
+            return false;
+        }
+
+        const std::string prefix =
+            "res/spaces/" +
+            space +
+            "/";
+
+        vloPath =
+            prefix +
+            "_" +
+            uid +
+            ".vlo";
+
+        odataPath =
+            prefix +
+            uid +
+            ".odata";
+
+        return true;
+    }
+
+    std::string BuildLargeObjectKey(
+        const std::string_view uid,
+        const std::string_view type)
+    {
+        std::string normalizedUid =
+            core::resources::ResourcePath::Normalize(
+                uid);
+
+        std::string normalizedType =
+            core::resources::ResourcePath::Normalize(
+                type);
+
+        while (!normalizedUid.empty() &&
+               normalizedUid.front() ==
+                   '_')
+        {
+            normalizedUid.erase(
+                normalizedUid.begin());
+        }
+
+        return
+            normalizedUid +
+            "|" +
+            normalizedType;
+    }
+
+    bool AddLargeObjectReference(
+        const core::resources::ResourceFileSystem& resources,
+        const std::string_view spaceName,
+        const std::string& chunkId,
+        const core::world::ChunkLargeObjectReference& source,
+        std::unordered_map<
+            std::string,
+            std::size_t>& lookup,
+        core::world::WorldScene& scene,
+        std::string& error)
+    {
+        error.clear();
+
+        const std::string key =
+            BuildLargeObjectKey(
+                source.uid,
+                source.type);
+
+        if (key.empty())
+        {
+            error =
+                "Large object UID/type is invalid.";
+
+            return false;
+        }
+
+        const auto existing =
+            lookup.find(
+                key);
+
+        if (existing !=
+            lookup.end())
+        {
+            core::world::WorldLargeObjectReference&
+                object =
+                    scene.largeObjects[
+                        existing->second];
+
+            if (std::find(
+                    object.chunkIds.begin(),
+                    object.chunkIds.end(),
+                    chunkId) ==
+                object.chunkIds.end())
+            {
+                object.chunkIds.push_back(
+                    chunkId);
+            }
+
+            return true;
+        }
+
+        core::world::WorldLargeObjectReference
+            object;
+
+        object.uid =
+            source.uid;
+
+        object.type =
+            source.type;
+
+        if (!BuildLargeObjectPaths(
+                spaceName,
+                source.uid,
+                object.vloLogicalPath,
+                object.odataLogicalPath))
+        {
+            error =
+                "Unable to build VLO paths for UID: " +
+                source.uid;
+
+            return false;
+        }
+
+        object.vloExists =
+            resources.Exists(
+                object.vloLogicalPath);
+
+        object.odataExists =
+            resources.Exists(
+                object.odataLogicalPath);
+
+        object.chunkIds.push_back(
+            chunkId);
+
+        const std::size_t index =
+            scene.largeObjects.size();
+
+        scene.largeObjects.push_back(
+            std::move(
+                object));
+
+        lookup.emplace(
+            key,
+            index);
+
+        return true;
+    }
+
     void AddModelInstance(
         const std::string& chunkId,
         const core::world::ChunkModelInstance& source,
@@ -417,6 +630,14 @@ namespace core::world
 
         std::unordered_set<std::string>
             missingSpeedTreeResources;
+
+        std::unordered_map<
+            std::string,
+            std::size_t>
+            largeObjectLookup;
+
+        std::size_t invalidLargeObjectReferences =
+            0;
 
         for (const resources::ResourceEntry* entry :
              chunks)
@@ -605,12 +826,62 @@ namespace core::world
                 ++scene.terrainReferenceCount;
             }
 
-            scene.largeObjectReferenceCount +=
-                chunk.largeObjects.size();
+            for (const ChunkLargeObjectReference& largeObject :
+                 chunk.largeObjects)
+            {
+                ++scene.largeObjectReferenceCount;
+
+                std::string largeObjectError;
+
+                if (!AddLargeObjectReference(
+                        resources,
+                        spaceName,
+                        chunkId,
+                        largeObject,
+                        largeObjectLookup,
+                        scene,
+                        largeObjectError))
+                {
+                    ++invalidLargeObjectReferences;
+
+                    core::Log::Warning(
+                        std::string(
+                            "Invalid VLO reference in chunk ") +
+                        chunkId +
+                        ": " +
+                        largeObjectError);
+
+                    continue;
+                }
+            }
         }
 
         scene.speedTreeInstanceCount =
             scene.speedTreeInstances.size();
+
+        scene.missingLargeObjectCount =
+            0;
+
+        std::unordered_map<
+            std::string,
+            std::size_t>
+            largeObjectTypes;
+
+        for (const WorldLargeObjectReference& object :
+             scene.largeObjects)
+        {
+            const std::string normalizedType =
+                resources::ResourcePath::Normalize(
+                    object.type);
+
+            ++largeObjectTypes[
+                normalizedType];
+
+            if (!object.vloExists)
+            {
+                ++scene.missingLargeObjectCount;
+            }
+        }
 
         if (scene.chunkCount == 0)
         {
@@ -669,6 +940,76 @@ namespace core::world
             std::string("Terrain instances: ") +
             std::to_string(
                 scene.terrainInstances.size()));
+
+        core::Log::Info(
+            std::string(
+                "VLO chunk references: ") +
+            std::to_string(
+                scene.largeObjectReferenceCount));
+
+        core::Log::Info(
+            std::string(
+                "Unique VLO objects: ") +
+            std::to_string(
+                scene.largeObjects.size()));
+
+        core::Log::Info(
+            std::string(
+                "Missing VLO resources: ") +
+            std::to_string(
+                scene.missingLargeObjectCount));
+
+        core::Log::Info(
+            std::string(
+                "Invalid VLO references: ") +
+            std::to_string(
+                invalidLargeObjectReferences));
+
+        for (const auto& [type, count] :
+             largeObjectTypes)
+        {
+            core::Log::Info(
+                std::string(
+                    "VLO type [") +
+                type +
+                "]: " +
+                std::to_string(
+                    count));
+        }
+
+        for (const WorldLargeObjectReference& object :
+             scene.largeObjects)
+        {
+            core::Log::Info(
+                std::string(
+                    "VLO resource: uid=") +
+                object.uid +
+                ", type=" +
+                object.type +
+                ", chunks=" +
+                std::to_string(
+                    object.chunkIds.size()) +
+                ", vlo=" +
+                object.vloLogicalPath +
+                ", odata=" +
+                object.odataLogicalPath);
+
+            if (!object.vloExists)
+            {
+                core::Log::Warning(
+                    std::string(
+                        "Missing VLO file: ") +
+                    object.vloLogicalPath);
+            }
+
+            if (!object.odataExists)
+            {
+                core::Log::Warning(
+                    std::string(
+                        "Missing VLO odata: ") +
+                    object.odataLogicalPath);
+            }
+        }
 
         for (const std::string& resource :
              uniqueSpeedTreeResources)
