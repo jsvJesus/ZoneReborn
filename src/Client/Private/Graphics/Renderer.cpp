@@ -696,6 +696,12 @@ namespace client::graphics
         std::vector<SceneInstance>
             instances;
 
+        std::vector<SceneLodInstance>
+            lodInstances;
+
+        std::vector<SceneInstance>
+            renderInstances;
+
         std::uint32_t width = 0;
         std::uint32_t height = 0;
 
@@ -1641,138 +1647,321 @@ namespace client::graphics
         state_->instances =
             scene.instances;
 
+        state_->lodInstances =
+            scene.lodInstances;
+
+        state_->renderInstances.clear();
+
+        state_->renderInstances.reserve(
+            state_->instances.size() +
+            state_->lodInstances.size() *
+                3u);
+
         bool hasBounds = false;
 
         DirectX::XMFLOAT3 sceneMinimum{};
         DirectX::XMFLOAT3 sceneMaximum{};
 
-        for (const SceneInstance& instance :
-             state_->instances)
+        const auto includeMeshBounds =
+            [&](
+                const std::size_t meshIndex,
+                const core::math::Transform3x4& transform)
+            {
+                if (meshIndex >=
+                    state_->meshes.size())
+                {
+                    return false;
+                }
+
+                const State::GpuMesh& mesh =
+                    state_->meshes[
+                        meshIndex];
+
+                const DirectX::XMMATRIX world =
+                    ToMatrix(
+                        transform);
+
+                const std::array<
+                    DirectX::XMFLOAT3,
+                    8>
+                    corners
+                {{
+                    {mesh.minimum.x, mesh.minimum.y, mesh.minimum.z},
+                    {mesh.maximum.x, mesh.minimum.y, mesh.minimum.z},
+                    {mesh.minimum.x, mesh.maximum.y, mesh.minimum.z},
+                    {mesh.maximum.x, mesh.maximum.y, mesh.minimum.z},
+                    {mesh.minimum.x, mesh.minimum.y, mesh.maximum.z},
+                    {mesh.maximum.x, mesh.minimum.y, mesh.maximum.z},
+                    {mesh.minimum.x, mesh.maximum.y, mesh.maximum.z},
+                    {mesh.maximum.x, mesh.maximum.y, mesh.maximum.z}
+                }};
+
+                for (const DirectX::XMFLOAT3& corner :
+                     corners)
+                {
+                    DirectX::XMVECTOR point =
+                        DirectX::XMLoadFloat3(
+                            &corner);
+
+                    point =
+                        DirectX::XMVector3TransformCoord(
+                            point,
+                            world);
+
+                    DirectX::XMFLOAT3 transformed{};
+
+                    DirectX::XMStoreFloat3(
+                        &transformed,
+                        point);
+
+                    if (!hasBounds)
+                    {
+                        sceneMinimum =
+                            transformed;
+
+                        sceneMaximum =
+                            transformed;
+
+                        hasBounds =
+                            true;
+
+                        continue;
+                    }
+
+                    sceneMinimum.x =
+                        std::min(
+                            sceneMinimum.x,
+                            transformed.x);
+
+                    sceneMinimum.y =
+                        std::min(
+                            sceneMinimum.y,
+                            transformed.y);
+
+                    sceneMinimum.z =
+                        std::min(
+                            sceneMinimum.z,
+                            transformed.z);
+
+                    sceneMaximum.x =
+                        std::max(
+                            sceneMaximum.x,
+                            transformed.x);
+
+                    sceneMaximum.y =
+                        std::max(
+                            sceneMaximum.y,
+                            transformed.y);
+
+                    sceneMaximum.z =
+                        std::max(
+                            sceneMaximum.z,
+                            transformed.z);
+                }
+
+                return true;
+            };
+
+        state_->renderInstances.clear();
+
+        state_->renderInstances.insert(
+            state_->renderInstances.end(),
+            state_->instances.begin(),
+            state_->instances.end());
+
+        for (const SceneLodInstance& lodInstance :
+             state_->lodInstances)
         {
-            if (instance.meshIndex >=
-                state_->meshes.size())
+            if (lodInstance.levelCount ==
+                0)
+            {
+                continue;
+            }
+
+            const float objectX =
+                lodInstance.transform.values[9];
+
+            const float objectY =
+                lodInstance.transform.values[10];
+
+            const float objectZ =
+                lodInstance.transform.values[11];
+
+            const float deltaX =
+                objectX -
+                state_->camera.position.x;
+
+            const float deltaY =
+                objectY -
+                state_->camera.position.y;
+
+            const float deltaZ =
+                objectZ -
+                state_->camera.position.z;
+
+            const float distance =
+                std::sqrt(
+                    deltaX * deltaX +
+                    deltaY * deltaY +
+                    deltaZ * deltaZ);
+
+            const float scaleX =
+                std::sqrt(
+                    lodInstance.transform.values[0] *
+                        lodInstance.transform.values[0] +
+                    lodInstance.transform.values[1] *
+                        lodInstance.transform.values[1] +
+                    lodInstance.transform.values[2] *
+                        lodInstance.transform.values[2]);
+
+            const float scaleY =
+                std::sqrt(
+                    lodInstance.transform.values[3] *
+                        lodInstance.transform.values[3] +
+                    lodInstance.transform.values[4] *
+                        lodInstance.transform.values[4] +
+                    lodInstance.transform.values[5] *
+                        lodInstance.transform.values[5]);
+
+            const float scaleZ =
+                std::sqrt(
+                    lodInstance.transform.values[6] *
+                        lodInstance.transform.values[6] +
+                    lodInstance.transform.values[7] *
+                        lodInstance.transform.values[7] +
+                    lodInstance.transform.values[8] *
+                        lodInstance.transform.values[8]);
+
+            const float instanceScale =
+                std::max(
+                    {
+                        scaleX,
+                        scaleY,
+                        scaleZ,
+                        0.001f
+                    });
+
+            const float localDistance =
+                distance /
+                instanceScale;
+
+            std::uint32_t selectedLevel =
+                lodInstance.levelCount -
+                1;
+
+            for (std::uint32_t levelIndex = 0;
+                 levelIndex <
+                    lodInstance.levelCount;
+                 ++levelIndex)
+            {
+                if (localDistance <=
+                    lodInstance.levels[
+                        levelIndex]
+                        .maximumDistance)
+                {
+                    selectedLevel =
+                        levelIndex;
+
+                    break;
+                }
+            }
+
+            const SceneLodLevel&
+                level =
+                    lodInstance.levels[
+                        selectedLevel];
+
+            for (const std::size_t meshIndex :
+                 level.meshIndices)
+            {
+                SceneInstance
+                    renderInstance;
+
+                renderInstance.meshIndex =
+                    meshIndex;
+
+                renderInstance.transform =
+                    lodInstance.transform;
+
+                state_->renderInstances.push_back(
+                    std::move(
+                        renderInstance));
+            }
+        }
+
+        for (const SceneInstance& instance :
+            state_->renderInstances)
+        {
+            if (!includeMeshBounds(
+                    instance.meshIndex,
+                    instance.transform))
             {
                 error =
                     "Scene contains invalid mesh index.";
 
                 return false;
             }
+        }
 
-            const State::GpuMesh& mesh =
-                state_->meshes[
-                    instance.meshIndex];
-
-            const DirectX::XMMATRIX world =
-                ToMatrix(
-                    instance.transform);
-
-            const std::array<
-                DirectX::XMFLOAT3,
-                8>
-                corners
-            {{
-                {
-                    mesh.minimum.x,
-                    mesh.minimum.y,
-                    mesh.minimum.z
-                },
-                {
-                    mesh.maximum.x,
-                    mesh.minimum.y,
-                    mesh.minimum.z
-                },
-                {
-                    mesh.minimum.x,
-                    mesh.maximum.y,
-                    mesh.minimum.z
-                },
-                {
-                    mesh.maximum.x,
-                    mesh.maximum.y,
-                    mesh.minimum.z
-                },
-                {
-                    mesh.minimum.x,
-                    mesh.minimum.y,
-                    mesh.maximum.z
-                },
-                {
-                    mesh.maximum.x,
-                    mesh.minimum.y,
-                    mesh.maximum.z
-                },
-                {
-                    mesh.minimum.x,
-                    mesh.maximum.y,
-                    mesh.maximum.z
-                },
-                {
-                    mesh.maximum.x,
-                    mesh.maximum.y,
-                    mesh.maximum.z
-                }
-            }};
-
-            for (const DirectX::XMFLOAT3& corner :
-                 corners)
+        for (const SceneLodInstance& instance :
+             state_->lodInstances)
+        {
+            if (instance.levelCount ==
+                    0 ||
+                instance.levelCount >
+                    instance.levels.size())
             {
-                DirectX::XMVECTOR point =
-                    DirectX::XMLoadFloat3(
-                        &corner);
+                error =
+                    "Scene contains invalid LOD instance.";
 
-                point =
-                    DirectX::XMVector3TransformCoord(
-                        point,
-                        world);
+                return false;
+            }
 
-                DirectX::XMFLOAT3 transformed{};
+            const SceneLodLevel&
+                highestDetail =
+                    instance.levels[0];
 
-                DirectX::XMStoreFloat3(
-                    &transformed,
-                    point);
+            if (highestDetail.meshIndices.empty())
+            {
+                error =
+                    "Scene LOD0 contains no meshes.";
 
-                if (!hasBounds)
+                return false;
+            }
+
+            for (const std::size_t meshIndex :
+                 highestDetail.meshIndices)
+            {
+                if (!includeMeshBounds(
+                        meshIndex,
+                        instance.transform))
                 {
-                    sceneMinimum =
-                        transformed;
+                    error =
+                        "Scene LOD contains invalid mesh index.";
 
-                    sceneMaximum =
-                        transformed;
-
-                    hasBounds = true;
-
-                    continue;
+                    return false;
                 }
+            }
 
-                sceneMinimum.x =
-                    std::min(
-                        sceneMinimum.x,
-                        transformed.x);
+            for (std::uint32_t levelIndex = 0;
+                 levelIndex <
+                    instance.levelCount;
+                 ++levelIndex)
+            {
+                for (const std::size_t meshIndex :
+                     instance.levels[
+                         levelIndex]
+                         .meshIndices)
+                {
+                    if (meshIndex >=
+                        state_->meshes.size())
+                    {
+                        error =
+                            "Scene LOD references invalid mesh.";
 
-                sceneMinimum.y =
-                    std::min(
-                        sceneMinimum.y,
-                        transformed.y);
-
-                sceneMinimum.z =
-                    std::min(
-                        sceneMinimum.z,
-                        transformed.z);
-
-                sceneMaximum.x =
-                    std::max(
-                        sceneMaximum.x,
-                        transformed.x);
-
-                sceneMaximum.y =
-                    std::max(
-                        sceneMaximum.y,
-                        transformed.y);
-
-                sceneMaximum.z =
-                    std::max(
-                        sceneMaximum.z,
-                        transformed.z);
+                        return false;
+                    }
+                }
             }
         }
 

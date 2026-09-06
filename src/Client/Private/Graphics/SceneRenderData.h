@@ -49,7 +49,8 @@ namespace client::graphics
 
     struct SceneTerrainLayer final
     {
-        std::size_t textureIndex = 0;
+        std::size_t textureIndex =
+            0;
 
         std::array<float, 4>
             uProjection{};
@@ -60,7 +61,8 @@ namespace client::graphics
 
     struct SceneTerrainPass final
     {
-        std::uint32_t layerCount = 0;
+        std::uint32_t layerCount =
+            0;
 
         std::array<
             SceneTerrainLayer,
@@ -91,9 +93,34 @@ namespace client::graphics
 
     struct SceneInstance final
     {
-        std::size_t meshIndex = 0;
+        std::size_t meshIndex =
+            0;
 
-        core::math::Transform3x4 transform;
+        core::math::Transform3x4
+            transform;
+    };
+
+    struct SceneLodLevel final
+    {
+        std::vector<std::size_t>
+            meshIndices;
+
+        float maximumDistance =
+            0.0f;
+    };
+
+    struct SceneLodInstance final
+    {
+        core::math::Transform3x4
+            transform;
+
+        std::array<
+            SceneLodLevel,
+            4>
+            levels{};
+
+        std::uint32_t levelCount =
+            0;
     };
 
     struct SceneRenderData final
@@ -103,6 +130,9 @@ namespace client::graphics
 
         std::vector<SceneInstance>
             instances;
+
+        std::vector<SceneLodInstance>
+            lodInstances;
 
         std::vector<SceneTextureData>
             textures;

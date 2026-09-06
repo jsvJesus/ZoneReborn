@@ -5,25 +5,41 @@
 #include "Core/Assets/SpeedTree/CTreeData.h"
 #include "Core/Resources/ResourceFileSystem.h"
 
+#include <array>
 #include <cstddef>
+#include <limits>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 namespace client::preview
 {
-    struct SpeedTreeRenderData final
+    struct SpeedTreeLodRenderData final
     {
         std::vector<std::size_t>
             meshIndices;
 
-        std::size_t branchTriangles =
+        std::size_t triangleCount =
             0;
+    };
 
-        std::size_t frondTriangles =
-            0;
+    struct SpeedTreeRenderData final
+    {
+        std::array<
+            SpeedTreeLodRenderData,
+            3>
+            lods{};
 
-        std::size_t leafTriangles =
+        std::array<float, 3>
+            maximumDistances{};
+
+        bool hasBillboard =
+            false;
+
+        std::size_t billboardMeshIndex =
+            std::numeric_limits<std::size_t>::max();
+
+        std::size_t billboardTriangles =
             0;
     };
 
@@ -43,6 +59,7 @@ namespace client::preview
         bool BuildIndexedGeometry(
             const core::resources::ResourceFileSystem& resources,
             const core::assets::speedtree::CTreeIndexedGeometry& source,
+            std::size_t requestedLod,
             bool cutout,
             graphics::SceneRenderData& scene,
             std::size_t& outputMeshIndex,
@@ -53,6 +70,16 @@ namespace client::preview
         bool BuildLeaves(
             const core::resources::ResourceFileSystem& resources,
             const core::assets::speedtree::CTreeLeafGeometry& source,
+            std::size_t requestedLod,
+            graphics::SceneRenderData& scene,
+            std::size_t& outputMeshIndex,
+            std::size_t& outputTriangleCount,
+            std::string& error);
+
+        [[nodiscard]]
+        bool BuildBillboard(
+            const core::resources::ResourceFileSystem& resources,
+            const core::assets::speedtree::CTreeBillboardGeometry& source,
             graphics::SceneRenderData& scene,
             std::size_t& outputMeshIndex,
             std::size_t& outputTriangleCount,

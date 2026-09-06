@@ -13,6 +13,7 @@
 #include "Core/World/TerrainLoader.h"
 #include "Core/World/WorldLoader.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <string>
@@ -20,6 +21,7 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
+#include <limits>
 
 namespace client::preview
 {
@@ -290,16 +292,16 @@ namespace client::preview
         std::size_t speedTreeRenderMeshes =
             0;
 
-        std::size_t speedTreeRenderInstances =
+        std::size_t speedTreeLodInstances =
             0;
 
-        std::size_t speedTreeBranchTriangles =
+        std::array<std::size_t, 3>
+            speedTreeLodTriangles{};
+
+        std::size_t speedTreeBillboardTriangles =
             0;
 
-        std::size_t speedTreeFrondTriangles =
-            0;
-
-        std::size_t speedTreeLeafTriangles =
+        std::size_t speedTreeBillboardResources =
             0;
 
         for (const auto& entry :
@@ -334,17 +336,31 @@ namespace client::preview
                 continue;
             }
 
-            speedTreeRenderMeshes +=
-                renderData.meshIndices.size();
+            for (std::size_t lodIndex = 0;
+                 lodIndex < 3;
+                 ++lodIndex)
+            {
+                speedTreeRenderMeshes +=
+                    renderData.lods[
+                        lodIndex]
+                        .meshIndices.size();
 
-            speedTreeBranchTriangles +=
-                renderData.branchTriangles;
+                speedTreeLodTriangles[
+                    lodIndex] +=
+                    renderData.lods[
+                        lodIndex]
+                        .triangleCount;
+            }
 
-            speedTreeFrondTriangles +=
-                renderData.frondTriangles;
+            if (renderData.hasBillboard)
+            {
+                ++speedTreeRenderMeshes;
 
-            speedTreeLeafTriangles +=
-                renderData.leafTriangles;
+                ++speedTreeBillboardResources;
+
+                speedTreeBillboardTriangles +=
+                    renderData.billboardTriangles;
+            }
 
             speedTreeRenderCache.emplace(
                 resourcePath,
@@ -365,25 +381,101 @@ namespace client::preview
                 continue;
             }
 
-            for (const std::size_t meshIndex :
-                 cached->second.meshIndices)
+            const SpeedTreeRenderData&
+                renderData =
+                    cached->second;
+
+            graphics::SceneLodInstance
+                instance;
+
+            instance.transform =
+                treeInstance.transform;
+
+            for (std::size_t lodIndex = 0;
+                 lodIndex < 3;
+                 ++lodIndex)
             {
-                graphics::SceneInstance
-                    instance;
+                if (renderData.lods[
+                        lodIndex]
+                        .meshIndices.empty())
+                {
+                    continue;
+                }
 
-                instance.meshIndex =
-                    meshIndex;
+                if (instance.levelCount >=
+                    instance.levels.size())
+                {
+                    break;
+                }
 
-                instance.transform =
-                    treeInstance.transform;
+                graphics::SceneLodLevel&
+                    level =
+                        instance.levels[
+                            instance.levelCount];
 
-                scene.instances.push_back(
-                    std::move(
-                        instance));
+                level.meshIndices =
+                    renderData.lods[
+                        lodIndex]
+                        .meshIndices;
 
-                ++speedTreeRenderInstances;
+                level.maximumDistance =
+                    renderData.maximumDistances[
+                        lodIndex];
+
+                ++instance.levelCount;
             }
+
+            if (renderData.hasBillboard &&
+                instance.levelCount <
+                    instance.levels.size())
+            {
+                graphics::SceneLodLevel&
+                    billboardLevel =
+                        instance.levels[
+                            instance.levelCount];
+
+                billboardLevel.meshIndices.push_back(
+                    renderData.billboardMeshIndex);
+
+                billboardLevel.maximumDistance =
+                    std::numeric_limits<float>::max();
+
+                ++instance.levelCount;
+            }
+            else if (instance.levelCount >
+                     0)
+            {
+                instance.levels[
+                    instance.levelCount -
+                    1]
+                    .maximumDistance =
+                        std::numeric_limits<float>::max();
+            }
+
+            if (instance.levelCount ==
+                0)
+            {
+                continue;
+            }
+
+            scene.lodInstances.push_back(
+                std::move(
+                    instance));
+
+            ++speedTreeLodInstances;
         }
+
+        core::Log::Info(
+            std::string(
+                "Scene fixed instances: ") +
+            std::to_string(
+                scene.instances.size()));
+
+        core::Log::Info(
+            std::string(
+                "Scene LOD instances: ") +
+            std::to_string(
+                scene.lodInstances.size()));
 
         core::Log::Info(
             std::string(
@@ -405,27 +497,57 @@ namespace client::preview
 
         core::Log::Info(
             std::string(
-                "SpeedTree render instances: ") +
+                "SpeedTree render resources: ") +
             std::to_string(
-                speedTreeRenderInstances));
+                speedTreeRenderCache.size()));
 
         core::Log::Info(
             std::string(
-                "SpeedTree branch triangles LOD0: ") +
+                "SpeedTree render resources failed: ") +
             std::to_string(
-                speedTreeBranchTriangles));
+                failedSpeedTreeRenderResources.size()));
 
         core::Log::Info(
             std::string(
-                "SpeedTree frond triangles LOD0: ") +
+                "SpeedTree render meshes: ") +
             std::to_string(
-                speedTreeFrondTriangles));
+                speedTreeRenderMeshes));
 
         core::Log::Info(
             std::string(
-                "SpeedTree leaf triangles LOD0: ") +
+                "SpeedTree LOD instances: ") +
             std::to_string(
-                speedTreeLeafTriangles));
+                speedTreeLodInstances));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree LOD0 triangles: ") +
+            std::to_string(
+                speedTreeLodTriangles[0]));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree LOD1 triangles: ") +
+            std::to_string(
+                speedTreeLodTriangles[1]));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree LOD2 triangles: ") +
+            std::to_string(
+                speedTreeLodTriangles[2]));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree billboard resources: ") +
+            std::to_string(
+                speedTreeBillboardResources));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree billboard triangles: ") +
+            std::to_string(
+                speedTreeBillboardTriangles));
 
         for (const core::world::WorldModelInstance& worldInstance :
              world.modelInstances)
@@ -722,7 +844,10 @@ namespace client::preview
         }
 
         if (scene.meshes.empty() ||
-            scene.instances.empty())
+            (
+                scene.instances.empty() &&
+                scene.lodInstances.empty()
+            ))
         {
             error =
                 "World contains no renderable geometry.";

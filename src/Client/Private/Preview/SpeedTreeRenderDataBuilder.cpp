@@ -525,6 +525,7 @@ namespace client::preview
     bool SpeedTreeRenderDataBuilder::BuildIndexedGeometry(
         const core::resources::ResourceFileSystem& resources,
         const core::assets::speedtree::CTreeIndexedGeometry& source,
+        const std::size_t requestedLod,
         const bool cutout,
         graphics::SceneRenderData& scene,
         std::size_t& outputMeshIndex,
@@ -552,8 +553,15 @@ namespace client::preview
             return false;
         }
 
+        const std::size_t sourceLodIndex =
+            std::min(
+                requestedLod,
+                source.lods.size() -
+                    1);
+
         const core::assets::speedtree::CTreeLod& lod =
-            source.lods.front();
+            source.lods[
+                sourceLodIndex];
 
         if (lod.indices.empty())
         {
@@ -683,9 +691,251 @@ namespace client::preview
         return true;
     }
 
+    bool SpeedTreeRenderDataBuilder::BuildBillboard(
+        const core::resources::ResourceFileSystem& resources,
+        const core::assets::speedtree::CTreeBillboardGeometry& source,
+        graphics::SceneRenderData& scene,
+        std::size_t& outputMeshIndex,
+        std::size_t& outputTriangleCount,
+        std::string& error)
+    {
+        outputMeshIndex =
+            0;
+
+        outputTriangleCount =
+            0;
+
+        error.clear();
+
+        if (source.groups.empty())
+        {
+            return true;
+        }
+
+        core::assets::MeshData
+            mesh;
+
+        mesh.vertexFormat =
+            "ctree-billboard";
+
+        const auto readFloat =
+            [](
+                const core::assets::speedtree::CTreeBillboardVertex& vertex,
+                const std::size_t index)
+            {
+                const std::size_t offset =
+                    index *
+                    sizeof(float);
+
+                if (offset >
+                        vertex.extra.size() ||
+                    sizeof(float) >
+                        vertex.extra.size() -
+                            offset)
+                {
+                    return 0.0f;
+                }
+
+                float value =
+                    0.0f;
+
+                std::memcpy(
+                    &value,
+                    vertex.extra.data() +
+                        offset,
+                    sizeof(value));
+
+                return value;
+            };
+
+        for (const core::assets::speedtree::CTreeBillboardGroup& group :
+             source.groups)
+        {
+            if (group.vertices.empty())
+            {
+                continue;
+            }
+
+            const std::size_t baseVertex =
+                mesh.vertices.size();
+
+            if (baseVertex +
+                    group.vertices.size() >
+                std::numeric_limits<std::uint16_t>::max())
+            {
+                error =
+                    "CTREE billboard requires 32-bit indices.";
+
+                return false;
+            }
+
+            for (const core::assets::speedtree::CTreeBillboardVertex& sourceVertex :
+                 group.vertices)
+            {
+                core::assets::MeshVertex
+                    vertex;
+
+                vertex.position =
+                    sourceVertex.position;
+
+                vertex.packedNormal =
+                    PackNormal(
+                        sourceVertex.normal);
+
+                vertex.u =
+                    readFloat(
+                        sourceVertex,
+                        3);
+
+                vertex.v =
+                    readFloat(
+                        sourceVertex,
+                        4);
+
+                vertex.colour =
+                    0xFFFFFFFFu;
+
+                mesh.vertices.push_back(
+                    vertex);
+            }
+
+            if (group.indices.empty())
+            {
+                if ((group.vertices.size() %
+                     3u) !=
+                    0u)
+                {
+                    error =
+                        "CTREE billboard vertex count is not a triangle list.";
+
+                    return false;
+                }
+
+                for (std::size_t index = 0;
+                     index <
+                        group.vertices.size();
+                     ++index)
+                {
+                    mesh.indices.push_back(
+                        static_cast<std::uint16_t>(
+                            baseVertex +
+                            index));
+                }
+
+                continue;
+            }
+
+            if ((group.indices.size() %
+                 3u) !=
+                0u)
+            {
+                error =
+                    "CTREE billboard index data is not a triangle list.";
+
+                return false;
+            }
+
+            for (const std::uint32_t sourceIndex :
+                 group.indices)
+            {
+                if (sourceIndex >=
+                    group.vertices.size())
+                {
+                    error =
+                        "CTREE billboard references invalid vertex.";
+
+                    return false;
+                }
+
+                mesh.indices.push_back(
+                    static_cast<std::uint16_t>(
+                        baseVertex +
+                        sourceIndex));
+            }
+        }
+
+        if (mesh.vertices.empty() ||
+            mesh.indices.empty())
+        {
+            return true;
+        }
+
+        core::assets::MeshPrimitiveGroup
+            group;
+
+        group.startIndex =
+            0;
+
+        group.primitiveCount =
+            static_cast<std::uint32_t>(
+                mesh.indices.size() /
+                3u);
+
+        group.startVertex =
+            0;
+
+        group.vertexCount =
+            static_cast<std::uint32_t>(
+                mesh.vertices.size());
+
+        mesh.primitiveGroups.push_back(
+            group);
+
+        graphics::SceneMesh
+            sceneMesh;
+
+        sceneMesh.geometry =
+            std::move(
+                mesh);
+
+        sceneMesh.modelMaterials.resize(
+            1);
+
+        std::size_t textureIndex =
+            0;
+
+        if (!ResolveTexture(
+                resources,
+                source.material.diffuseLogicalPath,
+                scene,
+                textureIndex,
+                error))
+        {
+            return false;
+        }
+
+        graphics::SceneModelMaterial&
+            material =
+                sceneMesh.modelMaterials[
+                    0];
+
+        material.diffuseTextureIndex =
+            static_cast<std::int32_t>(
+                textureIndex);
+
+        material.alphaMode =
+            graphics::SceneAlphaMode::Cutout;
+
+        material.alphaCutoff =
+            0.35f;
+
+        outputTriangleCount =
+            sceneMesh.geometry.TriangleCount();
+
+        outputMeshIndex =
+            scene.meshes.size();
+
+        scene.meshes.push_back(
+            std::move(
+                sceneMesh));
+
+        return true;
+    }
+
     bool SpeedTreeRenderDataBuilder::BuildLeaves(
         const core::resources::ResourceFileSystem& resources,
         const core::assets::speedtree::CTreeLeafGeometry& source,
+        const std::size_t requestedLod,
         graphics::SceneRenderData& scene,
         std::size_t& outputMeshIndex,
         std::size_t& outputTriangleCount,
@@ -722,8 +972,15 @@ namespace client::preview
             return false;
         }
 
+        const std::size_t sourceLodIndex =
+            std::min(
+                requestedLod,
+                source.lods.size() -
+                    1);
+
         const core::assets::speedtree::CTreeLod& lod =
-            source.lods.front();
+            source.lods[
+                sourceLodIndex];
 
         if (lod.indices.empty())
         {
@@ -989,123 +1246,237 @@ namespace client::preview
         output = {};
         error.clear();
 
-        if (!tree.branches.vertices.empty() &&
-            !tree.branches.lods.empty() &&
-            !tree.branches.lods.front().indices.empty())
+        for (std::size_t lodIndex = 0;
+             lodIndex < 3;
+             ++lodIndex)
         {
-            std::size_t meshIndex =
-                0;
+            SpeedTreeLodRenderData&
+                lod =
+                    output.lods[
+                        lodIndex];
 
-            std::size_t triangleCount =
-                0;
-
-            if (!BuildIndexedGeometry(
-                    resources,
-                    tree.branches,
-                    false,
-                    scene,
-                    meshIndex,
-                    triangleCount,
-                    error))
+            if (!tree.branches.vertices.empty() &&
+                !tree.branches.lods.empty())
             {
-                error =
-                    tree.sptLogicalPath +
-                    " branches: " +
-                    error;
+                std::size_t meshIndex =
+                    0;
 
-                return false;
+                std::size_t triangleCount =
+                    0;
+
+                if (!BuildIndexedGeometry(
+                        resources,
+                        tree.branches,
+                        lodIndex,
+                        false,
+                        scene,
+                        meshIndex,
+                        triangleCount,
+                        error))
+                {
+                    error =
+                        tree.sptLogicalPath +
+                        " branches LOD" +
+                        std::to_string(
+                            lodIndex) +
+                        ": " +
+                        error;
+
+                    return false;
+                }
+
+                if (triangleCount >
+                    0)
+                {
+                    lod.meshIndices.push_back(
+                        meshIndex);
+
+                    lod.triangleCount +=
+                        triangleCount;
+                }
             }
 
-            if (triangleCount >
-                0)
+            if (!tree.fronds.vertices.empty() &&
+                !tree.fronds.lods.empty())
             {
-                output.meshIndices.push_back(
-                    meshIndex);
+                std::size_t meshIndex =
+                    0;
 
-                output.branchTriangles +=
-                    triangleCount;
+                std::size_t triangleCount =
+                    0;
+
+                if (!BuildIndexedGeometry(
+                        resources,
+                        tree.fronds,
+                        lodIndex,
+                        true,
+                        scene,
+                        meshIndex,
+                        triangleCount,
+                        error))
+                {
+                    error =
+                        tree.sptLogicalPath +
+                        " fronds LOD" +
+                        std::to_string(
+                            lodIndex) +
+                        ": " +
+                        error;
+
+                    return false;
+                }
+
+                if (triangleCount >
+                    0)
+                {
+                    lod.meshIndices.push_back(
+                        meshIndex);
+
+                    lod.triangleCount +=
+                        triangleCount;
+                }
+            }
+
+            if (!tree.leaves.vertices.empty() &&
+                !tree.leaves.lods.empty())
+            {
+                std::size_t meshIndex =
+                    0;
+
+                std::size_t triangleCount =
+                    0;
+
+                if (!BuildLeaves(
+                        resources,
+                        tree.leaves,
+                        lodIndex,
+                        scene,
+                        meshIndex,
+                        triangleCount,
+                        error))
+                {
+                    error =
+                        tree.sptLogicalPath +
+                        " leaves LOD" +
+                        std::to_string(
+                            lodIndex) +
+                        ": " +
+                        error;
+
+                    return false;
+                }
+
+                if (triangleCount >
+                    0)
+                {
+                    lod.meshIndices.push_back(
+                        meshIndex);
+
+                    lod.triangleCount +=
+                        triangleCount;
+                }
             }
         }
 
-        if (!tree.fronds.vertices.empty() &&
-            !tree.fronds.lods.empty() &&
-            !tree.fronds.lods.front().indices.empty())
-        {
-            std::size_t meshIndex =
-                0;
+        const float sizeX =
+            tree.boundsMaximum.x -
+            tree.boundsMinimum.x;
 
-            std::size_t triangleCount =
-                0;
+        const float sizeY =
+            tree.boundsMaximum.y -
+            tree.boundsMinimum.y;
 
-            if (!BuildIndexedGeometry(
-                    resources,
-                    tree.fronds,
-                    true,
-                    scene,
-                    meshIndex,
-                    triangleCount,
-                    error))
-            {
-                error =
-                    tree.sptLogicalPath +
-                    " fronds: " +
-                    error;
+        const float sizeZ =
+            tree.boundsMaximum.z -
+            tree.boundsMinimum.z;
 
-                return false;
-            }
+        const float objectSize =
+            std::max(
+                {
+                    std::abs(
+                        sizeX),
 
-            if (triangleCount >
-                0)
-            {
-                output.meshIndices.push_back(
-                    meshIndex);
+                    std::abs(
+                        sizeY),
 
-                output.frondTriangles +=
-                    triangleCount;
-            }
-        }
+                    std::abs(
+                        sizeZ),
 
-        if (!tree.leaves.vertices.empty() &&
-            !tree.leaves.lods.empty() &&
-            !tree.leaves.lods.front().indices.empty())
-        {
-            std::size_t meshIndex =
-                0;
+                    1.0f
+                });
 
-            std::size_t triangleCount =
-                0;
+        output.maximumDistances[0] =
+            std::max(
+                30.0f,
+                objectSize *
+                    3.0f);
 
-            if (!BuildLeaves(
-                    resources,
-                    tree.leaves,
-                    scene,
-                    meshIndex,
-                    triangleCount,
-                    error))
-            {
-                error =
-                    tree.sptLogicalPath +
-                    " leaves: " +
-                    error;
+        output.maximumDistances[1] =
+            std::max(
+                60.0f,
+                objectSize *
+                    6.0f);
 
-                return false;
-            }
+        output.maximumDistances[2] =
+            std::max(
+                120.0f,
+                objectSize *
+                    12.0f);
 
-            if (triangleCount >
-                0)
-            {
-                output.meshIndices.push_back(
-                    meshIndex);
+        std::size_t billboardMeshIndex =
+            0;
 
-                output.leafTriangles +=
-                    triangleCount;
-            }
-        }
+        std::size_t billboardTriangles =
+            0;
 
-        if (output.meshIndices.empty())
+        if (!BuildBillboard(
+                resources,
+                tree.billboard,
+                scene,
+                billboardMeshIndex,
+                billboardTriangles,
+                error))
         {
             error =
-                "CTREE contains no renderable LOD0 geometry: " +
+                tree.sptLogicalPath +
+                " billboard: " +
+                error;
+
+            return false;
+        }
+
+        if (billboardTriangles >
+            0)
+        {
+            output.hasBillboard =
+                true;
+
+            output.billboardMeshIndex =
+                billboardMeshIndex;
+
+            output.billboardTriangles =
+                billboardTriangles;
+        }
+
+        bool hasGeometry =
+            output.hasBillboard;
+
+        for (const SpeedTreeLodRenderData& lod :
+             output.lods)
+        {
+            if (!lod.meshIndices.empty())
+            {
+                hasGeometry =
+                    true;
+
+                break;
+            }
+        }
+
+        if (!hasGeometry)
+        {
+            error =
+                "CTREE contains no renderable geometry: " +
                 tree.sptLogicalPath;
 
             return false;
