@@ -3,6 +3,7 @@
 #include "Preview/ModelRenderDataBuilder.h"
 #include "Preview/TerrainRenderDataBuilder.h"
 #include "Preview/SpeedTreeRenderDataBuilder.h"
+#include "Preview/FloraRenderDataBuilder.h"
 
 #include "Core/Assets/MeshLoader.h"
 #include "Core/Assets/ModelBundleLoader.h"
@@ -12,9 +13,11 @@
 #include "Core/Resources/ResourcePath.h"
 #include "Core/World/TerrainLoader.h"
 #include "Core/World/Flora/FloraConfigLoader.h"
+#include "Core/World/Flora/FloraVisualLoader.h"
 #include "Core/World/WorldLoader.h"
 
 #include <array>
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <string>
@@ -1040,6 +1043,198 @@ namespace client::preview
                     "Flora ecotype: ") +
                 ecotype);
         }
+
+        std::unordered_set<std::string>
+            uniqueActiveFloraVisuals;
+
+        for (const core::world::flora::FloraEcotype& ecotype :
+             floraConfig.ecotypes)
+        {
+            if (!activeFloraEcotypes.contains(
+                    ecotype.name))
+            {
+                continue;
+            }
+
+            for (const core::world::flora::FloraGeneratorRule& generator :
+                 ecotype.generators)
+            {
+                for (const core::world::flora::FloraVisualRule& visual :
+                     generator.visuals)
+                {
+                    const std::string normalized =
+                        core::resources::ResourcePath::Normalize(
+                            visual.visualReference);
+
+                    if (normalized.empty())
+                    {
+                        continue;
+                    }
+
+                    uniqueActiveFloraVisuals.insert(
+                        normalized);
+                }
+            }
+        }
+
+        std::vector<std::string>
+            activeFloraVisuals(
+                uniqueActiveFloraVisuals.begin(),
+                uniqueActiveFloraVisuals.end());
+
+        std::sort(
+            activeFloraVisuals.begin(),
+            activeFloraVisuals.end());
+
+        core::world::flora::FloraVisualLoader
+            floraVisualLoader;
+
+        FloraRenderDataBuilder
+            floraRenderBuilder;
+
+        std::unordered_map<
+            std::string,
+            FloraRenderData>
+            floraRenderCache;
+
+        std::unordered_set<std::string>
+            failedFloraVisuals;
+
+        std::size_t floraMeshCount =
+            0;
+
+        std::size_t floraTriangleCount =
+            0;
+
+        std::size_t floraTexturedGroupCount =
+            0;
+
+        const float floraAlphaCutoff =
+            static_cast<float>(
+                floraConfig.alphaTestReference) /
+            255.0f;
+
+        for (const std::string& visualReference :
+             activeFloraVisuals)
+        {
+            core::world::flora::FloraVisualAsset
+                floraAsset;
+
+            std::string floraError;
+
+            if (!floraVisualLoader.Load(
+                    runtime.Resources(),
+                    visualReference,
+                    floraAsset,
+                    floraError))
+            {
+                failedFloraVisuals.insert(
+                    visualReference);
+
+                core::Log::Warning(
+                    std::string(
+                        "Flora visual load failed: ") +
+                    visualReference +
+                    ": " +
+                    floraError);
+
+                continue;
+            }
+
+            FloraRenderData
+                renderData;
+
+            if (!floraRenderBuilder.Build(
+                    runtime.Resources(),
+                    floraAsset,
+                    floraAlphaCutoff,
+                    scene,
+                    renderData,
+                    floraError))
+            {
+                failedFloraVisuals.insert(
+                    visualReference);
+
+                core::Log::Warning(
+                    std::string(
+                        "Flora render build failed: ") +
+                    visualReference +
+                    ": " +
+                    floraError);
+
+                continue;
+            }
+
+            floraMeshCount +=
+                renderData.meshIndices.size();
+
+            floraTriangleCount +=
+                renderData.triangleCount;
+
+            floraTexturedGroupCount +=
+                renderData.texturedPrimitiveGroups;
+
+            core::Log::Info(
+                std::string(
+                    "Flora visual loaded: ") +
+                floraAsset.visualLogicalPath +
+                ", meshes=" +
+                std::to_string(
+                    renderData.meshIndices.size()) +
+                ", triangles=" +
+                std::to_string(
+                    renderData.triangleCount) +
+                ", texturedGroups=" +
+                std::to_string(
+                    renderData.texturedPrimitiveGroups));
+
+            floraRenderCache.emplace(
+                visualReference,
+                std::move(
+                    renderData));
+        }
+
+        core::Log::Info(
+            std::string(
+                "Active flora visual resources: ") +
+            std::to_string(
+                activeFloraVisuals.size()));
+
+        core::Log::Info(
+            std::string(
+                "Flora visual resources loaded: ") +
+            std::to_string(
+                floraRenderCache.size()));
+
+        core::Log::Info(
+            std::string(
+                "Flora visual resources failed: ") +
+            std::to_string(
+                failedFloraVisuals.size()));
+
+        core::Log::Info(
+            std::string(
+                "Flora render meshes: ") +
+            std::to_string(
+                floraMeshCount));
+
+        core::Log::Info(
+            std::string(
+                "Flora triangles: ") +
+            std::to_string(
+                floraTriangleCount));
+
+        core::Log::Info(
+            std::string(
+                "Flora textured primitive groups: ") +
+            std::to_string(
+                floraTexturedGroupCount));
+
+        core::Log::Info(
+            std::string(
+                "Flora alpha cutoff: ") +
+            std::to_string(
+                floraAlphaCutoff));
 
         for (const std::string& texture :
              floraUnmatchedTextures)

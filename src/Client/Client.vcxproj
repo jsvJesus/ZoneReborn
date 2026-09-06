@@ -23,6 +23,7 @@
     <ClInclude Include="Private\Graphics\SceneRenderData.h" />
     <ClInclude Include="Private\Input\CameraController.h" />
     <ClInclude Include="Private\Platform\Window.h" />
+    <ClInclude Include="Private\Preview\FloraRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\ModelPreviewLoader.h" />
     <ClInclude Include="Private\Preview\ModelRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\SpeedTreeRenderDataBuilder.h" />
@@ -37,6 +38,7 @@
     <ClCompile Include="Private\Main.cpp" />
     <ClCompile Include="Private\Diagnostics\ResourceValidation.cpp" />
     <ClCompile Include="Private\Platform\Window.cpp" />
+    <ClCompile Include="Private\Preview\FloraRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\ModelPreviewLoader.cpp" />
     <ClCompile Include="Private\Preview\ModelRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\SpeedTreeRenderDataBuilder.cpp" />
