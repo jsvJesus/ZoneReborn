@@ -53,13 +53,13 @@
                 "name": "base", 
                 "sfxes": {
                     "hide": [
-                        "sfx/anomaly_microwave.xml"
+                        "sfx/Anomalys/anomaly_microwave.xml"
                     ], 
                     "persistent": [
-                        "sfx/anomaly_microwave.xml"
+                        "sfx/Anomalys/anomaly_microwave.xml"
                     ], 
                     "revealed": [
-                        "sfx/anomaly_electro.xml"
+                        "sfx/Anomalys/anomaly_electro.xml"
                     ]
                 }
             }, 
@@ -79,13 +79,13 @@
                 "name": "base1", 
                 "sfxes": {
                     "hide": [
-                        "sfx/anomaly_microwave.xml"
+                        "sfx/Anomalys/anomaly_microwave.xml"
                     ], 
                     "persistent": [
-                        "sfx/anomaly_microwave.xml"
+                        "sfx/Anomalys/anomaly_microwave.xml"
                     ], 
                     "revealed": [
-                        "sfx/anomaly_electro.xml"
+                        "sfx/Anomalys/anomaly_electro.xml"
                     ]
                 }
             }

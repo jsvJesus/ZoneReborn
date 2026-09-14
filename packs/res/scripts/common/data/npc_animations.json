@@ -1,0 +1,329 @@
+{
+	"Valentin1": [
+		{
+			"Animations": ["SitGroundAssIn","SitGroundAssIdle","SitGroundAssOut"],
+			"chance": 80.0,
+			"stop_time": 2.0,
+			"holsterWeapon": true,
+			"timeFrom": 10.0,
+			"timeTo": 30.0,
+			"additional_animations": ["EatPiece",405,"UseGuitar"],
+			"additional_cooldown": 10,
+            "mark_height": 1.4,
+            "calcBoundingBox":true
+		}, 
+		{
+			"Animations": "gesture_point",
+			"chance": 20.0,
+			"holsterWeapon": false,
+			"timeFrom": 4.0,
+			"timeTo": 6.0
+		}
+	],
+	"Nigger_smoke": [
+		{
+			"Animations": "Smoke",
+			"chance": 100,
+			"timeFrom": 20.0,
+			"timeTo": 60.0,
+            "additional_animations": ["EatPiece",405,"UseGuitar"],
+			"additional_animations": ["EatPiece",410045,"UseGuitar"],
+			"additional_cooldown": 10
+		}
+	],
+    "Weaponer": [
+        {
+            "Animations": "IdleUnarmed",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true
+        }
+    ],
+    "UNIQUE_Ded_moroz": [
+        {
+            "Animations": "ded_moroz_idle",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true
+        }
+    ],
+	"UNIQUE_Bear_Sit": [
+		{
+			"Animations": "Bear_Sit",
+			"chance": 100,
+			"timeFrom": 20.0,
+			"timeTo": 60.0,
+			"holsterWeapon": true,
+            "mark_height": 1.5
+		}
+	],
+	"IdleUnarmed": [
+		{
+			"Animations": "IdleUnarmed",
+			"chance": 90,
+			"timeFrom": 20.0,
+			"timeTo": 60.0,
+			"holsterWeapon": true
+		},
+		{
+			"Animations": "gesture_limbering",
+			"chance": 5,
+			"timeFrom": 5.0,
+			"timeTo": 5.0,
+			"holsterWeapon": true
+		},
+		{
+			"Animations": "gesture_shake",
+			"chance": 5,
+			"timeFrom": 5.0,
+			"timeTo": 5.0,
+			"holsterWeapon": true
+		}
+	],
+	"IdleArmed": [
+        {
+            "Animations": "idle_static_automat",
+            "chance": 90,
+            "timeFrom": 10.0,
+            "timeTo": 40.0,
+            "holsterWeapon": false
+        },
+        {
+            "Animations": "idle_static_automat_mini",
+            "chance": 5,
+            "timeFrom": 10.0,
+            "timeTo": 40.0,
+            "holsterWeapon": false
+        },
+        {
+            "Animations": "gesture_limbering",
+            "chance": 5,
+            "timeFrom": 5.0,
+            "timeTo": 5.0,
+            "holsterWeapon": false
+        }
+    ],
+    "Idle_Smoke": [
+        {
+            "Animations": "IdleUnarmed",
+            "chance": 60,
+            "timeFrom": 20.0,
+            "timeTo": 40.0,
+            "holsterWeapon": true
+        },
+        {
+            "Animations": "IdleUnarmed",
+            "chance": 30,
+            "timeFrom": 31.0,
+            "timeTo": 31.0,
+            "additional_animations": [410045],
+            "additional_cooldown": 1,
+            "holsterWeapon": true
+
+        },
+        {
+            "Animations": "gesture_limbering",
+            "chance": 5,
+            "timeFrom": 5.0,
+            "timeTo": 5.0,
+            "holsterWeapon": true
+        },
+        {
+            "Animations": "gesture_shake",
+            "chance": 5,
+            "timeFrom": 5.0,
+            "timeTo": 5.0,
+            "holsterWeapon": true
+        }
+    ],
+    "Stand_Near_Wall": [
+        {
+            "Animations": "stand_near_wall",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 40.0,
+            "holsterWeapon": true,
+            "calcBoundingBox":true
+        }
+    ],
+    "Sit_Ground": [
+        {
+            "Animations": ["SitGroundAssIn","SitGroundAssIdle","SitGroundAssOut"],
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.0
+        }
+    ],
+    "Sit_Legs_Crossed": [
+        {
+            "Animations": ["SitGroundXIn","SitGroundXIdle","SitGroundXOut"],
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.0
+        }
+    ],
+    "Sit_on_Backpack": [
+        {
+            "Animations": ["SitBackpackIn","SitBackpackIdle","SitBackpackOut"],
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.4
+        }
+    ],
+    "Sit_Legs": [
+        {
+            "Animations": ["SitLegsIn","SitLegsIdle","SitLegsOut"],
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.4
+        }
+    ],
+    "Sit_Legs2": [
+        {
+            "Animations": "SitLegs2",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.4
+        }
+    ],
+    "Sit_Armchair_1": [
+        {
+            "Animations": "sit_armchair_1",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.4,
+            "calcBoundingBox":true
+        }
+    ],
+    "Sit_Armchair_2": [
+        {
+            "Animations": "sit_armchair_2",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.4,
+            "calcBoundingBox":true
+        }
+    ],
+    "Sit_Straight_1": [
+        {
+            "Animations": "sit_straight_1",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.55,
+            "calcBoundingBox":true
+        }
+    ],
+    "Sit_Bar_1": [
+        {
+            "Animations": "IdleSitBar1",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.4
+        }
+    ],
+    "Sit_Bar_2": [
+        {
+            "Animations": "IdleSitBar2",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.4
+        }
+    ],
+    "Sit_Bar_3": [
+        {
+            "Animations": "IdleSitBar3",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.6
+        }
+    ],
+    "Sit_Guitar": [
+        {
+            "Animations": "UseGuitar",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.4
+        }
+    ],
+    "Campfire": [
+        {
+            "Animations": ["gesture_campfire_in","gesture_campfire_loop","gesture_campfire_out"],
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.4
+        }
+	],
+    "Search_crouched": [
+        {
+            "Animations": "CrouchIdleUnarmed",
+            "chance": 100,
+            "timeFrom": 60.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "additional_animations": ["SearchContainerLoop"],
+            "additional_cooldown": 0,
+            "mark_height": 1.5
+        }
+    ],
+    "Dead_1": [
+        {
+            "Animations": "Dead1",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.0,
+            "calcBoundingBox":true
+        }
+    ],
+    "Dead_2": [
+        {
+            "Animations": "Dead2",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.0,
+            "calcBoundingBox":true
+        }
+    ],
+    "Dead_3": [
+        {
+            "Animations": "Dead3",
+            "chance": 100,
+            "timeFrom": 20.0,
+            "timeTo": 60.0,
+            "holsterWeapon": true,
+            "mark_height": 1.0,
+            "calcBoundingBox":true
+        }
+    ]
+}

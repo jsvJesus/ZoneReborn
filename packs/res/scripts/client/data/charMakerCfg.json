@@ -250,47 +250,47 @@
 				"item_type_ID": 110256
 				},
 		"3": {
-				"icon": "soGUI/maps/Icons/armors/icon_legs_djinsy.dds", 
+				"icon": "soGUI/maps/Icons/armors/icon_legs_djinsy_brown.dds", 
 				"caption": "DefaultModels.client.o4_legs_jeans_brown", 
 				"item_type_ID": 110257
 				},
 		"4": {
-				"icon": "soGUI/maps/Icons/armors/icon_legs_djinsy.dds", 
+				"icon": "soGUI/maps/Icons/armors/icon_legs_djinsy_black.dds", 
 				"caption": "DefaultModels.client.o4_legs_jeans_black", 
 				"item_type_ID": 110258
 				},
 		"5": {
-				"icon": "soGUI/maps/Icons/armors/icon_legs_djinsy.dds", 
+				"icon": "soGUI/maps/Icons/armors/icon_legs_djinsy_green.dds", 
 				"caption": "DefaultModels.client.o4_legs_jeans_green", 
 				"item_type_ID": 110259
 				},
 		"6": {
-				"icon": "soGUI/maps/Icons/armors/icon_legs_djinsy.dds", 
+				"icon": "soGUI/maps/Icons/armors/icon_bigpants_01.dds", 
 				"caption": "DefaultModels.client.o4_legs_bigpants_01", 
 				"item_type_ID": 200200
 				},
 		"7": {
-				"icon": "soGUI/maps/Icons/armors/icon_legs_djinsy.dds", 
+				"icon": "soGUI/maps/Icons/armors/icon_bigpants_01.dds", 
 				"caption": "DefaultModels.client.o4_legs_bigpants_01_gray", 
 				"item_type_ID": 200201
 				},
 		"8": {
-				"icon": "soGUI/maps/Icons/armors/icon_legs_djinsy.dds", 
+				"icon": "soGUI/maps/Icons/armors/icon_jeans_01.dds", 
 				"caption": "DefaultModels.client.o4_legs_jeans_01", 
 				"item_type_ID": 200205
 				},
 		"9": {
-				"icon": "soGUI/maps/Icons/armors/icon_legs_djinsy.dds", 
-				"caption": "DefaultModels.client.o4_legs_bigpants_01_gray", 
+				"icon": "soGUI/maps/Icons/armors/icon_jeans_01.dds", 
+				"caption": "DefaultModels.client.o4_legs_jeans_01_gray", 
 				"item_type_ID": 200206
 				},
 		"10": {
-				"icon": "soGUI/maps/Icons/armors/icon_legs_djinsy.dds", 
+				"icon": "soGUI/maps/Icons/armors/icon_pants_01.dds", 
 				"caption": "DefaultModels.client.o4_legs_pants_01", 
 				"item_type_ID": 200210
 				},
 		"11": {
-				"icon": "soGUI/maps/Icons/armors/icon_legs_djinsy.dds", 
+				"icon": "soGUI/maps/Icons/armors/icon_pants_01.dds", 
 				"caption": "DefaultModels.client.o4_legs_pants_01_gray", 
 				"item_type_ID": 200211
 				}
@@ -303,17 +303,17 @@
 				"item_type_ID": 110251
 				},
 		"2": {
-				"icon": "soGUI/maps/Icons/armors/icon_boots_bertsi.dds", 
+				"icon": "soGUI/maps/Icons/armors/icon_boots_bertsi_m2.dds", 
 				"caption": "DefaultModels.client.o5_feet_bertci_m2", 
 				"item_type_ID": 110252
 				},
 		"3": {
-				"icon": "soGUI/maps/Icons/armors/icon_boots_bertsi.dds", 
+				"icon": "soGUI/maps/Icons/armors/icon_boots_bertsi_m3.dds", 
 				"caption": "DefaultModels.client.o5_feet_bertci_m3", 
 				"item_type_ID": 110253
 				},
 		"4": {
-				"icon": "soGUI/maps/Icons/armors/icon_boots_bertsi.dds", 
+				"icon": "soGUI/maps/Icons/armors/icon_boots_bertsi_m4.dds", 
 				"caption": "DefaultModels.client.o5_feet_bertci_m4", 
 				"item_type_ID": 110254
 				},
@@ -321,11 +321,6 @@
 				"icon": "soGUI/maps/Icons/armors/icon_boots_botinok.dds", 
 				"caption": "DefaultModels.client.o5_feet_botinki", 
 				"item_type_ID": 110255
-				},
-		"5": {
-				"icon": "soGUI/maps/Icons/armors/icon_boots_botinok.dds", 
-				"caption": "DefaultModels.client.o5_feet_botinki", 
-				"item_type_ID": 200650
 				}
 		}
 }

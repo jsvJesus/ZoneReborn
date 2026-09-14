@@ -1,661 +1,501 @@
 {
-	"name, bylevel" : {
-		"default" : "Creatures.common.SAGE1",
-		"1" : "Creatures.common.SAGE2",
-		"2" : "Creatures.common.SAGE1",
-		"3" : "Creatures.common.SAGE3",
-		"501" : "Creatures.common.SAGE4",
-		
-		"lvl1_all" : "Creatures.common.SAGE_lv1",
-		"lvl3_all" : "Creatures.common.SAGE_lv3",
-		"lvl6_all" : "Creatures.common.SAGE_lv6",
-		"lvl9_all" : "Creatures.common.SAGE_lv9",
-		"lvl12_all" : "Creatures.common.SAGE_lv12",
-		"lvl15_all" : "Creatures.common.SAGE_lv15",
-		"lvl18_all" : "Creatures.common.SAGE_lv18",
-		"lvl21_all" : "Creatures.common.SAGE_lv21",
-		"lvl24_all" : "Creatures.common.SAGE_lv24",
-		"lvl27_all" : "Creatures.common.SAGE_lv27",
-		"lvl30_all" : "Creatures.common.SAGE_lv30"
-	},
-	"coefLevel, bylevel": {
-		"default" : 99,
-		"1" : 99,
-		"2" : 99,
-		"3" : 99
-	},
-	"model" : "vedun/vedun_lod1.model",	
-	"karma": 52,
-	"model_scale, bylevel" : {
-		"default" : 1,
-		"1" : 1,
-		"2" : 1.2,
-		"3" : 1.4,
-		"501" : 1.2,
-		
-		"lvl1_all" : 1,
-		"lvl3_all" : 1.05,
-		"lvl6_all" : 1.1,
-		"lvl9_all" : 1.15,
-		"lvl12_all" : 1.2,
-		"lvl15_all" : 1.25,
-		"lvl18_all" : 1.3,
-		"lvl21_all" : 1.35,
-		"lvl24_all" : 1.4,
-		"lvl27_all" : 1.45,
-		"lvl30_all" : 1.5
-	},
-	"tints" : [{}],
-	"experience, bylevel" : {
-		"default" : 80,
-		"1" : 108,
-		"2" : 192,
-		"3" : 300,
-		"501" : 192,
-		
-		"lvl1_all" : 101,
-		"lvl3_all" : 102,
-		"lvl6_all" : 103,
-		"lvl9_all" : 104,
-		"lvl12_all" : 105,
-		"lvl15_all" : 106,
-		"lvl18_all" : 107,
-		"lvl21_all" : 108,
-		"lvl24_all" : 109,
-		"lvl27_all" : 110,
-		"lvl30_all" : 111
-	},
-	"health, bylevel" : {
-		"default" : 0.777,
-		"1" : 0.24,
-		"2" : 0.36,
-		"3" : 0.54,
-		"501" : 0.36,
-		
-		"lvl1_all" : 0.24,
-		"lvl3_all" : 0.26,
-		"lvl6_all" : 0.28,
-		"lvl9_all" : 0.3,
-		"lvl12_all" : 0.32,
-		"lvl15_all" : 0.34,
-		"lvl18_all" : 0.36,
-		"lvl21_all" : 0.38,
-		"lvl24_all" : 0.4,
-		"lvl27_all" : 0.42,
-		"lvl30_all" : 0.44
-	},	
-	"agro_range" : 30,
-	"lose_agro_range" : 40,
-	"global_cooldown" : 3,
-	"defence, bylevel" : {
-		"default" : {
-			"MELEE" : 700.0,
-			"BULLET" : 1.0,
-			"EXPLOSION" : 50.0,
-			"BIO" : 700.0
-		},
-		"1" : {
-			"BULLET" : 0.0
-		},
-		"2" : {
-			"BULLET" : 50.0
-		},
-		"3" : {
-			"BULLET" : 150.0
-		},
-		"501" : {
-			"BULLET" : 100.0,
-			"MAGNETIC" : 1000.0
-		},
-		
-		"lvl1_all" : {
-			"BULLET" : 0.0
-		},
-		"lvl3_all" : {
-			"BULLET" : 0.20
-		},
-		"lvl6_all" : {
-			"BULLET" : 0.40
-		},
-		"lvl9_all" : {
-			"BULLET" : 0.60
-		},
-		"lvl12_all" : {
-			"BULLET" : 0.80
-		},
-		"lvl15_all" : {
-			"BULLET" : 0.100
-		},
-		"lvl18_all" : {
-			"BULLET" : 0.120
-		},
-		"lvl21_all" : {
-			"BULLET" : 0.140
-		},
-		"lvl24_all" : {
-			"BULLET" : 0.160
-		},
-		"lvl27_all" : {
-			"BULLET" : 0.180
-		},
-		"lvl30_all" : {
-			"BULLET" : 0.2
-		}
-	},
-	"height" : 1.8,	
-	"width" : 0.5,
-	"decompose_time" : [60,120],
-	"loot, bylevel" : {
-		"default" : {},
-		"1" : {
-			"837" : "0.95",
-			"210021" : "0.02"
-		},
-		"2" : {
-			"838" : "0.75",
-			"210021" : "0.03"
-		},
-		"3" : {
-			"839" : "0.5",
-			"210021" : "0.04"
-		},
-		"501" : {
-			"838" : "0.75",
-			"210021" : "0.03"
-		},
-		
-		"lvl1_all" : {
-			"837" : "0.5"
-		},
-		"lvl3_all" : {
-			"837" : "0.85",
-			"210021" : "0.01"
-		},
-		"lvl6_all" : {
-			"837" : "0.95",
-			"210021" : "0.02"
-		},
-		"lvl9_all" : {
-			"837" : "0.95",
-			"210022" : "0.03"
-		},
-		"lvl12_all" : {
-			"837" : "0.95",
-			"210022" : "0.04"
-		},
-		"lvl15_all" : {
-			"838" : "0.75",
-			"210022" : "0.03"
-		},
-		"lvl18_all" : {
-			"838" : "0.8",
-			"210022" : "0.04"
-		},
-		"lvl21_all" : {
-			"838" : "0.85",
-			"210022" : "0.05"
-		},
-		"lvl24_all" : {
-			"838" : "0.9",
-			"210022" : "0.06"
-		},
-		"lvl27_all" : {
-			"838" : "0.9",
-			"210022" : "0.07"
-		},
-		"lvl30_all" : {
-			"839" : "0.5",
-			"210022" : "0.04"
-		}
-	},
-	"foot_nodes" : ["Bone02", "Bone01"],
-	"footsteps_sound" : "mob/vedun/footsteps",
-	"melee_distance, bylevel" : {
-		"default" : 1.56,
-		"1" : 1.56,
-		"2" : 1.87,
-		"3" : 2.18,
-		"501" : 1.87
-	},
-	"melee_height, bylevel" : {
-		"default" : 2,
-		"2" : 2,		
-		"3" : 3
-	},	
-	"actions, bylevel" : {
-		"default" : {
-			"Idle" : {				
-				"sounds" : ["mob/vedun/idle"]
-			},
-			"Idle1" : {				
-				"model_actions" : ["Idle1"],
-				"sounds" : ["mob/vedun/idle"]
-			},
-			"AttackPaws" : {
-				"model_actions" : ["AttackPaws"],
-				"sounds" : ["mob/vedun/attack"]
-			},
-			"AttackHeadPsy" : {
-				"model_actions" : ["AttackTooth"],
-				"sounds" : ["mob/vedun/attack"]
-			},
-			"AttackRangedPsy" : {
-				"model_actions" : ["AttackSpecialMiddle"],
-				"sounds" : ["mob/vedun/attack"]
-			},
-			"Die" : {
-				"model_actions" : ["Die"],
-				"sounds" : ["mob/vedun/death"]
-			},
-			"Dead" : {
-				"model_actions" : ["Dead"]	
-			},				
-			"Pain" : {
-				"model_actions" : ["Pain"],
-				"sounds" : ["mob/vedun/pain"]
-			},				
-			"Attacking" : {
-				"sounds" : ["mob/vedun/angry"]
-			}
-		},
-		"2" : {}
-	},
-	"events" : {
-		"onTakeDamage" : ["Pain"]
-	},
-	"default_state" : "walk_around",
-	"common_conditions,parent=default_common_conditions" : [],	
-	"states" : {
-		"walk_around" : {
-			"persistent_actions" : ["Idle"],			
-			"movement_types" : ["walk_around"],
-			"conditions" : [
-				{
-					"to_state" : "attacking_ranged",
-					"predicate" : 
-						["and",[
-							["targets_count", "more", "0"],
-							["health_percent", "more", "85"]
-						]]
-				},
-				{
-					"to_state" : "attacking",
-					"predicate" : 
-						["and",[
-							["targets_count", "more", "0"],
-							["health_percent", "less", "85"]
-						]]
-				}
-			],
-			"speed" : {
-				"walk_around" : [1.1, 1.7]
-			}
-		},		
-		"attacking, parent=default_attacking" : {
-			"skills, bylevel" : {
-				"default" : {
-						"VEDUN_MELEE" : 8,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl1_all" : {
-						"VEDUN_MELEE" : 8,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl3_all" : {
-						"VEDUN_MELEE" : 6,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl6_all" : {
-						"VEDUN_MELEE" : 8,
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 4,
-						"VEDUN_PSY_BLEED" :2
-					},
-				"lvl9_all" : {
-						"VEDUN_MELEE" : 7,
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 3,
-						"VEDUN_PSY_BLEED" :2
-					},
-				"lvl12_all" : {
-						"VEDUN_MELEE" : 6,
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :2
-					},
-				"lvl15_all" : {
-						"VEDUN_MELEE" : 5,
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :2
-					},
-				"lvl18_all" : {
-						"VEDUN_MELEE" : 4,
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl21_all" : {
-						"VEDUN_MELEE" : 3,
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl24_all" : {
-						"VEDUN_MELEE" : 3,
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl27_all" : {
-						"VEDUN_MELEE" : 2,
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl30_all" : {
-						"VEDUN_MELEE" : 1,
-						"VEDUN_PSY_STUN" : 2,
-						"VEDUN_PSY_POISON" : 1,
-						"VEDUN_PSY_BLEED" :1
-					}
-				},	
-			"persistent_actions" : ["Attacking"],
-			"movement_types" : ["follow_target", "walk_around"],
-			"speed" : {
-				"follow_target" : 3.5,
-				"walk_around" : [1.2, 2]
-			}	
-		},
-		"attacking_ranged" : {
-			"speed" : 2,
-			"movement_types" : ["follow_target", "walk_around"],
-			"conditions" : [
-				{
-					"to_state" : "attacking",
-					"predicate" : 
-						["and",[
-							["targets_count", "more", "0"],
-							["health_percent", "less", "85"]
-						]]
-				},
-				{
-					"to_state" : "before_recover",
-					"predicate" : 
-						["and",[
-							["targets_count", "equal", "0"],
-							["health_percent", "less", "100"]
-						]]
-				},
-				{
-					"to_state" : "walk_around",
-					"predicate" : ["targets_count", "equal", 0]
-				}
-			],
-			"skills, bylevel" : {
-				"default" : {
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl1_all" : {
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl3_all" : {
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl6_all" : {
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 4,
-						"VEDUN_PSY_BLEED" :2
-					},
-				"lvl9_all" : {
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 3,
-						"VEDUN_PSY_BLEED" :2
-					},
-				"lvl12_all" : {
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :2
-					},
-				"lvl15_all" : {
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :2
-					},
-				"lvl18_all" : {
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl21_all" : {
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl24_all" : {
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl27_all" : {
-						"VEDUN_PSY_STUN" : 1,
-						"VEDUN_PSY_POISON" : 2,
-						"VEDUN_PSY_BLEED" :1
-					},
-				"lvl30_all" : {
-						"VEDUN_PSY_STUN" : 2,
-						"VEDUN_PSY_POISON" : 1,
-						"VEDUN_PSY_BLEED" :1
-					}
-			},
-			"movement_types" : ["follow_target", "walk_around"],
-			"speed" : {
-				"follow_target" : 3.5,
-				"walk_around" : [1, 2]
-			}	
-		},
-		"dead" : {		
-			"persistent_actions" : ["Dead"],
-			"entering_actions" : {"actions" : ["Die"], "time" : 0.6},
-			"conditions" : [
-				{
-					"to_state" : "walk_around",
-					"predicate" : ["is_dead", "equal", 0]
-				}
-			]
-		},
-		"before_recover, parent=default_before_recover" : {
-			"speed" : {
-				"walk_around" : [1.1, 1.7]
-			}
-		},
-		"recover, parent=default_recover" : {			
-			"persistent_actions" : ["Idle1"]
-		}
-	},
-	"skills" : {
-		"VEDUN_MELEE": {
-			"type": "MELEE",
-			"cooldown": 1.5,
-			"aoe_radius": 0,
-			"damage, bylevel": {
-				"default": {
-					"body_zones": ["HEAD", "LEG_UPPER", "TORSO", "ARM"],
-					"type" : "MELEE",
-					"value" : [0.083, 0.125],
-					"penetration" : 100
-				},
-				"1": {
-					"value" : [0.083, 0.125]
-				},
-				"2": {
-					"value" : [0.128, 0.192]
-				},
-				"3": {
-					"value" : [0.179, 0.268]
-				},
-				
-				"lvl1_all" : {
-					"value" : [0.073, 0.125]
-				},
-				"lvl3_all" : {
-					"value" : [0.084, 0.14]
-				},
-				"lvl6_all" : {
-					"value" : [0.095, 0.155]
-				},
-				"lvl9_all" : {
-					"value" : [0.106, 0.17]
-				},
-				"lvl12_all" : {
-					"value" : [0.117, 0.185]
-				},
-				"lvl15_all" : {
-					"value" : [0.128, 0.192]
-				},
-				"lvl18_all" : {
-					"value" : [0.128, 0.192],
-					"penetration" : 110
-				},
-				"lvl21_all" : {
-					"value" : [0.128, 0.192],
-					"penetration" : 120
-				},
-				"lvl24_all" : {
-					"value" : [0.128, 0.192],
-					"penetration" : 130
-				},
-				"lvl27_all" : {
-					"value" : [0.128, 0.192],
-					"penetration" : 140
-				},
-				"lvl30_all" : {
-					"value" : [0.179, 0.268],
-					"penetration" : 150
-				}
-			},			 
-			"actions": ["AttackPaws"]
-		},
-		"VEDUN_PSY_STUN": {
-			"type": "DIRECT",
-			"cast_range": 20.0,
-			"cooldown": 3.5,
-			"aoe_radius": 25,			
-			"effects, bylevel": {
-				"default": [["Stun", 1]],
-				"lvl6_all" : [["Stun", 1]],
-				"lvl9_all" : [["Stun", 1]],
-				"lvl12_all" : [["Stun", 2]],
-				"lvl15_all" : [["Stun", 2]],
-				"lvl18_all" : [["Stun", 3]],
-				"lvl21_all" : [["Stun", 3]],
-				"lvl24_all" : [["Stun", 4]],
-				"lvl27_all" : [["Stun", 4]],
-				"lvl30_all" : [["Stun", 5]]
-			},
-			"actions": ["AttackRangedPsy"],
-			"sfxes_on_self": [
-				{						
-					"path"			: "sfx/Mob/AttackPsy.xml",
-					"source_node" 	: "Bip001 R Finger2",
-					"target_node"	: "HP_spine1",
-					"direct_to_target": 1,
-					"delay"			: 0.5,
-					"play_time"		: 1
-				}
-			],
-			"damage, bylevel": {
-				"default": {
-					"body_zones": ["TORSO"],
-					"type" : "MELEE",
-					"value" : [0.0, 0.0],
-					"penetration" : 10
-				}
-			}	
-		},
-		"VEDUN_PSY_POISON": {
-			"type": "DIRECT",
-			"cast_range": 20.0,
-			"cooldown": 2.5,
-			"aoe_radius": 25,			
-			"effects, bylevel": {
-				"default": [["Poison", 1]],
-				"lvl1_all" : [["Poison", 1]],
-				"lvl3_all" : [["Poison", 1]],
-				"lvl6_all" : [["Poison", 2]],
-				"lvl9_all" : [["Poison", 2]],
-				"lvl12_all" : [["Poison", 3]],
-				"lvl15_all" : [["Poison", 3]],
-				"lvl18_all" : [["Poison", 4]],
-				"lvl21_all" : [["Poison", 4]],
-				"lvl24_all" : [["Poison", 5]],
-				"lvl27_all" : [["Poison", 5]],
-				"lvl30_all" : [["Poison", 6]]
-			},
-			"actions": ["AttackRangedPsy"],
-			"sfxes_on_self": [
-				{						
-					"path"			: "sfx/Mob/AttackPsy.xml",
-					"source_node" 	: "Bip001 R Finger2",
-					"target_node"	: "HP_spine1",
-					"direct_to_target": 1,
-					"delay"			: 0.5,
-					"play_time"		: 1
-				}
-			],
-			"damage, bylevel": {
-				"default": {
-					"body_zones": ["TORSO"],
-					"type" : "MELEE",
-					"value" : [0.0, 0.0],
-					"penetration" : 10
-				}
-			}	
-		},
-		"VEDUN_PSY_BLEED": {
-			"type": "DIRECT",
-			"cast_range": 20.0,
-			"cooldown": 2.5,
-			"aoe_radius": 25,			
-			"effects, bylevel": {
-				"default": [["Bleed", 1]],
-				"lvl1_all" : [["Bleed", 1]],
-				"lvl3_all" : [["Bleed", 1]],
-				"lvl6_all" : [["Bleed", 2]],
-				"lvl9_all" : [["Bleed", 2]],
-				"lvl12_all" : [["Bleed", 3]],
-				"lvl15_all" : [["Bleed", 3]],
-				"lvl18_all" : [["Bleed", 4]],
-				"lvl21_all" : [["Bleed", 4]],
-				"lvl24_all" : [["Bleed", 5]],
-				"lvl27_all" : [["Bleed", 5]],
-				"lvl30_all" : [["Bleed", 6]]
-			},
-			"actions": ["AttackRangedPsy"],
-			"sfxes_on_self": [
-				{						
-					"path"			: "sfx/Mob/AttackPsy.xml",
-					"source_node" 	: "Bip001 R Finger2",
-					"target_node"	: "HP_spine1",
-					"direct_to_target": 1,
-					"delay"			: 0.5,
-					"play_time"		: 1
-				}
-			],
-			"damage, bylevel": {
-				"default": {
-					"body_zones": ["TORSO"],
-					"type" : "MELEE",
-					"value" : [0.0, 0.0],
-					"penetration" : 10
-				}
-			}	
-		}
-	}
+  "model": "vedun/vedun_lod1.model",
+  "tints": [{}],
+  "model_scale, bylevel": {
+    "default": 1,
+    "1": 0.9,
+    "2": 1.0,
+    "3": 1.2,
+    "501": 1.2,
+    "lvl6_all": 1.1,
+    "lvl9_all": 1.15,
+    "lvl12_all": 1.2
+  }, 
+  "roll_param": [-20, 20],
+  "pitch_param": [-10, 20],
+  "radius_model": 0.25,
+  "collide_distance": 4.0,
+  "height": 1.81,
+  "width": 1.0,
+  "height_idle": 1.81,
+  "width_idle": 0.7,
+  "depth_idle": 0.5,
+  "name, bylevel": {
+    "default": "Creatures.common.SAGE1",
+    "1": "Creatures.common.SAGE2", 
+    "2": "Creatures.common.SAGE1", 
+    "3": "Creatures.common.SAGE3", 
+    "501": "Creatures.common.SAGE4",
+    "lvl6_all": "Creatures.common.SAGE_lv6", 
+    "lvl9_all": "Creatures.common.SAGE_lv9", 
+    "lvl12_all": "Creatures.common.SAGE_lv12"
+  },
+  "health, bylevel": {
+    "default": 390,
+    "1": 240,
+    "2": 360,
+    "3": 770,
+    "501": 180,
+    "lvl6_all": 640,
+    "lvl9_all": 1150,
+    "lvl12_all": 1660
+  },
+  "self_effects": 10010,
+  "experience, bylevel": {
+    "default": 80,
+    "1": 108,
+    "2": 192,
+    "3": 300,
+    "501": 192,
+    "lvl6_all": 153,
+    "lvl9_all": 204,
+    "lvl12_all": 255
+  },
+  "karma": 52,
+  "melee_height, bylevel": {
+    "default": 2, 
+    "3": 3, 
+    "2": 2
+  }, 
+  "agro_range": 70, 
+  "lose_agro_range": 100, 
+  "promenade_time":  [10, 60],
+  "assist, bylevel": {
+    "default": {
+      "clan": "veduns",
+      "friends": ["veduns", "blyaks", "brutors", "boars", "bears", "dogs", "silvans", "outcasts"],
+      "radius": 50
+    }
+  },
+  "footsteps_sound": "mob/vedun/footsteps", 
+  "global_cooldown": 3, 
+  "foot_nodes": [ "Bone02", "Bone01" ],
+  "melee_distance, bylevel": {
+    "default": 1.56, 
+    "1": 1.56, 
+    "2": 1.87, 
+    "3": 2.18, 
+    "501": 1.87
+  }, 
+  "coefLevel, bylevel": {
+    "default": 99, 
+    "1": 99, 
+    "3": 99, 
+    "2": 99
+  },
+  "skins_stiffness": 5.0,
+  "looting_time": 16.0,
+  "buchering_time": 18.0,
+  "looting_types": ["Search"],
+  "interaction_distance": 1.0, 
+  "loot, bylevel": {
+    "default": "empty", 
+    "1": "Vedun_1", 
+    "2": "Vedun_2", 
+    "3": "Vedun_3", 
+    "501": "Vedun_501",
+    "lvl6_all": "Vedun_lvl6_all", 
+    "lvl9_all": "Vedun_lvl9_all", 
+    "lvl12_all": "Vedun_lvl12_all" 
+  }, 
+  "decompose_time" : [119,120],
+  "multiplier":
+  {
+    "default":1,
+    "HEAD":2,
+    "FACE":1,
+    "TORSO":1,
+    "HEART":1,
+    "GROIN":1.5,
+    "ARM" :0.5,
+    "FOREARM":0.5,
+    "LEG_UPPER":0.5,
+    "LEG_LOWER":0.5
+  },
+  "defence, bylevel": {
+    "default": {
+      "HEAD":     {"MELEE": 0.0,"BULLET": 0.0,"EXPLOSION": 0.0,"GRAVITATION": 0.0,"ELECTROSTATIC": 0.0,"INFRARED": 0.0,"RADIATION": 0.0,"PSY": 0.0,"BIO": 700.0,"SUFFOCATION": 0.0,"COLD": 0.0},
+      "FACE":     {"MELEE": 0.0,"BULLET": 0.0,"EXPLOSION": 0.0,"GRAVITATION": 0.0,"ELECTROSTATIC": 0.0,"INFRARED": 0.0,"RADIATION": 0.0,"PSY": 0.0,"BIO": 700.0,"SUFFOCATION": 0.0,"COLD": 0.0},
+      "TORSO":    {"MELEE": 0.0,"BULLET": 0.0,"EXPLOSION": 0.0,"GRAVITATION": 0.0,"ELECTROSTATIC": 0.0,"INFRARED": 0.0,"RADIATION": 0.0,"PSY": 0.0,"BIO": 700.0,"SUFFOCATION": 0.0,"COLD": 0.0},
+      "HEART":    {"MELEE": 0.0,"BULLET": 0.0,"EXPLOSION": 0.0,"GRAVITATION": 0.0,"ELECTROSTATIC": 0.0,"INFRARED": 0.0,"RADIATION": 0.0,"PSY": 0.0,"BIO": 700.0,"SUFFOCATION": 0.0,"COLD": 0.0},
+      "GROIN":    {"MELEE": 0.0,"BULLET": 0.0,"EXPLOSION": 0.0,"GRAVITATION": 0.0,"ELECTROSTATIC": 0.0,"INFRARED": 0.0,"RADIATION": 0.0,"PSY": 0.0,"BIO": 700.0,"SUFFOCATION": 0.0,"COLD": 0.0},
+      "ARM" :     {"MELEE": 0.0,"BULLET": 0.0,"EXPLOSION": 0.0,"GRAVITATION": 0.0,"ELECTROSTATIC": 0.0,"INFRARED": 0.0,"RADIATION": 0.0,"PSY": 0.0,"BIO": 700.0,"SUFFOCATION": 0.0,"COLD": 0.0},
+      "FOREARM":  {"MELEE": 0.0,"BULLET": 0.0,"EXPLOSION": 0.0,"GRAVITATION": 0.0,"ELECTROSTATIC": 0.0,"INFRARED": 0.0,"RADIATION": 0.0,"PSY": 0.0,"BIO": 700.0,"SUFFOCATION": 0.0,"COLD": 0.0},
+      "LEG_UPPER":{"MELEE": 0.0,"BULLET": 0.0,"EXPLOSION": 0.0,"GRAVITATION": 0.0,"ELECTROSTATIC": 0.0,"INFRARED": 0.0,"RADIATION": 0.0,"PSY": 0.0,"BIO": 700.0,"SUFFOCATION": 0.0,"COLD": 0.0},
+      "LEG_LOWER":{"MELEE": 0.0,"BULLET": 0.0,"EXPLOSION": 0.0,"GRAVITATION": 0.0,"ELECTROSTATIC": 0.0,"INFRARED": 0.0,"RADIATION": 0.0,"PSY": 0.0,"BIO": 700.0,"SUFFOCATION": 0.0,"COLD": 0.0}
+    },
+    "501": {
+      "default": {"MAGNETIC": 1000.0}
+    }
+  },
+  "bleed_sfx, bylevel": {
+    "default": {
+      "default": "Flesh"
+    }
+  },
+  "death_bleed, bylevel": {
+    "default": [{
+      "sfx" : "sfx/hits/bleed_red_decal.xml",
+      "frequency" : 0.2,
+      "dispersion" : 0.8,
+      "time" : 4
+    }]
+  },
+  "events": {
+    "onTakeDamage": [ "Pain" ]
+  }, 
+  "default_state": "walk_around", 
+  "states": {
+    "walk_around": {
+          "persistent_actions": [ "Idle" ],
+          "movement_types": [ "walk_around" ], 
+          "conditions": [
+            { "to_state": "attacking_melee",
+              "criteria": "targets_count > 0 and target_distance < 5"
+            },
+            { "to_state": "attacking_ranged",
+              "criteria": "targets_count > 0  and target_distance >= 5"
+            }
+          ], 
+          "speed": {
+            "walk_around": [ 1.1, 1.7 ]
+          }
+    },
+    "attacking_melee": {
+          "persistent_actions": [ "Attacking" ],
+          "movement_types": [ "follow_target", "walk_around" ], 
+          "skills": { "VEDUN_MELEE": 1 },
+          "conditions": [
+            { "to_state": "attacking_ranged",
+              "criteria": "targets_count > 0  and target_distance >= 5"
+            },
+            { "to_state": "walk_around",
+              "criteria": "targets_count == 0"
+            }
+          ], 
+          "speed": {
+            "follow_target": 3.5, 
+            "walk_around": [ 1.2, 2 ]
+          }
+    }, 
+    "attacking_ranged": {
+          "persistent_actions": [ "Idle" ],
+          "movement_types": [ "follow_target", "walk_around" ], 
+          "skills, bylevel": {
+            "default": { "VEDUN_PSY_BLEED": 1, "VEDUN_PSY_POISON": 2 },
+            "lvl6_all": { "VEDUN_PSY_STUN": 1, "VEDUN_PSY_BLEED": 2, "VEDUN_PSY_POISON": 4 },
+            "lvl9_all": { "VEDUN_PSY_STUN": 1, "VEDUN_PSY_BLEED": 2, "VEDUN_PSY_POISON": 3 },
+            "lvl12_all": { "VEDUN_PSY_STUN": 1, "VEDUN_PSY_BLEED": 2, "VEDUN_PSY_POISON": 2 }
+          }, 
+          "conditions": [
+            { "to_state": "attacking_melee",
+              "criteria": "targets_count > 0 and target_distance < 5"
+            },
+            { "to_state": "walk_around",
+              "criteria": "targets_count == 0"
+            }
+          ], 
+          "speed": {
+            "follow_target": 3.5, 
+            "walk_around": [ 1, 2 ]
+          }
+    }, 
+    "dead": {
+          "persistent_actions": [ "Dead" ],
+          "entering_actions": {
+            "actions": [ "Die" ], 
+            "time": 2.8
+          },
+          "conditions": [
+            { "to_state": "walk_around",
+              "criteria": "is_dead == 0"
+            }
+          ], 
+          "caps":["Dead"],
+          "roll_param": [-60, 60],
+          "pitch_param": [-60, 60]
+    }
+  }, 
+  "skills": {
+    "VEDUN_MELEE": {
+      "waves_damage, bylevel": {
+        "default": [{
+            "body_zones": [ "HEAD", "TORSO", "ARM" ], 
+            "value_damage": [ 18.0, 23.0 ],
+            "penetration": 200.0,
+            "type": "MELEE",
+            "delay": 0.38
+          },{
+            "body_zones": [ "HEAD", "TORSO", "ARM" ], 
+            "value_damage": [ 18.0, 23.0 ],
+            "penetration": 200.0,
+            "type": "MELEE",
+            "delay": 0.38
+          }
+        ],
+        "1": [{"value_damage": [ 18, 23 ]},{"value_damage": [ 18, 23 ]}],
+        "2": [{"value_damage": [ 23, 27 ]},{"value_damage": [ 23, 27 ]}],
+        "3": [{"value_damage": [ 26, 30 ]},{"value_damage": [ 26, 30 ]}],
+        "lvl6_all": [{"value_damage": [ 19, 23 ]},{"value_damage": [ 19, 23 ]}],
+        "lvl9_all": [{"value_damage": [ 23, 28 ]},{"value_damage": [ 23, 28 ]}],
+        "lvl12_all": [{"value_damage": [ 27, 31 ]},{"value_damage": [ 27, 31 ]}]
+      },
+      "actions": [ "AttackPaws" ],
+      "type": "MELEE",
+      "global_cooldown": 1.6, 
+      "aoe_radius": 0, 
+      "stop_movement": 1.2
+    },
+    "VEDUN_PSY_STUN": {
+      "waves_damage, bylevel": {
+        "default": [{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.6,
+            "effect_id": 5,
+            "effect_stack": 1,
+            "effect_chance": 0.2
+          },{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.1,
+            "effect_id": 5,
+            "effect_stack": 1,
+            "effect_chance": 0.2
+          },{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.1,
+            "effect_id": 5,
+            "effect_stack": 1,
+            "effect_chance": 0.1
+          },{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.1,
+            "effect_id": 5,
+            "effect_stack": 1,
+            "effect_chance": 0.1
+          },{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.1,
+            "effect_id": 5,
+            "effect_stack": 1,
+            "effect_chance": 0.1
+          }
+        ],
+        "1": [{ "effect_stack": 1 },{ "effect_stack": 1 },{ "effect_stack": 1 },{ "effect_stack": 1 },{ "effect_stack": 1 }],
+        "2": [{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 }],
+        "3": [{ "effect_stack": 3 },{ "effect_stack": 3 },{ "effect_stack": 3 },{ "effect_stack": 3 },{ "effect_stack": 3 }],
+        "lvl6_all": [{ "effect_stack": 1 },{ "effect_stack": 1 },{ "effect_stack": 1 },{ "effect_stack": 1 },{ "effect_stack": 1 }],
+        "lvl9_all": [{ "effect_stack": 1 },{ "effect_stack": 1 },{ "effect_stack": 1 },{ "effect_stack": 1 },{ "effect_stack": 1 }],
+        "lvl12_all": [{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 }]
+      },
+      "tracker, bylevel": {
+        "default": {
+          "primary_node_name": "Bip001 R Forearm",
+          "pointing_node_name": "Bip001 R Hand",
+          "secondary_nodes": [["Bip001 R UpperArm", 0.01], ["Bip001 R Forearm", 999.0]],
+          "minPitch": -80,
+          "maxPitch": 90,
+          "maxYaw": 50,
+          "minYaw": -50,
+          "angularVelocity": 999
+        }
+      },
+      "actions": [ "AttackRangedPsy" ],
+      "type": "DIRECT",
+      "global_cooldown": 1.3, 
+      "aoe_radius": 0,
+      "cast_range": 20.0,
+      "stop_movement": 1.0
+    },
+    "VEDUN_PSY_BLEED": {
+      "waves_damage, bylevel": {
+        "default": [{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.6,
+            "effect_id": 402,
+            "effect_stack": 1,
+            "effect_chance": 0.2
+          },{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.1,
+            "effect_id": 402,
+            "effect_stack": 1,
+            "effect_chance": 0.2
+          },{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.1,
+            "effect_id": 402,
+            "effect_stack": 1,
+            "effect_chance": 0.1
+          },{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.1,
+            "effect_id": 402,
+            "effect_stack": 1,
+            "effect_chance": 0.1
+          },{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.1,
+            "effect_id": 402,
+            "effect_stack": 1,
+            "effect_chance": 0.1
+          }
+        ],
+        "lvl6_all": [{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 }],
+        "lvl9_all": [{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 }],
+        "lvl12_all": [{ "effect_stack": 3 },{ "effect_stack": 3 },{ "effect_stack": 3 },{ "effect_stack": 3 },{ "effect_stack": 3 }]
+      },
+      "tracker, bylevel": {
+        "default": {
+          "primary_node_name": "Bip001 R Forearm",
+          "pointing_node_name": "Bip001 R Hand",
+          "secondary_nodes": [["Bip001 R UpperArm", 0.01], ["Bip001 R Forearm", 999.0]],
+          "minPitch": -80,
+          "maxPitch": 90,
+          "maxYaw": 50,
+          "minYaw": -50,
+          "angularVelocity": 999
+        }
+      },
+      "actions": [ "AttackRangedPsy" ],
+      "type": "DIRECT",
+      "global_cooldown": 1.3, 
+      "aoe_radius": 0, 
+      "cast_range": 20.0,
+      "stop_movement": 1.0
+    },
+    "VEDUN_PSY_POISON": {
+      "waves_damage, bylevel": {
+        "default": [{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.6,
+            "effect_id": 401,
+            "effect_stack": 1,
+            "effect_chance": 0.2
+          },{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.1,
+            "effect_id": 401,
+            "effect_stack": 1,
+            "effect_chance": 0.2
+          },{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.1,
+            "effect_id": 401,
+            "effect_stack": 1,
+            "effect_chance": 0.1
+          },{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.1,
+            "effect_id": 401,
+            "effect_stack": 1,
+            "effect_chance": 0.1
+          },{
+            "body_zones": [ "HEAD" ], 
+            "value_damage": [ 1.0, 15.0 ],
+            "penetration": 150.0,
+            "type": "PSY",
+            "delay": 0.1,
+            "effect_id": 401,
+            "effect_stack": 1,
+            "effect_chance": 0.1
+          }
+        ],
+        "1": [{ "effect_stack": 1 },{ "effect_stack": 1 },{ "effect_stack": 1 },{ "effect_stack": 1 },{ "effect_stack": 1 }],
+        "2": [{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 }],
+        "3": [{ "effect_stack": 3 },{ "effect_stack": 3 },{ "effect_stack": 3 },{ "effect_stack": 3 },{ "effect_stack": 3 }],
+        "lvl6_all": [{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 }],
+        "lvl9_all": [{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 },{ "effect_stack": 2 }],
+        "lvl12_all": [{ "effect_stack": 3 },{ "effect_stack": 3 },{ "effect_stack": 3 },{ "effect_stack": 3 },{ "effect_stack": 3 }]
+      },
+      "tracker, bylevel": {
+        "default": {
+          "primary_node_name": "Bip001 R Forearm",
+          "pointing_node_name": "Bip001 R Hand",
+          "secondary_nodes": [["Bip001 R UpperArm", 0.01], ["Bip001 R Forearm", 999.0]],
+          "minPitch": -80,
+          "maxPitch": 90,
+          "maxYaw": 50,
+          "minYaw": -50,
+          "angularVelocity": 999
+        }
+      },
+      "actions": [ "AttackRangedPsy" ],
+      "type": "DIRECT",
+      "global_cooldown": 1.3, 
+      "aoe_radius": 0, 
+      "cast_range": 20.0,
+      "stop_movement": 1.0
+    }
+  },
+  "effect_hips": "Bip001 Spine1",
+  "hips_offset": [0, 0.1, 0],
+  "actions, bylevel": {
+    "default": {
+      "Attacking": { "sounds": [ "mob/vedun/angry" ]},
+      "AttackPaws": { "model_actions": [ "Vedun_AttackPaws" ], "sounds": [ "mob/vedun/attack" ]}, 
+      "AttackHeadPsy": { "model_actions": [ "Vedun_AttackTooth" ], "sounds": [ "mob/vedun/attack" ]}, 
+      "AttackRangedPsy": { "model_actions": [ "Vedun_AttackSpecialMiddle" ], "sounds": [ "mob/vedun/attack" ]}, 
+      "Pain": { "model_actions": [ "Vedun_Pain" ], "sounds": [ "mob/vedun/pain" ]}, 
+      "Idle": { "sounds": [ "mob/vedun/idle" ]}, 
+      "Idle1": { "model_actions": [ "Vedun_Idle1" ], "sounds": [ "mob/vedun/idle" ]}, 
+      "Die": { "model_actions": [ "Vedun_Die" ], "sounds": [ "mob/vedun/death" ]}, 
+      "Dead": { "model_actions": [ "Vedun_Dead" ]}
+    }, 
+    "2": {}
+  },
+  "tracker, bylevel": {
+    "default": {
+      "primary_node_name": "Headtracker_primary",
+      "pointing_node_name": "Headtracker_point",
+      "secondary_nodes": [["Bip001 Head", 50.0], ["Bip001 Neck", 20.0]],
+      "minPitch": -60,
+      "maxPitch": 45,
+      "maxYaw": 50,
+      "minYaw": -50,
+      "angularVelocity": 250
+    }
+  },
+  "common_conditions,parent=default_common_conditions": []
 }

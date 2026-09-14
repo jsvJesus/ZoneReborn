@@ -1,0 +1,45 @@
+{
+	"emotions":[
+		{"id": 0, "name": "yes", "key":"NUMPAD1", "action": "gesture_yes"},
+		{"id": 1, "name": "no", "key":"NUMPAD2", "action": "gesture_no"},
+		{"id": 3, "name": "hi_short", "key":"NUMPAD3", "action": "gesture_hi_short"},
+		{"id": 4, "name": "hi", "key":"NUMPAD4", "action": "gesture_hi"},
+		{"id": 5, "name": "direction", "key":"NUMPAD5", "action": "gesture_direction"},
+		{"id": 6, "name": "giveup", "key":"NUMPAD6", "action": ["gesture_giveup_in","gesture_giveup_loop","gesture_giveup_out"], "BlockItems":true},
+		{"id": 7, "name": "victory", "key":"NUMPAD7", "action": "gesture_victory"},
+		{"id": 8, "name": "honor",  "key":"NUMPAD8", "action": ["gesture_honor_in","gesture_honor_loop","gesture_honor_out"], "BlockItems":true},
+		{"id": 9, "name": "point", "key":"NUMPAD9", "action": "gesture_point"},
+		{"id": 10, "name": "angry", "key": "1", "action": "gesture_angry"}, 
+		{"id": 11, "name": "cough", "key": "2", "action": "gesture_cough"},
+		{"id": 12, "name": "hands", "key": "3", "action": ["gesture_hands_in","gesture_hands_loop","gesture_hands_out"], "BlockItems":true},
+		{"id": 13, "name": "campfire", "key": "4", "action": ["gesture_campfire_in","gesture_campfire_loop","gesture_campfire_out"], "BlockItems":true},
+		{"id": 14, "name": "limbering", "key": "5", "action": "gesture_limbering"},
+		{"id": 15, "name": "shake", "key": "6", "action": "gesture_shake"},
+		{"id": 16, "name": "shot", "key": "7", "action": "gesture_shot"},
+		{"id": 17, "name": "think", "key": "8", "action": "gesture_think"},
+		{
+			"id": 18, 
+			"name": "SitGround", 
+			"key": "NUMPADMINUS", 
+			"action": ["SitGroundAssIn","SitGroundAssIdle","SitGroundAssOut"], 
+			"Effects": [[7,1]],
+			"mark_height": 1.2
+		},
+		{
+			"id": 19, 
+			"name": "SitGroundX", 
+			"key": "ADD", 
+			"action": ["SitGroundXIn","SitGroundXIdle","SitGroundXOut"], 
+			"Effects": [[7,1]],
+			"mark_height": 1.2
+		},
+		{
+			"id": 20,
+			"name": "SitLegs", 
+			"key": "NUMPADSLASH", 
+			"action": ["SitLegsIn","SitLegsIdle","SitLegsOut"], 
+			"Effects": [[7,1]],
+			"mark_height": 1.2
+		}
+	]
+}

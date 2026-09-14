@@ -48,13 +48,13 @@
                 "name": "mushroom_big", 
                 "sfxes": {
                     "hide": [
-                        "sfx/anomaly_mushroom_off.xml"
+                        "sfx/Anomalys/mushroom_off.xml"
                     ], 
                     "persistent": [
-                        "sfx/anomaly_mushroom_off.xml"
+                        "sfx/Anomalys/mushroom_off.xml"
                     ], 
                     "revealed": [
-                        "sfx/anomaly_mushroom.xml"
+                        "sfx/Anomalys/anomaly_mushroom.xml"
                     ]
                 }
             }, 
@@ -69,13 +69,13 @@
                 "name": "mushroom_small", 
                 "sfxes": {
                     "hide": [
-                        "sfx/anomaly_mushroom_off_small.xml"
+                        "sfx/Anomalys/mushroom_off_small.xml"
                     ], 
                     "persistent": [
-                        "sfx/anomaly_mushroom_off_small.xml"
+                        "sfx/Anomalys/mushroom_off_small.xml"
                     ], 
                     "revealed": [
-                        "sfx/anomaly_mushroom.xml"
+                        "sfx/Anomalys/anomaly_mushroom.xml"
                     ]
                 }
             }

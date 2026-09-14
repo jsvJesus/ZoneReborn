@@ -49,17 +49,17 @@
                 "name": "mushroom_big", 
                 "sfxes": {
                     "hide": [
-                        "sfx/anomaly_mushroom_off.xml"
+                        "sfx/Anomalys/mushroom_off.xml"
                     ], 
                     "persistent": [
-                        "sfx/anomaly_mushroom_off.xml"
+                        "sfx/Anomalys/mushroom_off.xml"
                     ], 
                     "revealed": [
-                        "sfx/anomaly_mushroom.xml"
+                        "sfx/Anomalys/anomaly_mushroom.xml"
                     ], 
                     "warning": [
-                        "sfx/anomaly_mushroom_off.xml", 
-                        "sfx/anomaly_electro.xml"
+                        "sfx/Anomalys/mushroom_off.xml", 
+                        "sfx/Anomalys/anomaly_electro.xml"
                     ]
                 }
             }, 
@@ -74,17 +74,17 @@
                 "name": "mushroom_small", 
                 "sfxes": {
                     "hide": [
-                        "sfx/anomaly_mushroom_off_small.xml"
+                        "sfx/Anomalys/mushroom_off_small.xml"
                     ], 
                     "persistent": [
-                        "sfx/anomaly_mushroom_off_small.xml"
+                        "sfx/Anomalys/mushroom_off_small.xml"
                     ], 
                     "revealed": [
-                        "sfx/anomaly_mushroom.xml"
+                        "sfx/Anomalys/anomaly_mushroom.xml"
                     ], 
                     "warning": [
-                        "sfx/anomaly_mushroom_off_small.xml", 
-                        "sfx/anomaly_electro.xml"
+                        "sfx/Anomalys/mushroom_off_small.xml", 
+                        "sfx/Anomalys/anomaly_electro.xml"
                     ]
                 }
             }, 
@@ -120,17 +120,17 @@
                 "name": "Snow_field_01", 
                 "sfxes": {
                     "hide": [
-                        "sfx/anomaly_snowfield.xml"
+                        "sfx/Anomalys/anomaly_snowfield.xml"
                     ], 
                     "persistent": [
-                        "sfx/anomaly_snowfield.xml"
+                        "sfx/Anomalys/anomaly_snowfield.xml"
                     ], 
                     "revealed": [
-                        "sfx/anomaly_snowfield_hit.xml"
+                        "sfx/Anomalys/anomaly_snowfield_hit.xml"
                     ], 
                     "warning": [
-                        "sfx/anomaly_snowfield.xml", 
-                        "sfx/anomaly_electro.xml"
+                        "sfx/Anomalys/anomaly_snowfield.xml", 
+                        "sfx/Anomalys/anomaly_electro.xml"
                     ]
                 }
             }, 
@@ -145,17 +145,17 @@
                 "name": "Snow_field_01", 
                 "sfxes": {
                     "hide": [
-                        "sfx/anomaly_snowfield.xml"
+                        "sfx/Anomalys/anomaly_snowfield.xml"
                     ], 
                     "persistent": [
-                        "sfx/anomaly_snowfield.xml"
+                        "sfx/Anomalys/anomaly_snowfield.xml"
                     ], 
                     "revealed": [
-                        "sfx/anomaly_snowfield_hit.xml"
+                        "sfx/Anomalys/anomaly_snowfield_hit.xml"
                     ], 
                     "warning": [
-                        "sfx/anomaly_snowfield.xml", 
-                        "sfx/anomaly_electro.xml"
+                        "sfx/Anomalys/anomaly_snowfield.xml", 
+                        "sfx/Anomalys/anomaly_electro.xml"
                     ]
                 }
             }, 

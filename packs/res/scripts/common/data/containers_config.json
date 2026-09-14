@@ -1,0 +1,264 @@
+{
+	"type1" : {
+
+		"model" : "models/misc/containers/chemodan_01.model",
+		"model_empty" : "models/misc/containers/raciya_01.model",
+		"model_searched" : "models/misc/containers/radio_01.model",
+		"name" : "TYPE_32",
+		"loot_time" : 3.0,
+		"behavior" : {
+			"type" : "MOVING",
+			"exist_time" : 3.0,
+			"nonexist_time" : 1.0,
+			"radius" : 5.0
+		},
+		"trade_lists" : [
+			"outlands_chemical_sinker_ammo_med_loot_01"
+		],
+		"drop_lists_additional" : [ "Random_group_1" ]
+	},
+
+	"type2" : {
+
+		"model" : "models/misc/barrels/bochka_01_lod1.model",
+		"name" : "TYPE_20",
+		"loot_time" : 3.0,
+		"behavior" : {
+			"type" : "RESETING",
+			"reset_time" : 10.0
+		},
+		"hidden": true,
+		"insertable" : false,
+		"lock_types" : { "type" : "CROWBAR", "locked_chance": 50.0 },
+		"trade_lists" : [
+			"Vokzal_him"
+		]
+	},
+
+
+
+	"tree_bark" : {
+		"model" : "models/entities/flora/bark.model",
+		"name" : "TREE_BARK",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"tree_mooshroom" : {
+		"model" : "models/entities/flora/grib_drevesnyi.model",
+		"name" : "TREE_MOOSHROOM",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"tree_moh" : {
+		"model" : "models/entities/flora/moh.model",
+		"name" : "TREE_MOH",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"tree_hvorost" : {
+		"model" : "models/entities/flora/fireplace_wood.model",
+		"name" : "TREE_HVOROST",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+
+
+	"brusnika" : {
+		"model" : "models/entities/flora/brusnika.model",
+		"name" : "BRUSNIKA",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"moroshka" : {
+		"model" : "models/entities/flora/coldberry.model",
+		"name" : "MOROSHKA",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"zemlyanika" : {
+		"model" : "models/entities/flora/zemlyanika.model",
+		"name" : "ZEMLYANIKA",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"klykva" : {
+		"model" : "models/entities/flora/klykva.model",
+		"name" : "KLYKVA",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"chernika" : {
+		"model" : "models/entities/flora/chernika.model",
+		"name" : "CHERNIKA",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"golubika" : {
+		"model" : "models/entities/flora/golubika.model",
+		"name" : "GOLUBIKA",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+
+
+	"podorojnik" : {
+		"model" : "models/entities/flora/podorozhnik.model",
+		"name" : "PODOROJNIK",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"oduvanchik" : {
+		"model" : "models/entities/flora/oduvanchik.model",
+		"name" : "ODUVANCHIK",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"romashka" : {
+		"model" : "models/entities/flora/romashka.model",
+		"name" : "ROMASHKA",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"solodka" : {
+		"model" : "models/entities/flora/solodka.model",
+		"name" : "SOLODKA",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"valeriana" : {
+		"model" : "models/entities/flora/valeriana.model",
+		"name" : "VALERIANA",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"zveroboy" : {
+		"model" : "models/entities/flora/zveroboy.model",
+		"name" : "ZVEROBOY",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"shipovnik" : {
+		"model" : "models/entities/flora/bush_shipovnik_01.model",
+		"name" : "SHIPOVNIK",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"pizhma_01" : {
+		"model" : "models/entities/flora/pizhma_01.model",
+		"name" : "PIZHMA_01",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"pizhma_02" : {
+		"model" : "models/entities/flora/pizhma_02.model",
+		"name" : "PIZHMA_02",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"yavor_01" : {
+		"model" : "models/entities/flora/yavor_01.model",
+		"name" : "YAVOR_01",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"yavor_02" : {
+		"model" : "models/entities/flora/yavor_02.model",
+		"name" : "YAVOR_02",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"kokushnik_01" : {
+		"model" : "models/entities/flora/kokushnik_01.model",
+		"name" : "KOKUSHNIK_01",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+	"kokushnik_02" : {
+		"model" : "models/entities/flora/kokushnik_02.model",
+		"name" : "KOKUSHNIK_02",
+		"loot_time" : 3.0,
+		"behavior" : { "type" : "RESETING", "reset_time" : 10.0 },
+		"hidden": false,
+		"insertable" : false,
+		"trade_lists" : [ "Vokzal_him" ]
+	},
+
+
+
+	"undefined" : {
+		"model" : "models/bolvan/helpers/cylinder_.model",
+		"name" : "TYPE_ERROR",
+		"loot_time" : 10.0,
+		"trade_lists" : [
+			"vez_voen_base_med",
+			"vez_voen_base",
+			"forest_caches_01"
+		]
+	}
+}

@@ -1,0 +1,30 @@
+{
+	"characters/avatars/TEST.model": {
+										"test_1":		{"sfx":  {"effectorleft": "sfx/items/smoke_start.xml"},
+														 "models":{"effectorleft":{"model":["characters/items/smoking/sigarette_1_lod1.model"],"tints":[{"tint_weapon":"camf_wood"}]}}},
+										"test_2":		{"sfx":  {"effectorleft": "sfx/items/smoke_start.xml"}},
+										"test_3":		{"sfx":  {"effectorleft": "sfx/items/smoke_cigarette_throw.xml"},
+														 "models":{"effectorleft":{"model":["None"]}}},
+										"test_4":		{"sfx":  {"effectorleft": "sfx/items/smoke_start.xml"},
+														 "models":{"effectorleft":{"model":["characters/items/smoking/sigarette_1_lod1.model","characters/items/smoking/sigarette_1_lod1.model"]}}}
+									},
+
+	"characters/avatars/basem.model": {
+										"cigarette_take":	{"models":{"effectorleft":{"model":["characters/items/smoking/sigarette_1_lod1.model"]}},"use_item": true},
+										"in_1":				{"sfx":  {"effectorleft": "sfx/items/smoke_in.xml"}},
+										"out_1":			{"sfx":  {"self": "sfx/items/smoke_out.xml"}},
+										"in_2":				{"sfx":  {"effectorleft": "sfx/items/smoke_in.xml"}},
+										"out_2":			{"sfx":  {"self": "sfx/items/smoke_out.xml"}},
+										"in_3":				{"sfx":  {"effectorleft": "sfx/items/smoke_in.xml"}},
+										"out_3":			{"sfx":  {"self": "sfx/items/smoke_out.xml"}},
+										"in_4":				{"sfx":  {"effectorleft": "sfx/items/smoke_in.xml"}},
+										"out_4":			{"sfx":  {"self": "sfx/items/smoke_out.xml"}},
+										"cigarette_throw":	{"sfx":  {"self": "sfx/items/smoke_cigarette_throw.xml"}, "models":{"effectorleft":{"model":["None"]}}},
+										"stomp_1":			{},
+										"stomp_2":			{},
+										"stomp_3":			{},
+										
+										"eat_take_in":		{"use_item": true},
+										"eat_take_out":		{"models":{"effectorleft":{"model":["None"]}, "effectorright":{"model":["None"]}}}
+									  }
+}

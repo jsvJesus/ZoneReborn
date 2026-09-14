@@ -1,16 +1,16 @@
 {
     "sfxes": {
         "revealed": [
-            "sfx/anomaly_moss.xml"
+            "sfx/Anomalys/moss.xml"
         ], 
         "warning": [
-            "sfx/anomaly_moss_off_small.xml"
+            "sfx/Anomalys/moss_off_small.xml"
         ], 
         "hide": [
-            "sfx/anomaly_moss_off_small.xml"
+            "sfx/Anomalys/moss_off_small.xml"
         ], 
         "persistent": [
-            "sfx/anomaly_moss_off_small.xml"
+            "sfx/Anomalys/moss_off_small.xml"
         ]
     }, 
     "name": "moss_small", 

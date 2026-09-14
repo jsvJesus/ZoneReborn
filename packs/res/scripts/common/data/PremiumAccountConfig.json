@@ -1,0 +1,123 @@
+{
+	"configs": [
+		{
+			"price": 300,
+			"ExpCoefficient": 2.0,
+			"days": 30,
+			"name": "PremiumAccountConfigs.STANDART",
+			"description": "PremiumAccountConfigs.descriptions.premium_id_0",
+			"premium_id": 0,
+			"icon_path":"../soGUI/maps/premium/x2_30.tga"
+		},
+		{
+			"price": 150,
+			"ExpCoefficient": 2.0,
+			"days": 10,
+			"name": "PremiumAccountConfigs.STANDART_10D",
+			"description": "PremiumAccountConfigs.descriptions.premium_id_1",
+			"premium_id": 1,
+			"icon_path":"../soGUI/maps/premium/x2_10.tga"
+		},
+		{
+			"price": 50,
+			"ExpCoefficient": 2.0,
+			"days": 2,
+			"name": "PremiumAccountConfigs.STANDART_2D",
+			"description": "PremiumAccountConfigs.descriptions.premium_id_2",
+			"premium_id": 2,
+			"icon_path":"../soGUI/maps/premium/x2_2.tga"
+		},
+		{
+			"price": 1000,
+			"ExpCoefficient": 3,
+			"days": 30,
+			"name": "PremiumAccountConfigs.X3_30D",
+			"description": "PremiumAccountConfigs.descriptions.premium_id_3",
+			"premium_id": 3,
+			"icon_path":"../soGUI/maps/premium/x3_30.tga"
+		},
+		{
+			"price": 70,
+			"ExpCoefficient": 2,
+			"days": 5,
+			"name": "PremiumAccountConfigs.STANDART_5D",
+			"description": "PremiumAccountConfigs.descriptions.premium_id_4",
+			"premium_id": 4,
+			"icon_path":"../soGUI/maps/premium/x2_5.tga"
+		},
+		{
+			"price": 200,
+			"ExpCoefficient": 3,
+			"days": 2,
+			"name": "PremiumAccountConfigs.X3_2D",
+			"description": "PremiumAccountConfigs.descriptions.premium_id_5",
+			"premium_id": 5,
+			"icon_path":"../soGUI/maps/premium/x3_2.tga"
+		},
+
+
+
+
+		{
+			"price": 100,
+			"days": 4,
+			"ExpCoefficient": 2,
+			"name": "PremiumAccountConfigs.MAY1_4D",
+			"description": "PremiumAccountConfigs.descriptions.premium_id_101",
+			"premium_id": 101,
+			"icon_path":"../soGUI/maps/premium/may1.tga",
+			"holiday": true
+		},
+		{
+			"price": 100,
+			"days": 2,
+			"ExpCoefficient": 3,
+			"name": "PremiumAccountConfigs.MAY9_2D",
+			"description": "PremiumAccountConfigs.descriptions.premium_id_102",
+			"premium_id": 102,
+			"icon_path":"../soGUI/maps/premium/may9.tga",
+			"holiday": true
+		},
+		{
+			"price": 100,
+			"days": 5,
+			"ExpCoefficient": 3,
+			"name": "PremiumAccountConfigs.CHRISTMAS_5D",
+			"description": "PremiumAccountConfigs.descriptions.premium_id_103",
+			"premium_id": 103,
+			"icon_path":"../soGUI/maps/premium/christmas.tga",
+			"holiday": true
+		},
+		{
+			"price": 100,
+			"days": 2,
+			"ExpCoefficient": 3,
+			"name": "PremiumAccountConfigs.RESPECT_2D",
+			"description": "PremiumAccountConfigs.descriptions.premium_id_104",
+			"premium_id": 104,
+			"icon_path":"../soGUI/maps/premium/respect.tga",
+			"holiday": true
+		},
+		{
+			"price": 100,
+			"days": 2,
+			"ExpCoefficient": 2,
+			"name": "PremiumAccountConfigs.HOLYDAY_X2_2D",
+			"description": "PremiumAccountConfigs.descriptions.premium_id_105",
+			"premium_id": 105,
+			"icon_path":"../soGUI/maps/premium/x2_def.tga",
+			"holiday": true
+		},
+		{
+			"price": 100,
+			"days": 1,
+			"ExpCoefficient": 4,
+			"name": "PremiumAccountConfigs.TEST",
+			"description": "PremiumAccountConfigs.descriptions.premium_id_789",
+			"premium_id": 789,
+			"icon_path":"../soGUI/maps/premium/christmas_tree2.tga",
+			"holiday": true
+		}
+
+	]
+}

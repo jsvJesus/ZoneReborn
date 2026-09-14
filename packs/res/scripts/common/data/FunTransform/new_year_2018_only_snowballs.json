@@ -1,0 +1,71 @@
+{
+
+	"avatar_name_lc":"",
+	"hide_in_world_marker": false,
+	"set_model": "DEF",
+	"set_model_tint": {},
+	"collide_boxs": "DEF",
+	"hide_weapon": false,
+	"AnimationCaps": [],
+	"hide_gui":[ "systemBar", "minimap"],
+
+
+	"post_proccess":"",
+	"sfx_on_dead":"",
+
+	"drop_on_dead_loot_bbox_name":"",
+	"animation_on_damage":"",
+
+	"camera_pivot_position": "DEF",
+	"camera_pivot_dist": "DEF",
+	"camera_node": "DEF",
+
+
+	
+	"lock_aciton":[],
+	"unlock_aciton":[],
+
+	"fire_only_gun" : [10013],
+	"fire_only_grenade" : [702, 719, 721],
+
+
+
+	"random_actions":[
+	],
+		
+
+
+
+	"actions":[
+
+		{
+			"action_name":"ReloadWeapon",
+			"action_class":"SELF_EFFECT",
+			"stamina_cost":20,
+			"animation": "PickupGround",
+
+			"time_start_effect": 0.5,
+			"time_end_animation": 2.2,
+			"time_reuse_delay": 10.0,
+
+			"sfx_start_animation":"",
+			"sfx_apply_effect_boner":"",
+			"sfx_apply_effect_hit":"sfx/Player/snowball_pickup.xml",
+			"sfx_end_animation":"",
+
+			"lock_move":true,
+
+			"add_items":{"719":1}
+		}
+
+
+
+
+
+	]
+
+	
+
+
+
+}

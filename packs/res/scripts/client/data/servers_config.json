@@ -1,0 +1,71 @@
+{
+	"customers_servers": [
+		{
+			"name": "Cluster MSK",
+			"server": {
+				"online": 1,
+				"host": "spb2.stalker.so:15231"
+				}
+		},
+		{
+			"name": "Cluster SPB",
+			"server": {
+				"online": 1,
+				"host": "spb-test.stalker.so:15231"
+				}
+		}
+	],
+	"developers_servers": [
+
+		{
+			"name": "dev2",
+			"server": {
+				"online": 1,
+				"host": "hz-dev2.stalker.so:22231"
+				}
+		},
+		{
+			"name": "test",
+			"server": {
+				"online": 1,
+				"host": "update-a3.stalker.so:15231"
+				}
+		},
+		{
+			"name": "hz-app1",
+			"server": {
+				"online": 1,
+				"host": "hz-app1.stalker.so:22231"
+				}
+		},
+		{
+			"name": "hz-app2",
+			"server": {
+				"online": 1,
+				"host": "hz-app2.stalker.so:22231"
+				}
+		}
+	]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

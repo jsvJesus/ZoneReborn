@@ -1,0 +1,88 @@
+{
+    "channels": [
+        {
+            "color":"0xffffff", 
+            "constant_name": "GENERAL", 
+            "id": 0, 
+            "name": "Chat.General", 
+            "shortcut": "/g"
+        }, 
+        {
+            "color": "0xff000a", 
+            "constant_name": "FIGHT_INPUT", 
+            "id": 1, 
+            "name": "Chat.FightInput", 
+            "shortcut": "null"
+        }, 
+        {
+            "color": "0xff5700", 
+            "constant_name": "FIGHT_OUTPUT", 
+            "id": 2, 
+            "name": "Chat.FightOutput", 
+            "shortcut": "null"
+        }, 
+        {
+            "color": "0x84a4a8", 
+            "constant_name": "TRADE", 
+            "id": 3, 
+            "name": "Chat.Trade", 
+            "shortcut": "/t"
+        }, 
+        {
+            "color": "0x70ff88", 
+            "constant_name": "SYSTEM", 
+            "id": 4, 
+            "name": "Chat.System", 
+            "shortcut": "null"
+        }, 
+        {
+            "color": "0xbbca70",
+            "constant_name": "ITEMS", 
+            "id": 5, 
+            "name": "Chat.Items", 
+            "shortcut": "null"
+        }, 
+        {
+            "color": "0xffca70", 
+            "constant_name": "ACHIEVMENTS", 
+            "id": 6, 
+            "name": "Chat.Achievments", 
+            "shortcut": "null"
+        }, 
+        {
+            "color": "0x11d022",
+            "constant_name": "QUESTS",
+            "id": 11,
+            "name": "Chat.Quests",
+            "shortcut": "null"
+        },
+        {
+            "color": "0x70f2ff", 
+            "constant_name": "GROUP", 
+            "id": 7, 
+            "name": "Chat.Group", 
+            "shortcut": "/p"
+        }, 
+        {
+            "color": "0x822c00", 
+            "constant_name": "CLAN", 
+            "id": 8, 
+            "name": "Chat.Clan", 
+            "shortcut": "/c"
+        }, 
+        {
+            "color": "0x9a85a7", 
+            "constant_name": "WHISPER", 
+            "id": 9, 
+            "name": "Chat.Whisper", 
+            "shortcut": "@"
+        }, 
+        {
+            "color": "0x709eff", 
+            "constant_name": "NEWS", 
+            "id": 10, 
+            "name": "Chat.News", 
+            "shortcut": "null"
+        }
+	]
+}

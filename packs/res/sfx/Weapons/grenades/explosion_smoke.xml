@@ -1,0 +1,44 @@
+<SFXFile>
+	<Actor> particles
+		<ParticleSystem>	particles/weapons/grenades/explosion_smoke_grenade.xml	</ParticleSystem>
+	</Actor>
+	
+	<Joint>	particles
+		<ModelRoot> </ModelRoot>
+	</Joint>
+
+	<Event> particles
+		<ForceParticle/>
+	</Event>
+
+
+	<Event>
+		<AddDecal> textures/fx/decals/explosion.tga
+			<size> 4.000000 </size
+			<maxDist> 5.000000 </maxDist>
+		</AddDecal>
+	</Event>
+
+	
+	<Actor> light
+		<Light>
+			<innerRadius>	0		</innerRadius>
+			<outerRadius>	10		</outerRadius>
+			<colour>	512 255 192 400 </colour>
+		</Light>
+	</Actor>
+
+	<Joint>	light
+		<LightSource>  <ModelRoot/> </LightSource>
+	</Joint>
+
+	<Event> light
+		<Fade>
+			<time>     5.500000     </time>
+		</Fade>
+	</Event>
+
+	<Event>
+		<PlaySound> grenade/explode </PlaySound>
+	</Event>
+</SFXFile>

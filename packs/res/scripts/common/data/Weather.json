@@ -1,215 +1,242 @@
 {
-	"Weather":
-	{
-		"spaces/so_origins":
-		{
+	"Weather": {
+		"spaces/so_origins": {
+			"default": "Origin"
+		},
+		"spaces/city_lubech": {
+			"default": "Fog",
+			"periods": {
+				"weather_day_09_15": ["DN_Stormy", "Cloudy_shadows", "Day_Cloudy1", "Day_Cloudy3"],
+				"weather_evening_sun_15_19": ["Fog", "MEsun_Cloudy1", "ME_Stormy", "MEsun_Cloudy3"],
+				"weather_evening_moon_19_21": ["MEmoon_Cloudy1", "Fog"],
+				"weather_night_21_03": ["Night_BlueClouds", "Night_BlueRed", "Night_Cloudy1", "Fog", "Rainy"],
+				"weather_morning_moon_03_05": ["Fog", "MEmoon_Cloudy1", "Rainy"],
+				"weather_morning_sun_05_09": ["Fog", "MEsun_Cloudy1", "ME_Stormy"]
+			}
+		},
+		"spaces/city_lubech_2": {
+			"default": "Fog",
+			"periods": {
+				"weather_day_09_15": ["DN_Stormy", "Cloudy_shadows", "Day_Cloudy1", "Day_Cloudy3"],
+				"weather_evening_sun_15_19": ["Fog", "MEsun_Cloudy1", "ME_Stormy", "MEsun_Cloudy3"],
+				"weather_evening_moon_19_21": ["MEmoon_Cloudy1", "Fog"],
+				"weather_night_21_03": ["Night_BlueClouds", "Night_BlueRed", "Night_Cloudy1", "Fog", "Rainy"],
+				"weather_morning_moon_03_05": ["Fog", "MEmoon_Cloudy1", "Rainy"],
+				"weather_morning_sun_05_09": ["Fog", "MEsun_Cloudy1", "ME_Stormy"]
+			}
+		},
+		"spaces/city_lubech_apartments": {
 			"default": "Fog"
 		},
-
-		"spaces/city_lubech":
-		{
+		"spaces/event_new_year_main_2017": {
+			"default": "NY_Snow",
+			"periods": {
+				"weather_day": ["NY_Snow", "NY_Snow_Clear"],
+				"weather_night": "NY_Snow_Night"
+			}
+		},
+		"spaces/event_new_year_builder_2": {
+			"default": "NY_Snow_Builder"
+		},
+		"spaces/outlands": {
 			"default": "Fog",
-				"periods":
-				{
-					"weather_day_09_15":			["DN_Stormy", "Day_Cloudy3", "Day_Cloudy1", "Day_Cloudy2"],
-					"weather_evening_sun_15_19":	["Fog", "MEsun_Cloudy2", "ME_Stormy", "MEsun_Cloudy3"],
-					"weather_evening_moon_19_21":	["MEmoon_Cloudy3", "Fog"],
-					"weather_night_21_03":			["Day_Cloudy2", "Night_BlueClouds", "Fog", "DN_Stormy"],
-					"weather_morning_moon_03_05":	["MEmoon_Cloudy3", "MEmoon_Cloudy1", "Fog", "Rainy"],
-					"weather_mornong_sun_05_09":	["Fog", "MEsun_Cloudy3", "ME_Stormy"]
-				}
+			"periods": {
+				"weather_day_09_15": ["DN_Stormy", "Cloudy_shadows", "Day_Cloudy1", "Day_Cloudy3"],
+				"weather_evening_sun_15_19": ["Fog", "MEsun_Cloudy1", "ME_Stormy", "MEsun_Cloudy3"],
+				"weather_evening_moon_19_21": ["MEmoon_Cloudy1", "Fog"],
+				"weather_night_21_03": ["Night_BlueClouds", "Night_BlueRed", "Fog", "Rainy"],
+				"weather_morning_moon_03_05": ["Fog", "MEmoon_Cloudy1", "Rainy"],
+				"weather_morning_sun_05_09": ["Fog", "MEsun_Cloudy1", "ME_Stormy"]
+			}
 		},
-
-		"spaces/outlands":
-		{
+		"spaces/outlands_apartments": {
+			"default": "Fog"
+		},
+		"spaces/outlands_airport": {
 			"default": "Fog",
-				"periods":
-				{
-					"weather_day_09_15":			["DN_Stormy", "Day_Cloudy2", "Day_Cloudy3", "Day_Cloudy1"],
-					"weather_evening_sun_15_19":	["ME_Stormy", "Fog", "MEsun_Cloudy2"],
-					"weather_evening_moon_19_21":	["MEmoon_Cloudy3", "Fog"],
-					"weather_night_21_03":			["Day_Cloudy3", "Night_BlueRed", "Night_BlueClouds", "DN_Stormy", "Fog"],
-					"weather_morning_moon_03_05":	["MEmoon_Cloudy2", "MEmoon_Cloudy1", "Fog", "Rainy"],
-					"weather_mornong_sun_05_09":	["Fog", "MEsun_Cloudy3", "ME_Stormy"]
-				}
+			"periods": {
+				"weather_day_09_15": ["DN_Stormy", "Cloudy_shadows", "Day_Cloudy1", "Day_Cloudy3"],
+				"weather_evening_sun_15_19": ["Fog", "MEsun_Cloudy1", "ME_Stormy", "MEsun_Cloudy3"],
+				"weather_evening_moon_19_21": ["MEmoon_Cloudy1", "Fog"],
+				"weather_night_21_03": ["Night_BlueClouds", "Night_BlueRed", "Fog", "Rainy"],
+				"weather_morning_moon_03_05": ["Fog", "MEmoon_Cloudy1", "Rainy"],
+				"weather_morning_sun_05_09": ["Fog", "MEsun_Cloudy1", "ME_Stormy"]
+			}
 		},
-
-		"spaces/vesuvius":
-		{
-			"default": "ME_DustStorm",
-				"periods":
-				{
-					"weather_day_09_15":			["DN_DustStorm", "DN_Stormy", "Day_Cloudy2"],
-					"weather_evening_sun_15_19":	["ME_DustStorm", "MEsun_Cloudy3"],
-					"weather_evening_moon_19_21":	["ME_DustStorm", "MEmoon_Cloudy3", "Fog", "ME_Stormy"],
-					"weather_night_21_03":			["Night_Cloudy2", "Night_BlueClouds", "Night_BlueRed", "Fog"],
-					"weather_morning_moon_03_05":	["ME_DustStorm", "MEmoon_Cloudy2", "MEmoon_Cloudy1"],
-					"weather_mornong_sun_05_09":	["ME_DustStorm", "MEsun_Cloudy2"]
-				}
+		"spaces/outlands_airport_apartments": {
+			"default": "Fog"
 		},
-		
-		"spaces/outlands_airport":
-		{
+		"spaces/vesuvius": {
 			"default": "Fog",
-				"periods":
-				{
-					"weather_day_09_15":			["DN_Stormy", "Fog", "Day_Cloudy1", "Day_Cloudy2"],
-					"weather_evening_sun_15_19":	["ME_Stormy", "Fog", "MEsun_Cloudy2"],
-					"weather_evening_moon_19_21":	["MEmoon_Cloudy3", "Fog", "Rainy"],
-					"weather_night_21_03":			["Night_BlueClouds", "Day_Cloudy3", "DN_Stormy", "Fog"],
-					"weather_morning_moon_03_05":	["MEmoon_Cloudy3", "MEmoon_Cloudy1", "Fog", "Rainy"],
-					"weather_mornong_sun_05_09":	["Fog", "MEsun_Cloudy3", "ME_Stormy"]
-				}
+			"periods": {
+				"weather_day_09_15": ["DN_Stormy", "DN_DustStorm", "DN_DustStorm", "Cloudy_shadows"],
+				"weather_evening_sun_15_19": ["Fog", "ME_DustStorm", "MEsun_Cloudy1", "ME_Stormy", "MEsun_Cloudy3"],
+				"weather_evening_moon_19_21": ["ME_DustStorm", "MEmoon_Cloudy3", "ME_DustStorm", "Fog", "ME_Stormy"],
+				"weather_night_21_03": ["Night_BlueClouds", "Night_BlueRed", "Fog", "Rainy"],
+				"weather_morning_moon_03_05": ["Fog", "ME_DustStorm", "Rainy"],
+				"weather_morning_sun_05_09": ["Fog", "ME_DustStorm", "ME_Stormy"]
+			}
 		},
-
-	    "spaces/outlands_caravan":
-		{
+		"spaces/tunguska": {
 			"default": "Fog",
-				"periods":
-				{
-					"weather_day_09_15":			["DN_Stormy", "Fog", "Day_Cloudy1", "Day_Cloudy2"],
-					"weather_evening_sun_15_19":	["ME_Stormy", "Fog", "MEsun_Cloudy2"],
-					"weather_evening_moon_19_21":	["MEmoon_Cloudy3", "Fog"],
-					"weather_night_21_03":			["Night_Cloudy3", "Night_BlueClouds", "DN_Stormy", "Cloudy2", "Fog"],
-					"weather_morning_moon_03_05":	["MEmoon_Cloudy3", "MEmoon_Cloudy1", "Fog", "Rainy"],
-					"weather_mornong_sun_05_09":	["Fog", "MEsun_Cloudy3", "ME_Stormy"]
-				}
+			"periods": {
+				"weather_day_09_15": ["DN_Stormy", "Fog", "Cloudy_shadows", "Day_Cloudy3"],
+				"weather_evening_sun_15_19": ["ME_Stormy", "Fog", "MEsun_Cloudy1", "MEsun_Cloudy2"],
+				"weather_evening_moon_19_21": ["MEmoon_Cloudy1", "Fog", "Rainy"],
+				"weather_night_21_03": [
+					"Night_BlueRed",
+					"Fog",
+					"Night_BlueClouds",
+					"Night_Cloudy1",
+					"Night_Quasar",
+					"Night_BordoNebula",
+					"Rainy"
+				],
+				"weather_morning_moon_03_05": ["MEmoon_Cloudy1", "Fog", "Rainy"],
+				"weather_morning_sun_05_09": ["MEsun_Cloudy1", "Fog", "MEsun_Cloudy3"]
+			}
 		},
-
-
-	    "spaces/tunguska":
-		{
+		"spaces/tunguska_caravan": {
 			"default": "Fog",
-				"periods":
-				{
-					"weather_day_09_15":			["DN_Stormy", "Fog", "Day_Cloudy1", "Day_Cloudy2"],
-					"weather_evening_sun_15_19":	["ME_Stormy", "Fog", "MEsun_Cloudy1"],
-					"weather_evening_moon_19_21":	["MEmoon_Cloudy2", "Fog"],
-					"weather_night_21_03":			["Night_Cloudy2", "Night_Quasar", "Night_BordoNebula", "Fog"],
-					"weather_morning_moon_03_05":	["MEmoon_Cloudy3", "MEmoon_Cloudy1", "Fog", "Rainy"],
-					"weather_mornong_sun_05_09":	["Fog", "MEsun_Cloudy3", "ME_Stormy"]
-				}
+			"periods": {
+				"weather_day_09_15": ["DN_Stormy", "Fog", "Cloudy_shadows", "Day_Cloudy3"],
+				"weather_evening_sun_15_19": ["ME_Stormy", "Fog", "MEsun_Cloudy1", "MEsun_Cloudy2"],
+				"weather_evening_moon_19_21": ["MEmoon_Cloudy1", "Fog", "Rainy"],
+				"weather_night_21_03": [
+					"Night_BlueRed",
+					"Fog",
+					"Night_BlueClouds",
+					"Night_Cloudy1",
+					"Night_Quasar",
+					"Night_BordoNebula",
+					"Rainy"
+				],
+				"weather_morning_moon_03_05": ["MEmoon_Cloudy1", "Fog", "Rainy"],
+				"weather_morning_sun_05_09": ["MEsun_Cloudy1", "Fog", "MEsun_Cloudy3"]
+			}
 		},
-
-		"spaces/volcano":
-	   	{
+		"spaces/volcano": {
 			"default": "ME_DustStorm"
 		},
-	
-	    "spaces/novaya":
-		{
+		"spaces/novaya": {
 			"default": "Blizzard",
-			"periods":
-			{
-				"weather_morning":			"Blizzard",
-				"weather_day":				["Snow", "Nz_aurora"],
-				"weather_evening":			["Blizzard", "Snow"],
-				"weather_night_random":		["Snow", "Blizzard", "Nz_aurora"]
+			"periods": {
+				"weather_morning": "Blizzard",
+				"weather_day": ["Snow", "Nz_aurora"],
+				"weather_evening": ["Blizzard", "Snow"],
+				"weather_night_random": ["Snow", "Blizzard", "Nz_aurora"]
 			}
 		},
-
-	    "spaces/steppe":
-	   	{
+		"spaces/novaya_3x9": {
+			"default": "nz_light_Blizzard",
+			"periods": {
+				"weather_morning": "nz_light_Blizzard",
+				"weather_day": ["nz_light_Snow", "Nz_aurora"],
+				"weather_evening": ["nz_light_Blizzard", "nz_light_Snow"],
+				"weather_night_random": ["nz_light_Snow", "nz_light_Blizzard", "Nz_aurora"]
+			}
+		},
+		"spaces/test_steppe": {
 			"default": "Steppe_dustwind"
 		},
-
-	    "spaces/steppe_dust":
-		{
+		"spaces/test_steppe_dust": {
 			"default": "Steppe_dustwind"
 		},
-
-		"spaces/lubech_uderground":
-	    {
-		    "default": "Lubech_Uderground"
-	    },
-		
-		"spaces/zoo":
-	    {
-		    "default": "Clear"
-	    },
-		
-		"spaces/dm_ryabinushka":
-		{
-		    "default": "DN_Stormy"
+		"spaces/city_lubech_underground": {
+			"default": "Lubech_Underground"
 		},
-
-		"spaces/dm_outlands_village":
-		{
-		    "default": "Day_Cloudy1"
+		"spaces/WINTER_city_lubech_underground": {
+			"default": "Lubech_Underground"
 		},
-
-		"spaces/dm_snowland":
-		{
-		    "default": "Blizzard"
+		"spaces/novaya_underground": {
+			"default": "Paukan_Dungeon"
 		},
-
-		"spaces/dm_rocks":
-		{
-		    "default": "Day_Cloudy1"
+		"spaces/laboratory": {
+			"default": "Lubech_Underground"
 		},
-
-		"spaces/pk_prison01":
-		{
-		    "default": "ME_Stormy"
-		}
-
-	},
-	
-	"ZoneWeather":
-	{
-	    
-		"zone_fog_strong":
-		{
-		    "default": "fog_strong",
-			"periods":
-            {
-			    
-			}
+		"spaces/donate_base_small": {
+			"default": "Lubech_Underground"
 		},
-		
-		"zone_fog_middle":
-		{
-		    "default": "fog_middle",
-			"periods":
-            {
-			    
-			}
+		"spaces/outlands_paukan": {
+			"default": "Paukan_Dungeon"
 		},
-		
-		"Fog":
-		{
-		    "default": "Fog",
-			"periods":
-            {
-			    
-			}
+		"spaces/test_zoo": {
+			"default": "Clear"
 		},
-		
-		"Rainy":
-		{
-		    "default": "Rainy",
-			"periods":
-            {
-			    
-			}
+		"spaces/test_anomaly": {
+			"default": "zoo_anomaly"
 		},
-		
-		"zone_1":
-		{
+		"spaces/dm_ryabinushka": {
+			"default": "DN_Stormy"
+		},
+		"spaces/dm_outlands_village": {
+			"default": "Cloudy_shadows"
+		},
+		"spaces/dm_snowland": {
+			"default": "Blizzard"
+		},
+		"spaces/dm_rocks": {
+			"default": "Day_Cloudy1"
+		},
+		"spaces/dm_new_year_fight": {
+			"default": "NY_Snow_lite",
+			"periods": {
+				"weather_day": ["NY_Snow_lite", "NY_Snow_Clear"],
+				"weather_night": "NY_Snow_Night"}
+		},
+		"spaces/dm_new_year_snowballs": {
+			"default": "NY_Snow_lite",
+			"periods": {
+				"weather_day": ["NY_Snow_lite", "NY_Snow_Clear"],
+				"weather_night": "NY_Snow_Night"}
+		},
+		"spaces/event_new_year_scenario_1": {
+			"default": "ny_blizzard"
+		},
+		"spaces/pk_prison01": {
+			"default": "DN_Stormy_prison"
+		},
+		"spaces/testers": {
 			"default": "Clear",
-			"periods":
-			{
-				"clear_time":
-				{
-					"0":"Rainy"
+			"periods": {}
+		}
+	},
+	"ZoneWeather": {
+		"zone_fog_strong": {
+			"default": "fog_strong",
+			"periods": {}
+		},
+		"zone_fog_middle": {
+			"default": "fog_middle",
+			"periods": {}
+		},
+		"Fog": {
+			"default": "Fog",
+			"periods": {}
+		},
+		"Rainy": {
+			"default": "Rainy",
+			"periods": {}
+		},
+		"Lubech_Underground": {
+			"default": "Lubech_Underground",
+			"periods": {}
+		},
+		"Paukan_Dungeon": {
+			"default": "Paukan_Dungeon",
+			"periods": {}
+		},
+		"zone_1": {
+			"default": "Clear",
+			"periods": {
+				"clear_time": {
+					"0": "Rainy"
 				},
-				"cloudy_time":
-				{
-					"0":"Rainy",
-					"1":["Rainy","Clear"]
+				"cloudy_time": {
+					"0": "Rainy",
+					"1": ["Rainy", "Clear"]
 				}
 			}
 		}
 	}
-
 }

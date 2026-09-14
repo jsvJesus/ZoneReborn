@@ -1,34 +1,25 @@
 {
-	"difficultyMin" : 10,
-	"difficultyMax" : 20,
-	"lifetime": 0.4,
-	"artifacts": [206],
-	"artifact_spawn_chance": 0.75,
-	"default_state": "main",
-	"states": {
-		"main": {
-			"radius": 5.0,
-			"radiusOut": 10.0,
-			"damage": {
-				"type": "BLEED",
-				"distribution":  "RADIAL",
-				"frequency": 3.0,
-				"value": 10.0,
-				"penetration": 100.0,
-				"body_zone": "LEG_LOWER"
-			},
-			"effects": [
-				["Anomaly_Noob_visible", 1]
-			],
-			"invisible": 0,
-			"nudge_type": "NONE",
-			"nudge_interval": 1,
-			"particles": "particles/anomaly_geyzer_activ.xml",
-			"particlesOut": "particles/anomaly_OFF.xml",
-			
-			"sfx_self_interval": [3,6],
-			
-			"sound": "anomaly/gravi"
-		}
-	}
+    "difficultyMax": 20, 
+    "difficultyMin": 10, 
+    "lifetimeMax": 1440.0, 
+    "lifetimeMin": 720.0,
+    "loot":"empty",
+    "damage": {
+        "body_zone": "LEG_LOWER", 
+        "distribution": "RADIAL", 
+        "frequency": 3.0, 
+        "penetration": 100.0, 
+        "type": "WATER", 
+        "value": 10.0
+    }, 
+    "effects": [[ "Anomaly_Noob_visible", 1 ]], 
+    "invisible": 0, 
+    "nudge_interval": 1, 
+    "nudge_type": "NONE", 
+    "radius": 5.0, 
+    "radiusOut": 10.0, 
+    "sfx_inside": "sfx/Anomalys/geyzer.xml", 
+    "sfx_main": "sfx/Anomalys/geyzer_idle.xml", 
+    "sfx_artifact_wall": "sfx/Anomalys/artefact_wall.xml", 
+    "sfx_main_interval": [ 3, 6 ]
 }

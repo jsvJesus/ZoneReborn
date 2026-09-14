@@ -10,6 +10,10 @@
 		"large_worm" : 2,
 		"small_worm" : 0.1
 	},
+	"height": 4,
+	"width": 2.5,
+	"height_idle": 3.5,
+	"width_idle": 0.5,
 	"tints, bylevel" : {
 		"default" : [{"bodys": "box1", "heads": "wood"}],
 		"large_worm" : [{"bodys": "metal2", "heads": "metal"}, {"bodys": "box1", "heads": "wood"}, {}]
@@ -25,8 +29,8 @@
 		"large_worm" : 300
 	},
 	"health, bylevel" : {
-		"default" : 3,
-		"large_worm" : 4
+		"default" : 1500,
+		"large_worm" : 2000
 	},
 	"agro_range, bylevel" : {
 		"default" : 10,
@@ -40,27 +44,44 @@
 		"default" : 2,
 		"large_worm" : 1
 	},
+	"multiplier":
+  	{
+    "HEAD":2,
+    "FACE":1,
+    "TORSO":1,
+    "HEART":1,
+    "GROIN":1.5,
+    "ARM" :1, 
+    "FOREARM":0.5,
+    "LEG_UPPER":1, 
+    "LEG_LOWER":0.5
+  	},
 	"defence, bylevel" : {
 		"default" : {
-			"MELEE" : 700.0,
-			"BULLET" : 1.0,
-			"EXPLOSION" : 60.0,
-			"BIO" : 700.0
+			"default": {
+				"MELEE": 0.0,
+				"BULLET": 0.0,
+				"EXPLOSION": 60.0,
+				"GRAVITATION": 0.0,
+				"ELECTROSTATIC": 0.0,
+				"INFRARED": 0.0,
+				"RADIATION": 0.0,
+				"PSY": 0.0,
+				"BIO": 700.0,
+				"SUFFOCATION": 0.0,
+				"COLD": 0.0
+				}
 		},
 		"large_worm" : {
-			"BULLET" : 1000.0
+			"default": {"BULLET" : 1000.0}
 		}
 	},
-	"height, bylevel" : {
-		"default" : 3,
-		"large_worm" : 10
-	},	
-	"width, bylevel" : {
-		"default" : 2,
-		"large_worm" : 3
-	},	
+	"skins_stiffness": 5.0,
+	"looting_time": 2.0,
+    "buchering_time":5.0,
+	"looting_types": ["Search" ,"Butchering"], 
 	"decompose_time, bylevel" : {
-		"default" : [500,700],
+		"default" : [119,120],
 		"large_worm" : [20,20]
 	},
 	"footsteps_sound" : "mob/dog/footsteps",
@@ -236,17 +257,17 @@
 		"WORM_RANGE_TEST": {
 			"type": "DIRECT",
 			"cast_range": 10.0,
-			"cooldown": 1.5,
+			"global_cooldown": 1.5,
 			"aoe_radius": 0,
 			"damage, bylevel": {
 				"default": {
 					"body_zones": ["TORSO"],
 					"type" : "MELEE",
-					"value" : [0.015, 0.020],
-					"penetration" : 100
+					"penetration" : 100,
+					"value" : [ 30, 30 ]
 				},
 				"large_worm": {
-					"value" : [0.04, 0.05]
+					"value" : [ 40, 40 ]
 				}
 			},			
 			"effects": [["Bleed", 0]], 
@@ -265,7 +286,7 @@
 		"WORM_GRENADE_TEST": {
 			"type": "THROW",
 			"cast_range": 10.0,
-			"cooldown": 1.5,
+			"global_cooldown": 1.5,
 			"aoe_radius": 3,
 			"throwing_type"	: "BIO",
 			"throw_start_position, bylevel"	: {
@@ -275,8 +296,8 @@
 			"explode_delay"	: 2,
 			"damage": {
 				"type" : "MELEE",
-				"value" : [0.015, 0.030],
-				"penetration" : 100
+				"penetration" : 100,
+				"value" : [ 20, 20 ]
 			},			
 			"effects": [["Bleed", 0]], 
 			"actions": ["Attack"]

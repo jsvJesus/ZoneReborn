@@ -1,0 +1,37 @@
+{
+    "default_state": "main", 
+    "difficultyMax": 20, 
+    "difficultyMin": 1, 
+    "lifetimeMin": 10000.0, 
+    "lifetimeMax": 11000.0, 
+    
+    "loot": "Drobilka_0",
+    "damage": {
+        "body_zone": "TORSO", 
+        "distribution": "RADIAL", 
+        "frequency": 0.34, 
+        "penetration": 114.0, 
+        "type": "BULLET", 
+        "value": 10.0
+    }, 
+    "effects": [], 
+    "invisible": 0, 
+    "nudge_interval": 2, 
+    "nudge_type": "TO_CENTER", 
+    "height_up": 3,
+    "height_down": 0.5,
+    "radius": 5.0, 
+    "radiusOut": 10.0, 
+    "radiation_effect": "Radioactivity",
+    "radiation_effect_stack_min": 1,
+    "radiation_effect_stack_max": 5,
+    "sfx_inside": "sfx/Anomalys/drobilka.xml", 
+    "sfx_main": "sfx/Anomalys/drobilka_idle.xml",  
+    "sfx_artifact_wall": "sfx/Anomalys/artefact_wall.xml", 
+    "sfx_main_interval": [ 3, 5 ],
+    "stone_hit_effect": "",
+    "destroy_stone": false,
+    "stone_proof": false,
+    "stone_fly_effect": "sfx/Anomalys/drobilka_stone_fly.xml",
+    "visible_artifact": {"sfx_main": 0, "sfx_inside":1}
+}

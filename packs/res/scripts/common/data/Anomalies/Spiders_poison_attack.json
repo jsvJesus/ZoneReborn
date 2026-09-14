@@ -1,33 +1,24 @@
 {
-	"difficultyMin" : 20,
-	"difficultyMax" : 30,
-	"lifetime": 10.0,
-	"artifact_spawn_chance": 0.0,
-	"default_state": "main",
-	"states": {
-		"main": {
-			"radius": 3.0,
-			"radiusOut": 10.0,
-			"damage": {
-				"type": "BIO",
-				"distribution":  "FLAT",
-				"frequency": 0.5,
-				"value": 20.0,
-				"penetration": 100.0,
-				"body_zone": "LEG_LOWER"
-			},
-			"effects": [
-				["HallucinationsSpider", 1]
-			],
-			"invisible": 0,
-			"nudge_type": "TO_CENTER",
-			"nudge_interval": 1,
-			"particles": "particles/Spiders_poison.xml",
-			"particlesOut": "particles/anomaly_OFF.xml",
-			
-			"sfx_self_interval": [3,6],
-			
-			"sound": "anomaly/water"
-		}
-	}
+    "difficultyMax": 30, 
+    "difficultyMin": 20, 
+    "lifetimeMax": 36000.0, 
+    "lifetimeMin": 18000.0, 
+    "loot":"empty",
+    "damage": {
+        "body_zone": "LEG_LOWER", 
+        "distribution": "FLAT", 
+        "frequency": 0.5, 
+        "penetration": 100.0, 
+        "type": "BIO", 
+        "value": 20.0
+    }, 
+    "effects": [[ "HallucinationsSpider", 1 ]], 
+    "invisible": 0, 
+    "nudge_interval": 1, 
+    "nudge_type": "TO_CENTER", 
+    "radius": 3.0, 
+    "radiusOut": 10.0, 
+    "sfx_inside": "sfx/Anomalys/poison_spiders.xml", 
+    "sfx_main": "sfx/Anomalys/shimmer.xml", 
+    "sfx_main_interval": [ 3, 6 ]
 }

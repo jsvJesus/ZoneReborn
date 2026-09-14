@@ -1,33 +1,28 @@
 {
-	"difficultyMin" : 1,
-	"difficultyMax" : 1000,
-	"lifetime": 5.0,
-	
-	"artifact_spawn_chance": 0.0,
-	"default_state": "main",
-	"states": {
-		"main": {
-			"radius": 15.0,
-			"radiusOut": 20.0,
-			"damage": {
-				"type": "RADIATION",
-				"distribution":  "RADIAL_SQUARED",
-				"frequency": 0.0,
-				"value": 0.0,
-				"penetration": 100.0,
-				"body_zone": "TORSO"
-			},
-			"effects": [
-				["RadioactivitySource", 5]
-			],
-			"invisible": 1,
-			"nudge_type": "NONE",
-			"nudge_interval": 1,
-			"particles": "particles/anomaly_OFF.xml",
-			"particlesOut": "particles/anomaly_OFF.xml",
-			
-			"sound": "anomaly/geiger_med"
-						
-		}
-	}
+    "difficultyMax": 1000, 
+    "difficultyMin": 1, 
+    "lifetimeMax": 18000.0, 
+    "lifetimeMin": 9000.0, 
+    "loot":"empty",
+    "damage": {
+        "body_zone": "TORSO", 
+        "distribution": "RADIAL_SQUARED", 
+        "frequency": 0.0, 
+        "penetration": 100.0, 
+        "type": "RADIATION", 
+        "value": 0.0
+    }, 
+    "effects": [[ "RadioactivitySource", 5 ]], 
+    "invisible": 0, 
+    "nudge_interval": 1, 
+    "nudge_type": "NONE", 
+    "radius": 5.0, 
+    "radiusOut": 20.0, 
+    "sfx_inside": "sfx/Anomalys/radioactivity.xml", 
+    "sfx_main": "", 
+    "sfx_main_interval": [ 3, 6 ],
+    "stone_hit_effect": "",
+    "destroy_stone": false,
+    "stone_proof": true,
+    "stone_fly_effect": ""
 }

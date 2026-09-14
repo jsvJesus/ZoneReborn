@@ -1,35 +1,31 @@
 {
-	"difficultyMin" : 1,
-	"difficultyMax" : 1000,
-	"lifetime": 5.0,
-	
-	"artifact_spawn_chance": 0.0,
-	"default_state": "main",
-	"states": {
-		"main": {
-			"radius": 15.0,
-			"radiusOut": 20.0,
-			"damage": {
-				"type": "PSY",
-				"distribution":  "RADIAL",
-				"frequency": 0.0,
-				"value": 5.0,
-				"penetration": 100.0,
-				"body_zone": "HEAD"
-			},
-			"effects": [
-				["Anomaly_Psycho", 1]
-			],
-			"invisible": 0,
-			"nudge_type": "NONE",
-			"nudge_interval": 1,
-			"particles": "particles/anomaly_OFF.xml",
-			"particlesOut": "particles/anomaly_OFF.xml",
-			
-			
-			"sfx_self_interval": [3,6],
-			
-			"sound": "ambient/pads/breathing"
-		}
-	}
+    "difficultyMax": 1000, 
+    "difficultyMin": 1, 
+    "lifetimeMax": 18000.0, 
+    "lifetimeMin": 9000.0, 
+    "loot":"empty",
+    "damage": {
+        "body_zone": "HEAD", 
+        "distribution": "RADIAL", 
+        "frequency": 0.0, 
+        "penetration": 100.0, 
+        "type": "PSY", 
+        "value": 5.0
+    }, 
+    "effects": [[ "Anomaly_Psycho", 1 ]], 
+    "invisible": 1, 
+    "nudge_interval": 1, 
+    "nudge_type": "NONE", 
+    "height_up": 3,
+    "height_down": 0.5,
+    "radius": 15.0, 
+    "radiusOut": 20.0, 
+    "sfx_inside": "", 
+    "sfx_main": "", 
+    "sfx_main_interval": [ 3, 6 ],
+    "stone_hit_effect": "",
+    "destroy_stone": false,
+    "stone_proof": true,
+    "stone_fly_effect": "",
+    "visible_artifact": {"sfx_main": 0, "sfx_inside":0}
 }

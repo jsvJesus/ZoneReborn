@@ -1,0 +1,10 @@
+{
+	"CROWBAR": {
+
+		"loot_time" : 3.0,
+		"item" : 350,
+		"in_animation" : "SitGroundAssIn",
+		"loop_animation" : "SitGroundAssIdle",
+		"out_animation" : "SitGroundAssOut"
+	}
+}

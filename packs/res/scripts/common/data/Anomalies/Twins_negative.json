@@ -1,34 +1,31 @@
 {
-	"difficultyMin" : 10,
-	"difficultyMax" : 20,
-	"lifetime": 0.5,
-	
-	"artifact_spawn_chance": 0.0,
-	"default_state": "main",
-	"states": {
-		"main": {
-			"radius": 15.0,
-			"radiusOut": 30.0,
-			"damage": {
-				"type": "INFRARED",
-				"distribution":  "FLAT",
-				"frequency": 0.0,
-				"value": 3.0,
-				"penetration": 100.0,
-				"body_zone": "TORSO"
-			},
-			"effects": [
-				["TwinsNegative", 1]
-			],
-			"invisible": 0,
-			"nudge_type": "NONE",
-			"nudge_interval": 1,
-			"particles": "particles/anomaliya_twins_negative_20m.xml",
-			"particlesOut": "particles/anomaliya_twins_negative_20m.xml",
-			
-			"sfx_self_interval": [3,6],
-			 
-			"sound": "anomaly/electro"
-		}
-	}
+    "difficultyMax": 20, 
+    "difficultyMin": 10, 
+    "lifetimeMax": 1800.0, 
+    "lifetimeMin": 900.0, 
+    "loot":"empty",
+    "damage": {
+        "body_zone": "TORSO", 
+        "distribution": "FLAT", 
+        "frequency": 0.0, 
+        "penetration": 100.0, 
+        "type": "INFRARED", 
+        "value": 3.0
+    }, 
+    "effects": [[ "TwinsNegative", 1 ]], 
+    "invisible": 0, 
+    "nudge_interval": 1, 
+    "nudge_type": "NONE", 
+    "height_up": 3,
+    "height_down": 0.5,
+    "radius": 15.0, 
+    "radiusOut": 30.0, 
+    "sfx_inside": "sfx/Anomalys/twins_negative.xml", 
+    "sfx_main": "sfx/Anomalys/twins_negative.xml", 
+    "sfx_main_interval": [ 3, 6 ],
+    "stone_hit_effect": "sfx/Anomalys/microwave_stone_hit.xml",
+    "destroy_stone": false,
+    "stone_proof": false,
+    "stone_fly_effect": "sfx/Anomalys/microwave_stone_fly.xml",
+    "visible_artifact": {"sfx_main": 0, "sfx_inside":1}
 }

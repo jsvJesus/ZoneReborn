@@ -1,0 +1,304 @@
+{
+	"cue_to_node":{
+		 "FootPrintLeft": "lefttoebase", 
+		 "FootPrintRight": "righttoebase"
+		},
+
+
+	"water_node_hips_stay": "rightleg",
+	"water_node_hips_crouch": "spine",
+	"water_node_head": "HP_spine1",
+	"add_water_node_head_height": 1.0,
+
+
+	"sfx_splashing_water":"sfx/waterFoot/splashingWater.xml",
+	"sfx_foot_in_water_lev1":"sfx/waterFoot/water_foot.xml",
+	"sfx_foot_in_water_lev2":{
+			"FootPrintLeft":"sfx/waterFoot/water_hips_left.xml",
+			"FootPrintRight":"sfx/waterFoot/water_hips_right.xml"
+			},
+
+	"sfx_foot_in_water_lev3":{
+			"FootPrintLeft":"sfx/waterFoot/water_head_left.xml",
+			"FootPrintRight":"sfx/waterFoot/water_head_right.xml"
+			},
+
+
+
+
+	"by_marterial_kind":{
+		"0": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/stone",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/stone",
+				"sfx": ""
+				}
+			}, 
+		"1": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/wood",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/wood",
+				"sfx": ""
+				}
+			}, 
+		"2": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/stone",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/stone",
+				"sfx": ""
+				}
+			}, 
+		"3": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/chain",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/chain",
+				"sfx": ""
+				}
+			}, 
+		"4": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/light_metal",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/light_metal",
+				"sfx": ""
+				}
+			}, 
+		"5": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/heavy_metal",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/heavy_metal",
+				"sfx": ""
+				}
+			}, 
+		"6": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/glass",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/glass",
+				"sfx": ""
+				}
+			}, 
+		"7": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/dirt",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/dirt",
+				"sfx": ""
+				}
+			}, 
+		"8": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/grass",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/grass",
+				"sfx": ""
+				}
+			}, 
+		"9": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/snow",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/snow",
+				"sfx": ""
+				}
+			}, 
+		"10": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/water_foot",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/water_foot",
+				"sfx": ""
+				}
+			}, 
+		"11": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/flesh",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/flesh",
+				"sfx": ""
+				}
+			}, 
+		"12": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/rubber",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/rubber",
+				"sfx": ""
+				}
+			}, 
+		"13": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/gravel",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/gravel",
+				"sfx": ""
+				}
+			}, 
+		"14": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/rubber",
+				"sfx": ""
+			}, 
+		"FootPrintRight": {
+				"sound": "players/footsteps/rubber",
+				"sfx": ""
+				}
+			}, 
+		"15": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/stone_tile",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/stone_tile",
+				"sfx": ""
+				}
+			}, 
+		"16": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/garbage",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/garbage",
+				"sfx": ""
+				}
+			}, 
+		"17": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/mud",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/mud",
+				"sfx": ""
+				}
+			}, 
+		"18": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/grass",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/grass",
+				"sfx": ""
+				}
+			}, 
+		"19": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/sand",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/sand",
+				"sfx": ""
+				}
+			}, 
+		"20": {
+			"FootPrintLeft": {
+				"sound": "",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "",
+				"sfx": ""
+				}
+			}, 
+		"21": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/carpet",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/carpet",
+				"sfx": ""
+				}
+			}, 
+		"200": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/light_metal",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/light_metal",
+				"sfx": ""
+				}
+			}, 
+		"201": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/heavy_metal",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/heavy_metal",
+				"sfx": ""
+				}
+			}, 
+		"202": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/glass",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/glass",
+				"sfx": ""
+				}
+			}, 
+		"203": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/rubber",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/rubber",
+				"sfx": ""
+				}
+			}, 
+		"204": {
+			"FootPrintLeft": {
+				"sound": "players/footsteps/wood",
+				"sfx": ""
+				}, 
+			"FootPrintRight": {
+				"sound": "players/footsteps/wood",
+				"sfx": ""
+				}
+			}
+
+
+
+	}
+}

@@ -22,8 +22,8 @@
 				"to_state" : "before_recover",
 				"predicate" : 
 						["and",[
-							["targets_count", "equal", "0"],
-							["health_percent", "less", "100"]
+							["targets_count", "equal", 0],
+							["health_percent", "less", 100]
 						]]
 			},
 				{
@@ -41,8 +41,8 @@
 				"to_state" : "walk_around",
 				"predicate" : 
 					["and",[
-						["targets_count", "equal", "0"],
-						["health_percent", "equal", "100"]
+						["targets_count", "equal", 0],
+						["health_percent", "equal", 100]
 					]]
 			},
 			{

@@ -1,16 +1,16 @@
 {
     "sfxes": {
         "revealed": [
-            "sfx/anomaly_mushroom.xml"
+            "sfx/Anomalys/mushroom.xml"
         ], 
         "warning": [
-            "sfx/anomaly_mushroom_off_small.xml"
+            "sfx/Anomalys/mushroom_off_small.xml"
         ], 
         "hide": [
-            "sfx/anomaly_mushroom_off_small.xml"
+            "sfx/Anomalys/mushroom_off_small.xml"
         ], 
         "persistent": [
-            "sfx/anomaly_mushroom_off_small.xml"
+            "sfx/Anomalys/mushroom_off_small.xml"
         ]
     }, 
     "name": "mushroom_small", 

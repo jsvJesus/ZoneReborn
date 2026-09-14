@@ -1,16 +1,16 @@
 {
     "sfxes": {
         "revealed": [
-            "sfx/anomaly_snowfield_hit.xml"
+            "sfx/Anomalys/snowfield_hit.xml"
         ], 
         "warning": [
-            "sfx/anomaly_snowfield.xml"
+            "sfx/Anomalys/snowfield.xml"
         ], 
         "hide": [
-            "sfx/anomaly_snowfield.xml"
+            "sfx/Anomalys/snowfield.xml"
         ], 
         "persistent": [
-            "sfx/anomaly_snowfield.xml"
+            "sfx/Anomalys/snowfield.xml"
         ]
     }, 
     "name": "Snow_field_01", 
@@ -18,7 +18,7 @@
         {
             "modifier": 1.0, 
             "stacks": 30, 
-            "id": 274
+            "id": 273
         }
     ]
 }

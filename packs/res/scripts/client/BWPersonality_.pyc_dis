@@ -1,5 +1,0 @@
-# Embedded file name: scripts/client/BWPersonality_.py
-import BigWorld
-
-def run():
-    BigWorld.setWatcher('Debug/activeConsole', 'Python')
