@@ -1556,7 +1556,7 @@ namespace client::graphics
                 state_->device.Get(),
                 state_->context.Get(),
                 texture.image,
-                true,
+                texture.generateMipmaps,
                 view,
                 error))
             {

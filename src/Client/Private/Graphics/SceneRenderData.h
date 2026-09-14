@@ -33,6 +33,9 @@ namespace client::graphics
 
         bool hasPartialAlphaPixels =
             false;
+
+        bool generateMipmaps =
+            true;
     };
 
     struct SceneModelMaterial final

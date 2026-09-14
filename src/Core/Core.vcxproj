@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ClInclude Include="Public\Core\Assets\MaterialLoader.h" />
     <ClInclude Include="Public\Core\Assets\MeshData.h" />
     <ClInclude Include="Public\Core\Assets\MeshLoader.h" />
     <ClInclude Include="Public\Core\Assets\ModelAsset.h" />
@@ -75,6 +76,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ClCompile Include="Private\Assets\MaterialLoader.cpp" />
     <ClCompile Include="Private\Assets\MeshLoader.cpp" />
     <ClCompile Include="Private\Assets\ModelBundleLoader.cpp" />
     <ClCompile Include="Private\Assets\ModelLoader.cpp" />

@@ -616,6 +616,9 @@ namespace client::preview
         AnalyzeAlpha(
             sceneTexture);
 
+        sceneTexture.generateMipmaps =
+            !sceneTexture.hasTransparentPixels;
+
         outputTextureIndex =
             scene.textures.size();
 

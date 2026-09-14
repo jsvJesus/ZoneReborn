@@ -1,5 +1,5 @@
 #include "Core/Assets/VisualLoader.h"
-#include "Core/Assets/TextureResolver.h"
+#include "Core/Assets/MaterialLoader.h"
 
 #include "Core/Resources/DataSection.h"
 #include "Core/Resources/PackedSectionReader.h"
@@ -104,154 +104,12 @@ namespace
             ReadVector3(*maximum, output.maximum);
     }
 
-    bool ReadMaterialProperty(
-        const core::resources::DataSection& section,
-        core::assets::VisualMaterialProperty& output)
-    {
-        output = {};
-
-        if (const std::string* name =
-                section.AsString())
-        {
-            output.name = *name;
-        }
-        else if (const auto* binary =
-                     section.AsBinary())
-        {
-            output.binaryName = *binary;
-        }
-
-        if (const auto* texture =
-                section.FindChild("Texture"))
-        {
-            const std::string* value =
-                texture->AsString();
-
-            if (value == nullptr)
-            {
-                return false;
-            }
-
-            core::assets::TextureResource resource;
-
-            resource.sourceReference =
-                *value;
-
-            resource.sourceLogicalPath =
-                core::resources::ResourcePath::ToResPath(
-                    *value);
-
-            resource.logicalPath =
-                resource.sourceLogicalPath;
-
-            output.texture =
-                std::move(resource);
-        }
-
-        if (const auto* vector =
-                section.FindChild("Vector4"))
-        {
-            const auto* values =
-                vector->AsFloats();
-
-            if (values == nullptr ||
-                values->size() != 4)
-            {
-                return false;
-            }
-
-            output.vector4 =
-                std::array<float, 4>
-                {
-                    (*values)[0],
-                    (*values)[1],
-                    (*values)[2],
-                    (*values)[3]
-                };
-        }
-
-        return true;
-    }
-
-    bool ReadMaterial(
-        const core::resources::DataSection& section,
-        core::assets::VisualMaterial& output)
-    {
-        output = {};
-
-        if (const auto* identifier =
-                section.FindChild("identifier"))
-        {
-            if (const std::string* value =
-                    identifier->AsString())
-            {
-                output.identifier = *value;
-            }
-            else if (const auto* value =
-                         identifier->AsBinary())
-            {
-                output.binaryIdentifier = *value;
-            }
-        }
-
-        if (const auto* effect =
-                section.FindChild("fx"))
-        {
-            const std::string* value =
-                effect->AsString();
-
-            if (value == nullptr)
-            {
-                return false;
-            }
-
-            output.effect = *value;
-        }
-
-        if (const auto* collisionFlags =
-                section.FindChild("collisionFlags"))
-        {
-            if (!ReadInt32(
-                    *collisionFlags,
-                    output.collisionFlags))
-            {
-                return false;
-            }
-        }
-
-        if (const auto* materialKind =
-                section.FindChild("materialKind"))
-        {
-            if (!ReadInt32(
-                    *materialKind,
-                    output.materialKind))
-            {
-                return false;
-            }
-        }
-
-        for (const auto* property :
-             section.FindChildren("property"))
-        {
-            core::assets::VisualMaterialProperty value;
-
-            if (!ReadMaterialProperty(
-                    *property,
-                    value))
-            {
-                return false;
-            }
-
-            output.properties.push_back(
-                std::move(value));
-        }
-
-        return true;
-    }
-
     bool ReadPrimitiveGroup(
+        const core::resources::ResourceFileSystem& resources,
+        const core::assets::MaterialLoader& materialLoader,
         const core::resources::DataSection& section,
-        core::assets::VisualPrimitiveGroup& output)
+        core::assets::VisualPrimitiveGroup& output,
+        std::string& error)
     {
         output = {};
 
@@ -259,25 +117,42 @@ namespace
                 section,
                 output.index))
         {
+            error =
+                "Visual contains invalid primitive group index.";
+
             return false;
         }
 
         const auto* material =
-            section.FindChild("material");
+            section.FindChild(
+                "material");
 
         if (material == nullptr)
+        {
+            error =
+                "Visual primitive group does not contain material.";
+
+            return false;
+        }
+
+        if (!materialLoader.Load(
+                resources,
+                *material,
+                output.material,
+                error))
         {
             return false;
         }
 
-        return ReadMaterial(
-            *material,
-            output.material);
+        return true;
     }
 
     bool ReadGeometry(
+        const core::resources::ResourceFileSystem& resources,
+        const core::assets::MaterialLoader& materialLoader,
         const core::resources::DataSection& section,
-        core::assets::VisualGeometry& output)
+        core::assets::VisualGeometry& output,
+        std::string& error)
     {
         output = {};
 
@@ -358,8 +233,11 @@ namespace
             core::assets::VisualPrimitiveGroup group;
 
             if (!ReadPrimitiveGroup(
-                    *primitiveGroup,
-                    group))
+                resources,
+                materialLoader,
+                *primitiveGroup,
+                group,
+                error))
             {
                 return false;
             }
@@ -372,8 +250,11 @@ namespace
     }
 
     bool ReadRenderSet(
+        const core::resources::ResourceFileSystem& resources,
+        const core::assets::MaterialLoader& materialLoader,
         const core::resources::DataSection& section,
-        core::assets::VisualRenderSet& output)
+        core::assets::VisualRenderSet& output,
+        std::string& error)
     {
         output = {};
 
@@ -414,8 +295,11 @@ namespace
             core::assets::VisualGeometry value;
 
             if (!ReadGeometry(
-                    *geometry,
-                    value))
+                resources,
+                materialLoader,
+                *geometry,
+                value,
+                error))
             {
                 return false;
             }
@@ -495,6 +379,9 @@ namespace core::assets
         visual.logicalPath =
             logicalPath;
 
+        MaterialLoader
+            materialLoader;
+
         for (const auto* node :
              root.FindChildren("node"))
         {
@@ -549,8 +436,11 @@ namespace core::assets
             VisualRenderSet value;
 
             if (!ReadRenderSet(
-                    *renderSet,
-                    value))
+                resources,
+                materialLoader,
+                *renderSet,
+                value,
+                error))
             {
                 error =
                     "Visual contains invalid renderSet.";
@@ -579,46 +469,6 @@ namespace core::assets
 
             visual.boundingBox =
                 box;
-        }
-
-        TextureResolver textureResolver;
-
-        for (VisualRenderSet& renderSet :
-             visual.renderSets)
-        {
-            for (VisualGeometry& geometry :
-                 renderSet.geometries)
-            {
-                for (VisualPrimitiveGroup& group :
-                     geometry.primitiveGroups)
-                {
-                    for (VisualMaterialProperty& property :
-                         group.material.properties)
-                    {
-                        if (!property.texture.has_value())
-                        {
-                            continue;
-                        }
-
-                        TextureResource resolvedTexture;
-
-                        if (!textureResolver.Resolve(
-                                resources,
-                                property.texture->sourceReference,
-                                resolvedTexture))
-                        {
-                            error =
-                                "Visual contains invalid texture reference: " +
-                                property.texture->sourceReference;
-
-                            return false;
-                        }
-
-                        property.texture =
-                            std::move(resolvedTexture);
-                    }
-                }
-            }
         }
 
         output =
