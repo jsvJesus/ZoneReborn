@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <cmath>
 #include <limits>
 #include <span>
 #include <string>
@@ -44,27 +45,103 @@ namespace
                         targetHeight - 1)
                 : 0.0f;
 
-        const std::uint32_t sourceX =
-            std::min(
-                static_cast<std::uint32_t>(
-                    normalizedX *
-                    static_cast<float>(
-                        layer.width - 1) +
-                    0.5f),
+        const float sourceX =
+            normalizedX *
+            static_cast<float>(
                 layer.width - 1);
 
-        const std::uint32_t sourceZ =
-            std::min(
-                static_cast<std::uint32_t>(
-                    normalizedZ *
-                    static_cast<float>(
-                        layer.height - 1) +
-                    0.5f),
+        const float sourceZ =
+            normalizedZ *
+            static_cast<float>(
                 layer.height - 1);
 
-        return layer.BlendAt(
-            sourceX,
-            sourceZ);
+        const std::uint32_t x0 =
+            std::min(
+                static_cast<std::uint32_t>(
+                    sourceX),
+                layer.width - 1);
+
+        const std::uint32_t z0 =
+            std::min(
+                static_cast<std::uint32_t>(
+                    sourceZ),
+                layer.height - 1);
+
+        const std::uint32_t x1 =
+            std::min(
+                x0 + 1,
+                layer.width - 1);
+
+        const std::uint32_t z1 =
+            std::min(
+                z0 + 1,
+                layer.height - 1);
+
+        const float fractionX =
+            sourceX -
+            static_cast<float>(
+                x0);
+
+        const float fractionZ =
+            sourceZ -
+            static_cast<float>(
+                z0);
+
+        const float value00 =
+            static_cast<float>(
+                layer.BlendAt(
+                    x0,
+                    z0));
+
+        const float value10 =
+            static_cast<float>(
+                layer.BlendAt(
+                    x1,
+                    z0));
+
+        const float value01 =
+            static_cast<float>(
+                layer.BlendAt(
+                    x0,
+                    z1));
+
+        const float value11 =
+            static_cast<float>(
+                layer.BlendAt(
+                    x1,
+                    z1));
+
+        const float top =
+            value00 +
+            (
+                value10 -
+                value00
+            ) *
+            fractionX;
+
+        const float bottom =
+            value01 +
+            (
+                value11 -
+                value01
+            ) *
+            fractionX;
+
+        const float value =
+            top +
+            (
+                bottom -
+                top
+            ) *
+            fractionZ;
+
+        return
+            static_cast<std::uint8_t>(
+                std::clamp(
+                    std::lround(
+                        value),
+                    0L,
+                    255L));
     }
 }
 

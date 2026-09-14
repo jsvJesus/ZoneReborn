@@ -109,7 +109,23 @@ namespace
 
             Contains(
                 propertyName,
+                "spec_map") ||
+
+            Contains(
+                propertyName,
                 "gloss") ||
+
+            Contains(
+                propertyName,
+                "roughness") ||
+
+            Contains(
+                propertyName,
+                "metallic") ||
+
+            Contains(
+                propertyName,
+                "metalness") ||
 
             Contains(
                 propertyName,
@@ -132,6 +148,26 @@ namespace
                 "lightmap") ||
 
             Contains(
+                propertyName,
+                "light_map") ||
+
+            Contains(
+                propertyName,
+                "emissive") ||
+
+            Contains(
+                propertyName,
+                "emission") ||
+
+            Contains(
+                propertyName,
+                "detailnormal") ||
+
+            Contains(
+                propertyName,
+                "detail_normal") ||
+
+            Contains(
                 path,
                 "normal_map") ||
 
@@ -145,7 +181,11 @@ namespace
 
             Contains(
                 path,
-                "_nm.");
+                "_nm.") ||
+
+            Contains(
+                path,
+                "/normal/");
     }
 
     int DiffuseScore(
@@ -159,20 +199,40 @@ namespace
             return -1;
         }
 
-        int score = 1;
+        int score =
+            1;
 
         if (Contains(
                 propertyName,
                 "diffuse"))
         {
-            score += 100;
+            score +=
+                300;
         }
 
         if (Contains(
                 propertyName,
                 "albedo"))
         {
-            score += 100;
+            score +=
+                300;
+        }
+
+        if (Contains(
+                propertyName,
+                "basecolor") ||
+            Contains(
+                propertyName,
+                "base_color") ||
+            Contains(
+                propertyName,
+                "basecolour") ||
+            Contains(
+                propertyName,
+                "base_colour"))
+        {
+            score +=
+                280;
         }
 
         if (Contains(
@@ -182,28 +242,51 @@ namespace
                 propertyName,
                 "color"))
         {
-            score += 80;
+            score +=
+                220;
         }
 
         if (Contains(
                 propertyName,
                 "base"))
         {
-            score += 60;
+            score +=
+                160;
         }
 
-        if (Contains(
-                propertyName,
-                "texture"))
+        if (propertyName ==
+                "texture" ||
+            propertyName ==
+                "texture0")
         {
-            score += 20;
+            score +=
+                120;
+        }
+        else if (Contains(
+                     propertyName,
+                     "texture"))
+        {
+            score +=
+                60;
         }
 
         if (Contains(
                 propertyName,
                 "map"))
         {
-            score += 10;
+            score +=
+                20;
+        }
+
+        if (Contains(
+                path,
+                "diffuse") ||
+            Contains(
+                path,
+                "albedo"))
+        {
+            score +=
+                50;
         }
 
         return score;

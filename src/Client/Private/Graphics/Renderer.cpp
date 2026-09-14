@@ -413,6 +413,7 @@ namespace
         ID3D11Device* device,
         ID3D11DeviceContext* context,
         const core::images::RgbaImage& image,
+        const bool generateMipmaps,
         ComPtr<ID3D11ShaderResourceView>& output,
         std::string& error)
     {
@@ -444,7 +445,8 @@ namespace
             return false;
         }
 
-        D3D11_TEXTURE2D_DESC description{};
+        D3D11_TEXTURE2D_DESC
+            description{};
 
         description.Width =
             image.width;
@@ -453,7 +455,9 @@ namespace
             image.height;
 
         description.MipLevels =
-            0;
+            generateMipmaps
+                ? 0
+                : 1;
 
         description.ArraySize =
             1;
@@ -464,15 +468,23 @@ namespace
         description.SampleDesc.Count =
             1;
 
+        description.SampleDesc.Quality =
+            0;
+
         description.Usage =
             D3D11_USAGE_DEFAULT;
 
         description.BindFlags =
-            D3D11_BIND_SHADER_RESOURCE |
-            D3D11_BIND_RENDER_TARGET;
+            D3D11_BIND_SHADER_RESOURCE;
 
-        description.MiscFlags =
-            D3D11_RESOURCE_MISC_GENERATE_MIPS;
+        if (generateMipmaps)
+        {
+            description.BindFlags |=
+                D3D11_BIND_RENDER_TARGET;
+
+            description.MiscFlags =
+                D3D11_RESOURCE_MISC_GENERATE_MIPS;
+        }
 
         ComPtr<ID3D11Texture2D>
             texture;
@@ -512,7 +524,9 @@ namespace
             0;
 
         viewDescription.Texture2D.MipLevels =
-            static_cast<UINT>(-1);
+            generateMipmaps
+                ? static_cast<UINT>(-1)
+                : 1;
 
         result =
             device->CreateShaderResourceView(
@@ -528,8 +542,11 @@ namespace
             return false;
         }
 
-        context->GenerateMips(
-            output.Get());
+        if (generateMipmaps)
+        {
+            context->GenerateMips(
+                output.Get());
+        }
 
         return true;
     }
@@ -1119,7 +1136,7 @@ namespace client::graphics
                 textureSamplerDescription;
 
         blendSamplerDescription.Filter =
-            D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+            D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT;
 
         blendSamplerDescription.AddressU =
             D3D11_TEXTURE_ADDRESS_CLAMP;
@@ -1132,6 +1149,15 @@ namespace client::graphics
 
         blendSamplerDescription.MaxAnisotropy =
             1;
+
+        blendSamplerDescription.MipLODBias =
+            0.0f;
+
+        blendSamplerDescription.MinLOD =
+            0.0f;
+
+        blendSamplerDescription.MaxLOD =
+            0.0f;
 
         result =
             state_->device->CreateSamplerState(
@@ -1527,11 +1553,12 @@ namespace client::graphics
                 view;
 
             if (!CreateRgbaTexture(
-                    state_->device.Get(),
-                    state_->context.Get(),
-                    texture.image,
-                    view,
-                    error))
+                state_->device.Get(),
+                state_->context.Get(),
+                texture.image,
+                true,
+                view,
+                error))
             {
                 error =
                     texture.logicalPath +
@@ -1623,11 +1650,12 @@ namespace client::graphics
                 }
 
                 if (!CreateRgbaTexture(
-                        state_->device.Get(),
-                        state_->context.Get(),
-                        sourcePass.blendMap,
-                        pass.blendView,
-                        error))
+                state_->device.Get(),
+                state_->context.Get(),
+                sourcePass.blendMap,
+                false,
+                pass.blendView,
+                error))
                 {
                     error =
                         "Unable to create terrain blend texture: " +
