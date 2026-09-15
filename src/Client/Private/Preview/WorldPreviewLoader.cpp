@@ -389,11 +389,11 @@ namespace client::preview
         std::array<std::size_t, 3>
             speedTreeLodTriangles{};
 
-        std::size_t speedTreeBillboardTriangles =
-            0;
+        //std::size_t speedTreeBillboardTriangles =
+            //0;
 
-        std::size_t speedTreeBillboardResources =
-            0;
+        //std::size_t speedTreeBillboardResources =
+            //0;
 
         for (const auto& entry :
              speedTreeCache)
@@ -443,6 +443,7 @@ namespace client::preview
                         .triangleCount;
             }
 
+            /*
             if (renderData.hasBillboard)
             {
                 ++speedTreeRenderMeshes;
@@ -452,6 +453,7 @@ namespace client::preview
                 speedTreeBillboardTriangles +=
                     renderData.billboardTriangles;
             }
+            */
 
             speedTreeRenderCache.emplace(
                 resourcePath,
@@ -546,6 +548,7 @@ namespace client::preview
                 ++instance.levelCount;
             }
 
+            /*
             if (renderData.hasBillboard &&
                 instance.levelCount <
                     instance.levels.size())
@@ -567,6 +570,16 @@ namespace client::preview
             {
                 instance.levels[
                     instance.levelCount - 1]
+                    .maximumDistance =
+                        std::numeric_limits<float>::max();
+            }
+            */
+
+            if (instance.levelCount > 0)
+            {
+                instance.levels[
+                    instance.levelCount -
+                    1]
                     .maximumDistance =
                         std::numeric_limits<float>::max();
             }
@@ -671,6 +684,7 @@ namespace client::preview
             std::to_string(
                 speedTreeLodTriangles[2]));
 
+        /*
         core::Log::Info(
             std::string(
                 "SpeedTree billboard resources: ") +
@@ -682,6 +696,16 @@ namespace client::preview
                 "SpeedTree billboard triangles: ") +
             std::to_string(
                 speedTreeBillboardTriangles));
+        */
+
+        core::Log::Info(
+            std::string(
+        "SpeedTree billboard source resources: ") +
+            std::to_string(
+                loadedSpeedTrees));
+
+        core::Log::Info(
+            "SpeedTree billboard rendering: disabled until camera-facing renderer is implemented");
 
         if (speedTreeRejectedInstances != 0)
         {

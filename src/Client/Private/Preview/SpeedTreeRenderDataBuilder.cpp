@@ -1258,8 +1258,7 @@ namespace client::preview
                     return 0;
                 }
 
-                return
-                    geometry.lods.size();
+                return geometry.lods.size();
             };
 
         output.sourceLodCount =
@@ -1433,80 +1432,49 @@ namespace client::preview
                     6.0f);
 
         output.maximumDistances[2] =
-            std::max(
-                120.0f,
-                objectSize *
-                    12.0f);
+            std::numeric_limits<float>::max();
 
-        std::size_t billboardMeshIndex =
+        output.hasBillboard =
+            false;
+
+        output.billboardMeshIndex =
+            std::numeric_limits<std::size_t>::max();
+
+        output.billboardTriangles =
             0;
 
-        std::size_t billboardTriangles =
-            0;
-
-        if (!BuildBillboard(
-                resources,
-                tree.billboard,
-                scene,
-                billboardMeshIndex,
-                billboardTriangles,
-                error))
+        for (const SpeedTreeLodRenderData& lod :
+             output.lods)
         {
-            error =
-                tree.sptLogicalPath +
-                " billboard: " +
-                error;
-
-            return false;
-        }
-
-        if (billboardTriangles != 0)
-        {
-            output.hasBillboard =
-                true;
-
-            output.billboardMeshIndex =
-                billboardMeshIndex;
-
-            output.billboardTriangles =
-                billboardTriangles;
-        }
-
-        if (!output.lods[0].meshIndices.empty())
-        {
-            output.fixedMeshIndices =
-                output.lods[0]
-                    .meshIndices;
-        }
-
-        output.usesLodChain =
-            output.hasBillboard ||
-            output.sourceLodCount >
-                1;
-
-        bool hasGeometry =
-            output.hasBillboard ||
-            !output.fixedMeshIndices.empty();
-
-        if (!hasGeometry)
-        {
-            for (const SpeedTreeLodRenderData& lod :
-                 output.lods)
+            if (!lod.meshIndices.empty())
             {
-                if (!lod.meshIndices.empty())
-                {
-                    hasGeometry =
-                        true;
+                output.fixedMeshIndices =
+                    lod.meshIndices;
 
-                    break;
-                }
+                break;
             }
         }
 
-        if (!hasGeometry)
+        std::size_t validLodLevels =
+            0;
+
+        for (const SpeedTreeLodRenderData& lod :
+             output.lods)
+        {
+            if (!lod.meshIndices.empty())
+            {
+                ++validLodLevels;
+            }
+        }
+
+        output.usesLodChain =
+            validLodLevels >
+            1;
+
+        if (output.fixedMeshIndices.empty())
         {
             error =
-                "CTREE contains no renderable geometry: " +
+                "CTREE contains no renderable branch/frond/leaf geometry: " +
                 tree.sptLogicalPath;
 
             return false;
