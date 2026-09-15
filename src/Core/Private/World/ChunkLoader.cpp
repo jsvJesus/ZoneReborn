@@ -90,6 +90,102 @@ namespace
         return true;
     }
 
+    bool ReadOptionalString(
+        const core::resources::DataSection& section,
+        const std::string_view childName,
+        std::string& output)
+    {
+        const core::resources::DataSection* child =
+            section.FindChild(childName);
+
+        if (child == nullptr)
+        {
+            return true;
+        }
+
+        const std::string* value =
+            child->AsString();
+
+        if (value == nullptr)
+        {
+            return false;
+        }
+
+        output = *value;
+
+        return true;
+    }
+
+    bool ReadOptionalInteger(
+        const core::resources::DataSection& section,
+        const std::string_view childName,
+        std::int32_t& output)
+    {
+        const core::resources::DataSection* child =
+            section.FindChild(childName);
+
+        if (child == nullptr)
+        {
+            return true;
+        }
+
+        const std::int64_t* value =
+            child->AsInteger();
+
+        if (value == nullptr)
+        {
+            return false;
+        }
+
+        if (*value <
+                std::numeric_limits<std::int32_t>::min() ||
+            *value >
+                std::numeric_limits<std::int32_t>::max())
+        {
+            return false;
+        }
+
+        output =
+            static_cast<std::int32_t>(
+                *value);
+
+        return true;
+    }
+
+    bool ReadRequiredFloat(
+        const core::resources::DataSection& section,
+        const std::string_view childName,
+        float& output)
+    {
+        const core::resources::DataSection* child =
+            section.FindChild(childName);
+
+        if (child == nullptr)
+        {
+            return false;
+        }
+
+        return child->TryGetFloat(
+            output);
+    }
+
+    bool ReadOptionalFloat(
+        const core::resources::DataSection& section,
+        const std::string_view childName,
+        float& output)
+    {
+        const core::resources::DataSection* child =
+            section.FindChild(childName);
+
+        if (child == nullptr)
+        {
+            return true;
+        }
+
+        return child->TryGetFloat(
+            output);
+    }
+
     bool ReadRequiredInteger(
         const core::resources::DataSection& section,
         const std::string_view childName,
@@ -196,6 +292,24 @@ namespace
         output.z = (*values)[2];
 
         return true;
+    }
+
+    bool ReadRequiredVector3(
+        const core::resources::DataSection& section,
+        const std::string_view childName,
+        core::math::Vector3& output)
+    {
+        const core::resources::DataSection* child =
+            section.FindChild(childName);
+
+        if (child == nullptr)
+        {
+            return false;
+        }
+
+        return ReadVector3(
+            *child,
+            output);
     }
 
     bool ReadBoundingBox(
@@ -327,6 +441,106 @@ namespace
                 section,
                 "type",
                 output.type))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool ReadOmniLight(
+        const core::resources::DataSection& section,
+        core::world::ChunkOmniLight& output)
+    {
+        output = {};
+
+        output.multiplier =
+            1.0f;
+
+        if (!ReadRequiredVector3(
+                section,
+                "colour",
+                output.colour))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredVector3(
+                section,
+                "position",
+                output.position))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredFloat(
+                section,
+                "innerRadius",
+                output.innerRadius))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredFloat(
+                section,
+                "outerRadius",
+                output.outerRadius))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalFloat(
+                section,
+                "multiplier",
+                output.multiplier))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalBoolean(
+                section,
+                "dynamic",
+                output.isDynamic))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalBoolean(
+                section,
+                "static",
+                output.isStatic))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalBoolean(
+                section,
+                "specular",
+                output.specular))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalInteger(
+                section,
+                "priority",
+                output.priority))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalInteger(
+                section,
+                "lightType",
+                output.lightType))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalString(
+                section,
+                "guid",
+                output.guid))
         {
             return false;
         }
@@ -527,6 +741,27 @@ namespace core::world
 
                 chunk.speedTrees.push_back(
                     std::move(tree));
+
+                continue;
+            }
+
+            if (section.name == "omniLight")
+            {
+                ChunkOmniLight light;
+
+                if (!ReadOmniLight(
+                        section,
+                        light))
+                {
+                    error =
+                        "Chunk contains invalid omniLight section: " +
+                        resourcePath;
+
+                    return false;
+                }
+
+                chunk.omniLights.push_back(
+                    std::move(light));
 
                 continue;
             }

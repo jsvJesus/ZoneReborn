@@ -148,6 +148,41 @@ namespace client::graphics
             false;
     };
 
+    struct SceneOmniLight final
+    {
+        std::string guid;
+
+        std::array<float, 3>
+            position{};
+
+        std::array<float, 3>
+            colour{};
+
+        float innerRadius =
+            0.0f;
+
+        float outerRadius =
+            0.0f;
+
+        float multiplier =
+            1.0f;
+
+        std::int32_t priority =
+            0;
+
+        std::int32_t lightType =
+            0;
+
+        bool isDynamic =
+            false;
+
+        bool isStatic =
+            false;
+
+        bool specular =
+            false;
+    };
+
     struct SceneMesh final
     {
         core::assets::MeshData geometry;
@@ -216,5 +251,8 @@ namespace client::graphics
 
         std::vector<SceneWaterMaterial>
             waterMaterials;
+
+        std::vector<SceneOmniLight>
+            omniLights;
     };
 }

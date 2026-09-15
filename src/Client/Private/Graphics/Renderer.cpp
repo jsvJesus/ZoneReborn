@@ -34,6 +34,41 @@ namespace
         float v;
     };
 
+    constexpr std::uint32_t MaxOmniLights =
+        32;
+
+    struct GpuOmniLight final
+    {
+        DirectX::XMFLOAT4 positionOuterRadius;
+        DirectX::XMFLOAT4 colourMultiplier;
+        DirectX::XMFLOAT4 parameters;
+    };
+
+    struct OmniLightConstants final
+    {
+        std::array<
+            GpuOmniLight,
+            MaxOmniLights>
+            lights{};
+
+        std::uint32_t lightCount =
+            0;
+
+        std::uint32_t padding0 =
+            0;
+
+        std::uint32_t padding1 =
+            0;
+
+        std::uint32_t padding2 =
+            0;
+    };
+
+    static_assert(
+        sizeof(OmniLightConstants) %
+            16u ==
+        0u);
+
     struct SceneConstants final
     {
         DirectX::XMFLOAT4X4 world;
@@ -202,6 +237,141 @@ namespace
         }
     }
 
+    OmniLightConstants BuildOmniLightConstants(
+        const std::vector<
+            client::graphics::SceneOmniLight>& lights,
+        const client::graphics::CameraView& camera)
+    {
+        struct RankedLight final
+        {
+            const client::graphics::SceneOmniLight*
+                light = nullptr;
+
+            float distanceSquared =
+                0.0f;
+        };
+
+        std::vector<RankedLight>
+            ranked;
+
+        ranked.reserve(
+            lights.size());
+
+        for (const client::graphics::SceneOmniLight& light :
+             lights)
+        {
+            if (light.outerRadius <=
+                    0.0f ||
+                light.multiplier <=
+                    0.0f)
+            {
+                continue;
+            }
+
+            const float deltaX =
+                light.position[0] -
+                camera.position.x;
+
+            const float deltaY =
+                light.position[1] -
+                camera.position.y;
+
+            const float deltaZ =
+                light.position[2] -
+                camera.position.z;
+
+            RankedLight entry;
+
+            entry.light =
+                &light;
+
+            entry.distanceSquared =
+                deltaX * deltaX +
+                deltaY * deltaY +
+                deltaZ * deltaZ;
+
+            ranked.push_back(
+                entry);
+        }
+
+        std::stable_sort(
+            ranked.begin(),
+            ranked.end(),
+            [](
+                const RankedLight& left,
+                const RankedLight& right)
+            {
+                if (left.light->priority !=
+                    right.light->priority)
+                {
+                    return
+                        left.light->priority >
+                        right.light->priority;
+                }
+
+                return
+                    left.distanceSquared <
+                    right.distanceSquared;
+            });
+
+        OmniLightConstants
+            constants{};
+
+        constants.lightCount =
+            static_cast<std::uint32_t>(
+                std::min<std::size_t>(
+                    ranked.size(),
+                    MaxOmniLights));
+
+        for (std::uint32_t index = 0;
+             index <
+                constants.lightCount;
+             ++index)
+        {
+            const client::graphics::SceneOmniLight&
+                source =
+                    *ranked[index].light;
+
+            GpuOmniLight& target =
+                constants.lights[index];
+
+            target.positionOuterRadius =
+            {
+                source.position[0],
+                source.position[1],
+                source.position[2],
+                source.outerRadius
+            };
+
+            target.colourMultiplier =
+            {
+                source.colour[0],
+                source.colour[1],
+                source.colour[2],
+                source.multiplier
+            };
+
+            target.parameters =
+            {
+                source.innerRadius,
+
+                source.specular
+                    ? 1.0f
+                    : 0.0f,
+
+                source.isStatic
+                    ? 1.0f
+                    : 0.0f,
+
+                source.isDynamic
+                    ? 1.0f
+                    : 0.0f
+            };
+        }
+
+        return constants;
+    }
+
     constexpr char ShaderSource[] = R"(
         cbuffer SceneConstants : register(b0)
         {
@@ -234,6 +404,24 @@ namespace
 
             float4 cameraPosition;
             float4 screenParameters;
+        }
+    )"
+    R"(
+        struct OmniLightData
+        {
+            float4 positionOuterRadius;
+            float4 colourMultiplier;
+            float4 parameters;
+        };
+
+        cbuffer OmniLightConstants : register(b1)
+        {
+            OmniLightData omniLights[32];
+
+            uint omniLightCount;
+            uint omniLightPadding0;
+            uint omniLightPadding1;
+            uint omniLightPadding2;
         }
 
         Texture2D terrainTexture0 : register(t0);
@@ -374,6 +562,134 @@ namespace
             }
 
             return colour;
+        }
+
+        void EvaluateOmniLights(
+            float3 worldPosition,
+            float3 surfaceNormal,
+            out float3 diffuseLighting,
+            out float3 specularLighting)
+        {
+            diffuseLighting =
+                float3(
+                    0.0f,
+                    0.0f,
+                    0.0f);
+
+            specularLighting =
+                float3(
+                    0.0f,
+                    0.0f,
+                    0.0f);
+
+            float3 normal =
+                normalize(
+                    surfaceNormal);
+
+            float3 viewDirection =
+                normalize(
+                    cameraPosition.xyz -
+                    worldPosition);
+
+            [loop]
+            for (uint index = 0;
+                 index < omniLightCount;
+                 ++index)
+            {
+                OmniLightData light =
+                    omniLights[index];
+
+                float3 toLight =
+                    light.positionOuterRadius.xyz -
+                    worldPosition;
+
+                float distanceToLight =
+                    length(
+                        toLight);
+
+                float outerRadius =
+                    max(
+                        light.positionOuterRadius.w,
+                        0.001f);
+
+                if (distanceToLight >=
+                    outerRadius)
+                {
+                    continue;
+                }
+
+                float innerRadius =
+                    clamp(
+                        light.parameters.x,
+                        0.0f,
+                        outerRadius);
+
+                float3 lightDirection =
+                    toLight /
+                    max(
+                        distanceToLight,
+                        0.0001f);
+
+                float attenuation =
+                    1.0f;
+
+                if (distanceToLight >
+                    innerRadius)
+                {
+                    attenuation =
+                        saturate(
+                            (
+                                outerRadius -
+                                distanceToLight
+                            ) /
+                            max(
+                                outerRadius -
+                                innerRadius,
+                                0.001f));
+                }
+
+                attenuation *=
+                    attenuation;
+
+                float diffuse =
+                    abs(
+                        dot(
+                            normal,
+                            lightDirection));
+
+                float3 lightColour =
+                    light.colourMultiplier.rgb *
+                    light.colourMultiplier.w;
+
+                diffuseLighting +=
+                    lightColour *
+                    diffuse *
+                    attenuation;
+
+                if (light.parameters.y >
+                    0.5f)
+                {
+                    float3 halfDirection =
+                        normalize(
+                            lightDirection +
+                            viewDirection);
+
+                    float specular =
+                        pow(
+                            saturate(
+                                abs(
+                                    dot(
+                                        normal,
+                                        halfDirection))),
+                            32.0f);
+
+                    specularLighting +=
+                        lightColour *
+                        specular *
+                        attenuation *
+                        0.35f;
+                }
+            }
         }
 
         float2 GetScreenUV(
@@ -992,9 +1308,30 @@ namespace
                     modelSample.rgb;
             }
 
-            return float4(
+            float3 omniDiffuse =
+                0.0f;
+
+            float3 omniSpecular =
+                0.0f;
+
+            EvaluateOmniLights(
+                input.worldPosition,
+                normal,
+                omniDiffuse,
+                omniSpecular);
+
+            float3 finalColour =
                 baseColour *
-                    lighting,
+                (
+                    lighting +
+                    omniDiffuse
+                );
+
+            finalColour +=
+                omniSpecular;
+
+            return float4(
+                finalColour,
                 outputAlpha);
         }
     )";
@@ -1310,6 +1647,9 @@ namespace client::graphics
         ComPtr<ID3D11Buffer>
             constantBuffer;
 
+        ComPtr<ID3D11Buffer>
+            omniLightConstantBuffer;
+
         std::vector<GpuMesh> meshes;
 
         std::vector<
@@ -1321,6 +1661,9 @@ namespace client::graphics
 
         std::vector<SceneWaterMaterial>
             waterMaterials;
+
+        std::vector<SceneOmniLight>
+            omniLights;
 
         std::vector<SceneInstance>
             instances;
@@ -2045,6 +2388,32 @@ namespace client::graphics
             return false;
         }
 
+        D3D11_BUFFER_DESC
+            omniLightConstantDescription{};
+
+        omniLightConstantDescription.ByteWidth =
+            sizeof(OmniLightConstants);
+
+        omniLightConstantDescription.Usage =
+            D3D11_USAGE_DEFAULT;
+
+        omniLightConstantDescription.BindFlags =
+            D3D11_BIND_CONSTANT_BUFFER;
+
+        result =
+            state_->device->CreateBuffer(
+                &omniLightConstantDescription,
+                nullptr,
+                &state_->omniLightConstantBuffer);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create OmniLight constant buffer.";
+
+            return false;
+        }
+
         state_->width =
             width;
 
@@ -2433,6 +2802,9 @@ namespace client::graphics
 
         state_->waterMaterials =
             scene.waterMaterials;
+
+        state_->omniLights =
+            scene.omniLights;
 
         state_->lodInstances =
             scene.lodInstances;
@@ -2836,6 +3208,12 @@ namespace client::graphics
             std::to_string(
                 state_->instances.size()));
 
+        core::Log::Info(
+            std::string(
+                "GPU OmniLight sources: ") +
+            std::to_string(
+                state_->omniLights.size()));
+
         return true;
     }
 
@@ -3087,6 +3465,31 @@ namespace client::graphics
             0,
             1,
             constantBuffers);
+
+        const OmniLightConstants
+            omniLightConstants =
+                BuildOmniLightConstants(
+                    state_->omniLights,
+                    state_->camera);
+
+        state_->context->UpdateSubresource(
+            state_->omniLightConstantBuffer.Get(),
+            0,
+            nullptr,
+            &omniLightConstants,
+            0,
+            0);
+
+        ID3D11Buffer*
+            omniLightBuffers[] =
+        {
+            state_->omniLightConstantBuffer.Get()
+        };
+
+        state_->context->PSSetConstantBuffers(
+            1,
+            1,
+            omniLightBuffers);
 
         SceneConstants constants{};
 

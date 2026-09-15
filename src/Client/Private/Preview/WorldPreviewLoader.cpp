@@ -127,6 +127,86 @@ namespace client::preview
         graphics::SceneRenderData
             scene;
 
+        scene.omniLights.reserve(
+            world.omniLights.size());
+
+        for (const core::world::WorldOmniLightInstance& source :
+             world.omniLights)
+        {
+            graphics::SceneOmniLight
+                light;
+
+            light.guid =
+                source.guid;
+
+            light.position =
+            {
+                source.position.x,
+                source.position.y,
+                source.position.z
+            };
+
+            light.colour =
+            {
+                std::clamp(
+                    source.colour.x /
+                        255.0f,
+                    0.0f,
+                    1.0f),
+
+                std::clamp(
+                    source.colour.y /
+                        255.0f,
+                    0.0f,
+                    1.0f),
+
+                std::clamp(
+                    source.colour.z /
+                        255.0f,
+                    0.0f,
+                    1.0f)
+            };
+
+            light.innerRadius =
+                std::max(
+                    source.innerRadius,
+                    0.0f);
+
+            light.outerRadius =
+                std::max(
+                    source.outerRadius,
+                    light.innerRadius);
+
+            light.multiplier =
+                std::max(
+                    source.multiplier,
+                    0.0f);
+
+            light.priority =
+                source.priority;
+
+            light.lightType =
+                source.lightType;
+
+            light.isDynamic =
+                source.isDynamic;
+
+            light.isStatic =
+                source.isStatic;
+
+            light.specular =
+                source.specular;
+
+            scene.omniLights.push_back(
+                std::move(light));
+        }
+
+        core::Log::Info(
+            std::string(
+                "OmniLight render sources: ") +
+            std::to_string(
+                scene.omniLights.size()));
+
         core::assets::speedtree::CTreeLoader
             ctreeLoader;
 

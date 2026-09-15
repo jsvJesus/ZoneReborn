@@ -461,6 +461,80 @@ namespace
         return true;
     }
 
+    core::math::Vector3 TransformPoint(
+        const core::math::Vector3& point,
+        const core::math::Transform3x4& transform) noexcept
+    {
+        return
+        {
+            point.x * transform.values[0] +
+                point.y * transform.values[3] +
+                point.z * transform.values[6] +
+                transform.values[9],
+
+            point.x * transform.values[1] +
+                point.y * transform.values[4] +
+                point.z * transform.values[7] +
+                transform.values[10],
+
+            point.x * transform.values[2] +
+                point.y * transform.values[5] +
+                point.z * transform.values[8] +
+                transform.values[11]
+        };
+    }
+
+    void AddOmniLightInstance(
+        const std::string& chunkId,
+        const core::world::ChunkOmniLight& source,
+        const core::math::Transform3x4& chunkTransform,
+        core::world::WorldScene& scene)
+    {
+        core::world::WorldOmniLightInstance
+            instance;
+
+        instance.chunkId =
+            chunkId;
+
+        instance.guid =
+            source.guid;
+
+        instance.position =
+            TransformPoint(
+                source.position,
+                chunkTransform);
+
+        instance.colour =
+            source.colour;
+
+        instance.innerRadius =
+            source.innerRadius;
+
+        instance.outerRadius =
+            source.outerRadius;
+
+        instance.multiplier =
+            source.multiplier;
+
+        instance.priority =
+            source.priority;
+
+        instance.lightType =
+            source.lightType;
+
+        instance.isDynamic =
+            source.isDynamic;
+
+        instance.isStatic =
+            source.isStatic;
+
+        instance.specular =
+            source.specular;
+
+        scene.omniLights.push_back(
+            std::move(instance));
+    }
+
     void AddModelInstance(
         const std::string& chunkId,
         const core::world::ChunkModelInstance& source,
@@ -781,6 +855,20 @@ namespace core::world
                     instance.sptLogicalPath);
             }
 
+            scene.omniLights.reserve(
+                scene.omniLights.size() +
+                chunk.omniLights.size());
+
+            for (const ChunkOmniLight& light :
+                 chunk.omniLights)
+            {
+                AddOmniLightInstance(
+                    chunkId,
+                    light,
+                    chunkTransform,
+                    scene);
+            }
+
             for (const ChunkTerrainReference& terrain :
                  chunk.terrains)
             {
@@ -859,6 +947,9 @@ namespace core::world
 
         scene.speedTreeInstanceCount =
             scene.speedTreeInstances.size();
+
+        scene.omniLightCount =
+            scene.omniLights.size();
 
         scene.missingLargeObjectCount =
             0;
@@ -1024,6 +1115,12 @@ namespace core::world
                 "SpeedTree instances: ") +
             std::to_string(
                 scene.speedTreeInstances.size()));
+
+        core::Log::Info(
+            std::string(
+                "OmniLight instances: ") +
+            std::to_string(
+                scene.omniLights.size()));
 
         core::Log::Info(
             std::string(
