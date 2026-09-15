@@ -83,6 +83,18 @@ namespace client::graphics
             passes;
     };
 
+    struct SceneWaterMaterial final
+    {
+        std::array<float, 4>
+            deepColour
+        {
+            0.0f,
+            0.0f,
+            0.0f,
+            1.0f
+        };
+    };
+
     struct SceneMesh final
     {
         core::assets::MeshData geometry;
@@ -91,6 +103,9 @@ namespace client::graphics
             modelMaterials;
 
         std::int32_t terrainMaterialIndex =
+            -1;
+
+        std::int32_t waterMaterialIndex =
             -1;
     };
 
@@ -145,5 +160,8 @@ namespace client::graphics
 
         std::vector<SceneTerrainMaterial>
             terrainMaterials;
+
+        std::vector<SceneWaterMaterial>
+            waterMaterials;
     };
 }

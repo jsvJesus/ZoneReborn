@@ -28,6 +28,7 @@
     <ClInclude Include="Private\Preview\ModelRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\SpeedTreeRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\TerrainRenderDataBuilder.h" />
+    <ClInclude Include="Private\Preview\WaterRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\WorldPreviewLoader.h" />
   </ItemGroup>
 
@@ -43,6 +44,7 @@
     <ClCompile Include="Private\Preview\ModelRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\SpeedTreeRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\TerrainRenderDataBuilder.cpp" />
+    <ClCompile Include="Private\Preview\WaterRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WorldPreviewLoader.cpp" />
   </ItemGroup>
 

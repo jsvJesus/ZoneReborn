@@ -4,6 +4,7 @@
 #include "Preview/TerrainRenderDataBuilder.h"
 #include "Preview/SpeedTreeRenderDataBuilder.h"
 #include "Preview/FloraRenderDataBuilder.h"
+#include "Preview/WaterRenderDataBuilder.h"
 
 #include "Core/Assets/MeshLoader.h"
 #include "Core/Assets/ModelBundleLoader.h"
@@ -389,12 +390,6 @@ namespace client::preview
         std::array<std::size_t, 3>
             speedTreeLodTriangles{};
 
-        //std::size_t speedTreeBillboardTriangles =
-            //0;
-
-        //std::size_t speedTreeBillboardResources =
-            //0;
-
         for (const auto& entry :
              speedTreeCache)
         {
@@ -442,18 +437,6 @@ namespace client::preview
                         lodIndex]
                         .triangleCount;
             }
-
-            /*
-            if (renderData.hasBillboard)
-            {
-                ++speedTreeRenderMeshes;
-
-                ++speedTreeBillboardResources;
-
-                speedTreeBillboardTriangles +=
-                    renderData.billboardTriangles;
-            }
-            */
 
             speedTreeRenderCache.emplace(
                 resourcePath,
@@ -547,33 +530,6 @@ namespace client::preview
 
                 ++instance.levelCount;
             }
-
-            /*
-            if (renderData.hasBillboard &&
-                instance.levelCount <
-                    instance.levels.size())
-            {
-                graphics::SceneLodLevel& billboardLevel =
-                    instance.levels[
-                        instance.levelCount];
-
-                billboardLevel.meshIndices.push_back(
-                    renderData.billboardMeshIndex);
-
-                billboardLevel.maximumDistance =
-                    std::numeric_limits<float>::max();
-
-                ++instance.levelCount;
-            }
-            else if (instance.levelCount !=
-                     0)
-            {
-                instance.levels[
-                    instance.levelCount - 1]
-                    .maximumDistance =
-                        std::numeric_limits<float>::max();
-            }
-            */
 
             if (instance.levelCount > 0)
             {
@@ -683,20 +639,6 @@ namespace client::preview
                 "SpeedTree LOD2 triangles: ") +
             std::to_string(
                 speedTreeLodTriangles[2]));
-
-        /*
-        core::Log::Info(
-            std::string(
-                "SpeedTree billboard resources: ") +
-            std::to_string(
-                speedTreeBillboardResources));
-
-        core::Log::Info(
-            std::string(
-                "SpeedTree billboard triangles: ") +
-            std::to_string(
-                speedTreeBillboardTriangles));
-        */
 
         core::Log::Info(
             std::string(
@@ -1520,6 +1462,140 @@ namespace client::preview
                     "Flora disabled for terrain texture: ") +
                 texture);
         }
+
+        WaterRenderDataBuilder
+            waterRenderBuilder;
+
+        std::size_t loadedWaterSurfaces =
+            0;
+
+        std::size_t failedWaterSurfaces =
+            0;
+
+        std::size_t totalWaterVertices =
+            0;
+
+        std::size_t totalWaterTriangles =
+            0;
+
+        for (const core::world::WorldLargeObjectReference& object :
+             world.largeObjects)
+        {
+            if (!object.vloLoaded)
+            {
+                continue;
+            }
+
+            if (object.vloResource.type !=
+                core::world::vlo::VloType::Water)
+            {
+                continue;
+            }
+
+            if (!object.vloResource.water.has_value())
+            {
+                ++failedWaterSurfaces;
+
+                core::Log::Warning(
+                    std::string(
+                        "Water VLO has no water definition: ") +
+                    object.uid);
+
+                continue;
+            }
+
+            WaterRenderData
+                renderData;
+
+            std::string
+                waterError;
+
+            if (!waterRenderBuilder.Build(
+                    object,
+                    scene,
+                    renderData,
+                    waterError))
+            {
+                ++failedWaterSurfaces;
+
+                core::Log::Warning(
+                    std::string(
+                        "Water render build failed: uid=") +
+                    object.uid +
+                    ": " +
+                    waterError);
+
+                continue;
+            }
+
+            ++loadedWaterSurfaces;
+
+            totalWaterVertices +=
+                renderData.vertexCount;
+
+            totalWaterTriangles +=
+                renderData.triangleCount;
+
+            const core::world::water::WaterDefinition&
+                water =
+                    *object.vloResource.water;
+
+            core::Log::Info(
+                std::string(
+                    "SO water surface loaded: uid=") +
+                object.uid +
+                ", chunks=" +
+                std::to_string(
+                    object.chunkIds.size()) +
+                ", vertices=" +
+                std::to_string(
+                    renderData.vertexCount) +
+                ", triangles=" +
+                std::to_string(
+                    renderData.triangleCount) +
+                ", position=(" +
+                std::to_string(
+                    water.position.x) +
+                ", " +
+                std::to_string(
+                    water.position.y) +
+                ", " +
+                std::to_string(
+                    water.position.z) +
+                "), size=(" +
+                std::to_string(
+                    water.size.x) +
+                ", " +
+                std::to_string(
+                    water.size.z) +
+                "), orientation=" +
+                std::to_string(
+                    water.orientation));
+        }
+
+        core::Log::Info(
+            std::string(
+                "SO water surfaces loaded: ") +
+            std::to_string(
+                loadedWaterSurfaces));
+
+        core::Log::Info(
+            std::string(
+                "SO water surfaces failed: ") +
+            std::to_string(
+                failedWaterSurfaces));
+
+        core::Log::Info(
+            std::string(
+                "SO water vertices: ") +
+            std::to_string(
+                totalWaterVertices));
+
+        core::Log::Info(
+            std::string(
+                "SO water triangles: ") +
+            std::to_string(
+                totalWaterTriangles));
 
         if (scene.meshes.empty() ||
             (

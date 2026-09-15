@@ -51,13 +51,17 @@ namespace
 
         DirectX::XMFLOAT4 groupColour;
 
-        std::uint32_t useTerrain = 0;
+        std::uint32_t useTerrain =
+            0;
 
-        std::uint32_t terrainLayerCount = 0;
+        std::uint32_t terrainLayerCount =
+            0;
 
-        std::uint32_t useModelTexture = 0;
+        std::uint32_t useModelTexture =
+            0;
 
-        std::uint32_t paddingFlags = 0;
+        std::uint32_t useWater =
+            0;
 
         DirectX::XMFLOAT4 modelParameters
         {
@@ -65,6 +69,14 @@ namespace
             0.0f,
             0.0f,
             0.0f
+        };
+
+        DirectX::XMFLOAT4 waterColour
+        {
+            0.0f,
+            0.0f,
+            0.0f,
+            1.0f
         };
     };
 
@@ -203,8 +215,10 @@ namespace
             uint useTerrain;
             uint terrainLayerCount;
             uint useModelTexture;
-            uint paddingFlags;
+            uint useWater;
+
             float4 modelParameters;
+            float4 waterColour;
         };
 
         Texture2D terrainTexture0 : register(t0);
@@ -367,7 +381,16 @@ namespace
             float outputAlpha =
                 1.0f;
 
-            if (useTerrain != 0)
+            if (useWater != 0)
+            {
+                baseColour =
+                    waterColour.rgb;
+
+                outputAlpha =
+                    waterColour.a;
+            }
+
+            else if (useTerrain != 0)
             {
                 baseColour =
                     SampleTerrain(
@@ -643,6 +666,7 @@ namespace client::graphics
 
             std::uint32_t indexCount = 0;
             std::int32_t terrainMaterialIndex = -1;
+            std::int32_t waterMaterialIndex = -1;
 
             std::vector<
                 core::assets::MeshPrimitiveGroup>
@@ -709,6 +733,9 @@ namespace client::graphics
 
         std::vector<GpuTerrainMaterial>
             terrainMaterials;
+
+        std::vector<SceneWaterMaterial>
+            waterMaterials;
 
         std::vector<SceneInstance>
             instances;
@@ -1537,6 +1564,25 @@ namespace client::graphics
             gpuMesh.terrainMaterialIndex =
                 sceneMesh.terrainMaterialIndex;
 
+            gpuMesh.waterMaterialIndex =
+                sceneMesh.waterMaterialIndex;
+
+            if (gpuMesh.waterMaterialIndex >= 0)
+            {
+                const std::size_t waterMaterialIndex =
+                    static_cast<std::size_t>(
+                        gpuMesh.waterMaterialIndex);
+
+                if (waterMaterialIndex >=
+                    scene.waterMaterials.size())
+                {
+                    error =
+                        "Scene mesh references invalid water material.";
+
+                    return false;
+                }
+            }
+
             state_->meshes.push_back(
                 std::move(gpuMesh));
         }
@@ -1674,6 +1720,9 @@ namespace client::graphics
 
         state_->instances =
             scene.instances;
+
+        state_->waterMaterials =
+            scene.waterMaterials;
 
         state_->lodInstances =
             scene.lodInstances;
@@ -1909,6 +1958,32 @@ namespace client::graphics
                         renderInstance));
             }
         }
+
+        std::stable_sort(
+            state_->renderInstances.begin(),
+            state_->renderInstances.end(),
+            [this](
+                const SceneInstance& left,
+                const SceneInstance& right)
+            {
+                const bool leftIsWater =
+                    left.meshIndex <
+                        state_->meshes.size() &&
+                    state_->meshes[
+                        left.meshIndex]
+                        .waterMaterialIndex >= 0;
+
+                const bool rightIsWater =
+                    right.meshIndex <
+                        state_->meshes.size() &&
+                    state_->meshes[
+                        right.meshIndex]
+                        .waterMaterialIndex >= 0;
+
+                return
+                    !leftIsWater &&
+                    rightIsWater;
+            });
 
         for (const SceneInstance& instance :
             state_->renderInstances)
@@ -2529,6 +2604,9 @@ namespace client::graphics
                     constants.useModelTexture =
                         0;
 
+                    constants.useWater =
+                        0;
+
                     constants.terrainLayerCount =
                         pass.layerCount;
 
@@ -2637,6 +2715,70 @@ namespace client::graphics
                 continue;
             }
 
+            if (mesh.waterMaterialIndex >= 0)
+            {
+                const std::size_t materialIndex =
+                    static_cast<std::size_t>(
+                        mesh.waterMaterialIndex);
+
+                if (materialIndex >=
+                    state_->waterMaterials.size())
+                {
+                    error =
+                        "GPU mesh contains invalid water material.";
+
+                    return false;
+                }
+
+                const SceneWaterMaterial& material =
+                    state_->waterMaterials[
+                        materialIndex];
+
+                constants.useTerrain =
+                    0;
+
+                constants.terrainLayerCount =
+                    0;
+
+                constants.useModelTexture =
+                    0;
+
+                constants.useWater =
+                    1;
+
+                constants.waterColour =
+                {
+                    material.deepColour[0],
+                    material.deepColour[1],
+                    material.deepColour[2],
+                    material.deepColour[3]
+                };
+
+                state_->context->OMSetBlendState(
+                    nullptr,
+                    nullptr,
+                    0xFFFFFFFFu);
+
+                state_->context->OMSetDepthStencilState(
+                    state_->depthState.Get(),
+                    0);
+
+                state_->context->UpdateSubresource(
+                    state_->constantBuffer.Get(),
+                    0,
+                    nullptr,
+                    &constants,
+                    0,
+                    0);
+
+                state_->context->DrawIndexed(
+                    mesh.indexCount,
+                    0,
+                    0);
+
+                continue;
+            }
+
             constants.useTerrain =
                 0;
 
@@ -2644,6 +2786,9 @@ namespace client::graphics
                 0;
 
             constants.useModelTexture =
+                0;
+
+            constants.useWater =
                 0;
 
             if (mesh.primitiveGroups.empty())
