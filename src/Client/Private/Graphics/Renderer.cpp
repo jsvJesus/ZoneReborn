@@ -618,7 +618,9 @@ namespace
                     lastUV,
                     0.0f).rgb *
                 waterReflectionTint.rgb;
-        }
+            }
+    )"
+    R"(
 
         float4 ShadeWater(
             PixelInput input)
@@ -809,10 +811,7 @@ namespace
                     waterParameters1.w *
                     0.25f;
 
-            float foamTexture =
-                waterFoamTexture.Sample(
-                    terrainTextureSampler,
-                    foamUV).r;
+            float foamTexture = waterFoamTexture.Sample(terrainTextureSampler, foamUV).r;
 
             foamAmount *=
                 foamTexture *
