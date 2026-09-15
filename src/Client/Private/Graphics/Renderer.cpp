@@ -244,6 +244,11 @@ namespace
         Texture2D terrainBlend : register(t4);
         Texture2D modelTexture : register(t5);
 
+        Texture2D sceneColourTexture : register(t6);
+        Texture2D sceneDepthTexture  : register(t7);
+        Texture2D waterNormalTexture : register(t8);
+        Texture2D waterFoamTexture   : register(t9);
+
         SamplerState terrainTextureSampler : register(s0);
         SamplerState terrainBlendSampler   : register(s1);
 
@@ -288,6 +293,9 @@ namespace
 
             output.terrainUV =
                 input.texcoord;
+
+            output.worldPosition =
+                worldPosition.xyz;
 
             return output;
         }
@@ -717,10 +725,18 @@ namespace
                     waterParameters3.x,
                     0.01f);
 
+            float fadeDistance =
+                waterParameters3.y >
+                    0.0f
+                    ? waterParameters3.y
+                    : configuredDepth;
+
             float deepFactor =
                 saturate(
                     verticalDepth /
-                    configuredDepth);
+                    max(
+                        fadeDistance,
+                        0.01f));
 
             refractionColour =
                 lerp(
@@ -762,21 +778,16 @@ namespace
                 ) /
                 totalWeight;
 
-            float rawDepthDifference =
-                abs(
-                    sceneDepth -
-                    input.position.z);
-
             float foamIntersection =
                 max(
                     waterParameters2.y,
-                    0.0f);
+                    0.001f);
 
             float foamAmount =
+                1.0f -
                 saturate(
-                    1.0f -
-                    rawDepthDifference *
-                        foamIntersection);
+                    verticalDepth /
+                    foamIntersection);
 
             float foamTiling =
                 waterParameters2.w;
@@ -1385,14 +1396,11 @@ namespace client::graphics
             return false;
         }
 
-        ComPtr<ID3D11Texture2D>
-            backBuffer;
-
         result =
             state_->swapChain->GetBuffer(
-        0,
-        IID_PPV_ARGS(
-            &state_->backBufferTexture));
+                0,
+                IID_PPV_ARGS(
+                    &state_->backBufferTexture));
 
         if (FAILED(result))
         {
@@ -1412,6 +1420,67 @@ namespace client::graphics
         {
             error =
                 "Unable to create render target.";
+
+            return false;
+        }
+
+        D3D11_TEXTURE2D_DESC
+            sceneColourDescription{};
+
+        state_->backBufferTexture->GetDesc(
+            &sceneColourDescription);
+
+        sceneColourDescription.BindFlags =
+            D3D11_BIND_RENDER_TARGET |
+            D3D11_BIND_SHADER_RESOURCE;
+
+        sceneColourDescription.CPUAccessFlags =
+            0;
+
+        sceneColourDescription.MiscFlags =
+            0;
+
+        sceneColourDescription.Usage =
+            D3D11_USAGE_DEFAULT;
+
+        result =
+            state_->device->CreateTexture2D(
+                &sceneColourDescription,
+                nullptr,
+                &state_->sceneColourTexture);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create scene colour texture.";
+
+            return false;
+        }
+
+        result =
+            state_->device->CreateRenderTargetView(
+                state_->sceneColourTexture.Get(),
+                nullptr,
+                &state_->sceneColourRenderTargetView);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create scene colour render target.";
+
+            return false;
+        }
+
+        result =
+            state_->device->CreateShaderResourceView(
+                state_->sceneColourTexture.Get(),
+                nullptr,
+                &state_->sceneColourShaderResourceView);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create scene colour shader resource.";
 
             return false;
         }
@@ -1458,16 +1527,79 @@ namespace client::graphics
             return false;
         }
 
+        D3D11_DEPTH_STENCIL_VIEW_DESC
+            depthViewDescription{};
+
+        depthViewDescription.Format =
+            DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+        depthViewDescription.ViewDimension =
+            D3D11_DSV_DIMENSION_TEXTURE2D;
+
+        depthViewDescription.Texture2D.MipSlice =
+            0;
+
         result =
             state_->device->CreateDepthStencilView(
                 state_->depthTexture.Get(),
-                nullptr,
+                &depthViewDescription,
                 &state_->depthStencilView);
 
         if (FAILED(result))
         {
             error =
                 "Unable to create depth view.";
+
+            return false;
+        }
+
+        D3D11_DEPTH_STENCIL_VIEW_DESC
+            depthReadOnlyViewDescription =
+                depthViewDescription;
+
+        depthReadOnlyViewDescription.Flags =
+            D3D11_DSV_READ_ONLY_DEPTH |
+            D3D11_DSV_READ_ONLY_STENCIL;
+
+        result =
+            state_->device->CreateDepthStencilView(
+                state_->depthTexture.Get(),
+                &depthReadOnlyViewDescription,
+                &state_->depthReadOnlyView);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create read-only depth view.";
+
+            return false;
+        }
+
+        D3D11_SHADER_RESOURCE_VIEW_DESC
+            depthResourceDescription{};
+
+        depthResourceDescription.Format =
+            DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+
+        depthResourceDescription.ViewDimension =
+            D3D11_SRV_DIMENSION_TEXTURE2D;
+
+        depthResourceDescription.Texture2D.MostDetailedMip =
+            0;
+
+        depthResourceDescription.Texture2D.MipLevels =
+            1;
+
+        result =
+            state_->device->CreateShaderResourceView(
+                state_->depthTexture.Get(),
+                &depthResourceDescription,
+                &state_->depthShaderResourceView);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create depth shader resource.";
 
             return false;
         }
@@ -1539,6 +1671,14 @@ namespace client::graphics
             state_->device->CreateRasterizerState(
                 &rasterizerDescription,
                 &state_->rasterizerState);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create rasterizer.";
+
+            return false;
+        }
 
         D3D11_BLEND_DESC
             blendDescription{};
@@ -1713,14 +1853,6 @@ namespace client::graphics
         {
             error =
                 "Unable to create terrain blend sampler.";
-
-            return false;
-        }
-
-        if (FAILED(result))
-        {
-            error =
-                "Unable to create rasterizer.";
 
             return false;
         }
@@ -2710,6 +2842,11 @@ namespace client::graphics
             1.0f
         };
 
+        state_->context->OMSetRenderTargets(
+            0,
+            nullptr,
+            nullptr);
+
         state_->context->ClearRenderTargetView(
             state_->sceneColourRenderTargetView.Get(),
             ClearColour);
@@ -2807,6 +2944,15 @@ namespace client::graphics
             static_cast<float>(
                 state_->height);
 
+        constexpr float NearPlane =
+            0.1f;
+
+        const float farPlane =
+            std::max(
+                5000.0f,
+                state_->sceneRadius *
+                    10.0f);
+
         const XMMATRIX projection =
             XMMatrixPerspectiveFovLH(
                 XMConvertToRadians(
@@ -2824,17 +2970,8 @@ namespace client::graphics
 
         const XMMATRIX inverseViewProjection =
             XMMatrixInverse(
-        nullptr,
-        viewProjection);
-
-        constexpr float NearPlane =
-            0.1f;
-
-        const float farPlane =
-            std::max(
-                5000.0f,
-                state_->sceneRadius *
-                    10.0f);
+                nullptr,
+                viewProjection);
 
         const float elapsedSeconds =
             std::chrono::duration<float>(
@@ -2892,6 +3029,10 @@ namespace client::graphics
             constantBuffers);
 
         SceneConstants constants{};
+
+        XMStoreFloat4x4(
+            &constants.viewProjection,
+            viewProjection);
 
         XMStoreFloat4x4(
             &constants.inverseViewProjection,
@@ -3274,70 +3415,6 @@ namespace client::graphics
                 continue;
             }
 
-            if (mesh.waterMaterialIndex >= 0)
-            {
-                const std::size_t materialIndex =
-                    static_cast<std::size_t>(
-                        mesh.waterMaterialIndex);
-
-                if (materialIndex >=
-                    state_->waterMaterials.size())
-                {
-                    error =
-                        "GPU mesh contains invalid water material.";
-
-                    return false;
-                }
-
-                const SceneWaterMaterial& material =
-                    state_->waterMaterials[
-                        materialIndex];
-
-                constants.useTerrain =
-                    0;
-
-                constants.terrainLayerCount =
-                    0;
-
-                constants.useModelTexture =
-                    0;
-
-                constants.useWater =
-                    1;
-
-                constants.waterColour =
-                {
-                    material.deepColour[0],
-                    material.deepColour[1],
-                    material.deepColour[2],
-                    material.deepColour[3]
-                };
-
-                state_->context->OMSetBlendState(
-                    nullptr,
-                    nullptr,
-                    0xFFFFFFFFu);
-
-                state_->context->OMSetDepthStencilState(
-                    state_->depthState.Get(),
-                    0);
-
-                state_->context->UpdateSubresource(
-                    state_->constantBuffer.Get(),
-                    0,
-                    nullptr,
-                    &constants,
-                    0,
-                    0);
-
-                state_->context->DrawIndexed(
-                    mesh.indexCount,
-                    0,
-                    0);
-
-                continue;
-            }
-
             constants.useTerrain =
                 0;
 
@@ -3519,6 +3596,283 @@ namespace client::graphics
                 state_->depthState.Get(),
                 0);
         }
+
+        // The opaque scene must be unbound before it can be used as an SRV.
+        state_->context->OMSetRenderTargets(
+            0,
+            nullptr,
+            nullptr);
+
+        state_->context->CopyResource(
+            state_->backBufferTexture.Get(),
+            state_->sceneColourTexture.Get());
+
+        ID3D11RenderTargetView*
+            finalRenderTargets[] =
+        {
+            state_->renderTargetView.Get()
+        };
+
+        state_->context->OMSetRenderTargets(
+            1,
+            finalRenderTargets,
+            state_->depthReadOnlyView.Get());
+
+        state_->context->OMSetDepthStencilState(
+            state_->depthReadState.Get(),
+            0);
+
+        for (const SceneInstance& instance :
+             state_->renderInstances)
+        {
+            if (instance.meshIndex >=
+                state_->meshes.size())
+            {
+                error =
+                    "Water pass contains invalid mesh index.";
+
+                return false;
+            }
+
+            const State::GpuMesh& mesh =
+                state_->meshes[
+                    instance.meshIndex];
+
+            if (mesh.waterMaterialIndex <
+                0)
+            {
+                continue;
+            }
+
+            const std::size_t materialIndex =
+                static_cast<std::size_t>(
+                    mesh.waterMaterialIndex);
+
+            if (materialIndex >=
+                state_->waterMaterials.size())
+            {
+                error =
+                    "Water mesh references invalid material.";
+
+                return false;
+            }
+
+            const SceneWaterMaterial& material =
+                state_->waterMaterials[
+                    materialIndex];
+
+            ID3D11Buffer*
+                vertexBuffers[] =
+            {
+                mesh.vertexBuffer.Get()
+            };
+
+            state_->context->IASetVertexBuffers(
+                0,
+                1,
+                vertexBuffers,
+                &stride,
+                &offset);
+
+            state_->context->IASetIndexBuffer(
+                mesh.indexBuffer.Get(),
+                DXGI_FORMAT_R16_UINT,
+                0);
+
+            const XMMATRIX world =
+                ToMatrix(
+                    instance.transform);
+
+            XMStoreFloat4x4(
+                &constants.world,
+                world);
+
+            constants.useTerrain =
+                0;
+
+            constants.terrainLayerCount =
+                0;
+
+            constants.useModelTexture =
+                0;
+
+            constants.useWater =
+                1;
+
+            constants.waterDeepColour =
+            {
+                material.deepColour[0],
+                material.deepColour[1],
+                material.deepColour[2],
+                material.deepColour[3]
+            };
+
+            constants.waterReflectionTint =
+            {
+                material.reflectionTint[0],
+                material.reflectionTint[1],
+                material.reflectionTint[2],
+                material.reflectionTint[3]
+            };
+
+            constants.waterRefractionTint =
+            {
+                material.refractionTint[0],
+                material.refractionTint[1],
+                material.refractionTint[2],
+                material.refractionTint[3]
+            };
+
+            constants.waterParameters0 =
+            {
+                material.reflectionStrength,
+                material.refractionStrength,
+                material.fresnelConstant,
+                material.fresnelExponent
+            };
+
+            constants.waterParameters1 =
+            {
+                material.waveScale[0],
+                material.waveScale[1],
+                material.windVelocity,
+                elapsedSeconds
+            };
+
+            constants.waterScrollSpeed1 =
+            {
+                material.scrollSpeed1[0],
+                material.scrollSpeed1[1],
+                0.0f,
+                0.0f
+            };
+
+            constants.waterScrollSpeed2 =
+            {
+                material.scrollSpeed2[0],
+                material.scrollSpeed2[1],
+                0.0f,
+                0.0f
+            };
+
+            constants.waterParameters2 =
+            {
+                material.textureTessellation,
+                material.foamIntersection,
+                material.foamMultiplier,
+                material.foamTiling
+            };
+
+            constants.waterParameters3 =
+            {
+                material.depth,
+                material.fadeDepth,
+                material.smoothness,
+                material.sunPower
+            };
+
+            constants.cameraPosition.w =
+                material.sunScale;
+
+            ID3D11ShaderResourceView*
+                waveTextureView =
+                    nullptr;
+
+            ID3D11ShaderResourceView*
+                foamTextureView =
+                    nullptr;
+
+            if (material.waveTextureIndex >=
+                0)
+            {
+                const std::size_t textureIndex =
+                    static_cast<std::size_t>(
+                        material.waveTextureIndex);
+
+                if (textureIndex >=
+                    state_->textures.size())
+                {
+                    error =
+                        "Water normal texture index is invalid.";
+
+                    return false;
+                }
+
+                waveTextureView =
+                    state_->textures[
+                        textureIndex].Get();
+            }
+
+            if (material.foamTextureIndex >=
+                0)
+            {
+                const std::size_t textureIndex =
+                    static_cast<std::size_t>(
+                        material.foamTextureIndex);
+
+                if (textureIndex >=
+                    state_->textures.size())
+                {
+                    error =
+                        "Water foam texture index is invalid.";
+
+                    return false;
+                }
+
+                foamTextureView =
+                    state_->textures[
+                        textureIndex].Get();
+            }
+
+            ID3D11ShaderResourceView*
+                waterViews[4] =
+            {
+                state_->sceneColourShaderResourceView.Get(),
+                state_->depthShaderResourceView.Get(),
+                waveTextureView,
+                foamTextureView
+            };
+
+            state_->context->PSSetShaderResources(
+                6,
+                4,
+                waterViews);
+
+            state_->context->OMSetBlendState(
+                nullptr,
+                nullptr,
+                0xFFFFFFFFu);
+
+            state_->context->UpdateSubresource(
+                state_->constantBuffer.Get(),
+                0,
+                nullptr,
+                &constants,
+                0,
+                0);
+
+            state_->context->DrawIndexed(
+                mesh.indexCount,
+                0,
+                0);
+        }
+
+        ID3D11ShaderResourceView*
+            emptyWaterViews[4] =
+        {
+            nullptr,
+            nullptr,
+            nullptr,
+            nullptr
+        };
+
+        state_->context->PSSetShaderResources(
+            6,
+            4,
+            emptyWaterViews);
+
+        constants.useWater =
+            0;
 
         const HRESULT result =
             state_->swapChain->Present(
