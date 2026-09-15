@@ -11,7 +11,7 @@ namespace
 {
     constexpr const char*
         DefaultSpace =
-            "so_origins";
+            "dm_snowland"; // Map loader
 
     void WaitOnFailure()
     {
