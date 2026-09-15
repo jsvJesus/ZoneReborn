@@ -263,14 +263,18 @@ namespace
         {
             output.diffuseLogicalPath =
                 core::resources::ResourcePath::ToResPath(
-                    output.diffuseReference);
+                    ReplaceExtension(
+                        output.diffuseReference,
+                        ".dds"));
         }
 
         if (!output.normalReference.empty())
         {
             output.normalLogicalPath =
                 core::resources::ResourcePath::ToResPath(
-                    output.normalReference);
+                    ReplaceExtension(
+                        output.normalReference,
+                        ".dds"));
         }
 
         return true;

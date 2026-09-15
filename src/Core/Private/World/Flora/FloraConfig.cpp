@@ -2,18 +2,56 @@
 
 #include "Core/Resources/ResourcePath.h"
 
+#include <filesystem>
 #include <string>
 #include <string_view>
 #include <vector>
 
 namespace
 {
-    std::string BuildTextureKey(
-        const std::string_view reference)
+    std::string ToLower(
+        std::string value)
+    {
+        for (char& character : value)
+        {
+            if (character >= 'A' &&
+                character <= 'Z')
+            {
+                character =
+                    static_cast<char>(
+                        character - 'A' + 'a');
+            }
+        }
+
+        return value;
+    }
+
+    bool IsTextureExtension(
+        const std::string& extension) noexcept
+    {
+        return
+            extension == ".dds" ||
+            extension == ".tga" ||
+            extension == ".png" ||
+            extension == ".jpg" ||
+            extension == ".jpeg" ||
+            extension == ".bmp";
+    }
+}
+
+namespace core::world::flora
+{
+    std::string BuildFloraTextureKey(
+        const std::string_view textureReference)
     {
         std::string normalized =
-            core::resources::ResourcePath::Normalize(
-                reference);
+            resources::ResourcePath::Normalize(
+                textureReference);
+
+        if (normalized.empty())
+        {
+            return {};
+        }
 
         if (normalized.starts_with(
                 "res/"))
@@ -23,12 +61,26 @@ namespace
                 4);
         }
 
+        std::filesystem::path path(
+            normalized);
+
+        const std::string extension =
+            ToLower(
+                path.extension().string());
+
+        if (IsTextureExtension(
+                extension))
+        {
+            path.replace_extension();
+        }
+
+        normalized =
+            resources::ResourcePath::Normalize(
+                path.generic_string());
+
         return normalized;
     }
-}
 
-namespace core::world::flora
-{
     std::vector<const FloraEcotype*>
     FloraConfig::FindEcotypesByTexture(
         const std::string_view textureReference) const
@@ -37,7 +89,7 @@ namespace core::world::flora
             result;
 
         const std::string key =
-            BuildTextureKey(
+            BuildFloraTextureKey(
                 textureReference);
 
         if (key.empty())
@@ -51,7 +103,7 @@ namespace core::world::flora
             for (const FloraTextureRule& texture :
                  ecotype.textures)
             {
-                if (BuildTextureKey(
+                if (BuildFloraTextureKey(
                         texture.textureReference) !=
                     key)
                 {

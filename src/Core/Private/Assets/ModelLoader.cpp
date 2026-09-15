@@ -5,11 +5,17 @@
 #include "Core/Resources/PackedSectionReader.h"
 #include "Core/Resources/ResourcePath.h"
 
+#include <cstddef>
 #include <string>
+#include <string_view>
+#include <unordered_set>
 #include <utility>
 
 namespace
 {
+    constexpr std::size_t MaximumParentDepth =
+        16;
+
     bool ReadVector3(
         const core::resources::DataSection& section,
         core::math::Vector3& output)
@@ -35,10 +41,12 @@ namespace
         core::math::BoundingBox& output)
     {
         const auto* minimum =
-            section.FindChild("min");
+            section.FindChild(
+                "min");
 
         const auto* maximum =
-            section.FindChild("max");
+            section.FindChild(
+                "max");
 
         if (minimum == nullptr ||
             maximum == nullptr)
@@ -47,25 +55,284 @@ namespace
         }
 
         return
-            ReadVector3(*minimum, output.minimum) &&
-            ReadVector3(*maximum, output.maximum);
+            ReadVector3(
+                *minimum,
+                output.minimum) &&
+            ReadVector3(
+                *maximum,
+                output.maximum);
     }
-}
 
-namespace core::assets
-{
-    bool ModelLoader::Load(
-        const resources::ResourceFileSystem& resources,
+    const std::string*
+    ReadReference(
+        const core::resources::DataSection* section)
+    {
+        if (section == nullptr)
+        {
+            return nullptr;
+        }
+
+        if (const std::string* value =
+                section->AsString();
+            value != nullptr &&
+            !value->empty())
+        {
+            return value;
+        }
+
+        const core::resources::DataSection* child =
+            section->FindChild(
+                "resource");
+
+        if (child != nullptr)
+        {
+            if (const std::string* value =
+                    child->AsString();
+                value != nullptr &&
+                !value->empty())
+            {
+                return value;
+            }
+        }
+
+        child =
+            section->FindChild(
+                "visual");
+
+        if (child != nullptr)
+        {
+            if (const std::string* value =
+                    child->AsString();
+                value != nullptr &&
+                !value->empty())
+            {
+                return value;
+            }
+        }
+
+        child =
+            section->FindChild(
+                "name");
+
+        if (child != nullptr)
+        {
+            if (const std::string* value =
+                    child->AsString();
+                value != nullptr &&
+                !value->empty())
+            {
+                return value;
+            }
+        }
+
+        return nullptr;
+    }
+
+    std::string NormalizeVisualReference(
+        const std::string_view reference)
+    {
+        std::string normalized =
+            core::resources::ResourcePath::Normalize(
+                reference);
+
+        if (normalized.empty())
+        {
+            return {};
+        }
+
+        if (normalized.starts_with(
+                "res/"))
+        {
+            normalized.erase(
+                0,
+                4);
+        }
+
+        if (normalized.ends_with(
+                ".visual"))
+        {
+            normalized.resize(
+                normalized.size() -
+                std::string_view(
+                    ".visual").size());
+        }
+        else if (normalized.ends_with(
+                     ".primitives"))
+        {
+            normalized.resize(
+                normalized.size() -
+                std::string_view(
+                    ".primitives").size());
+        }
+
+        return normalized;
+    }
+
+    std::string NormalizeModelReference(
+        const std::string_view reference)
+    {
+        std::string normalized =
+            core::resources::ResourcePath::Normalize(
+                reference);
+
+        if (normalized.empty())
+        {
+            return {};
+        }
+
+        if (normalized.starts_with(
+                "res/"))
+        {
+            normalized.erase(
+                0,
+                4);
+        }
+
+        if (!normalized.ends_with(
+                ".model"))
+        {
+            normalized +=
+                ".model";
+        }
+
+        return normalized;
+    }
+
+    bool ApplyVisualReference(
+        const core::resources::ResourceFileSystem& resources,
+        const std::string_view reference,
+        core::assets::ModelAsset& model)
+    {
+        const std::string normalized =
+            NormalizeVisualReference(
+                reference);
+
+        if (normalized.empty())
+        {
+            return false;
+        }
+
+        model.visualReference =
+            normalized;
+
+        model.visualLogicalPath =
+            core::resources::ResourcePath::ToResPath(
+                normalized +
+                ".visual");
+
+        model.primitivesLogicalPath =
+            core::resources::ResourcePath::ToResPath(
+                normalized +
+                ".primitives");
+
+        if (model.visualLogicalPath.empty() ||
+            model.primitivesLogicalPath.empty())
+        {
+            return false;
+        }
+
+        model.visualExists =
+            resources.Exists(
+                model.visualLogicalPath);
+
+        model.primitivesExists =
+            resources.Exists(
+                model.primitivesLogicalPath);
+
+        return true;
+    }
+
+    bool TrySiblingVisual(
+        const core::resources::ResourceFileSystem& resources,
+        const std::string& modelLogicalPath,
+        core::assets::ModelAsset& model)
+    {
+        std::string base =
+            core::resources::ResourcePath::Normalize(
+                modelLogicalPath);
+
+        if (base.empty() ||
+            !base.ends_with(
+                ".model"))
+        {
+            return false;
+        }
+
+        base.resize(
+            base.size() -
+            std::string_view(
+                ".model").size());
+
+        const std::string visualPath =
+            base +
+            ".visual";
+
+        const std::string primitivesPath =
+            base +
+            ".primitives";
+
+        if (!resources.Exists(
+                visualPath) ||
+            !resources.Exists(
+                primitivesPath))
+        {
+            return false;
+        }
+
+        std::string reference =
+            base;
+
+        if (reference.starts_with(
+                "res/"))
+        {
+            reference.erase(
+                0,
+                4);
+        }
+
+        model.visualReference =
+            reference;
+
+        model.visualLogicalPath =
+            visualPath;
+
+        model.primitivesLogicalPath =
+            primitivesPath;
+
+        model.visualExists =
+            true;
+
+        model.primitivesExists =
+            true;
+
+        return true;
+    }
+
+    bool LoadModelRecursive(
+        const core::resources::ResourceFileSystem& resources,
         const std::string_view modelReference,
-        ModelAsset& output,
-        std::string& error) const
+        const std::size_t depth,
+        std::unordered_set<std::string>& visited,
+        core::assets::ModelAsset& output,
+        std::string& error)
     {
         output = {};
         error.clear();
 
-        ModelSourceLoader sourceLoader;
+        if (depth >
+            MaximumParentDepth)
+        {
+            error =
+                "Model parent chain exceeds maximum depth.";
 
-        ModelSource source;
+            return false;
+        }
+
+        core::assets::ModelSourceLoader
+            sourceLoader;
+
+        core::assets::ModelSource
+            source;
 
         if (!sourceLoader.Load(
                 resources,
@@ -76,9 +343,21 @@ namespace core::assets
             return false;
         }
 
-        resources::PackedSectionReader reader;
+        if (!visited.insert(
+                source.resource.logicalPath).second)
+        {
+            error =
+                "Model parent cycle detected: " +
+                source.resource.logicalPath;
 
-        resources::DataSection root;
+            return false;
+        }
+
+        core::resources::PackedSectionReader
+            reader;
+
+        core::resources::DataSection
+            root;
 
         if (!reader.Read(
                 source.data,
@@ -94,13 +373,15 @@ namespace core::assets
             return false;
         }
 
-        ModelAsset model;
+        core::assets::ModelAsset
+            model;
 
         model.resource =
-            std::move(source.resource);
+            source.resource;
 
         if (const auto* extent =
-                root.FindChild("extent"))
+                root.FindChild(
+                    "extent"))
         {
             if (!extent->TryGetFloat(
                     model.extent))
@@ -113,7 +394,8 @@ namespace core::assets
         }
 
         if (const auto* batched =
-                root.FindChild("batched"))
+                root.FindChild(
+                    "batched"))
         {
             const bool* value =
                 batched->AsBoolean();
@@ -126,13 +408,16 @@ namespace core::assets
                 return false;
             }
 
-            model.batched = *value;
+            model.batched =
+                *value;
         }
 
         if (const auto* visibilityBox =
-                root.FindChild("visibilityBox"))
+                root.FindChild(
+                    "visibilityBox"))
         {
-            math::BoundingBox box;
+            core::math::BoundingBox
+                box;
 
             if (!ReadBoundingBox(
                     *visibilityBox,
@@ -148,74 +433,142 @@ namespace core::assets
                 box;
         }
 
-        const resources::DataSection* visualSection =
-            root.FindChild("nodelessVisual");
+        const core::resources::DataSection* visualSection =
+            root.FindChild(
+                "nodelessVisual");
 
         if (visualSection == nullptr)
         {
             visualSection =
-                root.FindChild("nodefullVisual");
+                root.FindChild(
+                    "nodefullVisual");
         }
 
         if (visualSection == nullptr)
         {
             visualSection =
-                root.FindChild("billboardVisual");
+                root.FindChild(
+                    "billboardVisual");
         }
 
-        if (visualSection == nullptr)
+        if (const std::string* visualReference =
+                ReadReference(
+                    visualSection);
+            visualReference != nullptr)
         {
-            error =
-                "Model does not contain a visual reference.";
+            if (ApplyVisualReference(
+                    resources,
+                    *visualReference,
+                    model))
+            {
+                output =
+                    std::move(
+                        model);
 
-            return false;
+                return true;
+            }
         }
 
-        const std::string* visualReference =
-            visualSection->AsString();
+        const core::resources::DataSection* parentSection =
+            root.FindChild(
+                "parent");
 
-        if (visualReference == nullptr ||
-            visualReference->empty())
+        if (const std::string* parentReference =
+                ReadReference(
+                    parentSection);
+            parentReference != nullptr)
+        {
+            const std::string normalizedParent =
+                NormalizeModelReference(
+                    *parentReference);
+
+            if (!normalizedParent.empty())
+            {
+                core::assets::ModelAsset
+                    parent;
+
+                std::string parentError;
+
+                if (LoadModelRecursive(
+                        resources,
+                        normalizedParent,
+                        depth + 1,
+                        visited,
+                        parent,
+                        parentError))
+                {
+                    model.visualReference =
+                        parent.visualReference;
+
+                    model.visualLogicalPath =
+                        parent.visualLogicalPath;
+
+                    model.primitivesLogicalPath =
+                        parent.primitivesLogicalPath;
+
+                    model.visualExists =
+                        parent.visualExists;
+
+                    model.primitivesExists =
+                        parent.primitivesExists;
+
+                    output =
+                        std::move(
+                            model);
+
+                    return true;
+                }
+            }
+        }
+
+        if (TrySiblingVisual(
+                resources,
+                source.resource.logicalPath,
+                model))
+        {
+            output =
+                std::move(
+                    model);
+
+            return true;
+        }
+
+        if (visualSection !=
+            nullptr)
         {
             error =
                 "Model contains invalid visual reference.";
-
-            return false;
         }
-
-        model.visualReference =
-            *visualReference;
-
-        model.visualLogicalPath =
-            resources::ResourcePath::ToResPath(
-                model.visualReference +
-                ".visual");
-
-        model.primitivesLogicalPath =
-            resources::ResourcePath::ToResPath(
-                model.visualReference +
-                ".primitives");
-
-        if (model.visualLogicalPath.empty() ||
-            model.primitivesLogicalPath.empty())
+        else
         {
             error =
-                "Unable to build model resource paths.";
-
-            return false;
+                "Model does not contain a visual reference.";
         }
 
-        model.visualExists =
-            resources.Exists(
-                model.visualLogicalPath);
+        return false;
+    }
+}
 
-        model.primitivesExists =
-            resources.Exists(
-                model.primitivesLogicalPath);
+namespace core::assets
+{
+    bool ModelLoader::Load(
+        const resources::ResourceFileSystem& resources,
+        const std::string_view modelReference,
+        ModelAsset& output,
+        std::string& error) const
+    {
+        output = {};
+        error.clear();
 
-        output =
-            std::move(model);
+        std::unordered_set<std::string>
+            visited;
 
-        return true;
+        return LoadModelRecursive(
+            resources,
+            modelReference,
+            0,
+            visited,
+            output,
+            error);
     }
 }

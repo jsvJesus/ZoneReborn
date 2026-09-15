@@ -1249,23 +1249,50 @@ namespace client::preview
         output = {};
         error.clear();
 
+        const auto resolveGeometryLodCount =
+            [](
+                const auto& geometry) -> std::size_t
+            {
+                if (geometry.vertices.empty())
+                {
+                    return 0;
+                }
+
+                return
+                    geometry.lods.size();
+            };
+
+        output.sourceLodCount =
+            std::max(
+                {
+                    resolveGeometryLodCount(
+                        tree.branches),
+
+                    resolveGeometryLodCount(
+                        tree.fronds),
+
+                    resolveGeometryLodCount(
+                        tree.leaves)
+                });
+
+        const std::size_t renderedLodCount =
+            std::min<std::size_t>(
+                output.sourceLodCount,
+                output.lods.size());
+
         for (std::size_t lodIndex = 0;
-             lodIndex < 3;
+             lodIndex < renderedLodCount;
              ++lodIndex)
         {
-            SpeedTreeLodRenderData&
-                lod =
-                    output.lods[
-                        lodIndex];
+            SpeedTreeLodRenderData& lod =
+                output.lods[
+                    lodIndex];
 
             if (!tree.branches.vertices.empty() &&
                 !tree.branches.lods.empty())
             {
-                std::size_t meshIndex =
-                    0;
-
-                std::size_t triangleCount =
-                    0;
+                std::size_t meshIndex = 0;
+                std::size_t triangleCount = 0;
 
                 if (!BuildIndexedGeometry(
                         resources,
@@ -1288,8 +1315,7 @@ namespace client::preview
                     return false;
                 }
 
-                if (triangleCount >
-                    0)
+                if (triangleCount != 0)
                 {
                     lod.meshIndices.push_back(
                         meshIndex);
@@ -1302,11 +1328,8 @@ namespace client::preview
             if (!tree.fronds.vertices.empty() &&
                 !tree.fronds.lods.empty())
             {
-                std::size_t meshIndex =
-                    0;
-
-                std::size_t triangleCount =
-                    0;
+                std::size_t meshIndex = 0;
+                std::size_t triangleCount = 0;
 
                 if (!BuildIndexedGeometry(
                         resources,
@@ -1329,8 +1352,7 @@ namespace client::preview
                     return false;
                 }
 
-                if (triangleCount >
-                    0)
+                if (triangleCount != 0)
                 {
                     lod.meshIndices.push_back(
                         meshIndex);
@@ -1343,11 +1365,8 @@ namespace client::preview
             if (!tree.leaves.vertices.empty() &&
                 !tree.leaves.lods.empty())
             {
-                std::size_t meshIndex =
-                    0;
-
-                std::size_t triangleCount =
-                    0;
+                std::size_t meshIndex = 0;
+                std::size_t triangleCount = 0;
 
                 if (!BuildLeaves(
                         resources,
@@ -1369,8 +1388,7 @@ namespace client::preview
                     return false;
                 }
 
-                if (triangleCount >
-                    0)
+                if (triangleCount != 0)
                 {
                     lod.meshIndices.push_back(
                         meshIndex);
@@ -1396,15 +1414,9 @@ namespace client::preview
         const float objectSize =
             std::max(
                 {
-                    std::abs(
-                        sizeX),
-
-                    std::abs(
-                        sizeY),
-
-                    std::abs(
-                        sizeZ),
-
+                    std::abs(sizeX),
+                    std::abs(sizeY),
+                    std::abs(sizeZ),
                     1.0f
                 });
 
@@ -1448,8 +1460,7 @@ namespace client::preview
             return false;
         }
 
-        if (billboardTriangles >
-            0)
+        if (billboardTriangles != 0)
         {
             output.hasBillboard =
                 true;
@@ -1461,18 +1472,34 @@ namespace client::preview
                 billboardTriangles;
         }
 
-        bool hasGeometry =
-            output.hasBillboard;
-
-        for (const SpeedTreeLodRenderData& lod :
-             output.lods)
+        if (!output.lods[0].meshIndices.empty())
         {
-            if (!lod.meshIndices.empty())
-            {
-                hasGeometry =
-                    true;
+            output.fixedMeshIndices =
+                output.lods[0]
+                    .meshIndices;
+        }
 
-                break;
+        output.usesLodChain =
+            output.hasBillboard ||
+            output.sourceLodCount >
+                1;
+
+        bool hasGeometry =
+            output.hasBillboard ||
+            !output.fixedMeshIndices.empty();
+
+        if (!hasGeometry)
+        {
+            for (const SpeedTreeLodRenderData& lod :
+                 output.lods)
+            {
+                if (!lod.meshIndices.empty())
+                {
+                    hasGeometry =
+                        true;
+
+                    break;
+                }
             }
         }
 

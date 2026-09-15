@@ -25,20 +25,44 @@ namespace
         return value;
     }
 
-    bool UsesRuntimeDds(
-        const std::filesystem::path& path)
+    bool IsTextureReferenceExtension(
+        const std::string& extension) noexcept
     {
+        return
+            extension.empty() ||
+            extension == ".dds" ||
+            extension == ".tga" ||
+            extension == ".png" ||
+            extension == ".jpg" ||
+            extension == ".jpeg" ||
+            extension == ".bmp";
+    }
+
+    std::string BuildRuntimeDdsPath(
+        const std::string& logicalPath)
+    {
+        std::filesystem::path path(
+            logicalPath);
+
         const std::string extension =
             ToLower(
                 path.extension().string());
 
+        if (!IsTextureReferenceExtension(
+                extension))
+        {
+            return {};
+        }
+
+        if (extension != ".dds")
+        {
+            path.replace_extension(
+                ".dds");
+        }
+
         return
-            extension.empty() ||
-            extension == ".jpg" ||
-            extension == ".jpeg" ||
-            extension == ".png" ||
-            extension == ".tga" ||
-            extension == ".bmp";
+            core::resources::ResourcePath::Normalize(
+                path.generic_string());
     }
 }
 
@@ -65,90 +89,34 @@ namespace core::assets
             return false;
         }
 
+        const std::string runtimeLogicalPath =
+            BuildRuntimeDdsPath(
+                sourceLogicalPath);
+
+        if (runtimeLogicalPath.empty())
+        {
+            return false;
+        }
+
         TextureResource resource;
 
         resource.sourceReference =
-            std::string(textureReference);
+            std::string(
+                textureReference);
 
         resource.sourceLogicalPath =
             sourceLogicalPath;
 
-        const std::filesystem::path sourcePath(
-            sourceLogicalPath);
+        resource.logicalPath =
+            runtimeLogicalPath;
 
-        const std::string sourceExtension =
-            ToLower(
-                sourcePath.extension().string());
-
-        if (sourceExtension == ".dds")
-        {
-            resource.logicalPath =
-                sourceLogicalPath;
-
-            resource.exists =
-                resources.Exists(
-                    resource.logicalPath);
-
-            output =
-                std::move(resource);
-
-            return true;
-        }
-
-        if (UsesRuntimeDds(sourcePath))
-        {
-            std::filesystem::path ddsPath =
-                sourcePath;
-
-            ddsPath.replace_extension(
-                ".dds");
-
-            const std::string ddsLogicalPath =
-                resources::ResourcePath::Normalize(
-                    ddsPath.generic_string());
-
-            if (!ddsLogicalPath.empty() &&
-                resources.Exists(ddsLogicalPath))
-            {
-                resource.logicalPath =
-                    ddsLogicalPath;
-
-                resource.exists = true;
-
-                output =
-                    std::move(resource);
-
-                return true;
-            }
-
-            resource.logicalPath =
-                ddsLogicalPath;
-        }
-
-        if (resources.Exists(
-                sourceLogicalPath))
-        {
-            resource.logicalPath =
-                sourceLogicalPath;
-
-            resource.exists = true;
-
-            output =
-                std::move(resource);
-
-            return true;
-        }
-
-        if (resource.logicalPath.empty())
-        {
-            resource.logicalPath =
-                sourceLogicalPath;
-        }
-
-        resource.exists = false;
+        resource.exists =
+            resources.Exists(
+                runtimeLogicalPath);
 
         output =
-            std::move(resource);
+            std::move(
+                resource);
 
         return true;
     }

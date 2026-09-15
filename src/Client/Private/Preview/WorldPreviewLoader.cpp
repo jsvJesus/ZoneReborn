@@ -162,6 +162,7 @@ namespace client::preview
         std::size_t skippedInstances = 0;
         std::size_t loadedUniqueModels = 0;
         std::size_t texturedModelGroups = 0;
+        std::size_t nonRenderableHelperInstances = 0;
 
         std::unordered_map<
             std::string,
@@ -210,6 +211,12 @@ namespace client::preview
                         material.normalLogicalPath);
                 }
             };
+
+        std::size_t speedTreeFixedInstances =
+            0;
+
+        std::size_t speedTreeRejectedInstances =
+            0;
 
         for (const core::world::WorldSpeedTreeInstance& treeInstance :
              world.speedTreeInstances)
@@ -462,12 +469,42 @@ namespace client::preview
             if (cached ==
                 speedTreeRenderCache.end())
             {
+                ++speedTreeRejectedInstances;
                 continue;
             }
 
-            const SpeedTreeRenderData&
-                renderData =
-                    cached->second;
+            const SpeedTreeRenderData& renderData =
+                cached->second;
+
+            if (!renderData.usesLodChain)
+            {
+                if (renderData.fixedMeshIndices.empty())
+                {
+                    ++speedTreeRejectedInstances;
+                    continue;
+                }
+
+                for (const std::size_t meshIndex :
+                     renderData.fixedMeshIndices)
+                {
+                    graphics::SceneInstance
+                        instance;
+
+                    instance.meshIndex =
+                        meshIndex;
+
+                    instance.transform =
+                        treeInstance.transform;
+
+                    scene.instances.push_back(
+                        std::move(
+                            instance));
+                }
+
+                ++speedTreeFixedInstances;
+
+                continue;
+            }
 
             graphics::SceneLodInstance
                 instance;
@@ -476,7 +513,8 @@ namespace client::preview
                 treeInstance.transform;
 
             for (std::size_t lodIndex = 0;
-                 lodIndex < 3;
+                 lodIndex <
+                    renderData.lods.size();
                  ++lodIndex)
             {
                 if (renderData.lods[
@@ -492,10 +530,9 @@ namespace client::preview
                     break;
                 }
 
-                graphics::SceneLodLevel&
-                    level =
-                        instance.levels[
-                            instance.levelCount];
+                graphics::SceneLodLevel& level =
+                    instance.levels[
+                        instance.levelCount];
 
                 level.meshIndices =
                     renderData.lods[
@@ -513,10 +550,9 @@ namespace client::preview
                 instance.levelCount <
                     instance.levels.size())
             {
-                graphics::SceneLodLevel&
-                    billboardLevel =
-                        instance.levels[
-                            instance.levelCount];
+                graphics::SceneLodLevel& billboardLevel =
+                    instance.levels[
+                        instance.levelCount];
 
                 billboardLevel.meshIndices.push_back(
                     renderData.billboardMeshIndex);
@@ -526,19 +562,43 @@ namespace client::preview
 
                 ++instance.levelCount;
             }
-            else if (instance.levelCount >
+            else if (instance.levelCount !=
                      0)
             {
                 instance.levels[
-                    instance.levelCount -
-                    1]
+                    instance.levelCount - 1]
                     .maximumDistance =
                         std::numeric_limits<float>::max();
             }
 
-            if (instance.levelCount ==
-                0)
+            if (instance.levelCount == 0)
             {
+                if (!renderData.fixedMeshIndices.empty())
+                {
+                    for (const std::size_t meshIndex :
+                         renderData.fixedMeshIndices)
+                    {
+                        graphics::SceneInstance
+                            fixedInstance;
+
+                        fixedInstance.meshIndex =
+                            meshIndex;
+
+                        fixedInstance.transform =
+                            treeInstance.transform;
+
+                        scene.instances.push_back(
+                            std::move(
+                                fixedInstance));
+                    }
+
+                    ++speedTreeFixedInstances;
+
+                    continue;
+                }
+
+                ++speedTreeRejectedInstances;
+
                 continue;
             }
 
@@ -550,58 +610,48 @@ namespace client::preview
         }
 
         core::Log::Info(
-            std::string(
-                "Scene fixed instances: ") +
+        std::string(
+        "SpeedTree fixed instances: ") +
             std::to_string(
-                scene.instances.size()));
-
-        core::Log::Info(
-            std::string(
-                "Scene LOD instances: ") +
-            std::to_string(
-                scene.lodInstances.size()));
-
-        core::Log::Info(
-            std::string(
-                "SpeedTree render resources: ") +
-            std::to_string(
-                speedTreeRenderCache.size()));
-
-        core::Log::Info(
-            std::string(
-                "SpeedTree render resources failed: ") +
-            std::to_string(
-                failedSpeedTreeRenderResources.size()));
-
-        core::Log::Info(
-            std::string(
-                "SpeedTree render meshes: ") +
-            std::to_string(
-                speedTreeRenderMeshes));
-
-        core::Log::Info(
-            std::string(
-                "SpeedTree render resources: ") +
-            std::to_string(
-                speedTreeRenderCache.size()));
-
-        core::Log::Info(
-            std::string(
-                "SpeedTree render resources failed: ") +
-            std::to_string(
-                failedSpeedTreeRenderResources.size()));
-
-        core::Log::Info(
-            std::string(
-                "SpeedTree render meshes: ") +
-            std::to_string(
-                speedTreeRenderMeshes));
+        speedTreeFixedInstances));
 
         core::Log::Info(
             std::string(
                 "SpeedTree LOD instances: ") +
             std::to_string(
                 speedTreeLodInstances));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree rejected instances: ") +
+            std::to_string(
+                speedTreeRejectedInstances));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree accounted instances: ") +
+            std::to_string(
+                speedTreeFixedInstances +
+                speedTreeLodInstances +
+                speedTreeRejectedInstances));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree render resources: ") +
+            std::to_string(
+                speedTreeRenderCache.size()));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree render resources failed: ") +
+            std::to_string(
+                failedSpeedTreeRenderResources.size()));
+
+        core::Log::Info(
+            std::string(
+                "SpeedTree render meshes: ") +
+            std::to_string(
+                speedTreeRenderMeshes));
 
         core::Log::Info(
             std::string(
@@ -633,6 +683,15 @@ namespace client::preview
             std::to_string(
                 speedTreeBillboardTriangles));
 
+        if (speedTreeRejectedInstances != 0)
+        {
+            core::Log::Warning(
+                std::string(
+                    "Rejected SpeedTree instances: ") +
+                std::to_string(
+                    speedTreeRejectedInstances));
+        }
+
         for (const core::world::WorldModelInstance& worldInstance :
              world.modelInstances)
         {
@@ -643,6 +702,14 @@ namespace client::preview
             if (normalizedModel.empty())
             {
                 ++skippedInstances;
+                continue;
+            }
+
+            if (normalizedModel.starts_with("helpers/") || normalizedModel.starts_with("res/helpers/"))
+            {
+                ++nonRenderableHelperInstances;
+                ++skippedInstances;
+
                 continue;
             }
 
@@ -815,16 +882,69 @@ namespace client::preview
         std::size_t texturedTerrains = 0;
 
         std::unordered_set<std::string>
-            floraDominantTextures;
+            floraTerrainTextures;
 
         std::unordered_set<std::string>
             floraMatchedTextures;
 
         std::unordered_set<std::string>
-            floraUnmatchedTextures;
+            floraNoEcotypeTextures;
 
         std::unordered_set<std::string>
             activeFloraEcotypes;
+
+        const auto registerFloraTexture =
+            [&floraConfig,
+             &floraTerrainTextures,
+             &floraMatchedTextures,
+             &floraNoEcotypeTextures,
+             &activeFloraEcotypes](
+                const std::string_view textureReference)
+            {
+                const std::string textureKey =
+                    core::world::flora::BuildFloraTextureKey(
+                        textureReference);
+
+                if (textureKey.empty())
+                {
+                    return;
+                }
+
+                floraTerrainTextures.insert(
+                    textureKey);
+
+                const std::vector<
+                    const core::world::flora::FloraEcotype*>
+                    ecotypes =
+                        floraConfig.FindEcotypesByTexture(
+                            textureReference);
+
+                if (ecotypes.empty())
+                {
+                    floraNoEcotypeTextures.insert(
+                        textureKey);
+
+                    return;
+                }
+
+                floraMatchedTextures.insert(
+                    textureKey);
+
+                floraNoEcotypeTextures.erase(
+                    textureKey);
+
+                for (const core::world::flora::FloraEcotype* ecotype :
+                     ecotypes)
+                {
+                    if (ecotype == nullptr)
+                    {
+                        continue;
+                    }
+
+                    activeFloraEcotypes.insert(
+                        ecotype->name);
+                }
+            };
 
         for (const core::world::WorldTerrainInstance& terrainInstance :
              world.terrainInstances)
@@ -859,13 +979,14 @@ namespace client::preview
             std::string floraPlacementError;
 
             if (!floraInstanceBuilder.Build(
-                    terrainInstance.chunkId,
-                    terrain.heightData,
-                    terrain.auxiliary,
-                    terrainInstance.transform,
-                    floraConfig,
-                    terrainFloraInstances,
-                    floraPlacementError))
+                terrainInstance.chunkId,
+                terrain.heightData,
+                terrain.layers,
+                terrain.auxiliary,
+                terrainInstance.transform,
+                floraConfig,
+                terrainFloraInstances,
+                floraPlacementError))
             {
                 ++floraPlacementFailures;
 
@@ -884,6 +1005,41 @@ namespace client::preview
                         terrainFloraInstances.begin()),
                     std::make_move_iterator(
                         terrainFloraInstances.end()));
+            }
+
+            for (const core::world::TerrainLayerData& layer : terrain.layers)
+            {
+                if (layer.blend.empty())
+                {
+                    continue;
+                }
+
+                const bool layerUsed =
+                    std::any_of(
+                        layer.blend.begin(),
+                        layer.blend.end(),
+                        [](
+                            const std::uint8_t value)
+                        {
+                            return
+                                value != 0;
+                        });
+
+                if (!layerUsed)
+                {
+                    continue;
+                }
+
+                if (!layer.texture.sourceReference.empty())
+                {
+                    registerFloraTexture(
+                        layer.texture.sourceReference);
+                }
+                else if (!layer.texture.sourceLogicalPath.empty())
+                {
+                    registerFloraTexture(
+                        layer.texture.sourceLogicalPath);
+                }
             }
 
             const core::world::TerrainDominantTextureData&
@@ -922,51 +1078,9 @@ namespace client::preview
                         continue;
                     }
 
-                    const std::string& textureReference =
+                    registerFloraTexture(
                         dominantTextures.textureReferences[
-                            textureIndex];
-
-                    const std::string normalizedTexture =
-                        core::resources::ResourcePath::Normalize(
-                            textureReference);
-
-                    if (normalizedTexture.empty())
-                    {
-                        continue;
-                    }
-
-                    floraDominantTextures.insert(
-                        normalizedTexture);
-
-                    const std::vector<
-                        const core::world::flora::FloraEcotype*>
-                        ecotypes =
-                            floraConfig.FindEcotypesByTexture(
-                                textureReference);
-
-                    if (ecotypes.empty())
-                    {
-                        floraUnmatchedTextures.insert(
-                            normalizedTexture);
-
-                        continue;
-                    }
-
-                    floraMatchedTextures.insert(
-                        normalizedTexture);
-
-                    for (const core::world::flora::FloraEcotype* ecotype :
-                         ecotypes)
-                    {
-                        if (ecotype ==
-                            nullptr)
-                        {
-                            continue;
-                        }
-
-                        activeFloraEcotypes.insert(
-                            ecotype->name);
-                    }
+                            textureIndex]);
                 }
             }
 
@@ -1059,9 +1173,9 @@ namespace client::preview
 
         core::Log::Info(
             std::string(
-                "Flora dominant terrain textures: ") +
+        "Flora terrain textures: ") +
             std::to_string(
-                floraDominantTextures.size()));
+        floraTerrainTextures.size()));
 
         core::Log::Info(
             std::string(
@@ -1071,9 +1185,9 @@ namespace client::preview
 
         core::Log::Info(
             std::string(
-                "Flora unmatched terrain textures: ") +
+                "Flora no-ecotype terrain textures: ") +
             std::to_string(
-                floraUnmatchedTextures.size()));
+                floraNoEcotypeTextures.size()));
 
         core::Log::Info(
             std::string(
@@ -1375,11 +1489,11 @@ namespace client::preview
         }
 
         for (const std::string& texture :
-             floraUnmatchedTextures)
+            floraNoEcotypeTextures)
         {
-            core::Log::Warning(
+            core::Log::Info(
                 std::string(
-                    "No flora ecotype for terrain texture: ") +
+                    "Flora disabled for terrain texture: ") +
                 texture);
         }
 
@@ -1448,6 +1562,12 @@ namespace client::preview
                 "Skipped model instances: ") +
             std::to_string(
                 skippedInstances));
+
+        core::Log::Info(
+            std::string(
+        "Non-render helper instances: ") +
+            std::to_string(
+                nonRenderableHelperInstances));
 
         core::Log::Info(
             std::string(

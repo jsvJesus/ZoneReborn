@@ -33,6 +33,15 @@ namespace client::preview
         std::array<float, 3>
             maximumDistances{};
 
+        std::vector<std::size_t>
+            fixedMeshIndices;
+
+        std::size_t sourceLodCount =
+            0;
+
+        bool usesLodChain =
+            false;
+
         bool hasBillboard =
             false;
 

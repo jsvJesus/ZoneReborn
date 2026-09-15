@@ -5,6 +5,7 @@
 #include "Core/World/Flora/FloraInstance.h"
 #include "Core/World/TerrainAuxiliaryData.h"
 #include "Core/World/TerrainHeightData.h"
+#include "Core/World/TerrainLayerData.h"
 
 #include <string>
 #include <string_view>
@@ -19,6 +20,7 @@ namespace core::world::flora
         bool Build(
             std::string_view chunkId,
             const TerrainHeightData& heightData,
+            const std::vector<TerrainLayerData>& layers,
             const TerrainAuxiliaryData& auxiliary,
             const math::Transform3x4& terrainTransform,
             const FloraConfig& config,

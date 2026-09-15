@@ -8,6 +8,10 @@
 
 namespace core::world::flora
 {
+    [[nodiscard]]
+    std::string BuildFloraTextureKey(
+        std::string_view textureReference);
+
     struct FloraTextureRule final
     {
         std::string textureReference;
