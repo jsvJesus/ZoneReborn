@@ -1478,6 +1478,12 @@ namespace client::preview
         std::size_t totalWaterTriangles =
             0;
 
+        std::size_t uniqueWaterObjects =
+            0;
+
+        std::size_t waterChunkReferences =
+            0;
+
         for (const core::world::WorldLargeObjectReference& object :
              world.largeObjects)
         {
@@ -1491,6 +1497,11 @@ namespace client::preview
             {
                 continue;
             }
+
+            ++uniqueWaterObjects;
+
+            waterChunkReferences +=
+                object.chunkIds.size();
 
             if (!object.vloResource.water.has_value())
             {
@@ -1511,10 +1522,11 @@ namespace client::preview
                 waterError;
 
             if (!waterRenderBuilder.Build(
-                    object,
-                    scene,
-                    renderData,
-                    waterError))
+                runtime.Resources(),
+                object,
+                scene,
+                renderData,
+                waterError))
             {
                 ++failedWaterSurfaces;
 
@@ -1596,6 +1608,45 @@ namespace client::preview
                 "SO water triangles: ") +
             std::to_string(
                 totalWaterTriangles));
+
+        core::Log::Info(
+            std::string(
+                "Water VLO unique objects: ") +
+        std::to_string(
+            uniqueWaterObjects));
+
+        core::Log::Info(
+            std::string(
+                "Water VLO chunk coverage references: ") +
+            std::to_string(
+                waterChunkReferences));
+
+        if (loadedWaterSurfaces !=
+            uniqueWaterObjects)
+        {
+            core::Log::Warning(
+                std::string(
+                    "Water VLO placement mismatch: unique=") +
+                std::to_string(
+                    uniqueWaterObjects) +
+                ", renderInstances=" +
+                std::to_string(
+                    loadedWaterSurfaces));
+        }
+        else
+        {
+            core::Log::Info(
+                std::string(
+                    "Water VLO placement validated: references=") +
+                std::to_string(
+                    waterChunkReferences) +
+                ", unique=" +
+                std::to_string(
+                    uniqueWaterObjects) +
+                ", renderInstances=" +
+                std::to_string(
+                    loadedWaterSurfaces));
+        }
 
         if (scene.meshes.empty() ||
             (

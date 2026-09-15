@@ -2,10 +2,14 @@
 
 #include "Graphics/SceneRenderData.h"
 
+#include "Core/Assets/TextureResource.h"
+#include "Core/Resources/ResourceFileSystem.h"
 #include "Core/World/WorldScene.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <string>
+#include <unordered_map>
 
 namespace client::preview
 {
@@ -29,9 +33,24 @@ namespace client::preview
     public:
         [[nodiscard]]
         bool Build(
+            const core::resources::ResourceFileSystem& resources,
             const core::world::WorldLargeObjectReference& object,
             graphics::SceneRenderData& scene,
             WaterRenderData& output,
-            std::string& error) const;
+            std::string& error);
+
+    private:
+        [[nodiscard]]
+        bool ResolveTexture(
+            const core::resources::ResourceFileSystem& resources,
+            const core::assets::TextureResource& resource,
+            graphics::SceneRenderData& scene,
+            std::int32_t& outputTextureIndex,
+            std::string& error);
+
+        std::unordered_map<
+            std::string,
+            std::int32_t>
+            textureCache_;
     };
 }

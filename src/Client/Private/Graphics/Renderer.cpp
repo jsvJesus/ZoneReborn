@@ -38,6 +38,7 @@ namespace
     {
         DirectX::XMFLOAT4X4 world;
         DirectX::XMFLOAT4X4 viewProjection;
+        DirectX::XMFLOAT4X4 inverseViewProjection;
 
         std::array<
             DirectX::XMFLOAT4,
@@ -63,21 +64,21 @@ namespace
         std::uint32_t useWater =
             0;
 
-        DirectX::XMFLOAT4 modelParameters
-        {
-            0.5f,
-            0.0f,
-            0.0f,
-            0.0f
-        };
+        DirectX::XMFLOAT4 modelParameters;
 
-        DirectX::XMFLOAT4 waterColour
-        {
-            0.0f,
-            0.0f,
-            0.0f,
-            1.0f
-        };
+        DirectX::XMFLOAT4 waterDeepColour;
+        DirectX::XMFLOAT4 waterReflectionTint;
+        DirectX::XMFLOAT4 waterRefractionTint;
+
+        DirectX::XMFLOAT4 waterParameters0;
+        DirectX::XMFLOAT4 waterParameters1;
+        DirectX::XMFLOAT4 waterScrollSpeed1;
+        DirectX::XMFLOAT4 waterScrollSpeed2;
+        DirectX::XMFLOAT4 waterParameters2;
+        DirectX::XMFLOAT4 waterParameters3;
+
+        DirectX::XMFLOAT4 cameraPosition;
+        DirectX::XMFLOAT4 screenParameters;
     };
 
     DirectX::XMFLOAT3 UnpackNormal(
@@ -206,6 +207,7 @@ namespace
         {
             row_major float4x4 world;
             row_major float4x4 viewProjection;
+            row_major float4x4 inverseViewProjection;
 
             float4 terrainU[4];
             float4 terrainV[4];
@@ -218,8 +220,21 @@ namespace
             uint useWater;
 
             float4 modelParameters;
-            float4 waterColour;
-        };
+
+            float4 waterDeepColour;
+            float4 waterReflectionTint;
+            float4 waterRefractionTint;
+
+            float4 waterParameters0;
+            float4 waterParameters1;
+            float4 waterScrollSpeed1;
+            float4 waterScrollSpeed2;
+            float4 waterParameters2;
+            float4 waterParameters3;
+
+            float4 cameraPosition;
+            float4 screenParameters;
+        }
 
         Texture2D terrainTexture0 : register(t0);
         Texture2D terrainTexture1 : register(t1);
@@ -245,6 +260,7 @@ namespace
             float3 normal        : NORMAL;
             float3 localPosition : TEXCOORD0;
             float2 terrainUV     : TEXCOORD1;
+            float3 worldPosition : TEXCOORD2;
         };
 
         PixelInput VSMain(VertexInput input)
@@ -352,6 +368,488 @@ namespace
             return colour;
         }
 
+        float2 GetScreenUV(
+            PixelInput input)
+        {
+            return
+                input.position.xy /
+                screenParameters.xy;
+        }
+
+        float3 ReconstructWorldPosition(
+            float2 uv,
+            float depth)
+        {
+            float2 ndc;
+
+            ndc.x =
+                uv.x * 2.0f -
+                1.0f;
+
+            ndc.y =
+                1.0f -
+                uv.y * 2.0f;
+
+            float4 position =
+                mul(
+                    float4(
+                        ndc,
+                        depth,
+                        1.0f),
+                    inverseViewProjection);
+
+            position.xyz /=
+                max(
+                    position.w,
+                    0.00001f);
+
+            return
+                position.xyz;
+        }
+
+        float2 ProjectWorldPosition(
+            float3 position,
+            out float depth)
+        {
+            float4 clipPosition =
+                mul(
+                    float4(
+                        position,
+                        1.0f),
+                    viewProjection);
+
+            float inverseW =
+                1.0f /
+                max(
+                    clipPosition.w,
+                    0.00001f);
+
+            float2 ndc =
+                clipPosition.xy *
+                inverseW;
+
+            depth =
+                clipPosition.z *
+                inverseW;
+
+            return float2(
+                ndc.x * 0.5f +
+                    0.5f,
+                -ndc.y * 0.5f +
+                    0.5f);
+        }
+
+        float3 CalculateWaterNormal(
+            PixelInput input)
+        {
+            float tessellation =
+                max(
+                    waterParameters2.x,
+                    0.001f);
+
+            float time =
+                waterParameters1.w;
+
+            float wind =
+                waterParameters1.z;
+
+            float2 uv1 =
+                input.terrainUV *
+                    tessellation +
+                waterScrollSpeed1.xy *
+                    wind *
+                    time;
+
+            float2 uv2 =
+                input.terrainUV *
+                    tessellation +
+                waterScrollSpeed2.xy *
+                    wind *
+                    time;
+
+            float2 normal1 =
+                waterNormalTexture.Sample(
+                    terrainTextureSampler,
+                    uv1).rg *
+                    2.0f -
+                1.0f;
+
+            float2 normal2 =
+                waterNormalTexture.Sample(
+                    terrainTextureSampler,
+                    uv2).rg *
+                    2.0f -
+                1.0f;
+
+            float2 wave =
+                (
+                    normal1 +
+                    normal2
+                ) *
+                0.5f;
+
+            wave *=
+                waterParameters1.xy;
+
+            return normalize(
+                float3(
+                    wave.x,
+                    1.0f,
+                    wave.y));
+        }
+
+        float3 TraceWaterReflection(
+            float3 worldPosition,
+            float3 normal,
+            float2 fallbackUV)
+        {
+            float3 incident =
+                normalize(
+                    worldPosition -
+                    cameraPosition.xyz);
+
+            float3 direction =
+                normalize(
+                    reflect(
+                        incident,
+                        normal));
+
+            float3 position =
+                worldPosition +
+                normal *
+                    0.05f;
+
+            float stepLength =
+                1.0f;
+
+            float2 lastUV =
+                fallbackUV;
+
+            [loop]
+            for (int index = 0;
+                 index < 20;
+                 ++index)
+            {
+                position +=
+                    direction *
+                    stepLength;
+
+                float projectedDepth =
+                    0.0f;
+
+                float2 uv =
+                    ProjectWorldPosition(
+                        position,
+                        projectedDepth);
+
+                if (uv.x <= 0.001f ||
+                    uv.x >= 0.999f ||
+                    uv.y <= 0.001f ||
+                    uv.y >= 0.999f ||
+                    projectedDepth <= 0.0f ||
+                    projectedDepth >= 1.0f)
+                {
+                    break;
+                }
+
+                lastUV =
+                    uv;
+
+                float sceneDepth =
+                    sceneDepthTexture.SampleLevel(
+                        terrainBlendSampler,
+                        uv,
+                        0.0f).r;
+
+                if (sceneDepth <
+                    0.99999f)
+                {
+                    float3 scenePosition =
+                        ReconstructWorldPosition(
+                            uv,
+                            sceneDepth);
+
+                    float rayDistance =
+                        distance(
+                            cameraPosition.xyz,
+                            position);
+
+                    float sceneDistance =
+                        distance(
+                            cameraPosition.xyz,
+                            scenePosition);
+
+                    float difference =
+                        rayDistance -
+                        sceneDistance;
+
+                    if (difference >= 0.0f &&
+                        difference <
+                            stepLength *
+                            2.0f)
+                    {
+                        return
+                            sceneColourTexture.SampleLevel(
+                                terrainBlendSampler,
+                                uv,
+                                0.0f).rgb *
+                            waterReflectionTint.rgb;
+                    }
+                }
+
+                stepLength =
+                    min(
+                        stepLength *
+                            1.18f,
+                        8.0f);
+            }
+
+            return
+                sceneColourTexture.SampleLevel(
+                    terrainBlendSampler,
+                    lastUV,
+                    0.0f).rgb *
+                waterReflectionTint.rgb;
+        }
+
+        float4 ShadeWater(
+            PixelInput input)
+        {
+            float reflectionStrength =
+                waterParameters0.x;
+
+            float refractionStrength =
+                waterParameters0.y;
+
+            float fresnelConstant =
+                waterParameters0.z;
+
+            float fresnelExponent =
+                max(
+                    waterParameters0.w,
+                    0.001f);
+
+            float3 waterNormal =
+                CalculateWaterNormal(
+                    input);
+
+            float3 viewDirection =
+                normalize(
+                    cameraPosition.xyz -
+                    input.worldPosition);
+
+            float viewDot =
+                saturate(
+                    dot(
+                        waterNormal,
+                        viewDirection));
+
+            float fresnel =
+                fresnelConstant +
+                (
+                    1.0f -
+                    fresnelConstant
+                ) *
+                pow(
+                    1.0f -
+                        viewDot,
+                    fresnelExponent);
+
+            fresnel =
+                saturate(
+                    fresnel);
+
+            float2 screenUV =
+                GetScreenUV(
+                    input);
+
+            float2 distortion =
+                waterNormal.xz *
+                0.0125f *
+                refractionStrength;
+
+            float2 refractionUV =
+                clamp(
+                    screenUV +
+                        distortion,
+                    float2(
+                        0.001f,
+                        0.001f),
+                    float2(
+                        0.999f,
+                        0.999f));
+
+            float3 refractionColour =
+                sceneColourTexture.SampleLevel(
+                    terrainBlendSampler,
+                    refractionUV,
+                    0.0f).rgb;
+
+            refractionColour *=
+                waterRefractionTint.rgb;
+
+            float sceneDepth =
+                sceneDepthTexture.SampleLevel(
+                    terrainBlendSampler,
+                    refractionUV,
+                    0.0f).r;
+
+            float verticalDepth =
+                waterParameters3.x;
+
+            if (sceneDepth <
+                0.99999f)
+            {
+                float3 scenePosition =
+                    ReconstructWorldPosition(
+                        refractionUV,
+                        sceneDepth);
+
+                verticalDepth =
+                    max(
+                        0.0f,
+                        input.worldPosition.y -
+                        scenePosition.y);
+            }
+
+            float configuredDepth =
+                max(
+                    waterParameters3.x,
+                    0.01f);
+
+            float deepFactor =
+                saturate(
+                    verticalDepth /
+                    configuredDepth);
+
+            refractionColour =
+                lerp(
+                    refractionColour,
+                    waterDeepColour.rgb,
+                    deepFactor);
+
+            float3 reflectionColour =
+                TraceWaterReflection(
+                    input.worldPosition,
+                    waterNormal,
+                    screenUV);
+
+            float reflectionWeight =
+                saturate(
+                    fresnel *
+                    reflectionStrength);
+
+            float refractionWeight =
+                saturate(
+                    (
+                        1.0f -
+                        fresnel
+                    ) *
+                    refractionStrength);
+
+            float totalWeight =
+                max(
+                    reflectionWeight +
+                        refractionWeight,
+                    0.0001f);
+
+            float3 colour =
+                (
+                    reflectionColour *
+                        reflectionWeight +
+                    refractionColour *
+                        refractionWeight
+                ) /
+                totalWeight;
+
+            float rawDepthDifference =
+                abs(
+                    sceneDepth -
+                    input.position.z);
+
+            float foamIntersection =
+                max(
+                    waterParameters2.y,
+                    0.0f);
+
+            float foamAmount =
+                saturate(
+                    1.0f -
+                    rawDepthDifference *
+                        foamIntersection);
+
+            float foamTiling =
+                waterParameters2.w;
+
+            if (foamTiling <=
+                0.0f)
+            {
+                foamTiling =
+                    max(
+                        waterParameters2.x,
+                        1.0f);
+            }
+
+            float2 foamUV =
+                input.terrainUV *
+                    foamTiling +
+                waterScrollSpeed1.xy *
+                    waterParameters1.z *
+                    waterParameters1.w *
+                    0.25f;
+
+            float foamTexture =
+                waterFoamTexture.Sample(
+                    terrainTextureSampler,
+                    foamUV).r;
+
+            foamAmount *=
+                foamTexture *
+                waterParameters2.z;
+
+            colour =
+                lerp(
+                    colour,
+                    float3(
+                        0.92f,
+                        0.95f,
+                        0.97f),
+                    saturate(
+                        foamAmount));
+
+            float3 lightDirection =
+                normalize(
+                    float3(
+                        -0.35f,
+                        0.85f,
+                        -0.40f));
+
+            float3 halfDirection =
+                normalize(
+                    lightDirection +
+                    viewDirection);
+
+            float specular =
+                pow(
+                    saturate(
+                        dot(
+                            waterNormal,
+                            halfDirection)),
+                    max(
+                        waterParameters3.w,
+                        1.0f));
+
+            specular *=
+                cameraPosition.w;
+
+            colour +=
+                specular;
+
+            return float4(
+                colour,
+                1.0f);
+        }
+
         float4 PSMain(PixelInput input) : SV_TARGET
         {
             float3 normal =
@@ -383,11 +881,9 @@ namespace
 
             if (useWater != 0)
             {
-                baseColour =
-                    waterColour.rgb;
-
-                outputAlpha =
-                    waterColour.a;
+                return
+                    ShadeWater(
+                        input);
             }
 
             else if (useTerrain != 0)
@@ -687,10 +1183,28 @@ namespace client::graphics
             renderTargetView;
 
         ComPtr<ID3D11Texture2D>
+            backBufferTexture;
+
+        ComPtr<ID3D11Texture2D>
+            sceneColourTexture;
+
+        ComPtr<ID3D11RenderTargetView>
+            sceneColourRenderTargetView;
+
+        ComPtr<ID3D11ShaderResourceView>
+            sceneColourShaderResourceView;
+
+        ComPtr<ID3D11Texture2D>
             depthTexture;
 
         ComPtr<ID3D11DepthStencilView>
             depthStencilView;
+
+        ComPtr<ID3D11DepthStencilView>
+            depthReadOnlyView;
+
+        ComPtr<ID3D11ShaderResourceView>
+            depthShaderResourceView;
 
         ComPtr<ID3D11DepthStencilState>
             depthState;
@@ -750,6 +1264,9 @@ namespace client::graphics
         std::uint32_t height = 0;
 
         DirectX::XMFLOAT3 sceneCenter{};
+
+        std::chrono::steady_clock::time_point
+            startTime = std::chrono::steady_clock::now();
 
         float sceneRadius =
             1.0f;
@@ -873,9 +1390,9 @@ namespace client::graphics
 
         result =
             state_->swapChain->GetBuffer(
-                0,
-                IID_PPV_ARGS(
-                    &backBuffer));
+        0,
+        IID_PPV_ARGS(
+            &state_->backBufferTexture));
 
         if (FAILED(result))
         {
@@ -887,7 +1404,7 @@ namespace client::graphics
 
         result =
             state_->device->CreateRenderTargetView(
-                backBuffer.Get(),
+                state_->backBufferTexture.Get(),
                 nullptr,
                 &state_->renderTargetView);
 
@@ -915,7 +1432,7 @@ namespace client::graphics
             1;
 
         depthDescription.Format =
-            DXGI_FORMAT_D24_UNORM_S8_UINT;
+            DXGI_FORMAT_R24G8_TYPELESS;
 
         depthDescription.SampleDesc.Count =
             1;
@@ -924,7 +1441,8 @@ namespace client::graphics
             D3D11_USAGE_DEFAULT;
 
         depthDescription.BindFlags =
-            D3D11_BIND_DEPTH_STENCIL;
+            D3D11_BIND_DEPTH_STENCIL |
+            D3D11_BIND_SHADER_RESOURCE;
 
         result =
             state_->device->CreateTexture2D(
@@ -2193,7 +2711,7 @@ namespace client::graphics
         };
 
         state_->context->ClearRenderTargetView(
-            state_->renderTargetView.Get(),
+            state_->sceneColourRenderTargetView.Get(),
             ClearColour);
 
         state_->context->ClearDepthStencilView(
@@ -2206,7 +2724,7 @@ namespace client::graphics
         ID3D11RenderTargetView*
             renderTargets[] =
         {
-            state_->renderTargetView.Get()
+            state_->sceneColourRenderTargetView.Get()
         };
 
         state_->context->OMSetRenderTargets(
@@ -2292,20 +2810,36 @@ namespace client::graphics
         const XMMATRIX projection =
             XMMatrixPerspectiveFovLH(
                 XMConvertToRadians(
-                std::clamp(
-                    state_->camera.fieldOfViewDegrees,
-                    20.0f,
-                    90.0f)),
+                    std::clamp(
+                        state_->camera.fieldOfViewDegrees,
+                        20.0f,
+                        90.0f)),
                 aspect,
-                0.1f,
-                std::max(
-                    5000.0f,
-                    state_->sceneRadius *
-                        10.0f));
+                NearPlane,
+                farPlane);
 
         const XMMATRIX viewProjection =
             view *
             projection;
+
+        const XMMATRIX inverseViewProjection =
+            XMMatrixInverse(
+        nullptr,
+        viewProjection);
+
+        constexpr float NearPlane =
+            0.1f;
+
+        const float farPlane =
+            std::max(
+                5000.0f,
+                state_->sceneRadius *
+                    10.0f);
+
+        const float elapsedSeconds =
+            std::chrono::duration<float>(
+                std::chrono::steady_clock::now() -
+                state_->startTime).count();
 
         const UINT stride =
             sizeof(GpuVertex);
@@ -2360,8 +2894,28 @@ namespace client::graphics
         SceneConstants constants{};
 
         XMStoreFloat4x4(
-            &constants.viewProjection,
-            viewProjection);
+            &constants.inverseViewProjection,
+            inverseViewProjection);
+
+        constants.cameraPosition =
+        {
+            state_->camera.position.x,
+            state_->camera.position.y,
+            state_->camera.position.z,
+            0.0f
+        };
+
+        constants.screenParameters =
+        {
+            static_cast<float>(
+                state_->width),
+
+            static_cast<float>(
+                state_->height),
+
+            NearPlane,
+            farPlane
+        };
 
         state_->renderInstances.clear();
 
@@ -2535,6 +3089,11 @@ namespace client::graphics
             const State::GpuMesh& mesh =
                 state_->meshes[
                     instance.meshIndex];
+
+            if (mesh.waterMaterialIndex >= 0)
+            {
+                continue;
+            }
 
             ID3D11Buffer*
                 vertexBuffers[] =

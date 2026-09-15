@@ -85,14 +85,67 @@ namespace client::graphics
 
     struct SceneWaterMaterial final
     {
-        std::array<float, 4>
-            deepColour
-        {
-            0.0f,
-            0.0f,
-            0.0f,
-            1.0f
-        };
+        std::int32_t waveTextureIndex =
+            -1;
+
+        std::int32_t foamTextureIndex =
+            -1;
+
+        std::array<float, 4> deepColour{};
+        std::array<float, 4> reflectionTint{};
+        std::array<float, 4> refractionTint{};
+
+        std::array<float, 2> waveScale{};
+        std::array<float, 2> scrollSpeed1{};
+        std::array<float, 2> scrollSpeed2{};
+
+        float reflectionStrength =
+            0.0f;
+
+        float refractionStrength =
+            0.0f;
+
+        float fresnelConstant =
+            0.0f;
+
+        float fresnelExponent =
+            0.0f;
+
+        float windVelocity =
+            0.0f;
+
+        float textureTessellation =
+            1.0f;
+
+        float foamIntersection =
+            0.0f;
+
+        float foamMultiplier =
+            0.0f;
+
+        float foamTiling =
+            0.0f;
+
+        float depth =
+            1.0f;
+
+        float fadeDepth =
+            0.0f;
+
+        float smoothness =
+            0.0f;
+
+        float sunPower =
+            1.0f;
+
+        float sunScale =
+            0.0f;
+
+        bool useEdgeAlpha =
+            false;
+
+        bool useSimulation =
+            false;
     };
 
     struct SceneMesh final
