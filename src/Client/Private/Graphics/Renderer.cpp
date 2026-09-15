@@ -788,20 +788,48 @@ namespace
             float foamIntersectionDistance =
                 max(
                     waterParameters2.y *
-                        0.001f,
-                    0.01f);
+                        0.00016f,
+                    0.025f);
+
+            float foamSceneDepth =
+                sceneDepthTexture.SampleLevel(
+                    terrainBlendSampler,
+                    screenUV,
+                    0.0f).r;
+
+            float foamDepth =
+                foamIntersectionDistance;
+
+            if (foamSceneDepth <
+                0.99999f)
+            {
+                float3 foamScenePosition =
+                    ReconstructWorldPosition(
+                        screenUV,
+                        foamSceneDepth);
+
+                foamDepth =
+                    max(
+                        0.0f,
+                        input.worldPosition.y -
+                        foamScenePosition.y);
+            }
 
             float foamAmount =
                 1.0f -
                 saturate(
-                    verticalDepth /
+                    foamDepth /
                     foamIntersectionDistance);
 
             foamAmount =
                 smoothstep(
-                    0.0f,
+                    0.55f,
                     1.0f,
                     foamAmount);
+
+            foamAmount =
+                foamAmount *
+                foamAmount;
 
             float foamTextureScale =
                 waterParameters2.w;
@@ -821,7 +849,7 @@ namespace
                 waterScrollSpeed1.xy *
                     waterParameters1.z *
                     waterParameters1.w *
-                    0.25f;
+                    0.18f;
 
             float foamSample =
                 waterFoamTexture.Sample(
@@ -830,23 +858,33 @@ namespace
 
             foamSample =
                 smoothstep(
-                    0.35f,
-                    0.75f,
+                    0.62f,
+                    0.90f,
                     foamSample);
 
             foamAmount *=
                 foamSample;
 
             foamAmount *=
-                waterParameters2.z;
+                saturate(
+                    waterParameters2.z);
+
+            foamAmount *=
+                0.38f;
+
+            float3 foamColour =
+                lerp(
+                    waterDeepColour.rgb,
+                    float3(
+                        0.68f,
+                        0.72f,
+                        0.70f),
+                    0.72f);
 
             colour =
                 lerp(
                     colour,
-                    float3(
-                        0.82f,
-                        0.86f,
-                        0.88f),
+                    foamColour,
                     saturate(
                         foamAmount));
 
