@@ -2,6 +2,7 @@
 
 #include "Core/Math/Transform3x4.h"
 #include "Core/World/SpaceSettings.h"
+#include "Core/World/Vlo/VloResource.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -55,6 +56,11 @@ namespace core::world
         bool vloExists = false;
         bool odataExists = false;
 
+        bool vloLoaded = false;
+
+        vlo::VloResource
+            vloResource;
+
         std::vector<std::string>
             chunkIds;
     };
@@ -86,5 +92,7 @@ namespace core::world
 
         std::size_t largeObjectReferenceCount = 0;
         std::size_t missingLargeObjectCount = 0;
+        std::size_t loadedLargeObjectCount = 0;
+        std::size_t failedLargeObjectLoadCount = 0;
     };
 }

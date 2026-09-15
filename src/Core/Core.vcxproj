@@ -71,6 +71,9 @@
     <ClInclude Include="Public\Core\World\TerrainLayerDecoder.h" />
     <ClInclude Include="Public\Core\World\TerrainLoader.h" />
     <ClInclude Include="Public\Core\World\TerrainMeshBuilder.h" />
+    <ClInclude Include="Public\Core\World\Vlo\VloLoader.h" />
+    <ClInclude Include="Public\Core\World\Vlo\VloResource.h" />
+    <ClInclude Include="Public\Core\World\Water\WaterDefinition.h" />
     <ClInclude Include="Public\Core\World\WorldLoader.h" />
     <ClInclude Include="Public\Core\World\WorldScene.h" />
   </ItemGroup>
@@ -116,7 +119,12 @@
     <ClCompile Include="Private\World\TerrainLayerDecoder.cpp" />
     <ClCompile Include="Private\World\TerrainLoader.cpp" />
     <ClCompile Include="Private\World\TerrainMeshBuilder.cpp" />
+    <ClCompile Include="Private\World\Vlo\VloLoader.cpp" />
     <ClCompile Include="Private\World\WorldLoader.cpp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Private\World\Water\" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">

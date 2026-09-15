@@ -5,6 +5,7 @@
 #include "Core/Resources/ResourceType.h"
 #include "Core/World/ChunkLoader.h"
 #include "Core/World/SpaceLoader.h"
+#include "Core/World/Vlo/VloLoader.h"
 
 #include <algorithm>
 #include <cstdint>
@@ -862,12 +863,21 @@ namespace core::world
         scene.missingLargeObjectCount =
             0;
 
+        scene.loadedLargeObjectCount =
+            0;
+
+        scene.failedLargeObjectLoadCount =
+            0;
+
         std::unordered_map<
             std::string,
             std::size_t>
             largeObjectTypes;
 
-        for (const WorldLargeObjectReference& object :
+        vlo::VloLoader
+            vloLoader;
+
+        for (WorldLargeObjectReference& object :
              scene.largeObjects)
         {
             const std::string normalizedType =
@@ -880,6 +890,103 @@ namespace core::world
             if (!object.vloExists)
             {
                 ++scene.missingLargeObjectCount;
+
+                continue;
+            }
+
+            vlo::VloResource
+                resource;
+
+            std::string
+                vloError;
+
+            if (!vloLoader.Load(
+                    resources,
+                    object.vloLogicalPath,
+                    object.type,
+                    resource,
+                    vloError))
+            {
+                ++scene.failedLargeObjectLoadCount;
+
+                core::Log::Warning(
+                    std::string(
+                        "Unable to load VLO ") +
+                    object.uid +
+                    ": " +
+                    vloError);
+
+                continue;
+            }
+
+            object.vloResource =
+                std::move(
+                    resource);
+
+            object.vloLoaded =
+                true;
+
+            ++scene.loadedLargeObjectCount;
+
+            if (object.vloResource.type ==
+                    vlo::VloType::Water &&
+                object.vloResource.water.has_value())
+            {
+                const water::WaterDefinition& water =
+                    *object.vloResource.water;
+
+                core::Log::Info(
+                    std::string(
+                        "Water VLO loaded: uid=") +
+                    object.uid +
+                    ", position=(" +
+                    std::to_string(
+                        water.position.x) +
+                    ", " +
+                    std::to_string(
+                        water.position.y) +
+                    ", " +
+                    std::to_string(
+                        water.position.z) +
+                    "), size=(" +
+                    std::to_string(
+                        water.size.x) +
+                    ", " +
+                    std::to_string(
+                        water.size.y) +
+                    ", " +
+                    std::to_string(
+                        water.size.z) +
+                    "), wave=" +
+                    water.waveTexture.logicalPath +
+                    ", foam=" +
+                    water.foamTexture.logicalPath +
+                    ", reflection=" +
+                    water.reflectionTexture.logicalPath);
+
+                if (!water.waveTexture.exists)
+                {
+                    core::Log::Warning(
+                        std::string(
+                            "Water wave texture not found: ") +
+                        water.waveTexture.logicalPath);
+                }
+
+                if (!water.foamTexture.exists)
+                {
+                    core::Log::Warning(
+                        std::string(
+                            "Water foam texture not found: ") +
+                        water.foamTexture.logicalPath);
+                }
+
+                if (!water.reflectionTexture.exists)
+                {
+                    core::Log::Warning(
+                        std::string(
+                            "Water reflection texture not found: ") +
+                        water.reflectionTexture.logicalPath);
+                }
             }
         }
 
@@ -958,6 +1065,18 @@ namespace core::world
                 "Missing VLO resources: ") +
             std::to_string(
                 scene.missingLargeObjectCount));
+
+        core::Log::Info(
+            std::string(
+                "Loaded VLO resources: ") +
+            std::to_string(
+                scene.loadedLargeObjectCount));
+
+        core::Log::Info(
+            std::string(
+                "Failed VLO loads: ") +
+            std::to_string(
+                scene.failedLargeObjectLoadCount));
 
         core::Log::Info(
             std::string(
