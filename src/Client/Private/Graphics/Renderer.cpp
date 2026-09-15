@@ -69,6 +69,42 @@ namespace
             16u ==
         0u);
 
+    constexpr std::uint32_t MaxSpotLights =
+        32;
+
+    struct GpuSpotLight final
+    {
+        DirectX::XMFLOAT4 positionOuterRadius;
+        DirectX::XMFLOAT4 directionCosConeAngle;
+        DirectX::XMFLOAT4 colourMultiplier;
+        DirectX::XMFLOAT4 parameters;
+    };
+
+    struct SpotLightConstants final
+    {
+        std::array<
+            GpuSpotLight,
+            MaxSpotLights>
+            lights{};
+
+        std::uint32_t lightCount =
+            0;
+
+        std::uint32_t padding0 =
+            0;
+
+        std::uint32_t padding1 =
+            0;
+
+        std::uint32_t padding2 =
+            0;
+    };
+
+    static_assert(
+        sizeof(SpotLightConstants) %
+            16u ==
+        0u);
+
     struct SceneConstants final
     {
         DirectX::XMFLOAT4X4 world;
@@ -372,6 +408,184 @@ namespace
         return constants;
     }
 
+    SpotLightConstants BuildSpotLightConstants(
+        const std::vector<
+            client::graphics::SceneSpotLight>& lights,
+        const client::graphics::CameraView& camera)
+    {
+        struct RankedLight final
+        {
+            const client::graphics::SceneSpotLight*
+                light = nullptr;
+
+            float distanceSquared =
+                0.0f;
+        };
+
+        std::vector<RankedLight>
+            ranked;
+
+        ranked.reserve(
+            lights.size());
+
+        for (const client::graphics::SceneSpotLight& light :
+             lights)
+        {
+            if (light.outerRadius <=
+                    0.0f ||
+                light.multiplier <=
+                    0.0f)
+            {
+                continue;
+            }
+
+            const float directionLengthSquared =
+                light.direction[0] *
+                    light.direction[0] +
+                light.direction[1] *
+                    light.direction[1] +
+                light.direction[2] *
+                    light.direction[2];
+
+            if (directionLengthSquared <=
+                0.000001f)
+            {
+                continue;
+            }
+
+            const float deltaX =
+                light.position[0] -
+                camera.position.x;
+
+            const float deltaY =
+                light.position[1] -
+                camera.position.y;
+
+            const float deltaZ =
+                light.position[2] -
+                camera.position.z;
+
+            RankedLight entry;
+
+            entry.light =
+                &light;
+
+            entry.distanceSquared =
+                deltaX * deltaX +
+                deltaY * deltaY +
+                deltaZ * deltaZ;
+
+            ranked.push_back(
+                entry);
+        }
+
+        std::stable_sort(
+            ranked.begin(),
+            ranked.end(),
+            [](
+                const RankedLight& left,
+                const RankedLight& right)
+            {
+                if (left.light->priority !=
+                    right.light->priority)
+                {
+                    return
+                        left.light->priority >
+                        right.light->priority;
+                }
+
+                return
+                    left.distanceSquared <
+                    right.distanceSquared;
+            });
+
+        SpotLightConstants
+            constants{};
+
+        constants.lightCount =
+            static_cast<std::uint32_t>(
+                std::min<std::size_t>(
+                    ranked.size(),
+                    MaxSpotLights));
+
+        for (std::uint32_t index = 0;
+             index <
+                constants.lightCount;
+             ++index)
+        {
+            const client::graphics::SceneSpotLight&
+                source =
+                    *ranked[index].light;
+
+            GpuSpotLight& target =
+                constants.lights[index];
+
+            const float directionLength =
+                std::sqrt(
+                    source.direction[0] *
+                        source.direction[0] +
+                    source.direction[1] *
+                        source.direction[1] +
+                    source.direction[2] *
+                        source.direction[2]);
+
+            const float inverseDirectionLength =
+                1.0f /
+                std::max(
+                    directionLength,
+                    0.000001f);
+
+            target.positionOuterRadius =
+            {
+                source.position[0],
+                source.position[1],
+                source.position[2],
+                source.outerRadius
+            };
+
+            target.directionCosConeAngle =
+            {
+                source.direction[0] *
+                    inverseDirectionLength,
+
+                source.direction[1] *
+                    inverseDirectionLength,
+
+                source.direction[2] *
+                    inverseDirectionLength,
+
+                source.cosConeAngle
+            };
+
+            target.colourMultiplier =
+            {
+                source.colour[0],
+                source.colour[1],
+                source.colour[2],
+                source.multiplier
+            };
+
+            target.parameters =
+            {
+                source.innerRadius,
+
+                source.specular
+                    ? 1.0f
+                    : 0.0f,
+
+                source.isStatic
+                    ? 1.0f
+                    : 0.0f,
+
+                source.isDynamic
+                    ? 1.0f
+                    : 0.0f
+            };
+        }
+
+        return constants;
+    }
+
     constexpr char ShaderSource[] = R"(
         cbuffer SceneConstants : register(b0)
         {
@@ -423,7 +637,27 @@ namespace
             uint omniLightPadding1;
             uint omniLightPadding2;
         }
+    )"
+    R"(
+        struct SpotLightData
+        {
+            float4 positionOuterRadius;
+            float4 directionCosConeAngle;
+            float4 colourMultiplier;
+            float4 parameters;
+        };
 
+        cbuffer SpotLightConstants : register(b2)
+        {
+            SpotLightData spotLights[32];
+
+            uint spotLightCount;
+            uint spotLightPadding0;
+            uint spotLightPadding1;
+            uint spotLightPadding2;
+        }
+    )"
+    R"(
         Texture2D terrainTexture0 : register(t0);
         Texture2D terrainTexture1 : register(t1);
         Texture2D terrainTexture2 : register(t2);
@@ -692,6 +926,168 @@ namespace
             }
         }
 
+        void EvaluateSpotLights(
+            float3 worldPosition,
+            float3 surfaceNormal,
+            out float3 diffuseLighting,
+            out float3 specularLighting)
+        {
+            diffuseLighting =
+                float3(
+                    0.0f,
+                    0.0f,
+                    0.0f);
+
+            specularLighting =
+                float3(
+                    0.0f,
+                    0.0f,
+                    0.0f);
+
+            float3 normal =
+                normalize(
+                    surfaceNormal);
+
+            float3 viewDirection =
+                normalize(
+                    cameraPosition.xyz -
+                    worldPosition);
+
+            [loop]
+            for (uint index = 0;
+                 index < spotLightCount;
+                 ++index)
+            {
+                SpotLightData light =
+                    spotLights[index];
+
+                float3 toLight =
+                    light.positionOuterRadius.xyz -
+                    worldPosition;
+
+                float distanceToLight =
+                    length(
+                        toLight);
+
+                float outerRadius =
+                    max(
+                        light.positionOuterRadius.w,
+                        0.001f);
+
+                if (distanceToLight >=
+                    outerRadius)
+                {
+                    continue;
+                }
+
+                float3 surfaceToLight =
+                    toLight /
+                    max(
+                        distanceToLight,
+                        0.0001f);
+
+                float3 lightToSurface =
+                    -surfaceToLight;
+
+                float3 spotDirection =
+                    normalize(
+                        light.directionCosConeAngle.xyz);
+
+                float coneLimit =
+                    clamp(
+                        light.directionCosConeAngle.w,
+                        -1.0f,
+                        1.0f);
+
+                float coneCosine =
+                    dot(
+                        spotDirection,
+                        lightToSurface);
+
+                if (coneCosine <
+                    coneLimit)
+                {
+                    continue;
+                }
+
+                float coneAttenuation =
+                    smoothstep(
+                        coneLimit,
+                        1.0f,
+                        coneCosine);
+
+                float innerRadius =
+                    clamp(
+                        light.parameters.x,
+                        0.0f,
+                        outerRadius);
+
+                float distanceAttenuation =
+                    1.0f;
+
+                if (distanceToLight >
+                    innerRadius)
+                {
+                    distanceAttenuation =
+                        saturate(
+                            (
+                                outerRadius -
+                                distanceToLight
+                            ) /
+                            max(
+                                outerRadius -
+                                innerRadius,
+                                0.001f));
+                }
+
+                distanceAttenuation *=
+                    distanceAttenuation;
+
+                float attenuation =
+                    distanceAttenuation *
+                    coneAttenuation;
+
+                float diffuse =
+                    abs(
+                        dot(
+                            normal,
+                            surfaceToLight));
+
+                float3 lightColour =
+                    light.colourMultiplier.rgb *
+                    light.colourMultiplier.w;
+
+                diffuseLighting +=
+                    lightColour *
+                    diffuse *
+                    attenuation;
+
+                if (light.parameters.y >
+                    0.5f)
+                {
+                    float3 halfDirection =
+                        normalize(
+                            surfaceToLight +
+                            viewDirection);
+
+                    float specular =
+                        pow(
+                            saturate(
+                                abs(
+                                    dot(
+                                        normal,
+                                        halfDirection))),
+                            32.0f);
+
+                    specularLighting +=
+                        lightColour *
+                        specular *
+                        attenuation *
+                        0.35f;
+                }
+            }
+        }
+
         float2 GetScreenUV(
             PixelInput input)
         {
@@ -826,6 +1222,9 @@ namespace
                     1.0f,
                     wave.y));
         }
+
+    )"
+    R"(
 
         float3 TraceWaterReflection(
             float3 worldPosition,
@@ -1320,15 +1719,29 @@ namespace
                 omniDiffuse,
                 omniSpecular);
 
+            float3 spotDiffuse =
+                0.0f;
+
+            float3 spotSpecular =
+                0.0f;
+
+            EvaluateSpotLights(
+                input.worldPosition,
+                normal,
+                spotDiffuse,
+                spotSpecular);
+
             float3 finalColour =
                 baseColour *
                 (
                     lighting +
-                    omniDiffuse
+                    omniDiffuse +
+                    spotDiffuse
                 );
 
             finalColour +=
-                omniSpecular;
+                omniSpecular +
+                spotSpecular;
 
             return float4(
                 finalColour,
@@ -1650,6 +2063,9 @@ namespace client::graphics
         ComPtr<ID3D11Buffer>
             omniLightConstantBuffer;
 
+        ComPtr<ID3D11Buffer>
+            spotLightConstantBuffer;
+
         std::vector<GpuMesh> meshes;
 
         std::vector<
@@ -1664,6 +2080,9 @@ namespace client::graphics
 
         std::vector<SceneOmniLight>
             omniLights;
+
+        std::vector<SceneSpotLight>
+            spotLights;
 
         std::vector<SceneInstance>
             instances;
@@ -2414,6 +2833,32 @@ namespace client::graphics
             return false;
         }
 
+        D3D11_BUFFER_DESC
+            spotLightConstantDescription{};
+
+        spotLightConstantDescription.ByteWidth =
+            sizeof(SpotLightConstants);
+
+        spotLightConstantDescription.Usage =
+            D3D11_USAGE_DEFAULT;
+
+        spotLightConstantDescription.BindFlags =
+            D3D11_BIND_CONSTANT_BUFFER;
+
+        result =
+            state_->device->CreateBuffer(
+                &spotLightConstantDescription,
+                nullptr,
+                &state_->spotLightConstantBuffer);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create SpotLight constant buffer.";
+
+            return false;
+        }
+
         state_->width =
             width;
 
@@ -2805,6 +3250,9 @@ namespace client::graphics
 
         state_->omniLights =
             scene.omniLights;
+
+        state_->spotLights =
+            scene.spotLights;
 
         state_->lodInstances =
             scene.lodInstances;
@@ -3214,6 +3662,12 @@ namespace client::graphics
             std::to_string(
                 state_->omniLights.size()));
 
+        core::Log::Info(
+            std::string(
+                "GPU SpotLight sources: ") +
+            std::to_string(
+                state_->spotLights.size()));
+
         return true;
     }
 
@@ -3490,6 +3944,31 @@ namespace client::graphics
             1,
             1,
             omniLightBuffers);
+
+        const SpotLightConstants
+            spotLightConstants =
+                BuildSpotLightConstants(
+                    state_->spotLights,
+                    state_->camera);
+
+        state_->context->UpdateSubresource(
+            state_->spotLightConstantBuffer.Get(),
+            0,
+            nullptr,
+            &spotLightConstants,
+            0,
+            0);
+
+        ID3D11Buffer*
+            spotLightBuffers[] =
+        {
+            state_->spotLightConstantBuffer.Get()
+        };
+
+        state_->context->PSSetConstantBuffers(
+            2,
+            1,
+            spotLightBuffers);
 
         SceneConstants constants{};
 

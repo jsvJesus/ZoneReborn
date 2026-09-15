@@ -207,6 +207,99 @@ namespace client::preview
             std::to_string(
                 scene.omniLights.size()));
 
+        scene.spotLights.reserve(
+            world.spotLights.size());
+
+        for (const core::world::WorldSpotLightInstance& source :
+             world.spotLights)
+        {
+            graphics::SceneSpotLight
+                light;
+
+            light.guid =
+                source.guid;
+
+            light.position =
+            {
+                source.position.x,
+                source.position.y,
+                source.position.z
+            };
+
+            light.direction =
+            {
+                source.direction.x,
+                source.direction.y,
+                source.direction.z
+            };
+
+            light.colour =
+            {
+                std::clamp(
+                    source.colour.x /
+                        255.0f,
+                    0.0f,
+                    1.0f),
+
+                std::clamp(
+                    source.colour.y /
+                        255.0f,
+                    0.0f,
+                    1.0f),
+
+                std::clamp(
+                    source.colour.z /
+                        255.0f,
+                    0.0f,
+                    1.0f)
+            };
+
+            light.innerRadius =
+                std::max(
+                    source.innerRadius,
+                    0.0f);
+
+            light.outerRadius =
+                std::max(
+                    source.outerRadius,
+                    light.innerRadius);
+
+            light.cosConeAngle =
+                std::clamp(
+                    source.cosConeAngle,
+                    -1.0f,
+                    1.0f);
+
+            light.multiplier =
+                std::max(
+                    source.multiplier,
+                    0.0f);
+
+            light.priority =
+                source.priority;
+
+            light.lightType =
+                source.lightType;
+
+            light.isDynamic =
+                source.isDynamic;
+
+            light.isStatic =
+                source.isStatic;
+
+            light.specular =
+                source.specular;
+
+            scene.spotLights.push_back(
+                std::move(light));
+        }
+
+        core::Log::Info(
+            std::string(
+                "SpotLight render sources: ") +
+            std::to_string(
+                scene.spotLights.size()));
+
         core::assets::speedtree::CTreeLoader
             ctreeLoader;
 

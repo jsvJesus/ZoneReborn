@@ -484,6 +484,26 @@ namespace
         };
     }
 
+    core::math::Vector3 TransformDirection(
+        const core::math::Vector3& direction,
+        const core::math::Transform3x4& transform) noexcept
+    {
+        return
+        {
+            direction.x * transform.values[0] +
+                direction.y * transform.values[3] +
+                direction.z * transform.values[6],
+
+            direction.x * transform.values[1] +
+                direction.y * transform.values[4] +
+                direction.z * transform.values[7],
+
+            direction.x * transform.values[2] +
+                direction.y * transform.values[5] +
+                direction.z * transform.values[8]
+        };
+    }
+
     void AddOmniLightInstance(
         const std::string& chunkId,
         const core::world::ChunkOmniLight& source,
@@ -532,6 +552,65 @@ namespace
             source.specular;
 
         scene.omniLights.push_back(
+            std::move(instance));
+    }
+
+    void AddSpotLightInstance(
+        const std::string& chunkId,
+        const core::world::ChunkSpotLight& source,
+        const core::math::Transform3x4& chunkTransform,
+        core::world::WorldScene& scene)
+    {
+        core::world::WorldSpotLightInstance
+            instance;
+
+        instance.chunkId =
+            chunkId;
+
+        instance.guid =
+            source.guid;
+
+        instance.position =
+            TransformPoint(
+                source.position,
+                chunkTransform);
+
+        instance.direction =
+            TransformDirection(
+                source.direction,
+                chunkTransform);
+
+        instance.colour =
+            source.colour;
+
+        instance.innerRadius =
+            source.innerRadius;
+
+        instance.outerRadius =
+            source.outerRadius;
+
+        instance.cosConeAngle =
+            source.cosConeAngle;
+
+        instance.multiplier =
+            source.multiplier;
+
+        instance.priority =
+            source.priority;
+
+        instance.lightType =
+            source.lightType;
+
+        instance.isDynamic =
+            source.isDynamic;
+
+        instance.isStatic =
+            source.isStatic;
+
+        instance.specular =
+            source.specular;
+
+        scene.spotLights.push_back(
             std::move(instance));
     }
 
@@ -869,6 +948,20 @@ namespace core::world
                     scene);
             }
 
+            scene.spotLights.reserve(
+                scene.spotLights.size() +
+                chunk.spotLights.size());
+
+            for (const ChunkSpotLight& light :
+                 chunk.spotLights)
+            {
+                AddSpotLightInstance(
+                    chunkId,
+                    light,
+                    chunkTransform,
+                    scene);
+            }
+
             for (const ChunkTerrainReference& terrain :
                  chunk.terrains)
             {
@@ -950,6 +1043,9 @@ namespace core::world
 
         scene.omniLightCount =
             scene.omniLights.size();
+
+        scene.spotLightCount =
+            scene.spotLights.size();
 
         scene.missingLargeObjectCount =
             0;
@@ -1121,6 +1217,12 @@ namespace core::world
                 "OmniLight instances: ") +
             std::to_string(
                 scene.omniLights.size()));
+
+        core::Log::Info(
+            std::string(
+                "SpotLight instances: ") +
+            std::to_string(
+                scene.spotLights.size()));
 
         core::Log::Info(
             std::string(

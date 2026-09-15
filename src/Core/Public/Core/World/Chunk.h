@@ -61,6 +61,27 @@ namespace core::world
         bool specular = false;
     };
 
+    struct ChunkSpotLight final
+    {
+        std::string guid;
+
+        math::Vector3 colour;
+        math::Vector3 position;
+        math::Vector3 direction;
+
+        float innerRadius = 0.0f;
+        float outerRadius = 0.0f;
+        float cosConeAngle = 1.0f;
+        float multiplier = 1.0f;
+
+        std::int32_t priority = 0;
+        std::int32_t lightType = 0;
+
+        bool isDynamic = false;
+        bool isStatic = false;
+        bool specular = false;
+    };
+
     struct Chunk final
     {
         std::string spaceName;
@@ -80,6 +101,8 @@ namespace core::world
         std::vector<ChunkLargeObjectReference> largeObjects;
 
         std::vector<ChunkOmniLight> omniLights;
+
+        std::vector<ChunkSpotLight> spotLights;
 
         std::vector<std::string> overlappers;
 

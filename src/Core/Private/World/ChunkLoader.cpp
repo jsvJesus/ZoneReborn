@@ -547,6 +547,125 @@ namespace
 
         return true;
     }
+
+    bool ReadSpotLight(
+        const core::resources::DataSection& section,
+        core::world::ChunkSpotLight& output)
+    {
+        output = {};
+
+        output.multiplier =
+            1.0f;
+
+        output.cosConeAngle =
+            1.0f;
+
+        if (!ReadRequiredVector3(
+                section,
+                "colour",
+                output.colour))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredVector3(
+                section,
+                "position",
+                output.position))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredVector3(
+                section,
+                "direction",
+                output.direction))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredFloat(
+                section,
+                "innerRadius",
+                output.innerRadius))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredFloat(
+                section,
+                "outerRadius",
+                output.outerRadius))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredFloat(
+                section,
+                "cosConeAngle",
+                output.cosConeAngle))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalFloat(
+                section,
+                "multiplier",
+                output.multiplier))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalBoolean(
+                section,
+                "dynamic",
+                output.isDynamic))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalBoolean(
+                section,
+                "static",
+                output.isStatic))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalBoolean(
+                section,
+                "specular",
+                output.specular))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalInteger(
+                section,
+                "priority",
+                output.priority))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalInteger(
+                section,
+                "lightType",
+                output.lightType))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalString(
+                section,
+                "guid",
+                output.guid))
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
 
 namespace core::world
@@ -761,6 +880,27 @@ namespace core::world
                 }
 
                 chunk.omniLights.push_back(
+                    std::move(light));
+
+                continue;
+            }
+
+            if (section.name == "spotLight")
+            {
+                ChunkSpotLight light;
+
+                if (!ReadSpotLight(
+                        section,
+                        light))
+                {
+                    error =
+                        "Chunk contains invalid spotLight section: " +
+                        resourcePath;
+
+                    return false;
+                }
+
+                chunk.spotLights.push_back(
                     std::move(light));
 
                 continue;
