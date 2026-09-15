@@ -450,7 +450,7 @@ namespace
         float3 CalculateWaterNormal(
             PixelInput input)
         {
-            float tessellation =
+            float textureScale =
                 max(
                     waterParameters2.x,
                     0.001f);
@@ -461,19 +461,21 @@ namespace
             float wind =
                 waterParameters1.z;
 
+            float2 baseUV =
+                input.localPosition.xz /
+                textureScale;
+
             float2 uv1 =
-                input.terrainUV *
-                    tessellation +
+                baseUV +
                 waterScrollSpeed1.xy *
-                    wind *
-                    time;
+                wind *
+                time;
 
             float2 uv2 =
-                input.terrainUV *
-                    tessellation +
+                baseUV +
                 waterScrollSpeed2.xy *
-                    wind *
-                    time;
+                wind *
+                time;
 
             float2 normal1 =
                 waterNormalTexture.Sample(
@@ -496,8 +498,11 @@ namespace
                 ) *
                 0.5f;
 
-            wave *=
-                waterParameters1.xy;
+            wave.x *=
+                waterParameters1.x;
+
+            wave.y *=
+                waterParameters1.y;
 
             return normalize(
                 float3(
@@ -780,50 +785,68 @@ namespace
                 ) /
                 totalWeight;
 
-            float foamIntersection =
+            float foamIntersectionDistance =
                 max(
-                    waterParameters2.y,
-                    0.001f);
+                    waterParameters2.y *
+                        0.001f,
+                    0.01f);
 
             float foamAmount =
                 1.0f -
                 saturate(
                     verticalDepth /
-                    foamIntersection);
+                    foamIntersectionDistance);
 
-            float foamTiling =
+            foamAmount =
+                smoothstep(
+                    0.0f,
+                    1.0f,
+                    foamAmount);
+
+            float foamTextureScale =
                 waterParameters2.w;
 
-            if (foamTiling <=
+            if (foamTextureScale <=
                 0.0f)
             {
-                foamTiling =
+                foamTextureScale =
                     max(
                         waterParameters2.x,
-                        1.0f);
+                        0.001f);
             }
 
             float2 foamUV =
-                input.terrainUV *
-                    foamTiling +
+                input.localPosition.xz /
+                    foamTextureScale +
                 waterScrollSpeed1.xy *
                     waterParameters1.z *
                     waterParameters1.w *
                     0.25f;
 
-            float foamTexture = waterFoamTexture.Sample(terrainTextureSampler, foamUV).r;
+            float foamSample =
+                waterFoamTexture.Sample(
+                    terrainTextureSampler,
+                    foamUV).r;
+
+            foamSample =
+                smoothstep(
+                    0.35f,
+                    0.75f,
+                    foamSample);
 
             foamAmount *=
-                foamTexture *
+                foamSample;
+
+            foamAmount *=
                 waterParameters2.z;
 
             colour =
                 lerp(
                     colour,
                     float3(
-                        0.92f,
-                        0.95f,
-                        0.97f),
+                        0.82f,
+                        0.86f,
+                        0.88f),
                     saturate(
                         foamAmount));
 
