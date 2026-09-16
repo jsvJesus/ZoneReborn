@@ -21,6 +21,7 @@
     <ClInclude Include="Private\Graphics\CameraView.h" />
     <ClInclude Include="Private\Graphics\Renderer.h" />
     <ClInclude Include="Private\Graphics\SceneRenderData.h" />
+    <ClInclude Include="Private\Graphics\Shaders\ShaderCompiler.h" />
     <ClInclude Include="Private\Input\CameraController.h" />
     <ClInclude Include="Private\Platform\Window.h" />
     <ClInclude Include="Private\Preview\FloraRenderDataBuilder.h" />
@@ -35,6 +36,7 @@
   <ItemGroup>
     <ClCompile Include="Private\Application.cpp" />
     <ClCompile Include="Private\Graphics\Renderer.cpp" />
+    <ClCompile Include="Private\Graphics\Shaders\ShaderCompiler.cpp" />
     <ClCompile Include="Private\Input\CameraController.cpp" />
     <ClCompile Include="Private\Main.cpp" />
     <ClCompile Include="Private\Diagnostics\ResourceValidation.cpp" />
@@ -46,6 +48,15 @@
     <ClCompile Include="Private\Preview\TerrainRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WaterRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WorldPreviewLoader.cpp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Shaders\World\WorldShared.hlsli" />
+    <None Include="Shaders\World\WorldLighting.hlsli" />
+    <None Include="Shaders\World\WorldTerrain.hlsli" />
+    <None Include="Shaders\World\WorldWater.hlsli" />
+    <None Include="Shaders\World\WorldVertex.hlsl" />
+    <None Include="Shaders\World\WorldPixel.hlsl" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">
