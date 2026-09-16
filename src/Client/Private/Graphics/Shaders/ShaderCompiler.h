@@ -1,9 +1,9 @@
 #pragma once
 
+#include <d3dcommon.h>
+
 #include <string>
 #include <string_view>
-
-struct ID3DBlob;
 
 namespace client::graphics::shaders
 {

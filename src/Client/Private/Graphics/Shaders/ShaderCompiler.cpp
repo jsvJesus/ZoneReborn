@@ -31,7 +31,8 @@ namespace
 
         if (length == 0 ||
             length >=
-                buffer.size())
+                static_cast<DWORD>(
+                    buffer.size()))
         {
             error =
                 "Unable to resolve executable directory.";
@@ -134,8 +135,8 @@ namespace client::graphics::shaders
                 profile,
                 CompileFlags,
                 0,
-                &shader,
-                &errors);
+                shader.GetAddressOf(),
+                errors.GetAddressOf());
 
         if (FAILED(result))
         {
