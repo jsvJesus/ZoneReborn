@@ -82,6 +82,33 @@ namespace core::world
         bool specular = false;
     };
 
+    struct ChunkPulseLightFrame final
+    {
+        float time = 0.0f;
+        float value = 1.0f;
+    };
+
+    struct ChunkPulseLight final
+    {
+        std::string guid;
+        std::string animation;
+
+        math::Vector3 colour;
+        math::Vector3 position;
+
+        float innerRadius = 0.0f;
+        float outerRadius = 0.0f;
+        float multiplier = 1.0f;
+
+        float timeScale = 1.0f;
+        float duration = 0.0f;
+
+        std::int32_t priority = 0;
+
+        std::vector<ChunkPulseLightFrame>
+            frames;
+    };
+
     struct Chunk final
     {
         std::string spaceName;
@@ -103,6 +130,8 @@ namespace core::world
         std::vector<ChunkOmniLight> omniLights;
 
         std::vector<ChunkSpotLight> spotLights;
+
+        std::vector<ChunkPulseLight> pulseLights;
 
         std::vector<std::string> overlappers;
 

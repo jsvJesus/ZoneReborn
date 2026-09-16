@@ -224,6 +224,48 @@ namespace client::graphics
             false;
     };
 
+    struct ScenePulseLightFrame final
+    {
+        float time =
+            0.0f;
+
+        float value =
+            1.0f;
+    };
+
+    struct ScenePulseLight final
+    {
+        std::string guid;
+        std::string animation;
+
+        std::array<float, 3>
+            position{};
+
+        std::array<float, 3>
+            colour{};
+
+        float innerRadius =
+            0.0f;
+
+        float outerRadius =
+            0.0f;
+
+        float multiplier =
+            1.0f;
+
+        float timeScale =
+            1.0f;
+
+        float duration =
+            0.0f;
+
+        std::int32_t priority =
+            0;
+
+        std::vector<ScenePulseLightFrame>
+            frames;
+    };
+
     struct SceneMesh final
     {
         core::assets::MeshData geometry;
@@ -298,5 +340,8 @@ namespace client::graphics
 
         std::vector<SceneSpotLight>
             spotLights;
+
+        std::vector<ScenePulseLight>
+            pulseLights;
     };
 }

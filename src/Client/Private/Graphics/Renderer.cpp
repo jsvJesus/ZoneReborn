@@ -273,15 +273,157 @@ namespace
         }
     }
 
+    float EvaluatePulseLight(
+        const client::graphics::ScenePulseLight& light,
+        const float elapsedSeconds) noexcept
+    {
+        if (light.frames.empty())
+        {
+            return 1.0f;
+        }
+
+        if (light.frames.size() == 1)
+        {
+            return
+                std::max(
+                    light.frames.front().value,
+                    0.0f);
+        }
+
+        const float sourceDuration =
+            light.frames.back().time;
+
+        if (sourceDuration <=
+            0.000001f)
+        {
+            return
+                std::max(
+                    light.frames.back().value,
+                    0.0f);
+        }
+
+        if (light.timeScale <=
+            0.000001f)
+        {
+            return
+                std::max(
+                    light.frames.front().value,
+                    0.0f);
+        }
+
+        const float cycleDuration =
+            light.duration >
+                0.000001f
+                ? light.duration
+                : sourceDuration;
+
+        float cycleTime =
+            std::fmod(
+                elapsedSeconds *
+                    light.timeScale,
+                cycleDuration);
+
+        if (cycleTime <
+            0.0f)
+        {
+            cycleTime +=
+                cycleDuration;
+        }
+
+        const float sampleTime =
+            cycleTime *
+            (
+                sourceDuration /
+                cycleDuration
+            );
+
+        if (sampleTime <=
+            light.frames.front().time)
+        {
+            return
+                std::max(
+                    light.frames.front().value,
+                    0.0f);
+        }
+
+        for (std::size_t index = 1;
+             index <
+                light.frames.size();
+             ++index)
+        {
+            const client::graphics::ScenePulseLightFrame&
+                previous =
+                    light.frames[
+                        index - 1];
+
+            const client::graphics::ScenePulseLightFrame&
+                current =
+                    light.frames[
+                        index];
+
+            if (sampleTime >
+                current.time)
+            {
+                continue;
+            }
+
+            const float frameDuration =
+                current.time -
+                previous.time;
+
+            if (frameDuration <=
+                0.000001f)
+            {
+                return
+                    std::max(
+                        current.value,
+                        0.0f);
+            }
+
+            const float factor =
+                std::clamp(
+                    (
+                        sampleTime -
+                        previous.time
+                    ) /
+                    frameDuration,
+                    0.0f,
+                    1.0f);
+
+            const float value =
+                previous.value +
+                (
+                    current.value -
+                    previous.value
+                ) *
+                factor;
+
+            return
+                std::max(
+                    value,
+                    0.0f);
+        }
+
+        return
+            std::max(
+                light.frames.back().value,
+                0.0f);
+    }
+
     OmniLightConstants BuildOmniLightConstants(
         const std::vector<
-            client::graphics::SceneOmniLight>& lights,
-        const client::graphics::CameraView& camera)
+            client::graphics::SceneOmniLight>& omniLights,
+        const std::vector<
+            client::graphics::ScenePulseLight>& pulseLights,
+        const client::graphics::CameraView& camera,
+        const float elapsedSeconds)
     {
         struct RankedLight final
         {
-            const client::graphics::SceneOmniLight*
-                light = nullptr;
+            GpuOmniLight gpu{};
+
+            std::int32_t priority =
+                0;
 
             float distanceSquared =
                 0.0f;
@@ -291,10 +433,11 @@ namespace
             ranked;
 
         ranked.reserve(
-            lights.size());
+            omniLights.size() +
+            pulseLights.size());
 
         for (const client::graphics::SceneOmniLight& light :
-             lights)
+             omniLights)
         {
             if (light.outerRadius <=
                     0.0f ||
@@ -316,15 +459,126 @@ namespace
                 light.position[2] -
                 camera.position.z;
 
-            RankedLight entry;
+            RankedLight
+                entry;
 
-            entry.light =
-                &light;
+            entry.priority =
+                light.priority;
 
             entry.distanceSquared =
                 deltaX * deltaX +
                 deltaY * deltaY +
                 deltaZ * deltaZ;
+
+            entry.gpu.positionOuterRadius =
+            {
+                light.position[0],
+                light.position[1],
+                light.position[2],
+                light.outerRadius
+            };
+
+            entry.gpu.colourMultiplier =
+            {
+                light.colour[0],
+                light.colour[1],
+                light.colour[2],
+                light.multiplier
+            };
+
+            entry.gpu.parameters =
+            {
+                light.innerRadius,
+
+                light.specular
+                    ? 1.0f
+                    : 0.0f,
+
+                light.isStatic
+                    ? 1.0f
+                    : 0.0f,
+
+                light.isDynamic
+                    ? 1.0f
+                    : 0.0f
+            };
+
+            ranked.push_back(
+                entry);
+        }
+
+        for (const client::graphics::ScenePulseLight& light :
+             pulseLights)
+        {
+            if (light.outerRadius <=
+                    0.0f ||
+                light.multiplier <=
+                    0.0f)
+            {
+                continue;
+            }
+
+            const float animationValue =
+                EvaluatePulseLight(
+                    light,
+                    elapsedSeconds);
+
+            const float animatedMultiplier =
+                light.multiplier *
+                animationValue;
+
+            if (animatedMultiplier <=
+                0.000001f)
+            {
+                continue;
+            }
+
+            const float deltaX =
+                light.position[0] -
+                camera.position.x;
+
+            const float deltaY =
+                light.position[1] -
+                camera.position.y;
+
+            const float deltaZ =
+                light.position[2] -
+                camera.position.z;
+
+            RankedLight
+                entry;
+
+            entry.priority =
+                light.priority;
+
+            entry.distanceSquared =
+                deltaX * deltaX +
+                deltaY * deltaY +
+                deltaZ * deltaZ;
+
+            entry.gpu.positionOuterRadius =
+            {
+                light.position[0],
+                light.position[1],
+                light.position[2],
+                light.outerRadius
+            };
+
+            entry.gpu.colourMultiplier =
+            {
+                light.colour[0],
+                light.colour[1],
+                light.colour[2],
+                animatedMultiplier
+            };
+
+            entry.gpu.parameters =
+            {
+                light.innerRadius,
+                0.0f,
+                0.0f,
+                1.0f
+            };
 
             ranked.push_back(
                 entry);
@@ -337,12 +591,12 @@ namespace
                 const RankedLight& left,
                 const RankedLight& right)
             {
-                if (left.light->priority !=
-                    right.light->priority)
+                if (left.priority !=
+                    right.priority)
                 {
                     return
-                        left.light->priority >
-                        right.light->priority;
+                        left.priority >
+                        right.priority;
                 }
 
                 return
@@ -364,45 +618,8 @@ namespace
                 constants.lightCount;
              ++index)
         {
-            const client::graphics::SceneOmniLight&
-                source =
-                    *ranked[index].light;
-
-            GpuOmniLight& target =
-                constants.lights[index];
-
-            target.positionOuterRadius =
-            {
-                source.position[0],
-                source.position[1],
-                source.position[2],
-                source.outerRadius
-            };
-
-            target.colourMultiplier =
-            {
-                source.colour[0],
-                source.colour[1],
-                source.colour[2],
-                source.multiplier
-            };
-
-            target.parameters =
-            {
-                source.innerRadius,
-
-                source.specular
-                    ? 1.0f
-                    : 0.0f,
-
-                source.isStatic
-                    ? 1.0f
-                    : 0.0f,
-
-                source.isDynamic
-                    ? 1.0f
-                    : 0.0f
-            };
+            constants.lights[index] =
+                ranked[index].gpu;
         }
 
         return constants;
@@ -2084,6 +2301,9 @@ namespace client::graphics
         std::vector<SceneSpotLight>
             spotLights;
 
+        std::vector<ScenePulseLight>
+            pulseLights;
+
         std::vector<SceneInstance>
             instances;
 
@@ -3254,6 +3474,9 @@ namespace client::graphics
         state_->spotLights =
             scene.spotLights;
 
+        state_->pulseLights =
+            scene.pulseLights;
+
         state_->lodInstances =
             scene.lodInstances;
 
@@ -3668,6 +3891,12 @@ namespace client::graphics
             std::to_string(
                 state_->spotLights.size()));
 
+        core::Log::Info(
+            std::string(
+                "GPU PulseLight sources: ") +
+            std::to_string(
+                state_->pulseLights.size()));
+
         return true;
     }
 
@@ -3924,7 +4153,9 @@ namespace client::graphics
             omniLightConstants =
                 BuildOmniLightConstants(
                     state_->omniLights,
-                    state_->camera);
+                    state_->pulseLights,
+                    state_->camera,
+                    elapsedSeconds);
 
         state_->context->UpdateSubresource(
             state_->omniLightConstantBuffer.Get(),

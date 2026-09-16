@@ -2,6 +2,7 @@
 
 #include "Core/Resources/DataSection.h"
 
+#include <cmath>
 #include <limits>
 #include <string>
 #include <utility>
@@ -666,6 +667,180 @@ namespace
 
         return true;
     }
+
+    bool ReadPulseLightFrame(
+        const core::resources::DataSection& section,
+        core::world::ChunkPulseLightFrame& output)
+    {
+        const core::resources::DataSection::FloatArray*
+            values =
+                section.AsFloats();
+
+        if (values == nullptr ||
+            values->size() != 2)
+        {
+            return false;
+        }
+
+        output.time =
+            (*values)[0];
+
+        output.value =
+            (*values)[1];
+
+        return true;
+    }
+
+    bool ReadPulseLight(
+        const core::resources::DataSection& section,
+        core::world::ChunkPulseLight& output)
+    {
+        output = {};
+
+        output.multiplier =
+            1.0f;
+
+        output.timeScale =
+            1.0f;
+
+        if (!ReadRequiredVector3(
+                section,
+                "colour",
+                output.colour))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredVector3(
+                section,
+                "position",
+                output.position))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredFloat(
+                section,
+                "innerRadius",
+                output.innerRadius))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredFloat(
+                section,
+                "outerRadius",
+                output.outerRadius))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredFloat(
+                section,
+                "multiplier",
+                output.multiplier))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredFloat(
+                section,
+                "timeScale",
+                output.timeScale))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredFloat(
+                section,
+                "duration",
+                output.duration))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredString(
+                section,
+                "animation",
+                output.animation))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredInteger(
+                section,
+                "priority",
+                output.priority))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalString(
+                section,
+                "guid",
+                output.guid))
+        {
+            return false;
+        }
+
+        const std::vector<
+            const core::resources::DataSection*>
+            frameSections =
+                section.FindChildren(
+                    "frame");
+
+        if (frameSections.empty())
+        {
+            return false;
+        }
+
+        output.frames.reserve(
+            frameSections.size());
+
+        float previousTime =
+            -std::numeric_limits<float>::infinity();
+
+        for (const core::resources::DataSection* frameSection :
+             frameSections)
+        {
+            if (frameSection == nullptr)
+            {
+                return false;
+            }
+
+            core::world::ChunkPulseLightFrame
+                frame;
+
+            if (!ReadPulseLightFrame(
+                    *frameSection,
+                    frame))
+            {
+                return false;
+            }
+
+            if (!std::isfinite(
+                    frame.time) ||
+                !std::isfinite(
+                    frame.value))
+            {
+                return false;
+            }
+
+            if (frame.time <
+                previousTime)
+            {
+                return false;
+            }
+
+            previousTime =
+                frame.time;
+
+            output.frames.push_back(
+                frame);
+        }
+
+        return true;
+    }
 }
 
 namespace core::world
@@ -901,6 +1076,27 @@ namespace core::world
                 }
 
                 chunk.spotLights.push_back(
+                    std::move(light));
+
+                continue;
+            }
+
+            if (section.name == "pulseLight")
+            {
+                ChunkPulseLight light;
+
+                if (!ReadPulseLight(
+                        section,
+                        light))
+                {
+                    error =
+                        "Chunk contains invalid pulseLight section: " +
+                        resourcePath;
+
+                    return false;
+                }
+
+                chunk.pulseLights.push_back(
                     std::move(light));
 
                 continue;

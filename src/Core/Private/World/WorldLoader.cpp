@@ -614,6 +614,73 @@ namespace
             std::move(instance));
     }
 
+    void AddPulseLightInstance(
+        const std::string& chunkId,
+        const core::world::ChunkPulseLight& source,
+        const core::math::Transform3x4& chunkTransform,
+        core::world::WorldScene& scene)
+    {
+        core::world::WorldPulseLightInstance
+            instance;
+
+        instance.chunkId =
+            chunkId;
+
+        instance.guid =
+            source.guid;
+
+        instance.animation =
+            source.animation;
+
+        instance.position =
+            TransformPoint(
+                source.position,
+                chunkTransform);
+
+        instance.colour =
+            source.colour;
+
+        instance.innerRadius =
+            source.innerRadius;
+
+        instance.outerRadius =
+            source.outerRadius;
+
+        instance.multiplier =
+            source.multiplier;
+
+        instance.timeScale =
+            source.timeScale;
+
+        instance.duration =
+            source.duration;
+
+        instance.priority =
+            source.priority;
+
+        instance.frames.reserve(
+            source.frames.size());
+
+        for (const core::world::ChunkPulseLightFrame& sourceFrame :
+             source.frames)
+        {
+            core::world::WorldPulseLightFrame
+                frame;
+
+            frame.time =
+                sourceFrame.time;
+
+            frame.value =
+                sourceFrame.value;
+
+            instance.frames.push_back(
+                frame);
+        }
+
+        scene.pulseLights.push_back(
+            std::move(instance));
+    }
+
     void AddModelInstance(
         const std::string& chunkId,
         const core::world::ChunkModelInstance& source,
@@ -962,6 +1029,20 @@ namespace core::world
                     scene);
             }
 
+            scene.pulseLights.reserve(
+                scene.pulseLights.size() +
+                chunk.pulseLights.size());
+
+            for (const ChunkPulseLight& light :
+                 chunk.pulseLights)
+            {
+                AddPulseLightInstance(
+                    chunkId,
+                    light,
+                    chunkTransform,
+                    scene);
+            }
+
             for (const ChunkTerrainReference& terrain :
                  chunk.terrains)
             {
@@ -1046,6 +1127,9 @@ namespace core::world
 
         scene.spotLightCount =
             scene.spotLights.size();
+
+        scene.pulseLightCount =
+            scene.pulseLights.size();
 
         scene.missingLargeObjectCount =
             0;
@@ -1223,6 +1307,28 @@ namespace core::world
                 "SpotLight instances: ") +
             std::to_string(
                 scene.spotLights.size()));
+
+        core::Log::Info(
+            std::string(
+                "PulseLight instances: ") +
+            std::to_string(
+                scene.pulseLights.size()));
+
+        std::size_t pulseFrameCount =
+            0;
+
+        for (const WorldPulseLightInstance& light :
+             scene.pulseLights)
+        {
+            pulseFrameCount +=
+                light.frames.size();
+        }
+
+        core::Log::Info(
+            std::string(
+                "PulseLight animation frames: ") +
+            std::to_string(
+                pulseFrameCount));
 
         core::Log::Info(
             std::string(

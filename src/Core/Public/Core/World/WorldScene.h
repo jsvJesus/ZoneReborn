@@ -108,6 +108,34 @@ namespace core::world
         bool specular = false;
     };
 
+    struct WorldPulseLightFrame final
+    {
+        float time = 0.0f;
+        float value = 1.0f;
+    };
+
+    struct WorldPulseLightInstance final
+    {
+        std::string chunkId;
+        std::string guid;
+        std::string animation;
+
+        math::Vector3 position;
+        math::Vector3 colour;
+
+        float innerRadius = 0.0f;
+        float outerRadius = 0.0f;
+        float multiplier = 1.0f;
+
+        float timeScale = 1.0f;
+        float duration = 0.0f;
+
+        std::int32_t priority = 0;
+
+        std::vector<WorldPulseLightFrame>
+            frames;
+    };
+
     struct WorldScene final
     {
         std::string spaceName;
@@ -132,6 +160,9 @@ namespace core::world
         std::vector<WorldSpotLightInstance>
             spotLights;
 
+        std::vector<WorldPulseLightInstance>
+            pulseLights;
+
         std::size_t chunkCount = 0;
         std::size_t outdoorChunkCount = 0;
         std::size_t indoorChunkCount = 0;
@@ -141,6 +172,7 @@ namespace core::world
 
         std::size_t omniLightCount = 0;
         std::size_t spotLightCount = 0;
+        std::size_t pulseLightCount = 0;
 
         std::size_t largeObjectReferenceCount = 0;
         std::size_t missingLargeObjectCount = 0;

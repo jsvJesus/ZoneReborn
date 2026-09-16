@@ -300,6 +300,106 @@ namespace client::preview
             std::to_string(
                 scene.spotLights.size()));
 
+        scene.pulseLights.reserve(
+            world.pulseLights.size());
+
+        for (const core::world::WorldPulseLightInstance& source :
+             world.pulseLights)
+        {
+            graphics::ScenePulseLight
+                light;
+
+            light.guid =
+                source.guid;
+
+            light.animation =
+                source.animation;
+
+            light.position =
+            {
+                source.position.x,
+                source.position.y,
+                source.position.z
+            };
+
+            light.colour =
+            {
+                std::clamp(
+                    source.colour.x /
+                        255.0f,
+                    0.0f,
+                    1.0f),
+
+                std::clamp(
+                    source.colour.y /
+                        255.0f,
+                    0.0f,
+                    1.0f),
+
+                std::clamp(
+                    source.colour.z /
+                        255.0f,
+                    0.0f,
+                    1.0f)
+            };
+
+            light.innerRadius =
+                std::max(
+                    source.innerRadius,
+                    0.0f);
+
+            light.outerRadius =
+                std::max(
+                    source.outerRadius,
+                    light.innerRadius);
+
+            light.multiplier =
+                std::max(
+                    source.multiplier,
+                    0.0f);
+
+            light.timeScale =
+                std::max(
+                    source.timeScale,
+                    0.0f);
+
+            light.duration =
+                std::max(
+                    source.duration,
+                    0.0f);
+
+            light.priority =
+                source.priority;
+
+            light.frames.reserve(
+                source.frames.size());
+
+            for (const core::world::WorldPulseLightFrame& sourceFrame :
+                 source.frames)
+            {
+                graphics::ScenePulseLightFrame
+                    frame;
+
+                frame.time =
+                    sourceFrame.time;
+
+                frame.value =
+                    sourceFrame.value;
+
+                light.frames.push_back(
+                    frame);
+            }
+
+            scene.pulseLights.push_back(
+                std::move(light));
+        }
+
+        core::Log::Info(
+            std::string(
+                "PulseLight render sources: ") +
+            std::to_string(
+                scene.pulseLights.size()));
+
         core::assets::speedtree::CTreeLoader
             ctreeLoader;
 
