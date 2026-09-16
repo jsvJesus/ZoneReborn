@@ -20,6 +20,7 @@
 #include "Core/World/WorldLoader.h"
 #include "Core/World/Flora/FloraInstanceBuilder.h"
 #include "Core/World/Sky/SkyLoader.h"
+#include "Core/World/Particles/ParticleLoader.h"
 
 #include <array>
 #include <algorithm>
@@ -57,6 +58,250 @@ namespace client::preview
                 error))
         {
             return false;
+        }
+
+        core::world::particles::ParticleLoader
+            particleLoader;
+
+        std::unordered_set<std::string>
+            uniqueParticleResources;
+
+        for (const core::world::WorldParticleInstance& instance :
+             world.particleInstances)
+        {
+            if (!instance.particleLogicalPath.empty())
+            {
+                uniqueParticleResources.insert(
+                    instance.particleLogicalPath);
+            }
+        }
+
+        std::vector<std::string>
+            particleResourcePaths(
+                uniqueParticleResources.begin(),
+                uniqueParticleResources.end());
+
+        std::sort(
+            particleResourcePaths.begin(),
+            particleResourcePaths.end());
+
+        std::unordered_map<
+            std::string,
+            core::world::particles::ParticleDefinition>
+            particleDefinitions;
+
+        std::unordered_set<std::string>
+            missingParticleTextures;
+
+        std::size_t particleResourcesLoaded =
+            0;
+
+        std::size_t particleResourcesFailed =
+            0;
+
+        std::size_t particleSystemsLoaded =
+            0;
+
+        std::size_t particleActionsLoaded =
+            0;
+
+        std::size_t particleRenderersLoaded =
+            0;
+
+        std::size_t particleVectorGeneratorsLoaded =
+            0;
+
+        std::size_t particleTextureReferences =
+            0;
+
+        std::size_t particleAnimatedTextureReferences =
+            0;
+
+        std::size_t particleUnsupportedActions =
+            0;
+
+        std::size_t particleUnsupportedRenderers =
+            0;
+
+        std::size_t particleUnsupportedGenerators =
+            0;
+
+        for (const std::string& particlePath :
+             particleResourcePaths)
+        {
+            core::world::particles::ParticleDefinition
+                definition;
+
+            std::string
+                particleError;
+
+            if (!particleLoader.Load(
+                    runtime.Resources(),
+                    particlePath,
+                    definition,
+                    particleError))
+            {
+                ++particleResourcesFailed;
+
+                core::Log::Warning(
+                    std::string(
+                        "Particle resource load failed: ") +
+                    particlePath +
+                    ": " +
+                    particleError);
+
+                continue;
+            }
+
+            ++particleResourcesLoaded;
+
+            particleSystemsLoaded +=
+                definition.statistics.systemCount;
+
+            particleActionsLoaded +=
+                definition.statistics.actionCount;
+
+            particleRenderersLoaded +=
+                definition.statistics.rendererCount;
+
+            particleVectorGeneratorsLoaded +=
+                definition.statistics.vectorGeneratorCount;
+
+            particleTextureReferences +=
+                definition.statistics.textureReferenceCount;
+
+            particleAnimatedTextureReferences +=
+                definition.statistics.animatedTextureReferenceCount;
+
+            particleUnsupportedActions +=
+                definition.statistics.unsupportedActionCount;
+
+            particleUnsupportedRenderers +=
+                definition.statistics.unsupportedRendererCount;
+
+            particleUnsupportedGenerators +=
+                definition.statistics.unsupportedVectorGeneratorCount;
+
+            for (const std::string& missing :
+                 definition.missingTextures)
+            {
+                if (!missing.empty())
+                {
+                    missingParticleTextures.insert(
+                        missing);
+                }
+            }
+
+            core::Log::Info(
+                std::string(
+                    "Particle definition loaded: ") +
+                definition.logicalPath +
+                ", systems=" +
+                std::to_string(
+                    definition.statistics.systemCount) +
+                ", actions=" +
+                std::to_string(
+                    definition.statistics.actionCount) +
+                ", renderers=" +
+                std::to_string(
+                    definition.statistics.rendererCount) +
+                ", generators=" +
+                std::to_string(
+                    definition.statistics.vectorGeneratorCount) +
+                ", textures=" +
+                std::to_string(
+                    definition.statistics.textureReferenceCount));
+
+            particleDefinitions.emplace(
+                particlePath,
+                std::move(definition));
+        }
+
+        core::Log::Info(
+            std::string(
+                "Particle resources referenced: ") +
+            std::to_string(
+                particleResourcePaths.size()));
+
+        core::Log::Info(
+            std::string(
+                "Particle resources loaded: ") +
+            std::to_string(
+                particleResourcesLoaded));
+
+        core::Log::Info(
+            std::string(
+                "Particle resources failed: ") +
+            std::to_string(
+                particleResourcesFailed));
+
+        core::Log::Info(
+            std::string(
+                "Particle systems loaded: ") +
+            std::to_string(
+                particleSystemsLoaded));
+
+        core::Log::Info(
+            std::string(
+                "Particle actions loaded: ") +
+            std::to_string(
+                particleActionsLoaded));
+
+        core::Log::Info(
+            std::string(
+                "Particle renderers loaded: ") +
+            std::to_string(
+                particleRenderersLoaded));
+
+        core::Log::Info(
+            std::string(
+                "Particle vector generators loaded: ") +
+            std::to_string(
+                particleVectorGeneratorsLoaded));
+
+        core::Log::Info(
+            std::string(
+                "Particle texture references: ") +
+            std::to_string(
+                particleTextureReferences));
+
+        core::Log::Info(
+            std::string(
+                "Particle animated texture references: ") +
+            std::to_string(
+                particleAnimatedTextureReferences));
+
+        core::Log::Info(
+            std::string(
+                "Missing particle textures: ") +
+            std::to_string(
+                missingParticleTextures.size()));
+
+        core::Log::Info(
+            std::string(
+                "Unsupported particle actions: ") +
+            std::to_string(
+                particleUnsupportedActions));
+
+        core::Log::Info(
+            std::string(
+                "Unsupported particle renderers: ") +
+            std::to_string(
+                particleUnsupportedRenderers));
+
+        core::Log::Info(
+            std::string(
+                "Unsupported particle generators: ") +
+            std::to_string(
+                particleUnsupportedGenerators));
+
+        for (const std::string& missing :
+             missingParticleTextures)
+        {
+            core::Log::Warning(
+                std::string(
+                    "Missing particle texture: ") +
+                missing);
         }
 
         core::world::flora::FloraConfigLoader

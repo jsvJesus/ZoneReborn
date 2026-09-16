@@ -61,6 +61,11 @@
     <ClInclude Include="Public\Core\World\Flora\FloraInstanceBuilder.h" />
     <ClInclude Include="Public\Core\World\Flora\FloraVisualAsset.h" />
     <ClInclude Include="Public\Core\World\Flora\FloraVisualLoader.h" />
+    <ClInclude Include="Public\Core\World\Particles\ParticleActionDefinition.h" />
+    <ClInclude Include="Public\Core\World\Particles\ParticleDefinition.h" />
+    <ClInclude Include="Public\Core\World\Particles\ParticleLoader.h" />
+    <ClInclude Include="Public\Core\World\Particles\ParticleRendererDefinition.h" />
+    <ClInclude Include="Public\Core\World\Particles\ParticleVectorGenerator.h" />
     <ClInclude Include="Public\Core\World\Sky\SkyDefinition.h" />
     <ClInclude Include="Public\Core\World\Sky\SkyEvaluator.h" />
     <ClInclude Include="Public\Core\World\Sky\SkyLoader.h" />
@@ -120,6 +125,7 @@
     <ClCompile Include="Private\World\Flora\FloraConfigLoader.cpp" />
     <ClCompile Include="Private\World\Flora\FloraInstanceBuilder.cpp" />
     <ClCompile Include="Private\World\Flora\FloraVisualLoader.cpp" />
+    <ClCompile Include="Private\World\Particles\ParticleLoader.cpp" />
     <ClCompile Include="Private\World\Sky\SkyEvaluator.cpp" />
     <ClCompile Include="Private\World\Sky\SkyLoader.cpp" />
 
