@@ -136,6 +136,31 @@ namespace core::world
             frames;
     };
 
+    struct WorldFlareInstance final
+    {
+        std::string chunkId;
+        std::string guid;
+        std::string resource;
+
+        math::Vector3 position;
+
+        math::Vector3 colour
+        {
+            255.0f,
+            255.0f,
+            255.0f
+        };
+
+        float maxDistance =
+            0.0f;
+
+        float area =
+            1.0f;
+
+        float fadeSpeed =
+            1.0f;
+    };
+
     struct WorldScene final
     {
         std::string spaceName;
@@ -163,6 +188,9 @@ namespace core::world
         std::vector<WorldPulseLightInstance>
             pulseLights;
 
+        std::vector<WorldFlareInstance>
+            flares;
+
         std::size_t chunkCount = 0;
         std::size_t outdoorChunkCount = 0;
         std::size_t indoorChunkCount = 0;
@@ -173,6 +201,7 @@ namespace core::world
         std::size_t omniLightCount = 0;
         std::size_t spotLightCount = 0;
         std::size_t pulseLightCount = 0;
+        std::size_t flareCount = 0;
 
         std::size_t largeObjectReferenceCount = 0;
         std::size_t missingLargeObjectCount = 0;

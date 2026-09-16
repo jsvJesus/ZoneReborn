@@ -109,6 +109,30 @@ namespace core::world
             frames;
     };
 
+    struct ChunkFlare final
+    {
+        std::string guid;
+        std::string resource;
+
+        math::Vector3 position;
+
+        math::Vector3 colour
+        {
+            255.0f,
+            255.0f,
+            255.0f
+        };
+
+        float maxDistance =
+            0.0f;
+
+        float area =
+            1.0f;
+
+        float fadeSpeed =
+            1.0f;
+    };
+
     struct Chunk final
     {
         std::string spaceName;
@@ -132,6 +156,8 @@ namespace core::world
         std::vector<ChunkSpotLight> spotLights;
 
         std::vector<ChunkPulseLight> pulseLights;
+
+        std::vector<ChunkFlare> flares;
 
         std::vector<std::string> overlappers;
 

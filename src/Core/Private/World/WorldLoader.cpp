@@ -681,6 +681,46 @@ namespace
             std::move(instance));
     }
 
+    void AddFlareInstance(
+        const std::string& chunkId,
+        const core::world::ChunkFlare& source,
+        const core::math::Transform3x4& chunkTransform,
+        core::world::WorldScene& scene)
+    {
+        core::world::WorldFlareInstance
+            instance;
+
+        instance.chunkId =
+            chunkId;
+
+        instance.guid =
+            source.guid;
+
+        instance.resource =
+            source.resource;
+
+        instance.position =
+            TransformPoint(
+                source.position,
+                chunkTransform);
+
+        instance.colour =
+            source.colour;
+
+        instance.maxDistance =
+            source.maxDistance;
+
+        instance.area =
+            source.area;
+
+        instance.fadeSpeed =
+            source.fadeSpeed;
+
+        scene.flares.push_back(
+            std::move(
+                instance));
+    }
+
     void AddModelInstance(
         const std::string& chunkId,
         const core::world::ChunkModelInstance& source,
@@ -1043,6 +1083,20 @@ namespace core::world
                     scene);
             }
 
+            scene.flares.reserve(
+                scene.flares.size() +
+                chunk.flares.size());
+
+            for (const ChunkFlare& flare :
+                 chunk.flares)
+            {
+                AddFlareInstance(
+                    chunkId,
+                    flare,
+                    chunkTransform,
+                    scene);
+            }
+
             for (const ChunkTerrainReference& terrain :
                  chunk.terrains)
             {
@@ -1130,6 +1184,9 @@ namespace core::world
 
         scene.pulseLightCount =
             scene.pulseLights.size();
+
+        scene.flareCount =
+             scene.flares.size();
 
         scene.missingLargeObjectCount =
             0;
@@ -1313,6 +1370,12 @@ namespace core::world
                 "PulseLight instances: ") +
             std::to_string(
                 scene.pulseLights.size()));
+
+        core::Log::Info(
+            std::string(
+                "Flare instances: ") +
+            std::to_string(
+                scene.flares.size()));
 
         std::size_t pulseFrameCount =
             0;

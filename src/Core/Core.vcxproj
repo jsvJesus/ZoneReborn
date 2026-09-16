@@ -52,6 +52,8 @@
     <ClInclude Include="Public\Core\Resources\ResourceType.h" />
     <ClInclude Include="Public\Core\Resources\ResourceFormatRegistry.h" />
     <ClInclude Include="Public\Core\Resources\ResourceFileSystem.h" />
+    <ClInclude Include="Public\Core\World\Flare\FlareDefinition.h" />
+    <ClInclude Include="Public\Core\World\Flare\FlareLoader.h" />
     <ClInclude Include="Public\Core\World\Flora\FloraConfig.h" />
     <ClInclude Include="Public\Core\World\Flora\FloraConfigLoader.h" />
     <ClInclude Include="Public\Core\World\Flora\FloraInstance.h" />
@@ -108,6 +110,7 @@
     <ClCompile Include="Private\Resources\PackedSectionReader.cpp" />
     <ClCompile Include="Private\Resources\ResourceFormatRegistry.cpp" />
     <ClCompile Include="Private\Resources\ResourceFileSystem.cpp" />
+    <ClCompile Include="Private\World\Flare\FlareLoader.cpp" />
     <ClCompile Include="Private\World\Flora\FloraConfig.cpp" />
     <ClCompile Include="Private\World\Flora\FloraConfigLoader.cpp" />
     <ClCompile Include="Private\World\Flora\FloraInstanceBuilder.cpp" />

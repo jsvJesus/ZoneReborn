@@ -266,6 +266,42 @@ namespace client::graphics
             frames;
     };
 
+    struct SceneFlare final
+    {
+        std::string guid;
+        std::string resource;
+
+        std::array<float, 3>
+            position{};
+
+        std::array<float, 4>
+            colour
+        {
+            1.0f,
+            1.0f,
+            1.0f,
+            1.0f
+        };
+
+        std::size_t textureIndex =
+            0;
+
+        float size =
+            1.0f;
+
+        float depth =
+            1.0f;
+
+        float maxDistance =
+            0.0f;
+
+        float area =
+            1.0f;
+
+        float fadeSpeed =
+            1.0f;
+    };
+
     struct SceneMesh final
     {
         core::assets::MeshData geometry;
@@ -343,5 +379,8 @@ namespace client::graphics
 
         std::vector<ScenePulseLight>
             pulseLights;
+
+        std::vector<SceneFlare>
+            flares;
     };
 }

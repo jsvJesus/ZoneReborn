@@ -841,6 +841,88 @@ namespace
 
         return true;
     }
+
+    bool ReadFlare(
+        const core::resources::DataSection& section,
+        core::world::ChunkFlare& output)
+    {
+        output = {};
+
+        output.colour =
+        {
+            255.0f,
+            255.0f,
+            255.0f
+        };
+
+        output.area =
+            1.0f;
+
+        output.fadeSpeed =
+            1.0f;
+
+        if (!ReadRequiredString(
+                section,
+                "resource",
+                output.resource))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredVector3(
+                section,
+                "position",
+                output.position))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredFloat(
+                section,
+                "maxDistance",
+                output.maxDistance))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredFloat(
+                section,
+                "area",
+                output.area))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredFloat(
+                section,
+                "fadeSpeed",
+                output.fadeSpeed))
+        {
+            return false;
+        }
+
+        if (const core::resources::DataSection* colour =
+                section.FindChild(
+                    "colour"))
+        {
+            if (!ReadVector3(
+                    *colour,
+                    output.colour))
+            {
+                return false;
+            }
+        }
+
+        if (!ReadOptionalString(
+                section,
+                "guid",
+                output.guid))
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
 
 namespace core::world
@@ -1098,6 +1180,28 @@ namespace core::world
 
                 chunk.pulseLights.push_back(
                     std::move(light));
+
+                continue;
+            }
+
+            if (section.name == "flare")
+            {
+                ChunkFlare flare;
+
+                if (!ReadFlare(
+                        section,
+                        flare))
+                {
+                    error =
+                        "Chunk contains invalid flare section: " +
+                        resourcePath;
+
+                    return false;
+                }
+
+                chunk.flares.push_back(
+                    std::move(
+                        flare));
 
                 continue;
             }

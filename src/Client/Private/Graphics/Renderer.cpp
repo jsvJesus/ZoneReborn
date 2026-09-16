@@ -153,6 +153,32 @@ namespace
         DirectX::XMFLOAT4 screenParameters;
     };
 
+    struct FlareConstants final
+    {
+        DirectX::XMFLOAT4X4
+            viewProjection;
+
+        DirectX::XMFLOAT4
+            sourcePositionSize;
+
+        DirectX::XMFLOAT4
+            colour;
+
+        DirectX::XMFLOAT4
+            parameters;
+
+        DirectX::XMFLOAT4
+            cameraPosition;
+
+        DirectX::XMFLOAT4
+            screenParameters;
+    };
+
+    static_assert(
+        sizeof(FlareConstants) %
+            16u ==
+        0u);
+
     DirectX::XMFLOAT3 UnpackNormal(
         const std::uint32_t packed) noexcept
     {
@@ -1040,6 +1066,9 @@ namespace client::graphics
         ComPtr<ID3D11DepthStencilState>
             depthReadState;
 
+        ComPtr<ID3D11DepthStencilState>
+            flareDepthState;
+
         ComPtr<ID3D11BlendState>
             additiveBlendState;
 
@@ -1061,6 +1090,12 @@ namespace client::graphics
         ComPtr<ID3D11PixelShader>
             pixelShader;
 
+        ComPtr<ID3D11VertexShader>
+            flareVertexShader;
+
+        ComPtr<ID3D11PixelShader>
+            flarePixelShader;
+
         ComPtr<ID3D11InputLayout>
             inputLayout;
 
@@ -1073,7 +1108,11 @@ namespace client::graphics
         ComPtr<ID3D11Buffer>
             spotLightConstantBuffer;
 
-        std::vector<GpuMesh> meshes;
+        ComPtr<ID3D11Buffer>
+            flareConstantBuffer;
+
+        std::vector<GpuMesh>
+            meshes;
 
         std::vector<
             ComPtr<ID3D11ShaderResourceView>>
@@ -1093,6 +1132,9 @@ namespace client::graphics
 
         std::vector<ScenePulseLight>
             pulseLights;
+
+        std::vector<SceneFlare>
+            flares;
 
         std::vector<SceneInstance>
             instances;
@@ -1437,6 +1479,34 @@ namespace client::graphics
         }
 
         D3D11_DEPTH_STENCIL_DESC
+            flareDepthDescription{};
+
+        flareDepthDescription.DepthEnable =
+            FALSE;
+
+        flareDepthDescription.DepthWriteMask =
+            D3D11_DEPTH_WRITE_MASK_ZERO;
+
+        flareDepthDescription.DepthFunc =
+            D3D11_COMPARISON_ALWAYS;
+
+        flareDepthDescription.StencilEnable =
+            FALSE;
+
+        result =
+            state_->device->CreateDepthStencilState(
+                &flareDepthDescription,
+                &state_->flareDepthState);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create flare depth state.";
+
+            return false;
+        }
+
+        D3D11_DEPTH_STENCIL_DESC
             depthStateDescription{};
 
         depthStateDescription.DepthEnable =
@@ -1745,6 +1815,62 @@ namespace client::graphics
             return false;
         }
 
+        ComPtr<ID3DBlob>
+            flareVertexShaderCode;
+
+        if (!shaders::CompileFromFile(
+                L"World\\WorldFlare.hlsl",
+                "VSFlare",
+                "vs_5_0",
+                &flareVertexShaderCode,
+                error))
+        {
+            return false;
+        }
+
+        ComPtr<ID3DBlob>
+            flarePixelShaderCode;
+
+        if (!shaders::CompileFromFile(
+                L"World\\WorldFlare.hlsl",
+                "PSFlare",
+                "ps_5_0",
+                &flarePixelShaderCode,
+                error))
+        {
+            return false;
+        }
+
+        result =
+            state_->device->CreateVertexShader(
+                flareVertexShaderCode->GetBufferPointer(),
+                flareVertexShaderCode->GetBufferSize(),
+                nullptr,
+                &state_->flareVertexShader);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create flare vertex shader.";
+
+            return false;
+        }
+
+        result =
+            state_->device->CreatePixelShader(
+                flarePixelShaderCode->GetBufferPointer(),
+                flarePixelShaderCode->GetBufferSize(),
+                nullptr,
+                &state_->flarePixelShader);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create flare pixel shader.";
+
+            return false;
+        }
+
         const D3D11_INPUT_ELEMENT_DESC
             inputElements[] =
         {
@@ -1815,6 +1941,32 @@ namespace client::graphics
         {
             error =
                 "Unable to create constant buffer.";
+
+            return false;
+        }
+
+        D3D11_BUFFER_DESC
+            flareConstantDescription{};
+
+        flareConstantDescription.ByteWidth =
+            sizeof(FlareConstants);
+
+        flareConstantDescription.Usage =
+            D3D11_USAGE_DEFAULT;
+
+        flareConstantDescription.BindFlags =
+            D3D11_BIND_CONSTANT_BUFFER;
+
+        result =
+            state_->device->CreateBuffer(
+                &flareConstantDescription,
+                nullptr,
+                &state_->flareConstantBuffer);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create flare constant buffer.";
 
             return false;
         }
@@ -2269,6 +2421,22 @@ namespace client::graphics
         state_->pulseLights =
             scene.pulseLights;
 
+        state_->flares =
+            scene.flares;
+
+        for (const SceneFlare& flare :
+             state_->flares)
+        {
+            if (flare.textureIndex >=
+                state_->textures.size())
+            {
+                error =
+                    "Flare references invalid texture.";
+
+                return false;
+            }
+        }
+
         state_->lodInstances =
             scene.lodInstances;
 
@@ -2688,6 +2856,12 @@ namespace client::graphics
                 "GPU PulseLight sources: ") +
             std::to_string(
                 state_->pulseLights.size()));
+
+        core::Log::Info(
+            std::string(
+                "GPU flare elements: ") +
+            std::to_string(
+                state_->flares.size()));
 
         return true;
     }
@@ -3838,6 +4012,221 @@ namespace client::graphics
 
         constants.useWater =
             0;
+
+        if (!state_->flares.empty())
+        {
+            state_->context->IASetInputLayout(
+                nullptr);
+
+            state_->context->IASetVertexBuffers(
+                0,
+                0,
+                nullptr,
+                nullptr,
+                nullptr);
+
+            state_->context->IASetIndexBuffer(
+                nullptr,
+                DXGI_FORMAT_UNKNOWN,
+                0);
+
+            state_->context->IASetPrimitiveTopology(
+                D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+            state_->context->VSSetShader(
+                state_->flareVertexShader.Get(),
+                nullptr,
+                0);
+
+            state_->context->PSSetShader(
+                state_->flarePixelShader.Get(),
+                nullptr,
+                0);
+
+            ID3D11Buffer*
+                flareBuffers[] =
+            {
+                state_->flareConstantBuffer.Get()
+            };
+
+            state_->context->VSSetConstantBuffers(
+                0,
+                1,
+                flareBuffers);
+
+            state_->context->PSSetConstantBuffers(
+                0,
+                1,
+                flareBuffers);
+
+            ID3D11SamplerState*
+                flareSamplers[] =
+            {
+                state_->terrainBlendSampler.Get()
+            };
+
+            state_->context->PSSetSamplers(
+                0,
+                1,
+                flareSamplers);
+
+            constexpr float
+                FlareBlendFactor[4]
+            {
+                0.0f,
+                0.0f,
+                0.0f,
+                0.0f
+            };
+
+            state_->context->OMSetBlendState(
+                state_->additiveBlendState.Get(),
+                FlareBlendFactor,
+                0xFFFFFFFFu);
+
+            state_->context->OMSetDepthStencilState(
+                state_->flareDepthState.Get(),
+                0);
+
+            for (const SceneFlare& flare :
+                 state_->flares)
+            {
+                if (flare.textureIndex >=
+                    state_->textures.size())
+                {
+                    continue;
+                }
+
+                const float deltaX =
+                    flare.position[0] -
+                    state_->camera.position.x;
+
+                const float deltaY =
+                    flare.position[1] -
+                    state_->camera.position.y;
+
+                const float deltaZ =
+                    flare.position[2] -
+                    state_->camera.position.z;
+
+                const float distanceSquared =
+                    deltaX * deltaX +
+                    deltaY * deltaY +
+                    deltaZ * deltaZ;
+
+                if (flare.maxDistance >
+                    0.0f)
+                {
+                    const float maxDistanceSquared =
+                        flare.maxDistance *
+                        flare.maxDistance;
+
+                    if (distanceSquared >
+                        maxDistanceSquared)
+                    {
+                        continue;
+                    }
+                }
+
+                FlareConstants
+                    flareConstants{};
+
+                XMStoreFloat4x4(
+                    &flareConstants.viewProjection,
+                    viewProjection);
+
+                flareConstants.sourcePositionSize =
+                {
+                    flare.position[0],
+                    flare.position[1],
+                    flare.position[2],
+                    flare.size
+                };
+
+                flareConstants.colour =
+                {
+                    flare.colour[0],
+                    flare.colour[1],
+                    flare.colour[2],
+                    flare.colour[3]
+                };
+
+                flareConstants.parameters =
+                {
+                    flare.maxDistance,
+                    flare.area,
+                    flare.fadeSpeed,
+                    flare.depth
+                };
+
+                flareConstants.cameraPosition =
+                {
+                    state_->camera.position.x,
+                    state_->camera.position.y,
+                    state_->camera.position.z,
+                    0.0f
+                };
+
+                flareConstants.screenParameters =
+                {
+                    static_cast<float>(
+                        state_->width),
+
+                    static_cast<float>(
+                        state_->height),
+
+                    0.0f,
+                    0.0f
+                };
+
+                state_->context->UpdateSubresource(
+                    state_->flareConstantBuffer.Get(),
+                    0,
+                    nullptr,
+                    &flareConstants,
+                    0,
+                    0);
+
+                ID3D11ShaderResourceView*
+                    flareViews[2]
+                {
+                    state_->textures[
+                        flare.textureIndex].Get(),
+
+                    state_->depthShaderResourceView.Get()
+                };
+
+                state_->context->PSSetShaderResources(
+                    0,
+                    2,
+                    flareViews);
+
+                state_->context->Draw(
+                    4,
+                    0);
+            }
+
+            ID3D11ShaderResourceView*
+                emptyFlareViews[2]
+            {
+                nullptr,
+                nullptr
+            };
+
+            state_->context->PSSetShaderResources(
+                0,
+                2,
+                emptyFlareViews);
+
+            state_->context->OMSetBlendState(
+                nullptr,
+                nullptr,
+                0xFFFFFFFFu);
+
+            state_->context->OMSetDepthStencilState(
+                state_->depthReadState.Get(),
+                0);
+        }
 
         const HRESULT result =
             state_->swapChain->Present(

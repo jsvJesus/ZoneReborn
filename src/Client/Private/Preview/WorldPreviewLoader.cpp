@@ -5,6 +5,7 @@
 #include "Preview/SpeedTreeRenderDataBuilder.h"
 #include "Preview/FloraRenderDataBuilder.h"
 #include "Preview/WaterRenderDataBuilder.h"
+#include "Preview/FlareRenderDataBuilder.h"
 
 #include "Core/Assets/MeshLoader.h"
 #include "Core/Assets/ModelBundleLoader.h"
@@ -68,7 +69,7 @@ namespace client::preview
                 error))
         {
             error =
-                "Unable to load SO flora system: " +
+                "Unable to load flora system: " +
                 error;
 
             return false;
@@ -102,25 +103,25 @@ namespace client::preview
 
         core::Log::Info(
             std::string(
-                "SO flora ecotypes: ") +
+                "Flora ecotypes: ") +
             std::to_string(
                 floraConfig.ecotypes.size()));
 
         core::Log::Info(
             std::string(
-                "SO flora terrain texture rules: ") +
+                "Flora terrain texture rules: ") +
             std::to_string(
                 floraTextureRuleCount));
 
         core::Log::Info(
             std::string(
-                "SO flora generators: ") +
+                "Flora generators: ") +
             std::to_string(
                 floraGeneratorCount));
 
         core::Log::Info(
             std::string(
-                "SO flora visual rules: ") +
+                "Flora visual rules: ") +
             std::to_string(
                 floraVisualRuleCount));
 
@@ -1735,6 +1736,7 @@ namespace client::preview
                     "Flora disabled for terrain texture: ") +
                 texture);
         }
+        
 
         WaterRenderDataBuilder
             waterRenderBuilder;
@@ -1827,7 +1829,7 @@ namespace client::preview
 
             core::Log::Info(
                 std::string(
-                    "SO water surface loaded: uid=") +
+                    "Water surface loaded: uid=") +
                 object.uid +
                 ", chunks=" +
                 std::to_string(
@@ -1860,25 +1862,25 @@ namespace client::preview
 
         core::Log::Info(
             std::string(
-                "SO water surfaces loaded: ") +
+                "Water surfaces loaded: ") +
             std::to_string(
                 loadedWaterSurfaces));
 
         core::Log::Info(
             std::string(
-                "SO water surfaces failed: ") +
+                "Water surfaces failed: ") +
             std::to_string(
                 failedWaterSurfaces));
 
         core::Log::Info(
             std::string(
-                "SO water vertices: ") +
+                "Water vertices: ") +
             std::to_string(
                 totalWaterVertices));
 
         core::Log::Info(
             std::string(
-                "SO water triangles: ") +
+                "Water triangles: ") +
             std::to_string(
                 totalWaterTriangles));
 
@@ -1893,6 +1895,79 @@ namespace client::preview
                 "Water VLO chunk coverage references: ") +
             std::to_string(
                 waterChunkReferences));
+
+        FlareRenderDataBuilder
+            flareRenderBuilder;
+
+        std::size_t flareRenderElements =
+            0;
+
+        std::size_t failedFlareInstances =
+            0;
+
+        std::unordered_set<std::string>
+            failedFlareResources;
+
+        for (const core::world::WorldFlareInstance& source :
+             world.flares)
+        {
+            std::size_t
+                createdElements =
+                    0;
+
+            std::string
+                flareError;
+
+            if (!flareRenderBuilder.Build(
+                    runtime.Resources(),
+                    source,
+                    scene,
+                    createdElements,
+                    flareError))
+            {
+                ++failedFlareInstances;
+
+                if (failedFlareResources.insert(
+                        source.resource).second)
+                {
+                    core::Log::Warning(
+                        std::string(
+                            "Unable to build flare ") +
+                        source.resource +
+                        ": " +
+                        flareError);
+                }
+
+                continue;
+            }
+
+            flareRenderElements +=
+                createdElements;
+        }
+
+        core::Log::Info(
+            std::string(
+                "Flare instances: ") +
+            std::to_string(
+                world.flares.size()));
+
+        core::Log::Info(
+            std::string(
+                "Flare definitions loaded: ") +
+            std::to_string(
+                flareRenderBuilder.LoadedDefinitionCount()));
+
+        core::Log::Info(
+            std::string(
+                "Flare render elements: ") +
+            std::to_string(
+                flareRenderElements));
+
+        core::Log::Info(
+            std::string(
+                "Flare instances failed: ") +
+            std::to_string(
+                failedFlareInstances));
 
         if (loadedWaterSurfaces !=
             uniqueWaterObjects)
