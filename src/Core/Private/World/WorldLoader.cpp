@@ -1359,7 +1359,7 @@ namespace core::world
              scene.pulseLights)
         {
             pulseFrameCount +=
-                light.frames.size();
+                light.animation.frames.size();
         }
 
         core::Log::Info(
