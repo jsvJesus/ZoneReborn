@@ -546,11 +546,40 @@ namespace
             return true;
         }
 
-        if (!ReadOptionalString(
-                section,
-                "nameID_",
-                output.nameId) ||
-            !ReadOptionalVector3(
+        output.nameId =
+            section.name;
+
+        const DataSection* nameId =
+            section.FindChild(
+                "nameID_");
+
+        if (nameId != nullptr)
+        {
+            if (const std::string* value =
+                    nameId->AsString())
+            {
+                output.nameId =
+                    *value;
+            }
+            else if (
+                section.name ==
+                    "PointVectorGenerator" &&
+                nameId->AsBinary() != nullptr)
+            {
+                output.nameId =
+                    "PointVectorGenerator";
+            }
+            else
+            {
+                error =
+                    "Particle vector generator contains invalid nameID_: " +
+                    section.name;
+
+                return false;
+            }
+        }
+
+        if (!ReadOptionalVector3(
                 section,
                 "position_",
                 output.position) ||
