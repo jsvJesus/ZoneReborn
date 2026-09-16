@@ -850,6 +850,39 @@ namespace
         return true;
     }
 
+    bool ReadParticle(
+        const core::resources::DataSection& section,
+        core::world::ChunkParticleInstance& output)
+    {
+        output = {};
+
+        if (!ReadRequiredString(
+                section,
+                "resource",
+                output.resource))
+        {
+            return false;
+        }
+
+        if (!ReadRequiredTransform(
+                section,
+                "transform",
+                output.transform))
+        {
+            return false;
+        }
+
+        if (!ReadOptionalBoolean(
+                section,
+                "reflectionVisible",
+                output.reflectionVisible))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     bool ReadFlare(
         const core::resources::DataSection& section,
         core::world::ChunkFlare& output)
@@ -1210,6 +1243,28 @@ namespace core::world
                 chunk.flares.push_back(
                     std::move(
                         flare));
+
+                continue;
+            }
+
+            if (section.name == "particles")
+            {
+                ChunkParticleInstance particle;
+
+                if (!ReadParticle(
+                        section,
+                        particle))
+                {
+                    error =
+                        "Chunk contains invalid particles section: " +
+                        resourcePath;
+
+                    return false;
+                }
+
+                chunk.particles.push_back(
+                    std::move(
+                        particle));
 
                 continue;
             }

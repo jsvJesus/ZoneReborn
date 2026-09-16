@@ -68,6 +68,18 @@ namespace core::world
             chunkIds;
     };
 
+    struct WorldParticleInstance final
+    {
+        std::string chunkId;
+
+        std::string resourceReference;
+        std::string particleLogicalPath;
+
+        math::Transform3x4 transform;
+
+        bool reflectionVisible = false;
+    };
+
     struct WorldOmniLightInstance final
     {
         std::string chunkId;
@@ -171,6 +183,9 @@ namespace core::world
         std::vector<WorldLargeObjectReference>
             largeObjects;
 
+        std::vector<WorldParticleInstance>
+            particleInstances;
+
         std::vector<WorldOmniLightInstance>
             omniLights;
 
@@ -189,6 +204,11 @@ namespace core::world
 
         std::size_t speedTreeInstanceCount = 0;
         std::size_t terrainReferenceCount = 0;
+
+        std::size_t particleInstanceCount = 0;
+        std::size_t uniqueParticleResourceCount = 0;
+        std::size_t missingParticleInstanceCount = 0;
+        std::size_t missingUniqueParticleResourceCount = 0;
 
         std::size_t omniLightCount = 0;
         std::size_t spotLightCount = 0;

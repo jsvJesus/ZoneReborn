@@ -44,6 +44,15 @@ namespace core::world
         std::string type;
     };
 
+    struct ChunkParticleInstance final
+    {
+        std::string resource;
+
+        math::Transform3x4 transform;
+
+        bool reflectionVisible = false;
+    };
+
     struct ChunkOmniLight final
     {
         std::string guid;
@@ -142,6 +151,8 @@ namespace core::world
         std::vector<ChunkTerrainReference> terrains;
 
         std::vector<ChunkLargeObjectReference> largeObjects;
+
+        std::vector<ChunkParticleInstance> particles;
 
         std::vector<ChunkOmniLight> omniLights;
 

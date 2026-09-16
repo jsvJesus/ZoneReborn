@@ -141,6 +141,44 @@ namespace
         return true;
     }
 
+    bool BuildParticlePath(
+        const std::string_view resourceReference,
+        std::string& output)
+    {
+        output.clear();
+
+        std::string resource =
+            core::resources::ResourcePath::Normalize(
+                resourceReference);
+
+        if (resource.empty())
+        {
+            return false;
+        }
+
+        if (!resource.ends_with(
+                ".xml"))
+        {
+            resource +=
+                ".xml";
+        }
+
+        if (resource.starts_with(
+                "res/"))
+        {
+            output =
+                resource;
+
+            return true;
+        }
+
+        output =
+            "res/" +
+            resource;
+
+        return true;
+    }
+
     bool BuildSpeedTreePath(
         const std::string_view resourceReference,
         std::string& output)
@@ -723,6 +761,59 @@ namespace
             std::move(instance));
     }
 
+    bool AddParticleInstance(
+        const core::resources::ResourceFileSystem& resources,
+        const std::string& chunkId,
+        const core::world::ChunkParticleInstance& source,
+        const core::math::Transform3x4& chunkTransform,
+        core::world::WorldScene& scene,
+        std::string& missingResource)
+    {
+        missingResource.clear();
+
+        core::world::WorldParticleInstance
+            instance;
+
+        instance.chunkId =
+            chunkId;
+
+        instance.resourceReference =
+            source.resource;
+
+        if (!BuildParticlePath(
+                source.resource,
+                instance.particleLogicalPath))
+        {
+            missingResource =
+                source.resource;
+
+            return false;
+        }
+
+        if (!resources.Exists(
+                instance.particleLogicalPath))
+        {
+            missingResource =
+                instance.particleLogicalPath;
+
+            return false;
+        }
+
+        instance.transform =
+            core::math::Transform3x4::Multiply(
+                source.transform,
+                chunkTransform);
+
+        instance.reflectionVisible =
+            source.reflectionVisible;
+
+        scene.particleInstances.push_back(
+            std::move(
+                instance));
+
+        return true;
+    }
+
     bool AddSpeedTreeInstance(
         const core::resources::ResourceFileSystem& resources,
         const std::string& chunkId,
@@ -861,11 +952,20 @@ namespace core::world
         std::size_t missingSpeedTrees =
             0;
 
+        std::size_t missingParticles =
+            0;
+
         std::unordered_set<std::string>
             uniqueSpeedTreeResources;
 
         std::unordered_set<std::string>
             missingSpeedTreeResources;
+
+        std::unordered_set<std::string>
+            uniqueParticleResources;
+
+        std::unordered_set<std::string>
+            missingParticleResources;
 
         std::unordered_map<
             std::string,
@@ -1072,6 +1172,41 @@ namespace core::world
                     scene);
             }
 
+            scene.particleInstances.reserve(
+                scene.particleInstances.size() +
+                chunk.particles.size());
+
+            for (const ChunkParticleInstance& particle :
+                 chunk.particles)
+            {
+                std::string missingResource;
+
+                if (!AddParticleInstance(
+                        resources,
+                        chunkId,
+                        particle,
+                        chunkTransform,
+                        scene,
+                        missingResource))
+                {
+                    ++missingParticles;
+
+                    if (!missingResource.empty())
+                    {
+                        missingParticleResources.insert(
+                            missingResource);
+                    }
+
+                    continue;
+                }
+
+                const WorldParticleInstance& instance =
+                    scene.particleInstances.back();
+
+                uniqueParticleResources.insert(
+                    instance.particleLogicalPath);
+            }
+
             for (const ChunkTerrainReference& terrain :
                  chunk.terrains)
             {
@@ -1150,6 +1285,18 @@ namespace core::world
 
         scene.speedTreeInstanceCount =
             scene.speedTreeInstances.size();
+
+        scene.particleInstanceCount =
+            scene.particleInstances.size();
+
+        scene.uniqueParticleResourceCount =
+            uniqueParticleResources.size();
+
+        scene.missingParticleInstanceCount =
+            missingParticles;
+
+        scene.missingUniqueParticleResourceCount =
+            missingParticleResources.size();
 
         scene.omniLightCount =
             scene.omniLights.size();
@@ -1330,6 +1477,30 @@ namespace core::world
 
         core::Log::Info(
             std::string(
+                "Particle instances: ") +
+            std::to_string(
+                scene.particleInstanceCount));
+
+        core::Log::Info(
+            std::string(
+                "Unique particle resources: ") +
+            std::to_string(
+                scene.uniqueParticleResourceCount));
+
+        core::Log::Info(
+            std::string(
+                "Missing particle instances: ") +
+            std::to_string(
+                scene.missingParticleInstanceCount));
+
+        core::Log::Info(
+            std::string(
+                "Missing unique particle resources: ") +
+            std::to_string(
+                scene.missingUniqueParticleResourceCount));
+
+        core::Log::Info(
+            std::string(
                 "OmniLight instances: ") +
             std::to_string(
                 scene.omniLights.size()));
@@ -1488,6 +1659,24 @@ namespace core::world
             core::Log::Warning(
                 std::string(
                     "Missing SpeedTree resource: ") +
+                resource);
+        }
+
+        for (const std::string& resource :
+             uniqueParticleResources)
+        {
+            core::Log::Info(
+                std::string(
+                    "Particle resource: ") +
+                resource);
+        }
+
+        for (const std::string& resource :
+             missingParticleResources)
+        {
+            core::Log::Warning(
+                std::string(
+                    "Missing particle resource: ") +
                 resource);
         }
 
