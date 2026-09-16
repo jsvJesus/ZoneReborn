@@ -305,16 +305,13 @@ namespace client::preview
             world.pulseLights.size());
 
         for (const core::world::WorldPulseLightInstance& source :
-             world.pulseLights)
+     world.pulseLights)
         {
             graphics::ScenePulseLight
                 light;
 
             light.guid =
                 source.guid;
-
-            light.animation =
-                source.animation;
 
             light.position =
             {
@@ -359,37 +356,21 @@ namespace client::preview
                     source.multiplier,
                     0.0f);
 
-            light.timeScale =
-                std::max(
-                    source.timeScale,
-                    0.0f);
-
-            light.duration =
-                std::max(
-                    source.duration,
-                    0.0f);
-
             light.priority =
                 source.priority;
 
-            light.frames.reserve(
-                source.frames.size());
+            light.animation =
+                source.animation;
 
-            for (const core::world::WorldPulseLightFrame& sourceFrame :
-                 source.frames)
-            {
-                graphics::ScenePulseLightFrame
-                    frame;
+            light.animation.timeScale =
+                std::max(
+                    light.animation.timeScale,
+                    0.0f);
 
-                frame.time =
-                    sourceFrame.time;
-
-                frame.value =
-                    sourceFrame.value;
-
-                light.frames.push_back(
-                    frame);
-            }
+            light.animation.duration =
+                std::max(
+                    light.animation.duration,
+                    0.0f);
 
             scene.pulseLights.push_back(
                 std::move(light));

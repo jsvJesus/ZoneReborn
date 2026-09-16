@@ -670,7 +670,7 @@ namespace
 
     bool ReadPulseLightFrame(
         const core::resources::DataSection& section,
-        core::world::ChunkPulseLightFrame& output)
+    core::animation::ScalarAnimationFrame& output)
     {
         const core::resources::DataSection::FloatArray*
             values =
@@ -700,7 +700,7 @@ namespace
         output.multiplier =
             1.0f;
 
-        output.timeScale =
+        output.animation.timeScale =
             1.0f;
 
         if (!ReadRequiredVector3(
@@ -746,7 +746,7 @@ namespace
         if (!ReadRequiredFloat(
                 section,
                 "timeScale",
-                output.timeScale))
+                output.animation.timeScale))
         {
             return false;
         }
@@ -754,7 +754,7 @@ namespace
         if (!ReadRequiredFloat(
                 section,
                 "duration",
-                output.duration))
+                output.animation.duration))
         {
             return false;
         }
@@ -762,7 +762,7 @@ namespace
         if (!ReadRequiredString(
                 section,
                 "animation",
-                output.animation))
+                output.animation.resource))
         {
             return false;
         }
@@ -783,6 +783,14 @@ namespace
             return false;
         }
 
+        if (!std::isfinite(
+                output.animation.timeScale) ||
+            !std::isfinite(
+                output.animation.duration))
+        {
+            return false;
+        }
+
         const std::vector<
             const core::resources::DataSection*>
             frameSections =
@@ -794,7 +802,7 @@ namespace
             return false;
         }
 
-        output.frames.reserve(
+        output.animation.frames.reserve(
             frameSections.size());
 
         float previousTime =
@@ -808,7 +816,7 @@ namespace
                 return false;
             }
 
-            core::world::ChunkPulseLightFrame
+            core::animation::ScalarAnimationFrame
                 frame;
 
             if (!ReadPulseLightFrame(
@@ -835,7 +843,7 @@ namespace
             previousTime =
                 frame.time;
 
-            output.frames.push_back(
+            output.animation.frames.push_back(
                 frame);
         }
 

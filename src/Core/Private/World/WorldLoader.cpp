@@ -629,9 +629,6 @@ namespace
         instance.guid =
             source.guid;
 
-        instance.animation =
-            source.animation;
-
         instance.position =
             TransformPoint(
                 source.position,
@@ -649,33 +646,11 @@ namespace
         instance.multiplier =
             source.multiplier;
 
-        instance.timeScale =
-            source.timeScale;
-
-        instance.duration =
-            source.duration;
-
         instance.priority =
             source.priority;
 
-        instance.frames.reserve(
-            source.frames.size());
-
-        for (const core::world::ChunkPulseLightFrame& sourceFrame :
-             source.frames)
-        {
-            core::world::WorldPulseLightFrame
-                frame;
-
-            frame.time =
-                sourceFrame.time;
-
-            frame.value =
-                sourceFrame.value;
-
-            instance.frames.push_back(
-                frame);
-        }
+        instance.animation =
+            source.animation;
 
         scene.pulseLights.push_back(
             std::move(instance));

@@ -1,6 +1,7 @@
 #include "Graphics/Renderer.h"
 
 #include "Graphics/Shaders/ShaderCompiler.h"
+#include "Core/Animation/ScalarAnimation.h"
 #include "Core/Log.h"
 
 #include <d3d11.h>
@@ -300,143 +301,6 @@ namespace
         }
     }
 
-    float EvaluatePulseLight(
-        const client::graphics::ScenePulseLight& light,
-        const float elapsedSeconds) noexcept
-    {
-        if (light.frames.empty())
-        {
-            return 1.0f;
-        }
-
-        if (light.frames.size() == 1)
-        {
-            return
-                std::max(
-                    light.frames.front().value,
-                    0.0f);
-        }
-
-        const float sourceDuration =
-            light.frames.back().time;
-
-        if (sourceDuration <=
-            0.000001f)
-        {
-            return
-                std::max(
-                    light.frames.back().value,
-                    0.0f);
-        }
-
-        if (light.timeScale <=
-            0.000001f)
-        {
-            return
-                std::max(
-                    light.frames.front().value,
-                    0.0f);
-        }
-
-        const float cycleDuration =
-            light.duration >
-                0.000001f
-                ? light.duration
-                : sourceDuration;
-
-        float cycleTime =
-            std::fmod(
-                elapsedSeconds *
-                    light.timeScale,
-                cycleDuration);
-
-        if (cycleTime <
-            0.0f)
-        {
-            cycleTime +=
-                cycleDuration;
-        }
-
-        const float sampleTime =
-            cycleTime *
-            (
-                sourceDuration /
-                cycleDuration
-            );
-
-        if (sampleTime <=
-            light.frames.front().time)
-        {
-            return
-                std::max(
-                    light.frames.front().value,
-                    0.0f);
-        }
-
-        for (std::size_t index = 1;
-             index <
-                light.frames.size();
-             ++index)
-        {
-            const client::graphics::ScenePulseLightFrame&
-                previous =
-                    light.frames[
-                        index - 1];
-
-            const client::graphics::ScenePulseLightFrame&
-                current =
-                    light.frames[
-                        index];
-
-            if (sampleTime >
-                current.time)
-            {
-                continue;
-            }
-
-            const float frameDuration =
-                current.time -
-                previous.time;
-
-            if (frameDuration <=
-                0.000001f)
-            {
-                return
-                    std::max(
-                        current.value,
-                        0.0f);
-            }
-
-            const float factor =
-                std::clamp(
-                    (
-                        sampleTime -
-                        previous.time
-                    ) /
-                    frameDuration,
-                    0.0f,
-                    1.0f);
-
-            const float value =
-                previous.value +
-                (
-                    current.value -
-                    previous.value
-                ) *
-                factor;
-
-            return
-                std::max(
-                    value,
-                    0.0f);
-        }
-
-        return
-            std::max(
-                light.frames.back().value,
-                0.0f);
-    }
-
     OmniLightConstants BuildOmniLightConstants(
         const std::vector<
             client::graphics::SceneOmniLight>& omniLights,
@@ -546,8 +410,8 @@ namespace
             }
 
             const float animationValue =
-                EvaluatePulseLight(
-                    light,
+                core::animation::ScalarAnimationEvaluator::Evaluate(
+                    light.animation,
                     elapsedSeconds);
 
             const float animatedMultiplier =

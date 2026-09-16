@@ -4,6 +4,8 @@
 #include "Core/Math/Transform3x4.h"
 #include "Core/Math/Vector3.h"
 
+#include "Core/Animation/ScalarAnimation.h"
+
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -82,16 +84,9 @@ namespace core::world
         bool specular = false;
     };
 
-    struct ChunkPulseLightFrame final
-    {
-        float time = 0.0f;
-        float value = 1.0f;
-    };
-
     struct ChunkPulseLight final
     {
         std::string guid;
-        std::string animation;
 
         math::Vector3 colour;
         math::Vector3 position;
@@ -100,13 +95,10 @@ namespace core::world
         float outerRadius = 0.0f;
         float multiplier = 1.0f;
 
-        float timeScale = 1.0f;
-        float duration = 0.0f;
-
         std::int32_t priority = 0;
 
-        std::vector<ChunkPulseLightFrame>
-            frames;
+        core::animation::ScalarAnimationTrack
+            animation;
     };
 
     struct ChunkFlare final

@@ -5,6 +5,8 @@
 #include "Core/World/SpaceSettings.h"
 #include "Core/World/Vlo/VloResource.h"
 
+#include "Core/Animation/ScalarAnimation.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <string>
@@ -108,17 +110,10 @@ namespace core::world
         bool specular = false;
     };
 
-    struct WorldPulseLightFrame final
-    {
-        float time = 0.0f;
-        float value = 1.0f;
-    };
-
     struct WorldPulseLightInstance final
     {
         std::string chunkId;
         std::string guid;
-        std::string animation;
 
         math::Vector3 position;
         math::Vector3 colour;
@@ -127,13 +122,10 @@ namespace core::world
         float outerRadius = 0.0f;
         float multiplier = 1.0f;
 
-        float timeScale = 1.0f;
-        float duration = 0.0f;
-
         std::int32_t priority = 0;
 
-        std::vector<WorldPulseLightFrame>
-            frames;
+        core::animation::ScalarAnimationTrack
+            animation;
     };
 
     struct WorldFlareInstance final

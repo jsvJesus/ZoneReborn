@@ -4,6 +4,8 @@
 #include "Core/Images/RgbaImage.h"
 #include "Core/Math/Transform3x4.h"
 
+#include "Core/Animation/ScalarAnimation.h"
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -236,7 +238,6 @@ namespace client::graphics
     struct ScenePulseLight final
     {
         std::string guid;
-        std::string animation;
 
         std::array<float, 3>
             position{};
@@ -253,17 +254,11 @@ namespace client::graphics
         float multiplier =
             1.0f;
 
-        float timeScale =
-            1.0f;
-
-        float duration =
-            0.0f;
-
         std::int32_t priority =
             0;
 
-        std::vector<ScenePulseLightFrame>
-            frames;
+        core::animation::ScalarAnimationTrack
+            animation;
     };
 
     struct SceneFlare final
