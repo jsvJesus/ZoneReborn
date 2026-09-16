@@ -159,6 +159,9 @@ namespace client::preview
                 return false;
             }
 
+            skyDefinition.startTimeHours =
+                12.0f;
+
             SkyRenderDataBuilder
                 skyRenderBuilder;
 

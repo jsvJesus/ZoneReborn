@@ -381,32 +381,24 @@ namespace
 
 namespace core::world::flare
 {
-    bool FlareLoader::Load(
+    bool LoadMaterialTexture(
         const core::resources::ResourceFileSystem& resources,
-        const std::string_view resourceReference,
-        FlareDefinition& output,
-        std::string& error) const
+        const std::string_view materialReference,
+        core::assets::TextureResource& output,
+        std::string& error)
     {
         output = {};
         error.clear();
 
-        if (!resources.IsInitialized())
-        {
-            error =
-                "Resource filesystem is not initialized.";
-
-            return false;
-        }
-
-        const std::string logicalPath =
+        std::string logicalPath =
             BuildResourcePath(
-                resourceReference,
-                ".xml");
+                materialReference,
+                ".mfm");
 
         if (logicalPath.empty())
         {
             error =
-                "Flare resource reference is invalid.";
+                "Flare material reference is invalid.";
 
             return false;
         }
@@ -414,8 +406,27 @@ namespace core::world::flare
         if (!resources.Exists(
                 logicalPath))
         {
+            if (logicalPath ==
+                "res/system/materials/fx_corona.mfm")
+            {
+                constexpr std::string_view
+                    CoronaMaterial =
+                        "res/materials/fx/corona.mfm";
+
+                if (resources.Exists(
+                        CoronaMaterial))
+                {
+                    logicalPath =
+                        CoronaMaterial;
+                }
+            }
+        }
+
+        if (!resources.Exists(
+                logicalPath))
+        {
             error =
-                "Flare resource not found: " +
+                "Flare material not found: " +
                 logicalPath;
 
             return false;
