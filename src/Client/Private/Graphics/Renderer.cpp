@@ -3,6 +3,8 @@
 #include "Graphics/Shaders/ShaderCompiler.h"
 #include "Core/Animation/ScalarAnimation.h"
 #include "Core/World/Sky/SkyEvaluator.h"
+#include "Core/World/Particles/ParticleRuntime.h"
+
 #include "Core/Log.h"
 
 #include <d3d11.h>
@@ -1144,6 +1146,17 @@ namespace client::graphics
 
         std::vector<SceneFlare>
             flares;
+
+        std::vector<
+            core::world::particles::ParticleRuntimeSystem>
+            particleSystems;
+
+        std::chrono::steady_clock::time_point
+            particleUpdateTime =
+                std::chrono::steady_clock::now();
+
+        bool particleRuntimeReported =
+            false;
 
         SceneSky
             sky;
@@ -2518,6 +2531,72 @@ namespace client::graphics
         state_->flares =
             scene.flares;
 
+        state_->particleSystems.clear();
+
+        state_->particleSystems.reserve(
+            scene.particleEmitters.size());
+
+        std::size_t particleRuntimeCapacity =
+            0;
+
+        std::uint32_t particleSeed =
+            0x6D2B79F5u;
+
+        for (const SceneParticleEmitter& emitter :
+             scene.particleEmitters)
+        {
+            core::world::particles::ParticleRuntimeSystem
+                runtimeSystem;
+
+            std::string
+                particleError;
+
+            if (!runtimeSystem.Initialize(
+                    emitter.system,
+                    emitter.transform,
+                    particleSeed,
+                    particleError))
+            {
+                error =
+                    "Unable to initialize particle runtime " +
+                    emitter.resource +
+                    "/" +
+                    emitter.system.name +
+                    ": " +
+                    particleError;
+
+                return false;
+            }
+
+            particleRuntimeCapacity +=
+                runtimeSystem.Capacity();
+
+            state_->particleSystems.push_back(
+                std::move(
+                    runtimeSystem));
+
+            particleSeed +=
+                0x9E3779B9u;
+        }
+
+        state_->particleUpdateTime =
+            std::chrono::steady_clock::now();
+
+        state_->particleRuntimeReported =
+            false;
+
+        core::Log::Info(
+            std::string(
+                "Particle runtime systems initialized: ") +
+            std::to_string(
+                state_->particleSystems.size()));
+
+        core::Log::Info(
+            std::string(
+                "Particle runtime total capacity: ") +
+            std::to_string(
+                particleRuntimeCapacity));
+
         for (const SceneFlare& flare :
              state_->flares)
         {
@@ -3182,10 +3261,78 @@ namespace client::graphics
                 nullptr,
                 viewProjection);
 
+        const auto currentTime =
+            std::chrono::steady_clock::now();
+
         const float elapsedSeconds =
             std::chrono::duration<float>(
-                std::chrono::steady_clock::now() -
+                currentTime -
                 state_->startTime).count();
+
+        float particleDeltaSeconds =
+            std::chrono::duration<float>(
+                currentTime -
+                state_->particleUpdateTime).count();
+
+        state_->particleUpdateTime =
+            currentTime;
+
+        particleDeltaSeconds =
+            std::clamp(
+                particleDeltaSeconds,
+                0.0f,
+                0.1f);
+
+        std::size_t activeParticleCount =
+            0;
+
+        std::size_t spawnedParticleCount =
+            0;
+
+        std::size_t killedParticleCount =
+            0;
+
+        for (core::world::particles::ParticleRuntimeSystem& particleSystem :
+             state_->particleSystems)
+        {
+            particleSystem.Update(
+                particleDeltaSeconds);
+
+            activeParticleCount +=
+                particleSystem.ActiveParticleCount();
+
+            spawnedParticleCount +=
+                particleSystem.Statistics().spawned;
+
+            killedParticleCount +=
+                particleSystem.Statistics().killed;
+        }
+
+        if (!state_->particleRuntimeReported &&
+            elapsedSeconds >=
+                1.0f)
+        {
+            core::Log::Info(
+                std::string(
+                    "Particle runtime active after 1s: ") +
+                std::to_string(
+                    activeParticleCount));
+
+            core::Log::Info(
+                std::string(
+                    "Particle runtime spawned after 1s: ") +
+                std::to_string(
+                    spawnedParticleCount));
+
+            core::Log::Info(
+                std::string(
+                    "Particle runtime killed after 1s: ") +
+                std::to_string(
+                    killedParticleCount));
+
+            state_->particleRuntimeReported =
+                true;
+        }
 
         const UINT stride =
             sizeof(GpuVertex);

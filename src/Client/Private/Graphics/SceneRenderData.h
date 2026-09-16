@@ -6,6 +6,7 @@
 
 #include "Core/Animation/ScalarAnimation.h"
 #include "Core/World/Sky/SkyDefinition.h"
+#include "Core/World/Particles/ParticleDefinition.h"
 
 #include <array>
 #include <cstddef>
@@ -359,6 +360,17 @@ namespace client::graphics
             definition;
     };
 
+    struct SceneParticleEmitter final
+    {
+        std::string resource;
+
+        core::world::particles::ParticleSystemDefinition
+            system;
+
+        core::math::Transform3x4
+            transform;
+    };
+
     struct SceneRenderData final
     {
         std::vector<SceneMesh>
@@ -390,6 +402,9 @@ namespace client::graphics
 
         std::vector<SceneFlare>
             flares;
+
+        std::vector<SceneParticleEmitter>
+            particleEmitters;
 
         SceneSky
             sky;

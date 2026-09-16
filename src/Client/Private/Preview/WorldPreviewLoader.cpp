@@ -7,6 +7,7 @@
 #include "Preview/WaterRenderDataBuilder.h"
 #include "Preview/FlareRenderDataBuilder.h"
 #include "Preview/SkyRenderDataBuilder.h"
+#include "Preview/ParticleRuntimeDataBuilder.h"
 
 #include "Core/Assets/MeshLoader.h"
 #include "Core/Assets/ModelBundleLoader.h"
@@ -375,10 +376,48 @@ namespace client::preview
         graphics::SceneRenderData
             scene;
 
+        ParticleRuntimeDataBuilder
+            particleRuntimeBuilder;
+
+        std::size_t particleRuntimeEmitterCount =
+            0;
+
+        std::size_t particleRuntimeCapacity =
+            0;
+
+        std::string particleRuntimeError;
+
+        if (!particleRuntimeBuilder.Build(
+                world,
+                particleDefinitions,
+                scene,
+                particleRuntimeEmitterCount,
+                particleRuntimeCapacity,
+                particleRuntimeError))
+        {
+            error =
+                "Unable to build particle runtime: " +
+                particleRuntimeError;
+
+            return false;
+        }
+
+        core::Log::Info(
+            std::string(
+                "Particle runtime emitters: ") +
+            std::to_string(
+                particleRuntimeEmitterCount));
+
+        core::Log::Info(
+            std::string(
+                "Particle runtime capacity: ") +
+            std::to_string(
+                particleRuntimeCapacity));
+
         const std::string& skyReference =
-    !world.settings.timeOfDay.empty()
-        ? world.settings.timeOfDay
-        : world.settings.skyGradientDome;
+            !world.settings.timeOfDay.empty()
+            ? world.settings.timeOfDay
+            : world.settings.skyGradientDome;
 
         if (!skyReference.empty())
         {
