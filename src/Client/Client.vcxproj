@@ -50,7 +50,6 @@
     <ClCompile Include="Private\Preview\TerrainRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WaterRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WorldPreviewLoader.cpp" />
-    <ClCompile Include="Shaders\World\WorldFlare.hlsl" />
   </ItemGroup>
 
   <ItemGroup>
@@ -60,6 +59,7 @@
     <None Include="Shaders\World\WorldWater.hlsli" />
     <None Include="Shaders\World\WorldVertex.hlsl" />
     <None Include="Shaders\World\WorldPixel.hlsl" />
+    <None Include="Shaders\World\WorldFlare.hlsl" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">
@@ -124,7 +124,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 
   <Target Name="CopyClientShaders"
-          AfterTargets="Link">
+          AfterTargets="Build">
 
     <ItemGroup>
       <ClientShaderFiles Include="$(ProjectDir)Shaders\World\**\*.hlsl" />
