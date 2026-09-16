@@ -6,6 +6,7 @@
 #include "Preview/FloraRenderDataBuilder.h"
 #include "Preview/WaterRenderDataBuilder.h"
 #include "Preview/FlareRenderDataBuilder.h"
+#include "Preview/SkyRenderDataBuilder.h"
 
 #include "Core/Assets/MeshLoader.h"
 #include "Core/Assets/ModelBundleLoader.h"
@@ -18,6 +19,7 @@
 #include "Core/World/Flora/FloraVisualLoader.h"
 #include "Core/World/WorldLoader.h"
 #include "Core/World/Flora/FloraInstanceBuilder.h"
+#include "Core/World/Sky/SkyLoader.h"
 
 #include <array>
 #include <algorithm>
@@ -127,6 +129,94 @@ namespace client::preview
 
         graphics::SceneRenderData
             scene;
+
+        const std::string& skyReference =
+    !world.settings.timeOfDay.empty()
+        ? world.settings.timeOfDay
+        : world.settings.skyGradientDome;
+
+        if (!skyReference.empty())
+        {
+            core::world::sky::SkyLoader
+                skyLoader;
+
+            core::world::sky::SkyDefinition
+                skyDefinition;
+
+            std::string
+                skyError;
+
+            if (!skyLoader.Load(
+                    runtime.Resources(),
+                    skyReference,
+                    skyDefinition,
+                    skyError))
+            {
+                error =
+                    "Unable to load TimeOfDay: " +
+                    skyError;
+
+                return false;
+            }
+
+            SkyRenderDataBuilder
+                skyRenderBuilder;
+
+            if (!skyRenderBuilder.Build(
+                    runtime.Resources(),
+                    skyDefinition,
+                    scene,
+                    skyError))
+            {
+                core::Log::Warning(
+                    std::string(
+                        "Sky gradient texture load failed: ") +
+                    skyError);
+            }
+
+            core::Log::Info(
+                std::string(
+                    "TimeOfDay resource: ") +
+                skyDefinition.resourcePath);
+
+            core::Log::Info(
+                std::string(
+                    "TimeOfDay start hour: ") +
+                std::to_string(
+                    skyDefinition.startTimeHours));
+
+            core::Log::Info(
+                std::string(
+                    "TimeOfDay seconds per hour: ") +
+                std::to_string(
+                    skyDefinition.hourLengthSeconds));
+
+            core::Log::Info(
+                std::string(
+                    "TimeOfDay light keys: ") +
+                std::to_string(
+                    skyDefinition.lightKeys.size()));
+
+            core::Log::Info(
+                std::string(
+                    "TimeOfDay ambient keys: ") +
+                std::to_string(
+                    skyDefinition.ambientKeys.size()));
+
+            core::Log::Info(
+                std::string(
+                    "Sky gradient DDS: ") +
+                skyDefinition.gradientTexture.logicalPath);
+
+            core::Log::Info(
+                std::string(
+                    "Sky gradient exists: ") +
+                (
+                    skyDefinition.gradientTexture.exists
+                        ? "true"
+                        : "false"
+                ));
+        }
 
         scene.omniLights.reserve(
             world.omniLights.size());

@@ -28,6 +28,7 @@
     <ClInclude Include="Private\Preview\FloraRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\ModelPreviewLoader.h" />
     <ClInclude Include="Private\Preview\ModelRenderDataBuilder.h" />
+    <ClInclude Include="Private\Preview\SkyRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\SpeedTreeRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\TerrainRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\WaterRenderDataBuilder.h" />
@@ -46,6 +47,7 @@
     <ClCompile Include="Private\Preview\FloraRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\ModelPreviewLoader.cpp" />
     <ClCompile Include="Private\Preview\ModelRenderDataBuilder.cpp" />
+    <ClCompile Include="Private\Preview\SkyRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\SpeedTreeRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\TerrainRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WaterRenderDataBuilder.cpp" />
@@ -60,6 +62,7 @@
     <None Include="Shaders\World\WorldVertex.hlsl" />
     <None Include="Shaders\World\WorldPixel.hlsl" />
     <None Include="Shaders\World\WorldFlare.hlsl" />
+    <None Include="Shaders\World\WorldSky.hlsl" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">

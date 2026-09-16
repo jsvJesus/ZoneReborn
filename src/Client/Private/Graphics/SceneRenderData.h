@@ -5,6 +5,7 @@
 #include "Core/Math/Transform3x4.h"
 
 #include "Core/Animation/ScalarAnimation.h"
+#include "Core/World/Sky/SkyDefinition.h"
 
 #include <array>
 #include <cstddef>
@@ -346,6 +347,18 @@ namespace client::graphics
             0;
     };
 
+    struct SceneSky final
+    {
+        bool enabled =
+            false;
+
+        std::int32_t gradientTextureIndex =
+            -1;
+
+        core::world::sky::SkyDefinition
+            definition;
+    };
+
     struct SceneRenderData final
     {
         std::vector<SceneMesh>
@@ -377,5 +390,8 @@ namespace client::graphics
 
         std::vector<SceneFlare>
             flares;
+
+        SceneSky
+            sky;
     };
 }

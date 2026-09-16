@@ -61,6 +61,9 @@
     <ClInclude Include="Public\Core\World\Flora\FloraInstanceBuilder.h" />
     <ClInclude Include="Public\Core\World\Flora\FloraVisualAsset.h" />
     <ClInclude Include="Public\Core\World\Flora\FloraVisualLoader.h" />
+    <ClInclude Include="Public\Core\World\Sky\SkyDefinition.h" />
+    <ClInclude Include="Public\Core\World\Sky\SkyEvaluator.h" />
+    <ClInclude Include="Public\Core\World\Sky\SkyLoader.h" />
 
     <ClInclude Include="Public\Core\World\SpaceSettings.h" />
     <ClInclude Include="Public\Core\World\SpaceLoader.h" />
@@ -117,6 +120,8 @@
     <ClCompile Include="Private\World\Flora\FloraConfigLoader.cpp" />
     <ClCompile Include="Private\World\Flora\FloraInstanceBuilder.cpp" />
     <ClCompile Include="Private\World\Flora\FloraVisualLoader.cpp" />
+    <ClCompile Include="Private\World\Sky\SkyEvaluator.cpp" />
+    <ClCompile Include="Private\World\Sky\SkyLoader.cpp" />
 
     <ClCompile Include="Private\World\SpaceLoader.cpp" />
     <ClCompile Include="Private\World\ChunkLoader.cpp" />

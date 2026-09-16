@@ -10,24 +10,6 @@ float4 PSMain(
         normalize(
             input.normal);
 
-    const float3 lightDirection =
-        normalize(
-            float3(
-                -0.35f,
-                0.85f,
-                -0.40f));
-
-    const float diffuse =
-        abs(
-            dot(
-                normal,
-                lightDirection));
-
-    const float lighting =
-        0.20f +
-        diffuse *
-        0.80f;
-
     float3 baseColour =
         groupColour.rgb;
 
@@ -75,6 +57,26 @@ float4 PSMain(
             modelSample.rgb;
     }
 
+    const float3 sunDirection =
+        normalize(
+            skySunDirectionDaylight.xyz);
+
+    const float sunDiffuse =
+        saturate(
+            dot(
+                normal,
+                sunDirection));
+
+    const float3 ambientLighting =
+        skyAmbientColour.rgb *
+        0.35f;
+
+    const float3 directionalLighting =
+        skySunColour.rgb *
+        sunDiffuse *
+        skySunDirectionDaylight.w *
+        0.85f;
+
     float3 omniDiffuse =
         0.0f;
 
@@ -102,7 +104,8 @@ float4 PSMain(
     float3 finalColour =
         baseColour *
         (
-            lighting +
+            ambientLighting +
+            directionalLighting +
             omniDiffuse +
             spotDiffuse
         );
@@ -111,7 +114,8 @@ float4 PSMain(
         omniSpecular +
         spotSpecular;
 
-    return float4(
-        finalColour,
-        outputAlpha);
+    return
+        float4(
+            finalColour,
+            outputAlpha);
 }

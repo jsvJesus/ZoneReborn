@@ -69,6 +69,16 @@ cbuffer SpotLightConstants : register(b2)
     uint spotLightPadding2;
 };
 
+cbuffer SkyConstants : register(b3)
+{
+    float4 skySunDirectionDaylight;
+    float4 skySunColour;
+    float4 skyAmbientColour;
+
+    float4 skyAtmosphere0;
+    float4 skyAtmosphere1;
+};
+
 Texture2D terrainTexture0 : register(t0);
 Texture2D terrainTexture1 : register(t1);
 Texture2D terrainTexture2 : register(t2);
@@ -81,6 +91,7 @@ Texture2D sceneColourTexture : register(t6);
 Texture2D sceneDepthTexture : register(t7);
 Texture2D waterNormalTexture : register(t8);
 Texture2D waterFoamTexture : register(t9);
+Texture2D skyGradientTexture : register(t10);
 
 SamplerState terrainTextureSampler : register(s0);
 SamplerState terrainBlendSampler : register(s1);

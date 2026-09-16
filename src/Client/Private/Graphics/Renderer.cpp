@@ -2,6 +2,7 @@
 
 #include "Graphics/Shaders/ShaderCompiler.h"
 #include "Core/Animation/ScalarAnimation.h"
+#include "Core/World/Sky/SkyEvaluator.h"
 #include "Core/Log.h"
 
 #include <d3d11.h>
@@ -104,6 +105,29 @@ namespace
 
     static_assert(
         sizeof(SpotLightConstants) %
+            16u ==
+        0u);
+
+    struct SkyConstants final
+    {
+        DirectX::XMFLOAT4
+            sunDirectionDaylight;
+
+        DirectX::XMFLOAT4
+            sunColour;
+
+        DirectX::XMFLOAT4
+            ambientColour;
+
+        DirectX::XMFLOAT4
+            atmosphere0;
+
+        DirectX::XMFLOAT4
+            atmosphere1;
+    };
+
+    static_assert(
+        sizeof(SkyConstants) %
             16u ==
         0u);
 
@@ -299,6 +323,118 @@ namespace
                     1.0f
                 };
         }
+    }
+
+    SkyConstants BuildSkyConstants(
+        const client::graphics::SceneSky& sky,
+        const float elapsedSeconds)
+    {
+        SkyConstants
+            constants{};
+
+        constants.sunDirectionDaylight =
+        {
+            -0.35f,
+            0.85f,
+            -0.40f,
+            1.0f
+        };
+
+        constants.sunColour =
+        {
+            1.0f,
+            1.0f,
+            1.0f,
+            1.0f
+        };
+
+        constants.ambientColour =
+        {
+            0.57f,
+            0.57f,
+            0.57f,
+            1.0f
+        };
+
+        if (!sky.enabled)
+        {
+            return constants;
+        }
+
+        const core::world::sky::SkySample sample =
+            core::world::sky::SkyEvaluator::Evaluate(
+                sky.definition,
+                elapsedSeconds);
+
+        const auto NormalizeColour =
+            [](
+                const float value) noexcept
+            {
+                return
+                    std::clamp(
+                        value /
+                            255.0f,
+                        0.0f,
+                        1.0f);
+            };
+
+        constants.sunDirectionDaylight =
+        {
+            sample.sunDirection.x,
+            sample.sunDirection.y,
+            sample.sunDirection.z,
+            sample.daylight
+        };
+
+        constants.sunColour =
+        {
+            NormalizeColour(
+                sample.lightColour.x),
+
+            NormalizeColour(
+                sample.lightColour.y),
+
+            NormalizeColour(
+                sample.lightColour.z),
+
+            1.0f
+        };
+
+        constants.ambientColour =
+        {
+            NormalizeColour(
+                sample.ambientColour.x),
+
+            NormalizeColour(
+                sample.ambientColour.y),
+
+            NormalizeColour(
+                sample.ambientColour.z),
+
+            1.0f
+        };
+
+        constants.atmosphere0 =
+        {
+            sky.definition.mieAmount,
+            sky.definition.turbidityOffset,
+            sky.definition.turbidityFactor,
+            sky.definition.vertexHeightEffect
+        };
+
+        constants.atmosphere1 =
+        {
+            sky.definition.sunHeightEffect,
+            sky.definition.power,
+            sample.timeHours,
+
+            sky.gradientTextureIndex >=
+                0
+                ? 1.0f
+                : 0.0f
+        };
+
+        return constants;
     }
 
     OmniLightConstants BuildOmniLightConstants(
@@ -955,6 +1091,12 @@ namespace client::graphics
             pixelShader;
 
         ComPtr<ID3D11VertexShader>
+            skyVertexShader;
+
+        ComPtr<ID3D11PixelShader>
+            skyPixelShader;
+
+        ComPtr<ID3D11VertexShader>
             flareVertexShader;
 
         ComPtr<ID3D11PixelShader>
@@ -971,6 +1113,9 @@ namespace client::graphics
 
         ComPtr<ID3D11Buffer>
             spotLightConstantBuffer;
+
+        ComPtr<ID3D11Buffer>
+            skyConstantBuffer;
 
         ComPtr<ID3D11Buffer>
             flareConstantBuffer;
@@ -999,6 +1144,9 @@ namespace client::graphics
 
         std::vector<SceneFlare>
             flares;
+
+        SceneSky
+            sky;
 
         std::vector<SceneInstance>
             instances;
@@ -1680,6 +1828,62 @@ namespace client::graphics
         }
 
         ComPtr<ID3DBlob>
+    skyVertexShaderCode;
+
+        if (!shaders::CompileFromFile(
+                L"World\\WorldSky.hlsl",
+                "VSSky",
+                "vs_5_0",
+                &skyVertexShaderCode,
+                error))
+        {
+            return false;
+        }
+
+        ComPtr<ID3DBlob>
+            skyPixelShaderCode;
+
+        if (!shaders::CompileFromFile(
+                L"World\\WorldSky.hlsl",
+                "PSSky",
+                "ps_5_0",
+                &skyPixelShaderCode,
+                error))
+        {
+            return false;
+        }
+
+        result =
+            state_->device->CreateVertexShader(
+                skyVertexShaderCode->GetBufferPointer(),
+                skyVertexShaderCode->GetBufferSize(),
+                nullptr,
+                &state_->skyVertexShader);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create sky vertex shader.";
+
+            return false;
+        }
+
+        result =
+            state_->device->CreatePixelShader(
+                skyPixelShaderCode->GetBufferPointer(),
+                skyPixelShaderCode->GetBufferSize(),
+                nullptr,
+                &state_->skyPixelShader);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create sky pixel shader.";
+
+            return false;
+        }
+
+        ComPtr<ID3DBlob>
             flareVertexShaderCode;
 
         if (!shaders::CompileFromFile(
@@ -1805,6 +2009,32 @@ namespace client::graphics
         {
             error =
                 "Unable to create constant buffer.";
+
+            return false;
+        }
+
+        D3D11_BUFFER_DESC
+    skyConstantDescription{};
+
+        skyConstantDescription.ByteWidth =
+            sizeof(SkyConstants);
+
+        skyConstantDescription.Usage =
+            D3D11_USAGE_DEFAULT;
+
+        skyConstantDescription.BindFlags =
+            D3D11_BIND_CONSTANT_BUFFER;
+
+        result =
+            state_->device->CreateBuffer(
+                &skyConstantDescription,
+                nullptr,
+                &state_->skyConstantBuffer);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create sky constant buffer.";
 
             return false;
         }
@@ -2300,6 +2530,30 @@ namespace client::graphics
                 return false;
             }
         }
+
+        state_->sky =
+            scene.sky;
+
+        if (state_->sky.enabled &&
+            state_->sky.gradientTextureIndex >=
+                0)
+        {
+            const std::size_t textureIndex =
+                static_cast<std::size_t>(
+                    state_->sky.gradientTextureIndex);
+
+            if (textureIndex >=
+                state_->textures.size())
+            {
+                error =
+                    "Sky references invalid gradient texture.";
+
+                return false;
+            }
+        }
+
+        state_->startTime =
+            std::chrono::steady_clock::now();
 
         state_->lodInstances =
             scene.lodInstances;
@@ -2899,10 +3153,14 @@ namespace client::graphics
             0.1f;
 
         const float farPlane =
-            std::max(
-                5000.0f,
-                state_->sceneRadius *
-                    10.0f);
+            state_->sky.enabled &&
+            state_->sky.definition.farPlane >
+                NearPlane
+                ? state_->sky.definition.farPlane
+                : std::max(
+                    5000.0f,
+                    state_->sceneRadius *
+                        10.0f);
 
         const XMMATRIX projection =
             XMMatrixPerspectiveFovLH(
@@ -3060,6 +3318,128 @@ namespace client::graphics
             NearPlane,
             farPlane
         };
+
+        state_->context->UpdateSubresource(
+            state_->constantBuffer.Get(),
+            0,
+            nullptr,
+            &constants,
+            0,
+            0);
+
+        const SkyConstants
+            skyConstants =
+                BuildSkyConstants(
+                    state_->sky,
+                    elapsedSeconds);
+
+        state_->context->UpdateSubresource(
+            state_->skyConstantBuffer.Get(),
+            0,
+            nullptr,
+            &skyConstants,
+            0,
+            0);
+
+        ID3D11Buffer*
+            skyBuffers[] =
+        {
+            state_->skyConstantBuffer.Get()
+        };
+
+        state_->context->PSSetConstantBuffers(
+            3,
+            1,
+            skyBuffers);
+
+        if (state_->sky.enabled)
+        {
+            state_->context->IASetInputLayout(
+                nullptr);
+
+            state_->context->IASetVertexBuffers(
+                0,
+                0,
+                nullptr,
+                nullptr,
+                nullptr);
+
+            state_->context->IASetIndexBuffer(
+                nullptr,
+                DXGI_FORMAT_UNKNOWN,
+                0);
+
+            state_->context->IASetPrimitiveTopology(
+                D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            state_->context->VSSetShader(
+                state_->skyVertexShader.Get(),
+                nullptr,
+                0);
+
+            state_->context->PSSetShader(
+                state_->skyPixelShader.Get(),
+                nullptr,
+                0);
+
+            state_->context->OMSetDepthStencilState(
+                state_->flareDepthState.Get(),
+                0);
+
+            ID3D11ShaderResourceView*
+                skyView =
+                    nullptr;
+
+            if (state_->sky.gradientTextureIndex >=
+                0)
+            {
+                const std::size_t textureIndex =
+                    static_cast<std::size_t>(
+                        state_->sky.gradientTextureIndex);
+
+                skyView =
+                    state_->textures[
+                        textureIndex].Get();
+            }
+
+            state_->context->PSSetShaderResources(
+                10,
+                1,
+                &skyView);
+
+            state_->context->Draw(
+                3,
+                0);
+
+            ID3D11ShaderResourceView*
+                emptySkyView =
+                    nullptr;
+
+            state_->context->PSSetShaderResources(
+                10,
+                1,
+                &emptySkyView);
+
+            state_->context->IASetInputLayout(
+                state_->inputLayout.Get());
+
+            state_->context->IASetPrimitiveTopology(
+                D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            state_->context->VSSetShader(
+                state_->vertexShader.Get(),
+                nullptr,
+                0);
+
+            state_->context->PSSetShader(
+                state_->pixelShader.Get(),
+                nullptr,
+                0);
+
+            state_->context->OMSetDepthStencilState(
+                state_->depthState.Get(),
+                0);
+        }
 
         state_->renderInstances.clear();
 
