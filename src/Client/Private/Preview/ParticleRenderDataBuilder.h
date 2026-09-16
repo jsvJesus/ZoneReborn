@@ -5,6 +5,7 @@
 #include "Core/Resources/ResourceFileSystem.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <string>
 
 namespace client::preview
@@ -19,6 +20,8 @@ namespace client::preview
             std::size_t& outputStaticEmitterCount,
             std::size_t& outputAnimatedEmitterCount,
             std::size_t& outputLoadedTextureCount,
+            std::size_t& outputAnimationCount,
+            std::size_t& outputAnimationFrameCount,
             std::string& error) const;
 
     private:

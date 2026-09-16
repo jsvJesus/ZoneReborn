@@ -1070,7 +1070,38 @@ namespace client::graphics
                 emitters[
                     systemIndex];
 
-            if (emitter.textureIndex <
+            std::int32_t selectedTextureIndex =
+                emitter.textureIndex;
+
+            if (emitter.animatedTexture)
+            {
+                if (emitter.textureFrameIndices.empty() ||
+                    emitter.textureAnimationFps <=
+                        0.0f)
+                {
+                    continue;
+                }
+
+                const float animationTime =
+                    std::max(
+                        systems[
+                            systemIndex]
+                            .Age(),
+                        0.0f);
+
+                const std::size_t frameIndex =
+                    static_cast<std::size_t>(
+                        std::floor(
+                            animationTime *
+                            emitter.textureAnimationFps)) %
+                    emitter.textureFrameIndices.size();
+
+                selectedTextureIndex =
+                    emitter.textureFrameIndices[
+                        frameIndex];
+            }
+
+            if (selectedTextureIndex <
                 0)
             {
                 continue;
@@ -1078,7 +1109,7 @@ namespace client::graphics
 
             const std::size_t textureIndex =
                 static_cast<std::size_t>(
-                    emitter.textureIndex);
+                    selectedTextureIndex);
 
             if (textureIndex >=
                 textures.size())

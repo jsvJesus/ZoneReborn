@@ -424,7 +424,13 @@ namespace client::preview
         std::size_t particleAnimatedRenderEmitters =
             0;
 
-        std::size_t particleStaticTexturesLoaded =
+        std::size_t particleTexturesLoaded =
+            0;
+
+        std::size_t particleTextureAnimationsLoaded =
+            0;
+
+        std::size_t particleAnimationFrames =
             0;
 
         std::string particleRenderError;
@@ -434,7 +440,9 @@ namespace client::preview
                 scene,
                 particleStaticRenderEmitters,
                 particleAnimatedRenderEmitters,
-                particleStaticTexturesLoaded,
+                particleTexturesLoaded,
+                particleTextureAnimationsLoaded,
+                particleAnimationFrames,
                 particleRenderError))
         {
             error =
@@ -452,15 +460,27 @@ namespace client::preview
 
         core::Log::Info(
             std::string(
-                "Particle animated render emitters deferred: ") +
+                "Particle animated render emitters: ") +
             std::to_string(
                 particleAnimatedRenderEmitters));
 
         core::Log::Info(
             std::string(
-                "Particle static textures loaded: ") +
+                "Particle texture animations loaded: ") +
             std::to_string(
-                particleStaticTexturesLoaded));
+                particleTextureAnimationsLoaded));
+
+        core::Log::Info(
+            std::string(
+                "Particle animation sequence frames: ") +
+            std::to_string(
+                particleAnimationFrames));
+
+        core::Log::Info(
+            std::string(
+                "Particle textures loaded: ") +
+            std::to_string(
+                particleTexturesLoaded));
 
         const std::string& skyReference =
             !world.settings.timeOfDay.empty()

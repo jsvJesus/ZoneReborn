@@ -375,6 +375,12 @@ namespace client::graphics
 
         bool animatedTexture =
             false;
+
+        float textureAnimationFps =
+            0.0f;
+
+        std::vector<std::int32_t>
+            textureFrameIndices;
     };
 
     struct SceneRenderData final

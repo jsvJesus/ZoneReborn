@@ -2568,40 +2568,62 @@ namespace client::graphics
             0x6D2B79F5u;
 
         for (const SceneParticleEmitter& emitter :
-             scene.particleEmitters)
+             state_->particleEmitters)
         {
-            core::world::particles::ParticleRuntimeSystem
-                runtimeSystem;
+            if (emitter.textureIndex >=
+                0)
+            {
+                const std::size_t textureIndex =
+                    static_cast<std::size_t>(
+                        emitter.textureIndex);
 
-            std::string
-                particleError;
+                if (textureIndex >=
+                    state_->textures.size())
+                {
+                    error =
+                        "Particle emitter references invalid GPU texture.";
 
-            if (!runtimeSystem.Initialize(
-                    emitter.system,
-                    emitter.transform,
-                    particleSeed,
-                    particleError))
+                    return false;
+                }
+            }
+
+            if (!emitter.animatedTexture)
+            {
+                continue;
+            }
+
+            if (emitter.textureAnimationFps <=
+                    0.0f ||
+                emitter.textureFrameIndices.empty())
             {
                 error =
-                    "Unable to initialize particle runtime " +
-                    emitter.resource +
-                    "/" +
-                    emitter.system.name +
-                    ": " +
-                    particleError;
+                    "Animated particle emitter contains invalid animation data.";
 
                 return false;
             }
 
-            particleRuntimeCapacity +=
-                runtimeSystem.Capacity();
+            for (const std::int32_t frameTextureIndex :
+                 emitter.textureFrameIndices)
+            {
+                if (frameTextureIndex <
+                    0)
+                {
+                    error =
+                        "Animated particle frame contains invalid texture index.";
 
-            state_->particleSystems.push_back(
-                std::move(
-                    runtimeSystem));
+                    return false;
+                }
 
-            particleSeed +=
-                0x9E3779B9u;
+                if (static_cast<std::size_t>(
+                        frameTextureIndex) >=
+                    state_->textures.size())
+                {
+                    error =
+                        "Animated particle frame references invalid GPU texture.";
+
+                    return false;
+                }
+            }
         }
 
         state_->particleUpdateTime =
