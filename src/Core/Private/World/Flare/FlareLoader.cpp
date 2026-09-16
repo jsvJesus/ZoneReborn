@@ -94,19 +94,17 @@ namespace
         const core::resources::DataSection& section,
         std::array<float, 4>& output)
     {
-        const core::resources::DataSection*
-            child =
-                section.FindChild(
-                    "rgba");
+        const core::resources::DataSection* child =
+            section.FindChild(
+                "rgba");
 
         if (child == nullptr)
         {
             return true;
         }
 
-        const core::resources::DataSection::FloatArray*
-            values =
-                child->AsFloats();
+        const core::resources::DataSection::FloatArray* values =
+            child->AsFloats();
 
         if (values == nullptr ||
             values->size() != 4)
@@ -126,31 +124,75 @@ namespace
     }
 
     std::string BuildResourcePath(
+        const core::resources::ResourceFileSystem& resources,
         const std::string_view reference,
         const std::string_view defaultExtension)
     {
-        std::string logicalPath =
-            core::resources::ResourcePath::ToResPath(
+        std::string normalized =
+            core::resources::ResourcePath::Normalize(
                 reference);
 
-        if (logicalPath.empty())
+        if (normalized.empty())
         {
             return {};
         }
 
-        std::filesystem::path
-            path(
-                logicalPath);
+        std::filesystem::path path(
+            normalized);
 
         if (!path.has_extension())
         {
-            logicalPath +=
+            normalized +=
                 defaultExtension;
+
+            normalized =
+                core::resources::ResourcePath::Normalize(
+                    normalized);
+
+            if (normalized.empty())
+            {
+                return {};
+            }
         }
 
-        return
+        if (normalized.starts_with(
+                "res/") ||
+            normalized.starts_with(
+                "sys/"))
+        {
+            return normalized;
+        }
+
+        const std::string resPath =
             core::resources::ResourcePath::Normalize(
-                logicalPath);
+                "res/" +
+                normalized);
+
+        if (!resPath.empty() &&
+            resources.Exists(
+                resPath))
+        {
+            return resPath;
+        }
+
+        const std::string sysPath =
+            core::resources::ResourcePath::Normalize(
+                "sys/" +
+                normalized);
+
+        if (!sysPath.empty() &&
+            resources.Exists(
+                sysPath))
+        {
+            return sysPath;
+        }
+
+        if (!resPath.empty())
+        {
+            return resPath;
+        }
+
+        return sysPath;
     }
 
     bool LoadMaterialTexture(
@@ -164,13 +206,16 @@ namespace
 
         const std::string logicalPath =
             BuildResourcePath(
+                resources,
                 materialReference,
                 ".mfm");
 
         if (logicalPath.empty())
         {
             error =
-                "Flare material reference is invalid.";
+                "Flare material reference is invalid: " +
+                std::string(
+                    materialReference);
 
             return false;
         }
@@ -269,10 +314,9 @@ namespace
         core::world::flare::FlareDefinition& definition,
         std::string& error)
     {
-        const core::resources::DataSection*
-            typeSection =
-                section.FindChild(
-                    "type");
+        const core::resources::DataSection* typeSection =
+            section.FindChild(
+                "type");
 
         if (typeSection == nullptr)
         {
@@ -282,9 +326,8 @@ namespace
             return false;
         }
 
-        const std::string*
-            type =
-                typeSection->AsString();
+        const std::string* type =
+            typeSection->AsString();
 
         if (type == nullptr ||
             type->empty())
@@ -346,10 +389,9 @@ namespace
             std::move(
                 element));
 
-        const core::resources::DataSection*
-            secondaries =
-                section.FindChild(
-                    "secondaries");
+        const core::resources::DataSection* secondaries =
+            section.FindChild(
+                "secondaries");
 
         if (secondaries == nullptr)
         {
@@ -381,24 +423,35 @@ namespace
 
 namespace core::world::flare
 {
-    bool LoadMaterialTexture(
+    bool FlareLoader::Load(
         const core::resources::ResourceFileSystem& resources,
-        const std::string_view materialReference,
-        core::assets::TextureResource& output,
-        std::string& error)
+        const std::string_view resourceReference,
+        FlareDefinition& output,
+        std::string& error) const
     {
         output = {};
         error.clear();
 
-        std::string logicalPath =
+        if (!resources.IsInitialized())
+        {
+            error =
+                "Resource filesystem is not initialized.";
+
+            return false;
+        }
+
+        const std::string logicalPath =
             BuildResourcePath(
-                materialReference,
-                ".mfm");
+                resources,
+                resourceReference,
+                ".xml");
 
         if (logicalPath.empty())
         {
             error =
-                "Flare material reference is invalid.";
+                "Flare resource reference is invalid: " +
+                std::string(
+                    resourceReference);
 
             return false;
         }
@@ -406,27 +459,8 @@ namespace core::world::flare
         if (!resources.Exists(
                 logicalPath))
         {
-            if (logicalPath ==
-                "res/system/materials/fx_corona.mfm")
-            {
-                constexpr std::string_view
-                    CoronaMaterial =
-                        "res/materials/fx/corona.mfm";
-
-                if (resources.Exists(
-                        CoronaMaterial))
-                {
-                    logicalPath =
-                        CoronaMaterial;
-                }
-            }
-        }
-
-        if (!resources.Exists(
-                logicalPath))
-        {
             error =
-                "Flare material not found: " +
+                "Flare resource not found: " +
                 logicalPath;
 
             return false;

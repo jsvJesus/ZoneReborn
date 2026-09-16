@@ -80,39 +80,100 @@ namespace core::assets
             return false;
         }
 
-        const std::string sourceLogicalPath =
-            resources::ResourcePath::ToResPath(
+        const std::string normalizedReference =
+            resources::ResourcePath::Normalize(
                 textureReference);
 
-        if (sourceLogicalPath.empty())
+        if (normalizedReference.empty())
         {
             return false;
         }
 
-        const std::string runtimeLogicalPath =
-            BuildRuntimeDdsPath(
-                sourceLogicalPath);
+        std::filesystem::path
+            sourcePath(
+                normalizedReference);
 
-        if (runtimeLogicalPath.empty())
+        const std::string extension =
+            ToLower(
+                sourcePath.extension().string());
+
+        if (!IsTextureReferenceExtension(
+                extension))
         {
             return false;
         }
 
-        TextureResource resource;
+        if (extension !=
+            ".dds")
+        {
+            sourcePath.replace_extension(
+                ".dds");
+        }
+
+        const std::string runtimeReference =
+            resources::ResourcePath::Normalize(
+                sourcePath.generic_string());
+
+        if (runtimeReference.empty())
+        {
+            return false;
+        }
+
+        std::string logicalPath;
+
+        if (runtimeReference.starts_with(
+                "res/") ||
+            runtimeReference.starts_with(
+                "sys/"))
+        {
+            logicalPath =
+                runtimeReference;
+        }
+        else
+        {
+            const std::string resPath =
+                "res/" +
+                runtimeReference;
+
+            const std::string sysPath =
+                "sys/" +
+                runtimeReference;
+
+            if (resources.Exists(
+                    resPath))
+            {
+                logicalPath =
+                    resPath;
+            }
+            else if (resources.Exists(
+                         sysPath))
+            {
+                logicalPath =
+                    sysPath;
+            }
+            else
+            {
+                logicalPath =
+                    resPath;
+            }
+        }
+
+        TextureResource
+            resource;
 
         resource.sourceReference =
             std::string(
                 textureReference);
 
         resource.sourceLogicalPath =
-            sourceLogicalPath;
+            normalizedReference;
 
         resource.logicalPath =
-            runtimeLogicalPath;
+            logicalPath;
 
         resource.exists =
             resources.Exists(
-                runtimeLogicalPath);
+                logicalPath);
 
         output =
             std::move(
