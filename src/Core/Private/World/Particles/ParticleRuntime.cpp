@@ -71,6 +71,56 @@ namespace
                     value));
     }
 
+    float Dot(
+        const core::math::Vector3& first,
+        const core::math::Vector3& second) noexcept
+    {
+        return
+            first.x * second.x +
+            first.y * second.y +
+            first.z * second.z;
+    }
+
+    float MaxTransformScale(
+        const core::math::Transform3x4& transform) noexcept
+    {
+        const float scaleX =
+            std::sqrt(
+                transform.values[0] *
+                    transform.values[0] +
+                transform.values[1] *
+                    transform.values[1] +
+                transform.values[2] *
+                    transform.values[2]);
+
+        const float scaleY =
+            std::sqrt(
+                transform.values[3] *
+                    transform.values[3] +
+                transform.values[4] *
+                    transform.values[4] +
+                transform.values[5] *
+                    transform.values[5]);
+
+        const float scaleZ =
+            std::sqrt(
+                transform.values[6] *
+                    transform.values[6] +
+                transform.values[7] *
+                    transform.values[7] +
+                transform.values[8] *
+                    transform.values[8]);
+
+        return
+            std::max(
+                {
+                    scaleX,
+                    scaleY,
+                    scaleZ,
+                    0.000001f
+                });
+    }
+
     core::math::Vector3 Normalize(
         const core::math::Vector3& value) noexcept
     {
@@ -785,6 +835,330 @@ namespace core::world::particles
         ++statistics_.spawned;
     }
 
+    bool ParticleRuntimeSystem::ApplyBarrier(
+        ParticleRuntimeParticle& particle,
+        const ParticleBarrierAction& action) noexcept
+    {
+        if (action.shape !=
+            3)
+        {
+            return true;
+        }
+
+        const float radius =
+            std::abs(
+                action.radius) *
+            MaxTransformScale(
+                transform_);
+
+        if (radius <=
+            0.000001f)
+        {
+            return true;
+        }
+
+        const math::Vector3 localCentre =
+            Add(
+                definition_.localOffset,
+                action.vectorA);
+
+        const math::Vector3 centre =
+            TransformPoint(
+                localCentre,
+                transform_);
+
+        const math::Vector3 previousDelta =
+            Subtract(
+                particle.previousPosition,
+                centre);
+
+        const math::Vector3 currentDelta =
+            Subtract(
+                particle.position,
+                centre);
+
+        const float previousDistance =
+            Length(
+                previousDelta);
+
+        const float currentDistance =
+            Length(
+                currentDelta);
+
+        const bool previousInside =
+            previousDistance <=
+            radius;
+
+        const bool currentInside =
+            currentDistance <=
+            radius;
+
+        if (previousInside ==
+            currentInside)
+        {
+            return true;
+        }
+
+        math::Vector3 normal =
+            Normalize(
+                currentDelta);
+
+        if (LengthSquared(
+                normal) <=
+            0.000001f)
+        {
+            normal =
+                Normalize(
+                    previousDelta);
+        }
+
+        if (LengthSquared(
+                normal) <=
+            0.000001f)
+        {
+            return true;
+        }
+
+        ++statistics_.barrierInteractions;
+
+        switch (action.reaction)
+        {
+            case 0:
+            {
+                constexpr float SurfaceEpsilon =
+                    0.001f;
+
+                const float targetRadius =
+                    previousInside
+                        ? std::max(
+                            radius -
+                                SurfaceEpsilon,
+                            0.0f)
+                        : radius +
+                            SurfaceEpsilon;
+
+                particle.position =
+                    Add(
+                        centre,
+                        Scale(
+                            normal,
+                            targetRadius));
+
+                const float normalVelocity =
+                    Dot(
+                        particle.velocity,
+                        normal);
+
+                const bool movingOut =
+                    previousInside &&
+                    normalVelocity >
+                        0.0f;
+
+                const bool movingIn =
+                    !previousInside &&
+                    normalVelocity <
+                        0.0f;
+
+                if (movingOut ||
+                    movingIn)
+                {
+                    particle.velocity =
+                        Subtract(
+                            particle.velocity,
+                            Scale(
+                                normal,
+                                normalVelocity *
+                                    2.0f));
+                }
+
+                return true;
+            }
+        
+            case 1:
+            {
+                return false;
+            }
+        
+            case 3:
+            {
+                const float overshoot =
+                    std::abs(
+                        currentDistance -
+                        radius);
+
+                float targetRadius =
+                    radius;
+
+                if (previousInside)
+                {
+                    targetRadius =
+                        std::max(
+                            radius -
+                                overshoot,
+                            0.0f);
+                }
+                else
+                {
+                    targetRadius =
+                        radius +
+                        overshoot;
+                }
+
+                particle.position =
+                    Add(
+                        centre,
+                        Scale(
+                            normal,
+                            -targetRadius));
+
+                return true;
+            }
+
+            default:
+            {
+                return true;
+            }
+        }
+    }
+
+    bool ParticleRuntimeSystem::ApplyCollide(
+        ParticleRuntimeParticle& particle,
+        const ParticleCollideAction& action) noexcept
+    {
+        const math::Vector3 localPlanePoint =
+            Add(
+                definition_.localOffset,
+                {
+                    0.0f,
+                    action.yOffset,
+                    0.0f
+                });
+
+        const math::Vector3 planePoint =
+            TransformPoint(
+                localPlanePoint,
+                transform_);
+
+        math::Vector3 planeNormal =
+            TransformDirection(
+                {
+                    0.0f,
+                    1.0f,
+                    0.0f
+                },
+                transform_);
+
+        planeNormal =
+            Normalize(
+                planeNormal);
+
+        if (LengthSquared(
+                planeNormal) <=
+            0.000001f)
+        {
+            return true;
+        }
+
+        const float previousDistance =
+            Dot(
+                Subtract(
+                    particle.previousPosition,
+                    planePoint),
+                planeNormal);
+
+        const float currentDistance =
+            Dot(
+                Subtract(
+                    particle.position,
+                    planePoint),
+                planeNormal);
+        
+        if (previousDistance <
+                0.0f ||
+            currentDistance >=
+                0.0f)
+        {
+            return true;
+        }
+
+        const float normalVelocity =
+            Dot(
+                particle.velocity,
+                planeNormal);
+
+        if (normalVelocity >=
+            0.0f)
+        {
+            return true;
+        }
+
+        ++statistics_.collisionInteractions;
+        
+        particle.position =
+            Subtract(
+                particle.position,
+                Scale(
+                    planeNormal,
+                    currentDistance));
+
+        const math::Vector3 normalComponent =
+            Scale(
+                planeNormal,
+                normalVelocity);
+
+        const math::Vector3 tangentComponent =
+            Subtract(
+                particle.velocity,
+                normalComponent);
+
+        const float elasticity =
+            std::max(
+                action.elasticity,
+                0.0f);
+
+        const float friction =
+            std::clamp(
+                action.frictionCoefficient,
+                0.0f,
+                1.0f);
+
+        particle.velocity =
+            Add(
+                Scale(
+                    tangentComponent,
+                    1.0f -
+                        friction),
+
+                Scale(
+                    planeNormal,
+                    -normalVelocity *
+                        elasticity));
+
+        if (action.minAddedRotation !=
+                0.0f ||
+            action.maxAddedRotation !=
+                0.0f)
+        {
+            const float minimumRotation =
+                std::min(
+                    action.minAddedRotation,
+                    action.maxAddedRotation);
+
+            const float maximumRotation =
+                std::max(
+                    action.minAddedRotation,
+                    action.maxAddedRotation);
+
+            particle.angularVelocity +=
+                Lerp(
+                    minimumRotation,
+                    maximumRotation,
+                    Random01());
+        }
+
+        return true;
+    }
+
     bool ParticleRuntimeSystem::UpdateParticle(
         ParticleRuntimeParticle& particle,
         const float deltaSeconds) noexcept
@@ -1202,6 +1576,68 @@ namespace core::world::particles
                 Scale(
                     particle.velocity,
                     deltaSeconds));
+        
+        for (const ParticleActionDefinition& actionDefinition :
+             definition_.actions)
+        {
+            switch (actionDefinition.type)
+            {
+                case ParticleActionType::Barrier:
+                {
+                    const ParticleBarrierAction* action =
+                        std::get_if<ParticleBarrierAction>(
+                            &actionDefinition.data);
+
+                    if (action == nullptr ||
+                        !IsActionActive(
+                            action->common,
+                            age_,
+                            particle.age))
+                    {
+                        break;
+                    }
+
+                    if (!ApplyBarrier(
+                            particle,
+                            *action))
+                    {
+                        return false;
+                    }
+
+                    break;
+                }
+
+                case ParticleActionType::Collide:
+                {
+                    const ParticleCollideAction* action =
+                        std::get_if<ParticleCollideAction>(
+                            &actionDefinition.data);
+
+                    if (action == nullptr ||
+                        !IsActionActive(
+                            action->common,
+                            age_,
+                            particle.age))
+                    {
+                        break;
+                    }
+
+                    if (!ApplyCollide(
+                            particle,
+                            *action))
+                    {
+                        return false;
+                    }
+
+                    break;
+                }
+
+                default:
+                {
+                    break;
+                }
+            }
+        }
 
         return true;
     }

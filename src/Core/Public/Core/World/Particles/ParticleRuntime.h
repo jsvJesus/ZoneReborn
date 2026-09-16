@@ -49,6 +49,12 @@ namespace core::world::particles
 
         std::size_t killed =
             0;
+
+        std::size_t barrierInteractions =
+            0;
+
+        std::size_t collisionInteractions =
+            0;
     };
 
     class ParticleRuntimeSystem final
@@ -113,6 +119,16 @@ namespace core::world::particles
         bool UpdateParticle(
             ParticleRuntimeParticle& particle,
             float deltaSeconds) noexcept;
+
+        [[nodiscard]]
+        bool ApplyBarrier(
+            ParticleRuntimeParticle& particle,
+            const ParticleBarrierAction& action) noexcept;
+
+        [[nodiscard]]
+        bool ApplyCollide(
+            ParticleRuntimeParticle& particle,
+            const ParticleCollideAction& action) noexcept;
 
         ParticleSystemDefinition
             definition_;

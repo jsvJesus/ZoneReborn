@@ -3414,6 +3414,12 @@ namespace client::graphics
         std::size_t killedParticleCount =
             0;
 
+        std::size_t particleBarrierInteractions =
+            0;
+
+        std::size_t particleCollisionInteractions =
+            0;
+
         for (core::world::particles::ParticleRuntimeSystem& particleSystem :
              state_->particleSystems)
         {
@@ -3428,6 +3434,14 @@ namespace client::graphics
 
             killedParticleCount +=
                 particleSystem.Statistics().killed;
+
+            particleBarrierInteractions +=
+                particleSystem.Statistics()
+                    .barrierInteractions;
+
+            particleCollisionInteractions +=
+                particleSystem.Statistics()
+                    .collisionInteractions;
         }
 
         if (!state_->particleRuntimeReported &&
@@ -3451,6 +3465,18 @@ namespace client::graphics
                     "Particle runtime killed after 1s: ") +
                 std::to_string(
                     killedParticleCount));
+
+            core::Log::Info(
+                std::string(
+                    "Particle Barrier interactions after 1s: ") +
+                std::to_string(
+                    particleBarrierInteractions));
+
+            core::Log::Info(
+                std::string(
+                    "Particle Collide interactions after 1s: ") +
+                std::to_string(
+                    particleCollisionInteractions));
 
             state_->particleRuntimeReported =
                 true;
