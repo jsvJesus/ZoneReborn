@@ -120,6 +120,24 @@
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 
+  <Target Name="CopyClientShaders"
+          AfterTargets="Link">
+
+    <ItemGroup>
+      <ClientShaderFiles Include="$(ProjectDir)Shaders\World\**\*.hlsl" />
+      <ClientShaderFiles Include="$(ProjectDir)Shaders\World\**\*.hlsli" />
+    </ItemGroup>
+
+    <MakeDir
+            Directories="$(OutDir)Shaders\World" />
+
+    <Copy
+            SourceFiles="@(ClientShaderFiles)"
+            DestinationFiles="@(ClientShaderFiles->'$(OutDir)Shaders\World\%(RecursiveDir)%(Filename)%(Extension)')"
+            SkipUnchangedFiles="true" />
+
+  </Target>
+
   <ImportGroup Label="ExtensionTargets" />
 
 </Project>

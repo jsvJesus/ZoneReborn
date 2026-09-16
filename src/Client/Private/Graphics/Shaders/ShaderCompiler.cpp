@@ -49,6 +49,66 @@ namespace
 
         return true;
     }
+
+    bool ResolveShaderPath(
+        const std::filesystem::path& executableDirectory,
+        const std::wstring_view relativePath,
+        std::filesystem::path& output)
+    {
+        const std::filesystem::path
+            relative(
+                relativePath);
+
+        const std::filesystem::path
+            runtimePath =
+                executableDirectory /
+                L"Shaders" /
+                relative;
+
+        std::error_code
+            error;
+
+        if (std::filesystem::is_regular_file(
+                runtimePath,
+                error))
+        {
+            output =
+                runtimePath;
+
+            return true;
+        }
+
+        error.clear();
+
+        const std::filesystem::path
+            sourcePath =
+                executableDirectory /
+                L"..\\..\\Client\\Shaders" /
+                relative;
+
+        if (std::filesystem::is_regular_file(
+                sourcePath,
+                error))
+        {
+            output =
+                std::filesystem::weakly_canonical(
+                    sourcePath,
+                    error);
+
+            if (error)
+            {
+                output =
+                    sourcePath.lexically_normal();
+            }
+
+            return true;
+        }
+
+        output =
+            runtimePath;
+
+        return false;
+    }
 }
 
 namespace client::graphics::shaders
@@ -93,19 +153,13 @@ namespace client::graphics::shaders
             return false;
         }
 
-        const std::filesystem::path
-            shaderPath =
-                executableDirectory /
-                L"Shaders" /
-                std::filesystem::path(
-                    relativePath);
+        std::filesystem::path
+            shaderPath;
 
-        std::error_code
-            fileError;
-
-        if (!std::filesystem::is_regular_file(
-                shaderPath,
-                fileError))
+        if (!ResolveShaderPath(
+                executableDirectory,
+                relativePath,
+                shaderPath))
         {
             error =
                 "Shader file not found: ";
