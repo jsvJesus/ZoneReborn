@@ -19,6 +19,7 @@
     <ClInclude Include="Private\Application.h" />
     <ClInclude Include="Private\Diagnostics\ResourceValidation.h" />
     <ClInclude Include="Private\Graphics\CameraView.h" />
+    <ClInclude Include="Private\Graphics\ParticleRenderer.h" />
     <ClInclude Include="Private\Graphics\Renderer.h" />
     <ClInclude Include="Private\Graphics\SceneRenderData.h" />
     <ClInclude Include="Private\Graphics\Shaders\ShaderCompiler.h" />
@@ -28,6 +29,7 @@
     <ClInclude Include="Private\Preview\FloraRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\ModelPreviewLoader.h" />
     <ClInclude Include="Private\Preview\ModelRenderDataBuilder.h" />
+    <ClInclude Include="Private\Preview\ParticleRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\ParticleRuntimeDataBuilder.h" />
     <ClInclude Include="Private\Preview\SkyRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\SpeedTreeRenderDataBuilder.h" />
@@ -38,6 +40,7 @@
 
   <ItemGroup>
     <ClCompile Include="Private\Application.cpp" />
+    <ClCompile Include="Private\Graphics\ParticleRenderer.cpp" />
     <ClCompile Include="Private\Graphics\Renderer.cpp" />
     <ClCompile Include="Private\Graphics\Shaders\ShaderCompiler.cpp" />
     <ClCompile Include="Private\Input\CameraController.cpp" />
@@ -48,6 +51,7 @@
     <ClCompile Include="Private\Preview\FloraRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\ModelPreviewLoader.cpp" />
     <ClCompile Include="Private\Preview\ModelRenderDataBuilder.cpp" />
+    <ClCompile Include="Private\Preview\ParticleRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\ParticleRuntimeDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\SkyRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\SpeedTreeRenderDataBuilder.cpp" />
@@ -65,6 +69,7 @@
     <None Include="Shaders\World\WorldPixel.hlsl" />
     <None Include="Shaders\World\WorldFlare.hlsl" />
     <None Include="Shaders\World\WorldSky.hlsl" />
+    <None Include="Shaders\World\WorldParticle.hlsl" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">

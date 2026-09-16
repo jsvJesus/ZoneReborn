@@ -369,6 +369,12 @@ namespace client::graphics
 
         core::math::Transform3x4
             transform;
+
+        std::int32_t textureIndex =
+            -1;
+
+        bool animatedTexture =
+            false;
     };
 
     struct SceneRenderData final

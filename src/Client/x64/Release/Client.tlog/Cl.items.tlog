@@ -1,4 +1,5 @@
 Z:\SOnline\src\Client\Private\Application.cpp;Z:\SOnline\src\Client\x64\Release\Application.obj
+Z:\SOnline\src\Client\Private\Graphics\ParticleRenderer.cpp;Z:\SOnline\src\Client\x64\Release\ParticleRenderer.obj
 Z:\SOnline\src\Client\Private\Graphics\Renderer.cpp;Z:\SOnline\src\Client\x64\Release\Renderer.obj
 Z:\SOnline\src\Client\Private\Graphics\Shaders\ShaderCompiler.cpp;Z:\SOnline\src\Client\x64\Release\ShaderCompiler.obj
 Z:\SOnline\src\Client\Private\Input\CameraController.cpp;Z:\SOnline\src\Client\x64\Release\CameraController.obj
@@ -9,6 +10,7 @@ Z:\SOnline\src\Client\Private\Preview\FlareRenderDataBuilder.cpp;Z:\SOnline\src\
 Z:\SOnline\src\Client\Private\Preview\FloraRenderDataBuilder.cpp;Z:\SOnline\src\Client\x64\Release\FloraRenderDataBuilder.obj
 Z:\SOnline\src\Client\Private\Preview\ModelPreviewLoader.cpp;Z:\SOnline\src\Client\x64\Release\ModelPreviewLoader.obj
 Z:\SOnline\src\Client\Private\Preview\ModelRenderDataBuilder.cpp;Z:\SOnline\src\Client\x64\Release\ModelRenderDataBuilder.obj
+Z:\SOnline\src\Client\Private\Preview\ParticleRenderDataBuilder.cpp;Z:\SOnline\src\Client\x64\Release\ParticleRenderDataBuilder.obj
 Z:\SOnline\src\Client\Private\Preview\ParticleRuntimeDataBuilder.cpp;Z:\SOnline\src\Client\x64\Release\ParticleRuntimeDataBuilder.obj
 Z:\SOnline\src\Client\Private\Preview\SkyRenderDataBuilder.cpp;Z:\SOnline\src\Client\x64\Release\SkyRenderDataBuilder.obj
 Z:\SOnline\src\Client\Private\Preview\SpeedTreeRenderDataBuilder.cpp;Z:\SOnline\src\Client\x64\Release\SpeedTreeRenderDataBuilder.obj

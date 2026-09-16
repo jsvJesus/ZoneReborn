@@ -1,6 +1,8 @@
 #include "Graphics/Renderer.h"
 
 #include "Graphics/Shaders/ShaderCompiler.h"
+#include "Graphics/ParticleRenderer.h"
+
 #include "Core/Animation/ScalarAnimation.h"
 #include "Core/World/Sky/SkyEvaluator.h"
 #include "Core/World/Particles/ParticleRuntime.h"
@@ -1151,6 +1153,15 @@ namespace client::graphics
             core::world::particles::ParticleRuntimeSystem>
             particleSystems;
 
+        std::vector<SceneParticleEmitter>
+            particleEmitters;
+
+        ParticleRenderer
+            particleRenderer;
+
+        bool particleGpuReported =
+            false;
+
         std::chrono::steady_clock::time_point
             particleUpdateTime =
                 std::chrono::steady_clock::now();
@@ -2130,6 +2141,17 @@ namespace client::graphics
             return false;
         }
 
+        if (!state_->particleRenderer.Initialize(
+                state_->device.Get(),
+                error))
+        {
+            error =
+                "Unable to initialize particle renderer: " +
+                error;
+
+            return false;
+        }
+
         state_->width =
             width;
 
@@ -2531,6 +2553,9 @@ namespace client::graphics
         state_->flares =
             scene.flares;
 
+        state_->particleEmitters =
+            scene.particleEmitters;
+
         state_->particleSystems.clear();
 
         state_->particleSystems.reserve(
@@ -2596,6 +2621,49 @@ namespace client::graphics
                 "Particle runtime total capacity: ") +
             std::to_string(
                 particleRuntimeCapacity));
+
+        if (!state_->particleRenderer.SetCapacity(
+                particleRuntimeCapacity,
+                error))
+        {
+            error =
+                "Unable to configure particle GPU buffer: " +
+                error;
+
+            return false;
+        }
+
+        for (const SceneParticleEmitter& emitter :
+             state_->particleEmitters)
+        {
+            if (emitter.textureIndex <
+                0)
+            {
+                continue;
+            }
+
+            const std::size_t textureIndex =
+                static_cast<std::size_t>(
+                    emitter.textureIndex);
+
+            if (textureIndex >=
+                state_->textures.size())
+            {
+                error =
+                    "Particle emitter references invalid GPU texture.";
+
+                return false;
+            }
+        }
+
+        state_->particleGpuReported =
+            false;
+
+        core::Log::Info(
+            std::string(
+                "GPU particle emitters: ") +
+            std::to_string(
+                state_->particleEmitters.size()));
 
         for (const SceneFlare& flare :
              state_->flares)
@@ -4403,6 +4471,54 @@ namespace client::graphics
 
         constants.useWater =
             0;
+
+        DirectX::XMFLOAT4X4
+            particleViewProjection{};
+
+        DirectX::XMStoreFloat4x4(
+            &particleViewProjection,
+            viewProjection);
+
+        std::string
+            particleRenderError;
+
+        if (!state_->particleRenderer.Render(
+                state_->context.Get(),
+                state_->particleSystems,
+                state_->particleEmitters,
+                state_->textures,
+                state_->camera,
+                particleViewProjection,
+                particleRenderError))
+        {
+            error =
+                "Particle rendering failed: " +
+                particleRenderError;
+
+            return false;
+        }
+
+        if (!state_->particleGpuReported &&
+            elapsedSeconds >=
+                1.0f)
+        {
+            core::Log::Info(
+                std::string(
+                    "GPU particles rendered after 1s: ") +
+                std::to_string(
+                    state_->particleRenderer
+                        .LastRenderedParticleCount()));
+
+            core::Log::Info(
+                std::string(
+                    "GPU particle draw calls after 1s: ") +
+                std::to_string(
+                    state_->particleRenderer
+                        .LastDrawCallCount()));
+
+            state_->particleGpuReported =
+                true;
+        }
 
         if (!state_->flares.empty())
         {

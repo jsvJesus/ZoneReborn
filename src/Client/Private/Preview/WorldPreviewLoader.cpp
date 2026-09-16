@@ -8,6 +8,7 @@
 #include "Preview/FlareRenderDataBuilder.h"
 #include "Preview/SkyRenderDataBuilder.h"
 #include "Preview/ParticleRuntimeDataBuilder.h"
+#include "Preview/ParticleRenderDataBuilder.h"
 
 #include "Core/Assets/MeshLoader.h"
 #include "Core/Assets/ModelBundleLoader.h"
@@ -413,6 +414,53 @@ namespace client::preview
                 "Particle runtime capacity: ") +
             std::to_string(
                 particleRuntimeCapacity));
+
+        ParticleRenderDataBuilder
+            particleRenderBuilder;
+
+        std::size_t particleStaticRenderEmitters =
+            0;
+
+        std::size_t particleAnimatedRenderEmitters =
+            0;
+
+        std::size_t particleStaticTexturesLoaded =
+            0;
+
+        std::string particleRenderError;
+
+        if (!particleRenderBuilder.Build(
+                runtime.Resources(),
+                scene,
+                particleStaticRenderEmitters,
+                particleAnimatedRenderEmitters,
+                particleStaticTexturesLoaded,
+                particleRenderError))
+        {
+            error =
+                "Unable to build particle render data: " +
+                particleRenderError;
+
+            return false;
+        }
+
+        core::Log::Info(
+            std::string(
+                "Particle static render emitters: ") +
+            std::to_string(
+                particleStaticRenderEmitters));
+
+        core::Log::Info(
+            std::string(
+                "Particle animated render emitters deferred: ") +
+            std::to_string(
+                particleAnimatedRenderEmitters));
+
+        core::Log::Info(
+            std::string(
+                "Particle static textures loaded: ") +
+            std::to_string(
+                particleStaticTexturesLoaded));
 
         const std::string& skyReference =
             !world.settings.timeOfDay.empty()
