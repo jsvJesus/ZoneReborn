@@ -459,6 +459,18 @@ namespace client::preview
             std::to_string(
                 particlePackAudit.missingTextureCount));
 
+        for (const auto& [texture, count] :
+             particlePackAudit.missingTextures)
+        {
+            core::Log::Warning(
+                std::string(
+                    "Missing particle texture [") +
+                texture +
+                "]: " +
+                std::to_string(
+                    count));
+        }
+
         core::Log::Info(
             std::string(
                 "Particle pack unsupported actions: ") +

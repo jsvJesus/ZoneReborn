@@ -235,6 +235,18 @@ namespace core::world::particles
             output.missingTextureCount +=
                 definition.statistics.missingTextureCount;
 
+            for (const std::string& texture :
+                 definition.missingTextures)
+            {
+                const std::string name =
+                    texture.empty()
+                        ? "<empty>"
+                        : texture;
+
+                ++output.missingTextures[
+                    name];
+            }
+
             output.unsupportedActionCount +=
                 definition.statistics.unsupportedActionCount;
 

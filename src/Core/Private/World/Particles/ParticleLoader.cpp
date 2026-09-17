@@ -8,6 +8,10 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <cerrno>
+#include <cmath>
+#include <cstdlib>
+#include <limits>
 #include <filesystem>
 #include <span>
 #include <string>
@@ -46,9 +50,73 @@ namespace
         const DataSection& section,
         float& output)
     {
-        return
-            section.TryGetFloat(
-                output);
+        if (section.TryGetFloat(
+                output))
+        {
+            return true;
+        }
+
+        const std::string* text =
+            section.AsString();
+
+        if (text == nullptr ||
+            text->empty())
+        {
+            return false;
+        }
+
+        errno =
+            0;
+
+        char* end =
+            nullptr;
+
+        const double parsed =
+            std::strtod(
+                text->c_str(),
+                &end);
+
+        if (end ==
+            text->c_str())
+        {
+            return false;
+        }
+
+        while (*end == ' ' ||
+               *end == '\t' ||
+               *end == '\r' ||
+               *end == '\n')
+        {
+            ++end;
+        }
+
+        if (*end !=
+            '\0')
+        {
+            return false;
+        }
+
+        if (!std::isfinite(
+                parsed))
+        {
+            return false;
+        }
+
+        const double maximum =
+            static_cast<double>(
+                std::numeric_limits<float>::max());
+
+        const double minimum =
+            -maximum;
+
+        output =
+            static_cast<float>(
+                std::clamp(
+                    parsed,
+                    minimum,
+                    maximum));
+
+        return true;
     }
 
     bool ReadInteger(
@@ -1276,10 +1344,6 @@ namespace
                     section,
                     "entityID_",
                     action.entityId) ||
-                !ReadOptionalString(
-                    section,
-                    "soundTag_",
-                    action.soundTag) ||
                 !ReadOptionalBoolean(
                     section,
                     "soundEnabled_",
@@ -1288,18 +1352,6 @@ namespace
                     section,
                     "soundSrcIdx_",
                     action.soundSourceIndex) ||
-                !ReadOptionalString(
-                    section,
-                    "soundProject_",
-                    action.soundProject) ||
-                !ReadOptionalString(
-                    section,
-                    "soundGroup_",
-                    action.soundGroup) ||
-                !ReadOptionalString(
-                    section,
-                    "soundName_",
-                    action.soundName) ||
                 !ReadOptionalBoolean(
                     section,
                     "cylinderCollide_",
@@ -1319,11 +1371,38 @@ namespace
                 return false;
             }
 
+            if (action.soundEnabled)
+            {
+                if (!ReadOptionalString(
+                        section,
+                        "soundTag_",
+                        action.soundTag) ||
+                    !ReadOptionalString(
+                        section,
+                        "soundProject_",
+                        action.soundProject) ||
+                    !ReadOptionalString(
+                        section,
+                        "soundGroup_",
+                        action.soundGroup) ||
+                    !ReadOptionalString(
+                        section,
+                        "soundName_",
+                        action.soundName))
+                {
+                    error =
+                        "Particle Collide action contains invalid enabled sound data.";
+
+                    return false;
+                }
+            }
+
             output.type =
                 ParticleActionType::Collide;
 
             output.data =
-                std::move(action);
+                std::move(
+                    action);
 
             return true;
         }

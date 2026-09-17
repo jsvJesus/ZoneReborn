@@ -65,6 +65,9 @@ namespace core::world::particles
         std::map<std::string, std::size_t>
             unsupportedVectorGenerators;
 
+        std::map<std::string, std::size_t>
+            missingTextures;
+
         std::vector<ParticlePackAuditFailure>
             failures;
     };
