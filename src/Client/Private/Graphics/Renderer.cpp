@@ -3190,6 +3190,44 @@ namespace client::graphics
         return true;
     }
 
+    bool Renderer::SetInstanceTransformRange(
+        const std::size_t firstInstance,
+        const std::size_t instanceCount,
+        const core::math::Transform3x4& transform) noexcept
+    {
+        if (!state_)
+        {
+            return false;
+        }
+
+        if (firstInstance >
+            state_->instances.size())
+        {
+            return false;
+        }
+
+        if (instanceCount >
+            state_->instances.size() -
+                firstInstance)
+        {
+            return false;
+        }
+
+        for (std::size_t index = 0;
+             index <
+                instanceCount;
+             ++index)
+        {
+            state_->instances[
+                firstInstance +
+                index]
+                .transform =
+                    transform;
+        }
+
+        return true;
+    }
+
     void Renderer::SetCamera(
         const CameraView& camera) noexcept
     {

@@ -6,6 +6,64 @@
 #include "Core/Log.h"
 
 #include <string>
+#include <cmath>
+
+namespace
+{
+    core::math::Transform3x4
+    ApplyYaw(
+        const core::math::Transform3x4& base,
+        const float yaw) noexcept
+    {
+        core::math::Transform3x4
+            rotation =
+                core::math::
+                    Transform3x4::
+                    Identity();
+
+        const float cosine =
+            std::cos(
+                yaw);
+
+        const float sine =
+            std::sin(
+                yaw);
+
+        rotation.values[0] =
+            cosine;
+
+        rotation.values[1] =
+            0.0f;
+
+        rotation.values[2] =
+            -sine;
+
+        rotation.values[3] =
+            0.0f;
+
+        rotation.values[4] =
+            1.0f;
+
+        rotation.values[5] =
+            0.0f;
+
+        rotation.values[6] =
+            sine;
+
+        rotation.values[7] =
+            0.0f;
+
+        rotation.values[8] =
+            cosine;
+
+        return
+            core::math::
+                Transform3x4::
+                Multiply(
+                    rotation,
+                    base);
+    }
+}
 
 namespace client
 {
@@ -95,7 +153,7 @@ namespace client
     }
 
     bool Application::InitializeCharacterSelectScene(
-        std::string& error)
+    std::string& error)
     {
         error.clear();
 
@@ -116,34 +174,23 @@ namespace client
             return false;
         }
 
-        graphics::SceneRenderData
-            scene;
+        characterSelectBaseScene_ =
+            {};
 
+        //
+        // Пока сохраняем personages_select как 3D stage.
+        //
+        // Flash UI к этой сцене отношения не имеет:
+        // он просто рисуется поверх DX11.
+        //
         if (!preview::LoadWorldPreview(
                 runtime_,
                 "personages_select",
-                scene,
+                characterSelectBaseScene_,
                 error))
         {
             error =
                 "Unable to load personages_select: " +
-                error;
-
-            return false;
-        }
-
-        preview::CharacterDummyRenderDataBuilder
-            characterDummyBuilder;
-
-        if (!characterDummyBuilder.BuildDefault(
-                runtime_.Resources(),
-                characterSelectStage_.
-                    dummyTransform,
-                scene,
-                error))
-        {
-            error =
-                "Unable to build CharacterDummy: " +
                 error;
 
             return false;
@@ -162,22 +209,26 @@ namespace client
             return false;
         }
 
-        if (!renderer_.SetScene(
-                scene,
+        characterDummyAppearance_ =
+            {};
+
+        characterDummyVisible_ =
+            true;
+
+        characterDummyYaw_ =
+            0.0f;
+
+        if (!RebuildCharacterDummy(
                 error))
         {
             renderer_.Shutdown();
 
             error =
-                "Unable to upload personages_select: " +
+                "Unable to build CharacterDummy scene: " +
                 error;
 
             return false;
         }
-
-        renderer_.SetCamera(
-            characterSelectStage_.
-                camera);
 
         rendererInitialized_ =
             true;
@@ -187,7 +238,6 @@ namespace client
 
         return true;
     }
-
 
     void Application::ShutdownCharacterSelectScene()
     {
@@ -204,8 +254,85 @@ namespace client
         characterSelectStage_ =
             {};
 
+        characterSelectBaseScene_ =
+            {};
+
+        characterDummyAppearance_ =
+            {};
+
+        characterDummyVisible_ =
+            true;
+
+        characterDummyYaw_ =
+            0.0f;
+
+        characterDummyFirstInstance_ =
+            0;
+
+        characterDummyInstanceCount_ =
+            0;
+
         core::Log::Info(
             "personages_select scene deactivated.");
+    }
+
+    core::math::Transform3x4
+        Application::CharacterDummyTransform() const noexcept
+    {
+        return ApplyYaw(
+            characterSelectStage_.
+                dummyTransform,
+            characterDummyYaw_);
+    }
+
+    bool Application::RebuildCharacterDummy(
+        std::string& error)
+    {
+        error.clear();
+
+        graphics::SceneRenderData
+            scene =
+                characterSelectBaseScene_;
+
+        characterDummyFirstInstance_ =
+            scene.instances.size();
+
+        characterDummyInstanceCount_ =
+            0;
+
+        if (characterDummyVisible_)
+        {
+            preview::
+                CharacterDummyRenderDataBuilder
+                    builder;
+
+            if (!builder.Build(
+                    runtime_.Resources(),
+                    characterDummyAppearance_,
+                    CharacterDummyTransform(),
+                    scene,
+                    error))
+            {
+                return false;
+            }
+
+            characterDummyInstanceCount_ =
+                scene.instances.size() -
+                characterDummyFirstInstance_;
+        }
+
+        if (!renderer_.SetScene(
+                scene,
+                error))
+        {
+            return false;
+        }
+
+        renderer_.SetCamera(
+            characterSelectStage_.
+                camera);
+
+        return true;
     }
 
     bool Application::Update()
@@ -329,6 +456,201 @@ namespace client
                         std::string(
                             "Frontend URL request: ") +
                         event.url);
+
+                    break;
+                }
+
+                case frontend::FrontendEventType::DummyShow:
+                {
+                    if (!rendererInitialized_)
+                    {
+                        break;
+                    }
+
+                    if (characterDummyVisible_)
+                    {
+                        break;
+                    }
+
+                    characterDummyVisible_ =
+                        true;
+
+                    std::string rebuildError;
+
+                    if (!RebuildCharacterDummy(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            std::string(
+                                "CharacterDummy show failed: ") +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    core::Log::Info(
+                        "CharacterDummy shown.");
+
+                    break;
+                }
+            
+                case frontend::FrontendEventType::DummyHide:
+                {
+                    if (!rendererInitialized_)
+                    {
+                        break;
+                    }
+
+                    if (!characterDummyVisible_)
+                    {
+                        break;
+                    }
+
+                    characterDummyVisible_ =
+                        false;
+
+                    std::string rebuildError;
+
+                    if (!RebuildCharacterDummy(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            std::string(
+                                "CharacterDummy hide failed: ") +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    core::Log::Info(
+                        "CharacterDummy hidden.");
+
+                    break;
+                }
+            
+                case frontend::FrontendEventType::DummyPart:
+                {
+                    if (!rendererInitialized_)
+                    {
+                        break;
+                    }
+
+                    if (!characterDummyAppearance_.
+                            SetPart(
+                                event.dummyGroup,
+                                event.dummyPartId))
+                    {
+                        core::Log::Warning(
+                            std::string(
+                                "Unknown CharacterDummy group: ") +
+                            event.dummyGroup);
+
+                        break;
+                    }
+
+                    core::Log::Info(
+                        std::string(
+                            "CharacterDummy part update: ") +
+                        event.dummyGroup +
+                        " -> " +
+                        std::to_string(
+                            event.dummyPartId));
+
+                    std::string rebuildError;
+
+                    if (!RebuildCharacterDummy(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            std::string(
+                                "CharacterDummy rebuild failed: ") +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    break;
+                }
+            
+                case frontend::FrontendEventType::DummyFull:
+                {
+                    if (!rendererInitialized_)
+                    {
+                        break;
+                    }
+
+                    for (const auto& part :
+                         event.dummyParts)
+                    {
+                        characterDummyAppearance_.
+                            SetPart(
+                                part.first,
+                                part.second);
+                    }
+
+                    core::Log::Info(
+                        std::string(
+                            "CharacterDummy full rebuild, parts=") +
+                        std::to_string(
+                            event.dummyParts.size()));
+
+                    std::string rebuildError;
+
+                    if (!RebuildCharacterDummy(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            std::string(
+                                "CharacterDummy full rebuild failed: ") +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    break;
+                }
+            
+                case frontend::FrontendEventType::DummyRotate:
+                {
+                    if (!rendererInitialized_ ||
+                        !characterDummyVisible_)
+                    {
+                        break;
+                    }
+
+                    //
+                    // Flash передаёт mouse delta.
+                    //
+                    characterDummyYaw_ +=
+                        event.dummyDeltaX *
+                        0.01f;
+
+                    constexpr float Pi =
+                        3.14159265358979323846f;
+
+                    if (characterDummyYaw_ >
+                        Pi * 2.0f)
+                    {
+                        characterDummyYaw_ -=
+                            Pi * 2.0f;
+                    }
+                    else if (
+                        characterDummyYaw_ <
+                        -Pi * 2.0f)
+                    {
+                        characterDummyYaw_ +=
+                            Pi * 2.0f;
+                    }
+
+                    if (!renderer_.
+                            SetInstanceTransformRange(
+                                characterDummyFirstInstance_,
+                                characterDummyInstanceCount_,
+                                CharacterDummyTransform()))
+                    {
+                        core::Log::Warning(
+                            "Unable to rotate CharacterDummy instances.");
+                    }
 
                     break;
                 }

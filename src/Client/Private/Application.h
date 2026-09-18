@@ -11,6 +11,9 @@
 
 #include "Graphics/Renderer.h"
 #include "Preview/CharacterSelectStage.h"
+#include "Preview/CharacterDummyRenderDataBuilder.h"
+
+#include <cstddef>
 
 namespace client
 {
@@ -58,6 +61,26 @@ namespace client
         preview::CharacterSelectStageData
             characterSelectStage_;
 
+        graphics::SceneRenderData
+            characterSelectBaseScene_;
+
+        preview::CharacterDummyAppearance
+            characterDummyAppearance_;
+
+        bool characterDummyVisible_ =
+            true;
+
+        float characterDummyYaw_ =
+            0.0f;
+
+        std::size_t
+            characterDummyFirstInstance_ =
+                0;
+
+        std::size_t
+            characterDummyInstanceCount_ =
+                0;
+
         bool rendererInitialized_ =
             false;
 
@@ -66,5 +89,13 @@ namespace client
             std::string& error);
 
         void ShutdownCharacterSelectScene();
+
+        [[nodiscard]]
+        bool RebuildCharacterDummy(
+            std::string& error);
+
+        [[nodiscard]]
+        core::math::Transform3x4
+            CharacterDummyTransform() const noexcept;
     };
 }

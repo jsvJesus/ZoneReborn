@@ -45,6 +45,78 @@ namespace
         return true;
     }
 
+    bool ReadSkinningData(
+        const std::span<const std::byte> data,
+        const std::size_t offset,
+        core::assets::MeshVertex& vertex) noexcept
+    {
+        std::uint8_t index0 = 0;
+        std::uint8_t index1 = 0;
+        std::uint8_t index2 = 0;
+
+        std::uint8_t weight0 = 0;
+        std::uint8_t weight1 = 0;
+
+        if (!ReadValue(
+                data,
+                offset + 24,
+                index0) ||
+            !ReadValue(
+                data,
+                offset + 25,
+                index1) ||
+            !ReadValue(
+                data,
+                offset + 26,
+                index2) ||
+            !ReadValue(
+                data,
+                offset + 27,
+                weight0) ||
+            !ReadValue(
+                data,
+                offset + 28,
+                weight1))
+        {
+            return false;
+        }
+
+        //
+        // BigWorld хранит не номер bone,
+        // а offset в float4 palette:
+        //
+        // 0, 3, 6, 9...
+        //
+        vertex.boneIndices[0] =
+            static_cast<std::uint16_t>(
+                index0 / 3u);
+
+        vertex.boneIndices[1] =
+            static_cast<std::uint16_t>(
+                index1 / 3u);
+
+        vertex.boneIndices[2] =
+            static_cast<std::uint16_t>(
+                index2 / 3u);
+
+        vertex.boneWeights[0] =
+            static_cast<float>(
+                weight0) /
+            255.0f;
+
+        vertex.boneWeights[1] =
+            static_cast<float>(
+                weight1) /
+            255.0f;
+
+        vertex.boneWeights[2] =
+            1.0f -
+            vertex.boneWeights[0] -
+            vertex.boneWeights[1];
+
+        return true;
+    }
+
     bool ReadFixedString(
         const std::span<const std::byte> data,
         const std::size_t offset,
@@ -471,13 +543,6 @@ namespace
 
             if (format == "xyznuviiiwwtb")
             {
-                //
-                // Stage 5:
-                // render the character in bind/static pose.
-                //
-                // Bone indices and weights are deliberately skipped here.
-                // They will become useful when skeletal animation is added.
-                //
                 if (!ReadValue(
                         data,
                         offset + 12,
@@ -490,6 +555,10 @@ namespace
                         data,
                         offset + 20,
                         vertex.v) ||
+                    !ReadSkinningData(
+                        data,
+                        offset,
+                        vertex) ||
                     !ReadValue(
                         data,
                         offset + 29,
@@ -504,6 +573,9 @@ namespace
 
                     return false;
                 }
+
+                output.skinned =
+                    true;
 
                 continue;
             }
@@ -521,13 +593,20 @@ namespace
                     !ReadValue(
                         data,
                         offset + 20,
-                        vertex.v))
+                        vertex.v) ||
+                    !ReadSkinningData(
+                        data,
+                        offset,
+                        vertex))
                 {
                     error =
                         "xyznuviiiww vertex is truncated.";
 
                     return false;
                 }
+
+                output.skinned =
+                    true;
 
                 continue;
             }

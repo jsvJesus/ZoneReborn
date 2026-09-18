@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <cstddef>
 
 namespace client::graphics
 {
@@ -33,6 +34,12 @@ namespace client::graphics
         bool SetScene(
             const SceneRenderData& scene,
             std::string& error);
+
+        [[nodiscard]]
+        bool SetInstanceTransformRange(
+            std::size_t firstInstance,
+            std::size_t instanceCount,
+            const core::math::Transform3x4& transform) noexcept;
 
         void SetCamera(
             const CameraView& camera) noexcept;

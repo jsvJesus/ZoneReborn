@@ -11,6 +11,8 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include <cstdint>
+#include <utility>
 
 namespace client::frontend
 {
@@ -19,7 +21,13 @@ namespace client::frontend
         Login,
         Exit,
         OpenUrl,
-        Play
+        Play,
+
+        DummyShow,
+        DummyHide,
+        DummyPart,
+        DummyFull,
+        DummyRotate
     };
 
     struct FrontendEvent final
@@ -31,6 +39,23 @@ namespace client::frontend
         std::string password;
         std::string serverId;
         std::string url;
+
+        std::string dummyGroup;
+
+        std::int32_t dummyPartId =
+            0;
+
+        float dummyDeltaX =
+            0.0f;
+
+        float dummyDeltaY =
+            0.0f;
+
+        std::vector<
+            std::pair<
+                std::string,
+                std::int32_t>>
+            dummyParts;
 
         bool rememberLogin =
             false;

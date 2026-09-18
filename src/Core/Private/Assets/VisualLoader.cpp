@@ -249,6 +249,112 @@ namespace
         return true;
     }
 
+    bool ReadNodeRecursive(
+        const core::resources::DataSection& section,
+        const std::int32_t parentIndex,
+        core::assets::VisualAsset& visual,
+        std::string& error)
+    {
+        const auto* identifier =
+            section.FindChild(
+                "identifier");
+
+        const auto* transform =
+            section.FindChild(
+                "transform");
+
+        if (identifier == nullptr ||
+            transform == nullptr)
+        {
+            error =
+                "Visual contains invalid node.";
+
+            return false;
+        }
+
+        const std::string* name =
+            identifier->AsString();
+
+        if (name == nullptr ||
+            name->empty())
+        {
+            error =
+                "Visual node contains invalid identifier.";
+
+            return false;
+        }
+
+        if (visual.nodes.size() >
+            static_cast<std::size_t>(
+                std::numeric_limits<
+                    std::int32_t>::max()))
+        {
+            error =
+                "Visual contains too many nodes.";
+
+            return false;
+        }
+
+        core::assets::VisualNode
+            node;
+
+        node.identifier =
+            *name;
+
+        node.parentIndex =
+            parentIndex;
+
+        if (!ReadTransform(
+                *transform,
+                node.transform))
+        {
+            error =
+                "Visual node contains invalid transform.";
+
+            return false;
+        }
+
+        const std::int32_t
+            currentIndex =
+                static_cast<std::int32_t>(
+                    visual.nodes.size());
+
+        visual.nodes.push_back(
+            std::move(
+                node));
+
+        //
+        // ВАЖНО:
+        // старый loader читал только root node.
+        // BigWorld skeleton находится внутри:
+        //
+        // node
+        //   node
+        //     node
+        //       ...
+        //
+        for (const auto* child :
+             section.FindChildren(
+                 "node"))
+        {
+            if (child == nullptr)
+            {
+                continue;
+            }
+
+            if (!ReadNodeRecursive(
+                    *child,
+                    currentIndex,
+                    visual,
+                    error))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     bool ReadRenderSet(
         const core::resources::ResourceFileSystem& resources,
         const core::assets::MaterialLoader& materialLoader,
@@ -383,51 +489,22 @@ namespace core::assets
             materialLoader;
 
         for (const auto* node :
-             root.FindChildren("node"))
+            root.FindChildren(
+         "node"))
         {
-            VisualNode value;
-
-            const auto* identifier =
-                node->FindChild("identifier");
-
-            const auto* transform =
-                node->FindChild("transform");
-
-            if (identifier == nullptr ||
-                transform == nullptr)
+            if (node == nullptr)
             {
-                error =
-                    "Visual contains invalid node.";
-
-                return false;
+                continue;
             }
 
-            const std::string* name =
-                identifier->AsString();
-
-            if (name == nullptr)
+            if (!ReadNodeRecursive(
+                    *node,
+                    -1,
+                    visual,
+                    error))
             {
-                error =
-                    "Visual node contains invalid identifier.";
-
                 return false;
             }
-
-            value.identifier =
-                *name;
-
-            if (!ReadTransform(
-                    *transform,
-                    value.transform))
-            {
-                error =
-                    "Visual node contains invalid transform.";
-
-                return false;
-            }
-
-            visual.nodes.push_back(
-                std::move(value));
         }
 
         for (const auto* renderSet :

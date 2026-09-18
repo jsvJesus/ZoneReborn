@@ -14,6 +14,7 @@
 #include <string_view>
 #include <utility>
 #include <vector>
+#include <cstdlib>
 
 namespace
 {
@@ -1021,6 +1022,69 @@ namespace
         return
             stream.str();
     }
+
+    bool ParseInt32(
+    const std::string& text,
+    std::int32_t& output)
+    {
+        if (text.empty())
+        {
+            return false;
+        }
+
+        char* end =
+            nullptr;
+
+        const long value =
+            std::strtol(
+                text.c_str(),
+                &end,
+                10);
+
+        if (end ==
+                text.c_str() ||
+            *end != '\0')
+        {
+            return false;
+        }
+
+        output =
+            static_cast<std::int32_t>(
+                value);
+
+        return true;
+    }
+
+
+    bool ParseFloat(
+        const std::string& text,
+        float& output)
+    {
+        if (text.empty())
+        {
+            return false;
+        }
+
+        char* end =
+            nullptr;
+
+        const float value =
+            std::strtof(
+                text.c_str(),
+                &end);
+
+        if (end ==
+                text.c_str() ||
+            *end != '\0')
+        {
+            return false;
+        }
+
+        output =
+            value;
+
+        return true;
+    }
 }
 
 namespace client::frontend
@@ -1762,6 +1826,173 @@ namespace client::frontend
                 event.url =
                     fields[1];
             }
+
+            events_.push_back(
+                std::move(
+                    event));
+
+            return;
+        }
+
+        if (command ==
+            "dummy_show")
+        {
+            FrontendEvent event;
+
+            event.type =
+                FrontendEventType::
+                    DummyShow;
+
+            events_.push_back(
+                std::move(
+                    event));
+
+            return;
+        }
+
+
+        if (command ==
+            "dummy_hide")
+        {
+            FrontendEvent event;
+
+            event.type =
+                FrontendEventType::
+                    DummyHide;
+
+            events_.push_back(
+                std::move(
+                    event));
+
+            return;
+        }
+
+
+        if (command ==
+            "dummy_part")
+        {
+            if (fields.size() <
+                3)
+            {
+                core::Log::Warning(
+                    "Invalid dummy_part message.");
+
+                return;
+            }
+
+            std::int32_t partId =
+                0;
+
+            if (!ParseInt32(
+                    fields[2],
+                    partId))
+            {
+                core::Log::Warning(
+                    "Invalid dummy_part ID.");
+
+                return;
+            }
+
+            FrontendEvent event;
+
+            event.type =
+                FrontendEventType::
+                    DummyPart;
+
+            event.dummyGroup =
+                fields[1];
+
+            event.dummyPartId =
+                partId;
+
+            events_.push_back(
+                std::move(
+                    event));
+
+            return;
+        }
+
+
+        if (command ==
+            "dummy_full")
+        {
+            if (fields.size() <
+                    3 ||
+                (
+                    (
+                        fields.size() -
+                        1
+                    ) %
+                    2
+                ) !=
+                    0)
+            {
+                core::Log::Warning(
+                    "Invalid dummy_full message.");
+
+                return;
+            }
+
+            FrontendEvent event;
+
+            event.type =
+                FrontendEventType::
+                    DummyFull;
+
+            for (std::size_t index = 1;
+                 index + 1 <
+                    fields.size();
+                 index += 2)
+            {
+                std::int32_t partId =
+                    0;
+
+                if (!ParseInt32(
+                        fields[
+                            index + 1],
+                        partId))
+                {
+                    core::Log::Warning(
+                        "Invalid dummy_full part ID.");
+
+                    return;
+                }
+
+                event.dummyParts.emplace_back(
+                    fields[index],
+                    partId);
+            }
+
+            events_.push_back(
+                std::move(
+                    event));
+
+            return;
+        }
+
+
+        if (command ==
+            "dummy_rotate")
+        {
+            if (fields.size() <
+                3)
+            {
+                return;
+            }
+
+            FrontendEvent event;
+
+            event.type =
+                FrontendEventType::
+                    DummyRotate;
+
+            ParseFloat(
+                fields[1],
+                event.dummyDeltaX);
+
+            ParseFloat(
+                fields[2],
+                event.dummyDeltaY);
 
             events_.push_back(
                 std::move(

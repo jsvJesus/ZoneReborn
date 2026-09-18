@@ -16,7 +16,15 @@ namespace core::assets
     struct VisualNode final
     {
         std::string identifier;
-        math::Transform3x4 transform;
+
+        math::Transform3x4
+            transform;
+
+        //
+        // -1 = root node.
+        //
+        std::int32_t parentIndex =
+            -1;
     };
 
     struct VisualMaterialProperty final

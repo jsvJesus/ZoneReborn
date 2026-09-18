@@ -2,6 +2,7 @@
 
 #include "Core/Math/Vector3.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <string>
@@ -26,6 +27,39 @@ namespace core::assets
 
         std::uint32_t colour =
             0xFFFFFFFFu;
+
+        //
+        // BigWorld skinned vertex:
+        //
+        // IIIWW =
+        //
+        // index1
+        // index2
+        // index3
+        // weight1
+        // weight2
+        //
+        // weight3 = 1 - w1 - w2
+        //
+        std::array<
+            std::uint16_t,
+            3>
+            boneIndices
+        {
+            0,
+            0,
+            0
+        };
+
+        std::array<
+            float,
+            3>
+            boneWeights
+        {
+            1.0f,
+            0.0f,
+            0.0f
+        };
     };
 
     struct MeshPrimitiveGroup final
@@ -40,6 +74,9 @@ namespace core::assets
     struct MeshData final
     {
         std::string vertexFormat;
+
+        bool skinned =
+            false;
 
         std::vector<MeshVertex>
             vertices;
