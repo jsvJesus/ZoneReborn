@@ -135,6 +135,7 @@ function transmit(
     eventName +
     " data=" +
     safeDebugValue(data));
+	
     if (!player)
     {
         return;
@@ -705,8 +706,8 @@ window.getDefaultOption =
 window.getKeybindLocalizeTable =
     function()
     {
-        emptyResponse(
-            "getKeybindLocalizeTable");
+        postToHost(
+            "keybind_localize");
     };
 
 
@@ -863,14 +864,19 @@ window.return_in_game =
 
 window.ZoneFrontend =
 {
+    keybindLocalizeResult:
+        function(data)
+        {
+            transmit(
+                "getKeybindLocalizeTable",
+                data ||
+                {});
+        },
+
+
     loginError:
         function(message)
         {
-            //
-            // Это точный event name,
-            // который использовал
-            // LoginScreenFlash.state_of_connect.
-            //
             transmit(
                 "ActionsWithLogin.authenticateUser",
                 {
@@ -883,10 +889,6 @@ window.ZoneFrontend =
     loginAccepted:
         function()
         {
-            //
-            // LoginScreenFlash.activate_account_window()
-            // отправлял именно это событие.
-            //
             transmit(
                 "activateAccountWindow",
                 {});

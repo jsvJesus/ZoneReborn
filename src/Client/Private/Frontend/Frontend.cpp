@@ -725,6 +725,153 @@ namespace
         return result;
     }
 
+    std::string BuildKeybindLocalizeJson(
+        const core::resources::ResourceFileSystem&
+            resources)
+    {
+        constexpr std::string_view LogicalPath =
+            "res/scripts/client/data/actions_display_names.xml";
+
+        std::vector<std::byte>
+            data;
+
+        if (!resources.ReadBinary(
+                std::string(
+                    LogicalPath),
+                data))
+        {
+            core::Log::Warning(
+                "Frontend keybind localization file not found.");
+
+            return "{}";
+        }
+
+        const std::span<
+            const std::byte>
+                bytes(
+                    data.data(),
+                    data.size());
+
+        if (!core::resources::
+                PackedSectionReader::
+                HasSignature(
+                    bytes))
+        {
+            core::Log::Warning(
+                "Frontend actions_display_names.xml is not a packed section.");
+
+            return "{}";
+        }
+
+        core::resources::
+            DataSection root;
+
+        std::string error;
+
+        core::resources::
+            PackedSectionReader
+                reader;
+
+        if (!reader.Read(
+                bytes,
+                root,
+                error))
+        {
+            core::Log::Warning(
+                std::string(
+                    "Frontend actions_display_names.xml decode failed: ") +
+                error);
+
+            return "{}";
+        }
+
+        std::string result =
+            "{";
+
+        bool first =
+            true;
+
+        std::size_t entryCount =
+            0;
+
+        for (const auto& action :
+             root.children)
+        {
+            const core::resources::
+                DataSection*
+                    internalNameSection =
+                        action.FindChild(
+                            "internal_name");
+
+            const core::resources::
+                DataSection*
+                    displayNameSection =
+                        action.FindChild(
+                            "display_name");
+
+            if (internalNameSection ==
+                    nullptr ||
+                displayNameSection ==
+                    nullptr)
+            {
+                continue;
+            }
+
+            const std::string*
+                internalName =
+                    internalNameSection->
+                        AsString();
+
+            const std::string*
+                displayName =
+                    displayNameSection->
+                        AsString();
+
+            if (internalName ==
+                    nullptr ||
+                displayName ==
+                    nullptr ||
+                internalName->
+                    empty())
+            {
+                continue;
+            }
+
+            if (!first)
+            {
+                result +=
+                    ',';
+            }
+
+            first =
+                false;
+
+            result +=
+                JsonString(
+                    *internalName);
+
+            result +=
+                ':';
+
+            result +=
+                JsonString(
+                    *displayName);
+
+            ++entryCount;
+        }
+
+        result +=
+            '}';
+
+        core::Log::Info(
+            std::string(
+                "Frontend keybind localization entries: ") +
+            std::to_string(
+                entryCount));
+
+        return result;
+    }
+
     std::string HResultText(
         const HRESULT result)
     {
@@ -1310,6 +1457,32 @@ namespace client::frontend
                         "[Frontend] ") +
                     fields[1]);
             }
+
+            return;
+        }
+
+        if (command ==
+            "keybind_localize")
+        {
+            if (resources_ ==
+                nullptr)
+            {
+                core::Log::Warning(
+                    "Frontend resources are unavailable.");
+
+                return;
+            }
+
+            const std::string json =
+                BuildKeybindLocalizeJson(
+                    *resources_);
+
+            ExecuteScriptUtf8(
+                "if(window.ZoneFrontend){"
+                "window.ZoneFrontend.keybindLocalizeResult(" +
+                json +
+                ");"
+                "}");
 
             return;
         }
