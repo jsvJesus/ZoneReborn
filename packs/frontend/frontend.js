@@ -1131,40 +1131,56 @@ async function startFlash()
     container.appendChild(
         player);
 
-    await player
-        .ruffle()
-        .load({
-            url:
-                SWF_URL,
+    trace(
+    "Loading original MainMenuGUI.swf: " +
+    SWF_URL);
 
-            base:
-                ROOT +
-                "/packs/res/",
+	await player
+		.ruffle()
+		.load({
+			url:
+				SWF_URL,
 
-            allowScriptAccess:
-                true,
+			base:
+				ROOT +
+				"/packs/res/",
 
-            autoplay:
-                "on",
+			allowScriptAccess:
+				true,
 
-            backgroundColor:
-                "#000000",
+			autoplay:
+				"on",
 
-            contextMenu:
-                "off",
+			unmuteOverlay:
+				"hidden",
 
-            preloader:
-                false,
+			warnOnUnsupportedContent:
+				true,
 
-            splashScreen:
-                false,
+			logLevel:
+				"debug",
 
-            letterbox:
-                "on",
+			backgroundColor:
+				"#000000",
 
-            scale:
-                "showAll"
-        });
+			contextMenu:
+				"off",
+
+			preloader:
+				false,
+
+			splashScreen:
+				false,
+
+			letterbox:
+				"on",
+
+			scale:
+				"showAll"
+		});
+
+	trace(
+		"MainMenuGUI.swf load() completed");
 
     document
         .getElementById(

@@ -44,13 +44,17 @@ user/webview2/
 *.lib
 
 # ============================================================
-# WebView2 SDK required by Client
+# WebView2 SDK
+# Keep only headers + x64 static loader
 # ============================================================
 
-!third_party/
-!third_party/WebView2/
+third_party/WebView2/*
+
 !third_party/WebView2/build/
+third_party/WebView2/build/*
+
 !third_party/WebView2/build/native/
+third_party/WebView2/build/native/*
 
 # Headers
 !third_party/WebView2/build/native/include/
@@ -58,4 +62,5 @@ user/webview2/
 
 # x64 static loader
 !third_party/WebView2/build/native/x64/
+third_party/WebView2/build/native/x64/*
 !third_party/WebView2/build/native/x64/WebView2LoaderStatic.lib
