@@ -130,14 +130,17 @@ function transmit(
     eventName,
     data = {})
 {
-	trace(
-    "Host -> Flash event=" +
-    eventName +
-    " data=" +
-    safeDebugValue(data));
-	
+    trace(
+        "Host -> Flash event=" +
+        eventName +
+        " data=" +
+        safeDebugValue(data));
+
     if (!player)
     {
+        trace(
+            "Host -> Flash FAILED: player is null");
+
         return;
     }
 
@@ -151,47 +154,61 @@ function transmit(
                 {}
         });
 
-    //
-    // Scaleform:
-    // movie.invoke(
-    //     "externalInterfaceTransmit",
-    //     response)
-    //
-    // Ruffle:
-    // вызываем зарегистрированный
-    // ExternalInterface callback.
-    //
-    try
+    trace(
+        "Flash callback externalInterfaceTransmit typeof=" +
+        typeof player.externalInterfaceTransmit);
+
+    if (typeof player.externalInterfaceTransmit ===
+        "function")
     {
-        if (typeof player.externalInterfaceTransmit ===
-            "function")
+        try
         {
-            player.externalInterfaceTransmit(
-                message);
+            const result =
+                player.externalInterfaceTransmit(
+                    message);
+
+            trace(
+                "externalInterfaceTransmit direct result=" +
+                safeDebugValue(result));
 
             return;
         }
-    }
-    catch (error)
-    {
-        trace(
-            "externalInterfaceTransmit direct: " +
-            error);
+        catch (error)
+        {
+            trace(
+                "externalInterfaceTransmit direct ERROR: " +
+                (
+                    error &&
+                    error.stack
+                        ? error.stack
+                        : error
+                ));
+        }
     }
 
     try
     {
-        player
-            .ruffle()
-            .callExternalInterface(
-                "externalInterfaceTransmit",
-                message);
+        const result =
+            player
+                .ruffle()
+                .callExternalInterface(
+                    "externalInterfaceTransmit",
+                    message);
+
+        trace(
+            "callExternalInterface result=" +
+            safeDebugValue(result));
     }
     catch (error)
     {
         trace(
-            "externalInterfaceTransmit: " +
-            error);
+            "callExternalInterface ERROR: " +
+            (
+                error &&
+                error.stack
+                    ? error.stack
+                    : error
+            ));
     }
 }
 
@@ -1191,6 +1208,10 @@ async function startFlash()
 
 	trace(
 		"MainMenuGUI.swf load() completed");
+		
+	trace(
+		"After load: externalInterfaceTransmit typeof=" +
+			typeof player.externalInterfaceTransmit);
 
     document
         .getElementById(
