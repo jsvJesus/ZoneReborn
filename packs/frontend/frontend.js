@@ -130,79 +130,48 @@ function transmit(
     eventName,
     data = {})
 {
+    if (!player)
+    {
+        return;
+    }
+
+    const message = {
+        event_name:
+            eventName,
+
+        data:
+            data ??
+            {}
+    };
+
     trace(
         "Host -> Flash event=" +
         eventName +
         " data=" +
-        safeDebugValue(data));
-
-    if (!player)
-    {
-        trace(
-            "Host -> Flash FAILED: player is null");
-
-        return;
-    }
-
-    const message =
-        JSON.stringify({
-            event_name:
-                eventName,
-
-            data:
-                data ??
-                {}
-        });
-
-    trace(
-        "Flash callback externalInterfaceTransmit typeof=" +
-        typeof player.externalInterfaceTransmit);
-
-    if (typeof player.externalInterfaceTransmit ===
-        "function")
-    {
-        try
-        {
-            const result =
-                player.externalInterfaceTransmit(
-                    message);
-
-            trace(
-                "externalInterfaceTransmit direct result=" +
-                safeDebugValue(result));
-
-            return;
-        }
-        catch (error)
-        {
-            trace(
-                "externalInterfaceTransmit direct ERROR: " +
-                (
-                    error &&
-                    error.stack
-                        ? error.stack
-                        : error
-                ));
-        }
-    }
+        safeDebugValue(
+            message.data));
 
     try
     {
-        const result =
-            player
-                .ruffle()
-                .callExternalInterface(
-                    "externalInterfaceTransmit",
-                    message);
+        if (typeof player.externalInterfaceTransmit ===
+            "function")
+        {
+            player.externalInterfaceTransmit(
+                message);
 
-        trace(
-            "callExternalInterface result=" +
-            safeDebugValue(result));
+            return;
+        }
+
+        player
+            .ruffle()
+            .callExternalInterface(
+                "externalInterfaceTransmit",
+                message);
     }
     catch (error)
     {
         trace(
-            "callExternalInterface ERROR: " +
+            "externalInterfaceTransmit ERROR: " +
             (
                 error &&
                 error.stack
@@ -224,7 +193,7 @@ function transmitAsync(
                 eventName,
                 data);
         },
-        0);
+        100);
 }
 
 
