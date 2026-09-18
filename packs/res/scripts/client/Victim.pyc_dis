@@ -1,0 +1,52 @@
+# Embedded file name: ./scripts/client/Victim.py
+import BigWorld
+from generic.victimdamager import GenericVictim
+from Config.Damage import SourceTypes
+
+class Victim(GenericVictim):
+    last_grenade_damage = 0
+
+    def getCurrentModel(self):
+        return self.model
+
+    def attach_collider_box(self, box_name, node_name, body_zone, min_bounds, max_bounds):
+        box = BigWorld.BoxAttachment()
+        box.name = box_name
+        box.minBounds = min_bounds
+        box.maxBounds = max_bounds
+        node = self.getCurrentModel().node(node_name)
+        node.attach(box)
+        self.skeletonCollider.addCollider(box)
+        self.colliderNames[box_name] = body_zone
+        self.collider_nodes[box_name] = (node_name, node)
+        self.last_grenade_damage = 0
+
+    def add_collider(self):
+        if getattr(self, 'skeletonCollider', None):
+            self.skeletonCollider = None
+        self.skeletonCollider = BigWorld.SkeletonCollider()
+        self.colliderNames = {}
+        self.collider_nodes = {}
+        return
+
+    def on_damaged(self, source_data, damagetaken_data):
+        GenericVictim.on_damaged(self, source_data, damagetaken_data)
+        if source_data['type'] == SourceTypes.GRENADE:
+            self.last_grenade_damage = damagetaken_data['health_decrement']
+
+    def on_grenaded(self, grenade_position, collided_id, collision_data):
+        self.on_grenade_damaged(self.last_grenade_damage, grenade_position, collided_id, collision_data)
+
+    def on_grenade_damaged(self, damage, grenade_position, collided_id, collision_data):
+        pass
+
+    def get_node_by_body_zone(self, body_zone):
+        if not hasattr(self, 'colliderNames'):
+            return None
+        else:
+            for box_name, box_body_zone in self.colliderNames.iteritems():
+                if box_body_zone == body_zone:
+                    node_name, node = self.collider_nodes[box_name]
+                    return node
+
+            return None

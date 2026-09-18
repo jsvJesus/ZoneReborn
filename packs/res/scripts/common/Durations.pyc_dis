@@ -1,0 +1,61 @@
+# Embedded file name: ./scripts/common/Durations.py
+__author__ = 'leviathan'
+import ItemsUtils
+from Items import ItemsCatalog
+
+def GetInformJammDuration(self, jamm_type):
+    return 1.0
+
+
+def GetUnJammDuration(self, unjamm_type):
+    return 1.0
+
+
+def GetReloadDuration(self, item_type, num_ammo, is_short = False, unload_ammo = 0):
+    tmp = 'ReloadDuration_short' if is_short else 'ReloadDuration'
+    tmp_one = 'ReloadDurationOne'
+    item_param = ItemsCatalog.GetItemParam(item_type)
+    if not item_param:
+        return 100.0
+    duration = item_param.get(tmp, 999) + item_param.get(tmp_one, 0) * num_ammo
+    if unload_ammo and item_param.get('Need_shells_extract'):
+        duration += item_param.get(tmp_one, 0) * unload_ammo
+    if hasattr(self, 'getReloadTimeModifyer'):
+        result = duration * self.getReloadTimeModifyer(item_param['GunType'], item_type)
+        return result
+    return duration
+
+
+def GetEquipDuration(self, gun_type):
+    duration = 1.0
+    if gun_type != None:
+        if hasattr(self, 'getEquipTimeModifyer'):
+            duration *= self.getEquipTimeModifyer(gun_type)
+        return duration
+    else:
+        return 0.0
+        return
+
+
+def getThrowUnEquipDuration(self):
+    return 0.5
+
+
+def GetPutOnDuration(self, equip_item_type, unequip_item_type):
+    return 3.0
+
+
+def GetItemUseDuration(self, item_type):
+    return 5.0
+
+
+def GetGrenadeThrowDuration(self):
+    return getThrowUnEquipDuration(self)
+
+
+def GetStoneThrowDuration(self):
+    return 0.8
+
+
+def GetModificationDuration(self):
+    return 2.0

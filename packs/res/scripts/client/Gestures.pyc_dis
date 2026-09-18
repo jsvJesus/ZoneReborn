@@ -1,0 +1,111 @@
+# Embedded file name: ./scripts/client/Gestures.py
+import random
+import BigWorld
+import Constants
+import Durations
+import GesturesUtils
+from GesturesCommon import GesturesCommon
+from time import time
+from Items import ItemsCatalog
+from functools import partial
+
+class Gestures(GesturesCommon):
+
+    def __init__(self):
+        GesturesCommon.__init__(self)
+        self._current_action = None
+        self._looped_action = None
+        self._stopped_action = None
+        self._action_callback = None
+        self.use_gesture = False
+        return
+
+    def playAnimationByIDInList(self, index, force_loop = False):
+        data = GesturesUtils.get_anim_action(index)
+        if not data or not self.model:
+            return
+        else:
+            data = data['action']
+            self.EnableModelPitch(False)
+            self.flashlight_suspend()
+            self.model.effectorright = None
+            self.model.effectorleft = None
+            self.model.ThrowRight = None
+            self.stopAnimation()
+            if isinstance(data, list):
+                self.play_set_animations(data, force_loop)
+            else:
+                self.play_one_animation(data, 0, self.stop_gesture)
+            if self.__class__.__name__ != 'Avatar':
+                self.checkCamera()
+            return
+
+    def stop_all_animations(self):
+        self.stopAnimation()
+        if self._current_action:
+            self._current_action.stop()
+            self._current_action = None
+        if self._action_callback:
+            BigWorld.cancelCallback(self._action_callback)
+            self._action_callback = None
+        if self._looped_action:
+            self._looped_action.stop()
+            self._looped_action = None
+        if self._stopped_action and not self.dead:
+            callback = partial(self.EnableModelPitch, True)
+            self.playAnimation(self._stopped_action, self._stopped_action.duration, self.stop_gesture)
+        else:
+            self.stop_gesture()
+        self._stopped_action = None
+        return
+
+    def stop_gesture(self):
+        if self.isDestroyed:
+            return
+        self.use_gesture = False
+        self.block_channel_items = False
+        self.returnModelToDefault()
+        self.removeControlLockByEffect(Constants.ControlLockTypes.ANIMATION)
+        if self.__class__.__name__ == 'PlayerAvatar':
+            self.checkCamera()
+            self.cell.clearAvatarGesture()
+
+    def play_one_animation(self, anim_name, duration = 0, callback = None):
+        if self.isDestroyed:
+            return
+        else:
+            if self._current_action:
+                self._current_action.stop()
+                self._current_action = None
+            if self._action_callback:
+                BigWorld.cancelCallback(self._action_callback)
+                self._action_callback = None
+            self._current_action = getattr(self.model, anim_name, None)
+            if duration == 0:
+                duration = self._current_action.duration
+            self.playAnimationClear(self._current_action, duration * 0.92, callback or self.stopAnimationClear)
+            return
+
+    def play_set_animations(self, anim_list, force_loop = False):
+        if self.isDestroyed:
+            return
+        elif not self.model:
+            return
+        else:
+            self._looped_action = getattr(self.model, anim_list[1])
+            if force_loop:
+                self._looped_action()
+            else:
+                self._current_action = getattr(getattr(self.model, anim_list[0])(), anim_list[1])
+                self._current_action()
+            self._stopped_action = getattr(self.model, anim_list[-1], None)
+            return
+
+    def getMarkHeight(self):
+        if self.usingGesture:
+            data = GesturesUtils.get_anim_action(self.usingGesture)
+            if not data:
+                return 1.9
+            return data.get('mark_height', 1.9)
+        else:
+            return 1.9

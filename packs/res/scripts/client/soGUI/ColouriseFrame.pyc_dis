@@ -1,0 +1,323 @@
+# Embedded file name: ./scripts/client/soGUI/ColouriseFrame.py
+import BigWorld
+import BWPersonality
+import os
+import GUI
+import random
+import copy
+import UCManager
+import DyeConstant
+import emblemWindow
+import colourisePicker
+import frameChangeImage
+from Items import ItemsCatalog
+import ItemsUtils
+import StalkerModel
+import traceback
+from Localization import lc, localization_object
+from Helpers.PyGUI.PyGUIBase import PyGUIBase
+from soGUI.soButton import soButton, soButtonWTT, soButtonWFT
+from soDraggableComponent import soDraggableComponent
+from soGUI.soEditField import soEditField2
+from soGUI.soEditField import soEditBox
+from soGUI.soEditField import soEditBox2
+import gui_jokes
+from soGUI.soItemView import soItemView, soItemSlot
+from soInventorySlot2 import soInventorySlot2
+soItemCacheSlot = soInventorySlot2
+from soGUI.soItemView import SLOTEVENT_LCLICK
+
+class ColouriseFrame(PyGUIBase):
+    factoryString = 'soGUI.ColouriseFrame'
+
+    def __init__(self, component, dummy_window, parent):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.dummy_window = dummy_window
+        self.parent = parent
+        self._dictItesm = {}
+        self._modifieds = {}
+        self._activeItemID = 0
+        self.setupRoot()
+        self.setupContent()
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.colour = (255, 255, 255, 210)
+        cmp.materialFX = 'BLEND'
+        sW, sH = BigWorld.screenSize()
+        self.width = cmp.width = 350
+        self.height = cmp.height = sH - 2
+        cmp = GUI.Simple('textures\\default\\white.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
+        cmp.colour = (30, 30, 30, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = cmp.height = 2.0
+        cmp.position = (0.0, 0.0, 0.9)
+        self.component.addChild(cmp, 'fon')
+
+    def setupContent(self):
+        W, H = BigWorld.screenSize()
+        itemView = soItemView(GUI.Window(), EquipedItemSlot, slot_eventsHandler=self.equipSlotHandler, eventsHandler=self.equipItemViewHandler, rowWidth=10, cols=5, hScroll=1, borderWidth=0, rows=1, vScroll=0)
+        cmp = itemView.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.position = (10, 10, 0.5)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        self.component.addChild(cmp, 'equip_view')
+        itemView.onBound()
+        itemView.setRestrictingComponent(None)
+        itemView.setItems(None)
+        self.equip_view = itemView
+        self.frame_change_image = frameChangeImage.FrameChangeImage(GUI.Window(), self.dummy_window, self)
+        self.frame_change_image.component.position = (10, 99, 0.0)
+        self.component.addChild(self.frame_change_image.component, 'frameChangeImage')
+        self.color_choise_frame = colourisePicker.ColourisePickerFrame(GUI.Window(), self)
+        self.color_choise_frame.component.position = (10, 520, 0.3)
+        self.color_choise_frame.component.width = self.width - 15
+        self.color_choise_frame.component.height = 160
+        self.component.addChild(self.color_choise_frame.component, 'colorChoise')
+        bApply = soButtonWTT(GUI.Window())
+        bApply.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        cmp = bApply.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 210
+        cmp.height = 29
+        cmp.label.text = lc('colourItemWindow.APPLY_CHANGES_TO_AN_ITEM')
+        cmp.position = (10, 709, 0.2)
+        self.component.addChild(cmp, 'bApply')
+        bApply.onClick = self._apply
+        bApply.onBound()
+        bCancel = soButtonWTT(GUI.Window())
+        bCancel.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        cmp = bCancel.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 120
+        cmp.height = 29
+        cmp.label.text = lc('colourItemWindow.CANCEL')
+        cmp.position = (225, 709, 0.2)
+        self.component.addChild(cmp, 'bCancel')
+        bCancel.onClick = self.parent.hide
+        bCancel.onBound()
+        return
+
+    def doReposition(self):
+        sW, sH = BigWorld.screenSize()
+        self.width = self.component.width = 350
+        self.height = self.component.height = sH - 2
+        self.color_choise_frame.component.width = self.width - 15
+
+    def disableApplyBtn(self, val):
+        self.component.bApply.script.setDisabledState(val)
+
+    def _apply(self):
+        if not self._modifieds:
+            gui_jokes.askUserOk(lc('colourItemWindow.ERROR'), lc('colourItemWindow.NO_CHANGES'))
+            return
+        self.parent.onApply(self._modifieds)
+
+    def equipItemViewHandler(self, *e):
+        pass
+
+    def equipSlotHandler(self, eventID, slot):
+        if SLOTEVENT_LCLICK != eventID:
+            return False
+        if isinstance(slot, list):
+            return False
+        if slot.haveItem():
+            self.setActiveItem(slot.itemData['complexItemID'])
+
+    def setActiveItem(self, newitemID):
+        self._activeItemID = newitemID
+        for itemID in self._dictItesm:
+            self._dictItesm[itemID]['selected'] = itemID == self._activeItemID
+
+        self.equip_view.setRestrictingComponent(None)
+        self.equip_view.setItems(self._dictItesm.values())
+        if self._activeItemID in self._dictItesm:
+            avatar = BigWorld.player()
+            model_stok_param = avatar.emblems_colors.get(self._activeItemID)
+            self.color_choise_frame.onSelectItem(self._activeItemID, self._dictItesm[self._activeItemID], self._modifieds, model_stok_param)
+            self.frame_change_image.onSelectItem(self._activeItemID, self._dictItesm[self._activeItemID], self._modifieds, model_stok_param)
+        else:
+            self.color_choise_frame.onSelectItem(None)
+            self.frame_change_image.onSelectItem(None)
+        return
+
+    def updateEquippedItems(self, dictItesm):
+        olddict = self._dictItesm
+        self._dictItesm = {}
+        for itemID, item in dictItesm.items():
+            item_params = ItemsCatalog.GetItemParam(item['complexItemType'])
+            isColorised = bool(DyeConstant.getTintColouriseAllowed(item['complexItemType']))
+            if 'isEmblem' in item_params:
+                isEmblem = item_params['isEmblem']
+                self._dictItesm[itemID] = itemID in olddict and olddict[itemID]
+            else:
+                self._dictItesm[itemID] = copy.deepcopy(dict(item))
+                self._dictItesm[itemID]['selected'] = False
+                self._dictItesm[itemID]['modified'] = False
+                self._dictItesm[itemID]['MisColorised'] = isColorised
+                self._dictItesm[itemID]['MisEmblem'] = isEmblem
+
+        if self._activeItemID not in self._dictItesm:
+            self.setActiveItem(0)
+        else:
+            self.equip_view.setRestrictingComponent(None)
+            self.equip_view.setItems(self._dictItesm.values())
+        for itemID in self._modifieds.keys():
+            if itemID not in dictItesm:
+                del self._modifieds[itemID]
+
+        self.updateColors()
+        return
+
+    def updateColors(self):
+        for itemID in self._modifieds:
+            self.resetDyeToModified(itemID)
+
+    def resetColorToStock(self, itemID):
+        avatar = BigWorld.player()
+        model_stok_param = avatar.emblems_colors.get(itemID)
+        tintID = model_stok_param['TINTID']
+        if tintID:
+            tintname = DyeConstant.getClothTintnameByID(tintID)
+        else:
+            tintname = model_stok_param['tint']
+        self.drawTint(itemID, tintname)
+        if 'COLORS4_4' in model_stok_param:
+            colors = model_stok_param['COLORS4_4']
+            if colors:
+                self.drawColor(itemID, colors)
+
+    def resetEmblemToStock(self, itemID):
+        avatar = BigWorld.player()
+        model_stok_param = avatar.emblems_colors.get(itemID)
+        feedName = 'feed_disable'
+        if model_stok_param and 'EMBLEMID' in model_stok_param:
+            EMBLEMID = model_stok_param['EMBLEMID']
+            if EMBLEMID:
+                feedName = UCManager.ucmanager.loadImg(EMBLEMID)
+        StalkerModel.setFeed(self.dummy_window.getModel(), model_stok_param['node'], model_stok_param['dye'], feedName, typemodel='dummy_window(reset) ')
+
+    def resetDyeToModified(self, itemID):
+        avatar = BigWorld.player()
+        model_stok_param = avatar.emblems_colors.get(itemID)
+        if not model_stok_param:
+            del self._modifieds[itemID]
+            self.setActiveItem(0)
+            return
+        if 'COLOR' in self._modifieds[itemID]:
+            tintID = self._modifieds[itemID]['COLOR']['TINTID']
+            colors = self._modifieds[itemID]['COLOR']['COLORS4_4']
+            tintname = DyeConstant.getClothTintnameByID(tintID)
+            self.drawTint(itemID, tintname)
+            self.drawColor(itemID, colors)
+        if 'EMBLEM' in self._modifieds[itemID]:
+            emblemID = self._modifieds[itemID]['EMBLEM']
+            self.drawEmblem(itemID, emblemID)
+        else:
+            self.resetEmblemToStock(itemID)
+
+    def drawTint(self, itemID, tintname):
+        avatar = BigWorld.player()
+        model_stok_param = avatar.emblems_colors.get(itemID)
+        StalkerModel.setTint(self.dummy_window.getModel(), model_stok_param['node'], model_stok_param['dye'], tintname)
+
+    def drawColor(self, itemID, colors):
+        avatar = BigWorld.player()
+        model_stok_param = avatar.emblems_colors.get(itemID)
+        StalkerModel.setcolors(self.dummy_window.getModel(), model_stok_param['node'], model_stok_param['dye'], colors)
+
+    def drawEmblem(self, itemID, emblemID):
+        avatar = BigWorld.player()
+        model_stok_param = avatar.emblems_colors.get(itemID)
+        feedName = UCManager.ucmanager.loadImg(emblemID)
+        StalkerModel.setFeed(self.dummy_window.getModel(), model_stok_param['node'], model_stok_param['dye'], feedName, typemodel='dummy_window ')
+
+    def updateEmblem(self):
+        itemID = self._activeItemID
+        if itemID in self._modifieds and self._modifieds[itemID].get('EMBLEM'):
+            emblemID = self._modifieds[itemID]['EMBLEM']
+            self.drawEmblem(itemID, emblemID)
+        else:
+            print 'resetEmblemToStock'
+            self.resetEmblemToStock(itemID)
+
+    def updateEmblemList(self, data):
+        self.frame_change_image.updateEmblemList(data)
+
+    def clear(self):
+        self._modifieds = {}
+        self.setActiveItem(0)
+
+
+class EquipedItemSlot(soItemCacheSlot):
+    factoryString = 'soGUI.EquipedItemSlot'
+
+    def take(self):
+        pass
+
+    def wannaDrop(self):
+        pass
+
+    def equipItem(self):
+        pass
+
+    def onDragStop(self):
+        return False
+
+    def onDragStart(self):
+        return False
+
+    def setupContent(self):
+        soItemCacheSlot.setupContent(self)
+        cmp = GUI.Simple('soGUI\\maps\\Colours\\white.bmp')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = horizontalAnchor = 'TOP'
+        cmp.materialFX = 'BLEND'
+        cmp.colour = (255, 210, 80, 70)
+        cmp.width = self.SLOTWIDTH
+        cmp.height = self.SLOTHEIGHT
+        cmp.position = (0, 0, 0.9)
+        cmp.visible = False
+        self.component.addChild(cmp, 'selected')
+
+    def _applyItemData(self):
+        soItemCacheSlot._applyItemData(self)
+        if not self.haveItem():
+            self.component.selected.visible = False
+            return
+        self.component.selected.visible = self.itemData['selected']
+        if not self.itemData['MisEmblem']:
+            editabled = self.itemData['MisColorised']
+            self.lockSlot(not editabled)
+            self.component.selected.colour = editabled and (255, 210, 80, 70)
+        else:
+            self.component.selected.colour = (255, 10, 10, 10)
+
+    def onRClick(self):
+        pass
+
+    def checkTransferItem(self):
+        pass

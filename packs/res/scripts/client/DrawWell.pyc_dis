@@ -1,0 +1,49 @@
+# Embedded file name: ./scripts/client/DrawWell.py
+import BigWorld
+import Math
+import DrawWellUtil
+from Helpers.Caps import CAP_DRAWWELL
+from Localization import lc
+
+class DrawWell(BigWorld.Entity):
+
+    def __init__(self):
+        self.height = 1.0
+        BigWorld.Entity.__init__(self)
+        self.targetCaps = [CAP_DRAWWELL]
+        self.name = self.get_mark_text()
+
+    def getHeight(self):
+        if self.model:
+            m = Math.Matrix(self.model.bounds)
+            abs_height = m.applyPoint((0, 1, 0))[1]
+            height = abs_height - self.position[1]
+            if height > 0 and height < 3.0:
+                return height
+        return 1.0
+
+    def onEnterWorld(self, prereqs):
+        self._redraw_Model()
+        self.targetFullBounds = True
+
+    def onLeaveWorld(self):
+        BigWorld.delShadowEntity(self)
+
+    def set_modelType(self, old):
+        self._redraw_Model()
+
+    def onLoadModel(self, model):
+        if self.isDestroyed:
+            return
+        self.model = model
+        self.height = self.getHeight()
+
+    def get_mark_text(self):
+        return lc(DrawWellUtil.get_name(self.modelType))
+
+    def get_interaction_dist(self):
+        return self.radius
+
+    def _redraw_Model(self):
+        modelname = DrawWellUtil.getNameModel(self.modelType)
+        BigWorld.fetchModelObstacle(modelname, self.matrix, 0, self.onLoadModel)

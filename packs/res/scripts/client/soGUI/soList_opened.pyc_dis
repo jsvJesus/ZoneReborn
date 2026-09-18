@@ -1,0 +1,33 @@
+# Embedded file name: ./scripts/client/soGUI/soList_opened.py
+from soGUI.soList_optimized import soList_optimized
+
+class soList_closed(soList_optimized):
+
+    def get_button_label_position(self, component):
+        return soList_opened.DEFAULT_POSITION
+
+
+class soList_opened(soList_optimized):
+    DEFAULT_POSITION = (-0.95, 0.2, 0)
+    FAV_POSITION = (-0.88, 0.2, 0)
+
+    def get_button_label_position(self, component):
+        return soList_opened.DEFAULT_POSITION
+
+    def apply_single_element(self, i, elem):
+        if self.elements[self.indexes[elem]] == 0:
+            self.elemComps[i].buttonActive = False
+            self.elemComps[i].setVisualState('normal')
+        else:
+            self.elemComps[i].buttonActive = True
+            self.elemComps[i].setToggleState(True)
+        if self.attachments[self.indexes[elem]]['favorite']:
+            self.elemComps[i].initVSC('soGUI/visual_styles/listElementFav.xml')
+            self.elemComps[i].add_glyph('soGUI/maps/Options/mark.dds')
+            self.elemComps[i].myLabel.position = soList_opened.FAV_POSITION
+        else:
+            self.elemComps[i].initVSC('soGUI/visual_styles/listElement.xml')
+            self.elemComps[i].clear_glyph()
+            self.elemComps[i].myLabel.position = soList_opened.DEFAULT_POSITION
+        self.elementHolder.children[i][1].label.text = self.indexes[elem]
+        self.elementHolder.children[i][1].visible = True

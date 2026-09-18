@@ -1,0 +1,240 @@
+# Embedded file name: ./scripts/common/GiftBankUtils.py
+from Localization import lc
+import ItemsUtils
+from Items import ItemsCatalog
+import math
+import ResMgr
+import json
+NUMER_STRING_PAGE = 10
+MAX_GIFTS = 50
+MAX_GIFTS_SENT = 15
+MAX_ITEM_IN_GIFT = 10
+TIME_RETURN_GIFT = 86400
+HIDE_IN_SHOP = set((u'Bank_Thief', u'CaptureBase_Sklad'))
+path = 'scripts/common/data/GiftBankData.json'
+item_bank_config = {}
+keeper_names_list = []
+keeper_name_to_id = {}
+TRANSFER_TYPE_BASE = 0
+TRANSFER_TYPE_EXPRESS = 1
+TRANSFER_TYPE_GOLD = 2
+COST_TRANSFER = {TRANSFER_TYPE_BASE: [2000, 0],
+ TRANSFER_TYPE_EXPRESS: [15000, 0],
+ TRANSFER_TYPE_GOLD: [0, 1]}
+TIME_TRANSFER = {TRANSFER_TYPE_BASE: 72000.0,
+ TRANSFER_TYPE_EXPRESS: 18000.0,
+ TRANSFER_TYPE_GOLD: 900.0}
+
+def getMoneyTax(tariff, money, isPremium = False):
+    """
+            \xd0\x9d\xd0\xb0\xd0\xbb\xd0\xbe\xd0\xb3 \xd0\xbd\xd0\xb0 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd1\x81\xd1\x8b\xd0\xbb\xd0\xb0\xd0\xb5\xd0\xbc\xd1\x8b\xd0\xb5 \xd0\xb4\xd0\xb5\xd0\xbd\xd1\x8c\xd0\xb3\xd0\xb8 \xd0\xb2 \xd0\xb7\xd0\xb0\xd0\xb2\xd0\xb8\xd1\x81\xd0\xb8\xd0\xbc\xd0\xbe\xd1\x81\xd1\x82\xd0\xb8 \xd0\xbe\xd1\x82 \xd1\x82\xd0\xb0\xd1\x80\xd0\xb8\xd1\x84\xd0\xb0
+            @ret: money
+    """
+    premMp = 0.8 if isPremium else 1.0
+    if tariff == TRANSFER_TYPE_BASE:
+        return (int(math.ceil(premMp * money * 0.05)), 0)
+    if tariff == TRANSFER_TYPE_EXPRESS:
+        return (int(math.ceil(premMp * money * 0.1)), 0)
+    if tariff == TRANSFER_TYPE_GOLD:
+        return (0, int(math.ceil(premMp * money / 10000 * 0.05)))
+    raise ValueError('Unknow tariff %s.' % tariff)
+
+
+def getGoldTax(tariff, gold, isPremium = False):
+    """
+            \xd0\x9d\xd0\xb0\xd0\xbb\xd0\xbe\xd0\xb3 \xd0\xbd\xd0\xb0 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd1\x81\xd1\x8b\xd0\xbb\xd0\xb0\xd0\xb5\xd0\xbc\xd0\xbe\xd0\xb5 \xd0\xb7\xd0\xbe\xd0\xbb\xd0\xbe\xd1\x82\xd0\xbe \xd0\xb2 \xd0\xb7\xd0\xb0\xd0\xb2\xd0\xb8\xd1\x81\xd0\xb8\xd0\xbc\xd0\xbe\xd1\x81\xd1\x82\xd0\xb8 \xd0\xbe\xd1\x82 \xd1\x82\xd0\xb0\xd1\x80\xd0\xb8\xd1\x84\xd0\xb0
+            @ret: gold
+    """
+    premMp = 0.8 if isPremium else 1.0
+    if tariff == TRANSFER_TYPE_BASE:
+        return (0, int(math.ceil(gold * 0.08)))
+    if tariff == TRANSFER_TYPE_EXPRESS:
+        return (0, int(math.ceil(gold * 0.1)))
+    if tariff == TRANSFER_TYPE_GOLD:
+        return (0, int(math.ceil(gold * 0.13)))
+    raise ValueError('Unknow tariff %s.' % tariff)
+
+
+def item_tax(tariff, multiplier_money, complexItem, isPremium = False):
+    """
+            \xd0\x9d\xd0\xb0\xd0\xbb\xd0\xbe\xd0\xb3 \xd0\xbd\xd0\xb0 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd1\x81\xd1\x8b\xd0\xbb\xd0\xb0\xd0\xb5\xd0\xbc\xd1\x8b\xd0\xb9 \xd0\xb8\xd1\x82\xd0\xb5\xd0\xbc \xd0\xb2 \xd0\xb7\xd0\xb0\xd0\xb2\xd0\xb8\xd1\x81\xd0\xb8\xd0\xbc\xd0\xbe\xd1\x81\xd1\x82\xd0\xb8 \xd0\xbe\xd1\x82 \xd1\x82\xd0\xb0\xd1\x80\xd0\xb8\xd1\x84\xd0\xb0 \xd0\xb8 \xd0\xb5\xd0\xb3\xd0\xbe \xd1\x81\xd1\x82\xd0\xb0\xd0\xba\xd0\xbe\xd0\xb2
+            @ret: [money, gold]
+    """
+    premMp = 0.8 if isPremium else 1.0
+    itemparam = ItemsCatalog.GetItemParam(complexItem['complexItemType'])
+    item_cost = max(1, itemparam.get('Cost', 1))
+    item_pack_size = max(1, itemparam.get('PackageSize', 1))
+    stack_number = ItemsUtils.GetItemNumber(complexItem)
+    item_weight = itemparam.get('Weight', 100.0)
+    item_class = ItemsCatalog.GetItemClass(complexItem['complexItemType'])
+    if item_class == ItemsCatalog.AMMO:
+        stack_number = stack_number / float(item_pack_size)
+    if tariff == TRANSFER_TYPE_BASE:
+        tax_1 = item_cost * stack_number * 0.025 * premMp
+        tax_2 = stack_number ** 1.2 * premMp
+        tax_3 = item_weight * stack_number / 10.0 * 20000
+        return (int((tax_1 + tax_2 + tax_3) * multiplier_money), 0)
+    if tariff == TRANSFER_TYPE_EXPRESS:
+        tax_1 = item_cost * stack_number * 0.041 * premMp
+        tax_2 = stack_number ** 1.39 * premMp
+        tax_3 = item_weight * stack_number / 10.0 * 20000
+        return (int((tax_1 + tax_2 + tax_3) * multiplier_money), 0)
+    if tariff == TRANSFER_TYPE_GOLD:
+        tax_1 = 0.0 * premMp
+        tax_2 = max(3, stack_number ** 0.2) * premMp
+        tax_3 = item_weight * stack_number / 10.0 * 1.5
+        return (0, int(tax_1 + tax_2 + tax_3))
+    raise ValueError('Unknow tariff %s.' % tariff)
+
+
+class MONEY_TAX:
+    MIN_MONEY_TAX = 100
+    MONEY_TAX_COEF = 0.05
+    MIN_GOLD_TAX = 2
+    GOLD_TAX_COEF = 0.01
+
+
+class GIFT_TYPE:
+    ACCEPTED_GIFTS = 0
+    SENT_GIFTS = 1
+
+
+class GIFT_STATUS:
+    UNDEFINED = 0
+    WAIT_TO_OPEN = 1
+    IS_FORWARDED = 2
+    START_OPEN = 3
+    IS_ALREADY_OPEN = 4
+    RETURNED = 5
+    HAS_BEEN_SENT = 6
+    HAS_BEEN_SENT_WAIT_TARGET_CONF = 7
+    HAS_BEEN_SENT_WAIT_SENDER_CONF = 8
+    RETURNED_TO_SENDER = 9
+    RETURNED_WAIT_TO_OPEN = 10
+    caption = {UNDEFINED: lc('Codes.GiftResponses.GIFT_STATUS_UNDEFINED'),
+     WAIT_TO_OPEN: lc('Codes.GiftResponses.GIFT_STATUS_WAIT_TO_OPEN'),
+     IS_FORWARDED: lc('Codes.GiftResponses.GIFT_STATUS_IS_FORWARDED'),
+     START_OPEN: lc('Codes.GiftResponses.GIFT_STATUS_START_OPEN'),
+     IS_ALREADY_OPEN: lc('Codes.GiftResponses.GIFT_STATUS_IS_ALREADY_OPEN'),
+     RETURNED: lc('Codes.GiftResponses.GIFT_STATUS_RETURNED'),
+     HAS_BEEN_SENT: lc('Codes.GiftResponses.GIFT_STATUS_HAS_BEEN_SENT'),
+     RETURNED_WAIT_TO_OPEN: lc('Codes.GiftResponses.GIFT_STATUS_RETURNED_WAIT_TO_OPEN'),
+     HAS_BEEN_SENT_WAIT_SENDER_CONF: u'Err8',
+     HAS_BEEN_SENT_WAIT_TARGET_CONF: u'Err7',
+     RETURNED_TO_SENDER: lc('Codes.GiftResponses.GIFT_STATUS_RETURNED_TO_SENDER')}
+
+
+class ERROR_CODE:
+    OPEN_OK = 0
+    RECEIVED_GIFT_AVATAR_OK = 1
+    RECEIVED_GIFT_SHOP_OK = 2
+    SEND_OK = 3
+    DELETE_OK = 4
+    RECEIVED_GIFT_WAIT = 5
+    MaxItemStorageNumber = 21
+    NPC_FAR = 22
+    ERROR_SEND_TAGERT_NOT_FOUND = 11
+    ERROR_SEND_ITEM_NOT_FOUND = 12
+    ERROR_SEND_CREDIT = 13
+    ERROR_SEND_GOLD = 14
+    ERROR_SEND_EMPTY_GIFT = 15
+    ERROR_GIFT_RETURN = 16
+    ERROR_NO_ROOM = 17
+    ERROR_TRANSACTION_LOCK = 18
+    ERROR_RECEIVED_MAX_GIFTS = 30
+    CHANGE_OK = 50
+    msg = {OPEN_OK: lc('Codes.GiftResponses.OPEN_OK'),
+     RECEIVED_GIFT_AVATAR_OK: lc('Codes.GiftResponses.RECEIVED_GIFT_AVATAR_OK'),
+     RECEIVED_GIFT_SHOP_OK: lc('Codes.GiftResponses.RECEIVED_GIFT_SHOP_OK'),
+     SEND_OK: lc('Codes.GiftResponses.SEND_OK'),
+     DELETE_OK: lc('Codes.GiftResponses.DELETE_OK'),
+     RECEIVED_GIFT_WAIT: lc('Codes.GiftResponses.RECEIVED_GIFT_WAIT'),
+     NPC_FAR: lc('Codes.GiftResponses.NPC_FAR'),
+     MaxItemStorageNumber: lc('Codes.GiftResponses.MaxItemStorageNumber'),
+     ERROR_SEND_TAGERT_NOT_FOUND: lc('Codes.GiftResponses.ERROR_SEND_TAGERT_NOT_FOUND'),
+     ERROR_SEND_ITEM_NOT_FOUND: lc('Codes.GiftResponses.ERROR_SEND_ITEM_NOT_FOUND'),
+     ERROR_SEND_CREDIT: lc('Codes.GiftResponses.ERROR_SEND_CREDIT'),
+     ERROR_SEND_GOLD: lc('Codes.GiftResponses.ERROR_SEND_GOLD'),
+     ERROR_GIFT_RETURN: lc('Codes.GiftResponses.ERROR_GIFT_RETURN'),
+     ERROR_SEND_EMPTY_GIFT: lc('Codes.GiftResponses.ERROR_SEND_EMPTY_GIFT'),
+     ERROR_RECEIVED_MAX_GIFTS: lc('Codes.GiftResponses.ERROR_RECEIVED_MAX_GIFTS'),
+     ERROR_NO_ROOM: lc('Codes.GiftResponses.ERROR_NO_ROOM'),
+     ERROR_TRANSACTION_LOCK: lc('Codes.GiftResponses.ERROR_TRANSACTION_LOCK'),
+     CHANGE_OK: u'CHANGE_OK'}
+
+
+class EVENTS:
+    OPEN = 0
+    SEND = 1
+    RECEIVING = 2
+
+
+def get_bank_param(bank_name):
+    global item_bank_config
+    if not item_bank_config:
+        _load_bank_config()
+    if bank_name in item_bank_config:
+        return item_bank_config[bank_name]
+    return item_bank_config['default']
+
+
+def bank_is_only_read(bank_name):
+    if not item_bank_config:
+        _load_bank_config()
+    bank_param = get_bank_param(str(bank_name))
+    if not bank_param:
+        bank_param = get_bank_param('default')
+    return bank_param.get('only_read')
+
+
+def get_send_param(bank_name, to_bank):
+    if not bank_name:
+        return []
+    if not item_bank_config:
+        _load_bank_config()
+    bank_param = get_bank_param(str(bank_name))
+    if not bank_param:
+        bank_param = get_bank_param('default')
+    if to_bank not in bank_param:
+        return bank_param.get('default', {'money': 1,
+         'time': 1,
+         'can_send': True})
+    return bank_param[to_bank]
+
+
+def _load_bank_config():
+    global keeper_name_to_id
+    global keeper_names_list
+    py_data_section = ResMgr.openSection(path)
+    data = json.loads(py_data_section.asBinary)
+    for i, item in enumerate(data):
+        keeper_name = item.keys()[0]
+        keeper_names_list.append(keeper_name)
+        item_bank_config[keeper_name] = item[keeper_name]
+        keeper_name_to_id[keeper_name] = i
+
+
+def get_keeper_names_list(show_hidden = True):
+    """ \xd0\xb2\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xbe\xd0\xba \xd0\xb2\xd1\x81\xd0\xb5\xd1\x85 \xd0\xba\xd0\xbb\xd0\xb0\xd0\xb4\xd0\xbe\xd0\xb2\xd1\x89\xd0\xb8\xd0\xba\xd0\xbe\xd0\xb2 """
+    if not keeper_names_list:
+        _load_bank_config()
+    if show_hidden:
+        return keeper_names_list
+    else:
+        return filter(lambda name: name not in HIDE_IN_SHOP, keeper_names_list)
+
+
+def get_keeper_index(keeper_name):
+    """ \xd0\xb2\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb8\xd0\xbd\xd0\xb4\xd0\xb5\xd1\x82\xd0\xb8\xd1\x84\xd0\xb8\xd0\xba\xd0\xb0\xd1\x82\xd0\xbe\xd1\x80 (\xd0\xb8\xd0\xbd\xd0\xb4\xd0\xb5\xd0\xba\xd1\x81) \xd0\xba\xd0\xbb\xd0\xb0\xd0\xb4\xd0\xbe\xd0\xb2\xd1\x89\xd0\xb8\xd0\xba\xd0\xb0 """
+    if not keeper_name_to_id:
+        _load_bank_config()
+    return keeper_name_to_id.get(keeper_name)
+
+
+def get_keeper_name(keeper_index):
+    """ \xd0\xb2\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb8\xd0\xbc\xd1\x8f \xd0\xba\xd0\xbb\xd0\xb0\xd0\xb4\xd0\xbe\xd0\xb2\xd1\x89\xd0\xb8\xd0\xba\xd0\xb0 \xd0\xbf\xd0\xbe \xd0\xb8\xd0\xbd\xd0\xb4\xd0\xb5\xd0\xba\xd1\x81\xd1\x83 (\xd0\xb8\xd0\xb4\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb8\xd1\x84\xd0\xb8\xd0\xba\xd0\xb0\xd1\x82\xd0\xbe\xd1\x80\xd1\x83) """
+    keeper_list = get_keeper_names_list()
+    if keeper_index >= len(keeper_list):
+        return None
+    else:
+        return keeper_list[keeper_index]

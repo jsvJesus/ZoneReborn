@@ -1,0 +1,516 @@
+# Embedded file name: ./scripts/client/soGUI/frameChangeImage.py
+import BigWorld
+import BWPersonality
+import os
+import GUI
+import random
+import copy
+import UCManager
+import emblemWindow
+import colourisePicker
+from Items import ItemsCatalog
+import ItemsUtils
+import StalkerModel
+import DyeConstant
+import traceback
+from Localization import lc, localization_object
+from Helpers.PyGUI.PyGUIBase import PyGUIBase
+from soGUI.soButton import soButton, soButtonWTT, soButtonWFT
+from soDraggableComponent import soDraggableComponent
+from soGUI.soEditField import soEditField2
+from soGUI.soEditField import soEditBox
+from soGUI.soEditField import soEditBox2
+import gui_jokes
+from soGUI.soItemView import soItemView, soItemSlot
+from soItemCache import soItemCacheSlot
+from soGUI.soItemView import SLOTEVENT_LCLICK
+
+class FrameChangeImage(PyGUIBase):
+    factoryString = 'soGUI.FrameChangeImage'
+
+    def __init__(self, component, dummy_window, parent):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self._tabs = set(['embl_view_stand', 'embl_view_my', 'embl_view_upload'])
+        self.parent = parent
+        self.dummy_window = dummy_window
+        self.setupRoot()
+        self.setupContent()
+        self._itemID = None
+        self._modifieds = None
+        return
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        sW, sH = BigWorld.screenSize()
+        self.width = cmp.width = 335
+        self.height = cmp.height = 420
+        cmp = GUI.Frame2('soGUI/maps/Controls/msgBox/windowFrame.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = cmp.height = 2.0
+        cmp.position = (0.0, 0.0, 0.9)
+        self.component.addChild(cmp, 'skin')
+        cmp = GUI.Simple('soGUI\\maps\\Colours\\white.bmp')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = horizontalAnchor = 'CENTER'
+        cmp.materialFX = 'BLEND'
+        cmp.colour = (255, 210, 80, 0)
+        cmp.width = cmp.height = 2
+        cmp.position = (0, 0, 0.9)
+        cmp.visible = 1
+        self.component.addChild(cmp, 'FrAdd')
+        cmp = GUI.Simple('soGUI\\maps\\Colours\\white.bmp')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = horizontalAnchor = 'CENTER'
+        cmp.materialFX = 'BLEND'
+        cmp.colour = (255, 210, 80, 0)
+        cmp.width = cmp.height = 2
+        cmp.position = (0, 0, 0.9)
+        cmp.visible = 0
+        self.component.addChild(cmp, 'frChange')
+        cmp = GUI.Simple('soGUI\\maps\\Colours\\white.bmp')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = horizontalAnchor = 'CENTER'
+        cmp.materialFX = 'BLEND'
+        cmp.colour = (255, 210, 80, 0)
+        cmp.width = cmp.height = 2
+        cmp.position = (0, 0, 0.9)
+        cmp.visible = 0
+        self.component.addChild(cmp, 'frDisable')
+
+    def setupContent(self):
+        bStandart = soButtonWFT(GUI.Window())
+        cmp = bStandart.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 101
+        cmp.height = 21
+        cmp.label.text = lc('colourItemWindow.TAB_STANDART')
+        cmp.position = (10, 5, 0.2)
+        bStandart.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        bStandart.initVSC('soGUI/visual_styles/charScreenTab.xml')
+        bStandart.onClick = lambda : self._openTab('embl_view_stand')
+        bStandart.onBound()
+        bStandart._updateVisualState()
+        self.component.frChange.addChild(cmp, 'bStandart')
+        bMyPict = soButtonWFT(GUI.Window())
+        cmp = bMyPict.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 101
+        cmp.height = 21
+        cmp.label.text = lc('colourItemWindow.TAB_MYPICT')
+        cmp.position = (110, 5, 0.2)
+        bMyPict.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        bMyPict.initVSC('soGUI/visual_styles/charScreenTab.xml')
+        bMyPict.onClick = lambda : self._openTab('embl_view_my')
+        bMyPict.onBound()
+        bMyPict._updateVisualState()
+        self.component.frChange.addChild(cmp, 'bMyPict')
+        bNewImg = soButtonWFT(GUI.Window())
+        cmp = bNewImg.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 101
+        cmp.height = 21
+        cmp.label.text = lc('colourItemWindow.TAB_UPLOAD')
+        cmp.position = (210, 5, 0.2)
+        bNewImg.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        bNewImg.initVSC('soGUI/visual_styles/charScreenTab.xml')
+        bNewImg.onClick = lambda : self._openTab('embl_view_upload')
+        bNewImg.onBound()
+        bNewImg._updateVisualState()
+        self.component.frChange.addChild(cmp, 'bNewImg')
+        itemView = soItemView(GUI.Window(), EmblemSlot, slot_eventsHandler=lambda *e: self.emblSlotHandler(isMyPicture=False, *e), eventsHandler=self.emblViewHandler, rowWidth=5, cols=5, hScroll=0, borderWidth=0, rows=5, vScroll=1)
+        self.itemViewAll = itemView
+        cmp = itemView.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.position = (0, 25, 0.5)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        self.component.frChange.addChild(cmp, 'embl_view_stand')
+        itemView.onBound()
+        itemView.setRestrictingComponent(None)
+        itemView.setItems(None)
+        self.embl_view = itemView
+        itemView = soItemView(GUI.Window(), EmblemSlot, slot_eventsHandler=lambda *e: self.emblSlotHandler(isMyPicture=True, *e), eventsHandler=self.emblViewHandler, rowWidth=5, cols=5, hScroll=0, borderWidth=0, rows=5, vScroll=1)
+        self.itemViewMy = itemView
+        cmp = itemView.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.position = (0, 26, 0.5)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.visible = False
+        cmp.materialFX = 'BLEND'
+        self.component.frChange.addChild(cmp, 'embl_view_my')
+        itemView.onBound()
+        itemView.setRestrictingComponent(None)
+        itemView.setItems(None)
+        self.embl_view = itemView
+        self._uploader = emblemWindow.EmblemWindow(GUI.Window(), self)
+        self._uploader.component.position = (0, 26, 0.0)
+        self.component.frChange.addChild(self._uploader.component, 'embl_view_upload')
+        self._uploader.component.visible = False
+        cmp = GUI.Simple('soGUI/maps/ucsdata/noimg.png')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 64
+        cmp.height = 64
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (10, self.height - 70, 0.1)
+        cmp.visible = 1
+        self.component.frChange.addChild(cmp, 'currentImg')
+        cmp = GUI.Text(lc('colourItemWindow.GOLD_COST').format(DyeConstant.COST_EMBLEM))
+        cmp.font = 'ruRU_calibri_default.font'
+        cmp.colour = (255, 215, 0, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.verticalAnchor = 'TOP'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.position = (90, self.height - 70, 0.1)
+        self.component.frChange.addChild(cmp, 'emblemCost')
+        bCancel = soButton(GUI.Window())
+        bCancel.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        cmp = bCancel.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 90
+        cmp.height = 25
+        cmp.label.text = lc('colourItemWindow.RESET')
+        cmp.position = (240, self.height - 5, 0.9)
+        self.component.frChange.addChild(cmp, 'creset')
+        bCancel.onClick = self._reset
+        bCancel.onBound()
+        bCancel._updateVisualState()
+        cmp = GUI.Text(lc('colourItemWindow.NOT_AVAILABLE'))
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_calibri_default.font'
+        cmp.colour = (150, 130, 80, 180)
+        cmp.materialFX = 'BLEND'
+        cmp.multiline = True
+        cmp.position = (15, 50, 0.1)
+        self.component.frDisable.addChild(cmp, 'disableText')
+        cmp = GUI.Text(lc('colourItemWindow.CURRENT_EMBLEM'))
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_calibri_default.font'
+        cmp.colour = (150, 130, 80, 180)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (90, 50, 0.1)
+        self.component.FrAdd.addChild(cmp, 'addText')
+        cmp = GUI.Text(u'')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_calibri_default.font'
+        cmp.colour = (150, 130, 80, 210)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (90, 70, 0.1)
+        self.component.FrAdd.addChild(cmp, 'curImgID')
+        cmp = GUI.Simple('soGUI/maps/ucsdata/noimg.png')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 64
+        cmp.height = 64
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (10, 40, 0.1)
+        cmp.visible = 1
+        self.component.FrAdd.addChild(cmp, 'loadedTexture')
+        cmp = GUI.Simple('soGUI/maps/ucsdata/noimg.png')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 64
+        cmp.height = 64
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (10, 40, 0.1)
+        cmp.visible = 0
+        self.component.FrAdd.addChild(cmp, 'noimg')
+        bAddImg = soButton(GUI.Window())
+        bAddImg.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        cmp = bAddImg.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 170
+        cmp.height = 30
+        cmp.label.text = lc('colourItemWindow.GO_TO_CHOICE_OR_UPLOAD')
+        cmp.position = (20, 150, 0.9)
+        self.component.FrAdd.addChild(cmp, 'bAddImg')
+        bAddImg.onClick = self._changeEmblem
+        bAddImg.onBound()
+        bAddImg._updateVisualState()
+        items = [ {'id': x} for x in [20,
+         17,
+         18,
+         19] ]
+        self.itemViewAll.setItems(items)
+        self.itemViewMy.setItems(items * 300)
+        BigWorld.player().zzz = self.itemViewMy
+        return
+
+    def updateEmblemList(self, data):
+        if 0 in data:
+            items = [ {'id': x} for x in data[0] ]
+            self.itemViewAll.setItems(items)
+        if 1 in data:
+            items = [ {'id': x} for x in data[1] ]
+            self.itemViewMy.setItems(items)
+
+    def _changeEmblem(self):
+        self.setStatus(2)
+
+    def _reset(self):
+        self.setStatus(1)
+        if self._itemID in self._modifieds:
+            if 'EMBLEM' in self._modifieds[self._itemID]:
+                del self._modifieds[self._itemID]['EMBLEM']
+            if not self._modifieds[self._itemID]:
+                del self._modifieds[self._itemID]
+        self.parent.resetEmblemToStock(self._itemID)
+        emblemID = self.model_stok_param['EMBLEMID']
+        if emblemID:
+            feedName = UCManager.ucmanager.loadImg(emblemID, self._drawIcon)
+        else:
+            self._drawIcon(None)
+        return
+
+    def setStatus(self, statusID = 0):
+        layers = ['frDisable', 'FrAdd', 'frChange']
+        for i, layer in enumerate(layers):
+            getattr(self.component, layer).visible = statusID == i
+
+    def onSelectItem(self, itemID, item = None, modifieds = None, model_stok_param = False):
+        self._itemID = itemID
+        self._item = item
+        self._modifieds = modifieds
+        self.model_stok_param = model_stok_param
+        if not itemID or not item or not model_stok_param:
+            self.setStatus(0)
+            return
+        else:
+            emblemID = self._modifieds.get(self._itemID, {}).get('EMBLEM')
+            if emblemID:
+                self.setStatus(2)
+            elif item['MisEmblem']:
+                self.setStatus(1)
+            else:
+                self.setStatus(0)
+                return
+            self._drawIcon(None)
+            if emblemID:
+                feedName = UCManager.ucmanager.loadImg(emblemID, self._drawIcon)
+                return
+            if model_stok_param:
+                emblemID = model_stok_param['EMBLEMID']
+                self.component.FrAdd.curImgID.text = str(emblemID)
+                if emblemID:
+                    feedName = UCManager.ucmanager.loadImg(emblemID, self._drawIcon)
+                    return
+            return
+
+    def _drawIcon(self, imgID, feedName = '', texture = None):
+        if imgID and texture:
+            self.component.FrAdd.noimg.visible = False
+            self.component.FrAdd.loadedTexture.visible = True
+            self.component.FrAdd.loadedTexture.texture = texture
+            self.component.frChange.currentImg.visible = True
+            self.component.frChange.currentImg.texture = texture
+        else:
+            self.component.FrAdd.noimg.visible = True
+            self.component.FrAdd.loadedTexture.visible = False
+            self.component.frChange.currentImg.visible = False
+
+    def _openTab(self, show_tab):
+        getattr(self.component.frChange, show_tab).visible = True
+        self.component.frChange.bStandart.script.setToggleState(False)
+        self.component.frChange.bMyPict.script.setToggleState(False)
+        self.component.frChange.bNewImg.script.setToggleState(False)
+        for tab in self._tabs:
+            if tab != show_tab:
+                getattr(self.component.frChange, tab).visible = False
+
+        if show_tab == 'embl_view_upload':
+            self.component.frChange.bNewImg.script.setToggleState(True)
+        elif show_tab == 'embl_view_my':
+            self.component.frChange.bMyPict.script.setToggleState(True)
+        elif show_tab == 'embl_view_upload':
+            self.component.frChange.bStandart.script.setToggleState(True)
+
+    def emblViewHandler(self, *e):
+        pass
+
+    def changeFeed(self, feedName):
+        avatar = BigWorld.player()
+        model_stok_param = avatar.emblems_colors.get(self._itemID)
+        StalkerModel.setFeed(self.parent.dummy_window.getModel(), model_stok_param['node'], model_stok_param['dye'], feedName, typemodel='dummy_window changeFeed')
+
+    def onloadEmblemOk(self, emblemID):
+        self.onSelectemblemID(emblemID)
+        self._openTab('embl_view_my')
+
+    def emblSlotHandler(self, eventID, slot, isMyPicture = False):
+        if SLOTEVENT_LCLICK != eventID:
+            return False
+        if isinstance(slot, list):
+            return False
+        if slot.haveItem():
+            emblemID = slot.itemData['id']
+            if not emblemID:
+                return
+            if UCManager.ucmanager.isBannedEmblem(emblemID):
+                return
+            self.onSelectemblemID(emblemID)
+
+    def onSelectemblemID(self, emblemID):
+        if not emblemID:
+            return
+        avatar = BigWorld.player()
+        model_stok_param = avatar.emblems_colors.get(self._itemID)
+        emblemID = int(emblemID)
+        if self._itemID not in self._modifieds:
+            self._modifieds[self._itemID] = {}
+        if 'EMBLEM' not in self._modifieds[self._itemID]:
+            self._modifieds[self._itemID]['EMBLEM'] = 0
+        self._modifieds[self._itemID]['EMBLEM'] = emblemID
+        feedName = UCManager.ucmanager.loadImg(emblemID, self._drawIcon)
+        StalkerModel.setFeed(self.parent.dummy_window.getModel(), model_stok_param['node'], model_stok_param['dye'], feedName, typemodel='dummy_window onSelectemblemID')
+
+
+class EmblemSlot(soItemCacheSlot):
+    factoryString = 'soGUI.EmblemSlot'
+    mark_state = False
+
+    def take(self):
+        pass
+
+    def onRClick(self):
+        pass
+
+    def setEmblemIcon(self, imgID, feedName, texture):
+        if self.haveItem():
+            if texture and self.itemData['id'] == imgID:
+                self.component.itemIcon.texture = texture
+                self.component.itemIcon.visible = True
+
+    def _applyItemData(self):
+        if self.haveItem():
+            tid = self.itemData['id']
+            self.component.itemIcon.visible = False
+            feedName = UCManager.ucmanager.loadImg(tid, self.setEmblemIcon)
+            self.component.itemName.text = '%s' % tid
+        else:
+            self.component.itemIcon.textureName = ''
+            self.component.itemName.text = ''
+            self.component.itemCount.text = ''
+            self.component.itemLockInShop.visible = False
+            self.component.frameCmp.colour = (255, 255, 255, 255)
+            self.lockSlot(False)
+            self.item_lock_in_shop = False
+
+
+class FrameChangeClanEmblemImage(FrameChangeImage):
+
+    def __init__(self, component, parent):
+        FrameChangeImage.__init__(self, component, None, parent)
+        bClear = soButton(GUI.Window())
+        bClear.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        cmp = bClear.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 90
+        cmp.height = 25
+        cmp.label.text = lc('colourItemWindow.CANCEL')
+        cmp.position = (140, self.height - 5, 0.9)
+        self.component.frChange.addChild(cmp, 'ccancel')
+        bClear.onClick = self._cancel
+        bClear.onBound()
+        bClear._updateVisualState()
+        if self.component.frChange.emblemCost:
+            self.component.frChange.emblemCost.text = lc('colourItemWindow.MONEY_COST').format(DyeConstant.COST_CLAN_EMBLEM)
+            self.component.frChange.emblemCost.colour = (255, 255, 255, 255)
+        return
+
+    def onSelectemblemID(self, emblemID):
+        if not emblemID:
+            return
+        emblemID = int(emblemID)
+        feedName = UCManager.ucmanager.loadImg(emblemID, self.parent._drawIcon)
+
+    def changeFeed(self, feedName):
+        texture = BigWorld.getTextureFeed(feedName)
+        self.parent._drawIcon(-1, feedName, texture)
+
+    def _reset(self):
+        self.setStatus(1)
+        self.parent._drawIcon(0)
+
+    def _cancel(self):
+        self.setStatus(1)
+        emblemID = self.parent.currentEmblemID
+        self.parent.clearEmblem()
+        if emblemID:
+            feedName = UCManager.ucmanager.loadImg(emblemID, self.parent._drawIcon)
+        else:
+            self.parent._drawIcon(0)
+
+    def LockBtn(self):
+        if self.component.FrAdd.bAddImg:
+            self.component.FrAdd.bAddImg.script.setDisabledState(True)
+
+    def unLockBtn(self):
+        if self.component.FrAdd.bAddImg:
+            self.component.FrAdd.bAddImg.script.setDisabledState(False)

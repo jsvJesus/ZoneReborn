@@ -1,0 +1,11 @@
+# Embedded file name: ./scripts/common/space_utils.py
+from Localization import lc
+
+def getLokalizedSpaceNameByName(space_name, default = None):
+    space_name = space_name.replace('spaces/', '')
+    if not default:
+        default = lc('spaceName.UNKNOWN_REGION')
+    name = lc('spaceName.space.%s' % space_name, default=default)
+    if name == space_name:
+        name = lc('DonateBases.name.%s' % space_name, default=default)
+    return name

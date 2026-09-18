@@ -1,0 +1,207 @@
+# Embedded file name: ./scripts/client/client_utils.py
+__author__ = 'mon'
+import BigWorld
+from Math import Vector3, Matrix
+MatrixProvider = Matrix.__bases__[0]
+import ResMgr
+import os
+from utils_bw import isinstance_ext
+PARTICLES_HELPER_MODEL = 'models/misc/particles/helper_attach.model'
+TEST_BALL_MODEL = 'helpers/models/unit_sphere.model'
+TEST_BALL_MODEL_2 = 'models/bolvan/sfera.model'
+BLYAK_MODEL = 'characters/creatures/blyak/blyak_lod1.model'
+FIRST_CLIENT_ID = 1073741825L
+EMPTY_MODEL = 'models/misc/particles/helper_attach.model'
+LARGE_INVISIBLE_BOX = 'models/bolvan/box_micro.model'
+_current_model_action = ''
+_current_model_action_callback_id = 0
+
+def direct_model(model, direction):
+    """Direct model x-axis to defined direction."""
+    direction = Vector3(direction)
+    direction.normalise()
+    model.alignToVector(direction, model.position, False)
+
+
+def direct_model_to(model, object_to):
+    """Direct model x-axis to position defined by Vector3/Matrix/MatrixProvider."""
+    if isinstance(object_to, MatrixProvider):
+        object_pos = Matrix(object_to).translation
+    elif isinstance(object_to, Matrix):
+        object_pos = object_to.translation
+    else:
+        object_pos = object_to
+    direct_model(model, object_pos - model.position)
+
+
+def entitiesOfClass(className):
+    return [ e for e in BigWorld.entities.values() if isinstance_ext(e, className) ]
+
+
+ents = entitiesOfClass
+
+def get_action_frame_rate(action, duration):
+    return action.frameRate * action.duration / duration
+
+
+def stop_execute_model_action():
+    global _current_model_action
+    global _current_model_action_callback_id
+    if _current_model_action:
+        _current_model_action.stop()
+        _current_model_action = None
+    if _current_model_action_callback_id:
+        BigWorld.cancelCallback(_current_model_action_callback_id)
+        _current_model_action_callback_id = 0
+    return
+
+
+def execute_model_action(action, duration = None, callback = None, stopable = False):
+    global _current_model_action
+    global _current_model_action_callback_id
+    callback_delay = 0
+    if action:
+        if stopable:
+            _current_model_action = action
+        if duration is None:
+            duration = action.duration
+        if duration <= 0.0:
+            action()
+        else:
+            framerate = get_action_frame_rate(action, duration)
+            if framerate < 1:
+                framerate = 1
+            action(0, None, 0, -1, -1, framerate)
+            callback_delay = duration - 3 / framerate
+    if callback:
+        if callback_delay > 0:
+            callback_id = BigWorld.callback(callback_delay, callback)
+            if stopable:
+                _current_model_action_callback_id = callback_id
+            return callback_id
+        callback()
+    return
+
+
+def get_entity_name(entity, utf8 = False):
+    if hasattr(entity, 'name'):
+        name = entity.name
+    elif isinstance_ext(entity, 'Creature'):
+        name = entity.get_name()
+    else:
+        name = ''
+    if hasattr(entity, 'active_transform'):
+        if entity.active_transform and entity.active_transform.funName():
+            name = entity.active_transform.funName()
+    if utf8:
+        if isinstance(name, unicode):
+            return name
+        return name.decode('utf-8')
+    elif isinstance(name, str):
+        return name
+    else:
+        return name.encode('utf-8')
+
+
+def is_entity_under_water(entity):
+    return BigWorld.waterCollide(entity.spaceID, entity.position + Vector3(0, 0.2, 0), entity.position + Vector3(0, 5, 0))
+
+
+def get_coner_in_pixels(component):
+    """
+    \xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd0\xbe\xd0\xb7\xd0\xb8\xd1\x86\xd0\xb8\xd1\x8e \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb0 \xd0\xbe\xd1\x82\xd0\xbd\xd0\xbe\xd1\x81\xd0\xb8\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c\xd0\xbd\xd0\xbe \xd0\xb2\xd0\xb5\xd1\x80\xd1\x85\xd0\xbd\xd0\xb5\xd0\xb3\xd0\xbe \xd0\xbb\xd0\xb5\xd0\xb2\xd0\xbe\xd0\xb3\xd0\xbe 
+    \xd1\x83\xd0\xb3\xd0\xbb\xd0\xb0 \xd1\x8d\xd0\xba\xd1\x80\xd0\xb0\xd0\xbd\xd0\xb0.
+    
+    \xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x81\xd0\xbb\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x80\xd1\x8c, \xd1\x81\xd0\xbe \xd1\x81\xd0\xbb\xd0\xb5\xd0\xb4\xd1\x83\xd1\x8e\xd1\x89\xd0\xb8\xd0\xbc\xd0\xb8 \xd0\xba\xd0\xbb\xd1\x8e\xd1\x87\xd0\xb0\xd0\xbc\xd0\xb8: 
+            'corner' - \xd0\xbb\xd0\xb5\xd0\xb2\xd1\x8b\xd0\xb9 \xd0\xbf\xd1\x80\xd0\xb0\xd0\xb2\xd1\x8b\xd0\xb9 \xd1\x83\xd0\xb3\xd0\xbe\xd0\xbb \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x83\xd1\x87\xd0\xb5\xd0\xbd\xd0\xbd\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb0
+            'width' - \xd1\x88\xd0\xb8\xd1\x80\xd0\xb8\xd0\xbd\xd0\xb0 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb0,
+            'height' - \xd0\xb2\xd1\x8b\xd1\x81\xd0\xbe\xd1\x82\xd0\xb0 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb0.
+    """
+    v_anchors = {'TOP': lambda height: 0,
+     'CENTER': lambda height: height / 2,
+     'BOTTOM': lambda height: height}
+    h_anchors = {'LEFT': lambda width: 0,
+     'CENTER': lambda width: width / 2,
+     'RIGHT': lambda width: width}
+    X, Y = (0, 1)
+    position = component.position
+    v_anchor = component.verticalAnchor
+    h_anchor = component.horizontalAnchor
+    additonal_v_pixels = v_anchors[v_anchor](component.height)
+    additonal_h_pixels = h_anchors[h_anchor](component.width)
+    return {'corner': [position[X] - additonal_h_pixels, position[Y] - additonal_v_pixels],
+     'width': component.width,
+     'height': component.height}
+
+
+def coords_to_pixels(positon):
+    """\xd0\x9a\xd0\xbe\xd0\xbd\xd0\xb2\xd0\xb5\xd1\x80\xd1\x82\xd0\xb8\xd1\x80\xd1\x83\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbe\xd0\xbe\xd1\x80\xd0\xb4\xd0\xb8\xd0\xbd\xd0\xb0\xd1\x82\xd1\x8b [-1, 1] \xd0\xb2 \xd0\xbf\xd0\xb8\xd0\xba\xd1\x81\xd0\xb5\xd0\xbb\xd0\xb8 \xd0\xbe\xd1\x82 \xd0\xbb\xd0\xb5\xd0\xb2\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xb2\xd0\xb5\xd1\x80\xd1\x85\xd0\xbd\xd0\xb5\xd0\xb3\xd0\xbe \xd1\x83\xd0\xb3\xd0\xbb\xd0\xb0."""
+    x, y = positon
+    y *= -1
+    sW, sH = BigWorld.screenSize()
+    x_part = sW / 2
+    y_part = sH / 2
+
+    def coord_to_pixels(coord, part):
+        pixels = part * (1 + coord)
+        return pixels
+
+    return [ coord_to_pixels(coord, part) for coord, part in zip((x, y), (x_part, y_part)) ]
+
+
+def clip_text(text, label, max_width):
+    """ \xd0\xbe\xd1\x87\xd0\xb5\xd0\xbd\xd1\x8c \xd0\xb3\xd1\x80\xd1\x83\xd0\xb1\xd0\xbe \xd0\xb8 \xd0\xbf\xd1\x80\xd0\xb8\xd0\xbc\xd0\xb8\xd1\x82\xd0\xb8\xd0\xb2\xd0\xbd\xd0\xbe \xd0\xbf\xd0\xbe\xd0\xb4\xd1\x80\xd0\xb5\xd0\xb7\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x81\xd1\x82\xd1\x80\xd0\xbe\xd0\xba\xd0\xb8, \xd0\xb2\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xbb\xd1\x8f\xd1\x8f \xd0\xb2 \xd0\xbd\xd0\xb8\xd1\x85 \xd0\xbc\xd0\xbd\xd0\xbe\xd0\xb3\xd0\xbe\xd1\x82\xd0\xbe\xd1\x87\xd0\xb8\xd0\xb5
+    """
+    clipped = False
+    dots_width = label.stringDimensions(u'...')[0]
+    while True:
+        tail = label.stringDimensions(text)[0] - max_width
+        if clipped:
+            tail += dots_width
+        if tail <= 0:
+            break
+        tail_letters = int(max(1, tail / 16))
+        text = text[:-tail_letters]
+        clipped = True
+
+    if clipped:
+        text += u'...'
+    return text
+
+
+def clips_to_pixels(positon):
+    """\xd0\x9a\xd0\xbe\xd0\xbd\xd0\xb2\xd0\xb5\xd1\x80\xd1\x82\xd0\xb8\xd1\x80\xd1\x83\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbe\xd0\xbe\xd1\x80\xd0\xb4\xd0\xb8\xd0\xbd\xd0\xb0\xd1\x82\xd1\x8b [-2, 2] \xd0\xb2 \xd0\xbf\xd0\xb8\xd0\xba\xd1\x81\xd0\xb5\xd0\xbb\xd0\xb8 \xd0\xbe\xd1\x82 \xd0\xbb\xd0\xb5\xd0\xb2\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xb2\xd0\xb5\xd1\x80\xd1\x85\xd0\xbd\xd0\xb5\xd0\xb3\xd0\xbe \xd1\x83\xd0\xb3\xd0\xbb\xd0\xb0."""
+    x, y = positon
+    sW, sH = BigWorld.screenSize()
+    x_part = sW / 4
+    y_part = sH / 4
+
+    def clip_to_pixels(coord, part):
+        pixels = part * (2 + coord)
+        return pixels
+
+    return [ clip_to_pixels(coord, part) for coord, part in zip((x, y), (x_part, y_part)) ]
+
+
+def isClientEntity(id):
+    return id >= FIRST_CLIENT_ID
+
+
+def reload_SFX_and_Particles():
+    SFX_PATH = '../res/sfx'
+    PARTICLES_PATH = '../res/particles'
+
+    def reload_files(path):
+        listOfFiles = os.listdir(path)
+        countOfFiles = len(listOfFiles)
+        for i in range(0, countOfFiles):
+            if os.path.isfile(path + '/' + listOfFiles[i]):
+                ind = listOfFiles[i].rfind('.')
+                l = len(listOfFiles[i])
+                if listOfFiles[i][ind:l] == '.xml':
+                    ResMgr.purge(path + '/' + listOfFiles[i], True)
+                elif os.path.isdir(path + '/' + listOfFiles[i]):
+                    reload_files(path + '/' + listOfFiles[i])
+
+    reload_files(SFX_PATH)
+    reload_files(PARTICLES_PATH)

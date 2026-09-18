@@ -1,0 +1,292 @@
+# Embedded file name: ./scripts/client/DevicesAnimations.py
+import BigWorld
+import time
+from client_utils import get_action_frame_rate, execute_model_action, stop_execute_model_action
+import Constants
+from utils_bw import if_not_destroyed
+from Items import ItemsCatalog
+from functools import partial
+BINOCULARS = 'binoculars'
+DeviceModelPath = {BINOCULARS: 'characters\\items\\gadjets\\binoculars\\binoculars_1_lod1.model'}
+DeviceModels = {}
+
+class DevicesAnimations:
+
+    def __init__(self):
+        self._playing_animation_device = False
+        self._playing_animation_loot = False
+        self.__dealyed_timer = 0
+        self._need_enable_crouch = False
+        self._binoculing_cooldown = 0
+        self._need_disable_crouch = False
+        self.__current_action = None
+        self._anim_callback_id = None
+        self._anim_action_in = None
+        self._anim_action_loop = None
+        self._anim_action_out = None
+        self._throw_model = None
+        return
+
+    @property
+    def binoculars_animation(self):
+        return self._playing_animation_device
+
+    def drawBinocularsAnimationStart(self):
+        self._playing_animation_device = True
+        duration = 1
+        self.EnableModelPitch(False)
+        self.flashlight_suspend()
+        self.model.effectorright = BigWorld.Model(DeviceModelPath[BINOCULARS])
+        self.model.ThrowRight = None
+        self.playAnimation(self.model.TakeInBinoculars, duration, self.drawBinocularsAnimation, stretch=True, offset_mult=0.9)
+        self.UpdateAvatarAnimationCaps()
+        return
+
+    @if_not_destroyed
+    def drawBinocularsAnimationStop(self):
+        if self.isDestroyed:
+            return
+        if not self.model:
+            return
+        duration = 1
+        self.playAnimation(self.model.TakeOffBinoculars, duration, self.returnModelToDefault, stretch=True, offset_mult=0.9)
+        self.EnableModelPitch(False)
+        self.UpdateAvatarAnimationCaps()
+
+    def drawBinocularsAnimation(self):
+        if self.isDestroyed:
+            return
+        if not self.model:
+            return
+        self.EnableModelPitch(True)
+        if self.model.effectorright == self.autogunModel:
+            self.model.effectorright = BigWorld.Model(DeviceModelPath[BINOCULARS])
+        if self.enable_pitch:
+            self.DoPitchAction(False)
+
+    def setBinocularsAnimation(self, value):
+        if self.isDestroyed:
+            return
+        if not self.model:
+            return
+        if value:
+            self.drawBinocularsAnimationStart()
+        else:
+            self.drawBinocularsAnimationStop()
+
+    @if_not_destroyed
+    def drawStartLootingAnimation(self, looting_type, duration, knife_type, target_id):
+        if not self.model:
+            return
+        else:
+            if self._anim_callback_id:
+                BigWorld.cancelCallback(self._anim_callback_id)
+                self._anim_callback_id = None
+            self.EnableModelPitch(False)
+            self._playing_animation_loot = True
+            self.model.effectorright = None
+            self.model.ThrowRight = None
+            self.flashlight_suspend()
+            self.UpdateAvatarAnimationCaps()
+            self.EnableModelPitch(True)
+            if self.enable_pitch:
+                self.DoPitchAction(False)
+            if looting_type == Constants.TYPE_UNLOCK:
+                capsule = BigWorld.entities[target_id]
+                in_animation, loop_animation, out_animation = capsule.get_unlock_animation()
+                self._anim_action_in = getattr(self.model, in_animation)
+                self._anim_action_loop = getattr(self.model, loop_animation)
+                action_stop = getattr(self.model, out_animation)
+                getattr(getattr(self.model, in_animation)(), loop_animation)()
+                unlock_item_param = ItemsCatalog.GetItemParam(capsule.get_unlock_item())
+                model_path = unlock_item_param['ModelNames'][ItemsCatalog.BODY]
+                self.model.effectorright = BigWorld.Model(model_path)
+            if looting_type == Constants.TYPE_SEARCH:
+                self._anim_action_in = self.model.SearchContainerIn
+                self._anim_action_loop = self.model.SearchContainerLoop
+                action_stop = self.model.SearchContainerOut
+                self.model.SearchContainerIn().SearchContainerLoop()
+            if looting_type == Constants.TYPE_BUTCH:
+                self._anim_action_in = self.model.ButcheringIn
+                self._anim_action_loop = self.model.ButcheringLoop
+                action_stop = self.model.ButcheringOut
+                gadget_param = ItemsCatalog.GetItemParam(knife_type)
+                if gadget_param.get('SubType', {}) == ItemsCatalog.KNIFE:
+                    model_path = gadget_param.get('ModelNames', {}).get(ItemsCatalog.BODY, None)
+                    if model_path:
+                        self.model.effectorright = BigWorld.Model(model_path)
+                self.model.ButcheringIn().ButcheringLoop()
+            duration = duration - action_stop.duration
+            stop_func = partial(self.drawStopLootingAnimation, action_stop)
+            self.playAnimation(None, duration, stop_func)
+            return
+
+    @if_not_destroyed
+    def drawLootingAnimation(self, animation_stop, action, duration):
+        self.playAnimation(action, duration, animation_stop)
+
+    @if_not_destroyed
+    def drawStopLootingAnimation(self, action):
+        self.playAnimation(action, action.duration, self.returnModelToDefault)
+
+    def drawUnequipThrowItemFIX(self, itemType, short = False, callback = None, duration = 0):
+        self.drawStopThrowGrenade()
+        if self.model is None:
+            return
+        elif not itemType:
+            self._throw_model = None
+            if self.ActiveItemID:
+                self.playAnimation(self.model.TakeOffGrenade, duration or self.model.TakeOffGrenade.duration, self.showAutogun, stretch=True)
+            else:
+                self.playAnimation(self.model.TakeOffGrenadeShort, duration or self.model.TakeOffGrenadeShort.duration, self.showAutogun, stretch=True)
+            return
+        else:
+            return
+
+    def drawEquipThrowItem(self, itemType, short = False, duration = 0):
+        self.is_throwing = False
+        if not self.model:
+            return
+        else:
+            self.drawStopThrowGrenade()
+            if not itemType:
+                self._throw_model = None
+                if self.ActiveItemID:
+                    self.playAnimation(self.model.TakeOffGrenade, duration or self.model.TakeOffGrenade.duration, self.returnModelToDefault, stretch=True)
+                else:
+                    self.playAnimation(self.model.TakeOffGrenadeShort, duration or self.model.TakeOffGrenadeShort.duration, self.returnModelToDefault, stretch=True)
+                self.UpdateAvatarAnimationCaps()
+                return
+            if ItemsCatalog.EXPLOSION != ItemsCatalog.GetItemClass(itemType):
+                print 'DevicesAnimations::drawEquipThrowItem ERROR!!!! throw_type class is not EXPLOSION: {0}'.format(itemType)
+                self.UpdateModelPitch()
+                return
+            throw_param = ItemsCatalog.GetItemParam(itemType)
+            if not throw_param:
+                print 'DevicesAnimations::drawEquipThrowItem ERROR!!!! Not throw_type: {0}'.format(itemType)
+                self.UpdateModelPitch()
+                return
+            self.UpdateAvatarAnimationCaps()
+            self.UpdateModelPitch()
+            self._throw_model = BigWorld.Model(throw_param['modelName'])
+            self.hideAutogun()
+            try:
+                self.model.ThrowRight = self._throw_model
+            except:
+                print throw_param['modelName']
+                raise
+
+            def callback():
+                if self.isDestroyed:
+                    return
+                self.EnableModelPitch(True)
+
+            if short or not self.ActiveItemID:
+                self.playAnimation(self.model.TakeInGrenadeShort, duration or self.model.TakeInGrenadeShort.duration, callback, True, 0.9)
+            else:
+                self.playAnimation(self.model.TakeInGrenade, duration or self.model.TakeInGrenade.duration, callback, True, 0.9)
+            return
+
+    def playAnimation(self, action, duration = 0, callback = None, stretch = False, offset_mult = 1):
+        if self.isDestroyed:
+            return
+        elif self.is_dead():
+            return
+        else:
+            self.__current_action = action
+            if callback:
+                self._anim_callback_id = BigWorld.callback(duration * offset_mult, callback)
+            if self.__current_action and stretch and duration:
+                framerate = action.frameRate * action.duration / duration
+                if framerate < 1:
+                    framerate = 1
+                self.__current_action(0, None, 0, -1, -1, framerate)
+                return
+            if self.__current_action:
+                self.__current_action()
+            return
+
+    def playListAnimations(self, anim_list, duration, callback = None):
+        if self.isDestroyed:
+            return
+        elif self.is_dead():
+            return
+        else:
+            self._anim_action_in = getattr(self.model, anim_list[0], None)
+            self._anim_action_loop = getattr(self.model, anim_list[1], None)
+            action_stop = getattr(self.model, anim_list[2], None)
+            duration = duration - action_stop.duration
+            stop_func = partial(self.playAnimation, action_stop, action_stop.duration, callback or self.returnModelToDefault)
+            self._anim_action_in(0, self._anim_action_loop)
+            self.playAnimation(None, duration, stop_func, offset_mult=0.95)
+            return
+
+    def playAnimationClear(self, action, duration = 0, callback = None, stretch = False):
+        self.flashlight_suspend()
+        self.model.effectorright = None
+        self.model.effectorleft = None
+        self.model.ThrowRight = None
+        self.EnableModelPitch(False)
+        self.playAnimation(action, duration, callback, stretch)
+        return
+
+    @if_not_destroyed
+    def stopAnimationClear(self):
+        self.stopAnimation()
+        self.returnModelToDefault()
+
+    @if_not_destroyed
+    def stopAnimation(self):
+        if self._anim_action_in:
+            self._anim_action_in.stop()
+            self._anim_action_in = None
+        if self._anim_action_loop:
+            self._anim_action_loop.stop()
+            self._anim_action_loop = None
+        if self._anim_action_out:
+            self._anim_action_out.stop()
+            self._anim_action_out = None
+        if self.__current_action:
+            self.__current_action.stop()
+            self.__current_action = None
+        if self._anim_callback_id:
+            BigWorld.cancelCallback(self._anim_callback_id)
+            self._anim_callback_id = None
+        self._playing_animation_loot = False
+        return
+
+    def returnModelToDefault(self):
+        if self.isDestroyed or not self.model:
+            return
+        else:
+            self._playing_animation_loot = False
+            self._playing_animation_device = False
+            self.EnableModelPitch(False)
+            self.EnableModelPitch(True)
+            self.model.ThrowRight = None
+            self.autogunModelVisible = True
+            if self._throw_model and self.ActiveThrowID and self.ActiveThrowType:
+                self.model.effectorright = None
+                self.model.ThrowRight = self._throw_model
+            elif hasattr(self, 'autogunModel') and self.ActiveItemID:
+                self.showAutogun()
+                if self.autogunModel:
+                    self.model.effectorright = self.autogunModel
+                else:
+                    self.SetAvatarGun()
+                self.model.ThrowRight = None
+                self.flashlight_restore()
+            else:
+                self.model.effectorright = None
+                self.model.ThrowRight = None
+            self.UpdateAvatarAnimationCaps()
+            self.flashlight_restore()
+            if self.active_transform and self.active_transform.getparam('hide_weapon'):
+                self.hideAutogun()
+            return
+
+    def flashlight_suspend(self):
+        pass
+
+    def flashlight_restore(self):
+        pass

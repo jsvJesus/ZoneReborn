@@ -1,0 +1,474 @@
+# Embedded file name: ./scripts/client/StalkerModel.py
+import ItemsUtils
+from Items import ItemsCatalog
+import BigWorld
+import traceback
+import DyeConstant
+import UCManager
+
+class STALKER_PART:
+    HEAD, SHIRT, HANDS, PANTS, BOOTS = xrange(0, 5)
+    ARMOR = 5
+    HAT, MASK, BACKPACK = xrange(6, 9)
+
+
+class STALKER_HP:
+    HEAD = 'HP_head'
+    BACKPACK = 'HP_backpack'
+    BACKPACK_NOARMOR = 'HP_backpack_noarmor'
+
+
+def unique(parts):
+    parts = set(parts)
+    return tuple(parts)
+
+
+def unique_second(parts):
+    base_model = parts[0]
+    parts = set(parts[1:])
+    return [base_model] + list(parts)
+
+
+def unique_noempty(parts):
+    parts = [ x for x in parts if x ]
+    parts = set(parts)
+    return tuple(parts)
+
+
+class STALKER_MODEL:
+    BASE = 'characters/avatars/basem.model'
+    BASE_INVISIBLE = 'characters/avatars/basem_invisible.model'
+    REQUIRED = {STALKER_PART.HEAD: [['characters/avatars/heads/head_m1.model']],
+     STALKER_PART.SHIRT: [['characters/avatars/body/body_pilot.model'], ['characters/avatars/body/body_haki.model', STALKER_PART.HAT]],
+     STALKER_PART.HANDS: [['characters/avatars/hands/hand_koja.model']],
+     STALKER_PART.PANTS: [['characters/avatars/legs/legs_pants_1.model'], ['characters/avatars/legs/legs_haki.model']],
+     STALKER_PART.BOOTS: [['characters/avatars/boots/boots_bertsi.model']]}
+    OPTIONAL = {STALKER_PART.ARMOR: [['characters/avatars/mod-armor/armor_ninja.model'], ['characters/avatars/mod-armor/armor_kaiser.model']]}
+    ATTACHING = {STALKER_PART.BACKPACK: [['characters/avatars/mod-back/backpack_m1.model'], ['characters/avatars/mod-back/backpack_sakvoyaj80.model']],
+     STALKER_PART.MASK: [['characters/avatars/mod-mask/mask1.model', STALKER_PART.HAT], ['characters/avatars/mod-mask/mask2.model'], ['characters/avatars/mod-mask/mask_jaba.model']],
+     STALKER_PART.HAT: [['characters/avatars/mod-cap/cap1.model']]}
+    DEAFAULT_MODELS = {ItemsCatalog.HEAD: REQUIRED[STALKER_PART.HEAD][0][0],
+     ItemsCatalog.SHIRT: REQUIRED[STALKER_PART.SHIRT][0][0],
+     ItemsCatalog.HANDS: REQUIRED[STALKER_PART.HANDS][0][0],
+     ItemsCatalog.PANTS: REQUIRED[STALKER_PART.PANTS][0][0],
+     ItemsCatalog.BOOTS: REQUIRED[STALKER_PART.BOOTS][0][0],
+     ItemsCatalog.ARMOR: None}
+
+
+def default():
+    supermodel = [STALKER_MODEL.BASE]
+    for part_model in STALKER_MODEL.REQUIRED.values():
+        supermodel.append(part_model[0][0])
+
+    return supermodel
+
+
+def getItemTints(item_type, param = None):
+    if param is None:
+        param = ItemsCatalog.GetItemParam(item_type)
+    if param:
+        if param.has_key('Tint'):
+            return param['Tint']
+    return {}
+
+
+def set_model_due_to_inventory(avatar, default_models):
+    model_tints_dict = {}
+    head_tints_dict = {}
+    backback_tints_dict = {}
+    weapon_back_tints_dict = {}
+    weapon_pistol_tints_dict = {}
+    list_added_to_model_items = [0]
+    supermodel = [STALKER_MODEL.BASE]
+    head_attachments = []
+    avatar.debugActiveItems = []
+    avatar.itemIDToDye = {}
+    avatar.itemIDToNode = {}
+    active_channels = []
+    for armor_key_name in ItemsUtils.getAllArmortNames():
+        item_type = avatar.ActiveArmorSet[armor_key_name]
+        if item_type:
+            item_param = ItemsCatalog.GetItemParam(item_type)
+            if item_param:
+                ch = item_param.get('ModelChannel', None)
+                if ch:
+                    active_channels.extend(ch)
+
+    hiding_model_parts = set()
+    for model_part in ItemsCatalog.head_mode_attr_dict.keys():
+        if avatar.ActiveArmorSet[ItemsCatalog.head_mode_attr_dict[model_part][0]] > 0:
+            item_type = avatar.ActiveArmorSet[ItemsCatalog.head_mode_attr_dict[model_part][1]]
+            item_param = ItemsCatalog.GetItemParam(item_type)
+            hiding_model_parts.update(item_param.get('HideAttachesAt', item_param.get('ArmorType', [])))
+
+    for model_part in ItemsCatalog.base_model_attr_dict.keys():
+        clothID = avatar.ActiveArmorSet[ItemsCatalog.base_model_attr_dict[model_part][0]]
+        clothType = avatar.ActiveArmorSet[ItemsCatalog.base_model_attr_dict[model_part][1]]
+        if avatar.ActiveArmorSet[ItemsCatalog.base_model_attr_dict[model_part][0]] not in list_added_to_model_items:
+            item_type = avatar.ActiveArmorSet[ItemsCatalog.base_model_attr_dict[model_part][1]]
+            avatar.debugActiveItems.append((clothID,
+             item_type,
+             clothType,
+             'type1',
+             ''))
+        elif avatar.ActiveArmorSet[ItemsCatalog.base_model_attr_dict[model_part][0]] == 0:
+            item_type = default_models.get(model_part)
+            avatar.debugActiveItems.append((clothID,
+             item_type,
+             clothType,
+             'type2',
+             ''))
+            if item_type is None:
+                continue
+            if isinstance(item_type, dict):
+                model = item_type.get('model', '')
+                tint = item_type.get('tint', {})
+                if model:
+                    supermodel.append(model)
+                if tint:
+                    model_tints_dict.update(tint)
+                attachments = item_type.get('attachments', [])
+                for attach in attachments:
+                    attach_part_type = attach.get('att_type')
+                    if attach_part_type is not None:
+                        if attach_part_type in hiding_model_parts:
+                            continue
+                    model = attach.get('model', '')
+                    tint = attach.get('tint', {})
+                    if model:
+                        head_attachments.append(model)
+                    if tint:
+                        head_tints_dict.update(tint)
+
+                continue
+        model = ItemsUtils.getModelNameByItemType(item_type, use_channels=active_channels)
+        avatar.itemIDToNode[clothID] = ''
+        tint = getItemTints(item_type)
+        if model:
+            list_added_to_model_items.append(avatar.ActiveArmorSet[ItemsCatalog.base_model_attr_dict[model_part][0]])
+            supermodel.append(model)
+        if tint:
+            model_tints_dict.update(tint)
+            avatar.itemIDToDye[clothID] = (tint, '')
+
+    for model_part in ItemsCatalog.head_mode_attr_dict.keys():
+        clothID = avatar.ActiveArmorSet[ItemsCatalog.head_mode_attr_dict[model_part][0]]
+        clothType = avatar.ActiveArmorSet[ItemsCatalog.head_mode_attr_dict[model_part][1]]
+        avatar.itemIDToNode[clothID] = 'head'
+        if avatar.ActiveArmorSet[ItemsCatalog.head_mode_attr_dict[model_part][0]] not in list_added_to_model_items:
+            item_type = avatar.ActiveArmorSet[ItemsCatalog.head_mode_attr_dict[model_part][1]]
+            avatar.debugActiveItems.append((clothID,
+             item_type,
+             clothType,
+             'type1',
+             'head'))
+            item_param = ItemsCatalog.GetItemParam(item_type)
+            model = ItemsUtils.getModelNameByItemType(item_type, item_param, use_channels=active_channels)
+            tint = getItemTints(item_type, item_param)
+            hiding_model_parts.update(item_param.get('HideAttachesAt', item_param.get('ArmorType', [])))
+            if model:
+                list_added_to_model_items.append(avatar.ActiveArmorSet[ItemsCatalog.head_mode_attr_dict[model_part][0]])
+                head_attachments.append(model)
+            if tint:
+                head_tints_dict.update(tint)
+                avatar.itemIDToDye[clothID] = (tint, 'head')
+        else:
+            avatar.debugActiveItems.append((clothID,
+             '?',
+             clothType,
+             'type2',
+             'head'))
+
+    back_pack_attachments = []
+    if avatar.ActiveArmorSet['BackPackID'] not in list_added_to_model_items:
+        item_id = avatar.ActiveArmorSet['BackPackID']
+        node_name = 'backpack_noarmor'
+        if avatar.hasArmor():
+            node_name = 'backpack'
+        avatar.itemIDToNode[item_id] = node_name
+        item_type = avatar.ActiveArmorSet['BackPackType']
+        avatar.debugActiveItems.append((item_id,
+         item_type,
+         item_type,
+         'type1',
+         node_name))
+        model = ItemsUtils.getModelNameByItemType(item_type, use_channels=active_channels)
+        tint = getItemTints(item_type)
+        if model:
+            list_added_to_model_items.append(item_id)
+            back_pack_attachments.append(model)
+        if tint:
+            backback_tints_dict.update(tint)
+            avatar.itemIDToDye[item_id] = (tint, node_name)
+    weapon_back_attachments = {}
+    if avatar.ActiveWeaponSet['PrimarySlotID']:
+        if avatar.ActiveWeaponSet['PrimarySlotID'] != avatar.ActiveItemID:
+            model = avatar.GetEquippedItemModels(ItemsCatalog.PRIMARY)
+            if model:
+                list_added_to_model_items.append(avatar.ActiveWeaponSet['PrimarySlotID'])
+                weapon_back_attachments = model
+    weapon_pistol_attachments = {}
+    if avatar.ActiveWeaponSet['SecondarySlotID']:
+        if avatar.ActiveWeaponSet['SecondarySlotID'] != avatar.ActiveItemID:
+            model = avatar.GetEquippedItemModels(ItemsCatalog.SECONDARY)
+            if model:
+                list_added_to_model_items.append(avatar.ActiveWeaponSet['SecondarySlotID'])
+                weapon_pistol_attachments = model
+    return (supermodel,
+     head_attachments,
+     back_pack_attachments,
+     weapon_back_attachments,
+     weapon_pistol_attachments,
+     model_tints_dict,
+     head_tints_dict,
+     backback_tints_dict)
+
+
+def baseNPC():
+    supermodel = [STALKER_MODEL.BASE]
+    for part_model in STALKER_MODEL.REQUIRED.values():
+        supermodel.append(part_model[0][0])
+
+    for part_model in STALKER_MODEL.OPTIONAL.values():
+        supermodel.append(part_model[0][0])
+
+    return supermodel
+
+
+def ComposePlayerTransformModel(player, transformation, callback):
+    if hasattr(player, 'onPreModelChange'):
+        player.onPreModelChange()
+    player.emblems_colors = {}
+    model_set = [STALKER_MODEL.BASE_INVISIBLE]
+    path_model_transf = transformation.getModelPath()
+    if path_model_transf:
+        path_model_transf = path_model_transf.encode('utf8')
+        model_set.append(path_model_transf)
+    model_tints_dict = transformation.getTints()
+    ComposeAvatarBodyModel(model_set, model_tints_dict, [], {}, [], {}, False, callback)
+
+
+def UpdatePlayerWeaponAttachments(player, model, weapon_back_attachments, weapon_pistol_attachments):
+    from functools import partial
+    try:
+        model.weaponback = None
+        if weapon_back_attachments:
+
+            def onLoadWeaponback(core_model, weapon_model):
+                weapon_model.origin('HP_weaponback')
+                core_model.weaponback = weapon_model
+
+            player.fetchModelByNamesDict(weapon_back_attachments, partial(onLoadWeaponback, model))
+    except Exception as e:
+        traceback.print_exc()
+
+    try:
+        model.Pistol = None
+        if weapon_pistol_attachments:
+
+            def onLoadPistol(core_model, weapon_model):
+                core_model.Pistol = weapon_model
+
+            player.fetchModelByNamesDict(weapon_pistol_attachments, partial(onLoadPistol, model))
+    except Exception as e:
+        traceback.print_exc()
+
+    return
+
+
+def UpdatePlayerBodyAttachments(model, core_model_tints_dict, back_pack_attachments, backback_tints_dict, head_attachments, head_tints_dict, hasArmor):
+    for model_tint in core_model_tints_dict:
+        try:
+            setattr(model, str(model_tint), str(core_model_tints_dict[model_tint]))
+        except:
+            print 'PLAYER unable to TINT model!', model_tint, core_model_tints_dict[model_tint]
+
+    model.backpack = None
+    model.backpack_noarmor = None
+    if back_pack_attachments:
+        model_backpack = BigWorld.Model(*unique(back_pack_attachments))
+        for backback_tints in backback_tints_dict:
+            try:
+                setattr(model_backpack, str(backback_tints), str(backback_tints_dict[backback_tints]))
+            except:
+                print 'PLAYER unable to TINT model!', backback_tints, backback_tints_dict[backback_tints]
+
+        if hasArmor:
+            model.backpack = model_backpack
+        else:
+            model.backpack_noarmor = model_backpack
+    model.head = None
+    if head_attachments:
+        try:
+            model.head = BigWorld.Model(*unique(head_attachments))
+            for head_tint in head_tints_dict:
+                try:
+                    setattr(model.head, str(head_tint), str(head_tints_dict[head_tint]))
+                except:
+                    print 'PLAYER unable to TINT model!', head_tint, head_tints_dict[head_tint]
+
+        except ValueError as ex:
+            print 'head_attachments:', head_attachments
+            traceback.print_exc()
+
+    return
+
+
+def UpdatePlayerModelAttachments(player):
+    model_set, head_attachments, back_pack_attachments, weapon_back_attachments, weapon_pistol_attachments, model_tints_dict, head_tints_dict, backback_tints_dict = set_model_due_to_inventory(player, player.getDefaultModels())
+    if hasattr(player, 'last_model_list'):
+        model_list = unique_second(model_set)
+        if player.last_model_list != model_list:
+            player.onLoadModel(BigWorld.Model(*model_list))
+            player.last_model_list = model_list
+    if not player.model:
+        return
+    UpdatePlayerWeaponAttachments(player, player.model, weapon_back_attachments, weapon_pistol_attachments)
+    UpdatePlayerBodyAttachments(player.model, model_tints_dict, back_pack_attachments, backback_tints_dict, head_attachments, head_tints_dict, player.hasArmor())
+    if hasattr(player, 'onPreModelChange'):
+        player.onPreModelChange()
+    emblems = getattr(player, 'coloriseEmblems', [])
+    updateEmblems(player, [], emblems, model=player.model)
+
+
+def ComposePlayerModel(player, callback):
+    model_set, head_attachments, back_pack_attachments, weapon_back_attachments, weapon_pistol_attachments, model_tints_dict, head_tints_dict, backback_tints_dict = set_model_due_to_inventory(player, player.getDefaultModels())
+    if hasattr(player, 'last_model_list'):
+        player.last_model_list = unique_second(model_set)
+
+    def onLoadModel(model):
+        if player.isDestroyed:
+            return
+        UpdatePlayerWeaponAttachments(player, model, weapon_back_attachments, weapon_pistol_attachments)
+        if hasattr(player, 'onPreModelChange'):
+            player.onPreModelChange()
+        emblems = getattr(player, 'coloriseEmblems', [])
+        updateEmblems(player, [], emblems, model=model)
+        callback(model)
+
+    ComposeAvatarBodyModel(model_set, model_tints_dict, back_pack_attachments, backback_tints_dict, head_attachments, head_tints_dict, player.hasArmor(), onLoadModel)
+
+
+def ComposeAvatarBodyModel(core_model_set, core_model_tints_dict, back_pack_attachments, backback_tints_dict, head_attachments, head_tints_dict, hasArmor, callback):
+
+    def onLoadModel(model):
+        UpdatePlayerBodyAttachments(model, core_model_tints_dict, back_pack_attachments, backback_tints_dict, head_attachments, head_tints_dict, hasArmor)
+        callback(model)
+
+    model_list = unique_second(core_model_set)
+    model_list.append(onLoadModel)
+    model = BigWorld.fetchModel(*model_list)
+
+
+def updateEmblems(avatar, oldEmblems, emblems, model = None):
+    if not model:
+        model = avatar.model
+    if not model:
+        return
+    else:
+        itemIDToDye = getattr(avatar, 'itemIDToDye', {})
+        avatar.emblems_colors = {}
+        for clrs in oldEmblems:
+            itemID = clrs['ItemID']
+            if itemID in itemIDToDye:
+                tint, node = itemIDToDye[itemID]
+                dye, tintname = tint.items()[0]
+                setTint(model, node, dye, tintname)
+
+        for itemID in itemIDToDye:
+            tint, node = itemIDToDye[itemID]
+            dye, oldtint = tint.items()[0]
+            avatar.emblems_colors[itemID] = dict(dye=dye, oldtint=oldtint, tint=oldtint, node=node, TINTID=None, COLORS4_4=None, EMBLEMID=None)
+
+        for clrs in emblems:
+            itemID = clrs['ItemID']
+            colors, tintid, emblemID = ItemsUtils.unpackColoriseClient(clrs)
+            if itemID not in itemIDToDye:
+                continue
+            if itemID not in avatar.emblems_colors:
+                continue
+            dye = avatar.emblems_colors[itemID]['dye']
+            node = avatar.emblems_colors[itemID]['node']
+            if tintid:
+                tintname = DyeConstant.getClothTintnameByID(tintid)
+                setTint(model, node, dye, tintname)
+                setcolors(model, node, dye, colors)
+                avatar.emblems_colors[itemID]['tint'] = tintname
+                avatar.emblems_colors[itemID]['TINTID'] = tintid
+                avatar.emblems_colors[itemID]['COLORS4_4'] = colors
+            if emblemID:
+                feedName = UCManager.ucmanager.loadImg(emblemID)
+                setFeed(model, node, dye, feedName, deb_avatar=avatar)
+                avatar.emblems_colors[itemID]['EMBLEMID'] = emblemID
+
+        return
+
+
+def setTint(model, node, dye, tintname):
+    try:
+        if not node:
+            node = model
+        else:
+            node = getattr(model, node)
+        setattr(node, dye, tintname)
+    except:
+        print 'tintname, node, dye, model', tintname, node, dye, model
+        traceback.print_exc()
+
+
+def setcolors(model, node, dye, colors):
+    raise colors or AssertionError
+    try:
+        if not node:
+            node = model
+        else:
+            node = getattr(model, node)
+        getattr(node, dye).colouriseR = tuple(map(lambda x: x / 255.0, colors['R']))
+        getattr(node, dye).colouriseG = tuple(map(lambda x: x / 255.0, colors['G']))
+        getattr(node, dye).colouriseB = tuple(map(lambda x: x / 255.0, colors['B']))
+        getattr(node, dye).colouriseA = tuple(map(lambda x: x / 255.0, colors['A']))
+    except:
+        traceback.print_exc()
+        print 'model, node, dye, colors', [model,
+         node,
+         dye,
+         colors]
+
+
+def getcolors(model, node, dye):
+    try:
+        if not node:
+            node = model
+        else:
+            node = getattr(model, node)
+        r1, g1, b1, a = map(lambda x: int(x * 255.0), getattr(node, dye).colouriseR)
+        r2, g2, b2, a = map(lambda x: int(x * 255.0), getattr(node, dye).colouriseG)
+        r3, g3, b3, a = map(lambda x: int(x * 255.0), getattr(node, dye).colouriseB)
+        r4, g4, b4, a = map(lambda x: int(x * 255.0), getattr(node, dye).colouriseA)
+        return (r1,
+         g1,
+         b1,
+         r2,
+         g2,
+         b2,
+         r3,
+         g3,
+         b3,
+         r4,
+         g4,
+         b4)
+    except:
+        print 'model, node, dye, colors', [model, node, dye]
+        raise
+
+
+def setFeed(model, node, dye, feedName, deb_avatar = None, typemodel = None):
+    try:
+        if not node:
+            node = model
+        else:
+            node = getattr(model, node)
+        getattr(node, dye).setFeedName('', feedName)
+    except:
+        print 'model, node, dye, feedName', model, node, dye, feedName
+        traceback.print_exc()

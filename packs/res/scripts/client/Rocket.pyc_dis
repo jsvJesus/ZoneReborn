@@ -1,0 +1,96 @@
+# Embedded file name: ./scripts/client/Rocket.py
+import BigWorld
+import Math
+from Grenade import Grenade
+from Victim import Victim
+from sfx.SfxCatalog import Mat
+import math_bw
+
+class Rocket(Grenade):
+    ACCELERATION = 5.0
+    MAX_LIFETIME = 10.0
+    START_VELOCITY = 120.0
+
+    def __init__(self):
+        Grenade.__init__(self)
+        self.life_time = 0
+        self.normalized_position = 0
+        self.initial_position = self.position
+        self.ghost_model = None
+        self.collided = False
+        return
+
+    def onEnterWorld(self, prereqs):
+        Grenade.onEnterWorld(self, prereqs)
+        self.ghost_model = prereqs[self.getModelName()]
+        self.ghost_model.position = self.model.position
+        self.addModel(self.ghost_model)
+        self.ghost_model.alignToVector(self.velocity, self.position, False)
+        self.show_model_sfx(True, self.ghost_model)
+
+    def onLeaveWorld(self):
+        Grenade.onLeaveWorld(self)
+        if self.ghost_model:
+            self.delModel(self.ghost_model)
+        self.ghost_model = None
+        return
+
+    def throw(self):
+        self.tick()
+        return (self.position,
+         self.velocity,
+         self.id,
+         None,
+         None)
+
+    def get_tick_period(self):
+        return 0
+
+    def get_cur_position(self):
+        return self.ghost_model and self.ghost_model.position or self.position
+
+    def _check_collide(self, position_from, position_to):
+        wall_collision = BigWorld.collide(self.spaceID, position_from, position_to)
+        if wall_collision:
+            mat_id = wall_collision[2]
+            self.ghost_model.position = wall_collision[0]
+            reflection, normal = math_bw.calculate_reflection(wall_collision[0], wall_collision[0] - position_from, wall_collision[1])
+            self.set_contact_data(self.get_cur_position(), normal, None, 0, None, mat_id)
+            return True
+        else:
+            direction = position_to - position_from
+            if direction.length > 0:
+                trace = BigWorld.traceBullet(position_from, position_to, self.ownerID)
+                if trace:
+                    entity_id, point, collider_name = trace
+                    victim = BigWorld.entities[entity_id]
+                    if victim:
+                        self.ghost_model.position = point
+                        direction.normalise()
+                        self.set_contact_data(self.get_cur_position(), direction, self.velocity, entity_id, None, Mat.Flesh)
+                        return True
+            return False
+
+    def explode_effect(self, pos, mat_id, direction):
+        if not self.collided:
+            return
+        self.ghost_model.visible = False
+        Grenade.explode_effect(self, pos, mat_id, direction)
+
+    def flew(self, position_from, position_to, delta_time):
+        self.life_time += delta_time
+        if self.life_time >= Rocket.MAX_LIFETIME:
+            self.removeSelfEnt()
+            return
+        if self.detonated:
+            return
+        self.normalized_position = Rocket.START_VELOCITY * self.life_time + Rocket.ACCELERATION * self.life_time * self.life_time * 0.5
+        if self.ghost_model:
+            self.ghost_model.position = self.initial_position + self.normalized_position * self.velocity
+            if self._check_collide(position_to, self.get_cur_position()):
+                self.collided = True
+                pos, direction, _, _, _, mat_id = self.get_contact_data()
+                self.explode_effect(pos, mat_id, direction + Math.Vector3(0, 0, 0.01))
+                if self.controled_by_this_client:
+                    self.detonate()
+                return

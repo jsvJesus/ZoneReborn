@@ -1,0 +1,54 @@
+# Embedded file name: ./scripts/common/AvatarCommon.py
+from Items import ItemsCatalog
+from bwdecorators import callableOnGhost
+
+class AvatarCommon:
+    _scopeModeDisable = False
+
+    def GetFiringStandAccuracyMod(self, accuracy_mods):
+        if self.crouching:
+            if self.sniping:
+                if self._scopeModeDisable or self.GetEquippedItemSnipingAbility() == [ItemsCatalog.NONE_TYPE]:
+                    stand_mod = accuracy_mods[ItemsCatalog.WEAPON_ACCMOD_AIM_KNEES]
+                else:
+                    stand_mod = accuracy_mods[ItemsCatalog.WEAPON_ACCMOD_SNIPING_KNEES]
+            else:
+                stand_mod = accuracy_mods[ItemsCatalog.WEAPON_ACCMOD_KNEES]
+        elif self.sniping:
+            if self._scopeModeDisable or self.GetEquippedItemSnipingAbility() == [ItemsCatalog.NONE_TYPE]:
+                stand_mod = accuracy_mods[ItemsCatalog.WEAPON_ACCMOD_AIM_STAND]
+            else:
+                stand_mod = accuracy_mods[ItemsCatalog.WEAPON_ACCMOD_SNIPING_STAND]
+        else:
+            stand_mod = accuracy_mods[ItemsCatalog.WEAPON_ACCMOD_STAND]
+        return stand_mod
+
+    def GetItemEffectId(self, item, key_str):
+        itemType = item['complexItemType']
+        item_params = ItemsCatalog.GetItemParam(itemType)
+        result = []
+        if item_params and item_params.has_key(key_str):
+            if isinstance(item_params[key_str], list):
+                for effect in item_params[key_str]:
+                    eff_id = effect.get('Effect', None)
+                    if eff_id:
+                        result.append(eff_id)
+
+            else:
+                effect = item_params[key_str]
+                eff_id = effect.get('Effect', None)
+                if eff_id:
+                    result.append(eff_id)
+        return result
+
+    @callableOnGhost
+    def get_height(self):
+        if self.dead:
+            return 0.3
+        if self.crouching:
+            return 1.35
+        return 1.8
+
+
+class WEIGHT_STATE:
+    NORMAL, HEAVY, STOP = xrange(3)

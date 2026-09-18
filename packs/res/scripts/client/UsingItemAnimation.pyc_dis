@@ -1,0 +1,102 @@
+# Embedded file name: ./scripts/client/UsingItemAnimation.py
+import BigWorld
+import time
+import ItemsUtils
+import Constants
+from Items import ItemsCatalog
+from client_utils import get_action_frame_rate, execute_model_action, stop_execute_model_action
+from utils_bw import if_not_destroyed
+DEFAULT_DRINK_MODEL = 'characters\\items\\gadjets\\drink\\bottle_05_lod1.model'
+DEFAULT_EAT_MODEL = 'characters\\items\\gadjets\\drink\\bottle_05_lod1.model'
+BODY, BUTT, MAGAZINE, LAUNCHER, LIGHT, BAYONET, SILENCER, SCOPE, AMMUNITION = xrange(9)
+LEFT_HAND, RIGHT_HAND = xrange(1, 3)
+
+class UsingItemAnimation:
+
+    def __init__(self):
+        self._playing_animation_item = False
+        self.__dealyed_timer = 0
+        self._need_enable_look = False
+        self._in_hand_model_effectorleft = None
+        self._in_hand_model_effectorright = None
+        self._using_item_action_name = ''
+        return
+
+    @property
+    def item_animation(self):
+        return self._playing_animation_item
+
+    @if_not_destroyed
+    def drawUsingItemAnimation(self, item_type, duration, on_target = False):
+        if self.isDestroyed:
+            return
+        elif not self.model:
+            return
+        else:
+            itemParam = ItemsCatalog.GetItemParam(item_type)
+            if not itemParam:
+                return
+            if hasattr(self, 'usingGesture') and not self.isSitting():
+                self.stopAnimation()
+            hands = itemParam.get('Action_model_in_hands', False)
+            self.hideAutogun()
+            self.model.effectorleft = None
+            self.model.ThrowRight = None
+            self._in_hand_model_effectorleft = None
+            self._in_hand_model_effectorright = None
+            self._using_item_action_name = ''
+            if hands:
+                if LEFT_HAND in hands:
+                    _model = hands.get(LEFT_HAND)
+                    self._in_hand_model_effectorleft = BigWorld.Model(_model)
+                if RIGHT_HAND in hands:
+                    _model = hands.get(RIGHT_HAND)
+                    self._in_hand_model_effectorright = BigWorld.Model(_model)
+            if on_target:
+                action_name = itemParam.get('Action_anim_action_on_target', None)
+            else:
+                action_name = itemParam.get('Action_anim_action', None)
+            _blocked = itemParam.get('Action_movement_block', False)
+            if _blocked:
+                self.setControlLockByEffect(Constants.ControlLockTypes.USE_ITEM, duration)
+            action = None
+            if action_name and isinstance(action_name, list):
+                self._using_item_action_name = action_name[1]
+                self.playListAnimations(action_name, duration, self.stopUsingItemAnimation)
+            else:
+                if action_name and hasattr(self.model, action_name):
+                    action = getattr(self.model, action_name, None)
+                if action:
+                    self._using_item_action_name = action_name
+                    self.playAnimation(action, duration, self.stopUsingItemAnimation, stretch=True)
+                else:
+                    self.stopUsingItemAnimation()
+                    return
+            self._playing_animation_item = True
+            self.EnableModelPitch(False)
+            self.flashlight_suspend()
+            return
+
+    @if_not_destroyed
+    def stopUsingItemAnimation(self):
+        self.removeControlLockByEffect(Constants.ControlLockTypes.USE_ITEM)
+        self.stopAnimation()
+        self._using_item = False
+        self._playing_animation_item = False
+        self._in_hand_model_effectorleft = None
+        self._in_hand_model_effectorright = None
+        self._using_item_action_name = ''
+        if self.is_dead():
+            return
+        elif not self.model:
+            return
+        else:
+            self.model.effectorright = None
+            self.model.effectorleft = None
+            self.model.ThrowRight = None
+            if self.usingGesture and not self.isSitting():
+                self.playAnimationByIDInList(self.usingGesture)
+            elif not self.isSitting():
+                self.EnableModelPitch(True)
+                self.returnModelToDefault()
+            return

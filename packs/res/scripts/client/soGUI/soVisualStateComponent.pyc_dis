@@ -1,0 +1,39 @@
+# Embedded file name: ./scripts/client/soGUI/soVisualStateComponent.py
+import ResMgr
+from bwdebug import ERROR_MSG
+from Helpers.PyGUI.VisualStateComponent import VisualStateComponent, VisualState
+
+class soVisualState(VisualState):
+    pass
+
+
+class soVisualStateComponent(VisualStateComponent):
+
+    def __init__(self, component, visualStateClassName):
+        VisualStateComponent.__init__(self, component, visualStateClassName)
+        self.xmlPath = None
+        return
+
+    def initVSC(self, xmlPath):
+        if self.xmlPath == xmlPath:
+            return
+        else:
+            self.xmlPath = xmlPath
+            ext = ResMgr.openSection(self.xmlPath)
+            if ext is not None:
+                visualStatesSection = ext
+                self.visualStateClassName = visualStatesSection.asString
+                components = self.visualStateClassName.strip('"').split('.')
+                module = __import__('__main__')
+                for comp in components[:-1]:
+                    module = getattr(module, comp)
+
+                visualStateClass = getattr(module, components[-1])
+                for stateName, stateSection in visualStatesSection.items():
+                    visualState = visualStateClass()
+                    visualState.onLoad(stateSection)
+                    self._visualStates[stateName] = visualState
+
+            else:
+                ERROR_MSG("Failed to open external visual state '%s'." % self.xmlPath)
+            return

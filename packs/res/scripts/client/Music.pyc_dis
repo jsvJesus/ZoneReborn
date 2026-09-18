@@ -1,0 +1,130 @@
+# Embedded file name: ./scripts/client/Music.py
+import sounds
+import BigWorld
+import random
+import rainConstant
+from Settings import Settings
+import BWPersonality
+
+class Music:
+
+    def __init__(self):
+        self.currentTrack = None
+        self.menuTrack = None
+        self.tracks = None
+        self.musicEnabled = True
+        self.lastSpaceSound = None
+        self.lastSpaceSoundName = ''
+        self._music_path = ''
+        self._music = None
+        return
+
+    def onInit(self):
+        print 'Music::onInit'
+        BigWorld.setMasterVolume(1.0)
+        self.initMusicTracks()
+        self.startMenuTrack()
+        self._playMusicTheme('menu_theme')
+        self.updateVolume()
+
+    def updateVolume(self):
+        s = Settings()
+        shell_modif = 1
+        player = BigWorld.player()
+        if player:
+            shell_modif = player.getSoundVolumeInShell()
+        if self._music and not self._music.isVirtual:
+            self._music.volume = s.getMusicVolume()
+        if self.lastSpaceSound and not self.lastSpaceSound.isVirtual:
+            self.lastSpaceSound.volume = s.getSfxVolume() * shell_modif
+            if BWPersonality.GUICore:
+                BWPersonality.GUICore.drawSound('A:shell', shell_modif)
+
+    def initMusicTracks(self):
+        pass
+
+    def setMusicState(self, state):
+        self.musicEnabled = state
+        for mus in self.tracks:
+            mus.muted = not self.musicEnabled
+
+        if not self.musicEnabled:
+            self.stopAllMusic()
+        else:
+            self.startRandomTrack()
+
+    def toggleMusic(self):
+        self.musicEnabled = not self.musicEnabled
+        self.setMusicState(self.musicEnabled)
+
+    def stopAllMusic(self):
+        print 'Music::stopAllMusic'
+        if self._music:
+            self._music.stop()
+        self._music_path = ''
+        self._music = None
+        return
+
+    def startMenuTrack(self):
+        pass
+
+    def startRandomTrack(self):
+        print 'Music::startRandomTrack'
+
+    def onGenericMusicStarted(self, snd):
+        pass
+
+    def onGenericMusicFinished(self, snd):
+        pass
+
+    def updateSpaceSoundVolume(self):
+        self.updateVolume()
+
+    def playSpaceSound(self, spacename):
+        soundName = 'ambient/' + spacename
+        print 'Play music (space ambient):', soundName
+        self._playMusicTheme(spacename)
+        if self.lastSpaceSound is not None and self.lastSpaceSoundName != soundName:
+            self.lastSpaceSound.stop()
+        if self.lastSpaceSoundName != soundName:
+            self.lastSpaceSoundName = soundName
+            self.lastSpaceSound = sounds.playAmbientMusic(soundName, None, None, True)
+            if self.lastSpaceSound:
+                self.lastSpaceSound.autoDetach = False
+        elif self.lastSpaceSound:
+            self.lastSpaceSound.play()
+        return
+
+    def stopSpaceSound(self):
+        print 'Music::stopSpaceSound'
+        if self.lastSpaceSound:
+            self.lastSpaceSound.stop()
+        self.lastSpaceSound = None
+        self.lastSpaceSoundName = ''
+        return
+
+    def onConnecting(self):
+        print 'Music::onConnecting'
+        self._playMusicTheme('menu_theme')
+
+    def onDisconnected(self):
+        print 'Music::onDisconnected'
+        self._playMusicTheme('menu_theme')
+
+    def onPlayerAccount(self):
+        print 'Music::onPlayerAccount'
+        self._playMusicTheme('menu_theme')
+
+    def _playMusicTheme(self, path):
+        if self._music_path == path:
+            return
+        self._music_path = path
+        sound_path = 'music/' + path
+        print 'Music::playMusicTheme', repr(sound_path)
+        if self._music:
+            self._music.stop()
+            self._music.releaseSound()
+        self._music = sounds.getMusic(sound_path)
+        if self._music:
+            self._music.autoDetach = False
+            self._music.play()

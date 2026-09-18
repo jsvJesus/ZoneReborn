@@ -1,0 +1,33 @@
+# Embedded file name: ./scripts/common/clan_utils.py
+import re
+import Clan
+CLAN_NAME_FILTERS = [u'^[\u0430-\u044f\\_0123456789]*$', u'^[a-z\\_0123456789]*$']
+
+def check_clan_name(clan_name):
+    if not isinstance(clan_name, unicode):
+        raise TypeError('clan_name mast be unicode,  clan_name={0}, type={1}'.format(repr(clan_name), type(clan_name)))
+    if len(clan_name) <= 1:
+        return Clan.STATUS_CLAN_NAME_IS_TOO_SHORT
+    if len(clan_name) > 32:
+        return Clan.STATUS_CLAN_NAME_IS_TOO_LONG
+    uid = clan_name.lower()
+    if not any([ re.match(regex_params, uid) for regex_params in CLAN_NAME_FILTERS ]):
+        return Clan.STATUS_CLAN_NAME_HAVE_FORBIDDEN_CHAR
+    if uid.count(u'_') > 1:
+        return Clan.STATUS_CLAN_NAME_HAVE_TOO_MUCH_UNDERLINE
+    if uid.startswith(u'_'):
+        return Clan.STATUS_CLAN_NAME_CANT_BEGIN_WITH_UNDERLINE
+    if uid[-1] == u'_':
+        return Clan.STATUS_CLAN_NAME_CANT_ENDS_WITH_UNDERLINE
+    return Clan.STATUS_CLAN_NAME_OK
+
+
+if __name__ == '__main__':
+    print 'test:'
+    for clan_name in [u'1',
+     u'2221',
+     u' sdasd',
+     u'\u0412\u042b\u0412',
+     u'\u0412 \u042b\u0412',
+     u'\u0412 Z\u042b\u0412']:
+        print check_clan_name(clan_name), repr(clan_name)

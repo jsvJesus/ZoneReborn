@@ -1,0 +1,203 @@
+# Embedded file name: ./scripts/common/Config/Creatures/__init__.py
+import BigWorld
+from Config import load_json
+from Config.Compiler import ConfigCompilerError
+from Config.Creatures import CommonConfig
+from CommonConfig import CREATURES_DATA_PATH, creature_type_to_file, uniq_mob_names
+from Config.Creatures.Compiler import CreatureConfigCompiler
+from Subtypes import SubtypesCompiler
+import copy
+import json
+import math
+from Config.Creatures.Constants import *
+from CommonConfig import MODELS_ROOT
+
+def getLoots(mob_type, mob_sub_type):
+    mob_file_name = creature_type_to_file[mob_type]
+    path = CREATURES_DATA_PATH + mob_file_name
+    json_data = open(path)
+    data = json.load(json_data)
+    loots = data.get('randomLoot')
+    if loots.get(str(mob_sub_type)) is None:
+        return loots.get('0').get('groups')
+    else:
+        return loots.get(str(mob_sub_type)).get('groups')
+
+
+def get_type_config(mob_type):
+    return get_type_config.cache[mob_type]
+
+
+def inject_crutch():
+    """ \xd0\xbd\xd0\xb5 \xd1\x83\xd0\xb4\xd0\xb0\xd0\xbb\xd0\xbe\xd1\x81\xd1\x8c \xd1\x80\xd0\xb0\xd0\xb7\xd0\xbe\xd0\xb1\xd1\x80\xd0\xb0\xd1\x82\xd1\x8c\xd1\x81\xd1\x8f, \xd0\xba\xd0\xb0\xd0\xba \xd1\x80\xd0\xb0\xd1\x81\xd0\xbf\xd0\xb0\xd1\x80\xd1\x81\xd0\xb8\xd1\x82\xd1\x8c \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xb0\xd0\xb9\xd0\xbb\xd0\xb5\xd1\x80\xd0\xbe\xd0\xbc \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xba\xd0\xb8 \xd1\x81\xd0\xbb\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x80\xd0\xb5\xd0\xb9,
+            \xd0\xbf\xd0\xbe\xd1\x81\xd0\xb5\xd0\xbc\xd1\x83 \xd0\xb4\xd0\xb5\xd0\xbb\xd0\xb0\xd1\x8e \xd1\x8d\xd1\x82\xd0\xbe \xd0\xb2\xd1\x80\xd1\x83\xd1\x87\xd0\xbd\xd1\x83\xd1\x8e, \xd0\xb2 \xd0\xbf\xd0\xb5\xd1\x80\xd1\x81\xd0\xbf\xd0\xb5\xd0\xba\xd1\x82\xd0\xb8\xd0\xb2\xd0\xb5 \xd0\xbd\xd0\xb5\xd0\xbe\xd0\xb1\xd1\x85\xd0\xbe\xd0\xb4\xd0\xb8\xd0\xbc\xd0\xbe \xd0\xb2\xd0\xbe\xd0\xbe\xd0\xb1\xd1\x89\xd0\xb5 \xd0\xb2\xd1\x8b\xd0\xb1\xd1\x80\xd0\xbe\xd1\x81\xd0\xb8\xd1\x82\xd1\x8c \xd1\x8d\xd1\x82\xd0\xb8 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xb0\xd0\xb9\xd0\xbb\xd0\xb5\xd1\x80\xd1\x8b
+            \xd0\xb8 \xd1\x81\xd0\xb4\xd0\xb5\xd0\xbb\xd0\xb0\xd1\x82\xd1\x8c \xd0\xba\xd0\xb0\xd0\xba\xd1\x83\xd1\x8e-\xd0\xbd\xd0\xb8\xd0\xb1\xd1\x83\xd0\xb4\xd1\x8c \xd0\xb3\xd1\x83\xd1\x8e
+    """
+    for mob_config in get_type_config.cache.values():
+        default_index = mob_config['__subtype_index_by_name__']['default']
+        default_config = mob_config[default_index]
+        level_configs = [ level_config_value for level_config_key, level_config_value in mob_config.items() if level_config_key not in ['__filename__', '__subtype_index_by_name__', default_index] ]
+
+        def update_tracker(config):
+            tracker = config.get('tracker')
+            if tracker:
+                secondaryNodes = tracker.get('secondary_nodes', [])
+                for i in range(len(secondaryNodes)):
+                    secondaryNodes[i] = (secondaryNodes[i][0], secondaryNodes[i][1])
+
+        for skill_config in default_config['skills'].values():
+            update_tracker(skill_config)
+            waves_config = skill_config.get('waves_damage')
+            if not waves_config:
+                continue
+            for wave in waves_config:
+
+                def set_default(key, value, wave):
+                    if key not in wave:
+                        wave[key] = value
+
+                set_default(DMG_BODY_ZONES, [], wave)
+                set_default(DMG_VALUE_DAMAGE, [0.0, 0.0], wave)
+                set_default(SKILL_EFFECT_ID, None, wave)
+                set_default(SKILL_EFFECT_STACK, 1, wave)
+                set_default(SKILL_EFFECT_CHANCE, 1.0, wave)
+                set_default(SKILL_SFX, None, wave)
+                set_default(SKILL_ABILITIES, [], wave)
+                set_default(SKILL_DIRECTION, None, wave)
+                if wave[SKILL_DIRECTION]:
+                    if type(wave[SKILL_DIRECTION]['YPR']) == list:
+                        wave[SKILL_DIRECTION]['YPR'] = map(math.radians, wave[SKILL_DIRECTION]['YPR'])
+                    wave[SKILL_DIRECTION]['angle'] = math.radians(wave[SKILL_DIRECTION]['angle'])
+
+        update_tracker(default_config)
+        for level_config in level_configs:
+            for skill_key, skill_config in level_config['skills'].items():
+                update_tracker(skill_config)
+                waves_config = skill_config.get('waves_damage')
+                if not waves_config:
+                    continue
+                default_waves = default_config['skills'][skill_key]['waves_damage']
+                for i, default_wave in enumerate(default_waves):
+                    if i >= len(waves_config):
+                        waves_config.append(default_wave)
+                    else:
+                        wave = waves_config[i]
+                        new_wave = copy.deepcopy(default_wave)
+                        for key in new_wave.keys():
+                            if key in wave:
+                                new_wave[key] = wave[key]
+                                if key == SKILL_DIRECTION:
+                                    if type(new_wave[SKILL_DIRECTION]['YPR']) == list:
+                                        new_wave[SKILL_DIRECTION]['YPR'] = map(math.radians, new_wave[SKILL_DIRECTION]['YPR'])
+                                    new_wave[SKILL_DIRECTION]['angle'] = math.radians(new_wave[SKILL_DIRECTION]['angle'])
+
+                        waves_config[i] = new_wave
+
+            update_tracker(level_config)
+            for state_config in level_config['states'].values():
+                for key in state_config['skills'].keys():
+                    if state_config['skills'][key] == 0:
+                        del state_config['skills'][key]
+
+    return
+
+
+def load_and_cache_creatures(reload_clients = False):
+    """ \xd0\xb7\xd0\xb0\xd0\xb3\xd1\x80\xd1\x83\xd0\xb7\xd0\xb8\xd1\x82\xd1\x8c (\xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xb7\xd0\xb0\xd0\xb3\xd1\x80\xd1\x83\xd0\xb7\xd0\xb8\xd1\x82\xd1\x8c) \xd0\xbf\xd0\xb0\xd1\x80\xd0\xb0\xd0\xbc\xd0\xb5\xd1\x82\xd1\x80\xd1\x8b \xd0\xbc\xd0\xbe\xd0\xb1\xd0\xbe\xd0\xb2 """
+    get_type_config.cache = {}
+    for mob_type in creature_type_to_file:
+        creature_json_file = creature_type_to_file[mob_type]
+        path = CREATURES_DATA_PATH + creature_json_file
+        config = load_json(path)
+        if config is None:
+            raise IOError("DESIGNER_ERROR: Config.Creatures.get_type_config: can't open file {0}".format(path))
+        try:
+            mob_type_config = SubtypesCompiler(config, CreatureConfigCompiler, debug_name=creature_json_file).compile()
+        except (ConfigCompilerError,
+         KeyError,
+         IndexError,
+         ValueError,
+         TypeError):
+            print 'DESIGNER_ERROR: Creature config: type {0}'.format(mob_type)
+            print path
+            raise
+
+        mob_type_config['__filename__'] = creature_json_file
+        get_type_config.cache[mob_type] = mob_type_config
+
+    if reload_clients:
+        for entity in BigWorld.entities.values():
+            if entity.__class__.__name__ == 'Avatar' and entity.hasWitness:
+                entity.ownClient.reload_creatures_config()
+
+    inject_crutch()
+    return
+
+
+load_and_cache_creatures()
+
+def get_config(mob_type, mob_level = KEYWORDS.DEFAULT_LEVEL):
+    mob_type_config = get_type_config(mob_type)
+    try:
+        return mob_type_config[mob_level]
+    except KeyError:
+        return mob_type_config[get_subtype_index(mob_type, KEYWORDS.DEFAULT_LEVEL)]
+
+
+def get_subtype_name(mob_type, subtype):
+    return get_config(mob_type, subtype)[SUBTYPE_NAME]
+
+
+def get_subtype_index(mob_type, subtype_name):
+    mob_type_config = get_type_config(mob_type)
+    try:
+        return mob_type_config[SUBTYPE_INDEX_BY_NAME][subtype_name]
+    except KeyError:
+        print 'Creatures config: get_subtype_index: no such subtype {0} for type {1}'.format(subtype_name, mob_type)
+        return None
+
+    return None
+
+
+def get_state_name(mob_type, mob_level, state_id):
+    config = get_config(mob_type, mob_level)
+    return config[STATES][state_id]['__name__']
+
+
+def get_mob_name(mob_type, mob_level):
+    return get_config(mob_type, mob_level)[NAME]
+
+
+def get_uniq_mob_name(uniq_id):
+    return uniq_mob_names.get(uniq_id)
+
+
+def get_creatures_types():
+    return creature_type_to_file.keys()
+
+
+def save_creature_config_in_file():
+    import codecs
+    crt_types = get_creatures_types()
+    outfile_path = 'CREATURE_TABLE.csv'
+    table_string = '*\xd0\xa2\xd0\xb8\xd0\xbf \xd0\xbc\xd0\xbe\xd0\xb1\xd0\xb0*;*\xd0\x9f\xd0\xbe\xd0\xb4\xd1\x82\xd0\xb8\xd0\xbf \xd0\xbc\xd0\xbe\xd0\xb1\xd0\xb0*;*\xd0\x9d\xd0\xb0\xd0\xb8\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb0\xd0\xbd\xd0\xb8\xd0\xb5 \xd0\xbc\xd0\xbe\xd0\xb1\xd0\xb0*;*\xd0\x9a\xd0\xbb\xd0\xb0\xd0\xbd \xd0\xb2 \xd0\xba\xd0\xbe\xd1\x82\xd0\xbe\xd1\x80\xd0\xbe\xd0\xbc \xd1\x81\xd0\xbe\xd1\x81\xd1\x82\xd0\xbe\xd0\xb8\xd1\x82 \xd0\xbc\xd0\xbe\xd0\xb1*;*\xd0\x94\xd1\x80\xd1\x83\xd0\xb6\xd0\xb5\xd1\x81\xd1\x82\xd0\xb2\xd0\xb5\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xba\xd0\xbb\xd0\xb0\xd0\xbd\xd1\x8b*;*\xd0\xa1\xd1\x82\xd0\xbe\xd1\x80\xd0\xbe\xd0\xbd\xd0\xb0 \xd1\x82\xd1\x80\xd0\xb0\xd0\xbf\xd0\xb0*;*\xd0\xa0\xd0\xb0\xd0\xb4\xd0\xb8\xd1\x83\xd1\x81 \xd0\xb4\xd1\x80\xd1\x83\xd0\xb6\xd0\xb1\xd1\x8b*' + '\r\n'
+    for crt_type in get_type_config.cache:
+        for subtype in get_type_config.cache[crt_type].keys():
+            if not isinstance(subtype, int):
+                continue
+            try:
+                mob_name = get_mob_name(crt_type, subtype).encode('utf-8')
+            except Exception as e:
+                continue
+
+            assist = get_type_config.cache[crt_type][subtype][ASSIST]
+            if not assist:
+                assist = {u'clan': 'None',
+                 u'radius': 'None',
+                 u'friends': ['None']}
+            argro_range = get_type_config.cache[crt_type][subtype][AGRO_RANGE]
+            table_string += '"{0}";"{1}";"{2}";"{3}";"{4}";"{5}";"{6}"\r\n'.format(crt_type, subtype, mob_name, assist[u'clan'], ','.join(assist[u'friends']), argro_range, assist[u'radius'])
+
+    xf = open(outfile_path, 'wb')
+    xf.write(table_string)
+    xf.close()

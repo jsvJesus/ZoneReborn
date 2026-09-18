@@ -1,0 +1,27 @@
+# Embedded file name: ./scripts/client/Trackable.py
+
+
+class Trackable:
+
+    def __init__(self):
+        self._trackers = set()
+
+    def model_updated(self):
+        if self.isDestroyed:
+            return
+        bad_listeners = []
+        for listener in list(self._trackers):
+            try:
+                listener.trackable_updated()
+            except:
+                bad_listeners.append(listener)
+
+        for listener in bad_listeners:
+            self._trackers.remove(listener)
+
+    def add_listener(self, listener):
+        self._trackers.add(listener)
+
+    def remove_listener(self, listener):
+        if listener in self._trackers:
+            self._trackers.remove(listener)

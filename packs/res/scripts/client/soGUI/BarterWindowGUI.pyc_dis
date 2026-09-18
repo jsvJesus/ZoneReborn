@@ -1,0 +1,872 @@
+# Embedded file name: ./scripts/client/soGUI/BarterWindowGUI.py
+"""\xd0\x9e\xd0\xba\xd0\xbd\xd0\xbe \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xb1\xd0\xb0\xd1\x80\xd1\x82\xd0\xb5\xd1\x80\xd0\xb0."""
+import BWPersonality
+import BigWorld
+import GUI
+import ItemsUtils
+import colorCodes
+import copy
+import soGUI
+import soGUI.soItemView as module_soItemView
+from Helpers.PyGUI import PyGUIBase
+from Helpers.PyGUI import PyGUIBase
+from Helpers.PyGUI import PyGUIEvent
+from Items import ItemsCatalog
+from Keys import *
+from Localization import lc
+from gui_const import PACKAGE_SELL
+from msgbox_templates import text_and_ok
+from soGUI.soButton import soButton
+from soGUI.soCheckBox import soCheckBox
+from soGUI.soEditField import soEditField2
+from soGUI.soItemView import soItemView, soItemSlot
+from soGUI.soList import soList
+from soGUI.soToolTipComponent import soToolTipComponent
+EVENT_PACKSELECT = PACKAGE_SELL.EVENT_PACKSELECT
+EVENT_ITEMADD = PACKAGE_SELL.EVENT_ITEMADD
+EVENT_ITEMREMOVE = PACKAGE_SELL.EVENT_ITEMREMOVE
+EVENT_BUY = PACKAGE_SELL.EVENT_BUY
+EVENT_CLEAR = PACKAGE_SELL.EVENT_CLEAR
+EVENT_HIDEUNAFFORDABLE = PACKAGE_SELL.EVENT_HIDEUNAFFORDABLE
+EVENT_ITEMCONTEXT = PACKAGE_SELL.EVENT_ITEMCONTEXT
+EVENT_CLOSE = PACKAGE_SELL.EVENT_CLOSE
+SLOTEVENT_MOUSELEAVE = 0
+SLOTEVENT_MOUSEENTER = 1
+SLOTEVENT_MOUSEMOVE = 2
+SLOTEVENT_DRAGSTART = 3
+SLOTEVENT_DRAGSTOP = 4
+SLOTEVENT_DROP = 5
+SLOTEVENT_DRAGENTER = 6
+SLOTEVENT_DRAGLEAVE = 7
+SLOTEVENT_RCLICK = 8
+SLOTEVENT_LCLICK = 9
+SLOTEVENT_DBLCLICK = 10
+EVENT_MOUSELEAVE = 0
+EVENT_MOUSEENTER = 1
+EVENT_MOUSEMOVE = 2
+EVENT_DRAGSTART = 3
+EVENT_DRAGSTOP = 4
+EVENT_DROP = 5
+EVENT_DRAGENTER = 6
+EVENT_DRAGLEAVE = 7
+EVENT_RCLICK = 8
+EVENT_LCLICK = 9
+EVENT_DBLCLICK = 10
+
+class MyEditField(soEditField2):
+    """"\xd0\x9f\xd0\xbe\xd0\xbb\xd0\xb5 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xb2\xd0\xb2\xd0\xbe\xd0\xb4\xd0\xb0 \xd1\x86\xd0\xb8\xd1\x84\xd1\x80."""
+
+    def __init__(self, *arg, **kw):
+        super(MyEditField, self).__init__(*arg, **kw)
+        self._call_back = None
+        return
+
+    def handleChar(self, char):
+        """\xd0\x9f\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x80\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xbd\xd0\xbe\xd0\xb2\xd1\x8b\xd0\xb9 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb9 \xd1\x81\xd0\xb8\xd0\xbc\xd0\xb2\xd0\xbe\xd0\xbb."""
+        if char == self.CHAR_BACKSPACE:
+            self.trueText = self.trueText[:-1]
+            self.visualText = self.visualText[:-1]
+            self.cursorPosition -= 1
+            if self.cursorPosition < 0:
+                self.cursorPosition = 0
+            self._call_back(self.trueText)
+        elif char not in self.CHARS_TO_IGNORE:
+            if self.isNumerical:
+                if not char.isdigit():
+                    return True
+                if len(self.trueText) + 1 > self.maxCharacters:
+                    return True
+            self.trueText += char
+            if self.maskChar != '':
+                self.visualText += self.maskChar
+            else:
+                self.visualText += char
+            self.cursorPosition += 1
+            if self._call_back is not None:
+                self._call_back(self.trueText)
+        else:
+            return False
+        self.renderText()
+        self.renderCursor()
+        return True
+
+    def bind_text_change(self, func):
+        """\xd0\x9f\xd1\x80\xd0\xb8\xd0\xb2\xd1\x8f\xd0\xb7\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x83\xd1\x8e \xd1\x84\xd1\x83\xd0\xbd\xd0\xba\xd1\x86\xd0\xb8\xd1\x8e \xd0\xba \xd1\x81\xd0\xbe\xd0\xb1\xd1\x8b\xd1\x82\xd0\xb8\xd1\x8f \xd0\xb8\xd0\xb7\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xb7\xd0\xbd\xd0\xb0\xd1\x87\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xb2 \xd0\xb2\xd0\xb8\xd0\xb4\xd0\xb6\xd0\xb8\xd1\x82\xd0\xb5.
+        
+        \xd0\xa4\xd1\x83\xd0\xbd\xd0\xba\xd1\x86\xd0\xb8\xd1\x8f \xd0\xb4\xd0\xbe\xd0\xbb\xd0\xb6\xd0\xbd\xd0\xb0 \xd0\xbf\xd1\x80\xd0\xb8\xd0\xbd\xd0\xb8\xd0\xbc\xd0\xb0\xd1\x82\xd1\x8c \xd0\xbe\xd0\xb4\xd0\xb8\xd0\xbd \xd0\xb0\xd1\x80\xd0\xb3\xd1\x83\xd0\xbc\xd0\xb5\xd0\xbd\xd1\x82 (\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xbe\xd0\xb5 \xd0\xb7\xd0\xbd\xd0\xb0\xd1\x87\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd1\x82\xd0\xb5\xd0\xba\xd1\x81\xd1\x82\xd0\xb0 \xd0\xb2 \xd0\xb2\xd0\xb8\xd0\xb4\xd0\xb6\xd0\xb8\xd1\x82\xd0\xb5).
+        """
+        self._call_back = func
+
+
+class BarterRewardSlot(soItemSlot):
+    """\xd0\x9d\xd0\xb5\xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd1\x82\xd0\xb0\xd1\x81\xd0\xba\xd0\xb8\xd0\xb2\xd0\xb0\xd0\xb5\xd0\xbc\xd1\x8b\xd0\xb9 \xd1\x81\xd0\xbb\xd0\xbe\xd1\x82 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0-\xd0\xb2\xd0\xbe\xd0\xb7\xd0\xbd\xd0\xb0\xd0\xb3\xd1\x80\xd0\xb0\xd0\xb6\xd0\xb4\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f."""
+    factoryString = 'soGUI.BarterRewardSlot'
+    SLOTWIDTH = 128
+    SLOTHEIGHT = 64
+
+    def __init__(self, component, slotIndex, itemData = None):
+        soItemSlot.__init__(self, component, slotIndex, itemData, centerDProxy=True)
+        component.script = self
+        self.dragProxy = self.component.dragProxy
+        self.proxyHolder = self.component
+        self.proxyName = 'dragProxy'
+
+    def setupRoot(self):
+        comp = self.component
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.width = self.SLOTWIDTH
+        comp.height = self.SLOTHEIGHT
+        comp.crossFocus = True
+        comp.moveFocus = True
+        comp.mouseButtonFocus = True
+
+    def setupContent(self):
+        comp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        comp.verticalPositionMode = comp.horizontalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.width = self.SLOTWIDTH
+        comp.height = self.SLOTHEIGHT
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (0, 0, 0.9)
+        self.component.addChild(comp, 'frameCmp')
+        comp = GUI.Simple('')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.width = self.SLOTWIDTH
+        comp.height = self.SLOTHEIGHT
+        comp.colour = (255, 255, 255, 128)
+        comp.materialFX = 'BLEND'
+        comp.position = (0, 0, 0.5)
+        comp.visible = False
+        self.component.addChild(comp, 'dragProxy')
+        comp = GUI.Simple('')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.width = self.SLOTWIDTH / 2
+        comp.height = self.SLOTHEIGHT
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (-1, 0, 0.4)
+        self.component.addChild(comp, 'itemIcon')
+        comp = GUI.Text('')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'BOTTOM'
+        comp.font = 'ruRU_Cyrvetica_Extra_10i.font'
+        comp.colour = (175, 166, 112, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (5, self.SLOTHEIGHT - 5, 0.3)
+        self.component.addChild(comp, 'itemName')
+        comp = GUI.Text('')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'RIGHT'
+        comp.verticalAnchor = 'CENTER'
+        comp.font = 'ruRU_Cyrvetica_Extra_10i.font'
+        comp.colour = (175, 166, 112, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (int(self.SLOTWIDTH * 0.8200000000000001), self.SLOTHEIGHT // 2, 0.3)
+        comp.text = '0'
+        comp.explicitSize = True
+        comp.size = (round(len(comp.text), 2) / 100.0, 0.06)
+        self.component.addChild(comp, 'itemCount')
+
+    def _applyItemData(self):
+        """\xd0\x92\xd1\x8b\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 (\xd0\xba\xd0\xb0\xd1\x80\xd1\x82\xd0\xb8\xd0\xbd\xd0\xba\xd1\x83, \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xbf\xd0\xb8\xd1\x81\xd0\xb8 \xd0\xb8 \xd0\xbf\xd1\x80\xd0\xbe\xd1\x87\xd0\xb5\xd0\xb5) \xd0\xb2 \xd1\x81\xd0\xbb\xd0\xbe\xd1\x82\xd0\xb5."""
+        if self.haveItem():
+            item_type = self.itemData['complexItemType']
+            item_params = ItemsCatalog.GetItemParam(item_type)
+            iconName = ItemsUtils.getTextureByTint(self.itemData)
+            if not iconName:
+                iconName = item_params['IconName']
+            if BWPersonality.GUICore.iconTextures is not None:
+                if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
+                    if BWPersonality.GUICore.iconTextures.has_key(iconName):
+                        self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures[iconName]
+                    else:
+                        self.component.itemIcon.textureName = iconName
+            else:
+                self.component.itemIcon.textureName = iconName
+            friendlyName = ItemsUtils.GetItemName(item_type, fGetShortName=True, tintItem=self.itemData)
+            self.component.itemName.text = friendlyName
+            text = 'x  {0}'.format(self.itemData['reward_quantity'])
+            self.component.itemCount.text = text
+            self.component.itemCount.size = (len(text) / 100.0, 0.06)
+        else:
+            self.component.itemIcon.textureName = ''
+            self.component.itemName.text = ''
+            self.component.itemCount.text = ''
+        self.dragProxy.texture = self.component.itemIcon.texture
+        return
+
+
+class BarterPaySlot(soItemSlot):
+    """\xd0\x9f\xd0\xb5\xd1\x80\xd0\xb5\xd1\x82\xd0\xb0\xd1\x81\xd0\xba\xd0\xb8\xd0\xb2\xd0\xb0\xd0\xb5\xd0\xbc\xd1\x8b\xd0\xb9 \xd1\x81\xd0\xbb\xd0\xbe\xd1\x82 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0, \xd0\xba\xd0\xbe\xd1\x82\xd0\xbe\xd1\x80\xd1\x8b\xd0\xb9 \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c \xd0\xbe\xd1\x82\xd0\xb4\xd0\xb0\xd1\x91\xd1\x82."""
+    factoryString = 'soGUI.BarterPaySlot'
+    SLOTWIDTH = 128
+    SLOTHEIGHT = 64
+
+    def __init__(self, component, slotIndex, itemData = None):
+        soItemSlot.__init__(self, component, slotIndex, itemData, centerDProxy=True)
+        component.script = self
+        self.dragProxy = self.component.dragProxy
+        self.proxyHolder = self.component
+        self.proxyName = 'dragProxy'
+        self._onDragStart = self.onDragStart
+        self._onDragStop = self.onDragStop
+
+    def setupRoot(self):
+        comp = self.component
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.width = self.SLOTWIDTH
+        comp.height = self.SLOTHEIGHT
+        comp.crossFocus = True
+        comp.dragFocus = True
+        comp.dropFocus = True
+        comp.moveFocus = True
+        comp.mouseButtonFocus = True
+
+    def setupContent(self):
+        comp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        comp.verticalPositionMode = comp.horizontalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.width = self.SLOTWIDTH
+        comp.height = self.SLOTHEIGHT
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (0, 0, 0.9)
+        self.component.addChild(comp, 'frameCmp')
+        comp = GUI.Simple('')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.width = self.SLOTWIDTH / 2
+        comp.height = self.SLOTHEIGHT
+        comp.colour = (255, 255, 255, 128)
+        comp.materialFX = 'BLEND'
+        comp.position = (0, 0, 0.5)
+        comp.visible = False
+        self.component.addChild(comp, 'dragProxy')
+        comp = GUI.Simple('')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.width = self.SLOTWIDTH / 2
+        comp.height = self.SLOTHEIGHT
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (-1, 0, 0.4)
+        self.component.addChild(comp, 'itemIcon')
+        comp = GUI.Text('')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'BOTTOM'
+        comp.font = 'ruRU_Cyrvetica_Extra_10i.font'
+        comp.colour = (175, 166, 112, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (5, self.SLOTHEIGHT - 5, 0.3)
+        self.component.addChild(comp, 'itemName')
+        comp = GUI.Text('')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'RIGHT'
+        comp.verticalAnchor = 'CENTER'
+        comp.font = 'ruRU_Cyrvetica_Extra_10i.font'
+        comp.colour = (175, 166, 112, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (int(self.SLOTWIDTH * 0.8200000000000001), self.SLOTHEIGHT // 2, 0.3)
+        comp.text = '0 / 0'
+        comp.explicitSize = True
+        comp.size = (round(len(comp.text), 2) / 100, 0.06)
+        self.component.addChild(comp, 'itemCount')
+        comp = GUI.Simple('soGUI/maps/Controls/inventory/bfg_slot.tga')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.width = self.SLOTWIDTH
+        comp.height = self.SLOTHEIGHT
+        comp.colour = (125, 0, 0, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (0, 0, 0.7)
+        comp.visible = False
+        self.component.addChild(comp, 'ItemsQuantityBg')
+
+    def _applyItemData(self):
+        """\xd0\x92\xd1\x8b\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 (\xd0\xba\xd0\xb0\xd1\x80\xd1\x82\xd0\xb8\xd0\xbd\xd0\xba\xd1\x83, \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xbf\xd0\xb8\xd1\x81\xd0\xb8 \xd0\xb8 \xd0\xbf\xd1\x80\xd0\xbe\xd1\x87\xd0\xb5\xd0\xb5) \xd0\xb2 \xd1\x81\xd0\xbb\xd0\xbe\xd1\x82\xd0\xb5."""
+        if self.haveItem():
+            item_type = self.itemData['complexItemType']
+            item_params = ItemsCatalog.GetItemParam(item_type)
+            iconName = item_params['IconName']
+            if BWPersonality.GUICore.iconTextures is not None:
+                if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
+                    if BWPersonality.GUICore.iconTextures.has_key(iconName):
+                        self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures[iconName]
+                    else:
+                        self.component.itemIcon.textureName = iconName
+            else:
+                self.component.itemIcon.textureName = iconName
+            friendlyName = ItemsUtils.GetItemName(item_type, fGetShortName=True, tintItem=self.itemData)
+            self.component.itemName.text = friendlyName
+            text = self._added_item_text(self.itemData)
+            self.component.itemCount.text = text
+            self.component.itemCount.size = self._added_item_text_size(text)
+            self._set_background(self.itemData)
+        else:
+            self.component.itemIcon.textureName = ''
+            self.component.itemName.text = ''
+            self.component.itemCount.text = ''
+            self.component.ItemsQuantityBg.visible = False
+        self.dragProxy.texture = self.component.itemIcon.texture
+        return
+
+    def _set_background(self, data):
+        already_added = data.get('already_added', None)
+        required_number = data.get('required_number', None)
+        if already_added is None or required_number is None:
+            self.component.ItemsQuantityBg.visible = False
+            return
+        else:
+            if required_number <= already_added:
+                self.component.ItemsQuantityBg.visible = False
+            else:
+                self.component.ItemsQuantityBg.visible = True
+            return
+
+    def _added_item_text(self, data):
+        already_added = data['already_added']
+        required_number = data['required_number']
+        text = '{0} / {1}'.format(already_added, required_number)
+        return text
+
+    def _added_item_text_size(self, text):
+        x = round(len(text) / 100.0, 2)
+        y = 0.06
+        return (x, y)
+
+    def onDragStart(self):
+        if self.haveItem():
+            self.dragProxy.visible = True
+            return True
+        return False
+
+    def onDragStop(self):
+        self.dragProxy.visible = False
+        return True
+
+    def cancelTrade(self):
+        BWPersonality.GUICore.packageSellEvent(EVENT_ITEMREMOVE, self.itemData)
+
+
+class BarterWindow(PyGUIBase):
+    """\xd0\x9e\xd0\xba\xd0\xbd\xd0\xbe \xd0\xb1\xd0\xb0\xd1\x80\xd1\x82\xd0\xb5\xd1\x80\xd0\xb0."""
+    factoryString = 'soGUI.BarterWindow'
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.interfaceID = BWPersonality.GUICore.GUI_ID_PACKAGESELL
+        self.setupRoot()
+        self.setupContent()
+        self._alignWnd()
+        self._clbID = 0
+        self._deltaposition = [0, 0]
+        self._multiplier = 1
+        self.you_can_get_items_count = 0
+
+    def setupRoot(self):
+        comp = self.component
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'RIGHT'
+        comp.verticalAnchor = 'BOTTOM'
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.width = 606
+        comp.height = 505
+        comp.visible = False
+        comp.dragFocus = True
+        comp.moveFocus = True
+
+    def setupContent(self):
+        itemView = soItemView(GUI.Window(), BarterPaySlot, slot_eventsHandler=self.paySlotHandler, eventsHandler=self.payItemViewHandler, rowWidth=3, cols=3, rows=3, vScroll=True, hScroll=False, borderWidth=0)
+        comp = itemView.component
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.position = (200, 52, 0.5)
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        self.component.addChild(comp, 'payItemView')
+        itemView.onBound()
+        itemView.setRestrictingComponent(None)
+        itemView.setItems(None)
+        itemView = soItemView(GUI.Window(), BarterRewardSlot, slot_eventsHandler=self.rewardSlotHandler, eventsHandler=self.rewardItemViewHandler, rowWidth=3, cols=3, rows=3, vScroll=True, hScroll=False, borderWidth=0)
+        comp = itemView.component
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.position = (200, 272, 0.5)
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        self.component.addChild(comp, 'rewardItemView')
+        itemView.onBound()
+        itemView.setRestrictingComponent(None)
+        itemView.setItems(None)
+        list = soList(GUI.Window(), soGUI.ListPropsStructure(width=190, height=437, isMultiSel=False, selectCallBack=self._onPackListElem, sorted=False))
+        comp = list.component
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.position = (5, 31, 0.4)
+        self.component.addChild(comp, 'packages')
+        list.onBound()
+        closeBox = soButton(GUI.Window())
+        comp = closeBox.component
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.width = 18
+        comp.height = 18
+        comp.position = (582, 6, 0.3)
+        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.onBound()
+        closeBox.setVisualState('normal')
+        self.component.addChild(comp, 'closeBox')
+        hintBox = soButton(GUI.Window())
+        comp = hintBox.component
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.width = 18
+        comp.height = 18
+        comp.position = (560, 6, 0.3)
+        hintBox.initVSC('soGUI/visual_styles/helpBox.xml')
+        hintBox.onBound()
+        hintBox.setVisualState('normal')
+        self.component.addChild(comp, 'hintBox')
+        cb = soCheckBox(GUI.Window(), soGUI.CheckBoxPropsStructure(labelText=lc('GUI.PackageSellGUI.HIDE_UNAFFORDABLE_LABEL'), font='ruRU_Cyrvetica_Extra_10i.font', labelColour=(175, 166, 112, 255)))
+        comp = cb.component
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (13, 478, 0.4)
+        self.component.addChild(comp, 'hideUnaffordable')
+        cb.onBound()
+        edit = MyEditField(GUI.Window(), width=50, height=25, borderWidth=1, font='ruRU_calibri_default.font', maxChars=6, isNumerical=True, visualStyle='defaultEditField', maskChar='')
+        comp = edit.component
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.position = (244, 471, 0.5)
+        edit.bind_text_change(self._onValueChange)
+        edit.onBound()
+        self.component.addChild(comp, 'NumberBox')
+        btn = soButton(GUI.Window())
+        comp = btn.component
+        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.label.font = 'ruRU_calibri_default.font'
+        comp.label.text = lc('BarterWindowGUI.client.BUTTON_ONE')
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.width = 50
+        comp.height = 29
+        comp.position = (295, 471, 0.5)
+        self.component.addChild(comp, 'onceBtn')
+        btn.onBound()
+        btn.setVisualState('normal')
+        btn = soButton(GUI.Window())
+        comp = btn.component
+        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.label.font = 'ruRU_calibri_default.font'
+        comp.label.text = lc('BarterWindowGUI.client.BUTTON_ALL')
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.width = 50
+        comp.height = 29
+        comp.position = (346, 471, 0.5)
+        self.component.addChild(comp, 'allBtn')
+        btn.onBound()
+        btn.setVisualState('normal')
+        btn = soButton(GUI.Window())
+        comp = btn.component
+        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.label.font = 'ruRU_calibri_default.font'
+        comp.label.text = lc('GUI.PackageSellGUI.CLEAR_BUTTON_LABEL')
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.width = 101
+        comp.height = 29
+        comp.position = (399, 471, 0.5)
+        self.component.addChild(comp, 'clearBtn')
+        btn.onBound()
+        btn.setVisualState('normal')
+        btn = soButton(GUI.Window())
+        comp = btn.component
+        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.label.font = 'ruRU_calibri_default.font'
+        comp.label.text = lc('GUI.PackageSellGUI.CONFIRM_BUTTON_LABEL')
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.width = 101
+        comp.height = 29
+        comp.position = (501, 471, 0.5)
+        self.component.addChild(comp, 'buyBtn')
+        btn.onBound()
+        btn.setVisualState('normal')
+        comp = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.height = 505
+        comp.width = 606
+        comp.position = (0, 0, 0.9)
+        self.component.addChild(comp, 'iFrame')
+        comp = GUI.Text('')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'CENTER'
+        comp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (18, 15, 0.3)
+        comp.text = lc('GUI.PackageSellGUI.WINDOW_CAPTION')
+        self.component.addChild(comp, 'psLabel')
+        comp = GUI.Simple('soGUI/maps/Controls/packSell/header.tga')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.height = 21
+        comp.width = 101
+        comp.position = (199, 30, 0.8)
+        self.component.addChild(comp, 'header')
+        comp = GUI.Text('')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        comp.colour = (175, 166, 112, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (207, 32, 0.3)
+        comp.text = lc('GUI.PackageSellGUI.FOR_EXCHANGE_LABEL')
+        self.component.addChild(comp, 'payLabel')
+        comp = GUI.Frame2('soGUI/maps/Controls/packSell/decFrame.tga')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.height = 198
+        comp.width = 405
+        comp.position = (197, 49, 0.8)
+        self.component.addChild(comp, 'botDFrame')
+        comp = GUI.Simple('soGUI/maps/Controls/packSell/header.tga')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.height = 21
+        comp.width = 101
+        comp.position = (199, 248, 0.8)
+        self.component.addChild(comp, 'result_header')
+        comp = GUI.Text('')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        comp.colour = (175, 166, 112, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (207, 250, 0.3)
+        comp.text = lc('GUI.PackageSellGUI.EXCHANGE_RESULT_LABEL')
+        self.component.addChild(comp, 'result_Label')
+        comp = GUI.Text('')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        comp.colour = (175, 166, 112, 255)
+        comp.materialFX = 'BLEND'
+        comp.position = (357, 250, 0.3)
+        comp.text = ''
+        self.component.addChild(comp, 'you_can_get')
+        comp = GUI.Frame2('soGUI/maps/Controls/packSell/decFrame.tga')
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.height = 198
+        comp.width = 405
+        comp.position = (197, 269, 0.8)
+        self.component.addChild(comp, 'botDRFrame')
+        return
+
+    def _onValueChange(self, count):
+        """\xd0\x92\xd1\x8b\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xbd\xd0\xbe\xd0\xb2\xd1\x8b\xd0\xb9 \xd0\xb7\xd0\xbd\xd0\xb0\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb0\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xba\xd0\xbe\xd0\xbb-\xd0\xb2\xd0\xb0 \xd0\xb2 \xd1\x81\xd0\xbb\xd0\xbe\xd1\x82\xd0\xb0\xd1\x85 (\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd1\x82\xd0\xbe \xd0\xbc\xd0\xb5\xd0\xbd\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xba\xd0\xb0\xd1\x80\xd1\x82\xd0\xb8\xd0\xbd\xd0\xba\xd1\x83)."""
+        if count in ('', '0'):
+            count = 1
+        self._multiplier = int(count)
+        data = BWPersonality.GUICore.packageSellDataSection
+        data.pop('barter_operation_count', None)
+        self.update()
+        return
+
+    def rewardSlotHandler(self, event, data):
+        if event == module_soItemView.SLOTEVENT_MOUSEENTER:
+            if isinstance(data, BarterRewardSlot):
+                BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_SHOW)
+                return True
+        if event == module_soItemView.SLOTEVENT_MOUSELEAVE:
+            if isinstance(data, BarterRewardSlot):
+                BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_HIDE)
+                return True
+        if event == module_soItemView.SLOTEVENT_RCLICK:
+            if isinstance(data, BarterRewardSlot):
+                BWPersonality.GUICore.packageSellEvent(PACKAGE_SELL.EVENT_ITEMCONTEXT, [data.itemData, PACKAGE_SELL.REWARD_ITEM])
+                return True
+
+    def rewardItemViewHandler(self, event, data):
+        return False
+
+    def paySlotHandler(self, event, data):
+        from soInventorySlot2 import soInventorySlot2
+        if event == module_soItemView.EVENT_DRAGENTER:
+            if isinstance(data[1], soInventorySlot2):
+                return True
+        if event == module_soItemView.EVENT_DROP:
+            if isinstance(data[1], soInventorySlot2):
+                BWPersonality.GUICore.packageSellEvent(EVENT_ITEMADD, data[1].itemData)
+        if event == module_soItemView.SLOTEVENT_MOUSEENTER:
+            if isinstance(data, BarterPaySlot):
+                BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_SHOW)
+                return True
+        if event == module_soItemView.SLOTEVENT_MOUSELEAVE:
+            if isinstance(data, BarterPaySlot):
+                BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_HIDE)
+                return True
+        if event == module_soItemView.SLOTEVENT_DBLCLICK:
+            if isinstance(data, BarterPaySlot):
+                BWPersonality.GUICore.packageSellEvent(EVENT_ITEMREMOVE, data.itemData)
+                return True
+        if event == module_soItemView.SLOTEVENT_RCLICK:
+            if isinstance(data, BarterPaySlot):
+                BWPersonality.GUICore.packageSellEvent(PACKAGE_SELL.EVENT_ITEMCONTEXT, [data.itemData, PACKAGE_SELL.PAY_ITEM])
+                return True
+        return False
+
+    def payItemViewHandler(self, event, data):
+        return False
+
+    def _onPackListElem(self):
+        selection = self.component.packages.script.getSelection()[-1]
+        data = self.component.packages.script.getAttachment(selection)
+        BWPersonality.GUICore.packageSellEvent(EVENT_PACKSELECT, data)
+
+    def _alignWnd(self):
+        """\xd0\x92\xd1\x8b\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb2\xd0\xbe\xd0\xbd\xd0\xb0\xd1\x87\xd0\xb0\xd0\xbb\xd1\x8c\xd0\xbd\xd0\xbe\xd0\xb5 \xd0\xbf\xd0\xbe\xd0\xbb\xd0\xbe\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd0\xbe\xd0\xba\xd0\xbd\xd0\xb0."""
+        sW, sH = BigWorld.screenSize()
+        if BWPersonality.GUICore.inventoryGUI:
+            invCmp = BWPersonality.GUICore.inventoryGUI.component
+            psX = sW * (invCmp.position.x + 1) / 2
+            psY = sH - sH * (invCmp.position.y + 1) / 2
+            psW = invCmp.width
+            self.component.position = (psX - psW, psY + self.component.height, 0.5)
+        else:
+            self.component.position = ((self.component.width + sW) / 2, self.component.height + sH / 2, 0.5)
+
+    def _updatePacks(self, pack_names):
+        """\xd0\x9e\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xb8\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb0 \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xba\xd0\xbe\xd0\xb2 \xd0\xb2 \xd0\xb1\xd0\xb0\xd1\x80\xd1\x82\xd0\xb5\xd1\x80\xd0\xb0 \xd0\xb2 \xd0\xbe\xd0\xba\xd0\xbd\xd0\xb5 \xd0\xb1\xd0\xb0\xd1\x80\xd1\x82\xd0\xb5\xd1\x80\xd0\xb0."""
+        self.component.packages.script.clear()
+        if not pack_names:
+            return
+        last_name = pack_names[-1].list_name
+        for pack_data in pack_names:
+            isLast = pack_data.list_name == last_name
+            self.component.packages.script.addElement(pack_data.list_name, pack_data.index, not isLast)
+
+    def _updateReward(self, data):
+        """\xd0\x9e\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd1\x81\xd0\xbb\xd0\xbe\xd1\x82\xd1\x8b \xd1\x81 \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0\xd0\xbc\xd0\xb8-\xd0\xb2\xd0\xbe\xd0\xb7\xd0\xbd\xd0\xb0\xd0\xb3\xd1\x80\xd0\xb0\xd0\xb6\xd0\xb4\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f\xd0\xbc\xd0\xb8 \xd0\xb2 \xd0\xbe\xd0\xba\xd0\xbd\xd0\xb5 \xd0\xb1\xd0\xb0\xd1\x80\xd1\x82\xd0\xb5\xd1\x80\xd0\xb0."""
+        new_data = copy.deepcopy(data)
+        for item in new_data:
+            item['reward_quantity'] *= self._multiplier
+
+        self.component.rewardItemView.script.setItems(new_data)
+
+    def _updatePay(self, data):
+        """\xd0\x9e\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd1\x81\xd0\xbb\xd0\xbe\xd1\x82\xd1\x8b \xd1\x81 \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0\xd0\xbc\xd0\xb8, \xd0\xba\xd0\xbe\xd1\x82\xd0\xbe\xd1\x80\xd1\x8b\xd0\xb5 \xd0\xbd\xd1\x83\xd0\xb6\xd0\xbd\xd0\xbe \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x83\xd1\x87\xd0\xb8\xd1\x82\xd1\x8c \xd0\xbe\xd1\x82 \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8f."""
+        new_data = copy.deepcopy(data)
+        for item in new_data:
+            item['required_number'] *= self._multiplier
+
+        self.component.payItemView.script.setItems(new_data)
+
+    def _update_you_can_get(self, count):
+        """\xd0\x9e\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xbd\xd0\xb0\xd0\xb4\xd0\xbf\xd0\xb8\xd1\x81\xd1\x8c, '\xd0\xb2\xd1\x8b \xd0\xbc\xd0\xbe\xd0\xb6\xd0\xb5\xd1\x82\xd0\xb5 \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x83\xd1\x87\xd0\xb8\xd1\x82\xd1\x8c'."""
+        if count is None:
+            text = ''
+            self.you_can_get_items_count = 0
+            self._multiplier = 1
+            self.component.NumberBox.script.setValue('0')
+        else:
+            text = lc('BarterWindowGUI.client.YOU_CAN_GET').format(count)
+            self.you_can_get_items_count = count
+            self._multiplier = count if count > 0 else 1
+            self.component.NumberBox.script.setValue(str(count))
+        self.component.you_can_get.text = text
+        return
+
+    def update(self):
+        """\xd0\x9e\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xbe\xd0\xba\xd0\xbd\xd0\xbe \xd0\xb1\xd0\xb0\xd1\x80\xd1\x82\xd0\xb5\xd1\x80\xd0\xb0."""
+        data = BWPersonality.GUICore.packageSellDataSection
+        if 'barter_operation_count' in data:
+            self._update_you_can_get(data['barter_operation_count'])
+        if 'packs' in data:
+            self._updatePacks(data['packs'])
+        if 'rewardItems' in data:
+            self._updateReward(data['rewardItems'])
+        if 'payItems' in data:
+            self._updatePay(data['payItems'])
+
+    def show(self):
+        if self.component.parent is None:
+            BWPersonality.GUICore.worldLayer.addChild(self.component, 'packageSell')
+        self._alignWnd()
+        self.component.visible = True
+        BWPersonality.GUICore.setBestCursor()
+        return
+
+    def hide(self):
+        sendEvent = self.component.visible
+        self.component.hideUnaffordable.script.setInactive()
+        self.component.NumberBox.script.setActive(False)
+        self.component.visible = False
+        if sendEvent:
+            BWPersonality.GUICore.packageSellEvent(EVENT_CLOSE, None)
+        BWPersonality.GUICore.setBestCursor()
+        return
+
+    def get_barter_multiplier(self):
+        """\xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbe\xd0\xbb-\xd0\xb2\xd0\xbe \xd0\xbe\xd0\xb1\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xbe\xd0\xb2, \xd0\xba\xd0\xbe\xd1\x82\xd0\xbe\xd1\x80\xd1\x8b\xd0\xb5 \xd1\x85\xd0\xbe\xd1\x87\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd0\xbe\xd0\xb8\xd0\xb7\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd0\xb8 \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c."""
+        return self._multiplier
+
+    @PyGUIEvent('hideUnaffordable', 'onStateChange')
+    def onCBs(self):
+        state = self.component.hideUnaffordable.script.isChecked()
+        BWPersonality.GUICore.packageSellEvent(EVENT_HIDEUNAFFORDABLE, state)
+
+    @PyGUIEvent('buyBtn', 'onClick')
+    def onBuyBtn(self):
+        BWPersonality.GUICore.packageSellEvent(EVENT_BUY, None)
+        return
+
+    @PyGUIEvent('clearBtn', 'onClick')
+    def onClearBtn(self):
+        BWPersonality.GUICore.packageSellEvent(EVENT_CLEAR, None)
+        return
+
+    @PyGUIEvent('closeBox', 'onClick')
+    def onCloseBox(self):
+        self.hide()
+
+    @PyGUIEvent('hintBox', 'onClick')
+    def onHintBox(self):
+        """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xbd\xd0\xb0\xd0\xb6\xd0\xb0\xd1\x82\xd0\xb8\xd0\xb8 \xd0\xba\xd0\xbd\xd0\xbe\xd0\xbf\xd0\xba\xd0\xb8-\xd0\xbf\xd0\xbe\xd0\xb4\xd1\x81\xd0\xba\xd0\xb0\xd0\xb7\xd0\xba\xd0\xb8."""
+        text_and_ok('BarterWindowGUI.hintBox', lc('BarterWindowGUI.client.MANUAL_TITLE'), colorCodes.tf3_regular_text_color + lc('BarterWindowGUI.client.MANUAL_TEXT'))
+
+    @PyGUIEvent('onceBtn', 'onClick')
+    def onOnceItem(self):
+        self.component.NumberBox.script.setValue('1')
+
+    @PyGUIEvent('allBtn', 'onClick')
+    def onAllItem(self):
+        count = str(self.you_can_get_items_count)
+        self.component.NumberBox.script.setValue(count)
+
+    def handleDragStartEvent(self, component):
+        """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd1\x85\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0\xd0\xb5\xd1\x88\xd1\x8c \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82."""
+        x, y = BWPersonality.game.mcursor.position
+        sW, sH = BigWorld.screenSize()
+        mouse_position_x = sW * (x + 1) / 2
+        mouse_position_y = sH - sH * (y + 1) / 2
+        delta_x = self.component.position[0] - mouse_position_x
+        delta_y = self.component.position[1] - mouse_position_y
+        self._deltaposition = (delta_x, delta_y)
+        self._repeatMoveToCursor()
+        return True
+
+    def handleDragStopEvent(self, component):
+        """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd0\xbe\xd1\x82\xd0\xbf\xd1\x83\xd1\x81\xd0\xba\xd0\xb0\xd0\xb5\xd1\x88\xd1\x8c \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82."""
+        BigWorld.cancelCallback(self._clbID)
+        return True
+
+    def _moveToCursor(self):
+        """\xd0\x9f\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb2\xd0\xb8\xd0\xb4\xd0\xb6\xd0\xb5\xd1\x82 \xd0\xb7\xd0\xb0 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5\xd0\xbc \xd0\xba\xd1\x83\xd1\x80\xd1\x81\xd0\xbe\xd1\x80\xd0\xb0 \xd0\xbc\xd0\xb8\xd1\x88\xd0\xb8."""
+        x, y = BWPersonality.game.mcursor.position
+        sW, sH = BigWorld.screenSize()
+        mouse_position_x = sW * (x + 1) / 2
+        mouse_position_y = sH - sH * (y + 1) / 2
+        x_position = self._deltaposition[0] + mouse_position_x
+        x = min(sW, max(x_position, self.component.width))
+        y_position = self._deltaposition[1] + mouse_position_y
+        y = min(sH, max(y_position, self.component.height))
+        self.component.position = (x, y, 1.0)
+
+    def handleMouseEnterEvent(self, comp):
+        return True
+
+    def handleMouseLeaveEvent(self, comp):
+        return True
+
+    def _repeatMoveToCursor(self):
+        """\xd0\x9f\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82 \xd1\x87\xd0\xb5\xd1\x80\xd0\xb5\xd0\xb7 \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb9 \xd0\xb8\xd0\xbd\xd1\x82\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb0\xd0\xbb."""
+        if not self.component.visible:
+            return
+        elif self.component.parent is None:
+            return
+        else:
+            self._moveToCursor()
+            self._clbID = BigWorld.callback(0.01, self._repeatMoveToCursor)
+            return

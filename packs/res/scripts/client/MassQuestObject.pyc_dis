@@ -1,0 +1,14 @@
+# Embedded file name: ./scripts/client/MassQuestObject.py
+import BigWorld
+from ModelSelector import ModelSelector
+import Helpers.Caps
+
+class MassQuestObject(BigWorld.Entity, ModelSelector):
+
+    def __init__(self):
+        BigWorld.Entity.__init__(self)
+
+    def onEnterWorld(self, prereqs):
+        ModelSelector.onEnterWorld(self, prereqs)
+        if Helpers.Caps.CAP_CAN_USE not in self.targetCaps:
+            self.targetCaps = self.targetCaps + [Helpers.Caps.CAP_CAN_USE]

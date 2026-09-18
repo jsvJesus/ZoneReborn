@@ -1,0 +1,187 @@
+# Embedded file name: ./scripts/common/client_lights/sceanrio_new_yaer2016.py
+import BWPersonality
+import BigWorld
+import Math
+import math
+from Math import Vector3, Matrix
+import time
+from Items import ItemsCatalog
+import GUI
+import Pixie
+import CameraNode
+import sys
+import NPC
+import sfx
+from FX_extension import preload_buffered_oneshot_sfx
+import ItemsUtils
+import SFXer
+from sounds import getSound, playSound
+
+def getNPC(self):
+    mindist = 9999
+    npc = None
+    for e in BigWorld.entities.values():
+        if isinstance(e, NPC.NPC):
+            dist = (self.position - e.position).length
+            if dist < mindist:
+                mindist = dist
+                npc = e
+
+    return npc
+
+
+def go():
+    self = p = BigWorld.player()
+    npc = getNPC(self)
+
+    def getYawNpc():
+        directinv = self.position - npc.position
+        directinv.normalise()
+        return directinv.yaw
+
+    def getYawNpcToHead():
+        directinv = Matrix(self.model.node('NPC_Head')).translation - npc.position
+        directinv.normalise()
+        return directinv.yaw
+
+    direct = npc.position - self.position
+    direct.normalise()
+    BigWorld.dcursor().yaw = direct.yaw
+
+    def offuserdir():
+        self.physics.userDirected = False
+
+    BigWorld.callback(0.3, offuserdir)
+    self.movingForward = True
+    self.sprinting = True
+    self.movingBackward = False
+    self.movingLeft = False
+    self.movingRight = False
+    self.UpdateVelocity()
+    self.transformationID = 7
+    self.set_transformationID()
+
+    def startAct():
+        agr1_skill = self.active_transform.getSkillByName('scene1')
+        agr2_skill = self.active_transform.getSkillByName('scene2')
+        dead_skill = self.active_transform.getSkillByName('scene3_dead')
+        BigWorld.callback(2.8, agr1_skill.use)
+        BigWorld.callback(4.2, agr2_skill.use)
+        BigWorld.callback(8.0, dead_skill.use)
+
+        def reloadWeapon():
+            npc.avatarReload(ItemsUtils.GetItemReloadType(ItemsCatalog.FN_FAL['TypeID'], 0), 4.0, 2)
+
+        def unjammWeapon():
+            npc.model.UnjammAutogun()
+
+        sfxmodel = BigWorld.Model('')
+        try:
+            self.model.node('NPC_Head').attach(sfxmodel)
+        except:
+            self.model.root.attach(sfxmodel)
+
+        def hit():
+            sfx.bufferedOneShotSFX('sfx/hits/body_hit.xml', sfxmodel, maxDuration=10.0)
+
+        def click():
+            playSound('guns/change_semi_auto', npc.model)
+
+        def slide():
+            sfx.bufferedOneShotSFX('sfx/weapons/reload/reload_autogun_slide.xml', npc.model, maxDuration=10.0)
+
+        def shell():
+            sfx.bufferedOneShotSFX('sfx/weapons/shells/12gauge.xml', npc.autogunModel, maxDuration=10.0)
+
+        def _fire():
+            npc.fire()
+            BigWorld.callback(0, hit)
+            npc.model.yaw = getYawNpcToHead()
+
+        def doNpcPitch(val):
+            npc.lock_pitch = val
+            npc.DoPitchAction()
+
+        def rotateNPCToHead():
+            npc.model.yaw = getYawNpcToHead()
+
+        def fire(*e):
+            npc.model.motors = []
+            npc.model.yaw = getYawNpc()
+            doNpcPitch(0)
+            for x in range(120):
+                BigWorld.callback(x / 10.0, rotateNPCToHead)
+
+            npc.model.yaw = getYawNpc()
+            BigWorld.callback(0.0, lambda : doNpcPitch(0.35))
+            BigWorld.callback(0.2, _fire)
+            BigWorld.callback(0.7, _fire)
+            BigWorld.callback(1.2, click)
+            BigWorld.callback(1.7, click)
+            BigWorld.callback(2.0, unjammWeapon)
+            BigWorld.callback(2.05, slide)
+            BigWorld.callback(2.1, shell)
+            BigWorld.callback(3.1, lambda : doNpcPitch(0.05))
+            BigWorld.callback(3.2, lambda : doNpcPitch(-0.05))
+            BigWorld.callback(3.3, lambda : doNpcPitch(-0.15))
+            BigWorld.callback(3.7, _fire)
+            BigWorld.callback(4.2, _fire)
+            BigWorld.callback(4.7, lambda : doNpcPitch(-0.05))
+            BigWorld.callback(4.8, lambda : doNpcPitch(0.1))
+            BigWorld.callback(4.9, lambda : doNpcPitch(0.25))
+            BigWorld.callback(5.1, _fire)
+            BigWorld.callback(5.8, _fire)
+            BigWorld.callback(6.5, lambda : doNpcPitch(0.35))
+            BigWorld.callback(6.6, lambda : doNpcPitch(0.45))
+            BigWorld.callback(6.7, lambda : doNpcPitch(0.55))
+            BigWorld.callback(8.8, _fire)
+            BigWorld.callback(12.0, lambda : doNpcPitch(0.3))
+            BigWorld.callback(12.0, reloadWeapon)
+            BigWorld.callback(16.0, endfire)
+
+        def teleport():
+            self.cell.tpRequestDialog('WINTER_noob_vokzal')
+            npc.model.PitchAutogun_lowFar.stop()
+            self.transformationID = 0
+            self.set_transformationID()
+            self.physics.userDirected = True
+            self.movingForward = False
+            self.sprinting = False
+            self.movingBackward = False
+            self.movingLeft = False
+            self.movingRight = False
+            self.UpdateVelocity()
+
+        def endfire():
+
+            def sit():
+                BWPersonality.GUICore.screenFade(afterTime=1, visible_time=14, fade_speed=5)
+                BigWorld.callback(10, teleport)
+
+            def end_anim():
+                if npc.isDestroyed:
+                    return
+                npc.isDisableDialogs = 0
+                npc.playAnimationByIDInList(npc.playedAnimationIndexList)
+
+            npc.model.Smoke()
+            BigWorld.callback(1.0, sit)
+            BigWorld.callback(6.0, end_anim)
+
+        npc.playAnimationByIDInList(0)
+        npc.isDisableDialogs = 1
+        BigWorld.callback(npc.model.SitBackpackOut.duration, fire)
+
+    sfx.cleanupBufferedEffects()
+    sfx.getBufferedOneShotSFX('sfx/hits/body_hit.xml')
+    sfx.getBufferedOneShotSFX('sfx/weapons/Reload/reload_doublebarelled_broke.xml')
+    sfx.getBufferedOneShotSFX('sfx/weapons/Reload/reload_doublebarelled_close.xml')
+    sfx.getBufferedOneShotSFX('sfx/weapons/Reload/reload_doublebarelled_insert.xml')
+    sfx.getBufferedOneShotSFX('sfx/weapons/shot/toz_34.xml')
+    sfx.getBufferedOneShotSFX('sfx/Mob/Bear/attack_aoe_start_anim.xml')
+    sfx.getBufferedOneShotSFX('sfx/Mob/Bear/attack_aoe_apply.xml')
+    sfx.bufferedOneShotSFX('sfx/hits/body_hit.xml', self.model)
+    sfx.getBufferedOneShotSFX('sfx/weapons/shot/saiga12k.xml')
+    sfx.getBufferedOneShotSFX('sfx/weapons/reload/reload_autogun_slide.xml')
+    sfx.getBufferedOneShotSFX('sfx/weapons/shells/12gauge.xml')
+    BigWorld.callback(1, startAct)

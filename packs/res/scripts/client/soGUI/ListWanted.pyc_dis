@@ -1,0 +1,192 @@
+# Embedded file name: ./scripts/client/soGUI/ListWanted.py
+import BigWorld
+from Localization import lc
+import BWPersonality
+from soGUI.soList import soList2ElementBase
+from Helpers.PyGUI.PyGUIBase import PyGUIBase
+from soGUI.soButton import soButton
+import GUI
+
+class soQuestElem(soList2ElementBase):
+    factoryString = 'soGUI.soQuestElem'
+
+    def __init__(self, component, id, data):
+        soList2ElementBase.__init__(self, component, id, data)
+        component.script = self
+
+    def setupRoot(self):
+        pass
+
+
+class WantedItem(PyGUIBase):
+    HEIGHT = 50
+    WIDTH = 782
+
+    def __init__(self, component, w):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.HEIGHT = w
+        self.setupRoot()
+        self.setupContent()
+        self.component.visible = False
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = self.WIDTH
+        cmp.height = self.HEIGHT
+        cmp.position = (0, 0, 0.1)
+
+    def setupContent(self):
+        cmp = GUI.Simple('textures/default/white.jpg')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 0, 0, 190)
+        cmp.materialFX = 'BLEND'
+        cmp.width = self.WIDTH
+        cmp.height = 1
+        cmp.position = (2, self.HEIGHT, 0.3)
+        self.component.addChild(cmp, 'frame1')
+        cmp = GUI.Text('wanted_name')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_calibri_default.font'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (10, 10, 0.3)
+        self.component.addChild(cmp, 'wanted_name')
+        cmp = GUI.Text('wanted_status')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_calibri_default.font'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (350, 10, 0.3)
+        self.component.addChild(cmp, 'wanted_status')
+        cmp = GUI.Text('wanted_map')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_calibri_default.font'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (520, 10, 0.3)
+        self.component.addChild(cmp, 'wanted_map')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 100
+        cmp.height = 30
+        cmp.position = (self.WIDTH - 5, 7, 0.3)
+        cmp.label.text = lc('GUI.QuestLog.TO_MAP')
+        self.component.addChild(cmp, 'bth_show')
+        btn.onClick = self._toMap
+        btn.onBound()
+
+    def setdata(self, data):
+        if not data:
+            self.component.visible = False
+            return
+        else:
+            self.component.visible = True
+            wantedname, subdata = data
+            self.wantedname = wantedname
+            self.subdata = subdata
+            self.component.wanted_name.text = wantedname
+            self.component.wanted_map.visible = False
+            self.component.bth_show.visible = False
+            if not subdata:
+                self.component.wanted_status.text = u'end'
+                self.component.wanted_status.colour = (255, 255, 255, 255)
+                return
+            isOnline, spaceID, position = subdata
+            if not isOnline:
+                self.component.wanted_status.text = u'offline'
+                self.component.wanted_status.colour = (255, 100, 100, 255)
+                return
+            self.component.wanted_status.text = u'online'
+            self.component.wanted_status.colour = (100, 255, 100, 255)
+            if spaceID:
+                mappath, lcmapName = BWPersonality.GUICore.getSpaceName(spaceID)
+                if lcmapName is None:
+                    lcmapName = lc('spaceName.UNKNOWN_REGION')
+                self.component.wanted_map.visible = True
+                self.component.wanted_map.text = lcmapName
+            if position:
+                self.component.bth_show.visible = True
+            return
+
+    def _toMap(self):
+        isOnline, spaceID, position = self.subdata
+        mappath, lcmapName = BWPersonality.GUICore.getSpaceName(spaceID)
+        BWPersonality.GUICore.showGPS()
+        isshowmap = BWPersonality.GUICore.gpsGUI.viewMap(mappath)
+        if isshowmap:
+            BWPersonality.GUICore.showQuestLog(False)
+            maps = BWPersonality.GUICore.gpsGUI.maps
+            from MapNotes import MapNotes
+            from GPSMap import GPSMap
+            self.GPSProvider = GPSMap(mappath)
+            mappos = self.GPSProvider.GetObjectRelativeCoords(position, mappath)
+            markname = self.wantedname.encode('utf8', 'ignore')
+            markname = self.wantedname
+            BWPersonality.GUICore.gpsGUI.addWantedMark(markname, mappos, mappath)
+            BWPersonality.GUICore.gpsGUI.centerOnCoords(mappos, mappath)
+
+
+class ListWanted(PyGUIBase):
+    factoryString = 'soGUI.ListWanted'
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.setupRoot()
+        self.setupContent()
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 792
+        cmp.height = 550
+        cmp.position = (0.0, 0.0, 0.1)
+        cmp.textureName = ''
+        cmp.visible = False
+
+    def setupContent(self):
+        self.rows = 9
+        for i in range(self.rows):
+            wanteditem = WantedItem(GUI.Window(), 40)
+            cmp = wanteditem.component
+            cmp.position = (0, 40 * i, 0.2)
+            self.component.addChild(cmp, 'wanteditem_%s' % i)
+            wanteditem.onBound()
+
+    def update(self):
+        BigWorld.player().getWantedPosition()
+
+    def updateWanted(self):
+        data = BWPersonality.GUICore.listWantedDataSection
+        data = data + [ (name, None) for name in BigWorld.player().HUNTER_lostListOfWanted ]
+        for i, item in map(lambda a, b: [a, b], range(self.rows), data):
+            if i is None:
+                return
+            witem = getattr(self.component, 'wanteditem_%s' % i)
+            witem.script.setdata(item)
+
+        return

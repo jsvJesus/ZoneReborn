@@ -1,0 +1,104 @@
+# Embedded file name: ./scripts/client/AI/Debugger.py
+import BigWorld
+from Config import Monsters as Config
+
+class Debugger:
+
+    def __init__(self):
+        self.debug_text = None
+        self.tick_enabled = False
+        self.ring_disp = None
+        self.ring_disp_model = None
+        self.inner_trap_model = None
+        self.outer_trap_model = None
+        return
+
+    def _tick(self):
+        if self.isDestroyed:
+            return
+        if self.__has_bit(Config.DEBUG_RING) and self.ring_disp and not self.is_dead() and self.cur_target:
+            self._draw_ring_disp()
+        else:
+            self._clear_ring_disp()
+        if self.__has_bit(Config.DEBUG_TRAPS):
+            self._draw_traps()
+        else:
+            self._clear_traps()
+        if self.tick_enabled:
+            BigWorld.callback(0, self._tick)
+
+    def get_debug_info(self):
+        return self.debug_text
+
+    def set_cur_target(self, old_target):
+        self._update_debug_info()
+
+    def set_debug_mode(self, old_mode):
+        if self.__has_bit(Config.DEBUG_RING) or self.__has_bit(Config.DEBUG_TRAPS):
+            tick_was_enabled = self.tick_enabled
+            self.tick_enabled = True
+            if not tick_was_enabled:
+                self._tick()
+        else:
+            self.tick_enabled = False
+        if not self.__has_bit(Config.DEBUG_RING):
+            self._clear_ring_disp()
+        self._update_debug_info()
+
+    def _draw_traps(self):
+        if not self.inner_trap_model:
+            self.inner_trap_model = BigWorld.Model('models/bolvan/helpers/test_sphere_wire.model')
+            r = Config.DEFAULT_INNER_RADIUS
+            self.inner_trap_model.scale = (r, r, r)
+            self.addModel(self.inner_trap_model)
+        if not self.outer_trap_model:
+            self.outer_trap_model = BigWorld.Model('models/bolvan/helpers/test_sphere_wire.model')
+            r = Config.DEFAULT_OUTER_RADIUS
+            self.outer_trap_model.scale = (r, r, r)
+            self.addModel(self.outer_trap_model)
+        self.inner_trap_model.position = self.position
+        self.outer_trap_model.position = self.position
+
+    def _clear_traps(self):
+        if self.inner_trap_model:
+            self.delModel(self.inner_trap_model)
+            self.inner_trap_model = None
+        if self.outer_trap_model:
+            self.delModel(self.outer_trap_model)
+            self.outer_trap_model = None
+        return
+
+    def _draw_ring_disp(self):
+        if not self.ring_disp_model:
+            self.ring_disp_model = BigWorld.Model('models/bolvan/sphere.model')
+            self.addModel(self.ring_disp_model)
+        target = BigWorld.entities.get(self.cur_target)
+        if target:
+            self.ring_disp_model.position = target.position + self.ring_disp
+
+    def _clear_ring_disp(self):
+        if self.ring_disp_model:
+            self.delModel(self.ring_disp_model)
+            self.ring_disp_model = None
+        return
+
+    def __has_bit(self, flag):
+        return bool(self.debug_mode & 1 << flag)
+
+    def ring_disp_changed(self, ring_disp):
+        self.ring_disp = ring_disp
+
+    def set_cur_state_index(self, old_value):
+        self._update_debug_info()
+
+    def _update_debug_info(self):
+        if self.__has_bit(Config.DEBUG_MARK):
+            BigWorld.player().debug_monsters = True
+            self.debug_text = self._debug_info()
+        else:
+            BigWorld.player().debug_monsters = False
+            self.debug_text = None
+        return
+
+    def _debug_info(self):
+        return 'state: {0},\ntarget: {1}\nid: {2}'.format(self.cur_state_index, self.cur_target, self.id)

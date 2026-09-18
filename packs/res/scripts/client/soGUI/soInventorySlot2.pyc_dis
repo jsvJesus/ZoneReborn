@@ -1,0 +1,324 @@
+# Embedded file name: ./scripts/client/soGUI/soInventorySlot2.py
+import BigWorld
+from soGUI.soItemView import soItemSlot
+import soGUI.soInventoryScreen
+import GUI
+import BWPersonality
+import Helpers.PyGUI as PyGUI
+from Items import ItemsCatalog
+from gui_const import INV_CONST
+from Localization import lc
+import ItemsUtils
+import soGUI
+import Keys
+
+class soInventorySlot2(soItemSlot):
+    factoryString = 'soGUI.soInventorySlot2'
+    SLOTWIDTH = 64
+    SLOTHEIGHT = 64
+
+    def __init__(self, component, slotIndex, itemData = None):
+        soItemSlot.__init__(self, component, slotIndex, itemData, centerDProxy=True)
+        component.script = self
+        self._slotIndex = slotIndex
+        self.dragProxy = self.component.dragProxy
+        self.proxyHolder = self.component
+        self.proxyName = 'dragProxy'
+        self.draggedData = None
+        self.draggedIcon = None
+        self.isDragging = False
+        self._onDragStart = self.onDragStart
+        self._onDragStop = self.onDragStop
+        return
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.SLOTWIDTH
+        cmp.height = self.SLOTHEIGHT
+        cmp.dragFocus = True
+        cmp.dropFocus = True
+        cmp.crossFocus = True
+        cmp.moveFocus = True
+        cmp.mouseButtonFocus = True
+
+    def setupContent(self):
+        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.SLOTWIDTH
+        cmp.height = self.SLOTHEIGHT
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (0, 0, 0.9)
+        self.component.addChild(cmp, 'frameCmp')
+        cmp = GUI.Simple('textures/default/white.dds')
+        cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.SLOTWIDTH
+        cmp.height = self.SLOTHEIGHT
+        cmp.colour = (100, 200, 0, 28)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (self.SLOTWIDTH, 0, 0.51)
+        cmp.visible = False
+        self.component.addChild(cmp, 'mark_attachable')
+        cmp = GUI.Simple('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.SLOTWIDTH
+        cmp.height = self.SLOTHEIGHT
+        cmp.colour = (255, 255, 255, 128)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (0, 0, 0.5)
+        cmp.visible = False
+        self.component.addChild(cmp, 'dragProxy')
+        cmp = GUI.Simple('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.SLOTWIDTH
+        cmp.height = self.SLOTHEIGHT
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (self.SLOTWIDTH, 0, 0.4)
+        self.component.addChild(cmp, 'itemIcon')
+        cmp = GUI.Simple('soGUI/maps/Controls/inventory/broken.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.SLOTWIDTH
+        cmp.height = self.SLOTHEIGHT
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (0, 0, 0.7)
+        cmp.visible = False
+        self.component.addChild(cmp, 'itemBroken')
+        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_painted.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.component.width / 5
+        cmp.height = self.component.height / 5
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (self.component.width, cmp.height / 2, 0.7)
+        cmp.visible = 0
+        self.component.addChild(cmp, 'itemColored')
+        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_label.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.component.width / 5
+        cmp.height = self.component.height / 5
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (self.component.width - 12, cmp.height / 2, 0.0)
+        cmp.visible = 0
+        self.component.addChild(cmp, 'itemEmblem')
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.font = 'ruRU_Cyrvetica_Extra_10i.font'
+        cmp.colour = (175, 166, 112, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (4, self.SLOTHEIGHT - 5, 0.3)
+        self.component.addChild(cmp, 'itemName')
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_Cyrvetica_Extra_10i.font'
+        cmp.colour = (175, 166, 112, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (self.SLOTWIDTH - 5, 5, 0.3)
+        self.component.addChild(cmp, 'itemCount')
+        cmp = GUI.Text('+')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        cmp.colour = (120, 100, 100, 230)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (3, 18, 0.3)
+        cmp.visible = False
+        self.component.addChild(cmp, 'haveAttachedParts')
+
+    def isQustItem(self):
+        item_inconstant_param = dict(zip(self.itemData['complexItemParametresKeys'], self.itemData['complexItemParametresValues']))
+        if item_inconstant_param.has_key(ItemsCatalog.IS_QUEST_ITEM) and item_inconstant_param[ItemsCatalog.IS_QUEST_ITEM] > 0:
+            return True
+        result = False
+        for sub_item in self.itemData['itemList']:
+            params = dict(zip(sub_item['itemParametresKeys'], sub_item['itemParametresValues']))
+            result = params.get(ItemsCatalog.INC_PERSONAL_ITEM, False) or result
+
+        return item_inconstant_param.get(ItemsCatalog.INC_PERSONAL_ITEM, False) or result
+
+    def _applyItemData(self):
+        if BigWorld.player().__class__.__name__ != 'PlayerAvatar':
+            return
+        else:
+            self._onLeaveDrag()
+            self.clearMarkAsAttachable()
+            if self.haveItem():
+                item_type = self.itemData['complexItemType']
+                item_id = self.itemData['complexItemID']
+                item_class = ItemsCatalog.GetItemClass(item_type)
+                item_params = ItemsCatalog.GetItemParam(item_type)
+                item_level = item_params['Level']
+                iconName = ItemsUtils.getTextureByTint(self.itemData)
+                if not iconName:
+                    iconName = item_params['IconName']
+                isQust = self.isQustItem()
+                if BWPersonality.GUICore.iconTextures is not None:
+                    if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
+                        if BWPersonality.GUICore.iconTextures.has_key(iconName):
+                            self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures[iconName]
+                        else:
+                            self.component.itemIcon.textureName = iconName
+                else:
+                    self.component.itemIcon.textureName = iconName
+                countStr = ItemsUtils.GetDisplayValue(self.itemData)
+                friendlyName = ItemsUtils.GetItemName(item_type, fGetShortName=True, tintItem=self.itemData)
+                if not BigWorld.player().ItemLocked(self.itemData):
+                    item_lock = soGUI.soInventoryScreen.tempBlocked(self.itemData)
+                    item_state = ItemsUtils.GetItemConditionPercent(BigWorld.player(), self.itemData)
+                    if item_state <= 0.5:
+                        self.component.itemBroken.visible = True
+                    else:
+                        self.component.itemBroken.visible = False
+                    postfix = ''
+                    if item_class == ItemsCatalog.GADGET:
+                        if 'waterNumberOfSips' in item_params:
+                            sips = ItemsUtils.getWaterSipsPot(self.itemData)
+                            maxsips = item_params['waterNumberOfSips']
+                            dirty = ItemsUtils.getWaterDirtyPot(self.itemData)
+                            if dirty:
+                                postfix = lc('Inventory.client.DIRTY_WATER_ABBREV')
+                            else:
+                                postfix = lc('Inventory.client.CLEAN_WATER_ABBREV')
+                    self.component.itemName.text = friendlyName + postfix
+                    self.component.itemCount.text = countStr
+                    self.lockSlot(item_lock)
+                    sub_items_count = len(self.itemData['itemList'])
+                    self.component.haveAttachedParts.visible = bool(sub_items_count)
+                    if 'IsArtefactContainer' in item_params:
+                        self.component.haveAttachedParts.text = str(sub_items_count)
+                    else:
+                        self.component.haveAttachedParts.text = '+'
+                    self.component.itemName.colour = (175, 166, 112, 255)
+                    emblem = ItemsUtils.getItemEmblem(self.itemData)
+                    colorise = ItemsUtils.getItemColorise(self.itemData)
+                    if not bool(colorise):
+                        self.component.itemColored.visible = bool(ItemsUtils.getTintID(self.itemData))
+                        self.component.itemEmblem.visible = bool(emblem)
+                        if item_class == ItemsCatalog.ARTIFACT:
+                            depleet_time = ItemsUtils.GetArtefactDepleetionTime(self.itemData, item_params, BWPersonality.gpd.time_diff)
+                            inconstantParam = ItemsUtils.GetComplexItemInconstanParams(self.itemData)
+                            if inconstantParam.get(ItemsCatalog.INC_ARTEFACT_DEAD, 0) or depleet_time < 0.0 or depleet_time is None:
+                                self.component.itemName.colour = (0, 0, 0, 255)
+                                self.component.itemBroken.visible = True
+                            else:
+                                self.component.itemBroken.visible = False
+                        self.component.itemName.colour = isQust and (255, 20, 20, 255)
+                else:
+                    self.component.itemIcon.textureName = ''
+                    self.component.itemName.text = ''
+                    self.component.itemCount.text = ''
+                    self.component.itemBroken.visible = False
+                    self.component.itemColored.visible = False
+                    self.component.itemEmblem.visible = False
+                    self.component.haveAttachedParts.visible = False
+                    self.component.itemName.colour = (175, 166, 112, 255)
+                    self.lockSlot(False)
+                self.dragProxy.texture = self.draggedIcon and self.isDragging and self.draggedIcon
+            else:
+                self.dragProxy.texture = self.component.itemIcon.texture
+            return
+
+    def equipItem(self):
+        if self.isDragging and self.draggedData is not None:
+            data = self.draggedData
+        else:
+            data = self.itemData
+        BWPersonality.GUICore.inventoryEvent(INV_CONST.EVENT_EQUIP, data)
+        return
+
+    def wannaDrop(self):
+        if self.isDragging and self.draggedData is not None:
+            data = self.draggedData
+        else:
+            data = self.itemData
+        BWPersonality.GUICore.inventoryEvent(INV_CONST.EVENT_DROP, data)
+        return
+
+    def toActionBar(self, slotN, slot_element = None):
+        prev_item_id = slot_element.itemData['item_id']
+        prev_item_type = slot_element.itemData['item_type']
+        if self.isDragging and self.draggedData is not None:
+            data = self.draggedData
+        else:
+            data = self.itemData
+        BWPersonality.GUICore.inventoryEvent(INV_CONST.EVENT_TOQUICKBAR, [self.itemData,
+         slotN,
+         prev_item_id,
+         prev_item_type])
+        return
+
+    def onDragStart(self):
+        if self.haveItem():
+            self.isDragging = True
+            self.draggedData = self.itemData
+            self.draggedIcon = self.component.itemIcon.texture
+            self.dragProxy.visible = True
+            return True
+        return False
+
+    def onDragStop(self):
+        self.isDragging = False
+        self.dragProxy.visible = False
+        self.draggedData = None
+        self.draggedIcon = None
+        return True
+
+    def lockSlot(self, doLock):
+        soItemSlot.lockSlot(self, doLock)
+        if self.locked:
+            self.component.itemIcon.colour = (125, 125, 125, 255)
+        else:
+            self.component.itemIcon.colour = (255, 255, 255, 255)
+
+    def _onLeaveDrag(self, dragged = None):
+        self.component.itemIcon.width = self.SLOTWIDTH
+        self.component.itemIcon.position[0] = self.SLOTWIDTH
+
+    def _onEnterDrag(self, dragged):
+        self._onLeaveDrag()
+        if dragged and dragged.haveItem() and dragged != self:
+            if BigWorld.isKeyDown(Keys.KEY_LSHIFT) or BigWorld.isKeyDown(Keys.KEY_RSHIFT):
+                self.component.itemIcon.width = self.SLOTWIDTH * 0.8
+                if self._slotIndex < dragged._slotIndex:
+                    self.component.itemIcon.position[0] = self.SLOTWIDTH + 10
+                else:
+                    self.component.itemIcon.position[0] = self.SLOTWIDTH - self.SLOTWIDTH * 0.19999999999999996
+
+    def clearMarkAsAttachable(self):
+        self.component.mark_attachable.visible = False
+
+    def checkMarkAsAttachable(self, attachingItem):
+        if not self.itemData:
+            return
+        entity = BigWorld.player()
+        if ItemsUtils.CheckPossibleAttach(entity, self.itemData, attachingItem):
+            self.component.mark_attachable.visible = True

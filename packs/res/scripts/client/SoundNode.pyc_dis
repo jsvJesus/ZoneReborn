@@ -1,0 +1,201 @@
+# Embedded file name: ./scripts/client/SoundNode.py
+import BigWorld
+from random import choice
+import BWPersonality
+from sounds import playSound, playMusic
+import Settings
+import GUI
+import rainConstant
+import fader_object
+import traceback
+from utils import ignoreError
+DEBUG = False
+UNKNOWN_IS_OUTSIDE = -1
+
+class SoundNode(BigWorld.Entity):
+    MODEL = 'models/misc/particles/helper_attach.model'
+    enable_from_trigger = False
+    _is_outside = UNKNOWN_IS_OUTSIDE
+    _shell_mod_volume = 1.0
+
+    def __init__(self):
+        BigWorld.Entity.__init__(self)
+        self.hasPlayer = False
+        self.lastSound = None
+        self.lastSoundName = ''
+        self.wasPlayed = False
+        if self.radius > 0:
+            BigWorld.addPot(self.matrix, self.radius, self.hitPot)
+        return
+
+    def hitPot(self, enteredTrap, handle):
+        if self.isDestroyed:
+            BigWorld.delPot(handle)
+            return
+        if enteredTrap:
+            self.hasPlayer = True
+            if not self.triggerDriven or self.enable_from_trigger:
+                if DEBUG:
+                    self.model_radius.empty = 'red'
+                self.playRandom()
+        else:
+            if DEBUG:
+                self.model_radius.empty = 'Default'
+            self.hasPlayer = False
+            self.stopSound()
+
+    def prerequisites(self):
+        return [self.MODEL]
+
+    def startSound(self):
+        pass
+
+    def stopSound(self):
+        if self.lastSound:
+            if (self.muteOnLeave or self.lastSound.looped) and not self.triggerDriven:
+                self.lastSound.muted = True
+            else:
+                self.lastSound.stop()
+        self.lastSoundName = ''
+        if DEBUG:
+            self._textnode.text = 'sound stopped'
+            print 'SoundNode: sound stopped', self.id
+
+    def onEnterWorld(self, prereq):
+        self._is_outside = self.isOutside()
+        if DEBUG:
+            self.model_debug = BigWorld.Model('models/bolvan/helpers/sound_node.model')
+            textnode = GUI.Text('node id {0}'.format(self.id))
+            textnode.explicitSize = True
+            textnode.multiline = True
+            textnode.size = (9, 3)
+            textnode.colour = (255, 205, 149, 245)
+            textnode.filterType = 'LINEAR'
+            textnode.verticalAnchor = 'BOTTOM'
+            textnode.position = (0, 1, 0)
+            atch = GUI.Attachment()
+            atch.component = textnode
+            atch.faceCamera = True
+            self.model_debug.root.attach(atch)
+            self.model_debug.position = self.position
+            self.addModel(self.model_debug)
+            self._attach = atch
+            self._textnode = textnode
+            self.model_radius = BigWorld.Model('models/Test/cylinder_1m.model')
+            self.addModel(self.model_radius)
+            self.model_radius.empty = 'Default'
+            self.model_radius.position = self.position + (0, 1, 0)
+            self.model_radius.scale = (self.radius, 0.5, self.radius)
+        if self.MODEL not in prereq.failedIDs:
+            self.model = prereq[self.MODEL]
+        self.snd = []
+        self.soundCallback = None
+        if not self.triggerDriven:
+            self.playRandom()
+        Settings.Settings().addSfxChangeObserver(self)
+        player = BigWorld.player()
+        try:
+            if player:
+                self.playerChangeShell(player.isOutsideShell())
+        except:
+            traceback.print_exc()
+
+        return
+
+    def sfxVolumeChanged(self, volume):
+        self._update_volume()
+
+    @ignoreError
+    def playerChangeShell(self, player_outside):
+        if self._is_outside == UNKNOWN_IS_OUTSIDE:
+            self._is_outside = self.isOutside()
+        self._shell_mod_volume = 1.0
+        if self._is_outside != player_outside:
+            color = (0, 1, 0, 1)
+            self._shell_mod_volume = rainConstant.sound_node_volume_in_shell
+        self._update_volume()
+
+    @ignoreError
+    def _update_volume(self):
+        if not self.lastSound:
+            return
+        if self.musicNode:
+            volume = Settings.Settings().getMusicVolume()
+        else:
+            volume = Settings.Settings().getSfxVolume()
+        volume *= self._shell_mod_volume
+        self.lastSound.set_volume(volume)
+
+    def onLeaveWorld(self):
+        if self.soundCallback is not None:
+            BigWorld.cancelCallback(self.soundCallback)
+        if self.lastSound != None:
+            self.lastSound.stop()
+        Settings.Settings().removeSfxChangeObserver(self)
+        if self.model:
+            self.model.debugSoundRemoveAll()
+        self.model = None
+        return
+
+    def playNodeSound(self):
+        pass
+
+    def playRandom(self):
+        if len(self.sounds) == 0:
+            print 'No sounds to play for SoundNode at', self.position
+            return
+        else:
+            randomSnd = choice(self.sounds)
+            if self.playOnce and self.wasPlayed:
+                return
+            if self.hasPlayer or self.radius == 0:
+                self.wasPlayed = True
+                if self.lastSound:
+                    if (self.muteOnLeave or self.lastSound.looped) and self.lastSound.muted:
+                        self.lastSound.muted = False
+                        return
+                    if self.lastSoundName != randomSnd:
+                        self.lastSound.stop()
+                if self.lastSoundName != randomSnd:
+                    if self.lastSound:
+                        self.lastSound.releaseSound()
+                    self.lastSound = (playMusic if self.musicNode else playSound)(randomSnd, self.model)
+                    if self.lastSound:
+                        self.lastSound.autoDetach = False
+                    self.lastSoundName = randomSnd
+                    if DEBUG:
+                        self._textnode.text = 'node id: {0}, \n sound: {1}'.format(self.id, self.lastSoundName)
+                else:
+                    self.lastSound.play()
+                    self._update_volume()
+                    if DEBUG:
+                        self._textnode.text = 'node id: {0}, \n sound: {1}'.format(self.id, self.lastSoundName)
+            if self.soundCallback is not None:
+                BigWorld.cancelCallback(self.soundCallback)
+            if self.playFrequency > 0.0:
+                self.soundCallback = BigWorld.callback(self.playFrequency, self.playRandom)
+            return
+
+    def play(self, index):
+        print 'SoundNode:play()'
+
+    def stop(self):
+        pass
+
+    @staticmethod
+    def create_from_udo(udo_item, space_id):
+        properties = {'sounds': udo_item.sounds,
+         'playFrequency': udo_item.playFrequency,
+         'radius': udo_item.radius,
+         'muteOnLeave': udo_item.muteOnLeave,
+         'musicNode': udo_item.musicNode,
+         'triggerDriven': 1}
+        return BigWorld.createEntity('SoundNode', space_id, 0, udo_item.position, (0, 0, 0), properties)
+
+    def activateFromTrigger(self):
+        self.enable_from_trigger = True
+        self.playRandom()
+
+    def deactivateFromTrigger(self):
+        self.enable_from_trigger = False
+        self.stopSound()

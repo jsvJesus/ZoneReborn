@@ -1,0 +1,302 @@
+# Embedded file name: ./scripts/client/soGUI/colourItemWindow.py
+import BigWorld
+import BWPersonality
+import os
+import Math
+import StalkerModel
+import UCManager
+import DyeConstant
+import GUI
+import random
+from Items import ItemsCatalog
+import ItemsUtils
+import traceback
+from Localization import lc, localization_object
+from Helpers.PyGUI.PyGUIBase import PyGUIBase
+from soGUI.soButton import soButton, soButtonWTT
+from soDraggableComponent import soDraggableComponent
+from soGUI.soEditField import soEditField2
+from soGUI.soEditField import soEditBox
+from soGUI.soEditField import soEditBox2
+import gui_jokes
+import FileManagerFlashGUI
+import ColouriseFrame
+import applyEmblemDialog
+
+class ColourItemWindow(PyGUIBase):
+    factoryString = 'soGUI.ColourItemWindow'
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.setupRoot()
+        self.setupContent()
+
+    def doReposition(self):
+        print 'ColourItemWindow doReposition'
+        sW, sH = BigWorld.screenSize()
+        self.width = self.component.width = sW
+        self.height = self.component.height = sH
+        self.component.closeBox.position = (self.width - self.component.closeBox.width - 10, 6, 0.3)
+        self._dw.doReposition()
+        self._cframe.doReposition()
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.colour = (255, 255, 255, 210)
+        cmp.materialFX = 'BLEND'
+        sW, sH = BigWorld.screenSize()
+        self.width = cmp.width = sW
+        self.height = cmp.height = sH
+        cmp.position = (0, 0, 0.51)
+        closeBox = soButton(GUI.Window())
+        cmp = closeBox.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 28
+        cmp.height = 28
+        cmp.position = (self.width - cmp.width - 10, 6, 0.3)
+        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.onBound()
+        closeBox.setVisualState('normal')
+        closeBox.onClick = self.hide
+        self.component.addChild(cmp, 'closeBox')
+
+    def setupContent(self):
+        self._dw = DummyWindow(GUI.Window())
+        BigWorld.player().dm = self._dw
+        self.component.addChild(self._dw.component, 'dummy')
+        self._cframe = ColouriseFrame.ColouriseFrame(GUI.Window(), self._dw, self)
+        self.component.addChild(self._cframe.component, 'cframe')
+        self._cframe.component.position = (-1, 0, 0)
+        bg = BackGround(GUI.Window())
+        self.component.addChild(bg.component, 'fon')
+        self._applyEmblemDialog = applyEmblemDialog.ApplyEmblemDialog(GUI.Window())
+        self.component.addChild(self._applyEmblemDialog.component, 'applyEmblemDialog')
+        self._applyEmblemDialog.hide()
+
+    def onApply(self, data):
+        self._applyEmblemDialog.show(data, self.onApplyComplete)
+
+    def onApplyComplete(self):
+        self._cframe.clear()
+        self.hide()
+
+    def show(self, npc = None):
+        self.component.visible = True
+        self.updateModel()
+        self._cframe.clear()
+        if self.component.parent is None:
+            BWPersonality.GUICore.worldLayer.addChild(self.component, 'ColourseWindow')
+        BigWorld.player().base.getMyEmblems()
+        return
+
+    def hide(self):
+        self.component.visible = False
+        self.updateModel()
+        self._dw.clearModel()
+        self._dw.hide()
+        self._cframe.clear()
+        self._applyEmblemDialog.hide()
+
+    def updateEmblemList(self, data):
+        self._cframe.updateEmblemList(data)
+
+    def updateModel(self):
+        self._dw.show()
+        self.update()
+
+    def update(self):
+        p = BigWorld.player()
+        dictItesm = {}
+        for key in ItemsCatalog.cloth_dict.keys():
+            complexItemID = p.ActiveArmorSet[ItemsCatalog.cloth_dict[key][0]]
+            if not complexItemID:
+                continue
+            item = ItemsUtils.GetComplexItemByID(p, complexItemID)
+            dictItesm[complexItemID] = item
+
+        self._cframe.updateEquippedItems(dictItesm)
+
+
+class DummyWindow(PyGUIBase):
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self._x, self._y, self._z = (0.015, 1.48, -0.415)
+        self.setupRoot()
+
+    def handleMouseEvent(self, component, event):
+        if event.dz:
+            return False
+        if BigWorld.isKeyDown(257):
+            pass
+        if BigWorld.isKeyDown(256):
+            x, y = event.dx, event.dy
+            self._model.rotate(-y * 0.001, (1, 0, 0), (0, 0, 0))
+            self._model.yaw -= x * 0.01
+        return False
+
+    def setupRoot(self):
+        W, H = BigWorld.screenSize()
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.width = cmp.height = 1.9
+        cmp.position = (0.1, 0, 0.1)
+        cmp.colour = (255, 255, 255, 100)
+        cmp.materialFX = 'BLEND'
+        cmp.visible = True
+        cmp.focus = 0
+        cmp.crossFocus = 0
+        cmp.dragFocus = False
+        cmp.moveFocus = 1
+        cmp.dropFocus = False
+        cmp = GUI.Simple('textures/default/white.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (255, 19, 17, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (0, 0.0, 0.1)
+        cmp.visible = 0
+        self.component.addChild(cmp, 'tmpFON')
+        cmp.width = H - 10
+        cmp.height = H - 10
+        cmp = GUI.Simple('textures/default/blue_dark.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'SOLID'
+        cmp.position = (0, 0.0, 0.1)
+        cmp.visible = 1
+        self.component.addChild(cmp, 'renderDummy')
+        cmp.width = H - 10
+        cmp.height = H - 10
+        mr = BigWorld.PyModelRenderer(1024, 1024)
+        for zz in range(100):
+            mr.delDirectionLight(0)
+            mr.delOmniLight(0)
+
+        dir1 = Math.Vector3((1, -1, 0))
+        dir1.normalise()
+        mr.addOmniLight((1.2, 1.2, 1.2, 1.5), (self._x, self._y, self._z), 0.2, 3)
+        c = 0.5
+        mr.addAmbientColor(tuple([c] * 4))
+        mr.backgroundColor = (19, 19, 17, 255)
+        self._model_renderer = mr
+
+    def doReposition(self):
+        W, H = BigWorld.screenSize()
+        self.component.renderDummy.width = H - 10
+        self.component.renderDummy.height = H - 10
+        self.component.tmpFON.width = H - 10
+        self.component.tmpFON.height = H - 10
+
+    def show(self):
+        self.clearModel()
+        self._model_renderer.dynamic = True
+        self._model_renderer.render()
+        self.component.renderDummy.texture = self._model_renderer.texture
+        BigWorld.worldDrawEnabled(False)
+
+    def hide(self):
+        self._model_renderer.dynamic = False
+        self.component.renderDummy.texture = None
+        self.clearModel()
+        BigWorld.worldDrawEnabled(True)
+        return
+
+    def getModel(self):
+        return self._model
+
+    def clearModel(self):
+        player = BigWorld.player()
+        if not hasattr(player, 'getDefaultModels'):
+            return
+
+        def onLoadModel(model):
+            self._model = model
+            self._model.zoomExtents(1, 1.0)
+            self._model.yaw = 2.0
+            self._model.position = (0, -0.131, -0.5)
+            self._model.rotate(0.5, (1, 0, 0), (0, 0, 0))
+            self._model_renderer.models = [self._model]
+            try:
+                self._model.IdleUnarmed()
+            except:
+                traceback.print_exc()
+
+        StalkerModel.ComposePlayerModel(player, onLoadModel)
+
+    def updateImageData(self, imgids, myimgids):
+        pass
+
+
+class BackGround(PyGUIBase):
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.setupRoot()
+        component.mouseButtonFocus = True
+        component.crossFocus = True
+        component.focus = 1
+        component.moveFocus = 1
+        component.dragFocus = 1
+
+    def handleMouseEvent(self, component, event):
+        return True
+
+    def handleMouseButtonEvent(self, component, event):
+        return True
+
+    def handleMouseEnterEvent(self, component):
+        return True
+
+    def handleMouseLeaveEvent(self, component):
+        return True
+
+    def handleMouseLeaveEvent(self, component):
+        return True
+
+    def setupRoot(self):
+        W, H = BigWorld.screenSize()
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.width = cmp.height = 20
+        cmp.position = (0, 0, 0.9)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.visible = True
+        cmp.focus = 0
+        cmp.crossFocus = 0
+        cmp.dragFocus = False
+        cmp.moveFocus = 1
+        cmp.dropFocus = False
+        cmp = GUI.Simple('textures\\default\\white.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
+        cmp.colour = (19, 19, 17, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = cmp.height = 2.0
+        cmp.position = (0.0, 0.0, 0.9)
+        self.component.addChild(cmp, 'fon')

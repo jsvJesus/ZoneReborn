@@ -1,0 +1,83 @@
+# Embedded file name: ./scripts/client/NPCPoint.py
+import BigWorld
+from HideModelUDO import HideModelUDO
+from SoundNode import SoundNode
+import FX
+import itertools
+
+class NPCPoint(BigWorld.Entity):
+
+    def __init__(self):
+        BigWorld.Entity.__init__(self)
+        self.spawn_entities = []
+
+    def onEnterWorld(self, prereqs):
+        self._spawnClientItems()
+
+    def _resources_loaded(self):
+        self.set_revealed(None)
+        return
+
+    def set_revealed(self, old_state):
+        """ \xd0\xbf\xd1\x80\xd0\xbe\xd1\x8f\xd0\xb2\xd0\xb8\xd1\x82\xd1\x8c \xd1\x81\xd0\xb5\xd0\xb1\xd1\x8f (\xd0\xb8\xd0\xbb\xd0\xb8 \xd1\x81\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8c) """
+        if self.revealed:
+            for model in self.models_list:
+                if not model.attached:
+                    self.addModel(model)
+
+            for sound in self.sounds_list:
+                sound.activateFromTrigger()
+
+            for particle in self.particles_list:
+                FX.OneShot(particle['sfx']).go(particle['model'])
+
+            for item in self.udo_questobjects:
+                properties = {'modelSelect': item.modelSelect,
+                 'questID': item.questID,
+                 'show_if': item.show_if}
+                questobject_id = BigWorld.createEntity('QuestObject', self.spaceID, 0, item.position, (0, 0, 0), properties)
+                self.spawn_entities.append(questobject_id)
+
+        else:
+            for model in self.models_list:
+                if model.attached:
+                    self.delModel(model)
+
+            for sound in self.sounds_list:
+                sound.deactivateFromTrigger()
+
+            for entity_id in self.spawn_entities:
+                BigWorld.destroyEntity(entity_id)
+
+            self.spawn_entities = []
+
+    def _spawnClientItems(self):
+        if self.isDestroyed:
+            return
+        self.models_list = []
+        self.sounds_list = []
+        self.particles_list = []
+        for item in itertools.chain(self.udo_models, self.udo_sounds, self.udo_particles, self.udo_questobjects):
+            try:
+                item.position
+            except BigWorld.UnresolvedUDORefException:
+                BigWorld.callback(5.0, self._spawnClientItems)
+                return
+
+        for item in self.udo_models:
+            model = HideModelUDO.parse_model(item)
+            if model:
+                self.models_list.append(model)
+
+        for item in self.udo_sounds:
+            sound_node_id = SoundNode.create_from_udo(item, self.spaceID)
+            self.sounds_list.append(BigWorld.entities[sound_node_id])
+
+        for item in self.udo_particles:
+            model = BigWorld.Model('')
+            model.position = item.position
+            self.addModel(model)
+            self.particles_list.append({'model': model,
+             'sfx': item.sfxName})
+
+        self._resources_loaded()

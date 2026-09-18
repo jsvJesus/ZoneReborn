@@ -1,0 +1,344 @@
+# Embedded file name: ./scripts/client/soGUI/soBulletinBoard.py
+import webbrowser
+import soGUI.soShopTabl
+import soGUI.soHunterTable
+import Localization
+import GUI
+import BigWorld
+import BWPersonality
+import functools
+import news_ulits_flash
+from soGUI.soButton import soButton
+from Localization import lc
+from Helpers.PyGUI.PyGUIBase import PyGUIBase
+from FlashGUIBase import FlashGUIBase
+from GlobalDataStorage import actual_news
+from soGUI.QuestsBoard import QuestsBoard
+
+class TextFlashWidget(FlashGUIBase):
+    """\xd0\x91\xd0\xb0\xd0\xb7\xd0\xbe\xd0\xb2\xd1\x8b\xd0\xb9 \xd0\xba\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81 \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x81\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x8f \xd1\x82\xd0\xb5\xd0\xba\xd1\x81\xd1\x82\xd0\xbe\xd0\xb2\xd1\x8b\xd1\x85 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd0\xbe\xd0\xb2 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xb4\xd0\xbe\xd1\x81\xd0\xba\xd0\xb8 \xd0\xbe\xd0\xb1\xd1\x8a\xd1\x8f\xd0\xb2\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb9.
+    
+    \xd0\x9f\xd1\x80\xd0\xb8 \xd1\x81\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd0\xb8 \xd0\xba\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81\xd0\xb0 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd1\x83 \xd1\x81\xd1\x80\xd0\xb0\xd0\xb7\xd1\x83 \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb0\xd1\x8e\xd1\x82\xd1\x81\xd1\x8f \xd1\x80\xd0\xb0\xd0\xb7\xd0\xbc\xd0\xb5\xd1\x80 \xd0\xb8 
+    \xd0\xbf\xd0\xbe\xd0\xb7\xd0\xb8\xd1\x86\xd0\xb8\xd1\x8f \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xb4\xd0\xbe\xd1\x81\xd0\xba\xd0\xb8 \xd0\xbe\xd0\xb1\xd1\x8f\xd0\xb2\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb9.
+    """
+
+    def __init__(self, component):
+        super(TextFlashWidget, self).__init__(component)
+
+    @classmethod
+    def create(cls):
+        """\xd0\x9c\xd0\xb5\xd1\x82\xd0\xbe\xd0\xb4 \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x81\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb0."""
+        movie_path = 'extendedGUI/TextWidget.swf'
+        backgroundAlpha = 0
+        component = super(TextFlashWidget, cls).create(movie_path, backgroundAlpha)
+        sW, sH = BigWorld.screenSize()
+        component.widthMode = component.heightMode = 'PIXEL'
+        component.horizontalPositionMode = component.verticalPositionMode = 'PIXEL'
+        component.height = sH - 96
+        component.width = sW - 8
+        component.horizontalAnchor = 'LEFT'
+        component.verticalAnchor = 'TOP'
+        component.position = (5, 58, 0)
+        component.visible = False
+        return component
+
+    def prepare_answer(self, req_name, answer = None):
+        """\xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbe\xd1\x82\xd0\xb2\xd0\xb5\xd1\x82 \xd0\xb2 \xd1\x82\xd0\xb0\xd0\xba\xd0\xbe\xd0\xbc \xd0\xb2\xd0\xb8\xd0\xb4\xd0\xb5, \xd0\xb2 \xd0\xba\xd0\xb0\xd0\xba\xd0\xbe\xd0\xbc \xd0\xb5\xd0\xb3\xd0\xbe \xd0\xbe\xd0\xb6\xd0\xb8\xd0\xb4\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x84\xd0\xbb\xd1\x8d\xd1\x88."""
+        return super(TextFlashWidget, self).prepare_answer(req_name, answer)
+
+    def ready(self):
+        """\xd0\xa4\xd0\xbb\xd1\x8d\xd1\x88 \xd0\xb2\xd1\x8b\xd0\xb7\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x8d\xd1\x82\xd1\x83 \xd1\x84\xd1\x83\xd0\xbd\xd0\xba\xd1\x86\xd0\xb8\xd1\x8e, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd0\xb3\xd0\xbe\xd1\x82\xd0\xbe\xd0\xb2\xd0\xb0 \xd0\xbf\xd1\x80\xd0\xb8\xd0\xbd\xd0\xb8\xd0\xbc\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd1\x8b."""
+        X, Y = (0, 1)
+        comp = self.component
+        corner_x = comp.position[X]
+        corner_y = comp.position[Y]
+        screen_size = {'corner': [corner_x, corner_y],
+         'height': comp.height,
+         'width': comp.width}
+        self.send_to_flashscript('screenSize', screen_size)
+
+    def send_to_flashscript(self, event, answer = None):
+        """\xd0\x9f\xd0\xbe\xd0\xb4\xd0\xb3\xd0\xbe\xd1\x82\xd0\xb0\xd0\xb2\xd0\xbb\xd0\xb8\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82, \xd0\xba\xd0\xbe\xd0\xb4\xd0\xb8\xd1\x80\xd1\x83\xd0\xb5\xd1\x82 \xd0\xb8 \xd0\xbe\xd1\x82\xd0\xbf\xd1\x80\xd0\xb0\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xb2\xd0\xbe \xd1\x84\xd0\xbb\xd0\xb5\xd1\x88.
+        
+        event - \xd0\xb8\xd0\xbc\xd1\x8f \xd1\x81\xd0\xbe\xd0\xb1\xd1\x8b\xd1\x82\xd0\xb8\xd1\x8f,
+        answer - \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xbf\xd0\xbe \xd1\x8d\xd1\x82\xd0\xbe\xd0\xbc\xd1\x83 \xd1\x81\xd0\xbe\xd0\xb1\xd1\x8b\xd1\x82\xd0\xb8\xd1\x8e.
+        """
+        result = self.prepare_answer(event, answer)
+        callback = functools.partial(self.viewX.invoke, ('externalInterfaceTransmit', result))
+        BigWorld.callback(0.0, callback)
+
+
+class NewsFlashWidget(TextFlashWidget):
+    """\xd0\x9d\xd0\xbe\xd0\xb2\xd0\xbe\xd1\x81\xd1\x82\xd0\xbd\xd0\xbe\xd0\xb5 \xd0\xbe\xd0\xba\xd0\xbd\xd0\xbe."""
+
+    def ready(self):
+        """\xd0\xa4\xd0\xbb\xd1\x8d\xd1\x88 \xd0\xb2\xd1\x8b\xd0\xb7\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x8d\xd1\x82\xd1\x83 \xd1\x84\xd1\x83\xd0\xbd\xd0\xba\xd1\x86\xd0\xb8\xd1\x8e, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd0\xb3\xd0\xbe\xd1\x82\xd0\xbe\xd0\xb2\xd0\xb0 \xd0\xbf\xd1\x80\xd0\xb8\xd0\xbd\xd0\xb8\xd0\xbc\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd1\x8b."""
+        super(NewsFlashWidget, self).ready()
+        news = dict(actual_news.getNews())
+        news['text'] = news_ulits_flash.convert_news(news['text'])
+        self.send_to_flashscript('showText', news)
+
+    def openURL(self, data):
+        """\xd0\x9e\xd1\x82\xd0\xba\xd1\x80\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x83\xd1\x8e \xd1\x81\xd1\x82\xd1\x80\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x86\xd1\x83 \xd0\xb2 \xd0\xb1\xd1\x80\xd0\xb0\xd1\x83\xd0\xb7\xd0\xb5\xd1\x80\xd0\xb5."""
+        url = data['url']
+        webbrowser.open(url)
+
+    def update(self):
+        """\xd0\x9e\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb8\xd1\x82\xd1\x8c \xd0\xbd\xd0\xbe\xd0\xb2\xd0\xbe\xd1\x81\xd1\x82\xd0\xb8 \xd0\xb2 \xd0\xb2\xd0\xb8\xd0\xb4\xd0\xb6\xd0\xb5\xd1\x82\xd0\xb5."""
+        news = dict(actual_news.getNews())
+        news['text'] = news_ulits_flash.convert_news(news['text'])
+        self.send_to_flashscript('showText', news)
+
+
+class soBulletinBoard(PyGUIBase):
+    factoryString = 'soGUI.soBulletinBoard'
+    bdata = ('worldso', 'textNews', 'quests', 'sale', 'hunt')
+    DISABLED_BUTTON = ()
+    bNames = dict([ (x, lc('soBulletinBoard.%s' % x)) for x in bdata ])
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.setupRoot()
+        self.setupContent()
+        self.curentTab = self.bdata[0]
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        sW, sH = BigWorld.screenSize()
+        cmp.width = sW
+        cmp.height = sH
+        cmp.position = (0, 0, 0.2)
+        cmp.dragFocus = True
+        self.component.mouseButtonFocus = True
+        self.component.focus = True
+        cmp.crossFocus = True
+
+    def handleDragEnterEvent(self, component, position, dragged):
+        return True
+
+    def handleDragLeaveEvent(self, component, position, dragged):
+        return True
+
+    def handleDragStartEvent(self, component):
+        return True
+
+    def handleDragStopEvent(self, component):
+        return True
+
+    def handleDropEvent(self, component, position, dropped):
+        return True
+
+    def handleMouseLeaveEvent(self, cmp):
+        return True
+
+    def handleMouseEnterEvent(self, cmp):
+        return True
+
+    def handleMouseEvent(self, cmp, event):
+        dz = event.dz
+        position = event.cursorPosition
+        if dz > 0:
+            self.scrollCurentTab(1)
+            return True
+        if dz < 0:
+            self.scrollCurentTab(0)
+            return True
+        return True
+
+    def scrollCurentTab(self, up):
+        cmp = getattr(self.component, self.curentTab, None)
+        if not cmp:
+            return
+        else:
+            if up:
+                if hasattr(cmp.script, 'scrolledUP'):
+                    cmp.script.scrolledUP()
+            elif hasattr(cmp.script, 'scrolledDOWN'):
+                cmp.script.scrolledDOWN()
+            return
+
+    def setupContent(self):
+        sW, sH = BigWorld.screenSize()
+        w = sW
+        h = sH - 70
+        posw = 0
+        FRAME_TEXTURE = 'soGUI/maps/Controls/inventory/inventoryFrame2.tga'
+        self.frameCmp = GUI.Frame2(FRAME_TEXTURE)
+        self.frameCmp.horizontalPositionMode = self.frameCmp.verticalPositionMode = 'PIXEL'
+        self.frameCmp.widthMode = self.frameCmp.heightMode = 'PIXEL'
+        self.frameCmp.horizontalAnchor = 'LEFT'
+        self.frameCmp.verticalAnchor = 'TOP'
+        self.frameCmp.visible = True
+        self.frameCmp.colour = (255, 255, 255, 255)
+        self.frameCmp.materialFX = 'BLEND'
+        self.frameCmp.width = sW
+        self.frameCmp.height = sH
+        self.frameCmp.position = (0, 0, 0.5)
+        self.component.addChild(self.frameCmp, 'frame1')
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.text = lc('soBulletinBoard.bulletin')
+        cmp.multiline = True
+        cmp.position = (sW // 2, 5, 0.5)
+        cmp.multiline = True
+        self.component.addChild(cmp, 'label_name')
+        news_component = NewsFlashWidget.create()
+        self.component.addChild(news_component, 'textNews')
+        self.createTabButtons(self.bdata, posw, w)
+        closeBox = soButton(GUI.Window())
+        cmp = closeBox.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 18
+        cmp.height = 18
+        cmp.position = (w - 5, 5, 0)
+        cmp.script.onClick = lambda : BWPersonality.GUICore.showBulletinBoard(False)
+        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.onBound()
+        closeBox.setVisualState('normal')
+        self.component.addChild(cmp, 'closeBox')
+        sale = soGUI.soShopTabl.soShopTabl(GUI.Window(), w - 10, h, posw, 10)
+        cmp = sale.component
+        cmp.position = (posw, 56, 0)
+        self.component.addChild(cmp, 'sale')
+        sale.onBound()
+        self.csale = sale
+        self.quest_board = QuestsBoard()
+        comp = self.quest_board.component
+        self.component.addChild(comp, 'quests')
+        hunters = soGUI.soHunterTable.soHunterTable(GUI.Window(), w - 10, h, posw, 10)
+        cmp = hunters.component
+        cmp.position = (posw, 56, 0)
+        self.component.addChild(cmp, 'hunt')
+        hunters.onBound()
+        self.chunters = hunters
+        if Localization.localization_object.globalLanguage == 'russian':
+            cmp = GUI.Simple('soGUI/maps/worldMaps/WorldMapSO.dds')
+        else:
+            cmp = GUI.Simple('soGUI/maps/worldMaps/WorldMapSOeng.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = w
+        cmp.height = h - 30
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (0, 60, 0.0)
+        cmp.visible = 1
+        cmp.filterType = 'POINT'
+        cmp.filterType = 'LINEAR'
+        self.component.addChild(cmp, 'worldso')
+
+    def createTabButtons(self, butParam, posw, w):
+        bwidth = w / len(butParam)
+        for i, name in enumerate(butParam):
+            btn = soButton(GUI.Window())
+            cmp = btn.component
+            btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+            cmp.widthMode = cmp.heightMode = 'PIXEL'
+            cmp.horizontalAnchor = 'LEFT'
+            cmp.verticalAnchor = 'TOP'
+            cmp.label.font = 'ruRU_calibri_default.font'
+            cmp.label.text = self.bNames.get(name, '???')
+            cmp.colour = (255, 255, 255, 255)
+            cmp.materialFX = 'BLEND'
+            cmp.width = bwidth
+            cmp.height = 25
+            cmp.position = (posw + i * bwidth, 30, 0.3)
+            cmp.script.onClick = lambda name = name: self.setViewTab(name)
+            cmp.script.setDisabledState(name in self.DISABLED_BUTTON)
+            self.component.addChild(cmp, 'button_%s' % name)
+            btn.onBound()
+            cmp = GUI.Simple('textures/default/bright_gray.jpg')
+            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+            cmp.widthMode = cmp.heightMode = 'PIXEL'
+            cmp.horizontalAnchor = 'LEFT'
+            cmp.verticalAnchor = 'TOP'
+            cmp.colour = (255, 255, 255, 120)
+            cmp.materialFX = 'BLEND'
+            cmp.width = bwidth - 5
+            cmp.height = 1
+            cmp.position = (posw + i * bwidth + 3, 55, 0.3)
+            self.component.addChild(cmp, 'frame_button_%s' % name)
+
+    def show(self):
+        if self.component.parent is None:
+            BWPersonality.GUICore.worldLayer.addChild(self.component, 'soBulletinBoard')
+        self.component.visible = True
+        self.setViewTab(self.curentTab)
+        return
+
+    def hide(self):
+        self.component.visible = False
+        for name in self.bdata:
+            cmp_text = getattr(self.component, name, None)
+            if not cmp_text:
+                continue
+            try:
+                cmp_text.script.hide()
+            except:
+                pass
+
+        self.csale.clearBuyWindows()
+        self.component.sale.script.on_board_hide()
+        return
+
+    def setViewTab(self, tabname):
+        if tabname not in self.bdata:
+            raise ValueError, tabname
+        if tabname == 'textNews':
+            self.component.textNews.script.update()
+        self.curentTab = tabname
+        for name in self.bdata:
+            cmp_bframe = getattr(self.component, 'frame_button_%s' % name, None)
+            cmp_bframe.colour.alpha = 255 if name == tabname else 120
+            cmp_text = getattr(self.component, name, None)
+            if not cmp_text:
+                continue
+            cmp_text.visible = name == tabname
+            if cmp_text.visible:
+                if hasattr(cmp_text.script, 'show'):
+                    cmp_text.script.show()
+            elif hasattr(cmp_text.script, 'hide'):
+                cmp_text.script.hide()
+
+        return
+
+    def doReposition(self):
+        quest_ids = self.quest_board.get_quest_ids()
+        sW, sH = BigWorld.screenSize()
+        self.component.width = sW
+        self.component.height = sH
+        for name in self.bdata:
+            self.component.delChild(name)
+            self.component.delChild('button_%s' % name)
+
+        self.component.delChild('frame1')
+        self.component.delChild('label_name')
+        self.component.delChild('closeBox')
+        self.setupContent()
+        self.quest_board.update_quests(quest_ids)
+
+    def updateShop(self):
+        self.csale.setData(BWPersonality.GUICore.bulletinBoardShopDataSection)
+
+    def updateHunter(self):
+        self.chunters.setData(BWPersonality.GUICore.bulletinBoardHunterDataSection)

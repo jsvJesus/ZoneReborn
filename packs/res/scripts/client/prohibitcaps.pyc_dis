@@ -1,0 +1,63 @@
+# Embedded file name: ./scripts/client/prohibitcaps.py
+"""\xd0\x9c\xd0\xbe\xd0\xb4\xd1\x83\xd0\xbb\xd1\x8c \xd1\x80\xd0\xb5\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb7\xd1\x83\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xb5\xd1\x82\xd0\xb0 Caps'\xd0\xbe\xd0\xb2."""
+import collections
+import BigWorld
+from utils_bw import isinstance_ext
+
+class ProhibitCapsSphereMixIn(object):
+    """
+    \xd0\x9a\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81 \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xb5\xd1\x89\xd0\xb0\xd1\x8e\xd1\x89\xd0\xb8\xd0\xb9 \xd0\xb8\xd0\xb3\xd1\x80\xd0\xbe\xd0\xba\xd1\x83 \xd0\xb2\xd0\xb7\xd0\xb0\xd0\xb8\xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xb9\xd1\x81\xd1\x82\xd0\xb2\xd0\xb8\xd0\xb5 (Caps'\xd1\x8b) \xd0\xb2 \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd0\xbe\xd0\xbc
+    \xd1\x80\xd0\xb0\xd0\xb4\xd0\xb8\xd1\x83\xd1\x81\xd0\xb5 \xd0\xb2\xd0\xbe\xd0\xba\xd1\x80\xd1\x83\xd0\xb3 \xd1\x83\xd0\xbd\xd0\xb0\xd1\x81\xd0\xbb\xd0\xb5\xd0\xb4\xd0\xbe\xd0\xb2\xd0\xb0\xd0\xb2\xd1\x88\xd0\xb5\xd0\xb9 \xd1\x8d\xd1\x82\xd0\xbe\xd1\x82 \xd0\xba\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81 \xd1\x81\xd1\x83\xd1\x89\xd0\xbd\xd0\xbe\xd1\x81\xd1\x82\xd0\xb8.
+    """
+
+    def __init__(self, prohibit_caps, radius):
+        """\xd0\x9a\xd0\xbe\xd0\xbd\xd1\x81\xd1\x82\xd1\x83\xd0\xba\xd1\x82\xd0\xbe\xd1\x80."""
+        self._prohibited_caps = prohibit_caps
+        self._radius = radius
+        self._trap_id = None
+        self._removed_caps = collections.defaultdict(list)
+        return
+
+    def onEnterWorld(self, *args, **kws):
+        self._trap_id = self.addTrap(self._radius, self.prohibit_caps)
+
+    def onLeaveWorld(self, *args, **kws):
+        self.delTrap(self._trap_id)
+        self._trap_id = None
+        self._removed_caps.clear()
+        return
+
+    def prohibit_caps(self, entities_in_trap):
+        """\xd0\xa3\xd0\xb4\xd0\xb0\xd0\xbb\xd0\xb8\xd1\x82\xd1\x8c\\\xd0\xb2\xd0\xbe\xd1\x81\xd1\x82\xd0\xb0\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb8\xd1\x82\xd1\x8c \xd0\xb0\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0\xd1\x80\xd0\xb0\xd0\xbc Caps'\xd1\x8b."""
+        avatars_in_trap = dict(((ent.id, ent) for ent in entities_in_trap if isinstance_ext(ent, 'Avatar')))
+        entered_avatars = self._entered_avatars(avatars_in_trap)
+        self._remove_prohibited_caps(entered_avatars)
+        left_avatar_ids = self._left_avatar_ids(avatars_in_trap)
+        self._restore_prohibited_caps(left_avatar_ids)
+
+    def _remove_prohibited_caps(self, entered_avatars):
+        for avatar in entered_avatars:
+            new_caps = []
+            for cap in avatar.targetCaps:
+                if cap in self._prohibited_caps:
+                    self._removed_caps[avatar.id].append(cap)
+                else:
+                    new_caps.append(cap)
+
+            avatar.targetCaps = new_caps
+
+    def _restore_prohibited_caps(self, left_avatar_ids):
+        for av_id in left_avatar_ids:
+            try:
+                avatar = BigWorld.entities[av_id]
+                avatar.targetCaps = avatar.targetCaps + self._removed_caps[av_id]
+            except KeyError:
+                pass
+
+            del self._removed_caps[av_id]
+
+    def _entered_avatars(self, avatars_in_trap):
+        return [ av for av_id, av in avatars_in_trap.items() if av_id not in self._removed_caps ]
+
+    def _left_avatar_ids(self, avatars_in_trap):
+        return [ av_id for av_id in self._removed_caps.keys() if av_id not in avatars_in_trap ]

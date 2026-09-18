@@ -1,0 +1,28 @@
+# Embedded file name: ./scripts/common/ItemData.py
+ARTIFACTS, WEAPONS, SHELLS, FOODS, GADGETS = range(5)
+itemTypeRanges = {WEAPONS: range(2, 3),
+ FOODS: range(4, 5),
+ GADGETS: range(6, 17),
+ ARTIFACTS: range(30, 50),
+ SHELLS: range(51, 100)}
+NONE_TYPE = -1
+FEATHERBED, STABILIZER = range(30, 32)
+SNAKE, LIGHTNING = range(2, 4)
+ItemsData = {FEATHERBED: {'class': 'Artifact',
+              'modelName': 'sets/items/item_food_drumstick.model',
+              'displayName': 'FEATHERBED Artifact',
+              'guiIconName': 'gui/maps/icon_items/artifact.jpg',
+              'pickUpBonus': 100},
+ STABILIZER: {'class': 'Artifact',
+              'modelName': 'sets/items/grail.model',
+              'displayName': 'STABILIZER Artifact',
+              'guiIconName': 'gui/maps/icon_items/artifact.jpg',
+              'pickUpBonus': 50},
+ SNAKE: {'class': 'Staff',
+         'modelName': 'sets/items/staff.model',
+         'displayName': 'Serpent Staff',
+         'guiIconName': 'gui/maps/icon_items/icon_staff.tga'},
+ LIGHTNING: {'class': 'Staff',
+             'modelName': 'sets/items/staff.model',
+             'displayName': 'Lightning Staff',
+             'guiIconName': 'gui/maps/icon_items/icon_staff.tga'}}

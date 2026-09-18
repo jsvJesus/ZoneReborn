@@ -1,0 +1,687 @@
+# Embedded file name: ./scripts/client/soGUI/soBillboardFilter.py
+import BigWorld
+import Helpers.PyGUI as PyGUI
+import GUI
+from Helpers.PyGUI.PyGUIBase import PyGUIBase
+from Helpers.BWCoroutine import BWCoroutine, BWWaitForPeriod
+from soGUI.soCheckBox import soCheckBox
+import soGUI
+import ItemCategories
+from soGUI.soScrollBar import soScrollBar2
+from Localization import lc
+from soGUI.soRadioButton import soRadioButton2
+from soGUI.soDropDownList import soDropDownList2
+from soGUI.soButton import soButton
+from soGUI.soEditField import soEditBox
+from soGUI.DropDownWindow import DropDownWindow
+from NPCs import NPCs
+import math_bw
+import GiftBankUtils
+from Settings import Settings
+LABEL_COLOR = (175,
+ 166,
+ 112,
+ 255)
+ARROW_DIRECTION_RIGHT, ARROW_DIRECTION_LEFT = range(2)
+
+class soBillboardFilter(PyGUI.Window):
+    """ \xd0\x98\xd0\xbd\xd1\x82\xd0\xb5\xd1\x80\xd1\x84\xd0\xb5\xd0\xb9\xd1\x81 \xd0\xbe\xd0\xba\xd0\xbd\xd0\xb0 \xd1\x84\xd0\xb8\xd0\xbb\xd1\x8c\xd1\x82\xd1\x80\xd0\xbe\xd0\xb2 \xd0\xba\xd0\xb0\xd1\x82\xd0\xb5\xd0\xb3\xd0\xbe\xd1\x80\xd0\xb8\xd0\xb9 \xd0\xbd\xd0\xb0 \xd0\xbf\xd1\x80\xd0\xbe\xd0\xb4\xd0\xb0\xd0\xb6\xd0\xbd\xd0\xbe\xd0\xb9 \xd0\xb4\xd0\xbe\xd1\x81\xd0\xba\xd0\xb5
+    """
+    factoryString = 'soGUI.soBillboardFilter.soBillboardFilter'
+
+    def __init__(self, update_callback = None):
+        component = GUI.Window()
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.update_callback = update_callback
+        self.min_width = 100
+        self.max_width = 550
+        self.move_disp = self.max_width - self.min_width
+        self.move_time = 0.2
+        self.initial_position = (BigWorld.screenWidth() + self.move_disp, 0, 0.1)
+        self.move_corutine = None
+        self.item_height = 20
+        self.scroll_step = 2.0 / (BigWorld.screenHeight() / self.item_height)
+        self.static_panel_height = 260
+        self.sort_index = 0
+        self.component.horizontalAnchor = 'RIGHT'
+        self.component.verticalAnchor = 'TOP'
+        self.component.horizontalPositionMode = 'PIXEL'
+        self.component.verticalPositionMode = 'PIXEL'
+        self.component.widthMode = 'PIXEL'
+        self.component.heightMode = 'PIXEL'
+        self.component.width = self.max_width
+        self.component.height = BigWorld.screenHeight() - 95
+        self.component.position = self.initial_position
+        self.component.crossFocus = True
+        self.component.moveFocus = True
+        self.component.mouseButtonFocus = True
+        self.cat_id_to_checkbox = {}
+        self.setup_content()
+        return
+
+    def setup_content(self):
+        header_height = 28
+        footer_height = 35
+        sider_width = 32
+        background = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        background.horizontalAnchor = 'LEFT'
+        background.verticalAnchor = 'TOP'
+        background.widthMode = 'PIXEL'
+        background.heightMode = 'PIXEL'
+        background.horizontalPositionMode = 'PIXEL'
+        background.verticalPositionMode = 'PIXEL'
+        background.position = (0, 0, 0.9)
+        background.materialFX = 'BLEND'
+        background.width = self.max_width
+        background.height = self.component.height
+        self.component.addChild(background, 'background')
+        caption = GUI.Text('')
+        caption.horizontalPositionMode = caption.verticalPositionMode = 'PIXEL'
+        caption.horizontalAnchor = 'LEFT'
+        caption.verticalAnchor = 'TOP'
+        caption.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        caption.colour = (255, 255, 255, 255)
+        caption.materialFX = 'BLEND'
+        caption.position = (sider_width + 4, 6, 0.3)
+        caption.text = lc('soTradeInterface.shop.ITEM_CATEGORY')
+        self.component.addChild(caption, 'main_caption')
+        fix_label = GUI.Text('')
+        fix_label.horizontalPositionMode = fix_label.verticalPositionMode = 'PIXEL'
+        fix_label.horizontalAnchor = 'RIGHT'
+        fix_label.verticalAnchor = 'TOP'
+        fix_label.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        fix_label.colour = (255, 255, 255, 255)
+        fix_label.materialFX = 'BLEND'
+        fix_label.position = (self.component.width - 50, 6, 0.3)
+        fix_label.text = lc('soTradeInterface.shop.PIN')
+        self.component.addChild(fix_label)
+
+        def onFixBtnClick():
+            Settings().setSetting('billboard_filter_lock', fix_button.buttonActive)
+
+        fix_button = soButton(GUI.Window())
+        fix_button.component.horizontalPositionMode = fix_button.component.verticalPositionMode = 'PIXEL'
+        fix_button.component.widthMode = fix_button.component.heightMode = 'PIXEL'
+        fix_button.component.horizontalAnchor = 'RIGHT'
+        fix_button.component.verticalAnchor = 'TOP'
+        fix_button.component.width = 18
+        fix_button.component.height = 18
+        fix_button.component.position = (self.component.width - 20, 6, 0.1)
+        fix_button.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        fix_button.initVSC('soGUI/visual_styles/filterArtifact.xml')
+        fix_button.onBound()
+        fix_button.setVisualState('normal')
+        self.component.addChild(fix_button.component, 'fix_button')
+        fix_button.setToggleState(Settings().getSetting('billboard_filter_lock', False))
+        fix_button.onClick = onFixBtnClick
+        if Settings().getSetting('billboard_filter_lock', False):
+            self.component.position = self.position_from_ratio(1)
+        sider = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        sider.horizontalAnchor = 'LEFT'
+        sider.verticalAnchor = 'TOP'
+        sider.widthMode = 'PIXEL'
+        sider.heightMode = 'PIXEL'
+        sider.horizontalPositionMode = 'PIXEL'
+        sider.verticalPositionMode = 'PIXEL'
+        sider.position = (0, header_height - 1, 0.8)
+        sider.width = sider_width
+        sider.materialFX = 'BLEND'
+        sider.height = self.component.height - header_height - footer_height
+        self.component.addChild(sider, 'sider')
+        arrow_x = 15
+        arrow_y = sider.height * 0.5
+        self.all_arrows = []
+        for i in range(3):
+            arrow = GUI.Simple('soGUI/maps/Controls/arrow_right.dds')
+            arrow.horizontalAnchor = 'CENTER'
+            arrow.verticalAnchor = 'TOP'
+            arrow.widthMode = 'PIXEL'
+            arrow.heightMode = 'PIXEL'
+            arrow.horizontalPositionMode = 'PIXEL'
+            arrow.verticalPositionMode = 'PIXEL'
+            arrow.position = (arrow_x, i * 18 + arrow_y, 0.1)
+            arrow.mapping = ((0, 0.75),
+             (0, 0.5),
+             (1, 0.5),
+             (1, 0.75))
+            arrow.width = 18
+            arrow.height = 18
+            arrow.materialFX = 'BLEND'
+            arrow.colour = (255, 255, 255, 100)
+            self.component.addChild(arrow, 'arrow' + str(i))
+            self.all_arrows.append(arrow)
+
+        if fix_button.buttonActive:
+            self.set_arrows_direction(ARROW_DIRECTION_RIGHT)
+        else:
+            self.set_arrows_direction(ARROW_DIRECTION_LEFT)
+        scroll = GUI.Window()
+        scroll.horizontalAnchor = 'LEFT'
+        scroll.verticalAnchor = 'TOP'
+        scroll.widthMode = 'PIXEL'
+        scroll.heightMode = 'PIXEL'
+        scroll.horizontalPositionMode = 'PIXEL'
+        scroll.verticalPositionMode = 'PIXEL'
+        scroll.position = (sider_width, header_height, 0.6)
+        scroll.width = self.max_width - sider_width
+        scroll.height = self.component.height - self.static_panel_height - header_height - footer_height
+        scroll.maxScroll.y = 3
+        self.component.addChild(scroll, 'background_scroll')
+        check_data = ItemCategories.get_all_names_classes_indices()
+        check_data.sort(key=lambda x: x[2])
+        half_row_length = len(check_data) / 2
+        second_row = False
+        first_row_amount = 0
+        left_margine = 20
+        cb = BillboardCheckBox(lc('soTradeInterface.shop.ALL'), -1, self.checkbox_clicked)
+        cb.component.position = (left_margine, self.item_height, 0.8)
+        self.component.background_scroll.addChild(cb.component, 'checkALL')
+        for i, (name, cat_id, index) in enumerate(check_data):
+            i += 1
+            if name == 'undefined':
+                continue
+            cb = BillboardCheckBox(name, cat_id, self.checkbox_clicked)
+            category_level = ItemCategories.get_level(cat_id)
+            if not second_row and i >= half_row_length and not ItemCategories.has_parent(cat_id):
+                second_row = True
+                first_row_amount = i
+            height_index = i if not second_row else i - first_row_amount
+            x_position = left_margine + category_level * 20 + (200 if second_row else 0)
+            cb.component.position = (x_position, (height_index + 1) * self.item_height, 0.8)
+            self.component.background_scroll.addChild(cb.component, 'check' + str(i))
+            self.cat_id_to_checkbox[cat_id] = cb
+
+        scroll_height = scroll.height - 8
+        row_amoun = max(first_row_amount, len(check_data) - first_row_amount)
+        steps = row_amoun - int(self.component.background_scroll.height / self.item_height) + 2
+        if steps > 0:
+            scroll_bar = soScrollBar2(GUI.Window(), steps, 16, scroll_height)
+            scroll_bar.component.horizontalAnchor = 'RIGHT'
+            scroll_bar.component.verticalAnchor = 'TOP'
+            scroll_bar.component.widthMode = 'PIXEL'
+            scroll_bar.component.heightMode = 'PIXEL'
+            scroll_bar.component.horizontalPositionMode = 'PIXEL'
+            scroll_bar.component.verticalPositionMode = 'PIXEL'
+            scroll_bar.component.position = (self.component.width - 10, 4 + header_height, 0.7)
+            scroll_bar.setValue(0)
+            scroll_bar.setVisualState('normal')
+            self.component.addChild(scroll_bar.component, 'scroll_bar')
+            scroll_bar.onBound()
+            scroll_bar.scrollUp = self.scrollUp
+            scroll_bar.scrollDown = self.scrollDown
+            scroll_bar.scrollMoved = self.scrollMoved
+            self.scroll_bar = scroll_bar
+        sortlist = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        sortlist.horizontalAnchor = 'LEFT'
+        sortlist.verticalAnchor = 'BOTTOM'
+        sortlist.widthMode = 'PIXEL'
+        sortlist.heightMode = 'PIXEL'
+        sortlist.horizontalPositionMode = 'PIXEL'
+        sortlist.verticalPositionMode = 'PIXEL'
+        sortlist.position = (0, self.component.height, 0.9)
+        sortlist.width = self.max_width
+        sortlist.height = self.static_panel_height + footer_height
+        sortlist.materialFX = 'BLEND'
+        self.component.addChild(sortlist, 'sort_panel')
+        caption = GUI.Text('')
+        caption.horizontalPositionMode = caption.verticalPositionMode = 'PIXEL'
+        caption.horizontalAnchor = 'LEFT'
+        caption.verticalAnchor = 'TOP'
+        caption.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        caption.materialFX = 'BLEND'
+        caption.position = (sider_width + 4, self.component.height - sortlist.height + 6, 0.1)
+        caption.text = lc('soTradeInterface.shop.ADDITIONAL')
+        self.component.sort_panel.addChild(caption, 'caption')
+        static_line = self.component.height - self.static_panel_height - footer_height + header_height
+        left_margine = 20
+        field_width = 200
+        column_width = 200
+        label_font = 'ruRU_Cyrvetica_Extra_14i.font'
+
+        def height_generator():
+            height = static_line + 10
+            while True:
+                yield height
+                height += 30
+
+        height = height_generator()
+
+        def create_guitext(name, caption, x, y, width, text = None, double = False, number_only = False):
+            guilabel = GUI.Text(caption)
+            guilabel.horizontalPositionMode = guilabel.verticalPositionMode = 'PIXEL'
+            guilabel.horizontalAnchor = 'LEFT'
+            guilabel.verticalAnchor = 'TOP'
+            guilabel.font = label_font
+            guilabel.colour = LABEL_COLOR
+            guilabel.materialFX = 'BLEND'
+            guilabel.position = (x + sider_width, y, 0.1)
+            self.component.addChild(guilabel, 'label_' + name)
+            if double:
+                from_label = GUI.Text(lc('soTradeInterface.shop.FROM'))
+                from_label.horizontalPositionMode = from_label.verticalPositionMode = 'PIXEL'
+                from_label.horizontalAnchor = 'LEFT'
+                from_label.verticalAnchor = 'TOP'
+                from_label.font = label_font
+                from_label.colour = LABEL_COLOR
+                from_label.materialFX = 'BLEND'
+                from_label.position = (x + sider_width + column_width, y, 0.1)
+                self.component.addChild(from_label, 'from_label_' + name)
+            if number_only:
+                guitext = BilboardEditTextNumber(self.edit_changed)
+            else:
+                guitext = BilboardEditText(width, self.edit_changed)
+            guitext = guitext.component
+            guitext.horizontalPositionMode = guitext.verticalPositionMode = 'PIXEL'
+            guitext.horizontalAnchor = 'LEFT'
+            guitext.verticalAnchor = 'TOP'
+            x_position = x + sider_width + column_width
+            if double:
+                x_position += 40
+            guitext.position = (x_position, y, 0.1)
+            guitext.width = width
+            self.component.addChild(guitext, name)
+            if text:
+                guitext.script.setValue(text)
+            guitext.script.onBound()
+            if not double:
+                return
+            to_label = GUI.Text(lc('soTradeInterface.shop.TO'))
+            to_label.horizontalPositionMode = to_label.verticalPositionMode = 'PIXEL'
+            to_label.horizontalAnchor = 'LEFT'
+            to_label.verticalAnchor = 'TOP'
+            to_label.font = label_font
+            to_label.colour = LABEL_COLOR
+            to_label.materialFX = 'BLEND'
+            to_label.position = (x + sider_width + column_width + 130, y, 0.1)
+            self.component.addChild(to_label, 'to_label_' + name)
+            if number_only:
+                guitext2 = BilboardEditTextNumber(self.edit_changed)
+            else:
+                guitext2 = BilboardEditText(width, self.edit_changed)
+            guitext2 = guitext2.component
+            guitext2.horizontalPositionMode = guitext2.verticalPositionMode = 'PIXEL'
+            guitext2.horizontalAnchor = 'LEFT'
+            guitext2.verticalAnchor = 'TOP'
+            x_position = x + sider_width + column_width
+            if double:
+                x_position += 150
+            guitext2.position = (x_position, y, 0.1)
+            guitext2.width = width
+            self.component.addChild(guitext2, name + '2')
+            if text:
+                guitext2.script.setValue(text)
+            guitext2.script.onBound()
+
+        create_guitext('filter_item_name', lc('soTradeInterface.shop.FILTER_ITEM_NAME'), left_margine, height.next(), field_width)
+        keepers_label = GUI.Text(lc('soTradeInterface.shop.BANK'))
+        keepers_label.horizontalPositionMode = keepers_label.verticalPositionMode = 'PIXEL'
+        keepers_label.horizontalAnchor = 'LEFT'
+        keepers_label.verticalAnchor = 'TOP'
+        keepers_label.font = label_font
+        keepers_label.colour = LABEL_COLOR
+        keepers_label.materialFX = 'BLEND'
+        keepers_label.position = (left_margine + sider_width, height.next(), 0.1)
+        self.component.addChild(keepers_label, 'keepers_label')
+        keepers_ddl = BillboardDropdownWindow(field_width, self.edit_changed)
+        keepers_ddl.component.horizontalPositionMode = keepers_ddl.component.verticalPositionMode = 'PIXEL'
+        keepers_ddl.component.widthMode = keepers_ddl.component.heightMode = 'PIXEL'
+        keepers_ddl.component.horizontalAnchor = 'LEFT'
+        keepers_ddl.component.verticalAnchor = 'TOP'
+        keepers_ddl.component.position = (left_margine + sider_width + column_width, keepers_label.position[1] - 4, 0.01)
+        elements = [ (GiftBankUtils.get_keeper_index(keeper), NPCs.getName(keeper)) for keeper in GiftBankUtils.get_keeper_names_list(False) ]
+        keepers_ddl.set_data(elements)
+        self.component.addChild(keepers_ddl.component, 'keepers_filter')
+        attachments_label = GUI.Text(lc('soTradeInterface.shop.ATTACHMENTS'))
+        attachments_label.horizontalPositionMode = attachments_label.verticalPositionMode = 'PIXEL'
+        attachments_label.horizontalAnchor = 'LEFT'
+        attachments_label.verticalAnchor = 'TOP'
+        attachments_label.font = label_font
+        attachments_label.colour = LABEL_COLOR
+        attachments_label.materialFX = 'BLEND'
+        attachments_label.position = (left_margine + sider_width, height.next(), 0.1)
+        self.component.addChild(attachments_label, 'attachments_label')
+        insertions_ddl = BilboardDropdown(field_width, self.edit_changed)
+        insertions_ddl.component.horizontalPositionMode = insertions_ddl.component.verticalPositionMode = 'PIXEL'
+        insertions_ddl.component.widthMode = insertions_ddl.component.heightMode = 'PIXEL'
+        insertions_ddl.component.horizontalAnchor = 'LEFT'
+        insertions_ddl.component.verticalAnchor = 'TOP'
+        insertions_ddl.component.position = (left_margine + sider_width + column_width, attachments_label.position[1] - 4, 0.1)
+        self.component.addChild(insertions_ddl.component, 'insertions_filter')
+        elems = [[0, lc('soTradeInterface.shop.NO_MATTER')], [1, lc('soTradeInterface.shop.YES')], [2, lc('soTradeInterface.shop.NO')]]
+        insertions_ddl.addElements(elems)
+        insertions_ddl.setSelectionByValue(0, True)
+        insertions_ddl.onBound()
+        create_guitext('filter_item_condition', lc('soTradeInterface.shop.STATE'), left_margine, height.next(), 50, double=True, number_only=True)
+        create_guitext('filter_repairs', lc('soTradeInterface.shop.REPAIRS'), left_margine, height.next(), 50, double=True, number_only=True)
+        create_guitext('items_filter', lc('soTradeInterface.shop.ITEMS'), left_margine, height.next(), 50, double=True, number_only=True)
+        sort_label = GUI.Text(lc('soTradeInterface.shop.SORT'))
+        sort_label.horizontalPositionMode = sort_label.verticalPositionMode = 'PIXEL'
+        sort_label.horizontalAnchor = 'LEFT'
+        sort_label.verticalAnchor = 'TOP'
+        sort_label.font = label_font
+        sort_label.colour = LABEL_COLOR
+        sort_label.materialFX = 'BLEND'
+        sort_label.position = (left_margine + sider_width, height.next(), 0.1)
+        self.component.addChild(sort_label, 'sort_label')
+        sort_ddl = BilboardDropdown(field_width, self.edit_changed)
+        sort_ddl.component.horizontalPositionMode = sort_ddl.component.verticalPositionMode = 'PIXEL'
+        sort_ddl.component.widthMode = sort_ddl.component.heightMode = 'PIXEL'
+        sort_ddl.component.horizontalAnchor = 'LEFT'
+        sort_ddl.component.verticalAnchor = 'TOP'
+        sort_ddl.component.position = (left_margine + sider_width + column_width, sort_label.position[1] - 4, 0.1)
+        self.component.addChild(sort_ddl.component, 'sort_ddl')
+        sortBy = [(0, lc('soTradeInterface.shop.PRICE')),
+         (1, lc('soTradeInterface.shop.TRADER')),
+         (2, lc('soTradeInterface.shop.TIME')),
+         (3, lc('soTradeInterface.shop.ITEM'))]
+        sort_ddl.addElements(sortBy)
+        sort_ddl.setSelectionByText(sortBy[0][1], True, True)
+        sort_ddl.onBound()
+        reset_button = soButton(GUI.Window())
+        reset_button.component.horizontalPositionMode = reset_button.component.verticalPositionMode = 'PIXEL'
+        reset_button.component.widthMode = reset_button.component.heightMode = 'PIXEL'
+        reset_button.component.horizontalAnchor = 'RIGHT'
+        reset_button.component.verticalAnchor = 'BOTTOM'
+        reset_button.component.position = (self.max_width - 20, self.component.height - 2, 0.01)
+        reset_button.component.width = 160
+        reset_button.component.height = 32
+        reset_button.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        reset_button.component.label.text = lc('soTradeInterface.shop.RESET')
+        reset_button.onBound()
+        reset_button.onClick = self.reset_button_click
+        self.component.addChild(reset_button.component, 'reset_button')
+        self.all_edit_texts = [self.component.filter_item_name,
+         self.component.filter_item_condition,
+         self.component.filter_item_condition2,
+         self.component.filter_repairs,
+         self.component.filter_repairs2,
+         self.component.items_filter,
+         self.component.items_filter2]
+        self.all_dropdowns = [self.component.insertions_filter, self.component.sort_ddl, self.component.keepers_filter]
+        return
+
+    def reset_button_click(self):
+        self.component.background_scroll.checkALL.script.setInactive()
+        for checkbox in self.cat_id_to_checkbox.values():
+            checkbox.setInactive()
+
+        self.component.keepers_filter.script.reset()
+        self.component.insertions_filter.script.setSelectionByValue(0, True)
+        self.component.sort_ddl.script.setSelectionByValue(0, True)
+        for edit_text in self.all_edit_texts:
+            edit_text.script.clear()
+
+        self.edit_changed(None)
+        return
+
+    def scrollMoved(self, new_value):
+        self.set_scroll_value(new_value)
+
+    def scrollUp(self):
+        value = self.scroll_bar.getValue()
+        value = max(0, value - 1)
+        self.set_scroll_value(value)
+
+    def scrollDown(self):
+        value = self.scroll_bar.getValue()
+        value = min(value + 1, self.scroll_bar.steps)
+        self.set_scroll_value(value)
+
+    def handleMouseEvent(self, comp, event):
+        dz = event.dz
+        if dz > 0:
+            self.scrollUp()
+            return True
+        if dz < 0:
+            self.scrollDown()
+            return True
+        return True
+
+    def get_cat_ids(self):
+        """ \xd0\xb2\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x87\xd0\xb8\xd1\x81\xd0\xbb\xd0\xb0 (INT64) \xd0\xb1\xd0\xb8\xd1\x82\xd1\x8b \xd0\xba\xd0\xbe\xd1\x82\xd0\xbe\xd1\x80\xd1\x8b\xd1\x85 - \xd1\x8d\xd1\x82\xd0\xbe \xd0\xb2\xd1\x8b\xd0\xb4\xd0\xb5\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xb8 """
+        cat_ids = [ cat_id for cat_id, checkbox in self.cat_id_to_checkbox.items() if checkbox.isChecked() ]
+        return math_bw.int_array_to_int64_bool_array(cat_ids)
+
+    def get_sort_index(self):
+        return self.component.sort_ddl.script.getSelection()[1]
+
+    def get_text_filter(self):
+        return self.component.filter_item_name.script.getRaw().strip().lower()
+
+    def get_repairs_filter(self):
+        text_from = self.component.filter_repairs.script.getRaw()
+        text_to = self.component.filter_repairs2.script.getRaw()
+        value_from = int(text_from) if text_from else 0
+        value_to = int(text_to) if text_to else 9999
+        return (value_from, value_to)
+
+    def get_condition_filter(self):
+        text_from = self.component.filter_item_condition.script.getRaw()
+        text_to = self.component.filter_item_condition2.script.getRaw()
+        value_from = int(text_from) if text_from else 0
+        value_to = int(text_to) if text_to else 100
+        return (value_from, value_to)
+
+    def get_items_filter(self):
+        text_from = self.component.items_filter.script.getRaw()
+        text_to = self.component.items_filter2.script.getRaw()
+        value_from = int(text_from) if text_from else 0
+        value_to = int(text_to) if text_to else 100
+        return (value_from, value_to)
+
+    def get_bank_filter(self):
+        """ \xd0\xb2\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbb\xd0\xb0\xd0\xb4\xd0\xbe\xd0\xb2\xd1\x89\xd0\xb8\xd0\xba\xd0\xbe\xd0\xb2 \xd0\xb2 \xd0\xb2\xd0\xb8\xd0\xb4\xd0\xb5 \xd0\xb1\xd0\xb8\xd1\x82\xd0\xbe\xd0\xb2\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xbc\xd0\xb0\xd1\x81\xd1\x81\xd0\xb8\xd0\xb2\xd0\xb0 """
+        selected_data = self.component.keepers_filter.script.get_selection()
+        return math_bw.int_array_to_int64_bool_array(selected_data)
+
+    def get_insertions_filter(self):
+        return self.component.insertions_filter.script.getSelection()[1]
+
+    def checkbox_clicked(self, cat_id, checked):
+        if cat_id == -1:
+            for checkbox in self.cat_id_to_checkbox.values():
+                if checked:
+                    checkbox.setActive()
+                else:
+                    checkbox.setInactive()
+
+        else:
+            children_cats = ItemCategories.get_children(cat_id, True)
+            if ItemCategories.UNDEFINED in children_cats:
+                children_cats.remove(ItemCategories.UNDEFINED)
+            children_checks = map(lambda x: self.cat_id_to_checkbox[x], children_cats)
+            for checkbox in children_checks:
+                if checked:
+                    checkbox.setActive()
+                else:
+                    checkbox.setInactive()
+
+        if self.update_callback:
+            self.update_callback()
+
+    def radiobutton_clicked(self, sort_id):
+        if self.sortindex == sort_id:
+            return
+        self.sortindex = sort_id
+        if self.update_callback:
+            self.update_callback()
+
+    def edit_changed(self, value):
+        if self.update_callback:
+            self.update_callback()
+
+    def set_scroll_value(self, value):
+        if self.scroll_bar.getValue() == value:
+            return
+        self.scroll_bar.setValue(value)
+        self.component.background_scroll.scroll.y = value * self.scroll_step
+
+    def handleMouseEnterEvent(self, comp):
+        if self.move_corutine:
+            self.move_corutine.stop()
+        self.move_corutine = self.move_panel_out(self)
+        self.move_corutine.run()
+        return True
+
+    def handleMouseLeaveEvent(self, comp):
+        if self.component.fix_button.script.buttonActive:
+            return True
+
+        def is_mouse_outside():
+            local_pos = self.component.screenToLocal(GUI.mcursor().position)
+            return local_pos[0] < 0 or local_pos[1] < 0
+
+        if is_mouse_outside():
+            if self.move_corutine:
+                self.move_corutine.stop()
+            self.move_corutine = self.move_panel_in(self)
+            self.move_corutine.run()
+        return True
+
+    def position_from_ratio(self, ratio):
+        interpolation = ratio * ratio * (3 - 2 * ratio)
+        disp = self.move_disp * interpolation
+        return (self.initial_position[0] - disp, self.initial_position[1], self.initial_position[2])
+
+    def ratio_from_position(self, position):
+        return (self.initial_position[0] - position[0]) / self.move_disp
+
+    @BWCoroutine
+    def move_panel_in(self):
+        """ \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb2\xd0\xb8\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd0\xbf\xd0\xb0\xd0\xbd\xd0\xb5\xd0\xbb\xd0\xb8 """
+        for dropdown in self.all_dropdowns:
+            dropdown.script.showList(False)
+
+        self.set_arrows_direction(ARROW_DIRECTION_LEFT)
+        cur_time = BigWorld.time()
+        ratio = self.ratio_from_position(self.component.position)
+        while ratio > 0:
+            yield BWWaitForPeriod(0)
+            delta_time = BigWorld.time() - cur_time
+            cur_time = BigWorld.time()
+            ratio = max(0, ratio - delta_time / self.move_time)
+            self.component.position = self.position_from_ratio(ratio)
+
+        self.move_corutine = None
+        return
+
+    @BWCoroutine
+    def move_panel_out(self):
+        """ \xd0\xb2\xd1\x8b\xd0\xb4\xd0\xb2\xd0\xb8\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd0\xbf\xd0\xb0\xd0\xbd\xd0\xb5\xd0\xbb\xd0\xb8 """
+        cur_time = BigWorld.time()
+        self.set_arrows_direction(ARROW_DIRECTION_RIGHT)
+        ratio = self.ratio_from_position(self.component.position)
+        while ratio < 1:
+            yield BWWaitForPeriod(0)
+            delta_time = BigWorld.time() - cur_time
+            cur_time = BigWorld.time()
+            ratio = min(1, ratio + delta_time / self.move_time)
+            self.component.position = self.position_from_ratio(ratio)
+
+        self.move_corutine = None
+        return
+
+    def set_arrows_direction(self, direction):
+        if direction == ARROW_DIRECTION_LEFT:
+            for arrow in self.all_arrows:
+                arrow.width = -abs(arrow.width)
+
+        elif direction == ARROW_DIRECTION_RIGHT:
+            for arrow in self.all_arrows:
+                arrow.width = abs(arrow.width)
+
+    def on_board_hide(self):
+        for edit_text in self.all_edit_texts:
+            edit_text.script.activate(False)
+
+
+class BillboardCheckBox(soCheckBox):
+
+    def __init__(self, text, klass, callback = None):
+        soCheckBox.__init__(self, GUI.Window(), soGUI.CheckBoxPropsStructure(labelText=text, font='ruRU_default.font', labelColour=LABEL_COLOR))
+        self.component.horizontalAnchor = 'LEFT'
+        self.component.verticalAnchor = 'TOP'
+        self.component.horizontalPositionMode = 'PIXEL'
+        self.component.verticalPositionMode = 'PIXEL'
+        self.component.widthMode = 'PIXEL'
+        self.component.heightMode = 'PIXEL'
+        self.box.onClick = self.click
+        self.klass = klass
+        self.callback = callback
+
+    def click(self):
+        if self.callback:
+            self.callback(self.klass, self.isChecked())
+
+
+class BillboardRadioButton(soRadioButton2):
+
+    def __init__(self, caption, sort_id, callback = None):
+        soRadioButton2.__init__(self, GUI.Window(), btnW=18, btnH=18, radioGroup='radiogr_sortBy', labelText=caption, bvisual_styles='soGUI/visual_styles/radioButton.xml')
+        self.sort_id = sort_id
+        self.callback = callback
+
+    def onStateChange(self):
+        soRadioButton2.onStateChange(self)
+        if self.isChecked() and self.callback:
+            self.callback(self.sort_id)
+
+
+class BilboardEditText(soEditBox):
+
+    def __init__(self, width, callback = None):
+        soEditBox.__init__(self, GUI.Window(), width=width, height=30, font='ruRU_Cyrvetica_Extra_14i.font', hOffset=3, vOffset=2)
+        self.callback = callback
+        self.setValidator(self.input_validator)
+
+    def onValueChange(self, by_user):
+        if self.callback:
+            self.callback(self.getRaw())
+
+    def input_validator(self, newStr, wholeText, offset):
+        return offset <= 19
+
+
+class BilboardEditTextNumber(soGUI.soNumberBox.soNumberBox):
+
+    def __init__(self, callback = None):
+        soGUI.soNumberBox.soNumberBox.__init__(self, GUI.Window(), width=50, height=22, font='ruRU_Cyrvetica_Extra_10i.font', hOffset=5, vOffset=5)
+        self.callback = callback
+        self.setValidator(self.input_validator)
+
+    def input_validator(self, newStr, wholeText, offset):
+        return offset <= 2
+
+    def onValueChange(self, by_user):
+        if self.callback:
+            self.callback(self.getRaw())
+
+
+class BilboardDropdown(soDropDownList2):
+
+    def __init__(self, field_width, callback = None):
+        soDropDownList2.__init__(self, GUI.Window(), width=field_width, height=29)
+        self.callback = callback
+
+    def onSelectedElement(self, elemID):
+        if self.callback:
+            self.callback(elemID)
+
+
+class BillboardDropdownWindow(DropDownWindow):
+
+    def __init__(self, width, callback = None):
+        DropDownWindow.__init__(self, width=width, height=29)
+        self.callback = callback
+
+    def check_box_clicked(self, checkbox):
+        DropDownWindow.check_box_clicked(self, checkbox)
+        if self.callback:
+            self.callback(checkbox)
+
+    def reset(self):
+        DropDownWindow.reset(self)
+        if self.callback:
+            self.callback(None)
+        return

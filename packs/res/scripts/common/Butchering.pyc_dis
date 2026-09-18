@@ -1,0 +1,92 @@
+# Embedded file name: ./scripts/common/Butchering.py
+import BigWorld
+from Items import ItemsCatalog
+import ItemsUtils
+import CharacterUtils
+MIN_BUTCH_CONST = 0.005
+MIN_LOOT_CONST = 0.005
+
+class Butchering:
+
+    def GetButchuingAbilityModelPath(self):
+        if not self.ActiveGadgetList:
+            return {}
+        for gadget in self.ActiveGadgetList:
+            if not gadget.GadjetID:
+                continue
+            gadget_param = ItemsCatalog.GetItemParam(gadget.GadjetType)
+            if gadget_param.get('SubType', {}) == ItemsCatalog.KNIFE:
+                return gadget_param.get('ModelNames', {})
+
+        return {}
+
+    def GetKnifeMultiplier(self):
+        if not self.ActiveGadgetList:
+            return
+        else:
+            for gadget in self.ActiveGadgetList:
+                if not gadget.GadjetID:
+                    continue
+                gadget_param = ItemsCatalog.GetItemParam(gadget.GadjetType)
+                if gadget_param.get('SubType', None) == ItemsCatalog.KNIFE:
+                    time = gadget_param.get('Butching_speed', 1)
+                    item = ItemsUtils.GetComplexItemByID(self, gadget.GadjetID)
+                    item_inconstant_params = ItemsUtils.GetComplexItemInconstanParams(item)
+                    max_cond = gadget_param.get('MaxCondition')
+                    current_cond = item_inconstant_params.get(ItemsCatalog.INC_CONDITION_VALUE, 0)
+                    time += time * (1 - float(current_cond) / max_cond)
+                    time = time * time / (time + MIN_BUTCH_CONST * CharacterUtils.GetButchSkill(self))
+                    time -= time * CharacterUtils.GetButchKoeffSpeedUp(self)
+                    return max(time, 0.1)
+
+            return
+
+    def GetSearchMultiplier(self, time):
+        loot_skill = CharacterUtils.GetLootSkill(self)
+        multiplier = time / (time + MIN_LOOT_CONST * loot_skill)
+        multiplier -= multiplier * CharacterUtils.GetLootKoeffSpeedUp(self)
+        return multiplier
+
+    def GetEquipKnifeID(self):
+        if not self.ActiveGadgetList:
+            return 0
+        else:
+            for gadget in self.ActiveGadgetList:
+                if not gadget.GadjetID:
+                    continue
+                gadget_param = ItemsCatalog.GetItemParam(gadget.GadjetType)
+                if gadget_param.get('SubType', None) == ItemsCatalog.KNIFE:
+                    return gadget.GadjetID
+
+            return 0
+
+    def GetEquipKnifeType(self):
+        if not self.ActiveGadgetList:
+            return 0
+        else:
+            for gadget in self.ActiveGadgetList:
+                if not gadget.GadjetID:
+                    continue
+                gadget_param = ItemsCatalog.GetItemParam(gadget.GadjetType)
+                if gadget_param.get('SubType', None) == ItemsCatalog.KNIFE:
+                    return gadget.GadjetType
+
+            return 0
+
+    def checkKnifeCond(self, creature_stiffness):
+        if not self.ActiveGadgetList:
+            return False
+        else:
+            for gadget in self.ActiveGadgetList:
+                if not gadget.GadjetID:
+                    continue
+                gadget_param = ItemsCatalog.GetItemParam(gadget.GadjetType)
+                if gadget_param.get('SubType', None) == ItemsCatalog.KNIFE:
+                    item = ItemsUtils.GetComplexItemByID(self, gadget.GadjetID)
+                    item_inconstant_params = ItemsUtils.GetComplexItemInconstanParams(item)
+                    current_cond = item_inconstant_params.get(ItemsCatalog.INC_CONDITION_VALUE, 0)
+                    if current_cond <= creature_stiffness:
+                        return False
+                    return True
+
+            return False

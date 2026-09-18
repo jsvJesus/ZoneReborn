@@ -1,0 +1,897 @@
+# Embedded file name: ./scripts/client/Quester.py
+"""
+Created on 02.09.2010
+
+@author: Madcat
+"""
+import BigWorld
+import BWPersonality
+from soGUI.soTPCQuestLog import soTPCQuestLog
+import Quest
+import colorCodes
+import PVPConst
+import soGUI
+import Config
+import re
+import gui_jokes
+import itertools
+from Localization import lc
+import QuestDispatcher as qd
+from QuestDispatcher import SHOW_SCREEN_TYPE as SST
+import ItemsUtils
+import ChatChannelConfig
+import Fractions
+import EffectUtils
+from Helpers import QuestTester
+import functools
+import Localization
+from gui_const import MESSAGEBOX
+from Quest import CTQ
+CHANNEL_CONSTS = ChatChannelConfig.ChannelConsts()
+
+class ClientQuests:
+    """ \xd0\xbe\xd0\xb1\xd1\x8a\xd0\xb5\xd0\xba\xd1\x82 \xd0\xba\xd0\xbb\xd0\xb8\xd0\xb5\xd0\xbd\xd1\x82\xd1\x81\xd0\xba\xd0\xb8\xd1\x85 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd0\xbe\xd0\xb2
+            \xd1\x81\xd0\xbe\xd0\xb4\xd0\xb5\xd1\x80\xd0\xb6\xd0\xb8\xd1\x82 \xd0\xb2\xd1\x81\xd0\xb5 \xd0\xba\xd0\xbb\xd0\xb8\xd0\xb5\xd0\xbd\xd1\x82\xd1\x81\xd0\xba\xd0\xb8\xd0\xb5 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd1\x8b \xd0\xb8 \xd0\xb8\xd1\x85 \xd1\x81\xd0\xbe\xd1\x81\xd1\x82\xd0\xbe\xd1\x8f\xd0\xbd\xd0\xb8\xd1\x8f
+    """
+
+    class QuestsList(list):
+        pass
+
+    def __init__(self, parent):
+        self._opened = self.QuestsList()
+        self._closed = self.QuestsList()
+        self._failed = self.QuestsList()
+        self._freeze = self.QuestsList()
+        self._ontest = self.QuestsList()
+        self._parent = parent
+        self._taken_time = {}
+        self.loaded = False
+        self.clear_cache()
+        self._state_to_list = [self._opened,
+         self._ontest,
+         self._closed,
+         self._freeze,
+         self._failed]
+        for index, quest_list in enumerate(self._state_to_list):
+            quest_list.state = index
+
+    def get_closed(self):
+        return self._closed
+
+    def get_opened(self):
+        return self._opened
+
+    def get_failed(self):
+        return self._failed
+
+    def get_all(self):
+        return itertools.chain.from_iterable(self._state_to_list)
+
+    def get_journal_opened(self):
+        """ \xd1\x82\xd0\xbe, \xd1\x87\xd1\x82\xd0\xbe \xd0\xbd\xd1\x83\xd0\xb6\xd0\xbd\xd0\xbe \xd0\xbe\xd1\x82\xd0\xbe\xd0\xb1\xd1\x80\xd0\xb0\xd0\xb6\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb2 \xd0\xb6\xd1\x83\xd1\x80\xd0\xbd\xd0\xb0\xd0\xbb\xd0\xb5 \xd0\xb2\xd0\xbe \xd0\xb2\xd0\xba\xd0\xbb\xd0\xb0\xd0\xb4\xd0\xba\xd0\xb5 '\xd0\xbe\xd1\x82\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8b\xd0\xb5'
+                (\xd0\xbe\xd1\x82\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8b\xd0\xb5 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd1\x8b \xd0\xb2\xd0\xb5\xd1\x80\xd1\x85\xd0\xbd\xd0\xb5\xd0\xb3\xd0\xbe \xd1\x83\xd1\x80\xd0\xbe\xd0\xb2\xd0\xbd\xd1\x8f \xd0\xb8 \xd0\xbf\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb0\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd1\x8b \xd1\x81 \xd0\xbf\xd0\xbe\xd0\xbc\xd0\xb5\xd1\x82\xd0\xba\xd0\xbe\xd0\xb9 "show in journal")
+        """
+        if self.opened_cache:
+            return self.opened_cache
+
+        def filter_quests(quest_id):
+            return not qd.is_subquest(quest_id) and qd.show_in_journal(quest_id)
+
+        opened_ids = filter(filter_quests, itertools.chain(self._opened + self._ontest))
+        self.opened_cache = map(lambda quest_id: {'Title': qd.getQuestTitleByID(quest_id),
+         'QuestID': quest_id}, opened_ids)
+        return self.opened_cache
+
+    def get_journal_failed(self):
+        """ \xd1\x82\xd0\xbe, \xd1\x87\xd1\x82\xd0\xbe \xd0\xbd\xd1\x83\xd0\xb6\xd0\xbd\xd0\xbe \xd0\xbe\xd1\x82\xd0\xbe\xd0\xb1\xd1\x80\xd0\xb0\xd0\xb6\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb2 \xd0\xb6\xd1\x83\xd1\x80\xd0\xbd\xd0\xb0\xd0\xbb\xd0\xb5 \xd0\xb2\xd0\xbe \xd0\xb2\xd0\xba\xd0\xbb\xd0\xb0\xd0\xb4\xd0\xba\xd0\xb5 '\xd0\xbf\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb0\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5'
+                (\xd0\xbf\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb0\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd1\x8b \xd0\xb2\xd0\xb5\xd1\x80\xd1\x85\xd0\xbd\xd0\xb5\xd0\xb3\xd0\xbe \xd1\x83\xd1\x80\xd0\xbe\xd0\xb2\xd0\xbd\xd1\x8f, \xd1\x81 \xd0\xbf\xd0\xbe\xd0\xbc\xd0\xb5\xd1\x82\xd0\xba\xd0\xbe\xd0\xb9 "show in journal")
+        """
+        if self.failed_cache:
+            return self.failed_cache
+
+        def filter_quests(quest_id):
+            return not qd.is_subquest(quest_id) and qd.show_in_journal(quest_id)
+
+        failed_ids = filter(filter_quests, self._failed)
+
+        def get_title(quest_id):
+            title = qd.getQuestTitleByID(quest_id)
+            return colorCodes.journal_failedtitle + lc('Quests.Journal.STATE_FAILED') + colorCodes.journal_title + title
+
+        self.failed_cache = map(lambda quest_id: {'Title': get_title(quest_id),
+         'QuestID': quest_id}, failed_ids)
+        return self.failed_cache
+
+    def get_journal_closed(self):
+        """ \xd1\x82\xd0\xbe, \xd1\x87\xd1\x82\xd0\xbe \xd0\xbd\xd1\x83\xd0\xb6\xd0\xbd\xd0\xbe \xd0\xbe\xd1\x82\xd0\xbe\xd0\xb1\xd1\x80\xd0\xb0\xd0\xb6\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb2 \xd0\xb6\xd1\x83\xd1\x80\xd0\xbd\xd0\xb0\xd0\xbb\xd0\xb5 \xd0\xb2\xd0\xbe \xd0\xb2\xd0\xba\xd0\xbb\xd0\xb0\xd0\xb4\xd0\xba\xd0\xb5 '\xd0\xb7\xd0\xb0\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8b\xd0\xb5'
+                (\xd0\xb7\xd0\xb0\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8b\xd0\xb5 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd1\x8b \xd0\xb2\xd0\xb5\xd1\x80\xd1\x85\xd0\xbd\xd0\xb5\xd0\xb3\xd0\xbe \xd1\x83\xd1\x80\xd0\xbe\xd0\xb2\xd0\xbd\xd1\x8f)
+        """
+        if self.closed_cache:
+            return self.closed_cache
+
+        def filter_quests(quest_id):
+            return not qd.is_subquest(quest_id) and qd.show_in_journal(quest_id)
+
+        closed_ids = filter(filter_quests, itertools.chain(self._freeze + self._closed))
+        self.closed_cache = map(lambda quest_id: {'Title': qd.getQuestTitleByID(quest_id),
+         'QuestID': quest_id}, closed_ids)
+        return self.closed_cache
+
+    def get_journal_hidden(self):
+        """ \xd1\x81\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8b\xd0\xb5 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd1\x8b, \xd0\xba\xd0\xbe\xd1\x82\xd0\xbe\xd1\x80\xd1\x8b\xd0\xb5 \xd0\xbe\xd1\x82\xd0\xbe\xd0\xb1\xd1\x80\xd0\xb0\xd0\xb6\xd0\xb0\xd1\x8e\xd1\x82\xd1\x81\xd1\x8f \xd0\xb2 \xd0\xb6\xd1\x83\xd1\x80\xd0\xbd\xd0\xb0\xd0\xbb\xd0\xb5 \xd0\xbf\xd0\xbe \xd1\x81\xd0\xbf\xd0\xb5\xd1\x86. \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd1\x83
+                (\xd0\xbe\xd1\x82\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8b\xd0\xb5 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd0\xb5 \xd0\xb1\xd0\xb5\xd0\xb7 \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xb0 show_in_journal)
+        """
+
+        def filter_quests(quest_id):
+            return not qd.is_subquest(quest_id) and not qd.show_in_journal(quest_id)
+
+        hidden_ids = filter(filter_quests, itertools.chain(self._opened + self._ontest))
+        return map(lambda quest_id: {'Title': qd.getQuestTitleByID(quest_id),
+         'QuestID': quest_id}, hidden_ids)
+
+    def clear_cache(self):
+        self.opened_cache = None
+        self.closed_cache = None
+        self.failed_cache = None
+        return
+
+    def append(self, quest_id, state, taken_time = 0):
+        self.clear_cache()
+        self._taken_time[quest_id] = taken_time
+        self._state_to_list[state].append(quest_id)
+
+    def prepend(self, quest_id, state, taken_time = 0):
+        self.clear_cache()
+        self._taken_time[quest_id] = taken_time
+        self._state_to_list[state].insert(0, quest_id)
+
+    def remove_ids(self, quest_ids):
+        self.clear_cache()
+        for quest_id in quest_ids:
+            self.remove(quest_id)
+
+    def remove(self, quest_id):
+        self.clear_cache()
+        for quest_list in self._state_to_list:
+            if quest_id in quest_list:
+                if quest_id in self._taken_time:
+                    del self._taken_time[quest_id]
+                quest_list.remove(quest_id)
+                return
+
+    def get_state(self, quest_id):
+        for quest_list in self._state_to_list:
+            if quest_id in quest_list:
+                return quest_list.state
+
+    def set_state(self, quest_id, state):
+        self.clear_cache()
+        self.remove(quest_id)
+        self.prepend(quest_id, state)
+
+    def get_taken_time(self, quest_id):
+        return self._taken_time.get(quest_id) or None
+
+
+class Quester:
+    groupOwnerMailbox = None
+    selectedQuest = 0
+    tutorialIDs = []
+    tutorial_owner = 0
+    VERBOSE_LEVEL_NONE, VERBOSE_LEVEL_PLAYER, VERBOSE_LEVEL_ALL = range(3)
+
+    def __init__(self):
+        self.client_quests = ClientQuests(self)
+        self.quest_verbose_level = Quester.VERBOSE_LEVEL_NONE
+
+    def tutorialGUIListener(self, event, data):
+        if not self.passTutorial:
+            self.cell.guiQuestCheck(data, event)
+
+    def updateJournal(self, quests):
+        if self.selectedQuest in quests:
+            BWPersonality.GUICore.setQuestDescription(' ')
+            self.base.getDescription(self.selectedQuest)
+        self.on_journal_update()
+
+    def questLogHandler(self, quest_id, event):
+        if event == soTPCQuestLog.EVENT_SELECT:
+            self.selectedQuest = quest_id
+            BWPersonality.GUICore.setQuestDescription(' ')
+            if quest_id:
+                if not qd.show_in_journal(quest_id):
+                    BWPersonality.GUICore.setQuestDescription(qd.get_description_by_id(quest_id))
+                    return
+                if self.client_quests.get_state(quest_id) in [Quest.STATE_OPENED, Quest.STATE_ONTEST]:
+                    self.base.getDescription(quest_id)
+                else:
+                    BWPersonality.GUICore.setQuestDescription(qd.get_description_by_id(quest_id))
+        elif event == soTPCQuestLog.EVENT_CANCEL:
+            quest = qd.getQuestOnID(self.selectedQuest)
+            if self.client_quests.get_state(self.selectedQuest) not in [Quest.STATE_CLOSED, Quest.STATE_FREEZ]:
+
+                def listener(event):
+                    if event == gui_jokes.askUserYesNoDelayDeafultNo.YES:
+                        self.chooseCloseDialog(True, True)
+                        if qd.cancel_fail_mode(quest):
+                            self.cell.request_fail_quest(self.selectedQuest)
+                        else:
+                            self.base.removeQuestFromJournal(self.selectedQuest)
+                        BWPersonality.GUICore.setQuestDescription(' ')
+                        if message_quest_cancel:
+                            self.questerMessageToConsole(message_quest_cancel)
+
+                quest_title = qd.getQuestTitleByID(self.selectedQuest)
+                message_quest_cancel = None
+                cancel_header = lc('Quests.Journal.CANCEL_QUEST_HEADER')
+                if quest['Additional']['CantCancel']:
+                    cancel_question = lc('Quests.Journal.CANTCANCEL_QUEST_QUESTION')
+                    gui_jokes.askUserOk(cancel_header, cancel_question.format(quest_title), listener)
+                    message_quest_cancel = lc('Quests.Messages.CANTCANCEL_QUEST_QUESTION').format(quest_title)
+                else:
+                    if qd.cancel_fail_mode(quest):
+                        win_width = 600
+                        cancel_question = lc('Quests.CancelQuest.CANCEL_QUEST_QUESTION_F').format(quest_title, qd.get_penalty_string(self.selectedQuest))
+                    else:
+                        win_width = 400
+                        cancel_question = lc('Quests.CancelQuest.CANCEL_QUEST_QUESTION_C')
+
+                    def callbackHandler(event, data):
+                        if data['btn'] == MESSAGEBOX.BTN_YES:
+                            listener(gui_jokes.askUserYesNoDelayDeafultNo.YES)
+
+                    addControls = [{'type': MESSAGEBOX.ADDCONTROL_TEXTFIELD,
+                      'ID': 'main_text',
+                      'text': cancel_question,
+                      'hAnchor': MESSAGEBOX.ANCHOR_CENTER}]
+                    BWPersonality.GUICore.showMsgBox('cancelquest', caption=cancel_header, width=win_width, addControls=addControls, btn_set=[{'type': MESSAGEBOX.BTN_YES,
+                      'width': 120}, {'type': MESSAGEBOX.BTN_NO,
+                      'width': 120}], defaultAction=MESSAGEBOX.BTN_YES, callback=callbackHandler)
+        elif event == soTPCQuestLog.EVENT_SHARE:
+            pass
+        return
+
+    def takeDescription(self, questIDs, descriptionList):
+        rootID = questIDs[0]
+        if qd.show_tutorial(rootID):
+            if not qd.is_subquest(rootID):
+                onSend = self.takeSubDescription(questIDs, descriptionList, rootID)
+                self.showTutorial(onSend)
+        elif self.selectedQuest:
+            onSend = self.takeSubDescription(questIDs, descriptionList, self.selectedQuest)
+            BWPersonality.GUICore.setQuestDescription(onSend)
+
+    def takeSubDescription(self, questIDs, descriptionList, targetQuest):
+        res = ''
+        for index, id in enumerate(questIDs):
+            if id == targetQuest:
+                description = self.gatherDescription(id, descriptionList[index])
+                if description:
+                    res += '<n>' + description + '<n>'
+
+        for subquestID in qd.get_subquests(targetQuest):
+            res += self.takeSubDescription(questIDs, descriptionList, subquestID)
+
+        return res
+
+    def sendJournalInfo(self):
+        BWPersonality.GUICore.quest_data_updated()
+
+    def gatherDescription(self, questID, desciption):
+        sAdd = u''
+        if not qd.is_subquest(questID) or qd.show_progress(questID) and desciption:
+            res = desciption.split(',')
+            q_type = int(res[0])
+            add_color = colorCodes.tf3_journal_collect
+
+            def get_color(curr_item, need_item):
+                if curr_item.isdigit() and need_item.isdigit():
+                    if int(curr_item) >= int(need_item):
+                        return colorCodes.tf3_journal_collect_complete
+                return colorCodes.tf3_journal_collect
+
+            if q_type in [Quest.TYPE_KILLMOBS_WITH_ONTEST, Quest.TYPE_KILLMOBS]:
+                sAdd += lc('Quester.YOU_HAVE_KILLED') + u' {0}/{1}.'.format(res[1], res[2])
+                add_color = get_color(res[1], res[2])
+            if q_type in [Quest.TYPE_FARM_AUTO, Quest.TYPE_FARM]:
+                sAdd += lc('Quester.YOU_HAVE_COLLECT') + u' {0}/{1}.'.format(res[1], res[2])
+                add_color = get_color(res[1], res[2])
+            if q_type in [Quest.TYPE_REPUTATION, Quest.TYPE_REPUTATION_AUTO]:
+                sAdd += lc('Quester.YOU_HAVE_COLLECT') + u' {0}/{1}.'.format(res[1], res[2])
+                add_color = get_color(res[1], res[2])
+            if q_type in [Quest.TYPE_GIVE_EFFECT]:
+                sAdd += lc('Quester.YOU_HAVE_COLLECT') + str(res)
+            if sAdd:
+                sAdd = u'<n><alignment=right>' + add_color + sAdd
+        description = qd.get_description_by_id(questID)
+        if description:
+            description = u'<alignment=left>' + colorCodes.tf3_journal_text + description + sAdd
+        return description
+
+    def appendClosedQuest(self, quest_ids, has_more):
+        for quest_id in quest_ids:
+            self.client_quests.append(quest_id, Quest.STATE_CLOSED)
+
+        self.sendJournalInfo()
+        BWPersonality.GUICore.quests_load_unblock(has_more)
+
+    def appendFailedQuest(self, quest_ids, has_more):
+        for quest_id in quest_ids:
+            self.client_quests.append(quest_id, Quest.STATE_FAILED)
+
+        self.sendJournalInfo()
+        BWPersonality.GUICore.quests_load_unblock(has_more)
+
+    def got_favorite_quests(self, favorite_list):
+        """ \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x83\xd1\x87\xd0\xb5\xd0\xbd \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xbe\xd0\xba \xd0\xb8\xd0\xb7\xd0\xb1\xd1\x80\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd1\x85 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd0\xbe\xd0\xb2
+                (\xd0\xbe\xd0\xb4\xd0\xb8\xd0\xbd \xd1\x80\xd0\xb0\xd0\xb7 \xd0\xbf\xd1\x80\xd0\xb8 \xd1\x81\xd1\x82\xd0\xb0\xd1\x80\xd1\x82\xd0\xb5)
+        """
+        BWPersonality.GUICore.got_favorite_quests(favorite_list)
+
+    def replaceConst(self, quest):
+        description_matches = re.findall('%NPC[0-9]+%', quest['Information']['Description'])
+        if description_matches:
+            for e in description_matches:
+                id = int(e.replace('NPC', '').replace('%', ''))
+                name = self.getNPCName(quest, id)
+                quest['Information']['Description'] = quest['Information']['Description'].replace(e, name)
+
+        return quest
+
+    def getNPCName(self, quest, id):
+        for e in quest['Information']['NPCs']:
+            if e['id'] == id:
+                return e['name']
+
+        return u''
+
+    def takeClientQuests(self, quests_from_server):
+        self.quests_handled(quests_from_server)
+        self.client_quests.loaded = True
+        quest_ids = [ quest['QuestID'] for quest in quests_from_server ]
+        quests = list(quests_from_server)
+        for i, q in enumerate(quests):
+            temp = qd.getQuestOnID(q['QuestID'])
+            if not temp['Information']['Title'] and not temp['Information']['Description'] and Localization.language == 'english' and not qd.is_empty(temp):
+                print 'Quester (ERROR): no translation for the quest with id', temp['QuestID']
+                foo = functools.partial(self.takeClientQuests, quests_from_server)
+                qd.merge_rus_to_eng(foo)
+                return
+            persistentData = q['PersistentData']['aint']
+            if not persistentData:
+                persistentData = q['PersistentData']['astr']
+            if persistentData:
+                if temp['Target']['QuestType'] == Quest.TYPE_KILLMOBS or temp['Target']['QuestType'] == Quest.TYPE_KILLMOBS_WITH_ONTEST:
+                    temp['Target']['NumOfObject'] = persistentData
+                elif temp['Target']['QuestType'] == Quest.TYPE_AREA_DISCOVER:
+                    temp['Target']['ObjectName'] = persistentData
+                elif temp['Target']['QuestType'] == Quest.TYPE_TRIGGER_ACTION:
+                    temp['Target']['ObjectType'] = persistentData
+            quests[i] = dict(quests[i])
+            quests[i]['Information'] = temp['Information']
+            quests[i]['Additional'] = temp['Additional']
+            quests[i]['Target'] = temp['Target']
+            if not quests[i]['Information']['Title'].strip():
+                quests[i]['Information']['Title'] = self.findTitleQuest(temp['Additional']['IsSubQuest'])
+
+        self.client_quests.remove_ids(quest_ids)
+        for quest in quests:
+            quest = self.replaceConst(quest)
+            self.client_quests.prepend(quest['QuestID'], quest['State'], quest['takenTime'])
+            if quest['Target']['QuestType'] in [Quest.TYPE_CREATE_NPC, Quest.TYPE_CREATE_MOB, Quest.TYPE_PLAYING_WITH_DIRECTOR]:
+                self.base.onQLoadFin(quest['QuestID'])
+            if quest['Additional']['ShowProgress'] & Quest.SHOW_TUTORIAL:
+                if quest['Additional']['IsSubQuest'] == 0:
+                    if not self.passTutorial and not self.tutorialIDs:
+                        BWPersonality.GUICore.addListener('generalGUIEvent', self.tutorialGUIListener)
+                        BWPersonality.GUICore.addListener('hlinkEvent', self.tutorialListener)
+                    if quest['QuestID'] not in self.tutorialIDs:
+                        self.tutorialIDs.append(quest['QuestID'])
+                        self.base.getDescription(quest['QuestID'])
+                else:
+                    root_id = self.getRootID(quest['QuestID'])
+                    if root_id:
+                        self.base.getDescription(root_id)
+
+        self.sendJournalInfo()
+        for quest_id in quest_ids:
+            self.onQStateChange(quest_id)
+
+    def removeClientQuest(self, questID, reason):
+        inTutorial = False
+        quest = qd.getQuestOnID(questID)
+        if quest:
+            if quest['Additional']['ShowProgress'] & Quest.SHOW_TUTORIAL:
+                inTutorial = True
+            if reason == Quest.DEL_ONWIN:
+                if quest['Additional']['ShowProgress'] & Quest.SHOW_ONWIN:
+                    self.tellAboutQuesterStatus([questID], [], Quest.STATUS_ONWIN)
+                if quest['Additional']['ShowProgress'] & Quest.SHOW_MESSAGE_CLOSE and not quest['Additional']['IsSubQuest']:
+                    self.tellAboutQuesterStatus([questID], [], Quest.STATUS_CLOSED)
+                if questID == self.selectedQuest:
+                    BWPersonality.GUICore.setQuestDescription(' ')
+                    self.selectedQuest = 0
+                self.client_quests.set_state(questID, Quest.STATE_CLOSED)
+                self.onQStateChange(questID)
+            elif reason == Quest.DEL_ONFAILED:
+                if quest['Additional']['ShowProgress'] & Quest.SHOW_ONFAILED:
+
+                    def check_sibling(sibling_id):
+                        return self.client_quests.get_state(sibling_id) == Quest.STATE_FAILED
+
+                    if not any(map(check_sibling, qd.get_siblings_by_id(questID))):
+                        self.tellAboutQuesterStatus([questID], [], Quest.STATUS_ONFAILED)
+                if quest['Additional']['ShowProgress'] & Quest.SHOW_MESSAGE_CLOSE and not quest['Additional']['IsSubQuest']:
+                    self.tellAboutQuesterStatus([questID], [], Quest.STATUS_FAILED)
+                if questID == self.selectedQuest:
+                    BWPersonality.GUICore.setQuestDescription(' ')
+                    self.selectedQuest = 0
+                self.client_quests.set_state(questID, Quest.STATE_FAILED)
+                self.onQStateChange(questID)
+            else:
+                self.client_quests.remove(questID)
+                self.onQRemove(questID)
+        if inTutorial and questID in self.tutorialIDs:
+            self.tutorialIDs.remove(questID)
+            if not self.tutorialIDs:
+                self.hideTutorial()
+            else:
+                self.base.getDescription(self.tutorialIDs[-1])
+        self.sendJournalInfo()
+        self.checkQuestOver(questID)
+
+    def getQItemInfo(self, questID, itemID):
+        quest = qd.getQuestOnID(questID)
+        if quest:
+            for item in quest['Information']['Items']:
+                if item['itemID'] == itemID:
+                    return (item['title'], item['description'], item['activation'])
+
+        return None
+
+    def getQTitle(self, questID):
+        return self.findTitleQuest(questID)
+
+    def getRootID(self, quest_id):
+        quest = qd.getQuestOnID(quest_id)
+        if quest:
+            root_id = quest['Additional']['IsSubQuest']
+            if not root_id:
+                return quest_id
+            else:
+                return self.getRootID(root_id)
+
+    def askOnJoinToGroup(self, ownerName):
+        self.showGroupInvite(ownerName)
+
+    def joinInGroup(self):
+        self.base.joinInGroup()
+        self.groupOwnerMailbox = None
+        return
+
+    def askOnGetReady(self):
+        self.showGetReady()
+
+    def askOnStartGroupQuest(self):
+        self.showStartGroupQuest()
+
+    def tellAboutQuesterStatus(self, data, stringData, status):
+
+        def getItemName(itemID, attr):
+            name = u''
+            item = self.getQItemInfo(questID, itemID)
+            if attr and item:
+                name = item[0]
+            if not name:
+                name = ItemsUtils.GetItemName(itemID)
+            return name
+
+        def getCreatureName(mob_type, mob_level):
+            return Config.Creatures.get_mob_name(mob_type, mob_level)
+
+        def getFractionName(fraction_id):
+            return lc(Fractions.FractionNames[fraction_id])
+
+        def getEffectName(effect_id):
+            effect = EffectUtils.getEffect(effect_id)
+            return lc(effect.get('name', 'None'))
+
+        def getNPCName(displayName, npcName):
+            from NPCs import NPCs
+            if displayName:
+                name = lc(displayName)
+            elif NPCs.getName(npcName) != u'' and NPCs.getName(self.npcName) != '<NO DATA>':
+                name = NPCs.getName(npcName)
+            else:
+                raise RuntimeError
+            return name
+
+        message = u''
+        screen_message = None
+        questID = data[0]
+        quest = qd.getQuestOnID(questID)
+        if status == Quest.STATUS_WIPE_OVER:
+            message = lc('Quests.Messages.WIPE_COMPLETE')
+        elif status == Quest.STATUS_OPENED and quest:
+            message = lc('Quests.Messages.MISSION_TAKEN').format(quest['Information']['Title'])
+            if qd.need_show_screen_message(quest, SST.OPEN):
+                screen_message = (quest['Information']['onGet'], dict(r=220.0, g=210.0, b=80.0, alpha=255.0))
+        elif status == Quest.STATUS_CLOSED and quest:
+            message = lc('Quests.Messages.MISSION_COMPLETE').format(quest['Information']['Title'])
+        elif status == Quest.STATUS_FAILED and quest:
+            message = lc('Quests.Messages.MISSION_FAILED').format(quest['Information']['Title'])
+        elif status == Quest.STATUS_SUCCESSFULL_COLLECT_ITEMS:
+            questID, itemID, attr = data
+            name = getItemName(itemID, attr)
+            message = lc('Quests.Messages.COLLECT_COMPLETE').format(name)
+        elif status == Quest.STATUS_ONPROCESS_COLLECT_ITEMS:
+            questID, itemID, attr, numOfItem, needOfItem = data
+            name = getItemName(itemID, attr)
+            numOfItem = needOfItem if numOfItem > needOfItem else numOfItem
+            message = lc('Quests.Messages.COLLECT_PROCESS').format(str(numOfItem), str(needOfItem), name)
+        elif status == Quest.STATUS_FAILED_COLLECT_ITEMS:
+            questID, itemID, attr = data
+            name = getItemName(itemID, attr)
+            message = lc('Quests.Messages.COLLECT_FAILED').format(name)
+        elif status == Quest.STATUS_SUCCESSFULL_KILLED_CREATURE:
+            questID, mobID, mobAttr = data
+            name = getCreatureName(mobID, mobAttr)
+            title = qd.getQuestTitleByID(questID)
+            message = lc('Quests.Messages.FARM_COMPLETE').format(title, name)
+        elif status == Quest.STATUS_SUCCESSFULL_KILLED_NPC:
+            title = qd.getQuestTitleByID(data[0])
+            name = getNPCName(stringData[0], stringData[1])
+            message = lc('Quests.Messages.NPC_KILLED').format(title, name)
+        elif status == Quest.STATUS_SOMEBODY_KILL_NPC:
+            title = qd.getQuestTitleByID(data[0])
+            message = lc('Quests.Messages.NPC_KILLED_SOMEBODY').format(title)
+        elif status == Quest.STATUS_ONPROCESS_KILLED_CREATURE:
+            questID, mobID, mobAttr, count, neededCount = data
+            name = getCreatureName(mobID, mobAttr)
+            title = qd.getQuestTitleByID(questID)
+            message = lc('Quests.Messages.FARM_PROCESS').format(title, count, neededCount, name)
+        elif status == Quest.STATUS_NEED_MORE_MONEY:
+            message = lc('Quests.Messages.MONEY_FAILED')
+        elif status == Quest.STATUS_AREA_FOUNDED:
+            areaName = stringData[0]
+            message = lc('Quests.Messages.AREA_COMPLETED').format(areaName)
+        elif status == Quest.STATUS_CANT_TELEPORT_TO_INSTANCE:
+            message = lc('Quests.Messages.PARTI_INSTANCE_LEADER_ONLY')
+        elif status == Quest.STATUS_NO_FREE_INSTANCE:
+            message = lc('Quests.Messages.SERVER_TOO_BUSY')
+        elif status == Quest.STATUS_ONWIN:
+            message = quest['Information']['onWin']
+            if qd.need_show_screen_message(quest, SST.CLOSE):
+                screen_message = (message, dict(r=220.0, g=210.0, b=80.0, alpha=255.0))
+        elif status == Quest.STATUS_ONFAILED:
+            message = quest['Information']['onFailed']
+            if qd.need_show_screen_message(quest, SST.FAIL):
+                screen_message = (message, dict(r=240.0, g=40.0, b=0.0, alpha=255.0))
+        elif status == Quest.STATUS_JOURNAL_RENEW:
+            message = lc('Quests.Messages.JOURNAL_UPDATED')
+        elif status == Quest.STATUS_NPC_IS_TOO_FAR:
+            message = lc('Quests.Messages.TOO_FAR')
+        elif status == Quest.STATUS_CANT_TAKE_MISSION_NOW:
+            text = qd.getQuestTitleByID(data[2])
+            message = lc('Quests.Messages.CANT_TAKE_MISSION_NOW').format(text, data[0], data[1])
+        elif status == Quest.STATUS_QUEST_ITEM_EQUIPPED:
+            message = lc('Quests.Messages.QUEST_ITEM_EQUIPPED')
+        elif status == Quest.STATUS_SUCCESSFULL_COLLECT_REPUTATION:
+            message = lc('Quests.Messages.COLLECT_REPUTATION').format(data[1], data[2], getFractionName(data[0]))
+        elif status == Quest.STATUS_SUCCESSFULL_COLLECT_EFFECT:
+            message = lc('Quests.Messages.COLLECT_EFFECT').format(getEffectName(data[1]))
+        elif status == Quest.STATUS_QUESTS_LIMIT:
+            message = lc('Quests.Messages.QUESTS_LIMIT')
+        elif status == Quest.STATUS_QUEST_DELETED:
+            if not qd.is_subquest(questID):
+                message = lc('Quests.Messages.QUEST_DELETED').format(qd.getQuestTitleByID(questID))
+        if message:
+            self.questerMessageToConsole(message)
+            if screen_message:
+                BWPersonality.gpd.sendHightMessage(screen_message[0], **screen_message[1])
+        return
+
+    def questerMessageToConsole(self, string):
+        self.putMessage(CHANNEL_CONSTS.QUESTS, string)
+
+    def startPVPPeriod(self, period, time):
+        if period:
+            BWPersonality.GUICore.showTimer(time, str(period), True)
+        else:
+            BWPersonality.GUICore.showTimer(0.0, '', False)
+
+    def takePVPStat(self, type, id):
+        if type == PVPConst.CLEAR_TYPE:
+            self.PVPStatistic['users'] = []
+            self.PVPStatistic['commands'] = []
+            return
+        if type == PVPConst.INC_COMMAND_WIN:
+            for e in self.PVPStatistic['commands']:
+                if e['command'] == id:
+                    e['count'] += 1
+                    return
+
+            self.PVPStatistic['commands'].append(dict(command=id, count=1))
+            for e in self.PVPStatistic['users']:
+                e['counter'] = 0
+
+            return
+        for e in self.PVPStatistic['users']:
+            if e['id'] == id:
+                if type == PVPConst.INC_TYPE_DEATH:
+                    e['deaths'] += 1
+                elif type == PVPConst.INC_TYPE_FRAG:
+                    e['counter'] += 1
+                return
+
+        self.PVPStatistic['users'].append(dict(id=id, name=u'', counter=1 if type == PVPConst.INC_TYPE_FRAG else 0, deaths=1 if type == PVPConst.INC_TYPE_DEATH else 0, command=0))
+        self.cell.getPVPStatInfo(id)
+
+    def takePVPStatInfo(self, infos):
+        for info in infos:
+            find = False
+            for e in self.PVPStatistic['users']:
+                if e['id'] == info['id']:
+                    e['name'] = info['name']
+                    e['command'] = info['command']
+                    find = True
+                    break
+
+            if not find:
+                self.PVPStatistic['users'].append(info)
+
+    def showPVPStatistic(self):
+        battleName = u''
+        command = 0
+        enemyName = lc('Quester.LIST_OF_TEAMS')
+        scoreCommand = u''
+        fragCommand = u''
+        deathsCommand = u''
+        scoreEnemy = u''
+        fragEnemy = u''
+        deathsEnemy = u''
+        playerTeam = []
+        enemy = []
+        for e in self.PVPStatistic['users']:
+            if e['id'] == self.id:
+                command = e['command']
+                break
+
+        fragCommand = str(sum([ e['counter'] for e in self.PVPStatistic['users'] if e['command'] == command ]))
+        deathsCommand = str(sum([ e['deaths'] for e in self.PVPStatistic['users'] if e['command'] == command ]))
+        guiMode = soGUI.soPvPStats.MODE_MT if len(set([ e['command'] for e in self.PVPStatistic['users'] ])) > 2 else soGUI.soPvPStats.MODE_2T
+        if guiMode == soGUI.soPvPStats.MODE_2T:
+            commandEnemy = [ e['command'] for e in self.PVPStatistic['users'] if e['command'] != command ][0]
+            enemyName = lc('Quester.TEAM') + str(commandEnemy)
+            fragEnemy = str(sum([ e['counter'] for e in self.PVPStatistic['users'] if e['command'] == commandEnemy ]))
+            deathsEnemy = str(sum([ e['deaths'] for e in self.PVPStatistic['users'] if e['command'] == commandEnemy ]))
+            for e in self.PVPStatistic['users']:
+                if e['command'] == command:
+                    playerTeam.append((e['name'],
+                     u'',
+                     str(e['counter']),
+                     str(e['deaths']),
+                     -1,
+                     []))
+                else:
+                    enemy.append((e['name'],
+                     u'',
+                     str(e['counter']),
+                     str(e['deaths']),
+                     -1,
+                     []))
+
+            commandGScore = u''
+            enemyGScore = u''
+            if self.PVPStatistic['commands']:
+                for e in self.PVPStatistic['commands']:
+                    if e['command'] == command:
+                        enemyGScore = str(e['count'])
+                    elif e['command'] == commandEnemy:
+                        commandGScore = str(e['count'])
+
+                battleName = commandGScore + u'\t\t:\t\t' + enemyGScore
+        data = {'battleName': battleName,
+         'playerTeamName': lc('Quester.TEAM') + str(command),
+         'enemyName': enemyName,
+         'guiMode': guiMode,
+         'hideThird': False,
+         'playerTeamScore': (scoreCommand, fragCommand, deathsCommand),
+         'enemyScore': (scoreEnemy, fragEnemy, deathsEnemy),
+         'playerTeam': playerTeam,
+         'enemy': enemy}
+        BWPersonality.GUICore.setPvPStatsData(data)
+        BWPersonality.GUICore.showPvPStats(True)
+
+    def hidePVPStatistic(self):
+        BWPersonality.GUICore.showPvPStats(False)
+
+    def setPVPStatus(self, status):
+        self.PVPInfo['State'] = status
+
+    def deleteTriggerMarkers(self, qID):
+        for e in BigWorld.entities.values():
+            if hasattr(e, 'quest') and e.quest == qID:
+                e.removeQuestMarker()
+
+    def addTriggerMarkers(self, qID):
+        for e in BigWorld.entities.values():
+            if hasattr(e, 'quest') and e.quest == qID:
+                e.appendQuestMarker()
+
+    @QuestTester.debug_event(QuestTester.QD_WIPED)
+    def removeAllTriggerMarkers(self):
+        for e in BigWorld.entities.values():
+            if hasattr(e, 'quest'):
+                e.removeQuestMarker()
+
+    def onQStateChange(self, qID):
+        from QuestObject import QuestObject
+        for e in BigWorld.entities.values():
+            if isinstance(e, QuestObject) and e.questID == qID:
+                e.onChangeQuest(self.client_quests.get_state(qID))
+
+    def onQRemove(self, qID):
+        from QuestObject import QuestObject
+        for e in BigWorld.entities.values():
+            if isinstance(e, QuestObject) and e.questID == qID:
+                e.onRemoveQuest()
+
+    def showTutorial(self, text):
+        position = [10, 100]
+        close_link = u'<n><hlink={0};passTutorial;normal>'.format(lc('Quests.Messages.BAYPASS_TUTORIAL'))
+        text += close_link
+        text = text.replace(u'<alignment=right>', u'<alignment=left>')
+        data = [position, text]
+        BWPersonality.GUICore.setTutorialData(data)
+        BWPersonality.GUICore.showTutorial()
+        self.tutorial_owner = self.id
+
+    def tutorialListener(self, event, data):
+        if event == 2 and data[0].replace(' ', '') == u'passTutorial':
+            self.base.removeQuestFromJournal(self.tutorialIDs[-1])
+
+    def hideTutorial(self):
+        BWPersonality.GUICore.showTutorial(False)
+        try:
+            BWPersonality.GUICore.removeListener('hlinkEvent', self.tutorialListener)
+        except:
+            pass
+
+        try:
+            BWPersonality.GUICore.removeListener('generalGUIEvent', self.tutorialGUIListener)
+        except:
+            pass
+
+        self.tutorial_owner = 0
+
+    def onEnterWorld(self):
+        if self.tutorial_owner != self.id:
+            BWPersonality.GUICore.showTutorial(False)
+            self.tutorialIDs = []
+            self.tutorial_owner = 0
+
+    def onLeaveWorld(self):
+        BWPersonality.GUICore.setQuestDescription(u' ')
+        BWPersonality.GUICore.clear_journal_data()
+        try:
+            BWPersonality.GUICore.removeListener('hlinkEvent', self.tutorialListener)
+        except:
+            print 'Has no hlinkEvent'
+
+        try:
+            BWPersonality.GUICore.removeListener('generalGUIEvent', self.tutorialGUIListener)
+        except:
+            print 'Has no generalGUIEvent'
+
+    def set_passTutorial(self, value):
+        pass
+
+    def findTitleQuest(self, quest_id):
+        if quest_id is None:
+            return u'[TITLE ERROR q = %s ]' % quest_id
+        else:
+            quest = qd.getQuestOnID(quest_id)
+            if not quest:
+                return u'[TITLE ERROR q = %s ]' % quest_id
+            if not quest['Information']['Title'].strip():
+                return self.findTitleQuest(quest['Additional']['IsSubQuest'])
+            return quest['Information']['Title']
+            return
+
+    def _countQItems(self, quest):
+        attr = quest['Target']['ObjectAttr']
+        itemDict = []
+        if attr:
+            itemDict = [ dict(count=self.getNumberOfItemsForQuester(quest['Target']['ObjectType'], at), quest=at) for at in quest['Target']['AObjectAttrs'] ]
+            return (sum([ at['count'] for at in itemDict ]), itemDict)
+        else:
+            return (self.getNumberOfItemsForQuester(quest['Target']['ObjectType'], quest['Target']['ObjectAttr']), itemDict)
+
+    def getNumberOfItemsForQuester(self, itemType, itemAttr):
+        return ItemsUtils.GetItemQuanity(self.CarryingItems, itemType, itemAttr)
+
+    def show_quest_item_window(self, quest_id):
+        if qd.get_type_by_id(quest_id) == Quest.TYPE_FARM:
+            BWPersonality.GUICore.show_quest_items_window(quest_id)
+            return True
+        return False
+
+    def quest_item_window_commited(self, quest_id, selected_ids):
+        self.cell.check_farm_quest(quest_id, selected_ids)
+
+    def got_reward(self, quest_id):
+        BWPersonality.GUICore.show_quest_reward_window(quest_id)
+
+    def on_got_closed_info(self, result, entity_id):
+        quest_object = BigWorld.entities.get(entity_id)
+        if quest_object:
+            quest_object.on_got_closed_info(result)
+
+    def refuse_to_take(self, quest_id):
+        """ \xd1\x81\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb5\xd1\x80 \xd0\xbd\xd0\xb5 \xd1\x85\xd0\xbe\xd1\x87\xd0\xb5\xd1\x82 \xd0\xb1\xd1\x80\xd0\xb0\xd1\x82\xd1\x8c \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82 """
+        self.quests_handled([qd.getQuestOnID(quest_id)])
+
+    def get_quest_status_callback(self, status):
+        from Helpers.Autoquester import Autoquester
+        Autoquester.get_quest_status_callback(status)
+
+    def startDialog(self, interactive_name, dialog_ids, sourceEntityID):
+        pass
+
+    def restart_current_dialog_node(self):
+        pass
+
+    def checkQuestOver(self, questID):
+        pass
+
+    def checkQuestNotOver(self, questID):
+        pass
+
+    def closeDialog(self):
+        pass
+
+    def on_start_base_talk(self, dialog_id):
+        pass
+
+    def request_board_quests(self):
+        """ \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd0\xb8\xd1\x82\xd1\x8c \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xbe\xd0\xba \xd0\xb0\xd0\xba\xd1\x82\xd0\xb8\xd0\xb2\xd0\xbd\xd1\x8b\xd1\x85 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd0\xbe\xd0\xb2 """
+        self.base.request_board_quests()
+
+    def got_board_quests(self, quest_ids):
+        """ \xd0\xbe\xd1\x82\xd0\xb2\xd0\xb5\xd1\x82 \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd0\xb0 \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xba\xd0\xb0 \xd0\xb0\xd0\xba\xd1\x82\xd0\xb8\xd0\xb2\xd0\xbd\xd1\x8b\xd1\x85 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd0\xbe\xd0\xb2 """
+        self._quest_board.update_quests(quest_ids)
+
+    def request_quest_from_board(self, quest_id):
+        """ \xd0\xb2\xd0\xb7\xd1\x8f\xd1\x82\xd1\x8c \xd0\xb2\xd1\x8b\xd0\xb1\xd1\x80\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb9 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82 """
+        if quest_id in self.client_quests.get_opened():
+            self.questerMessageToConsole(CTQ.get_error_message(CTQ.ERROR_BADSTATE))
+            return
+        self.base.request_quest_from_board(quest_id)
+
+    def got_requested_quest(self, quest_id, request_result, update_result, quest_ids):
+        """ \xd0\xbe\xd1\x82\xd0\xb2\xd0\xb5\xd1\x82 \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd0\xb0 \xd0\xb2\xd0\xb7\xd1\x8f\xd1\x82\xd0\xb8\xd1\x8f \xd0\xb2\xd1\x8b\xd0\xb1\xd1\x80\xd0\xb0\xd0\xbd\xd0\xbd\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd0\xb0
+                \xd0\xb4\xd0\xbe \xd0\xba\xd1\x83\xd1\x87\xd0\xb8 \xd0\xbf\xd1\x80\xd0\xb8\xd1\x81\xd1\x8b\xd0\xbb\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbe\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xbb\xd1\x91\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb9 \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xbe\xd0\xba \xd0\xb4\xd0\xbe\xd1\x81\xd1\x82\xd1\x83\xd0\xbf\xd0\xbd\xd1\x8b\xd1\x85 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd0\xbe\xd0\xb2
+        """
+        if update_result:
+            self._quest_board.update_quests(quest_ids)
+        if request_result == CTQ.OK:
+            return
+        if request_result == CTQ.ERROR_TIMEPOS:
+            self._wating_for_time_remain = quest_id
+            self.base.get_time_remain(quest_id)
+        else:
+            self.questerMessageToConsole(CTQ.get_error_message(request_result))
+
+    def got_time_remain(self, time):
+        if not hasattr(self, '_wating_for_time_remain'):
+            return
+        del self._wating_for_time_remain
+        from DialogInterface import time_to_string
+        time = time_to_string(time)
+        message = CTQ.get_error_message(CTQ.ERROR_TIMEPOS).format(time)
+        self.questerMessageToConsole(message)
+
+    @property
+    def _quest_board(self):
+        return BWPersonality.GUICore.soBulletinBoard.quest_board

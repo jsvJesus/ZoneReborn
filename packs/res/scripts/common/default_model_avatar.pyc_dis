@@ -1,0 +1,28 @@
+# Embedded file name: ./scripts/common/default_model_avatar.py
+import BigWorld
+import ResMgr
+import json
+from Items import ItemsCatalog
+CONFIG_FILE = 'scripts/client/data/charMakerCfg.json'
+_dataSection = ResMgr.openSection(CONFIG_FILE)
+_config = json.loads(_dataSection.asBinary)
+_model_part_table = {'01_head': 'head',
+ '02_body': 'body',
+ '03_palms': 'hands',
+ '04_legs': 'legs',
+ '05_feet': 'boots'}
+valid_id = {}
+for js_key, data in _config.items():
+    def_key = _model_part_table[js_key]
+    item_key = 'head_id' if js_key == '01_head' else 'item_type_ID'
+    valid_id[def_key] = [ x[item_key] for x in data.values() ]
+
+def validate_user_default_model(default_models_dict):
+    error = []
+    for def_key, model_param in default_models_dict.items():
+        if model_param['type_id'] not in valid_id[def_key]:
+            print 'error', def_key, model_param['type_id']
+            error.append((def_key, model_param['type_id']))
+            model_param['type_id'] = valid_id[def_key][0]
+
+    return (error, default_models_dict)

@@ -1,0 +1,377 @@
+# Embedded file name: ./scripts/client/soGUI/soInworldMarkers.py
+import BigWorld
+import GUI
+import BWPersonality
+import soGUI
+import Helpers.PyGUI as PyGUI
+import UCManager
+import Math
+from Math import Vector3
+from math import cos
+from math import sqrt
+from math import pow
+from Helpers.PyGUI.PyGUIBase import PyGUIBase
+from matrix_providers import ShiftProvider
+from Helpers.BWCoroutine import *
+MAX_MARKERS = 30
+
+class soInworldMarker(PyGUIBase):
+    factoryString = 'soGUI.soInworldMarker'
+    MARKER_PLAYER = 0
+    MARKER_ITEM = 1
+    MARKER_NPC = 2
+    MARKER_PK = 100
+    MARKER_WARDECLARED = 101
+    MARKER_WARRECIEVED = 102
+    MARKER_USE = 200
+    MARKER_PICKUP = 201
+    MARKER_TALK = 202
+    MARKER_TRADE = 203
+    MARKER_WANTED = 204
+    ICON_SIZE = 16
+    FRAME_TEXTURE = BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/frame.tga')
+
+    def __init__(self, component, ids = [MARKER_PLAYER], description = u'', alpha = 1.0, matrix = Math.Matrix(), height = 0, clanIcon = None):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.iconIDs = ids
+        self.description = description
+        self.matrix = matrix
+        self.height = height
+        self.clanIconID = 0
+        self.textLabels = []
+        self.alpha = alpha * 255.0
+        self.colour = (255,
+         255,
+         255,
+         self.alpha)
+        self.setupRoot()
+        self.setupMark()
+        self.setupContent()
+        self.setClanIconByID(clanIcon)
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255,
+         255,
+         255,
+         self.alpha)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 0
+        cmp.height = 0
+        cmp.position = (0.0, 0.0, 1.5)
+        cmp.textureName = ''
+
+    def setupMatrix(self):
+        self.setMatrix(ShiftProvider(self.matrix, (0, self.height, 0)))
+
+    def setPosition(self, pos):
+        self.component.position = pos
+        self.component.delShader('mover')
+
+    def setupContent(self):
+        cmp = GUI.Simple('')
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.width = self.ICON_SIZE
+        cmp.height = self.ICON_SIZE
+        cmp.colour = (255,
+         255,
+         255,
+         self.alpha)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (1, 0, 0.5)
+        cmp.texture = None
+        cmp.visible = False
+        self.component.addChild(cmp, 'clanIcon')
+        self.setupIcons()
+        self.setupMatrix()
+        return
+
+    def setupIcons(self):
+        iconHolder = None
+        if len(self.iconIDs) > 0:
+            cmp = GUI.Window('')
+            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+            cmp.widthMode = cmp.heightMode = 'PIXEL'
+            cmp.horizontalAnchor = 'CENTER'
+            cmp.verticalAnchor = 'TOP'
+            cmp.colour = (255,
+             255,
+             255,
+             self.alpha)
+            cmp.materialFX = 'BLEND'
+            cmp.width = 0
+            cmp.height = 16
+            cmp.position = (0.0, 1.0, 1.5)
+            cmp.textureName = ''
+            iconHolder = cmp
+        for i, icon in enumerate(self.iconIDs):
+            iconHolder.width += 16
+            cmp = GUI.Simple('')
+            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+            cmp.widthMode = cmp.heightMode = 'PIXEL'
+            cmp.horizontalAnchor = 'LEFT'
+            cmp.verticalAnchor = 'TOP'
+            cmp.width = 16
+            cmp.height = 16
+            cmp.colour = (255,
+             255,
+             255,
+             self.alpha)
+            cmp.materialFX = 'BLEND'
+            cmp.position = (0 + i * 16, 0, 0.5)
+            cmp.texture = soInworldMarkers.ICON_MAP[icon]
+            iconHolder.addChild(cmp, 'icon' + str(i))
+
+        if iconHolder:
+            self.component.width = iconHolder.width
+            self.component.height = iconHolder.height
+            self.component.addChild(iconHolder, 'iconHolder')
+        self.setupCaption()
+        return
+
+    def setupCaption(self):
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.font = 'ruRU_calibri_default.font'
+        cmp.colour = (255,
+         255,
+         255,
+         self.alpha)
+        if self.MARKER_WANTED in self.iconIDs:
+            cmp.colour = (255,
+             150,
+             150,
+             self.alpha)
+        cmp.colourFormatting = True
+        cmp.multiline = True
+        cmp.materialFX = 'BLEND'
+        cmp.text = self.description
+        calcStr = self.description
+        colorCodes = []
+        for label in self.textLabels:
+            self.component.delChild(label)
+
+        self.textLabels = []
+        idx = 0
+        w, h = cmp.stringDimensions(calcStr)
+        if self.clanIconID:
+            w += self.ICON_SIZE
+        if w + 8 > self.component.width:
+            self.component.width = w + 8
+        self.normal_width = w + 8
+        self.component.height = self.ICON_SIZE + h + 4
+        vis_str = self.description.split('\n')
+        for index, vis_part in enumerate(vis_str):
+            cmp = GUI.Text('')
+            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+            cmp.horizontalAnchor = 'CENTER'
+            cmp.verticalAnchor = 'BOTTOM'
+            cmp.font = 'ruRU_calibri_default.font'
+            cmp.colour = (255,
+             255,
+             255,
+             self.alpha)
+            if self.MARKER_WANTED in self.iconIDs:
+                cmp.colour = (255,
+                 150,
+                 150,
+                 self.alpha)
+            cmp.colourFormatting = True
+            cmp.multiline = True
+            cmp.materialFX = 'BLEND'
+            cmp.text = vis_part
+            _X = self.component.width // 2
+            _Y = self.component.height - 2 - (len(vis_str) - (index + 1)) * (h / len(vis_str))
+            cmp.position = (_X, int(_Y), 0.5)
+            self.textLabels.append(cmp)
+            self.textLabels.append(cmp)
+            self.component.addChild(cmp, 'description{0}'.format(index))
+            if self.component.clanIcon:
+                self.component.clanIcon.position = self.textLabels[-1].position - (self.textLabels[-1].width / 2 - self.ICON_SIZE / 2, 0, 0)
+
+        cmp = GUI.Frame2('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255,
+         255,
+         255,
+         self.alpha)
+        cmp.materialFX = 'BLEND'
+        cmp.width = w + 8
+        cmp.height = h + 4
+        cmp.position = (self.component.width // 2, self.component.height, 1.0)
+        cmp.texture = self.FRAME_TEXTURE
+        self.component.addChild(cmp, 'backFrame')
+        self.fixPosition()
+
+    def setupMark(self):
+        self.clipMP = GUI.WorldToClipMP()
+        shader = GUI.MatrixShader()
+        shader.eta = 0
+        shader.blend = True
+        shader.target = self.clipMP
+        self.component.addShader(shader, 'mover')
+
+    def setMatrix(self, matrix):
+        self.clipMP.target = matrix
+
+    def fixPosition(self, isNoIcon = False):
+        self.component.backFrame.width = self.component.width
+        self.component.backFrame.position = (self.component.width / 2, self.component.height, 1.0)
+        eps = 0
+        if self.clanIconID != 0:
+            isNoIcon = True
+        labels_count = len(self.textLabels)
+        for index in range(0, labels_count):
+            if index == labels_count - 1 and isNoIcon:
+                eps = self.ICON_SIZE / 2 + 2
+            _X = self.component.width / 2 + eps
+            _Y = self.textLabels[index].position.y
+            self.textLabels[index].position = (_X, _Y, 0.5)
+
+        w, h = self.textLabels[-1].stringDimensions(self.textLabels[-1].text)
+        self.component.clanIcon.position = self.textLabels[index].position - (w / 2 + 2, 0, 0)
+
+    def setClanIconByID(self, iconID):
+        if self.clanIconID == iconID:
+            return
+        self.clanIconID = iconID
+        if iconID == 0:
+            self.setClanIcon(0)
+            return
+        feedName = UCManager.ucmanager.loadImg(iconID, self.setClanIcon)
+
+    def setClanIcon(self, imgID = 0, feedName = '', textureProvider = None):
+        if textureProvider:
+            self.component.clanIcon.texture = textureProvider
+            self.component.clanIcon.visible = True
+            self.component.width = self.normal_width + self.component.clanIcon.width + 4
+        else:
+            self.component.clanIcon.visible = False
+            self.component.clanIcon.texture = None
+            self.component.width = self.normal_width
+        self.fixPosition()
+        return
+
+    def setDescription(self, txt):
+        if self.description == txt:
+            return
+        self.description = txt
+        self.setupCaption()
+
+    def setDistance(self, dist):
+        self.component.position.z = dist
+
+    def setAlpha(self, alph):
+        if self.alpha == alph:
+            return
+        self.alpha = alph
+        for i, child in self.component.children:
+            child.colour = (255,
+             255,
+             255,
+             self.alpha)
+
+        if not hasattr(self.component, 'iconHolder'):
+            return
+        for i, child in self.component.iconHolder.children:
+            child.colour = (255,
+             255,
+             255,
+             self.alpha)
+
+    def setData(self, ids, description, alpha, matrix, height, clanIcon):
+        self.setAlpha(alpha * 255)
+        self.setClanIconByID(clanIcon)
+        if self.iconIDs != ids:
+            self.iconIDs = ids
+            self.setupIcons()
+        self.setClanIconByID(clanIcon)
+        self.setDescription(description)
+        if self.matrix != matrix or self.height != height:
+            self.matrix = matrix
+            self.height = height
+            self.setupMatrix()
+
+    def fini(self):
+        self.clearAllChildren(self.component)
+        self.component.delShader('mover')
+        self.component.script = None
+        self.component = None
+        self.clipMP = None
+        return
+
+
+class soInworldMarkers(PyGUIBase):
+    factoryString = 'soGUI.soInworldMarkers'
+    MAX_DISTANCE = 50.0
+    MIN_DISTANCE = 0.0
+    ICON_MAP = {soInworldMarker.MARKER_PLAYER: BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/player.tga'),
+     soInworldMarker.MARKER_NPC: BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/NPC.tga'),
+     soInworldMarker.MARKER_ITEM: BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/item.tga'),
+     soInworldMarker.MARKER_USE: BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/use.tga'),
+     soInworldMarker.MARKER_PICKUP: BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/pickUp.tga'),
+     soInworldMarker.MARKER_TALK: BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/talk.tga'),
+     soInworldMarker.MARKER_PK: BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/PK.tga'),
+     soInworldMarker.MARKER_WARDECLARED: BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/declare_war.tga'),
+     soInworldMarker.MARKER_WARRECIEVED: BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/recieve_war.tga'),
+     soInworldMarker.MARKER_TRADE: BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/trade.tga'),
+     soInworldMarker.MARKER_WANTED: BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/wanted.tga')}
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.markers = {}
+        self.setupRoot()
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 2.0
+        cmp.height = 2.0
+        cmp.position = (0.0, 0.0, 1.1)
+        cmp.visible = True
+        BWPersonality.GUICore.worldLayer.addChild(cmp, 'inworldMarkers')
+
+    def update(self):
+        data = BWPersonality.GUICore.inworldMarkersDataSection
+        for _id, marker in self.markers.items():
+            if _id not in data:
+                if marker is not None:
+                    self.component.delChild(marker.component)
+                    marker.fini()
+                    del self.markers[_id]
+
+        for _id, marker in data.items():
+            if _id not in self.markers:
+                markerObj = soInworldMarker(GUI.Window(), marker['icons'], marker['text'], marker['alpha'], marker['matrix'], marker['height'], marker['clanIcon'])
+                markerObj.onBound()
+                self.markers[_id] = markerObj
+                cmp = markerObj.component
+                self.component.addChild(cmp)
+            else:
+                self.markers[_id].setData(marker['icons'], marker['text'], marker['alpha'], marker['matrix'], marker['height'], marker['clanIcon'])
+
+        return
+
+    def show(self):
+        self.component.visible = True
+
+    def hide(self):
+        self.component.visible = False

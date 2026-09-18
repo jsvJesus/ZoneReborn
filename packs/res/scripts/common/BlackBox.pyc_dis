@@ -1,0 +1,206 @@
+# Embedded file name: ./scripts/common/BlackBox.py
+from RandomItems import RandomItems
+import BigWorld
+import ResMgr
+import json
+import time
+from Character import Character
+from CharacterUtils import CharacterConst
+from Items import ItemsCatalog
+import ItemsUtils
+from Localization import lc, get_user_localization
+from ChatChannelConfig import ChannelConsts
+CHANNEL_CONSTS = ChannelConsts()
+BBOX_PATH = 'scripts/common/data/blackboxs.json'
+CREATURE_PATH = 'scripts/common/data/creature_loot.json'
+DISASSEMBLES_PATH = 'scripts/common/data/disassemblesTo.json'
+ANOMALYES_PATH = 'scripts/cell/data/anomaly_loot.json'
+REPAIR_PATH = 'scripts/common/data/repair_black_box.json'
+try:
+    py_data_section = ResMgr.openSection(BBOX_PATH)
+    blackboxs_data = json.loads(py_data_section.asBinary, encoding='utf-8')
+except:
+    print 'error file:', repr(BBOX_PATH)
+    raise
+
+try:
+    py_data_section = ResMgr.openSection(CREATURE_PATH)
+    creature_data = json.loads(py_data_section.asBinary, encoding='utf-8')
+except:
+    print 'error file:', repr(CREATURE_PATH)
+    raise
+
+try:
+    py_data_section = ResMgr.openSection(DISASSEMBLES_PATH)
+    disassembles_data = json.loads(py_data_section.asBinary, encoding='utf-8')
+except:
+    print 'error file:', repr(DISASSEMBLES_PATH)
+    raise
+
+try:
+    py_data_section = ResMgr.openSection(ANOMALYES_PATH)
+    anomalyes_data = json.loads(py_data_section.asBinary, encoding='utf-8')
+except:
+    pass
+
+try:
+    py_data_section = ResMgr.openSection(REPAIR_PATH)
+    repairs_data = json.loads(py_data_section.asBinary, encoding='utf-8')
+except:
+    print 'error file:', repr(REPAIR_PATH)
+    raise
+
+def readBoxInfo(name):
+    for box in blackboxs_data:
+        if box['Name'] == name:
+            return box
+
+    raise KeyError, 'not found Name=%s in %s' % (name, BBOX_PATH)
+
+
+def readCreatureInfo(name):
+    for box in creature_data:
+        if box['Name'] == name:
+            return box
+
+    raise KeyError, "not found Name='%s' in %s" % (name, CREATURE_PATH)
+
+
+def readDisassemblesInfo(name):
+    for box in disassembles_data:
+        if box['Name'] == name:
+            return box
+
+    raise KeyError, "not found Name='%s' in %s" % (name, DISASSEMBLES_PATH)
+
+
+def readAnomalyInfo(name):
+    for box in anomalyes_data:
+        if box['Name'] == name:
+            return box
+
+    raise KeyError, "not found Name='%s' in %s" % (name, ANOMALYES_PATH)
+
+
+def readRepairInfo(name):
+    for box in repairs_data:
+        if box['Name'] == name:
+            return box
+
+    raise KeyError, "not found Name='%s' in %s" % (name, REPAIR_PATH)
+
+
+class BlackBox:
+    CATEGORY_NAME = 'BLACKBOX'
+
+    def __init__(self, name):
+        self._name = name
+        self._data = readBoxInfo(name)
+
+    def getExpCombat(self):
+        return self._data.get('exp_combat', 0)
+
+    def getExpSurvival(self):
+        return self._data.get('exp_survival', 0)
+
+    def getExpOther(self):
+        return self._data.get('exp_other', 0)
+
+    def get_last_generated_items(self):
+        return self._last_generated_items
+
+    def getMaxPossibleItems(self):
+        maxCount = 0
+        box_groups = self._data['groups']
+        for gr in box_groups:
+            maxCount += int(gr['rangeTo'])
+
+        return maxCount
+
+    def openBlackBox(self):
+        box_groups = self._data['groups']
+        r = RandomItems(box_groups)
+        chance = self.getServerChanceMultiplier()
+        items = r.getRandomItems(chance)
+        return items
+
+    def getServerChanceMultiplier(self):
+        chance_data = BigWorld.globalData['blackbox_config_holiday']
+        cur_time = time.time()
+        if not chance_data['start_time'] <= cur_time <= chance_data['end_time']:
+            return 1
+        chance = 1
+        for bb_conf in chance_data['data']:
+            if bb_conf['bb_name'].upper() == self.CATEGORY_NAME and chance == 1 or bb_conf['bb_name'] == self._name:
+                chance = bb_conf['group_chance_multiplier']
+            elif bb_conf['bb_name'] == self._name:
+                chance = bb_conf['group_chance_multiplier']
+
+        return chance
+
+    def fill_character_with_content(self, character, comment):
+        if self.getMaxPossibleItems() > ItemsUtils.MAX_AVATAR_ITEMS - len(character.CarryingItems):
+            language = get_user_localization(character)
+            character.putMessage(CHANNEL_CONSTS.SYSTEM, lc('Items.Messages.FAIL_NO_ROOM', language=language))
+            return False
+        items = self.openBlackBox()
+        items_dict = {}
+        for itm in items:
+            item_type = int(itm['itemID'])
+            items_dict[item_type] = items_dict.get(item_type, 0) + itm['itemCount']
+
+        for item_type, itemCount in items_dict.items():
+            BigWorld.globalData['ItemDispatcher'].AddNewItemsCountToEntity(character.base, item_type, ItemsCatalog.ITEM_TYPE_VOID, itemCount, comment)
+
+        character.AddExperience(CharacterConst.COMBAT_EXPIRIENCE, self.getExpCombat())
+        character.AddExperience(CharacterConst.SURVIVAL_EXPIRIENCE, self.getExpSurvival())
+        character.AddExperience(CharacterConst.OTHER_EXPIRIENCE, self.getExpOther())
+        self._last_generated_items = items
+        return True
+
+
+class CreatureBox(BlackBox):
+
+    def __init__(self, name):
+        self._name = name
+        self._data = readCreatureInfo(name)
+        self.CATEGORY_NAME = 'CREATURE'
+
+    def openBlackBoxByType(self, open_type, chance = 1):
+        box_groups = self._data['groups']
+        r = RandomItems(box_groups)
+        chance *= self.getServerChanceMultiplier()
+        items, exp = r.getRandomItemsByType(open_type, chance)
+        return (items, exp)
+
+
+class DisassemblesBox(BlackBox):
+
+    def __init__(self, name):
+        self._name = name
+        self._data = readDisassemblesInfo(name)
+        self.CATEGORY_NAME = 'DISASSEMBLES'
+
+
+class AnomalyBox(BlackBox):
+
+    def __init__(self, name):
+        self._name = name
+        self._data = readAnomalyInfo(name)
+        self.CATEGORY_NAME = 'ANOMALY'
+
+
+class RepairBox(BlackBox):
+
+    def __init__(self, name):
+        self._name = name
+        self._data = readRepairInfo(name)
+        self.CATEGORY_NAME = 'REPAIR'
+
+    def fill_character_with_content(self, character, comment):
+        return False
+
+
+if __name__ == '__main__':
+    cb = CreatureBox('default')
+    print cb.openBlackBox()

@@ -1,0 +1,5 @@
+# Embedded file name: ./scripts/common/Config/Skills.py
+
+
+class SkillsTypes:
+    DIRECT, THROW, MELEE = ('DIRECT', 'THROW', 'MELEE')

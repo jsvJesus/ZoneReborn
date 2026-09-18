@@ -1,0 +1,515 @@
+# Embedded file name: ./scripts/client/SFXer.py
+import itertools
+from functools import partial
+import random
+import traceback
+import sfx
+import BigWorld
+import Math
+import math
+from Math import Vector3, Matrix
+from Helpers.VectorUtils import getTriangleByZ
+from Items import ItemsCatalog
+import ItemsUtils
+import Pixie
+import FX
+from sfx.SfxCatalog import SFX_HIT_CATALOG
+
+def get_gun_explosive_gas_sfx_path(sfx_type):
+    try:
+        sfx_paths = sfx_type[1]
+    except Exception:
+        sfx_paths = None
+
+    _sfx = None
+    if isinstance(sfx_paths, str):
+        _sfx = sfx_paths
+    elif isinstance(sfx_paths, list):
+        _sfx = random.choice(sfx_paths)
+    elif isinstance(sfx_paths, dict):
+        unwrapped_sfxs = [ itertools.repeat(k, v) for k, v in sfx_paths.iteritems() if v < 10 ]
+        _sfx = random.choice(list(itertools.chain(*unwrapped_sfxs)))
+    return _sfx
+
+
+def get_gunfire_sfx_path(sfx_type):
+    try:
+        sfx_paths = sfx_type[0]
+    except:
+        sfx_paths = 'sfx/weapons/gun_fire.xml'
+
+    _sfx = None
+    if isinstance(sfx_paths, str):
+        _sfx = sfx_paths
+    elif isinstance(sfx_paths, list):
+        _sfx = random.choice(sfx_paths)
+    elif isinstance(sfx_paths, dict):
+        unwrapped_sfxs = [ itertools.repeat(k, v) for k, v in sfx_paths.iteritems() if v < 10 ]
+        _sfx = random.choice(list(itertools.chain(*unwrapped_sfxs)))
+    return _sfx
+
+
+def get_sfx_target(player):
+    if player.isDestroyed or not player.autogunModel:
+        return
+    elif player.hp_barrel is not None and player.hp_barrel_node is not None and player.hp_barrel_node.isActualCoords:
+        return player.hp_barrel
+    else:
+        return player.autogunModel
+        return
+
+
+def GunSmoke(player, sfx_type):
+    if not player.autogunModel:
+        return
+    target = get_sfx_target(player)
+    sfx_path = get_gun_explosive_gas_sfx_path(sfx_type)
+    if not sfx_path:
+        return
+    FX.bufferedOneShotEffect(sfx_path, target)
+
+
+def GunFire(player, sfx_type):
+    sfx_path = get_gunfire_sfx_path(sfx_type)
+    if not player.autogunModel:
+        return
+    if not sfx_path:
+        return
+    target = get_sfx_target(player)
+    FX.bufferedOneShotEffect(sfx_path, target)
+
+
+def get_shell_launch_sfx(player, mode):
+    equippedItemType = ItemsUtils.GetEquippedItemType(player)
+    noShellLaunchList = set([20,
+     10223,
+     10224,
+     10225,
+     10226,
+     10247,
+     10248,
+     10249,
+     10250,
+     10251,
+     10252,
+     10253,
+     10254,
+     10255,
+     10256,
+     10257,
+     10258,
+     10259,
+     10260,
+     10261,
+     10262,
+     10263,
+     10264,
+     10265,
+     10266])
+    noShellOnlyOnShootLaunchList = set([1,
+     8,
+     18,
+     21,
+     26,
+     75,
+     10401,
+     10402])
+    shell_9x18 = set([3,
+     19,
+     22,
+     24,
+     28,
+     29,
+     30,
+     31,
+     49])
+    shell_762x25 = set([23, 27])
+    shell_357magnum = set([1, 11])
+    shell_45acp = set([10405])
+    shell_12gauge = set([8,
+     9,
+     21,
+     26,
+     32,
+     33])
+    shell_545x39 = set([2,
+     7,
+     34,
+     36,
+     63,
+     64,
+     65,
+     66,
+     67,
+     71])
+    shell_556x45_nato = set([10,
+     13,
+     15,
+     16,
+     38,
+     40,
+     42,
+     45,
+     46,
+     47,
+     55,
+     56,
+     68,
+     35,
+     76])
+    shell_762x39 = set([37,
+     60,
+     61,
+     62,
+     69,
+     70,
+     77,
+     97])
+    shell_9x39 = set([5,
+     6,
+     41,
+     57,
+     58])
+    shell_762x51_nato = set([4,
+     12,
+     43,
+     72,
+     73,
+     74,
+     87,
+     92,
+     93,
+     95,
+     96])
+    shell_762x54r = set([25,
+     48,
+     50,
+     75,
+     94,
+     10180])
+    shell_127x99 = set([44, 10013])
+    shell_40x46 = set([18])
+    if player.ActiveItemType in noShellLaunchList or player.ActiveItemType in noShellOnlyOnShootLaunchList and mode == ItemsUtils.MODE_FIRE:
+        return None
+    elif player.ActiveItemType in shell_9x18:
+        return 'sfx/weapons/shells/9x18.xml'
+    elif player.ActiveItemType in shell_762x25:
+        return 'sfx/weapons/shells/762x25.xml'
+    elif player.ActiveItemType in shell_357magnum:
+        return 'sfx/weapons/shells/357magnum.xml'
+    elif player.ActiveItemType in shell_45acp:
+        return 'sfx/weapons/shells/45acp.xml'
+    elif player.ActiveItemType in shell_12gauge:
+        return 'sfx/weapons/shells/12gauge.xml'
+    elif player.ActiveItemType in shell_545x39:
+        return 'sfx/weapons/shells/545x39.xml'
+    elif player.ActiveItemType in shell_556x45_nato:
+        return 'sfx/weapons/shells/556x45_nato.xml'
+    elif player.ActiveItemType in shell_762x39:
+        return 'sfx/weapons/shells/762x39.xml'
+    elif player.ActiveItemType in shell_9x39:
+        return 'sfx/weapons/shells/9x39.xml'
+    elif player.ActiveItemType in shell_762x51_nato:
+        return 'sfx/weapons/shells/762x51_nato.xml'
+    elif player.ActiveItemType in shell_762x54r:
+        return 'sfx/weapons/shells/762x54r.xml'
+    elif player.ActiveItemType in shell_127x99:
+        return 'sfx/weapons/shells/127x99.xml'
+    elif player.ActiveItemType in shell_40x46:
+        return 'sfx/weapons/shells/40x46.xml'
+    else:
+        return None
+        return None
+
+
+def ShellLaunch(player, mode):
+    sfx_path = get_shell_launch_sfx(player, mode)
+    if sfx_path and player.autogunModel and player.autogunModel.inWorld:
+        FX.bufferedOneShotEffect(sfx_path, player.autogunModel)
+
+
+def tri_normal(triangle):
+    tri_normal = (triangle[2] - triangle[0]) * (triangle[2] - triangle[1])
+    tri_normal.normalise()
+    return tri_normal
+
+
+def Explode(player, shoot_source, shoot_target, shoot_normal, target_triangle, material):
+    explosion_model = BigWorld.Model('')
+    player.addModel(explosion_model)
+    target_normal = tri_normal(target_triangle)
+    near_shoot_target = shoot_target + target_normal * 0.1
+    v = shoot_normal * Vector3(0, 1, 0)
+    explosion_model.alignTriangle(near_shoot_target, near_shoot_target + v * 0.05, near_shoot_target + shoot_normal * v * 0.05, False)
+    sfx.bufferedOneShotSFX('sfx/weapons/grenades/grenade_explode.xml', explosion_model, DecalInfo=[shoot_target - (0, 1, 0), shoot_target + (0, 1, 0)])
+    BigWorld.callback(3.3, partial(player.delModel, explosion_model))
+
+
+def footWaterStep(player, position, sfx_path, alignToVector = None, lifeTime = 3.3):
+    explosion_model = BigWorld.Model('')
+    explosion_model.position = position
+    player.addModel(explosion_model)
+    if alignToVector:
+        pass
+    sfx.bufferedOneShotSFX(sfx_path, explosion_model)
+    BigWorld.callback(lifeTime, partial(player.delModel, explosion_model))
+
+
+def waterHit(player, position, sfx_path, alignToVector = None, lifeTime = 3.3):
+    hiden_model = BigWorld.Model('characters/items/weapons/sphere_water_spl.model')
+    explosion_model = BigWorld.Model('')
+    explosion_model.position = position
+    hiden_model.position = position + Math.Vector3(0, 1, 0)
+    player.addModel(explosion_model)
+    player.addModel(hiden_model)
+    if alignToVector:
+        pass
+
+    def dwn():
+        hiden_model.position = position + Math.Vector3(0, -1, 0)
+
+    sfx.bufferedOneShotSFX(sfx_path, explosion_model)
+    BigWorld.callback(0.1, dwn)
+    BigWorld.callback(lifeTime, partial(player.delModel, explosion_model))
+    BigWorld.callback(lifeTime, partial(player.delModel, hiden_model))
+
+
+def Ricochet(player, shoot_source, shoot_target, target_triangle, material, ammo_type = None):
+    ricochet_model = BigWorld.Model('')
+    player.addModel(ricochet_model)
+    target_normal = tri_normal(target_triangle)
+    m = Matrix()
+    m.setRotateYPR(Vector3(target_normal.yaw, target_normal.pitch + math.pi * 0.5, 0))
+    m_translation = Matrix()
+    m_translation.setTranslate(shoot_target)
+    m.postMultiply(m_translation)
+    ricochet_model.setWorldTransform(m)
+    sfx_category = ammo_type and ItemsCatalog.GetItemParam(ammo_type).get('HitSfxCategory') or 'Default'
+    catalog = SFX_HIT_CATALOG[sfx_category]
+    sfx_hit_name = catalog.get(material) or catalog.get('default')
+    sfx.bufferedOneShotSFX(sfx_hit_name, ricochet_model, DecalInfo=[shoot_target + target_normal, shoot_target - target_normal], forceDecal=True)
+    BigWorld.callback(2.0, partial(player.delModel, ricochet_model))
+
+
+def BodyHit(hitPos, entity, shoot_normal, reflection, sfx_path):
+    if not sfx_path:
+        return
+    hit_model = BigWorld.Model('')
+    entity.addModel(hit_model)
+    target_triangle = []
+    triangle = getTriangleByZ(reflection)
+    for AnglesNum in xrange(len(triangle)):
+        target_triangle.append(triangle[AnglesNum] + hitPos)
+
+    hit_model.alignTriangle(target_triangle[0], target_triangle[1], target_triangle[2], False)
+    back_normal = Vector3(shoot_normal)
+    back_normal.normalise()
+    hit_height = hitPos[1] - entity.position.y
+    hit_height -= random.random()
+    height_shift_vector = Vector3(0, max(0, hit_height), 0)
+    back_normal -= height_shift_vector
+    back_normal = back_normal * 5
+    if not hit_model.position:
+        print 'BodyHit  not not hit_model.position!!!'
+        print 'position:', hit_model.position
+        print 'hitPos:', hitPos
+        print 'entity:', entity, entity.position
+        print 'shoot_normal:', shoot_normal
+        print 'sfx_path:', sfx_path
+        print 'back_normal:', back_normal
+        print 'triangle:', triangle
+        print 'target_triangle:', target_triangle
+        print
+        traceback.print_stack()
+        print
+        print
+        hit_model.position = hitPos
+    sfx.bufferedOneShotSFX(sfx_path, hit_model, DecalInfo=[hitPos, hitPos + back_normal])
+
+    def deleteModel():
+        if entity.isDestroyed:
+            return
+        hit_model.debugSoundRemoveAll()
+        entity.delModel(hit_model)
+
+    BigWorld.callback(2.0, deleteModel)
+
+
+def ArmorNotBroken(hitPos, entity, reflection):
+    hit_model = BigWorld.Model('')
+    entity.addModel(hit_model)
+    target_triangle = []
+    triangle = getTriangleByZ(reflection)
+    for AnglesNum in xrange(len(triangle)):
+        target_triangle.append(triangle[AnglesNum] + hitPos)
+
+    hit_model.alignTriangle(target_triangle[0], target_triangle[1], target_triangle[2], False)
+    sfx.bufferedOneShotSFX('sfx/hits/armor.xml', hit_model)
+    BigWorld.callback(1.0, partial(entity.delModel, hit_model))
+
+
+def JumpEffect(entity, delay = 0.0):
+
+    def callback_func():
+        sfx.bufferedOneShotSFX('sfx/Player/jump.xml', entity.model)
+
+    if delay:
+        BigWorld.callback(delay, callback_func)
+    else:
+        callback_func()
+
+
+def JumpEndEffect(entity, delay = 0.0):
+
+    def callback_func():
+        sfx.bufferedOneShotSFX('sfx/Player/landing.xml', entity.model)
+
+    if delay:
+        BigWorld.callback(delay, callback_func)
+    else:
+        callback_func()
+
+
+def FlashlightSwitch(entity, delay = 0.0):
+
+    def callback_func():
+        if entity.isDestroyed:
+            return
+        if not entity.model:
+            return
+        sfx.bufferedOneShotSFX('sfx/items/flashlight.xml', entity.model)
+
+    if delay:
+        BigWorld.callback(delay, callback_func)
+    else:
+        callback_func()
+
+
+def DeathEffect(entity, delay = 0.0):
+
+    def callback_func():
+        if entity.isDestroyed:
+            return
+        if not entity.model:
+            return
+        sfx.bufferedOneShotSFX('sfx/Player/death.xml', entity.model)
+
+    if delay:
+        BigWorld.callback(delay, callback_func)
+    else:
+        callback_func()
+
+
+def ReloadEffect(entity, sx_name, delay = 0.0):
+
+    def callback_func():
+        if entity.isDestroyed:
+            return
+        if not entity.model:
+            return
+        sfx.bufferedOneShotSFX(sx_name, entity.model)
+
+    if delay:
+        BigWorld.callback(delay, callback_func)
+    else:
+        callback_func()
+
+
+def RepairEffect(entity, delay = 0.0):
+
+    def callback_func():
+        pass
+
+    if delay:
+        BigWorld.callback(delay, callback_func)
+    else:
+        callback_func()
+
+
+def EatEffect(entity, delay = 0.0):
+
+    def callback_func():
+        pass
+
+    if delay:
+        BigWorld.callback(delay, callback_func)
+    else:
+        callback_func()
+
+
+def HealEffect(entity, delay = 0.0):
+
+    def callback_func():
+        pass
+
+    if delay:
+        BigWorld.callback(delay, callback_func)
+    else:
+        callback_func()
+
+
+def ChangeStanceEffect(entity, delay = 0.0):
+
+    def callback_func():
+        pass
+
+    if delay:
+        BigWorld.callback(delay, callback_func)
+    else:
+        callback_func()
+
+
+def WeaponEquipEffect(entity, delay = 0.0):
+
+    def callback_func():
+        if entity.model:
+            sfx.bufferedOneShotSFX('sfx/weapons/weapon_change.xml', entity.model)
+
+    if delay:
+        BigWorld.callback(delay, callback_func)
+    else:
+        callback_func()
+
+
+def WeaponM1GarandClipOut(entity, delay = 0.0):
+
+    def callback_func():
+        if entity.autogunModel and entity.autogunModel.inWorld:
+            sfx.bufferedOneShotSFX('sfx/weapons/m1_garand_clip_out.xml', entity.autogunModel)
+
+    if delay:
+        BigWorld.callback(delay, callback_func)
+    else:
+        callback_func()
+
+
+def AddPixieToEntity(entity, particle_name, node = None, callBackFn = None):
+
+    def onLoadLensFlare(ps):
+        node.attach(ps)
+        ps.force()
+        if callBackFn:
+            callBackFn(ps)
+
+    if node == None:
+        node = entity.model.root
+    onLoadLensFlare(Pixie.create(particle_name))
+    return
+
+
+def onSandbagDelete(sandbag_entity):
+    pass
+
+
+def playSFX(sfx_path, position, direction = None, delay = 0.0, timeLife = 10.0):
+    explosion_model = BigWorld.Model('')
+    explosion_model.position = position
+    BigWorld.player().addModel(explosion_model)
+    if not direction:
+        direction = Math.Vector3(0, -1, 0)
+
+    def play():
+        sfx.bufferedOneShotSFX(sfx_path, explosion_model, DecalInfo=[position - direction, position + direction], forceDecal=True)
+        BigWorld.callback(timeLife, partial(BigWorld.player().delModel, explosion_model))
+
+    BigWorld.callback(delay, play)

@@ -1,0 +1,23 @@
+# Embedded file name: ./scripts/common/DrawWellUtil.py
+WATER_TYPE_NONE = 0
+WATER_TYPE_DIRTY = 1
+WATER_TYPE_CLEAN = 2
+WALL_ITEM_TYPE = 307
+WATER_COUNT = 1000
+MODELS = {0: ('models/props/villageobjects/kolodec.model', 'DrawWell.water_well'),
+ 1: ('models/props/water_and_sewer/water_pump_01_lod1.model', 'DrawWell.water_pump'),
+ 2: ('models/props/water_and_sewer/water_pump_02_lod1.model', 'DrawWell.water_pump'),
+ 3: ('models/props/water_and_sewer/water_pump_03_lod1.model', 'DrawWell.water_pump'),
+ 4: ('models/props/water_and_sewer/water_pump_04_lod1.model', 'DrawWell.water_pump'),
+ 5: ('models/props/water_and_sewer/water_pump_05_lod1.model', 'DrawWell.water_pump'),
+ 6: ('models/props/water_and_sewer/water_pump_06_lod1.model', 'DrawWell.water_pump'),
+ 7: ('models/props/water_and_sewer/water_pump_07_lod1.model', 'DrawWell.water_pump'),
+ 8: ('models/misc/furniture/moika_kuhonnaya.model', 'DrawWell.water_sink')}
+ERRORMODEL = ('models/entities/containers/bag.model', 'DrawWell.water_souce')
+
+def getNameModel(model_type):
+    return MODELS.get(model_type, ERRORMODEL)[0]
+
+
+def get_name(model_type):
+    return MODELS.get(model_type, ERRORMODEL)[1]

@@ -1,0 +1,50 @@
+# Embedded file name: ./scripts/client/thermal_trap.py
+import BigWorld
+import random
+import Pixie
+from Math import Vector3, Matrix
+
+class ThermalTrap(object):
+    p_path = 'particles/transport/helicopter/term_trap.xml'
+
+    def __init__(self, entity, node):
+        self.entity = entity
+        self.model = BigWorld.Model('')
+        self.eff = Pixie.create(self.p_path)
+        self.dir = node.applyToAxis(0)
+        self.dir.setPitchYaw(self.dir.pitch + random.uniform(-0.1, 1.1), self.dir.yaw + random.uniform(-0.1, 1.1))
+        start_pos = node.translation
+        self.model.position = start_pos
+        self.speed = 0.09 + random.uniform(0, 0.09)
+        self.entity.addModel(self.model)
+        self.model.root.attach(self.eff)
+        self._tick()
+        BigWorld.callback(5, self.smooth_off)
+        BigWorld.callback(7, self.stop)
+        self.eff.force()
+
+    def _tick(self):
+        self._cid = BigWorld.callback(0, self._tick)
+        self.dir = self.dir + Vector3(0, -0.005, 0)
+        self.dir.normalise()
+        self.speed = self.speed * 0.997
+        self.speed = max(self.speed, 0.009)
+        pos = self.model.position
+        self.model.position = pos + self.dir * self.speed
+
+    def smooth_off(self):
+        if not self.model:
+            return
+        if not self.eff:
+            return
+        for i in range(self.eff.nSystems()):
+            self.eff.system(i).action(1).rate = 0
+
+    def stop(self):
+        BigWorld.cancelCallback(self._cid)
+        if self.model:
+            self.model.root.detach(self.eff)
+            self.entity.delModel(self.model)
+            self.model = None
+            self.eff = None
+        return

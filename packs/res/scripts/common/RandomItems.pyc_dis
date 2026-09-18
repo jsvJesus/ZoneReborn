@@ -1,0 +1,116 @@
+# Embedded file name: ./scripts/common/RandomItems.py
+import random
+
+class RandomItems:
+
+    def __init__(self, groups):
+        self.groups = groups
+
+    def _add_group_to_result(self, result, group):
+        if group.get('items'):
+            chance_total = sum((float(item['dropChance']) for item in group['items']))
+            if chance_total >= 100 or random.random() * 100 <= chance_total:
+                chance_random = random.uniform(0.0, chance_total)
+                chance_sum = 0
+                chance_item = None
+                for item in group['items']:
+                    chance_sum += float(item['dropChance'])
+                    if chance_random <= chance_sum:
+                        chance_item = item
+                        break
+
+                if chance_item:
+                    self._add_item_to_result(result, chance_item)
+        if group.get('groups'):
+            chance_total = sum((float(group['dropChance']) for group in group['groups']))
+            chance_random = random.uniform(0.0, chance_total)
+            chance_sum = 0
+            chance_group = None
+            for group in group['groups']:
+                chance_sum += float(group['dropChance'])
+                if chance_random <= chance_sum:
+                    chance_group = group
+                    break
+
+            if chance_group:
+                self._add_subgroup_to_result(result, group)
+        return
+
+    def _add_subgroup_to_result(self, result, subgroup):
+        count = random.randint(int(subgroup['rangeFrom']), int(subgroup['rangeTo']))
+        for _ in range(count):
+            subdata = self.get_subgroup(subgroup['dropGroupName'])
+            self._add_groups_to_result(result, subdata)
+
+    def get_subgroup(self, subgroup_name):
+        raise NotImplementedError
+
+    def _add_item_to_result(self, result, item):
+        count = random.randint(int(item['rangeFrom']), int(item['rangeTo']))
+        if count > 0:
+            result.append({'itemID': int(item['itemID']),
+             'itemCount': count})
+
+    def _add_groups_to_result(self, result, groups, chance_multiplier = 1):
+        for group in groups:
+            cycle_group_count = random.randint(int(group['rangeFrom']), int(group['rangeTo']))
+            for _ in range(cycle_group_count):
+                if random.random() * 100 <= float(group['chance']) * chance_multiplier:
+                    self._add_group_to_result(result, group)
+
+    def getRandomItems(self, chance_multiplier = 1):
+        result = []
+        if not self.groups:
+            return result
+        self._add_groups_to_result(result, self.groups, chance_multiplier)
+        return result
+
+    def getRandomItemsByType(self, open_type = '', chance = 1):
+        result = []
+        result_exp = [0, 0, 0]
+        if self.groups is None:
+            return result
+        else:
+            open_type = open_type.decode('utf-8')
+
+            def getSummaryChance(data, number):
+                _sum = 0.0
+                for it, d in enumerate(data):
+                    _sum += float(d['dropChance'])
+                    if it == number:
+                        break
+
+                return _sum
+
+            for group in self.groups:
+                group_type = group.get('open_type', [])
+                if group_type and open_type and open_type not in group_type:
+                    continue
+                count = random.randint(int(group['rangeFrom']), int(group['rangeTo']))
+                for c in xrange(count):
+                    randomGroup = random.uniform(0.0, 100.0)
+                    if randomGroup <= float(str.strip(str(group['chance']))) * chance:
+                        open_exp = group.get('open_exp', [0, 0, 0])
+                        for index, exp in enumerate(open_exp):
+                            result_exp[index] += exp
+
+                        items = group['items']
+                        if len(items) == 0:
+                            continue
+                        randomItem = random.uniform(0.0, 100.0)
+                        if randomItem <= float(str.strip(str(items[0]['dropChance']))):
+                            count = random.randint(int(items[0]['rangeFrom']), int(items[0]['rangeTo']))
+                            result.append({'itemID': int(items[0]['itemID']),
+                             'itemCount': count})
+                        else:
+                            for it, item in enumerate(items):
+                                if it == 0:
+                                    continue
+                                if randomItem > getSummaryChance(items, it - 1) and randomItem <= getSummaryChance(items, it):
+                                    itemID = int(item['itemID'])
+                                    countItem = random.randint(int(item['rangeFrom']), int(item['rangeTo']))
+                                    result.append({'itemID': itemID,
+                                     'itemCount': countItem})
+                                    break
+
+            return (result, result_exp)

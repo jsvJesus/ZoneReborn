@@ -1,0 +1,95 @@
+# Embedded file name: ./scripts/client/CueModel.py
+import FX
+import BigWorld
+import traceback
+from functools import partial
+from CueModelUtills import CueModelUtills
+
+class CueModel(object):
+
+    def __init__(self):
+        pass
+
+    def onLoadModel(self, model):
+        if model is None:
+            return
+        else:
+            model_name = model.sources[0]
+            cue_data = CueModelUtills().get_cue_data(model_name)
+            cue_list = []
+            if cue_data:
+                cue_list = cue_data.keys()
+            for cue_name in cue_list:
+                model.cue(cue_name, partial(self.cueTrigger, cue_name))
+
+            return
+
+    def cueTrigger(self, cue_name, event_time):
+        if not self.model:
+            return
+        model_name = self.model.sources[0]
+        cue_data = CueModelUtills().get_cue_data(model_name, cue_name)
+        self._loadCueSFX(cue_data.get('sfx', {}))
+        self._loadCueModels(cue_data.get('models', {}), cue_data.has_key('use_item'))
+
+    def _loadCueSFX(self, sfxes):
+        for target_name, sfx_path in sfxes.items():
+            if target_name == 'self':
+                target = self.model
+            else:
+                target = getattr(self.model, target_name, None)
+            if not target or not sfx_path:
+                continue
+            FX.bufferedOneShotEffect(sfx_path, target)
+
+        return
+
+    def _loadCueModels(self, cue_models, use_item = False):
+        if use_item and (self._in_hand_model_effectorleft or self._in_hand_model_effectorright):
+            self.model.effectorleft = self._in_hand_model_effectorleft
+            self.model.effectorright = self._in_hand_model_effectorright
+            return
+        else:
+            for target_name, model_param in cue_models.items():
+                model_list_names = model_param.get('model', [])
+                if not model_list_names:
+                    continue
+                for i, model_name in enumerate(model_list_names):
+                    model_list_names[i] = str(model_name)
+
+                try:
+                    if model_list_names[0] == 'None':
+                        setattr(self.model, target_name, None)
+                        continue
+                except Exception as e:
+                    continue
+
+                saved_model = getattr(self, '_in_hand_model_' + target_name, None)
+                if use_item and saved_model:
+                    try:
+                        setattr(self.model, target_name, saved_model)
+                        continue
+                    except Exception as e:
+                        continue
+
+                def onLoadCueModel(node_name, tint_list, model):
+                    try:
+                        setattr(self.model, str(node_name), model)
+                    except Exception as e:
+                        print 'ERROR:: CueModel::onLoadCueModel', self.model, node_name, model
+                        traceback.print_exc()
+
+                    for tint in tint_list:
+                        for tint_key, tint_val in tint.items():
+                            try:
+                                setattr(model, str(tint_key), str(tint_val))
+                            except Exception as e:
+                                print 'ERROR:: CueModel::onLoadCueModel::TintErr', model.sources, tint_key, tint_val
+                                traceback.print_exc()
+
+                model_list = []
+                model_list.extend(model_list_names)
+                model_list.append(partial(onLoadCueModel, target_name, model_param.get('tints', [])))
+                BigWorld.fetchModel(*model_list)
+
+            return

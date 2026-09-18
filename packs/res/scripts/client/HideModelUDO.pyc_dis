@@ -1,0 +1,51 @@
+# Embedded file name: ./scripts/client/HideModelUDO.py
+import BigWorld
+import ResMgr
+import Math
+import traceback
+
+class HideModelUDO(BigWorld.UserDataObject):
+
+    def __init__(self):
+        BigWorld.UserDataObject.__init__(self)
+
+    SOURCE = None
+
+    @staticmethod
+    def parse_model(item):
+        """ \xd0\xbf\xd0\xb0\xd1\x80\xd1\x81\xd0\xb8\xd1\x82 UDO \xd0\xb2 \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd1\x8c """
+        model_path = None
+        tint = None
+        if not HideModelUDO.SOURCE:
+            source = ResMgr.openSection('scripts/client/data/editor.xml')
+        for i in source.values():
+            if item.modelSelect == i['value'].asInt:
+                model_path = i['path'].asString
+                if i['tint'] != None:
+                    tint = i['tint'].asString
+                break
+
+        if model_path:
+            r_matrix = Math.Matrix()
+            r_matrix.setRotateYPR((item.yaw, item.pitch, item.roll))
+            s_matrix = Math.Matrix()
+            s_matrix.setScale((item.scale, item.scale, item.scale))
+            t_matrix = Math.Matrix()
+            t_matrix.translation = item.position
+            m = Math.Matrix()
+            m.set(r_matrix)
+            m.postMultiply(s_matrix)
+            m.postMultiply(t_matrix)
+            model = BigWorld.PyModelObstacle(model_path, m, 0)
+            if item.tint:
+                tint = item.tint
+            if tint:
+                tint = tint.split()
+                try:
+                    setattr(model, tint[0], tint[1])
+                except:
+                    traceback.print_exc()
+
+            return model
+        else:
+            return

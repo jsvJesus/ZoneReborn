@@ -1,0 +1,245 @@
+# Embedded file name: ./scripts/common/math_bw.py
+import BigWorld
+import math
+import bisect
+from random import random
+import traceback
+from Math import Vector3, Matrix
+import sys
+if BigWorld.component == 'client':
+    from Math import Quaternion
+neg_inf = float('-inf')
+VECTOR3_INVALID = Vector3(neg_inf, neg_inf, neg_inf)
+VECTOR3_ZERO = Vector3(0, 0, 0)
+VECTOR3_UP = Vector3(0, 1, 0)
+cached_matrix = Matrix()
+
+def box_intersect_line(segment_begin, segment_end, box_center, box_size):
+    """ \xd0\xbd\xd0\xb0\xd1\x85\xd0\xbe\xd0\xb4\xd0\xb8\xd1\x82 \xd1\x82\xd0\xbe\xd1\x87\xd0\xba\xd0\xb8 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd1\x81\xd0\xb5\xd1\x87\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xba\xd0\xbe\xd1\x80\xd0\xbe\xd0\xb1\xd0\xba\xd0\xb8 (AABB \xd1\x82\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xba\xd0\xbe) \xd0\xb8 \xd0\xbe\xd1\x82\xd1\x80\xd0\xb5\xd0\xb7\xd0\xba\xd0\xb0
+            \xd0\xb2\xd0\xb7\xd1\x8f\xd0\xbb \xd0\xbe\xd1\x82\xd1\x81\xd1\x8e\xd0\xb4\xd0\xb0: https://stackoverflow.com/questions/3106666/intersection-of-line-segment-with-axis-aligned-box-in-c-sharp
+    """
+    AXIS_X, AXIS_Y, AXIS_Z = range(3)
+    begin_to_end = segment_end - segment_begin
+    min_to_max = Vector3(box_size.x, box_size.y, box_size.z)
+    min_ = box_center - min_to_max / 2
+    max_ = box_center + min_to_max / 2
+    begin_to_min = min_ - segment_begin
+    begin_to_max = max_ - segment_begin
+    t_near = sys.float_info.min
+    t_far = sys.float_info.max
+    intersections = []
+    for axis in (AXIS_X, AXIS_Y, AXIS_Z):
+        if begin_to_end[axis] == 0:
+            if begin_to_min[axis] > 0 or begin_to_max[axis] < 0:
+                return intersections
+        else:
+            t1 = begin_to_min[axis] / begin_to_end[axis]
+            t2 = begin_to_max[axis] / begin_to_end[axis]
+            t_min = min(t1, t2)
+            t_max = max(t1, t2)
+            if t_min > t_near:
+                t_near = t_min
+            if t_max < t_far:
+                t_far = t_max
+            if t_near > t_far or t_far < 0:
+                return intersections
+
+    if 0 <= t_near <= 1:
+        intersections.append(segment_begin + begin_to_end * t_near)
+    if 0 <= t_far <= 1:
+        intersections.append(segment_begin + begin_to_end * t_far)
+    return intersections
+
+
+def int64_bool_array_to_int_set(int64_bool_array):
+    """ \xd0\xba\xd0\xbe\xd0\xbd\xd0\xb2\xd0\xb5\xd1\x80\xd1\x82\xd0\xb8\xd1\x80\xd1\x83\xd0\xb5\xd1\x82 \xd0\xb1\xd0\xb8\xd1\x82\xd0\xbe\xd0\xb2\xd1\x8b\xd0\xb9 \xd0\xbc\xd0\xb0\xd1\x81\xd1\x81\xd0\xb8\xd0\xb2 \xd0\xb2 \xd0\xbd\xd0\xb0\xd0\xb1\xd0\xbe\xd1\x80 \xd1\x86\xd0\xb5\xd0\xbb\xd1\x8b\xd1\x85 \xd1\x87\xd0\xb8\xd1\x81\xd0\xb5\xd0\xbb
+            \xd1\x82\xd0\xbe \xd0\xb6\xd0\xb5, \xd1\x87\xd1\x82\xd0\xbe int_array_to_int64_bool_array, \xd1\x82\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xba\xd0\xbe \xd0\xbd\xd0\xb0\xd0\xbe\xd0\xb1\xd0\xbe\xd1\x80\xd0\xbe\xd1\x82
+    """
+    index = 0
+    result = set()
+    for int64 in reversed(int64_bool_array):
+        while int64:
+            if int64 & 1:
+                result.add(index)
+            int64 = int64 >> 1
+            index += 1
+
+    return result
+
+
+def is_inside_trap(pos1, pos2, size):
+    """        \xd0\xbd\xd0\xb0\xd1\x85\xd0\xbe\xd0\xb4\xd1\x8f\xd1\x82\xd1\x81\xd1\x8f \xd0\xbb\xd0\xb8 \xd0\xbe\xd0\xb1\xd0\xb5 \xd1\x82\xd0\xbe\xd1\x87\xd0\xba\xd0\xb8 \xd0\xb2 \xd0\xbe\xd0\xb4\xd0\xbd\xd0\xbe\xd0\xbc \xd0\xba\xd0\xb2\xd0\xb0\xd0\xb4\xd1\x80\xd0\xb0\xd1\x82\xd0\xb5 \xd1\x80\xd0\xb0\xd0\xb7\xd0\xbc\xd0\xb5\xd1\x80\xd0\xb0 size
+            (\xd0\xb4\xd0\xbb\xd1\x8f \xd0\xbf\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x80\xd0\xbe\xd0\xba \xd1\x80\xd0\xb0\xd0\xb1\xd0\xbe\xd1\x82\xd1\x8b \xd1\x81 proximity \xd0\xb8 \xd0\xbf\xd1\x80.)
+    """
+    return abs(pos1[0] - pos2[0]) <= size and abs(pos1[2] - pos2[2]) <= size
+
+
+def int_array_to_int64_bool_array(int_iterable):
+    """ \xd0\xba\xd0\xbe\xd0\xbd\xd0\xb2\xd0\xb5\xd1\x80\xd1\x82\xd0\xb8\xd1\x80\xd1\x83\xd0\xb5\xd1\x82 \xd0\xbc\xd0\xb0\xd1\x81\xd1\x81\xd0\xb8\xd0\xb2 \xd1\x86\xd0\xb5\xd0\xbb\xd1\x8b\xd1\x85 \xd1\x87\xd0\xb8\xd1\x81\xd0\xb5\xd0\xbb \xd0\xb2 \xd0\xb4\xd0\xb2\xd0\xbe\xd0\xb8\xd1\x87\xd0\xbd\xd1\x8b\xd0\xb9 \xd0\xbc\xd0\xb0\xd1\x81\xd1\x81\xd0\xb8\xd0\xb2 \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd1\x85
+            (\xd0\xbf\xd1\x80\xd0\xb8\xd0\xbc\xd0\xb5\xd0\xbd\xd1\x8f\xd0\xb5\xd1\x82\xd1\x81\xd1\x8f \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x81\xd0\xb6\xd0\xb0\xd1\x82\xd0\xb8\xd1\x8f \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xb4\xd0\xb0\xd1\x87\xd0\xb5 \xd0\xbc\xd0\xb0\xd1\x81\xd1\x81\xd0\xb8\xd0\xb2\xd0\xbe\xd0\xb2 \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd1\x85)
+            \xd1\x82\xd0\xbe \xd0\xb6\xd0\xb5, \xd1\x87\xd1\x82\xd0\xbe int64_bool_array_to_int_set, \xd1\x82\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xba\xd0\xbe \xd0\xbd\xd0\xb0\xd0\xbe\xd0\xb1\xd0\xbe\xd1\x80\xd0\xbe\xd1\x82
+    """
+    result = 0
+    for int_value in int_iterable:
+        result |= 1 << int_value
+
+    result_array = []
+    MASK_LEN = 64
+    while result > 0:
+        mask = (1 << MASK_LEN) - 1
+        part = result & mask
+        result_array.append(part)
+        result = result >> MASK_LEN
+
+    return result_array
+
+
+def clamp(v, min_value, max_value):
+    if v <= min_value:
+        return min_value
+    if v >= max_value:
+        return max_value
+    return v
+
+
+def angle_between_vectors(v1, v2):
+    """ \xd1\x83\xd0\xb3\xd0\xbe\xd0\xbb \xd0\xbc\xd0\xb5\xd0\xb6\xd0\xb4\xd1\x83 \xd0\xb2\xd0\xb5\xd0\xba\xd1\x82\xd0\xbe\xd1\x80\xd0\xb0\xd0\xbc\xd0\xb8 (\xd0\xb2\xd1\x81\xd0\xb5\xd0\xb3\xd0\xb4\xd0\xb0 \xd0\xbf\xd0\xbe\xd0\xbb\xd0\xbe\xd0\xb6\xd0\xb8\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c\xd0\xbd\xd1\x8b\xd0\xb9) """
+    try:
+        length = v1.length * v2.length
+        if not length:
+            return 0
+        cos = v1.dot(v2) / length
+        cos = max(-1.0, min(1.0, cos))
+        return math.acos(cos)
+    except:
+        print 'angle_between_vectors ERROR:', v1, v2
+        traceback.print_exc()
+        return 0
+
+
+def int_to_uint16(n):
+    return n & 65535
+
+
+def uint_to_int16(n):
+    n &= 65535
+    return (n ^ 32768) - 32768
+
+
+def rotate_by_yaw_pitch(vec, yaw, pitch):
+    cached_matrix.setRotateYPR((yaw, pitch, 0))
+    return cached_matrix.applyVector(vec)
+
+
+def rotate_by_Y(vec, angle_rad):
+    cached_matrix.setRotateY(angle_rad)
+    return cached_matrix.applyVector(vec)
+
+
+def randomPointInRadius(radius, center = Vector3(0, 0, 0)):
+    angle = random() * 2 * math.pi
+    pos = center + radius * Vector3(math.cos(angle), 0, math.sin(angle))
+    return pos
+
+
+def print_matrix(*matrix_providers):
+    matrices = map(Matrix, matrix_providers)
+    for row in range(0, 4):
+        for matrix in matrices:
+            for col in range(0, 4):
+                print '%6.1f' % matrix.get(row, col),
+
+            print ' | ',
+
+        print '\n'
+
+
+def weighted_random(weights):
+    rnd = random() * sum(weights)
+    for i, weight in enumerate(weights):
+        rnd -= weight
+        if rnd < 0:
+            return i
+
+    if len(weights) == 1:
+        return 0
+    else:
+        return None
+
+
+class WeightedRandom:
+    """ Select random index using weights.
+            Runs faster than weighted_random func if you need several selections.
+    """
+
+    def __init__(self, weights):
+        total_sum = float(sum(weights))
+        self.weights = []
+        prev_sum = 0
+        for weight in weights:
+            prev_sum += weight
+            self.weights.append(prev_sum / total_sum)
+
+    def get(self):
+        return bisect.bisect(self.weights, random())
+
+
+def distance_from_point_to_line(point, point_on_line, vector_of_line):
+    point, point_on_line, vector_of_line = Vector3(point), Vector3(point_on_line), Vector3(vector_of_line)
+    return ((point - point_on_line) * vector_of_line).length / vector_of_line.length
+
+
+def is_point_in_cylinder(point, cylinder_cap_center, cylinder_vector, cylinder_radius):
+    """ is_point_in_cylinder(impact_point, fire_src_point, fire_vector, valid_impact_threshold)"""
+    return distance_from_point_to_line(point, cylinder_cap_center, cylinder_vector) <= cylinder_radius
+
+
+def lerp(value1, value2, amount):
+    """ \xd0\xbb\xd0\xb8\xd0\xbd\xd0\xb5\xd0\xb9\xd0\xbd\xd0\xb0\xd1\x8f \xd0\xb8\xd0\xbd\xd1\x82\xd0\xb5\xd1\x80\xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8f\xd1\x86\xd0\xb8\xd1\x8f (0 < amount < 1) """
+    return (value2 - value1) * amount + value1
+
+
+def lerp_angle(value1, value2, amount):
+    """ \xd0\xbb\xd0\xb8\xd0\xbd\xd0\xb5\xd0\xb9\xd0\xbd\xd0\xb0\xd1\x8f \xd0\xb8\xd0\xbd\xd1\x82\xd0\xb5\xd1\x80\xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8f\xd1\x86\xd0\xb8\xd1\x8f \xd1\x83\xd0\xb3\xd0\xbb\xd0\xbe\xd0\xb2 (0 < amount < 1) \xd0\xb2 \xd1\x80\xd0\xb0\xd0\xb4\xd0\xb8\xd0\xb0\xd0\xbd\xd0\xb0\xd1\x85
+    (\xd1\x80\xd0\xb0\xd0\xb1\xd0\xbe\xd1\x82\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x82\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xba\xd0\xbe \xd0\xbd\xd0\xb0 \xd0\xba\xd0\xbb\xd0\xb8\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb5)
+    """
+    q1 = Quaternion()
+    q2 = Quaternion()
+    q3 = Quaternion()
+    q1.fromAngleAxis(value1, Vector3(0, 1, 0))
+    q2.fromAngleAxis(value2, Vector3(0, 1, 0))
+    q3.slerp(q1, q2, amount)
+    return q3.axisAngle()[1]
+
+
+def get_angle(angle_a, angle_b):
+    """ \xd1\x83\xd0\xb3\xd0\xbe\xd0\xbb \xd0\xbc\xd0\xb5\xd0\xb6\xd0\xb4\xd1\x83 \xd1\x83\xd0\xb3\xd0\xbb\xd0\xb0\xd0\xbc\xd0\xb8 (\xd0\xb2 \xd1\x80\xd0\xb0\xd0\xb4\xd0\xb8\xd0\xb0\xd0\xbd\xd0\xb0\xd1\x85) """
+    return abs((angle_a - angle_b + math.pi) % (math.pi * 2) - math.pi)
+
+
+def calculate_reflection(collision_point, collistion_vector, collision_triangle):
+    """ collision_point - \xd1\x82\xd0\xbe\xd1\x87\xd0\xba\xd0\xb0 \xd1\x81\xd1\x82\xd0\xbe\xd0\xbb\xd0\xba\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f
+            collision_vector - \xd0\xbd\xd0\xb0\xd0\xbf\xd1\x80\xd0\xb0\xd0\xb2\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd1\x81\xd1\x82\xd0\xbe\xd0\xbb\xd0\xba\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f
+            collision_triangle - \xd1\x82\xd1\x80\xd0\xb8 \xd1\x82\xd0\xbe\xd1\x87\xd0\xba\xd0\xb8, \xd0\xba\xd0\xbe\xd1\x82\xd0\xbe\xd1\x80\xd1\x8b \xd1\x85\xd0\xb0\xd1\x80\xd0\xb0\xd0\xba\xd1\x82\xd0\xb5\xd1\x80\xd0\xb8\xd0\xb7\xd1\x83\xd1\x8e\xd1\x82 \xd0\xbc\xd0\xb5\xd1\x81\xd1\x82\xd0\xbe \xd1\x83\xd0\xb4\xd0\xb0\xd1\x80\xd0\xb0
+            \xd0\xb5\xd1\x81\xd0\xbb\xd0\xb8 \xd0\xbf\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x80\xd1\x85\xd0\xbd\xd0\xbe\xd1\x81\xd1\x82\xd1\x8c \xd0\xb2\xd1\x8b\xd0\xb2\xd0\xb5\xd1\x80\xd0\xbd\xd1\x83\xd1\x82\xd0\xb0, \xd1\x81\xd0\xba\xd0\xbe\xd1\x80\xd1\x80\xd0\xb5\xd0\xba\xd1\x82\xd0\xb8\xd1\x80\xd1\x83\xd0\xb5\xd1\x82\xd1\x81\xd1\x8f \xd0\xb0\xd0\xb2\xd1\x82\xd0\xbe\xd0\xbc\xd0\xb0\xd1\x82\xd0\xb8\xd1\x87\xd0\xb5\xd1\x81\xd0\xba\xd0\xb8
+    """
+    vector1 = collision_triangle[0] - collision_triangle[1]
+    vector2 = collision_triangle[0] - collision_triangle[2]
+    collistion_vector.normalise()
+    normal = vector1 * vector2
+    normal.normalise()
+    dot = collistion_vector.dot(normal)
+    if dot > 0.0:
+        normal = -normal
+        dot = collistion_vector.dot(normal)
+    result = collistion_vector - normal * dot * 2
+    result.normalise()
+    return (result, normal)
+
+
+def erf(x):
+    """approximation of http://en.wikipedia.org/wiki/Error_function"""
+    sign = 1 if x >= 0 else -1
+    x = abs(x)
+    t = 1.0 / (1.0 + 0.3275911 * x)
+    return sign * (1.0 - ((((1.061405429 * t + -1.453152027) * t + 1.421413741) * t + -0.284496736) * t + 0.254829592) * t * math.exp(-x ** 2))

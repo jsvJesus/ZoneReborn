@@ -1,0 +1,634 @@
+# Embedded file name: ./scripts/client/Anomaly.py
+import functools
+import random
+import traceback
+import sys
+import BigWorld
+import fader_object
+import Constants
+import Helpers.Caps
+import ItemsUtils
+import FX
+from FX.persistent_ext_bg import loadPersistentExtBG
+import Pixie
+import GUI
+from Settings import Settings
+from Config import Anomalies as Cfg
+from AnomalyCommon import AnomalyCommon
+from Damager import Damager
+from Items import ItemsCatalog
+from Localization import lc
+from ChatChannelConfig import ChannelConsts
+from Radiometer import RadiationSource
+import sfx
+import time
+from Throwable import Throwable
+CHANNEL_CONSTS = ChannelConsts()
+DEBUG = False
+
+def set_debug_mode(status):
+    global DEBUG
+    DEBUG = status
+    for e in BigWorld.entities.values():
+        if isinstance(e, Anomaly):
+            e._update_debug_text()
+            if DEBUG:
+                e._show_debug()
+            else:
+                e._hide_debug()
+
+
+class DroppedItemEmulation(object):
+    """\xd0\x98\xd0\xbc\xd0\xb8\xd1\x82\xd0\xb8\xd1\x80\xd1\x83\xd0\xb5\xd1\x82 \xd0\xb2\xd0\xbd\xd0\xb5\xd1\x88\xd0\xbd\xd0\xb8\xd0\xb9 \xd0\xb2\xd0\xb8\xd0\xb4 \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0 \xd0\xbf\xd0\xbe\xd1\x80\xd0\xbe\xd0\xb6\xd0\xb4\xd0\xb5\xd0\xbd\xd0\xbd\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb5\xd0\xb9."""
+
+    def __init__(self, item_type, master, callback = None):
+        """\xd0\x9a\xd0\xbe\xd0\xbd\xd1\x81\xd1\x82\xd1\x80\xd1\x83\xd0\xba\xd1\x82\xd0\xbe\xd1\x80."""
+        self.item_type = item_type
+        self.master = master
+        self.model = None
+        self.particles = None
+        self.empty_model = None
+        self.callback = callback
+        self._create_model()
+        return
+
+    def get_model(self):
+        """\xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd1\x8c \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0."""
+        return self.model
+
+    def start_animation(self):
+        """\xd0\x97\xd0\xb0\xd0\xbf\xd1\x83\xd1\x81\xd0\xba\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb0\xd0\xbd\xd0\xb8\xd0\xbc\xd0\xb0\xd1\x86\xd0\xb8\xd1\x8e \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0."""
+        particle_name = self._getParticleName()
+        if not particle_name:
+            print particle_name, 'failed to load'
+        self.particles = Pixie.create(particle_name)
+        self.empty_model = BigWorld.Model('models/misc/particles/helper_attach.model')
+        self.empty_model.position = self.model.position
+        try:
+            self.master.model.root.attach(self.empty_model)
+            self.empty_model.root.attach(self.particles)
+            self.particles.force()
+        except KeyError:
+            print 'Error init dropped item, item type: {0}, particle name: {1}'.format(self.item_type, particle_name)
+            traceback.print_stack()
+
+        try:
+            self.model.idle()
+        except AttributeError:
+            pass
+
+    def stop_animation(self):
+        """\xd0\x9e\xd1\x82\xd0\xba\xd0\xbb\xd1\x8e\xd1\x87\xd0\xb8\xd1\x82\xd1\x8c \xd0\xb2\xd0\xb8\xd0\xb7\xd1\x83\xd0\xb0\xd0\xbb\xd1\x8c\xd0\xbd\xd1\x8b\xd0\xb5 \xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82\xd1\x8b \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0."""
+        if self.particles:
+            self.particles.clear()
+        try:
+            self.master.model.root.detach(self.empty_model)
+        except:
+            traceback.print_exc()
+
+        try:
+            self.master.model.root.detach(self.model)
+        except:
+            traceback.print_exc()
+
+        self.model = None
+        self.empty_model = None
+        self.particles = None
+        self.master = None
+        return
+
+    def _create_model(self):
+        """\xd0\xa1\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd1\x8c \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0."""
+
+        def _onLoadModel(model):
+            if not self.master:
+                return
+            elif self.master.isDestroyed:
+                return
+            else:
+                self.model = model
+                if self.model is None:
+                    print model, 'failed to load'
+                self.model.position = self.master.position - (0, 0.1, 0)
+                if self.callback:
+                    self.callback(self.model)
+                return
+
+        model_name = self._getModelName()
+        self.name = ItemsUtils.GetItemName(self.item_type)
+        if isinstance(model_name, list):
+            model_name.append(_onLoadModel)
+            BigWorld.fetchModel(*model_name)
+        else:
+            item_class = ItemsCatalog.GetItemClass(self.item_type)
+            if item_class in [ItemsCatalog.ARTIFACT]:
+                BigWorld.fetchModel(model_name, _onLoadModel)
+            else:
+                BigWorld.fetchModelObstacle(model_name, self.master.matrix, 0, _onLoadModel)
+
+    def _getModelName(self):
+        """\xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x83\xd1\x82\xd1\x8c \xd0\xb4\xd0\xbe \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd0\xb8."""
+        item_params = ItemsCatalog.GetItemParam(self.item_type)
+        if item_params.has_key('OnFlorModel'):
+            item_model = item_params['OnFlorModel']
+        else:
+            item_model = self._getModelNameByNamesDict(item_params['ModelNames'].values())
+        return item_model
+
+    def _getParticleName(self):
+        """\xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x83\xd1\x82\xd1\x8c \xd0\xb4\xd0\xbe \xd0\xbf\xd0\xb0\xd1\x80\xd1\x82\xd0\xb8\xd0\xba\xd0\xbb\xd0\xb5\xd0\xb9."""
+        item_params = ItemsCatalog.GetItemParam(self.item_type)
+        if item_params.has_key('ParticleName'):
+            ps = item_params['ParticleName']
+        else:
+            ps = 'particles/item_light.xml'
+        return ps
+
+    def _getModelNameByNamesDict(self, names_dict):
+        """????"""
+        if names_dict:
+            if len(names_dict) == 1:
+                return names_dict[0]
+            else:
+                return names_dict
+        else:
+            return None
+        return None
+
+
+class Anomaly(BigWorld.Entity, AnomalyCommon, Damager, RadiationSource):
+    """\xd0\xa1\xd1\x83\xd1\x89\xd0\xbd\xd0\xbe\xd1\x81\xd1\x82\xd1\x8c-\xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd1\x8f \xd0\xbd\xd0\xb0 \xd0\xba\xd0\xbb\xd0\xb8\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb5."""
+    ARTIFACT_WALL_RADIUS = Constants.INTERACTION_DISTANCE + 0.1
+    NO_SPAWNED_ITEMS = 0
+    artifactVisionRadius = 15
+
+    def __init__(self):
+        """\xd0\xa1\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd1\x91\xd1\x82 \xd1\x81\xd1\x83\xd1\x89\xd0\xbd\xd0\xbe\xd1\x81\xd1\x82\xd1\x8c \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb8.
+        
+        self.sfx_main - \xd0\xbe\xd1\x81\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xbd\xd0\xbe\xd0\xb9 \xd1\x86\xd0\xb8\xd0\xba\xd0\xbb\xd0\xb8\xd1\x87\xd0\xb5\xd1\x81\xd0\xba\xd0\xb8\xd0\xb9 \xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82 \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb8
+        self.sfx_inside - \xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82\xd1\x8b \xd0\xb2\xd0\xbd\xd1\x83\xd1\x82\xd1\x80\xd0\xb8 \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb8 (\xd0\xbf\xd0\xbe\xd1\x81\xd0\xbb\xd0\xb5 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb2\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xba\xd1\x80\xd1\x83\xd0\xb3\xd0\xb0)
+        self.sfx_target - \xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82\xd1\x8b \xd0\xbd\xd0\xb0\xd0\xba\xd0\xb8\xd0\xb4\xd1\x8b\xd0\xb2\xd0\xb0\xd1\x8e\xd1\x89\xd0\xb8\xd0\xb5\xd1\x81\xd1\x8f \xd0\xbd\xd0\xb0 \xd0\xb8\xd0\xb3\xd1\x80\xd0\xbe\xd0\xba\xd0\xb0 \xd0\xb2
+        \xd1\x86\xd0\xb5\xd0\xbd\xd1\x82\xd1\x80\xd0\xb0\xd0\xbb\xd1\x8c\xd0\xbd\xd0\xbe\xd0\xbc \xd0\xba\xd1\x80\xd1\x83\xd0\xb3\xd0\xb5 \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb8
+        
+        """
+        BigWorld.Entity.__init__(self)
+        self.loaded_resources = None
+        self.sfx_main = None
+        self.sfx_main_callback = None
+        self.sfx_inside = None
+        self.sfx_target = None
+        self.model_path = 'models/misc/particles/helper_attach.model'
+        self.model = None
+        self.item_model = None
+        self.item_emul = None
+        self.potID = None
+        self.potShowItemID = None
+        self.store_sounds = {}
+        self.current_sfx_state = Cfg.STRING_STATE.get(self.state, 'sfx_main')
+        self.targetCaps = []
+        self.item_availability = [Helpers.Caps.CAP_CAN_PICKUP]
+        self._sound_anomaly_roof_modif = 1.0
+        self._fader_anomaly_sound = fader_object.Fader(1.0, 1.0, self._onFaderAnomalySound)
+        return
+
+    def artifact_wall_action(self, enteredTrap, handle):
+        """\xd0\xad\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82 \xd1\x81\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd1\x8e\xd1\x89\xd0\xb8\xd0\xb9 \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xbf\xd0\xbe\xd0\xbf\xd1\x8b\xd1\x82\xd0\xba\xd0\xb5 \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xbe\xd0\xb9\xd1\x82\xd0\xb8 \xd0\xb1\xd0\xbb\xd0\xb8\xd0\xb7\xd0\xba\xd0\xbe \xd0\xba \xd0\xb0\xd1\x80\xd1\x82\xd0\xb5\xd1\x84\xd0\xb0\xd0\xba\xd1\x82\xd1\x83."""
+        if enteredTrap and self.client_spawned_item:
+            player = BigWorld.player()
+            if player.dead:
+                return
+            player.putMessage(CHANNEL_CONSTS.SYSTEM, lc('Anomaly.client.artifact_wall_msg'))
+            player.take_two_steps_backward(self)
+            player.affect_avatar_from_artifact_wall()
+            self.cell.do_artifact_wall_animation()
+
+    def cycle_effect(self):
+        """\xd0\xa6\xd0\xb8\xd0\xba\xd0\xbb\xd0\xb8\xd1\x87\xd0\xbd\xd0\xbe \xd0\xbf\xd0\xbe\xd0\xb2\xd1\x82\xd0\xbe\xd1\x80\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xbe\xd1\x81\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xbd\xd0\xbe\xd0\xb9 \xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82 \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb8."""
+        if self.isDestroyed:
+            return
+        if self.sfx_main:
+            self.sfx_main.go()
+        self.sfx_main_callback = BigWorld.callback(self.get_sfx_delay(), self.cycle_effect)
+
+    def do_artifact_wall_animation(self):
+        """\xd0\x92\xd0\xbe\xd1\x81\xd0\xbf\xd1\x80\xd0\xbe\xd0\xb8\xd0\xb7\xd0\xb2\xd0\xbe\xd0\xb4\xd0\xb8\xd1\x82 \xd0\xb5\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82 \xd0\xb7\xd0\xb0\xd1\x89\xd0\xb8\xd1\x89\xd0\xb0\xd1\x8e\xd1\x89\xd0\xb8\xd0\xb9 \xd0\xb0\xd1\x80\xd1\x82\xd0\xb5\xd1\x84\xd0\xb0\xd0\xba\xd1\x82 \xd0\xb2 \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb8."""
+        config = self.get_config()
+        if not config['sfx_artifact_wall']:
+            return
+        empty_model = BigWorld.Model('')
+        empty_model.position = self.position
+        self.addModel(empty_model)
+        duration = 10
+        one_shot_effect = FX.OneShot(fileName=config['sfx_artifact_wall'], maxDuration=duration)
+        one_shot_effect.go(self.model)
+
+        def del_model(empty_model):
+            try:
+                self.delModel(empty_model)
+            except Exception:
+                pass
+
+        BigWorld.callback(duration, functools.partial(del_model, empty_model))
+
+    def set_state(self, old_value):
+        """\xd0\x9c\xd0\xb5\xd1\x82\xd0\xbe\xd0\xb4 \xd1\x81\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xb2\xd1\x85\xd0\xbe\xd0\xb4\xd0\xb5/\xd0\xb2\xd1\x8b\xd1\x85\xd0\xbe\xd0\xb4\xd0\xb5 \xd0\xb2 \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd1\x8e."""
+        self._sound_anomaly_roof_modif = 1.0
+        if self._fader_anomaly_sound:
+            self._fader_anomaly_sound.stop()
+            self._fader_anomaly_sound.setValue(1.0)
+        if self.state == Cfg.States.SFX_MAIN and self._fader_anomaly_sound:
+            self._fader_anomaly_sound.blendTo(0, 1)
+        else:
+            self.stopSounds()
+        if self.sfx_target:
+            self.sfx_target = None
+        if self.state == Cfg.States.SFX_INSIDE:
+            if self.sfx_inside:
+                self.sfx_inside.go()
+            if self.sfx_main:
+                BigWorld.cancelCallback(self.sfx_main_callback)
+                self.sfx_main.stop()
+        else:
+            if self.sfx_inside:
+                self.sfx_inside.stop()
+            if self.sfx_main:
+                if self.sfx_main_callback is not None:
+                    BigWorld.cancelCallback(self.sfx_main_callback)
+                self.sfx_main_callback = BigWorld.callback(self.get_sfx_delay(), self.cycle_effect)
+        self.current_sfx_state = Cfg.STRING_STATE.get(self.state, 'sfx_main')
+        self._check_can_show_art()
+        self._update_debug_text()
+        return
+
+    def finalize(self):
+        """\xd0\x9e\xd1\x82\xd0\xba\xd0\xbb\xd1\x8e\xd1\x87\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82\xd1\x8b \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb8."""
+        if self.sfx_main_callback is not None:
+            BigWorld.cancelCallback(self.sfx_main_callback)
+            self.sfx_main_callback = None
+        try:
+            self.stopSounds()
+        except:
+            print 'anomaly:', self, self.position
+            traceback.print_exc()
+
+        attrs = ('sfx_main', 'sfx_inside')
+        for attr in attrs:
+            if getattr(self, attr):
+                getattr(self, attr).stop()
+                getattr(self, attr).detach()
+                setattr(self, attr, None)
+
+        if self.sfx_target:
+            self.sfx_target = None
+        if self.potID is not None:
+            BigWorld.delPot(self.potID)
+            self.potID = None
+        if self.potShowItemID is not None:
+            BigWorld.delPot(self.potShowItemID)
+            self.potShowItemID = None
+        if self.item_model is not None:
+            self.remove_item()
+        self.targetCaps = []
+        self.store_sounds = {}
+        if self._fader_anomaly_sound:
+            self._fader_anomaly_sound.stop()
+            self._fader_anomaly_sound = None
+        self.loaded_resources = None
+        return
+
+    def get_sfx_delay(self):
+        """\xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb8\xd0\xbd\xd1\x82\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb0\xd0\xbb \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb5\xd1\x80\xd0\xb6\xd0\xba\xd0\xb8 \xd0\xb3\xd0\xbb\xd0\xb0\xd0\xb2\xd0\xbd\xd0\xbe\xd0\xb3\xd0\xbe \xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82\xd0\xb0 \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb8."""
+        interval_lst = self.get_config()['sfx_main_interval']
+        bottom = abs(interval_lst[0])
+        top = abs(interval_lst[1])
+        return bottom + random.random() * (top - bottom)
+
+    def get_item_visible_param(self):
+        item_params = self.get_config()['visible_artifact']
+        return item_params.get(self.current_sfx_state, False)
+
+    def give_item_to_avatar(self, avatarID):
+        self.cell.give_item_to_avatar(avatarID)
+
+    def initialize(self):
+        """\xd0\x98\xd0\xbd\xd0\xb8\xd1\x86\xd0\xb8\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb7\xd0\xb0\xd1\x86\xd0\xb8\xd1\x8f \xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82\xd0\xbe\xd0\xb2 \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb8."""
+        self.initialize_state()
+
+    def initialize_state(self):
+        """\xd0\x98\xd0\xbd\xd0\xb8\xd1\x86\xd0\xb8\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb7\xd0\xb0\xd1\x86\xd0\xb8\xd1\x8f \xd1\x81\xd0\xbe\xd1\x81\xd1\x82\xd0\xbe\xd1\x8f\xd0\xbd\xd0\xb8\xd0\xb9."""
+        state_config = self.get_config()
+        if state_config['sfx_target']:
+            self.sfx_target = FX.OneShot(state_config['sfx_target'])
+        for attr_name in ('sfx_main', 'sfx_inside'):
+            if state_config[attr_name]:
+                self.store_sounds[attr_name] = {}
+
+                def onLoadFX(fx_obj, attr_name = 'nope'):
+                    if self.isDestroyed:
+                        return
+                    if not self.model:
+                        return
+                    setattr(self, attr_name, fx_obj)
+                    getattr(self, attr_name).attach(self.model)
+                    self.set_state(Cfg.States.SFX_MAIN)
+
+                loadPersistentExtBG(state_config[attr_name], lambda e, attr_name = attr_name: onLoadFX(e, attr_name), presq=self.loaded_resources, store_sounds=self.store_sounds[attr_name])
+
+        if state_config['sfx_main']:
+            self.sfx_main_callback = BigWorld.callback(self.get_sfx_delay(), self.cycle_effect)
+        self.potID = BigWorld.addPot(self.matrix, self.ARTIFACT_WALL_RADIUS, self.artifact_wall_action)
+
+    def _onFaderAnomalySound(self, volume):
+        if self.isDestroyed:
+            return
+        self._sound_anomaly_roof_modif = volume
+        self.updateSonuds()
+
+    def updateSonuds(self):
+        if not self.store_sounds:
+            return
+        player = BigWorld.player()
+        if not player:
+            return self._setSoundVolume(0.0)
+        def_volume = Settings().getSfxVolume()
+        vol = def_volume * self._sound_anomaly_roof_modif
+        self._setSoundVolume(vol)
+
+    def _setSoundVolume(self, volume):
+        if not self.store_sounds:
+            return
+        for sound_name, sound in self.store_sounds['sfx_inside'].items():
+            try:
+                sound.setVolume(volume)
+            except:
+                print 'Anomaly', repr(sound_name), volume
+                traceback.print_exc()
+
+        if volume == 0:
+            self.stopSounds()
+
+    def stopSounds(self):
+        if not self.store_sounds:
+            return
+        for state in self.store_sounds:
+            if not self.store_sounds[state]:
+                continue
+            for sound in self.store_sounds[state].values():
+                sound.stopSound()
+
+    def on_resources_loaded(self, callback, resources):
+        if self.inWorld:
+            self.loaded_resources = resources
+            callback()
+
+    def onEnterWorld(self, prereqs):
+        """\xd0\x97\xd0\xb0\xd0\xbf\xd1\x83\xd1\x81\xd0\xba\xd0\xb0\xd0\xb5\xd1\x82\xd1\x81\xd1\x8f \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xb2\xd1\x85\xd0\xbe\xd0\xb4\xd0\xb5 \xd0\xbf\xd0\xb5\xd1\x80\xd1\x81\xd0\xbe\xd0\xbd\xd0\xb0\xd0\xb6\xd0\xb0 \xd0\xb2 \xd0\xbc\xd0\xb8\xd1\x80."""
+        try:
+            if prereqs.failedIDs:
+                print '****', self.get_config()['__filename__']
+                print 'failedIDs:', prereqs.failedIDs
+                print 'loadded:', prereqs.items()
+        except:
+            traceback.print_exc()
+
+        conf = self.get_config()
+        start_load_sfx = time.time()
+        _ef_hit = _ef_fly = 0
+        if conf.get('stone_hit_effect'):
+            _ef_hit = time.time()
+            sfx.preloadBufferedOneShotSFX(conf.get('stone_hit_effect'), prereqs=prereqs, check_buffer=True, test_asyn=True)
+            _ef_hit = time.time() - _ef_hit
+        if conf.get('stone_fly_effect'):
+            _ef_fly = time.time()
+            sfx.preloadBufferedOneShotSFX(conf.get('stone_fly_effect'), prereqs=prereqs, check_buffer=True, test_asyn=True)
+            _ef_fly = time.time() - _ef_fly
+        dealy = time.time() - start_load_sfx
+        if dealy > 0.01:
+            print 'WARNING anomaly preloadBufferedOneShotSFX ', dealy, self.get_config()['__filename__']
+            print 'stone_hit_effect:', _ef_hit, conf.get('stone_hit_effect', 'not')
+            print 'stone_fly_effect:', _ef_fly, conf.get('stone_fly_effect', 'not')
+            print
+        self.loaded_resources = prereqs
+        if self.model_path not in self.loaded_resources.failedIDs:
+            self.model = self.loaded_resources[self.model_path]
+            if self.client_spawned_item != self.NO_SPAWNED_ITEMS:
+                self._add_spawned_item()
+        self.initialize()
+        if self.state == Cfg.States.SFX_INSIDE:
+            self.set_state(Cfg.States.SFX_MAIN)
+        self._update_debug_text()
+        if DEBUG:
+            self._show_debug()
+
+    def _update_debug_text(self):
+        if not DEBUG:
+            if getattr(self, '_debug_text_model', None):
+                self.delModel(self._debug_text_model)
+                self._debug_text_model = None
+            return
+        else:
+            if not getattr(self, '_debug_text_model', None):
+                model = BigWorld.Model('')
+                self.addModel(model)
+                model.position = self.position + (0, 2, 0)
+                textnode = GUI.Text('')
+                textnode.explicitSize = True
+                textnode.multiline = True
+                textnode.size = (3, 1)
+                textnode.colour = (255, 205, 149, 245)
+                textnode.filterType = 'LINEAR'
+                textnode.verticalAnchor = 'BOTTOM'
+                textnode.position = (0, 1, 0)
+                atch = GUI.Attachment()
+                atch.component = textnode
+                atch.faceCamera = True
+                model.root.attach(atch)
+                self._debug_text_model = model
+                self._attach = atch
+                self._textnode = textnode
+            path = self.get_config()['__filename__']
+            self._textnode.text = u'[{3}]{2}'.format(self.id, self.anomalyType, path, self.state)
+            return
+
+    def _show_debug(self):
+        self._hide_debug()
+        config = self.get_config()
+        self._model_in = BigWorld.Model('models/bolvan/helpers/cylinder_.model')
+        self._model_in_up = BigWorld.Model('models/bolvan/helpers/cylinder_.model')
+        self._model_out = BigWorld.Model('models/bolvan/helpers/cylinder_.model')
+        self._model_in.position = self.position + (0, 0.1, 0)
+        self._model_in_up.position = self.position + (0, config['height_up'], 0)
+        self._model_out.position = self._model_in.position
+        self.addModel(self._model_in)
+        self.addModel(self._model_out)
+        self.addModel(self._model_in_up)
+        radius = config['radius']
+        radiusOut = config.get('radiusOut')
+        if not radiusOut:
+            radiusOut = 10.0
+        self._model_in.scale = (radius, 0.05, radius)
+        self._model_in_up.scale = (radius, 0.05, radius)
+        self._model_out.scale = (radiusOut, 0.05, radiusOut)
+        self._model_out.empty = 'rad'
+
+    def _hide_debug(self):
+        for x in ('_model_in_up', '_model_in', '_model_out'):
+            model = getattr(self, x, None)
+            if model:
+                self.delModel(model)
+                setattr(self, x, None)
+
+        return
+
+    def onLeaveWorld(self):
+        """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xbf\xd0\xbe\xd0\xba\xd0\xb8\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd0\xb8 \xd0\xbc\xd0\xb8\xd1\x80\xd0\xb0 \xd0\xbf\xd0\xb5\xd1\x80\xd1\x81\xd0\xbe\xd0\xbd\xd0\xb0\xd0\xb6\xd0\xb5\xd0\xbc."""
+        self.finalize()
+        self.loaded_resources = None
+        self.model = None
+        return
+
+    def onShot(self, target_id):
+        """\xd0\x9a\xd1\x80\xd0\xb0\xd1\x82\xd0\xba\xd0\xbe\xd0\xb2\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb9 \xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82 \xd0\xbd\xd0\xb0 \xd0\xb8\xd0\xb3\xd1\x80\xd0\xbe\xd0\xba\xd0\xb5 \xd0\xb2 \xd1\x86\xd0\xb5\xd0\xbd\xd1\x82\xd1\x80\xd0\xb5 \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb8 \xd0\xb8 \xd0\xbf\xd0\xbe\xd1\x81\xd0\xbb\xd0\xb5 \xd0\xb2\xd1\x8b\xd1\x85\xd0\xbe\xd0\xb4\xd0\xb0"""
+        if self.sfx_target:
+            entity = BigWorld.entities.get(target_id)
+            if entity:
+                self.sfx_target.go(entity.model)
+
+    def prerequisites(self):
+        """\xd0\x9f\xd1\x80\xd0\xb5\xd0\xb4\xd1\x83\xd1\x81\xd1\x82\xd0\xb0\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xba\xd0\xb8."""
+        return self.required_resources()
+
+    def remove_item(self):
+        """\xd0\xa3\xd0\xb4\xd0\xb0\xd0\xbb\xd0\xb8\xd1\x82\xd1\x8c \xd0\xbf\xd1\x80\xd0\xb5\xd0\xba\xd1\x80\xd0\xb5\xd0\xbf\xd0\xbb\xd1\x91\xd0\xbd\xd0\xbd\xd1\x83\xd1\x8e \xd1\x8d\xd0\xbc\xd1\x83\xd0\xbb\xd1\x8f\xd1\x86\xd0\xb8\xd1\x8e \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0 \xd0\xb8 \xd0\xbe\xd1\x82\xd0\xba\xd0\xbb\xd1\x8e\xd1\x87\xd0\xb8\xd1\x82\xd1\x8c \xd0\xb5\xd0\xb3\xd0\xbe \xd0\xb0\xd0\xbd\xd0\xb8\xd0\xbc\xd0\xb0\xd1\x86\xd0\xb8\xd1\x8e."""
+        if not self.item_emul:
+            return
+        else:
+            self.item_emul.stop_animation()
+            self.item_emul = None
+            self.item_model = None
+            self.targetCaps = []
+            return
+
+    def required_resources(self):
+        """\xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xb7\xd0\xb0\xd0\xb3\xd1\x80\xd1\x83\xd0\xb7\xd0\xbe\xd1\x87\xd0\xbd\xd1\x8b\xd0\xb5 \xd1\x80\xd0\xb5\xd1\x81\xd1\x83\xd1\x80\xd1\x81\xd1\x8b."""
+        resources = [self.model_path]
+        config = self.get_config()
+        keys = ('sfx_target', 'sfx_artifact_wall', 'stone_hit_effect', 'stone_fly_effect')
+        for key in keys:
+            if config.get(key):
+                resources.append(config[key])
+
+        resources = filter(lambda x: x, resources)
+        resources = filter(lambda x: '.' in x, resources)
+        return resources
+
+    def reset_params(self, anomalyType):
+        """ Works like anomaly was recreated."""
+        self.finalize()
+        self.anomalyType = anomalyType
+        BigWorld.loadResourceListBG(self.required_resources(), functools.partial(self.on_resources_loaded, self.initialize))
+
+    def set_client_spawned_item(self, old_value):
+        """\xd0\x9c\xd0\xb5\xd1\x82\xd0\xbe\xd0\xb4 \xd1\x81\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xb8\xd0\xb7\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb8 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xbd\xd0\xbe\xd0\xb9 \xd0\xbd\xd0\xb0 \xd1\x81\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb5\xd1\x80\xd0\xb5."""
+        if old_value == self.client_spawned_item:
+            return
+        self._check_can_show_art()
+        self._check_avatar_in_wall_radius()
+
+    def _check_can_show_art(self):
+        """\xd0\x9f\xd0\xbe\xd0\xba\xd0\xb0\xd0\xb7\xd0\xb0\xd1\x82\xd1\x8c/\xd1\x81\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8c \xd0\xb0\xd1\x80\xd1\x82\xd0\xb8\xd1\x84\xd0\xb0\xd0\xba\xd1\x82 \xd0\xb2 \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb8."""
+        visible = self.get_item_visible_param()
+        if self.client_spawned_item == self.NO_SPAWNED_ITEMS or not visible:
+            self.remove_item()
+            self.targetCaps = []
+            return
+        else:
+            if self.item_emul is None:
+                self._add_spawned_item()
+                self.targetCaps = self.item_availability
+            return
+
+    def _add_spawned_item(self):
+        """\xd0\x94\xd0\xbe\xd0\xb1\xd0\xb0\xd0\xb2\xd0\xb8\xd1\x82\xd1\x8c \xd0\xba \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd0\xb5 \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb8 \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd1\x8c \xd0\xbf\xd0\xbe\xd1\x80\xd0\xbe\xd0\xb6\xd0\xb4\xd1\x91\xd0\xbd\xd0\xbd\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0."""
+        if not self.get_item_visible_param():
+            return
+
+        def onLoadArtModel(model):
+            if self.item_emul is None:
+                return
+            else:
+                self.model.root.attach(model)
+                self.item_model = model
+                self.targetCaps = self.item_availability
+                self.item_emul.start_animation()
+                return
+
+        self.item_emul = DroppedItemEmulation(self.client_spawned_item, self, onLoadArtModel)
+
+    def _check_avatar_in_wall_radius(self):
+        """
+        \xd0\x9f\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x80\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xbd\xd0\xb5 \xd0\xbd\xd0\xb0\xd1\x85\xd0\xbe\xd0\xb4\xd0\xb8\xd1\x82\xd1\x81\xd1\x8f \xd0\xbb\xd0\xb8 \xd0\x90\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0\xd1\x80 \xd0\xb2 \xd1\x80\xd0\xb0\xd0\xb4\xd0\xb8\xd1\x83\xd1\x81\xd0\xb5 
+        \xd0\xbf\xd0\xbe\xd1\x80\xd0\xb0\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb8 \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xbf\xd0\xbe\xd1\x8f\xd0\xb2\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb8 \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0.
+        """
+        player = BigWorld.player()
+        distance = self.position.distTo(player.position)
+        if distance <= self.ARTIFACT_WALL_RADIUS:
+            self.artifact_wall_action(enteredTrap=True, handle=None)
+        return
+
+    def is_hidden(self):
+        """ \xd1\x81\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd0\xb0\xd1\x8f \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd1\x8f (\xd0\xbd\xd0\xb5 \xd0\xb2\xd0\xb7\xd0\xb0\xd0\xb8\xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xb9\xd1\x81\xd1\x82\xd0\xb2\xd1\x83\xd0\xb5\xd1\x82 \xd1\x81 \xd0\xba\xd0\xb0\xd0\xbc\xd0\xbd\xd1\x8f\xd0\xbc\xd0\xb8) """
+        return self.get_config().get('stone_proof', False)
+
+    def can_destroy_stone(self):
+        """ \xd1\x83\xd0\xbd\xd0\xb8\xd1\x87\xd1\x82\xd0\xbe\xd0\xb6\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb1\xd1\x80\xd0\xbe\xd1\x88\xd0\xb5\xd0\xbd\xd1\x8b \xd0\xba\xd0\xb0\xd0\xbc\xd0\xbd\xd0\xb8 """
+        return self.get_config().get('destroy_stone', True)
+
+    def get_collision_particle_effect(self):
+        """ \xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82 \xd0\xb2 \xd1\x82\xd0\xbe\xd1\x87\xd0\xba\xd0\xb5 \xd0\xbf\xd0\xbe\xd0\xbf\xd0\xb0\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xba\xd0\xb0\xd0\xbc\xd0\xbd\xd1\x8f \xd0\xb2 \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd1\x8e """
+        return self.get_config().get('stone_hit_effect') or None
+
+    def get_stone_fly_effect(self):
+        """ \xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82 \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x91\xd1\x82\xd0\xb0 \xd0\xba\xd0\xb0\xd0\xbc\xd0\xbd\xd1\x8f \xd1\x87\xd0\xb5\xd1\x80\xd0\xb5 \xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc\xd0\xb0\xd0\xbb\xd0\xb8\xd1\x8e
+        \xd0\xb8\xd0\xbc\xd0\xb5\xd0\xb5\xd1\x82 \xd1\x81\xd0\xbc\xd1\x8b\xd1\x81\xd0\xbb, \xd1\x82\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xba\xd0\xbe \xd0\xb5\xd1\x81\xd0\xbb\xd0\xb8 \xd0\xb2\xd1\x8b\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xbe destroy_stone = False"""
+        return self.get_config().get('stone_fly_effect') or None
+
+    def anomaly_collide(self, position, stone_id, thrower_id, from_server):
+        if from_server and thrower_id == BigWorld.player().id:
+            return
+        stone = Throwable.get_by_origin(stone_id, thrower_id) if from_server else BigWorld.entities.get(stone_id)
+        if stone:
+            if self.can_destroy_stone():
+                stone.model.visible = False
+            else:
+                effect_name = self.get_stone_fly_effect()
+                if effect_name:
+                    sfx.bufferedOneShotSFX(effect_name, stone.model)
+        collision_effect = self.get_collision_particle_effect()
+        if collision_effect:
+            p = BigWorld.player()
+            direction = (0, 0, 0)
+            properties = {}
+            tmp_ent_id = BigWorld.createEntity('EmptyEntity', p.spaceID, 0, p.position, direction, properties)
+            ent = BigWorld.entity(tmp_ent_id)
+            m = BigWorld.Model('')
+            m.position = position
+            ent.models = [m]
+            sfx.bufferedOneShotSFX(collision_effect, m)
+            BigWorld.callback(10, lambda : BigWorld.destroyEntity(tmp_ent_id))
+
+    def radiation_params(self):
+        """ \xd0\xbf\xd1\x80\xd0\xb0\xd0\xbc\xd0\xb5\xd1\x82\xd1\x80\xd1\x8b \xd1\x80\xd0\xb0\xd0\xb4\xd0\xb8\xd0\xb0\xd1\x86\xd0\xb8\xd0\xb8 """
+        state_config = self.get_config()
+        radius = state_config['radius']
+        radius_out = state_config['radiusOut']
+        stack_min = state_config['radiation_effect_stack_min']
+        stack_max = state_config['radiation_effect_stack_max']
+        if state_config.get('radiation_effect'):
+            return (radius,
+             radius_out,
+             stack_max,
+             stack_min,
+             self.position)
+        else:
+            return None

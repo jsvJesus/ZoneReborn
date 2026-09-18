@@ -1,0 +1,178 @@
+# Embedded file name: ./scripts/common/EffectsFormulas.py
+from functools import partial
+from FiringDefs import FiringDefs, DamageTypes, BODY_ZONES
+import Stats
+
+def onlyValueFormula(subEf, baseEf, stacks, entity):
+    return subEf['value']
+
+
+def useStacksFormula(subEf, baseEf, stacks, entity):
+    return subEf['value'] * stacks
+
+
+def useStacksMinusFormula(subEf, baseEf, stacks, entity):
+    return subEf['value'] * max(stacks - subEf['stacksMinus'], 0)
+
+
+def modificatorMultiplyFormula(subEf, baseEf, stacks, entity):
+    return subEf['value'] * baseEf['modifier']
+
+
+def modificatorMultiplyAndStacksFormula(subEf, baseEf, stacks, entity):
+    return subEf['value'] * stacks * baseEf['modifier']
+
+
+def fullDurationFormula(subEf, baseEf, stacks, entity):
+    duration = baseEf['duration'] + (baseEf['stacks'] - 1) * baseEf['stackDuration']
+    return duration
+
+
+def radiationStacksFormula(subEf, baseEf, stacks, entity):
+    radiationDef = entity.get_defence(BODY_ZONES.TORSO, DamageTypes.RADIATION)
+    return stacks * round(subEf['value'] * (1 - min(0.95, radiationDef * 0.001)))
+
+
+def bioDefOnHeadStacksFormula(subEf, baseEf, stacks, entity):
+    bioDef = entity.get_defence(BODY_ZONES.HEAD, DamageTypes.BIO)
+    return subEf['value'] * stacks * (1.0 - min(1.0, bioDef * 0.001))
+
+
+def damageTypeStacksFormula(subEf, baseEf, stacks, entity):
+    _damageType = baseEf['damageType']
+    _dmgDef = entity.get_defence(BODY_ZONES.TORSO, _damageType)
+    return subEf['value'] * round(stacks * (1 - min(0.95, _dmgDef * 0.001)))
+
+
+def impactIfHasEffectFormula(subEf, baseEf, stacks, entity):
+    otherEffectStacks = entity.getEffectStacks(subEf['otherEffectID'])
+    return subEf['value'] * min(otherEffectStacks, 1)
+
+
+def impactIfHasNotEffectFormula(subEf, baseEf, stacks, entity):
+    otherEffectStacks = entity.getEffectStacks(subEf['otherEffectID'])
+    if otherEffectStacks == 0:
+        return subEf['value']
+    else:
+        return 0
+
+
+def impactIfHasEffectList_AND_Formula(subEf, baseEf, stacks, entity):
+    for other_eff_id in subEf['otherEffectIDlist']:
+        otherEffectStacks = entity.getEffectStacks(other_eff_id)
+        if otherEffectStacks <= 0:
+            return 0
+
+    return subEf['value']
+
+
+def impactIfHasEffectList_NOT_AND_Formula(subEf, baseEf, stacks, entity):
+    for other_eff_id in subEf['otherEffectIDlist']:
+        otherEffectStacks = entity.getEffectStacks(other_eff_id)
+        if otherEffectStacks <= 0:
+            return subEf['value']
+
+    return 0
+
+
+def impactIfHasEffectList_OR_Formula(subEf, baseEf, stacks, entity):
+    for other_eff_id in subEf['otherEffectIDlist']:
+        otherEffectStacks = entity.getEffectStacks(other_eff_id)
+        if otherEffectStacks > 0:
+            return subEf['value']
+
+    return 0
+
+
+def impactIfHasEffectList_NOT_OR_Formula(subEf, baseEf, stacks, entity):
+    for other_eff_id in subEf['otherEffectIDlist']:
+        otherEffectStacks = entity.getEffectStacks(other_eff_id)
+        if otherEffectStacks > 0:
+            return 0
+
+    return subEf['value']
+
+
+def waterDamageByMetersFormula(subEf, baseEf, stacks, entity):
+    enableEffectLevel = entity.position[1] + 0.2
+    if enableEffectLevel < entity.waterHeight:
+        return subEf['value'] * round(entity.waterHeight - enableEffectLevel)
+    else:
+        return 0
+
+
+def underTheWaterFormula(subEf, baseEf, stacks, entity):
+    stamina_drain = subEf.get('stamina_drain', 0)
+    above_water_mult = subEf.get('above_water_mult', 0)
+    SIT_LEVEL = {1: 0.69,
+     3: 0.69,
+     2: 0.98,
+     4: 0.81}
+    NOSE_LEVEL = {(False, False): 1.58,
+     (True, False): 1.5,
+     (False, True): 1.1,
+     (True, True): 1.18}
+    sit_pose = entity.IsAvatarHaveSitPose()
+    if sit_pose:
+        enableEffectLevel = SIT_LEVEL[sit_pose]
+    else:
+        is_weapon = not entity.ActiveItemID == 0
+        is_crouch = entity.crouching
+        enableEffectLevel = NOSE_LEVEL[is_weapon, is_crouch]
+    underWaterLevel = abs(entity.position[1] - entity.waterHeight)
+    if enableEffectLevel < underWaterLevel:
+        stamina = entity.GetStatValue(Stats.ch_Stamina)
+        if stamina_drain and stamina > stamina_drain:
+            entity.SetStatValue(Stats.ch_Stamina, stamina - stamina_drain)
+            return subEf['value'] // 2
+        else:
+            return subEf['value']
+    else:
+        return above_water_mult * subEf['value']
+
+
+def waterSlowingByMetersFormula(subEf, baseEf, stacks, entity):
+    enableEffectLevel = entity.position[1] + 0.15
+    maxValue = 2
+    if enableEffectLevel < entity.waterHeight:
+        return subEf['value'] * min(entity.waterHeight - enableEffectLevel, maxValue)
+    else:
+        return 0
+
+
+def regenerationAvatarHPFormula(subEf, baseEf, stacks, entity):
+    regeneration_value = entity.GetStatValue(Stats.ch_HitPointsRegeneration)
+    return regeneration_value
+
+
+def regenerationAvatarMPFormula(subEf, baseEf, stacks, entity):
+    regeneration_value = entity.GetStatValue(Stats.ch_StaminaRegeneration)
+    return regeneration_value
+
+
+def regenerationAvatarCPFormula(subEf, baseEf, stacks, entity):
+    regeneration_value = entity.GetStatValue(Stats.ch_CombatPointsRegeneration)
+    return regeneration_value
+
+
+class Formula:
+    Value = partial(onlyValueFormula)
+    UseStacks = partial(useStacksFormula)
+    UseStacksMinus = partial(useStacksMinusFormula)
+    MultMod = partial(modificatorMultiplyFormula)
+    MultModAndStacks = partial(modificatorMultiplyAndStacksFormula)
+    FullDuration = partial(fullDurationFormula)
+    Radiation = partial(radiationStacksFormula)
+    BioDefOnHead = partial(bioDefOnHeadStacksFormula)
+    impactIfHasEffect = partial(impactIfHasEffectFormula)
+    impactIfHasNotEffect = partial(impactIfHasNotEffectFormula)
+    impactIfHas_OR_Effects = partial(impactIfHasEffectList_OR_Formula)
+    impactIfHas_AND_Effects = partial(impactIfHasEffectList_AND_Formula)
+    impactIfHas_NOT_OR_Effects = partial(impactIfHasEffectList_NOT_OR_Formula)
+    impactIfHas_NOT_AND_Effects = partial(impactIfHasEffectList_NOT_AND_Formula)
+    waterFormula = partial(waterDamageByMetersFormula)
+    waterUnderFormula = partial(underTheWaterFormula)
+    waterSlowing = partial(waterSlowingByMetersFormula)
+    regenerationHPAvatar = partial(regenerationAvatarHPFormula)
+    regenerationMPAvatar = partial(regenerationAvatarMPFormula)
+    regenerationCPAvatar = partial(regenerationAvatarCPFormula)

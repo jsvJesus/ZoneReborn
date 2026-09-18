@@ -1,0 +1,677 @@
+# Embedded file name: ./scripts/client/soGUI/base_to_capture_gui.py
+"""GUI \xd0\xb1\xd0\xb0\xd0\xb7\xd1\x8b \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xb7\xd0\xb0\xd1\x85\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0."""
+import functools
+import json
+import itertools
+import time
+import BWPersonality
+import BigWorld
+import GUI
+import ResMgr
+import Math
+import msgbox_templates
+import sounds
+from base_to_capture import flag_caption
+from base_to_capture.flags_info_storage import FlagsInfoStorage
+from base_to_capture.flying_camera import BaseToCaptureFlyingCam
+from base_to_capture.temp_flag_mgr import TempFlagManager
+from base_to_capture_common import properties_loaders
+from base_to_capture_common.utils import get_str_cost
+from base_to_capture_common.utils import get_str_cost_dct
+from base_to_capture_common.utils import check_money_buy
+from base_to_capture_common.utils import can_create_guardian
+from ChatChannelConfig import CHANNEL_CONSTS
+import client_utils
+from client_utils import get_coner_in_pixels, coords_to_pixels
+from gui_const import MESSAGEBOX
+from Helpers.PyGUI.DraggableComponent import DraggableComponent
+from Localization import lc
+from soGUI.soBaseFlagIndicator import soFlagIndicatorBuying
+from .FlashGUIBase import FlashScriptGUIBase
+from .flash_utils import FlashTeamWorker
+from .soFlagMarkers import PictureCaption
+from utils import ignoreError
+BUY_ALPHA = 0.8
+NORMAL_ALPHA = 0.1
+
+def get_rectangle_for_base_gui():
+    """
+    \xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd1\x8f\xd0\xbc\xd0\xbe\xd1\x83\xd0\xb3\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xbd\xd0\xb8\xd0\xba \xd0\xb2 \xd0\xba\xd0\xbe\xd1\x82\xd0\xbe\xd1\x80\xd0\xbe\xd0\xbc \xd0\xb4\xd0\xbe\xd0\xbb\xd0\xb6\xd0\xb5\xd0\xbd \xd0\xb1\xd1\x8b\xd1\x82\xd1\x8c GUI 
+    \xd0\xb1\xd0\xb0\xd0\xb7\xd1\x8b \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xb7\xd0\xb0\xd1\x85\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0 \xd0\xbf\xd0\xbe \xd1\x83\xd0\xbc\xd0\xbe\xd0\xbb\xd1\x87\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x8e.
+    """
+    bottom_cmp = BWPersonality.GUICore.munitionsGUI.component
+    top_cmp = BWPersonality.GUICore.systemMenu.component
+    top_pos_data = get_coner_in_pixels(top_cmp)
+    X, Y = (0, 1)
+    x = top_pos_data['corner'][X]
+    y = top_pos_data['corner'][Y] + top_cmp.height
+    width = top_cmp.width - 10
+    bottom_pos_data = get_coner_in_pixels(bottom_cmp)
+    height = min(bottom_pos_data['corner'][Y] - y, top_cmp.width * 2)
+    return {'corner': [x, y],
+     'width': width,
+     'height': height}
+
+
+def set_size_and_position_for_gui_base(component, init_positon = True):
+    """\xd0\x92\xd1\x8b\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xb8\xd1\x82\xd1\x8c \xd1\x80\xd0\xb0\xd0\xb7\xd0\xbc\xd0\xb5\xd1\x80\xd1\x8b \xd0\xb8 \xd0\xbf\xd0\xbe\xd0\xb7\xd0\xb8\xd1\x86\xd0\xb8\xd1\x8e \xd0\xb4\xd0\xbb\xd1\x8f GUI \xd0\xb1\xd0\xb0\xd0\xb7\xd1\x8b \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xb7\xd0\xb0\xd1\x85\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0."""
+    pos_data = get_rectangle_for_base_gui()
+    x, y = pos_data['corner']
+    if not init_positon:
+        x = min(x, component.position[0])
+        _sW, sH = BigWorld.screenSize()
+        if component.position[1] < sH:
+            y = component.position[1]
+    component.position = (x, y, 0.5)
+    component.width = pos_data['width']
+    component.height = pos_data['height']
+
+
+class BaseToCaptureGUI(FlashScriptGUIBase, FlashTeamWorker, DraggableComponent):
+    """\xd0\x9e\xd0\xba\xd0\xbd\xd0\xbe \xd0\xbf\xd0\xbe\xd0\xba\xd0\xb0\xd0\xb7\xd1\x8b\xd0\xb2\xd0\xb0\xd1\x8e\xd1\x89\xd0\xb5\xd0\xb5 \xd0\xb8\xd0\xbd\xd1\x84\xd0\xbe\xd1\x80\xd0\xbc\xd0\xb0\xd1\x86\xd0\xb8\xd1\x8e \xd0\xbe \xd0\xb1\xd0\xb0\xd0\xb7\xd0\xb0\xd1\x85 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xb7\xd0\xb0\xd1\x85\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0."""
+    factoryString = 'BaseToCaptureGUI'
+
+    def __init__(self, component):
+        """\xd0\x9a\xd0\xbe\xd0\xbd\xd1\x81\xd1\x82\xd1\x80\xd1\x83\xd0\xba\xd1\x82\xd0\xbe\xd1\x80."""
+        FlashScriptGUIBase.__init__(self, component)
+        FlashTeamWorker.__init__(self)
+        DraggableComponent.__init__(self, True, True, True, 0, 0)
+        self.class_name = self.__class__.__name__
+        layer = BWPersonality.GUICore.flashWorldLayer
+        self.bind_to_parrent_layer(layer)
+        self._flags_storage = FlagsInfoStorage()
+        self._temp_flags = {}
+        self._flying_cam = None
+        self._temp_flags_mgr = None
+        self.base_money = {'base_money': -1,
+         'base_gold': -1}
+        self._can_show = None
+        self._is_guardians_buying = None
+        self.guards_loop_id = None
+        self._current_base = None
+        self._cost_loader = properties_loaders.CostsLoader()
+        self._compact_size = {'width': 30,
+         'height': 30}
+        self._compact_state = False
+        self._on_buy_stop_callback = lambda : None
+        self.onDragging = self._send_current_comp_position
+        self._current_flag_camera = None
+        self.py_data = {}
+        self.flags_positions = {}
+        self._flag_captions = {}
+        self._caption_picture = 'soGUI/maps/inworldMarkers/NPC.tga'
+        self._current_base = None
+        self._flag_cost = {'gold_cost': -3,
+         'rouble_cost': -2}
+        self._guardian_cost = {'gold_cost': -3,
+         'rouble_cost': -2}
+        return
+
+    @classmethod
+    def create(cls, movie_path_name = None, backgroundAlpha = 0):
+        """\xd0\x9c\xd0\xb5\xd1\x82\xd0\xbe\xd0\xb4 \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x81\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb0."""
+        movie_path_name = 'extendedGUI/Flags.swf'
+        backgroundAlpha = 0.1
+        component = super(BaseToCaptureGUI, cls).create(movie_path_name, backgroundAlpha)
+        component.widthMode = component.heightMode = 'PIXEL'
+        component.horizontalPositionMode = component.verticalPositionMode = 'PIXEL'
+        component.horizontalAnchor = 'LEFT'
+        component.verticalAnchor = 'TOP'
+        component.materialFX = 'BLEND'
+        component.focus = True
+        component.mouseButtonFocus = True
+        component.crossFocus = True
+        component.dragFocus = True
+        component.moveFocus = True
+        component.position = (0.0, 0.0, 0.15)
+        set_size_and_position_for_gui_base(component)
+        return component
+
+    def doReposition(self):
+        """\xd0\x9f\xd1\x80\xd0\xb8 \xd0\xb8\xd0\xb7\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb8 \xd1\x80\xd0\xb0\xd0\xb7\xd1\x80\xd0\xb5\xd1\x88\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f \xd1\x8d\xd0\xba\xd1\x80\xd0\xb0\xd0\xbd\xd0\xb0 \xd0\xb4\xd0\xb5\xd0\xbb\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbe\xd1\x80\xd1\x80\xd0\xb5\xd0\xba\xd1\x82\xd0\xbd\xd1\x8b\xd0\xb9 \xd1\x80\xd0\xb0\xd0\xb7\xd0\xbc\xd0\xb5\xd1\x80 \xd1\x84\xd0\xbb\xd1\x8d\xd1\x88.
+        
+        \xd0\x95\xd1\x81\xd0\xbb\xd0\xb8 \xd0\xb8\xd0\xb7\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x82\xd1\x8c \xd1\x80\xd0\xb0\xd0\xb7\xd0\xbc\xd0\xb5\xd1\x80 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb0 \xd0\xb7\xd0\xb0 \xd0\xbe\xd0\xb4\xd0\xb8\xd0\xbd \xd1\x82\xd0\xb8\xd0\xba, \xd0\xbd\xd0\xb8\xd1\x87\xd0\xb5\xd0\xb3\xd0\xbe \xd0\xbd\xd0\xb5 \xd0\xbf\xd0\xbe\xd0\xbc\xd0\xb5\xd0\xbd\xd1\x8f\xd0\xb5\xd1\x82\xd1\x81\xd1\x8f,
+        \xd0\xbf\xd0\xbe\xd1\x8d\xd1\x82\xd0\xbe\xd0\xbc\xd1\x83 \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x83\xd1\x81\xd0\xba\xd0\xb0\xd0\xb5\xd1\x82\xd1\x81\xd1\x8f \xd0\xba\xd0\xbe\xd0\xbb\xd0\xb1\xd1\x8d\xd0\xba.
+        """
+        self.component.width = self.component.width + 1
+        self.component.height = self.component.height + 1
+        BigWorld.callback(0.1, self._do_reposition)
+
+    def _do_reposition(self):
+        """\xd0\x97\xd0\xb0\xd0\xba\xd0\xb0\xd0\xbd\xd1\x87\xd0\xb8\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb8\xd0\xb7\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd1\x80\xd0\xb0\xd0\xb7\xd0\xbc\xd0\xb5\xd1\x80\xd0\xb0 \xd1\x84\xd0\xbb\xd1\x8d\xd1\x88-\xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb0."""
+        self.component.width = self.component.width - 1
+        self.component.height = self.component.height - 1
+        set_size_and_position_for_gui_base(self.component, True)
+        self.compact_state(self._compact_state)
+
+    def externalInterfaceHandler(self, *args, **kws):
+        FlashTeamWorker.externalInterfaceHandler(self, *args, **kws)
+
+    def setBaseMoney(self, base_money):
+        self.base_money = base_money
+        self.set_base_money_and_cost()
+
+    @FlashTeamWorker.receiving_method
+    def ready(self):
+        """\xd0\xa4\xd0\xbb\xd1\x8d\xd1\x88 \xd0\xb2\xd1\x8b\xd0\xb7\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x8d\xd1\x82\xd1\x83 \xd1\x84\xd1\x83\xd0\xbd\xd0\xba\xd1\x86\xd0\xb8\xd1\x8e, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd0\xb3\xd0\xbe\xd1\x82\xd0\xbe\xd0\xb2\xd0\xb0 \xd0\xbf\xd1\x80\xd0\xb8\xd0\xbd\xd0\xb8\xd0\xbc\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd1\x8b."""
+        return self.send_screen_size()
+
+    @FlashTeamWorker.sending_method('screenSize')
+    def send_screen_size(self):
+        """\xd0\x9e\xd1\x82\xd0\xbf\xd1\x80\xd0\xb0\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd1\x8f\xd0\xbc\xd0\xbe\xd1\x83\xd0\xb3\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xbd\xd0\xb8\xd0\xba \xd0\xb2 \xd0\xba\xd0\xbe\xd1\x82\xd0\xbe\xd1\x80\xd0\xbe\xd0\xbc \xd0\xb4\xd0\xbe\xd0\xbb\xd0\xb6\xd0\xb5\xd0\xbd \xd0\xb1\xd1\x8b\xd1\x82\xd1\x8c GUI \xd0\xb1\xd0\xb0\xd0\xb7\xd1\x8b \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xb7\xd0\xb0\xd1\x85\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0."""
+        data = get_rectangle_for_base_gui()
+        x, y, _z = self.component.position
+        sW, sH = BigWorld.screenSize()
+        data['corner'] = [x / sW, y / sH]
+        data['compact_state'] = self._compact_state
+        return data
+
+    @FlashTeamWorker.exchanging_method
+    def localized_resource(self, paths):
+        """\xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xbe\xd1\x89\xd0\xb5\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd1\x84\xd0\xb0\xd0\xb9\xd0\xbb\xd1\x8b \xd0\xbb\xd0\xbe\xd0\xba\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb7\xd0\xb0\xd1\x86\xd0\xb8\xd0\xb8 \xd0\xb2 \xd1\x84\xd0\xbe\xd1\x80\xd0\xbc\xd0\xb0\xd1\x82\xd0\xb5 json."""
+        return FlashScriptGUIBase.localized_resource(self, paths)
+
+    @FlashTeamWorker.sending_method
+    def flag_height(self, base_name, flag_name, height):
+        """\xd0\xa1\xd0\xbe\xd0\xbe\xd0\xb1\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbe \xd0\xb2\xd1\x8b\xd1\x81\xd0\xbe\xd1\x82\xd0\xb5 \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xb0."""
+        if self._current_base != base_name:
+            return
+        flag = self._flags_storage.get_flag(base_name, flag_name)
+        flag.height = height
+        if self.is_buying_state:
+            return
+        player = BigWorld.player()
+        if player.is_hoist_flag:
+            self.flag_is_hoisting_sound()
+        return {'name': flag_name,
+         'height': height}
+
+    @FlashTeamWorker.sending_method
+    def base_owner(self, base_name, clan_owner):
+        """\xd0\x9e\xd0\xbf\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82, \xd1\x87\xd1\x82\xd0\xbe \xd1\x81\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xbb\xd1\x81\xd1\x8f \xd0\xb2\xd0\xbb\xd0\xb0\xd0\xb4\xd0\xb5\xd0\xbb\xd0\xb5\xd1\x86 \xd0\xb1\xd0\xb0\xd0\xb7\xd1\x8b."""
+        base = self._flags_storage.get_base(base_name)
+        old_clan_owner = base.clan_owner
+        base.clan_owner = clan_owner
+        if old_clan_owner and old_clan_owner != clan_owner:
+            player_clan_name = BigWorld.player().clanName
+            clan_color = '#b3b300'
+            if clan_owner == player_clan_name:
+                self.on_capture_base_sound()
+                clan_color = '#006f00'
+            elif old_clan_owner == player_clan_name:
+                self.on_lose_base_sound()
+            if clan_owner in BigWorld.player().clanEnemies:
+                clan_color = '#b90000'
+            base_col_name = u"<font color='#e4d5c6'>{0}</font>".format(lc('BaseToCaptureNames.%s' % base_name))
+            clan_col_name = u"<font color='{0}'>{1}</font>".format(clan_color, clan_owner.decode('utf-8'))
+            msg = lc('BaseToCapture.CLAN_CAPTURED_BASE').format(clan_col_name, base_col_name)
+            BWPersonality.GUICore.chatConsole.show_notification(msg)
+            BigWorld.player().putMessage(CHANNEL_CONSTS.SYSTEM, msg)
+        return clan_owner
+
+    @FlashTeamWorker.sending_method
+    def flag_clan_owner(self, base_name, flag_name, old_clan, clan_owner):
+        """\xd0\xa1\xd0\xbe\xd1\x85\xd1\x80\xd0\xb0\xd0\xbd\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xbd\xd0\xbe\xd0\xb2\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xb2\xd0\xbb\xd0\xb0\xd0\xb4\xd0\xb5\xd0\xbb\xd1\x8c\xd1\x86\xd0\xb0 \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xb0."""
+        if self._current_base != base_name:
+            return
+        flag = self._flags_storage.get_flag(base_name, flag_name)
+        old_clan_owner = flag.clan_owner
+        flag.clan_owner = clan_owner
+        if not self.is_buying_state:
+            if old_clan:
+                if flag.is_playeravatar_owner:
+                    self.on_capture_flag_sound()
+                elif old_clan == BigWorld.player().clanName:
+                    self.on_lose_flag_sound()
+            return {'name': flag_name,
+             'is_my_flag': flag.is_playeravatar_owner}
+
+    @FlashTeamWorker.sending_method
+    def change_status(self, base_name, state_code, start_capture_time):
+        """\xd0\x9e\xd0\xbf\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82, \xd1\x87\xd1\x82\xd0\xbe \xd0\xb1\xd0\xb0\xd0\xb7\xd0\xb0 \xd0\xb8\xd0\xb7\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xbb\xd0\xb0 \xd1\x81\xd1\x82\xd0\xb0\xd1\x82\xd1\x83\xd1\x81."""
+        base = self._flags_storage.get_base(base_name)
+        base.state = state_code
+        base.set_capture_time_start(start_capture_time)
+        if base.state == 2:
+            next_time = base.underatack_end_time - time.time()
+        else:
+            next_time = base.next_capture_time - time.time()
+        fully_update = functools.partial(self.fully_update_component, base_name)
+        BigWorld.callback(1, fully_update)
+        return {'state_code': state_code,
+         'next_time': next_time}
+
+    def adjust_flags_data(self, base_name, volatile_data):
+        """\xd0\x9e\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb8\xd1\x82\xd1\x8c \xd1\x83\xd1\x81\xd1\x82\xd0\xb0\xd1\x80\xd0\xb5\xd0\xb2\xd1\x88\xd0\xb8\xd0\xb5 \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5."""
+        base = self._flags_storage.get_base(base_name)
+        for flag_data in volatile_data.values():
+            flag_data['last_change'] += BWPersonality.gpd.time_diff
+            base.adjust_flag_data(flag_data['name'], flag_data['height'], flag_data['clan_owner_name'], flag_data['last_change'])
+
+        self._current_base = base_name
+        if not self.is_buying_state:
+            self.fully_update_component(base_name)
+
+    def rewrite_flags_data(self, base_name, new_data):
+        """\xd0\x9e\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb8\xd1\x82\xd1\x8c \xd1\x83\xd1\x81\xd1\x82\xd0\xb0\xd1\x80\xd0\xb5\xd0\xb2\xd1\x88\xd0\xb8\xd0\xb5 \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5."""
+        base = self._flags_storage.get_base(base_name)
+        base.rewrite_flags_data(new_data)
+        self.fully_update_component(base_name)
+
+    @FlashTeamWorker.sending_method
+    def fully_update_component(self, base_name):
+        """\xd0\x94\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xbe \xd0\xb1\xd0\xb0\xd0\xb7\xd0\xb5 c \xd0\xb8\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb5\xd0\xbc base_name."""
+        self._current_base = base_name
+        info = self._flags_storage.get_base_info(base_name)
+        return info
+
+    @FlashTeamWorker.sending_method
+    def leave_base(self, base_name):
+        """\xd0\x9e\xd0\xbf\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82, \xd1\x87\xd1\x82\xd0\xbe \xd0\xb0\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0\xd1\x80 \xd0\xbf\xd0\xbe\xd0\xba\xd0\xb8\xd0\xbd\xd1\x83\xd0\xbb \xd0\xb7\xd0\xbe\xd0\xbd\xd1\x83 \xd0\xbe\xd0\xbf\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x89\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xb1\xd0\xb0\xd0\xb7\xd1\x8b."""
+        self.hide()
+        self._current_base = None
+        return True
+
+    @FlashTeamWorker.sending_method
+    def set_init_base_capture_time(self, base_name, inti_capture_time, cycle_time, time_of_capture):
+        """\xd0\x97\xd0\xb0\xd0\xbf\xd0\xb8\xd1\x81\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xba\xd0\xb0\xd1\x81\xd0\xb0\xd1\x8e\xd1\x89\xd0\xb8\xd0\xb5\xd1\x81\xd1\x8f \xd0\xb2\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb8 \xd0\xb7\xd0\xb0\xd1\x85\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0 \xd0\xb8 \xd0\xb5\xd0\xb3\xd0\xbe \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb8\xd0\xbe\xd0\xb4\xd0\xbe\xd0\xb2."""
+        base_data = self._flags_storage.get_base(base_name)
+        base_data.set_init_capture_time(inti_capture_time, cycle_time, time_of_capture)
+        self.show()
+        self.fully_update_component(base_name)
+
+    def _create_flag_on_buying_caption(self, flags_positions, flag_data, base_name):
+        """\xd0\xa1\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd1\x82\xd1\x8c \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xbf\xd0\xb8\xd1\x81\xd1\x8c \xd0\xba \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd1\x83 \xd0\xbd\xd0\xb0 \xd0\xb2\xd1\x80\xd0\xb5\xd0\xbc\xd1\x8f \xd0\xbf\xd0\xbe\xd0\xba\xd1\x83\xd0\xbf\xd0\xba\xd0\xb8 \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xbe\xd0\xb2."""
+        self._flag_captions = {}
+        for flag_name, position in flags_positions.items():
+            matrix = Math.Matrix()
+            matrix.setTranslate(position)
+            capture_inst = soFlagIndicatorBuying(GUI.Window(), flag_name, flag_data[flag_name])
+            caption = flag_caption.FlagCaption(matrix, flag_name, capture_inst.component, [], 0)
+            self._flag_captions[flag_name, base_name] = caption
+
+        BWPersonality.GUICore.flagMarkersGUI.hide_inworld_flag_markers()
+        BWPersonality.GUICore.flagMarkersGUI.hide_on_buying_flag_markers()
+        for caption in self._flag_captions.values():
+            caption.attach_caption_on_buy()
+
+        BWPersonality.GUICore.flagMarkersGUI.show_on_buying_flag_markers()
+        BWPersonality.GUICore.entityPickerLayer.hide()
+
+    @FlashTeamWorker.sending_method
+    def start_flag_buying(self, base_name, flags_on_purchase, camera_nodes, flag_cost, base_money):
+        """\xd0\xa1\xd0\xbe\xd0\xbe\xd0\xb1\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82, \xd1\x87\xd1\x82\xd0\xbe \xd0\xbf\xd0\xbe\xd0\xba\xd1\x83\xd0\xbf\xd0\xba\xd0\xb0 \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xbe\xd0\xb2 \xd0\xbd\xd0\xb0\xd1\x87\xd0\xb0\xd0\xbb\xd0\xb0\xd1\x81\xd1\x8c."""
+        self.base_money = base_money
+        self.set_alpha_background(BUY_ALPHA)
+        if not self.is_buying_state:
+            cmr_nds = {}
+            for dct in camera_nodes:
+                cmr_nds[dct['name']] = dct['camera']
+
+            self._flying_cam = BaseToCaptureFlyingCam(base_name, cmr_nds)
+            flags_on_create = dict(((dct['unique_str_id'], dct) for dct in flags_on_purchase))
+            self._temp_flags_mgr = TempFlagManager(base_name, flags_on_create)
+            self._flying_cam.take_wing()
+            self._temp_flags_mgr.show_temp_flags()
+        data = {}
+        self._current_base = base_name
+        self.py_data = {}
+        self.flags_positions = {}
+        self._can_show = list((dct['name'] for dct in camera_nodes))
+        flags_on_buy = list((dct['name'] for dct in flags_on_purchase))
+        for dct in itertools.chain(flags_on_purchase, camera_nodes):
+            flag_name = dct['name']
+            data[flag_name] = {'id': dct['unique_str_id'],
+             'active': dct['name'] not in flags_on_buy}
+            self.py_data[flag_name] = {'active': dct['name'] not in flags_on_buy,
+             'camera': dct['name'] in self._can_show,
+             'current_camera': False,
+             'flag_id': dct['id']}
+
+        data['flag_cost'] = flag_cost
+        BWPersonality.GUICore.setBestCursor()
+        if self._compact_state:
+            self._on_buy_stop_callback = functools.partial(self.compact_state, True)
+            self.compact_state(False)
+        self.flags_positions = dict(((d['name'], d['position']) for d in camera_nodes))
+        self._create_flag_on_buying_caption(self.flags_positions, self.py_data, base_name)
+        self._flag_cost = flag_cost
+        self.set_base_money_and_cost()
+        return data
+
+    @FlashTeamWorker.receiving_method
+    def go_to_flag(self, name):
+        """\xd0\x9f\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x81\xd1\x82\xd0\xb8\xd1\x82\xd1\x8c \xd0\xba\xd0\xb0\xd0\xbc\xd0\xb5\xd1\x80\xd1\x83 \xd0\xba \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd1\x83 \xd1\x81 \xd0\xb8\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb5\xd0\xbc name."""
+        if name in self._can_show:
+            active = self.py_data[name]['active']
+            id = self.py_data[name]['flag_id']
+            flag_pos = self.flags_positions.get(name, (0, 0, 0))
+            self._flying_cam.go_to_next_camera_point(name, flag_pos, active, id)
+            self._current_flag_camera = name
+            for flag_name in self.py_data:
+                if flag_name == name:
+                    self.py_data[flag_name]['current_camera'] = True
+                else:
+                    self.py_data[flag_name]['current_camera'] = False
+
+            self._create_flag_on_buying_caption(self.flags_positions, self.py_data, self._current_base)
+
+    @FlashTeamWorker.receiving_method
+    def go_to_main_plan(self):
+        """\xd0\x9f\xd0\xb5\xd1\x80\xd0\xb5\xd0\xb9\xd1\x82\xd0\xb8 \xd0\xba \xd0\xbe\xd1\x81\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xbd\xd0\xbe\xd0\xbc\xd1\x83 \xd0\xbe\xd0\xb1\xd0\xb7\xd0\xbe\xd1\x80\xd0\xbd\xd0\xbe\xd0\xbc\xd1\x83 \xd0\xbf\xd0\xbb\xd0\xb0\xd0\xbd\xd1\x83."""
+        self._flying_cam.go_to_main_plan()
+        self._current_flag_camera = None
+        for flag_name in self.py_data:
+            self.py_data[flag_name]['current_camera'] = False
+
+        self._create_flag_on_buying_caption(self.flags_positions, self.py_data, self._current_base)
+        return
+
+    @FlashTeamWorker.receiving_method
+    def buy_flag(self, name):
+        """\xd0\x9a\xd1\x83\xd0\xbf\xd0\xb8\xd1\x82\xd1\x8c \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3."""
+        player = BigWorld.player()
+        flag_cost = self._cost_loader.flag_cost(self._current_base)
+        check_sum = [flag_cost['rouble_cost'], 0]
+        disp_cost_data = get_str_cost(flag_cost)
+        if not check_money_buy(check_sum, self.base_money):
+            str_flag = lc('BaseToCapture.FLAG')
+            item_cost_msg = lc('BaseToCapture.ITEM_COST') % (str_flag, disp_cost_data)
+            msg = lc('BaseToCapture.NOT_ENOUGH_MONEY')
+            player.putMessage(CHANNEL_CONSTS.SYSTEM, u'%s %s' % (item_cost_msg, msg))
+            self.stop_buying()
+            return
+
+        def callback(event, data):
+            if event == MESSAGEBOX.EVENT_BTNPRESS:
+                try:
+                    if data['btn'] == MESSAGEBOX.BTN_YES:
+                        self._temp_flags_mgr.buy_flag(name)
+                        return
+                except KeyError:
+                    pass
+
+            self._send_on_buy_flag(False, name)
+
+        msgbox_templates.ask_yes_no('base_to_capture_gui.buy_flag', lc('BaseToCapture.BUYING_FLAG'), lc('BaseToCapture.DO_YOU_WANT_BUY_FLAG') % disp_cost_data, callback=callback)
+
+    @FlashTeamWorker.sending_method('buy_flag')
+    def _send_on_buy_flag(self, success, flag_name):
+        if flag_name in self.py_data:
+            self.py_data[flag_name]['active'] = success
+            self._create_flag_on_buying_caption(self.flags_positions, self.py_data, self._current_base)
+        return {'name': flag_name,
+         'success': success}
+
+    @FlashTeamWorker.sending_method('buy_flag')
+    def on_buy_flag(self, base_name, unique_str_id, success, base_money):
+        """\xd0\xa1\xd0\xbe\xd0\xbe\xd0\xb1\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x83\xd1\x87\xd0\xb8\xd0\xbb\xd0\xbe\xd1\x81\xd1\x8c \xd1\x81\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x80\xd1\x88\xd0\xb8\xd1\x82\xd1\x8c \xd0\xbf\xd0\xbe\xd0\xba\xd1\x83\xd0\xbf\xd0\xba\xd1\x83 \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xb0 \xd0\xb8\xd0\xbb\xd0\xb8 \xd0\xbd\xd0\xb5\xd1\x82."""
+        self.base_money = base_money
+        self._temp_flags_mgr.on_buy_flag(unique_str_id, success)
+        flag_name = self._temp_flags_mgr.unique_str_id_to_flag_name(unique_str_id)
+        self.set_base_money_and_cost()
+        self._send_on_buy_flag(success, flag_name)
+
+    @FlashTeamWorker.receiving_method
+    def come_back_to_earth(self):
+        """\xd0\x97\xd0\xb0\xd0\xba\xd0\xbe\xd0\xbd\xd1\x87\xd0\xb8\xd1\x82\xd1\x8c \xd0\xbf\xd0\xbe\xd0\xba\xd1\x83\xd0\xbf\xd0\xba\xd1\x83 \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xbe\xd0\xb2."""
+        self._flying_cam.come_back_to_earth()
+        self._stop_flags_buying()
+
+    def stop_buying(self):
+        """\xd0\x98\xd0\xb7\xd0\xb2\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x84\xd0\xbb\xd1\x8d\xd1\x88, \xd1\x87\xd1\x82\xd0\xbe \xd0\xbf\xd0\xbe\xd0\xba\xd1\x83\xd0\xbf\xd0\xba\xd0\xb0 \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xbe\xd0\xb2 \xd0\xb8 \xd0\xbe\xd1\x85\xd1\x80\xd0\xb0\xd0\xbd\xd0\xbd\xd0\xb8\xd0\xba\xd0\xbe\xd0\xb2 \xd0\xb7\xd0\xb0\xd0\xba\xd0\xbe\xd0\xbd\xd1\x87\xd0\xb5\xd0\xbd\xd0\xb0."""
+        if self.is_flags_buying:
+            self.come_back_to_earth()
+        if self.is_guardians_buying:
+            self.hide_guardians_buying_interface()
+
+    @property
+    def avatar_inside_base_radius(self):
+        """\xd0\x90\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0\xd1\x80 \xd0\xbd\xd0\xb0 \xd1\x82\xd0\xb5\xd1\x80\xd1\x80\xd0\xb8\xd1\x82\xd0\xbe\xd1\x80\xd0\xb8\xd0\xb8 \xd0\xb1\xd0\xb0\xd0\xb7\xd1\x8b."""
+        return bool(self._current_base)
+
+    @property
+    def is_buying_state(self):
+        """\xd0\xa1\xd0\xb5\xd0\xb9\xd1\x87\xd0\xb0\xd1\x81 \xd1\x87\xd1\x82\xd0\xbe-\xd1\x82\xd0\xbe \xd0\xbf\xd0\xbe\xd0\xba\xd1\x83\xd0\xbf\xd0\xb0\xd0\xb5\xd1\x82\xd1\x81\xd1\x8f?"""
+        return self.is_guardians_buying or self.is_flags_buying
+
+    @property
+    def is_flags_buying(self):
+        return bool(self._flying_cam)
+
+    @property
+    def is_guardians_buying(self):
+        return bool(self.guards_loop_id)
+
+    @FlashTeamWorker.sending_method('stop_flag_buying')
+    def _stop_flags_buying(self):
+        self.set_alpha_background(NORMAL_ALPHA)
+        self._temp_flags_mgr.hide_all_flags()
+        self.fully_update_component(self._current_base)
+        self._flying_cam = None
+        BWPersonality.GUICore.setBestCursor()
+        self._on_buy_stop_callback()
+        self._on_buy_stop_callback = lambda : None
+        flagMarkersGUI = BWPersonality.GUICore.flagMarkersGUI
+        flagMarkersGUI.hide_on_buying_flag_markers()
+        for caption in self._flag_captions.values():
+            caption.marker.fini()
+            flagMarkersGUI.del_on_buying_caption(caption.identific)
+
+        flagMarkersGUI.show_inworld_flag_markers()
+        BWPersonality.GUICore.entityPickerLayer.show()
+        BWPersonality.GUICore.entityPickerLayer.mouse_focus = True
+        return True
+
+    def emergency_stop_flag_buying(self):
+        """\xd0\xa0\xd0\xb5\xd0\xb7\xd0\xba\xd0\xbe \xd0\xb7\xd0\xb0\xd0\xb2\xd0\xb5\xd1\x80\xd1\x88\xd0\xb8\xd1\x82\xd1\x8c \xd0\xbf\xd0\xbe\xd0\xba\xd1\x83\xd0\xbf\xd0\xba\xd1\x83 \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xbe\xd0\xb2."""
+        self._flying_cam.emergency_stop()
+        self._stop_flags_buying()
+
+    def remove_base_data(self, base_name):
+        """\xd0\xa3\xd0\xb4\xd0\xb0\xd0\xbb\xd0\xb8\xd1\x82\xd1\x8c \xd0\xb8\xd0\xbd\xd1\x84\xd0\xbe\xd1\x80\xd0\xbc\xd0\xb0\xd1\x86\xd0\xb8\xd1\x8e \xd0\xbe \xd0\xb1\xd0\xb0\xd0\xb7\xd0\xb5."""
+        self._flags_storage.remove_base(base_name)
+        self.leave_base(base_name)
+
+    def show(self):
+        self.visible = True
+
+    def hide(self):
+        self.visible = False
+        self.stop_buying()
+
+    def handleKeyEvent(self, event):
+        FlashScriptGUIBase.handleKeyEvent(self, event)
+        return False
+
+    def _guardians_buying_loop(self, radius_of_creating_npc, position):
+        avatar = BigWorld.player()
+        dist = avatar.position.distTo(position)
+        is_guardians_buying = dist <= radius_of_creating_npc
+        if self._is_guardians_buying != is_guardians_buying:
+            if is_guardians_buying:
+                self.activate_guardians_buying()
+            else:
+                self.deactivate_guardians_buying()
+        self._is_guardians_buying = is_guardians_buying
+        callback = functools.partial(self._guardians_buying_loop, radius_of_creating_npc, position)
+        self.guards_loop_id = BigWorld.callback(1, callback)
+
+    @FlashTeamWorker.sending_method
+    def deactivate_guardians_buying(self):
+        """
+        \xd0\x9e\xd1\x82\xd0\xbf\xd1\x80\xd0\xb0\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd1\x81\xd0\xbe\xd0\xb1\xd1\x8b\xd1\x82\xd0\xb8\xd0\xb5 \xd0\xb2\xd0\xbe \xd1\x84\xd0\xbb\xd1\x8d\xd1\x88, \xd1\x87\xd1\x82\xd0\xbe \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c 
+        \xd0\xb2\xd1\x8b\xd1\x88\xd0\xb5\xd0\xbb \xd0\xb8\xd0\xb7 \xd1\x80\xd0\xb0\xd0\xb4\xd0\xb8\xd1\x83\xd1\x81\xd0\xb0 \xd0\xbf\xd0\xbe\xd0\xba\xd1\x83\xd0\xbf\xd0\xba\xd0\xb8 \xd0\xbe\xd1\x85\xd1\x80\xd0\xb0\xd0\xbd\xd0\xbd\xd0\xb8\xd0\xba\xd0\xb0.
+        """
+        return True
+
+    @FlashTeamWorker.sending_method
+    def activate_guardians_buying(self):
+        """
+        \xd0\x9e\xd1\x82\xd0\xbf\xd1\x80\xd0\xb0\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd1\x81\xd0\xbe\xd0\xb1\xd1\x8b\xd1\x82\xd0\xb8\xd0\xb5 \xd0\xb2\xd0\xbe \xd1\x84\xd0\xbb\xd1\x8d\xd1\x88, \xd1\x87\xd1\x82\xd0\xbe \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c 
+        \xd0\xb2\xd0\xbe\xd1\x88\xd0\xb5\xd0\xbb \xd0\xb2 \xd1\x80\xd0\xb0\xd0\xb4\xd0\xb8\xd1\x83\xd1\x81 \xd0\xbf\xd0\xbe\xd0\xba\xd1\x83\xd0\xbf\xd0\xba\xd0\xb8 \xd0\xbe\xd1\x85\xd1\x80\xd0\xb0\xd0\xbd\xd0\xbd\xd0\xb8\xd0\xba\xd0\xb0.
+        """
+        return True
+
+    def _stop_guardians_buying(self):
+        self.set_alpha_background(NORMAL_ALPHA)
+        if self.guards_loop_id is not None:
+            BigWorld.cancelCallback(self.guards_loop_id)
+        self._is_guardians_buying = None
+        self.guards_loop_id = None
+        BWPersonality.GUICore.setMouseAltState(False, True)
+        BWPersonality.GUICore.setBestCursor()
+        self._on_buy_stop_callback()
+        self._on_buy_stop_callback = lambda : None
+        return
+
+    @FlashTeamWorker.sending_method('stop_guardians_buying')
+    def hide_guardians_buying_interface(self):
+        """\xd0\x98\xd0\xb7\xd0\xb2\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x84\xd0\xbb\xd1\x8d\xd1\x88, \xd1\x87\xd1\x82\xd0\xbe \xd0\xbf\xd0\xbe\xd0\xba\xd1\x83\xd0\xbf\xd0\xba\xd0\xb0 \xd0\xbe\xd1\x85\xd1\x80\xd0\xb0\xd0\xbd\xd0\xbd\xd0\xb8\xd0\xba\xd0\xbe\xd0\xb2 \xd0\xbe\xd0\xba\xd0\xbe\xd0\xbd\xd1\x87\xd0\xb5\xd0\xbd\xd0\xb0."""
+        self._stop_guardians_buying()
+        return True
+
+    @FlashTeamWorker.receiving_method
+    def stop_guardians_buying(self):
+        """\xd0\x9f\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c \xd0\xbd\xd0\xb0\xd0\xb6\xd0\xb0\xd0\xbb \xd0\xba\xd0\xbd\xd0\xbe\xd0\xbf\xd0\xba\xd1\x83 \xd0\xbe\xd0\xb1 \xd0\xbe\xd0\xba\xd0\xbe\xd0\xbd\xd1\x87\xd0\xb0\xd0\xbd\xd0\xb8\xd0\xb8 \xd0\xbf\xd0\xbe\xd0\xba\xd1\x83\xd0\xbf\xd0\xba\xd0\xb8 \xd0\xbe\xd1\x85\xd1\x80\xd0\xb0\xd0\xbd\xd0\xbd\xd0\xb8\xd0\xba\xd0\xbe\xd0\xb2."""
+        self._stop_guardians_buying()
+
+    @FlashTeamWorker.receiving_method
+    def buy_guardian(self):
+        """\xd0\x9f\xd0\xbe\xd0\xbf\xd1\x8b\xd1\x82\xd0\xb0\xd1\x82\xd1\x8c\xd1\x81\xd1\x8f \xd0\xba\xd1\x83\xd0\xbf\xd0\xb8\xd1\x82\xd1\x8c \xd0\xbe\xd1\x85\xd1\x80\xd0\xb0\xd0\xbd\xd0\xbd\xd0\xb8\xd0\xba\xd0\xb0."""
+        player = BigWorld.player()
+        guard_cost = self._cost_loader.guardian_cost(self._current_base)
+        check_sum = [guard_cost['rouble_cost'], guard_cost['gold_cost']]
+        disp_cost_data = get_str_cost(guard_cost)
+        if not can_create_guardian(player.position, player.spaceID) or client_utils.is_entity_under_water(player):
+            player.putMessage(CHANNEL_CONSTS.SYSTEM, lc('BaseToCapture.OUT_OF_PURCHASE_OF_GUARDS'))
+            self.on_buy_guard(None, False, self.base_money)
+            return
+        elif not check_money_buy(check_sum, self.base_money):
+            str_guard = lc('BaseToCapture.GUARDIAN')
+            item_cost_msg = lc('BaseToCapture.ITEM_COST') % (str_guard, disp_cost_data)
+            msg = lc('BaseToCapture.NOT_ENOUGH_MONEY')
+            player.putMessage(CHANNEL_CONSTS.SYSTEM, u'%s %s' % (item_cost_msg, msg))
+            self.stop_buying()
+            return
+        else:
+
+            def callback(event, data):
+                if event == MESSAGEBOX.EVENT_BTNPRESS:
+                    if data and data.get('btn', None) == MESSAGEBOX.BTN_YES:
+                        BigWorld.player().buy_guardian(self._current_base)
+                        return
+                self.on_buy_guard(None, False, self.base_money)
+                return
+
+            msgbox_templates.ask_yes_no('base_to_capture_gui.buy_guardian', lc('BaseToCapture.BUYING_A_GUARD'), lc('BaseToCapture.DO_YOU_WANT_BUY_GUARD') % disp_cost_data, callback=callback)
+            return
+
+    def buy_trader(self):
+        """\xd0\x9f\xd0\xbe\xd0\xbf\xd1\x8b\xd1\x82\xd0\xb0\xd1\x82\xd1\x8c\xd1\x81\xd1\x8f \xd0\xba\xd1\x83\xd0\xbf\xd0\xb8\xd1\x82\xd1\x8c \xd1\x82\xd0\xbe\xd1\x80\xd0\xb3\xd0\xbe\xd0\xb2\xd1\x86\xd0\xb0."""
+        pass
+
+    @FlashTeamWorker.sending_method
+    def start_guardians_buying(self, base_name, data, base_money):
+        self.base_money = base_money
+        self._is_guardians_buying = None
+        self.set_alpha_background(BUY_ALPHA)
+        radius_of_creating_npc = data['radius_of_creating_npc']
+        position = data['position']
+        self._guardians_buying_loop(radius_of_creating_npc, position)
+        if self._compact_state:
+            self._on_buy_stop_callback = functools.partial(self.compact_state, True)
+            self.compact_state(False)
+        self._guardian_cost = data['guardian_cost']
+        self.set_base_money_and_cost()
+        return {'max_count': data['guardians_max_count'],
+         'current_count': data['guardians_current_count'],
+         'guardian_cost': data['guardian_cost']}
+
+    @FlashTeamWorker.sending_method
+    def on_buy_guard(self, base_name, success, base_money):
+        """\xd0\xa1\xd0\xbe\xd0\xbe\xd0\xb1\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x83\xd1\x87\xd0\xb8\xd0\xbb\xd0\xbe\xd1\x81\xd1\x8c \xd1\x81\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x80\xd1\x88\xd0\xb8\xd1\x82\xd1\x8c \xd0\xbf\xd0\xbe\xd0\xba\xd1\x83\xd0\xbf\xd0\xba\xd1\x83 \xd0\xbe\xd1\x85\xd1\x80\xd0\xb0\xd0\xbd\xd0\xbd\xd0\xb8\xd0\xba\xd0\xb0 \xd0\xb8\xd0\xbb\xd0\xb8 \xd0\xbd\xd0\xb5\xd1\x82."""
+        self.base_money = base_money
+        BWPersonality.GUICore.setMouseAltState(False, True)
+        BWPersonality.GUICore.setBestCursor()
+        self.set_base_money_and_cost()
+        return success
+
+    @FlashTeamWorker.sending_method
+    def on_change_guard_count(self, base_name, current_count, base_money):
+        """\xd0\x9e\xd0\x9f\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82, \xd1\x87\xd1\x82\xd0\xbe \xd0\xb8\xd0\xb7\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb5\xd0\xbd\xd0\xbe \xd0\xba\xd0\xbe\xd0\xbb-\xd0\xb2\xd0\xbe \xd0\xba\xd1\x83\xd0\xbf\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xbd\xd1\x8b\xd1\x85 NPC."""
+        self.base_money = base_money
+        self.set_base_money_and_cost()
+        return current_count
+
+    @FlashTeamWorker.sending_method
+    def set_base_money_and_cost(self):
+        ret = {'flag': get_str_cost_dct(self._flag_cost, self.base_money),
+         'guardian': get_str_cost_dct(self._guardian_cost, self.base_money)}
+        return ret
+
+    def handleMouseButtonEvent(self, comp, event):
+        FlashScriptGUIBase.handleMouseButtonEvent(self, comp, event)
+        return DraggableComponent.handleMouseButtonEvent(self, comp, event)
+
+    def handleMouseEvent(self, comp, event):
+        result = FlashScriptGUIBase.handleMouseEvent(self, comp, event)
+        return result
+
+    @FlashTeamWorker.sending_method('screenSize')
+    def _send_current_comp_position(self):
+        x, y, _z = self.component.position
+        sW, sH = BigWorld.screenSize()
+        return {'corner': [x / sW, y / sH],
+         'width': self.component.width,
+         'height': self.component.height,
+         'compact_state': self._compact_state}
+
+    @FlashTeamWorker.receiving_method
+    def compact_state(self, value = True):
+        """\xd0\xa1\xd0\xb2\xd0\xb5\xd1\x80\xd0\xbd\xd1\x83\xd1\x82\xd1\x8c/\xd1\x80\xd0\xb0\xd0\xb7\xd0\xb2\xd0\xb5\xd1\x80\xd0\xbd\xd1\x83\xd1\x82\xd1\x8c \xd0\xbe\xd0\xba\xd0\xbd\xd0\xbe."""
+        if value:
+            old_width = self.component.width
+            self.component.width = self._compact_size['width']
+            self.component.height = self._compact_size['height']
+            dif_x = old_width / 2 - self.component.width / 2
+            x, y, z = self.component.position
+            self.component.position = (x + dif_x, y, z)
+        else:
+            old_width = self.component.width
+            new_width = get_rectangle_for_base_gui()['width']
+            dif_x = new_width / 2 - old_width / 2
+            x, y, z = self.component.position
+            self.component.position = (x - dif_x, y, z)
+            set_size_and_position_for_gui_base(self.component, False)
+        self._compact_state = value
+        BigWorld.callback(0, self._send_current_comp_position)
+
+    sound_path = 'scripts/client/data/BaseToCapture/sounds.json'
+    __sounds = json.loads(ResMgr.openSection(sound_path).asBinary)
+
+    def play_sound(self, sound_type):
+        sound_name = self.__sounds.get(sound_type, None)
+        if sound_name:
+            sounds.playSound(sound_name)
+        return
+
+    @ignoreError
+    def flag_is_hoisting_sound(self):
+        self.play_sound('flag_is_hoisting')
+
+    @ignoreError
+    def on_capture_base_sound(self):
+        self.play_sound('on_capture_base')
+
+    @ignoreError
+    def on_lose_base_sound(self):
+        self.play_sound('on_lose_base')
+
+    @ignoreError
+    def on_capture_flag_sound(self):
+        self.play_sound('on_capture_flag')
+
+    @ignoreError
+    def on_lose_flag_sound(self):
+        self.play_sound('on_lose_flag')

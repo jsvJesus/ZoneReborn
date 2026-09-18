@@ -1,0 +1,41 @@
+# Embedded file name: ./scripts/common/MonsterCommon.py
+import Constants
+from Config import Monsters as Config
+import bwdecorators
+
+class MonsterCommon:
+    """ \xd0\xbe\xd0\xb1\xd1\x89\xd0\xb8\xd0\xb5 \xd0\xbc\xd0\xb5\xd1\x82\xd0\xbe\xd0\xb4\xd1\x8b \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xbc\xd0\xbe\xd0\xbd\xd1\x81\xd1\x82\xd1\x80\xd0\xbe\xd0\xb2 \xd0\xbd\xd0\xb0 \xd0\xba\xd0\xbb\xd0\xb8\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb5 \xd0\xb8 \xd0\xbd\xd0\xb0 \xd1\x81\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb5\xd1\x80\xd0\xb5
+            (\xd0\xbf\xd1\x80\xd0\xb5\xd0\xb8\xd0\xbc\xd1\x83\xd1\x89\xd0\xb5\xd1\x81\xd1\x82\xd0\xb2\xd0\xb5\xd0\xbd\xd0\xbd\xd0\xbe \xd1\x80\xd0\xb0\xd0\xb1\xd0\xbe\xd1\x82\xd0\xb0 \xd1\x81 \xd1\x84\xd0\xb0\xd0\xb9\xd0\xbb\xd0\xbe\xd0\xbc \xd0\xba\xd0\xbe\xd0\xbd\xd1\x84\xd0\xb8\xd0\xb3\xd1\x83\xd1\x80\xd0\xb0\xd1\x86\xd0\xb8\xd0\xb8)
+    """
+
+    @bwdecorators.callableOnGhost
+    def get_quest_check_params(self):
+        return (self.type_id, 0, None)
+
+    @bwdecorators.callableOnGhost
+    def get_time_looting(self, open_type):
+        return 2.0
+
+    @bwdecorators.callableOnGhost
+    def get_looting_types(self):
+        return [Constants.TYPE_BUTCH]
+
+    @bwdecorators.callableOnGhost
+    def get_stiffness(self):
+        return 3.0
+
+    @bwdecorators.callableOnGhost
+    def get_full_time_looting(self, open_type):
+        return 3.0
+
+    @bwdecorators.callableOnGhost
+    def get_radius(self):
+        return Config.get_radius(self.type_id)
+
+    @bwdecorators.callableOnGhost
+    def get_type_id(self):
+        return self.type_id
+
+    @bwdecorators.callableOnGhost
+    def get_experience(self, player_level):
+        return Config.get_experience(self.type_id)

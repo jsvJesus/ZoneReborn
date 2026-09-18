@@ -1,0 +1,211 @@
+# Embedded file name: ./scripts/common/ItemHolderCommon.py
+__author__ = 'Leviathan'
+import ItemsUtils
+from Items import ItemsCatalog
+import copy
+
+class ItemHolderCommon:
+
+    def GetMaxEquippedArtifactNumber(self):
+        return 0
+
+    def findEquippedGadgetByID(self, item_id):
+        for gadget in self.ActiveGadgetList:
+            if gadget['GadjetID'] == item_id:
+                return True
+
+        return False
+
+    def findEquippedArtifactByID(self, item_id):
+        for gadget in self.ActiveArtifactList:
+            if gadget['ArtifactID'] == item_id:
+                return True
+
+        return False
+
+    def getEquippedThrowID(self):
+        for gadget in self.ActiveGadgetList:
+            if ItemsCatalog.GetItemClass(gadget['GadjetType']) == ItemsCatalog.EXPLOSION:
+                return gadget['GadjetID']
+
+        return 0
+
+    def getEquippedThrowType(self):
+        for gadget in self.ActiveGadgetList:
+            if ItemsCatalog.GetItemClass(gadget['GadjetType']) == ItemsCatalog.EXPLOSION:
+                return gadget['GadjetType']
+
+        return 0
+
+    def checkFakeActiveGadgetList(self):
+        for index, gadget in enumerate(self.ActiveGadgetList):
+            if gadget['GadjetID'] and not ItemsUtils.GetComplexItemByID(self, gadget['GadjetID']):
+                self.ActiveGadgetList.pop(index)
+                if gadget['GadjetID'] in self.FakeActiveGadgetList:
+                    self.FakeActiveGadgetList.remove(gadget['GadjetID'])
+
+        for index, artifact in enumerate(self.ActiveArtifactList):
+            if artifact['ArtifactID'] and not ItemsUtils.GetComplexItemByID(self, artifact['ArtifactID']):
+                self.ActiveArtifactList.pop(index)
+                if artifact['ArtifactID'] in self.FakeActiveGadgetList:
+                    self.FakeActiveGadgetList.remove(artifact['ArtifactID'])
+
+        _list = copy.copy(self.FakeActiveGadgetList)
+        for gadget_id in _list:
+            if self.findEquippedGadgetByID(gadget_id) or self.findEquippedArtifactByID(gadget_id):
+                continue
+            self.FakeActiveGadgetList.remove(gadget_id)
+
+    def fixFakeActiveGadgetList(self):
+        for index, gadget in enumerate(self.ActiveGadgetList):
+            if gadget['GadjetID'] and gadget['GadjetID'] not in self.FakeActiveGadgetList:
+                if not self.CheckEquippedGadgetNumber():
+                    self.ActiveGadgetList.pop(index)
+                else:
+                    self.FakeActiveGadgetList.append(gadget['GadjetID'])
+
+        for index, artifact in enumerate(self.ActiveArtifactList):
+            if artifact['ArtifactID'] and artifact['ArtifactID'] not in self.FakeActiveGadgetList:
+                if not self.CheckEquippedGadgetNumber():
+                    self.ActiveArtifactList.pop(index)
+                else:
+                    self.FakeActiveGadgetList.append(artifact['ArtifactID'])
+
+    def getEquippedGadgets(self):
+        _ids = []
+        for gadget in self.ActiveGadgetList:
+            if gadget['GadjetID']:
+                _ids.append(gadget['GadjetID'])
+
+        for artifact in self.ActiveArtifactList:
+            if artifact['ArtifactID']:
+                _ids.append(artifact['ArtifactID'])
+
+        return _ids
+
+    def removeGadgetsByIDs(self, gadget_ids):
+        gadget_list = copy.copy(self.ActiveGadgetList)
+        for gadget in gadget_list:
+            if gadget['GadjetID'] in gadget_ids:
+                self.ActiveGadgetList.remove(gadget)
+                if gadget['GadjetID'] in self.FakeActiveGadgetList:
+                    self.FakeActiveGadgetList.remove(gadget['GadjetID'])
+                item = ItemsUtils.GetComplexItemByID(self, gadget['GadjetID'])
+                gadget_param = ItemsCatalog.GetItemParam(gadget['GadjetType'])
+                gadget_action = gadget_param.get('Action', None)
+                if gadget_action:
+                    self.client.stopGadgetActionByID(gadget_action, gadget['GadjetID'])
+                if gadget['GadjetID'] == self.ActiveThrowID:
+                    self.ActiveThrowID = 0
+                    self.ActiveThrowType = 0
+                    self.allClients.drawEquipThrowItem(0, False, 0)
+
+        artifact_list = copy.copy(self.ActiveArtifactList)
+        for artifact in artifact_list:
+            if artifact['ArtifactID'] in gadget_ids:
+                self.ActiveArtifactList.remove(artifact)
+                if artifact['ArtifactID'] in self.FakeActiveGadgetList:
+                    self.FakeActiveGadgetList.remove(artifact['ArtifactID'])
+
+        return
+
+    def CheckEquippedGadgetNumber(self):
+        max_items = min(ItemsUtils.MAX_GADGET_EQUIP, ItemsUtils.GetMaximumGadgetSlots(self))
+        current = len(self.ActiveGadgetList) + len(self.ActiveArtifactList)
+        if current >= max_items:
+            return False
+        return True
+
+    def CheckEquippedGadgetSubType(self, gadget_type):
+        new_gadget_param = ItemsCatalog.GetItemParam(gadget_type)
+        gadget_class = ItemsCatalog.GetItemClass(gadget_type)
+        if gadget_class == ItemsCatalog.EXPLOSION:
+            return True
+        else:
+            sub_class = new_gadget_param.get('SubType', None)
+            if not sub_class:
+                return False
+            for gadget in self.ActiveGadgetList:
+                gadget_param = ItemsCatalog.GetItemParam(gadget['GadjetType'])
+                equipped_sub_class = gadget_param.get('SubType', None)
+                if sub_class == equipped_sub_class:
+                    return False
+
+            return True
+
+    def CheckEquippedArtifactNumber(self):
+        if len(self.ActiveArtifactList) >= self.GetMaxEquippedArtifactNumber():
+            return False
+        return True
+
+    def checkEquippedThrow(self):
+        for gadget in self.ActiveGadgetList:
+            gadget_param = ItemsCatalog.GetItemParam(gadget['GadjetType'])
+            equipped_gadget_class = ItemsCatalog.GetItemClass(gadget['GadjetType'])
+            if equipped_gadget_class == ItemsCatalog.EXPLOSION:
+                return True
+
+        return False
+
+    def GetMaxItemStorageNumber(self, trader_name):
+        return ItemsUtils.DEFAULT_TRADER_STORAGE_SPACE
+
+    def GetEquippedItemSnipingAbility(self):
+        if self.ActiveItemType:
+            equipped_item_param = ItemsCatalog.GetItemParam(self.ActiveItemType)
+            gun_type = equipped_item_param['GunType']
+            gun_priority = ItemsUtils.GetWeaponPriority(gun_type)
+            if gun_priority == ItemsCatalog.SECONDARY:
+                upgrade_dict = self.SecondaryWeaponUpgrades
+            else:
+                upgrade_dict = self.PrimaryWeaponUpgrades
+            if upgrade_dict['ScopeType'] > 0:
+                scope_item_param = ItemsCatalog.GetItemParam(upgrade_dict['ScopeType'])
+                scope_type = scope_item_param['ScopeType']
+            else:
+                scope_type = equipped_item_param['ScopeType']
+            if not isinstance(scope_type, list):
+                scope_type = [scope_type]
+            return scope_type
+
+    def GetEquippedItemSnipingNightVisionAbility(self):
+        if self.ActiveItemType and self.ActiveItemID:
+            for item in self.CarryingItems:
+                if item['complexItemID'] == self.ActiveItemID:
+                    for subitem in item['itemList']:
+                        subitem_param = ItemsCatalog.GetItemParam(subitem['itemType'])
+                        if subitem_param.has_key('isNightVision') and subitem_param['isNightVision']:
+                            return True
+
+                    return False
+
+        return False
+
+    def has_item_type(self, item_type):
+        """ \xd0\xbf\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x80\xd0\xba\xd0\xb0 \xd0\xbd\xd0\xb0\xd0\xbb\xd0\xb8\xd1\x87\xd0\xb8\xd1\x8f \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0 \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd0\xbe\xd0\xb3\xd0\xbe \xd1\x82\xd0\xb8\xd0\xbf\xd0\xb0 \xd0\xb2 \xd0\xb8\xd0\xbd\xd0\xb2\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb0\xd1\x80\xd0\xb5 """
+        for item in self.CarryingItems:
+            if item.complexItemType == item_type:
+                return True
+
+        return False
+
+    def has_gadget_type(self, gadget_type):
+        """ \xd0\xbf\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x80\xd0\xba\xd0\xb0 \xd0\xbd\xd0\xb0\xd0\xbb\xd0\xb8\xd1\x87\xd0\xb8\xd1\x8f \xd1\x8d\xd0\xba\xd0\xb8\xd0\xbf\xd0\xb8\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb0\xd0\xbd\xd0\xbd\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xb3\xd0\xb0\xd0\xb4\xd0\xb6\xd0\xb5\xd1\x82\xd0\xb0 """
+        for item in self.ActiveGadgetList:
+            if item.GadjetType == gadget_type:
+                return True
+
+        return False
+
+    def GetEquippedItemSnipingSwitchScopeAbility(self):
+        if self.ActiveItemType and self.ActiveItemID:
+            for item in self.CarryingItems:
+                if item['complexItemID'] == self.ActiveItemID:
+                    for subitem in item['itemList']:
+                        subitem_param = ItemsCatalog.GetItemParam(subitem['itemType'])
+                        if subitem_param.has_key('CanSwitchScopeSnipingMode') and subitem_param['CanSwitchScopeSnipingMode']:
+                            return True
+
+                    return False
+
+        return False

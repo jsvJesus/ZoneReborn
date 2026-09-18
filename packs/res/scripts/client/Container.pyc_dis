@@ -1,0 +1,68 @@
+# Embedded file name: ./scripts/client/Container.py
+"""
+from Localization import lc
+Created on 17.08.2010
+
+@author: muzhig
+"""
+import BigWorld
+from ItemHolder import ItemHolder
+from Helpers.Caps import CAP_CAN_OPEN_AND_EXPLORE
+import ItemsUtils
+import ResMgr
+import Math
+from Localization import lc
+from utils_bw import inRange
+import Constants
+
+class Container(BigWorld.Entity, ItemHolder):
+    DEFAULT_POINT_MODEL = 'models\\bolvan\\sfera.model'
+    MODELS = {}
+    source = ResMgr.openSection('scripts/user_data_object_defs/ItemSpawnPointUDO.def')
+    source = source['Properties']['modelSelect']['Widget']
+    for item in source.values():
+        MODELS[item['value'].asInt] = 'models\\entities\\containers\\' + item['display'].asString
+
+    def __init__(self):
+        self.targetCaps = [CAP_CAN_OPEN_AND_EXPLORE]
+
+    def prerequisites(self):
+        if self.modelSelect:
+            return [self.MODELS[self.modelSelect]]
+        else:
+            return self.DEFAULT_POINT_MODEL
+
+    def onEnterWorld(self, prereq):
+        self.setNormalModel(prereq)
+        if self.containerName:
+            self.name = self.containerName
+        else:
+            self.name = self.GetContainerName(self.modelSelect)
+
+    def GetContainerName(self, container_type):
+        poll_str = 'Container.Names.TYPE_' + str(container_type)
+        return lc(poll_str)
+
+    def onLoadModel(self, model):
+        if self.isDestroyed:
+            return
+        self.model = model
+        self.height = Math.Matrix(self.model.bounds).get(1, 1) if model else 1.0
+
+    def setNormalModel(self, prereqs = None):
+        if self.modelSelect:
+            BigWorld.fetchModelObstacle(self.MODELS[self.modelSelect], self.matrix, 0, self.onLoadModel)
+
+    def set_CarryingItems(self, old_value):
+        if inRange(self, BigWorld.player(), Constants.INTERACTION_DISTANCE ** 2):
+            BigWorld.player().NeedToUpdateItemCache()
+
+    def onLeaveWorld(self):
+        if inRange(self, BigWorld.player(), Constants.INTERACTION_DISTANCE ** 2):
+            BigWorld.player().NeedToCloseItemCache(self)
+
+    def onOpen(self, player):
+        self.cell.onOpenContainer()
+
+    def onClose(self, player):
+        self.cell.onCloseContainer()

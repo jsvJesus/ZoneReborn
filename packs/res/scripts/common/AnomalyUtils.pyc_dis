@@ -1,0 +1,94 @@
+# Embedded file name: ./scripts/common/AnomalyUtils.py
+import math
+import Math
+import Config.Anomalies
+
+def getMaxAnomalyRadius(terrainType, AnomalyRadiusType):
+    if AnomalyRadiusType == 1:
+        return 5
+    if AnomalyRadiusType == 2:
+        return 7
+    if AnomalyRadiusType == 3:
+        return 15
+    radius = 0
+    terrain_anomalies = Config.Anomalies.get_anomalies_for_terrain(terrainType)
+    for anomaly_id in terrain_anomalies:
+        anom_cfg = Config.Anomalies.get_config(anomaly_id)
+        if anom_cfg['radius'] > radius:
+            radius = anom_cfg['radius']
+
+    return radius
+
+
+def getMaximumAnomaliesCount(spawnRadius, anomalyRadius):
+    anomalyDiametr = anomalyRadius * 2
+    if anomalyDiametr < 1.0:
+        return 0
+    numberCircle = int(spawnRadius / anomalyDiametr)
+    if numberCircle == 0:
+        return 0
+    if numberCircle == 1:
+        return 1
+    allnumberCircle = 0
+    for circle in range(1, numberCircle):
+        circleRadius = circle * anomalyDiametr
+        c = 6.28 * circleRadius
+        counthere = int(c / anomalyDiametr)
+        allnumberCircle += counthere
+
+    return allnumberCircle
+
+
+def getAnomaliePositionGenerator(spawPos, spawnRadius, anomalyRadius):
+    anomalyDiametr = anomalyRadius * 2
+    numberCircle = int(spawnRadius / anomalyDiametr)
+    if numberCircle == 0:
+        yield (spawPos, -1)
+    if numberCircle == 1:
+        yield (spawPos, 0)
+    else:
+        allnumberCircle = 0
+        xc, yc, zc = spawPos
+        currentPoint = -1
+        for circle in range(1, numberCircle):
+            circleRadius = circle * anomalyDiametr
+            c = 6.28 * circleRadius
+            counthere = c / anomalyDiametr
+            allnumberCircle += counthere
+            curent = -3.14
+            step = 6.28 / counthere
+            for sub in range(int(counthere)):
+                currentPoint += 1
+                curent += step
+                x = xc + circleRadius * math.cos(curent)
+                z = zc + circleRadius * math.sin(curent)
+                yield (Math.Vector3(x, yc, z), currentPoint)
+
+
+def getAnomaliePosition(spawPos, spawnRadius, anomalyRadius, pointID):
+    anomalyDiametr = anomalyRadius * 2
+    numberCircle = int(spawnRadius / anomalyDiametr)
+    if numberCircle == 0:
+        return spawPos
+    elif numberCircle == 1:
+        return spawPos
+    else:
+        allnumberCircle = 0
+        xc, yc, zc = spawPos
+        currentPoint = -1
+        for circle in range(1, numberCircle):
+            circleRadius = circle * anomalyDiametr
+            c = 6.28 * circleRadius
+            counthere = c / anomalyDiametr
+            allnumberCircle += counthere
+            curent = -3.14
+            step = 6.28 / counthere
+            for sub in range(int(counthere)):
+                currentPoint += 1
+                curent += step
+                if pointID == currentPoint:
+                    x = xc + circleRadius * math.cos(curent)
+                    z = zc + circleRadius * math.sin(curent)
+                    return Math.Vector3(x, yc, z)
+
+        return None

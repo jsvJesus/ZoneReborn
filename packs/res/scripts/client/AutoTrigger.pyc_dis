@@ -1,0 +1,57 @@
+# Embedded file name: ./scripts/client/AutoTrigger.py
+import BigWorld
+from HideModelUDO import HideModelUDO
+from SoundNode import SoundNode
+
+class AutoTrigger(BigWorld.Entity):
+
+    def __init__(self):
+        BigWorld.Entity.__init__(self)
+
+    def onEnterWorld(self, prereqs):
+        self._spawnClientItems()
+
+    def onLeaveWorld(self):
+        self.deactivateItems()
+        self.client_entities_list = []
+        self.models_list = []
+
+    def _spawnClientItems(self):
+        self.client_entities_list = []
+        self.models_list = []
+        for item in self.targetNodes:
+            if item.__class__.__name__ == 'UserDataObjectRef':
+                continue
+            try:
+                item.position
+            except BigWorld.UnresolvedUDORefException:
+                BigWorld.callback(5.0, self._spawnClientItems)
+                return
+
+        for item in self.targetNodes:
+            if item.__class__.__name__ == 'SoundNodeUDO':
+                sound_node_id = SoundNode.create_from_udo(item, self.spaceID)
+                self.client_entities_list.append(BigWorld.entities[sound_node_id])
+            elif item.__class__.__name__ == 'HideModelUDO':
+                model = HideModelUDO.parse_model(item)
+                if model:
+                    self.models_list.append(model)
+
+        if self.activated:
+            self.activateItems()
+
+    def activateItems(self):
+        for item in self.client_entities_list:
+            item.activateFromTrigger()
+
+        for model in self.models_list:
+            if not model.attached:
+                self.addModel(model)
+
+    def deactivateItems(self):
+        for item in self.client_entities_list:
+            item.deactivateFromTrigger()
+
+        for model in self.models_list:
+            if model.attached:
+                self.delModel(model)

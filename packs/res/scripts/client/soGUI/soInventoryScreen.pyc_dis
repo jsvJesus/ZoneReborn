@@ -1,0 +1,886 @@
+# Embedded file name: ./scripts/client/soGUI/soInventoryScreen.py
+import BigWorld
+import GUI
+import BWPersonality
+import Helpers.PyGUI as PyGUI
+from soGUI import soButton, soButtonWTT
+import Helpers.Listener as Listener
+import soGUI
+import Keys
+import Helpers.BWKeyBindings as BWKeyBindings
+from Helpers.BWKeyBindings import BWKeyBindingAction
+from Helpers.PyGUI import PyGUIEvent
+from Helpers.PyGUI.DraggableComponent import DraggableComponent
+from soGUI.soDraggableComponent import soDraggableComponent
+from soGUI.GUIPositions import GUIPositions
+from Items import ItemsCatalog
+import ItemsUtils
+import soGUI.soScrollBar as soScrollBar
+from soGUI.soScrollBar import soScrollBar2
+from soGUI.soContextMenuComponent import soContextMenuComponent
+from Helpers.BWCoroutine import *
+from Helpers.PyGUI.PyGUIBase import PyGUIBase
+from soGUI.soItemView import soItemView, soItemSlot
+import soGUI.soItemView as module_soItemView
+from soPrivateStoreGUI import soPrivateStoreSlot
+from soItemCache import soItemCacheSlot
+from BarterWindowGUI import BarterPaySlot
+from soQuickSlotsBar import soActionSlot
+from gui_const import INV_CONST
+from Localization import lc
+from functools import partial
+from soGUI.soToolTipComponent import soToolTipComponent
+from soGUI.soUserFireCache import soUserFireCacheSlot
+from soGUI.soWarehouse import soWarehouseSlot
+from soGUI.soCraftGUI import CraftGUI
+from soGUI.data import GUIEvents
+import textMoney
+from textMoney import TextMoney, TextGold
+import soInventorySlot2
+reload(soInventorySlot2)
+from soGUI.soInventorySlot2 import soInventorySlot2
+from Helpers import QuestTester
+temporary_blocked_items = {}
+
+def tempBlocked(item):
+    if not item:
+        return
+    return item['complexItemID'] in temporary_blocked_items
+
+
+class guiKeyEvent(object):
+
+    def __init__(self, key, down, mods = None):
+        self.key = key
+        self.down = down
+        self.modifiers = mods
+
+    def isKeyDown(self):
+        return self.down
+
+
+from soCharacterScreen import soCharacterSlot, soGadgetSlot
+
+class soScrollArea(PyGUIBase):
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.onDropItem = lambda item: False
+        self.component.dragFocus = True
+        self.callbackID = None
+        self.component.focus = 1
+        self.component.crossFocus = 0
+        self.component.moveFocus = 1
+        self.component.dropFocus = True
+        cmp = GUI.Simple('textures/default/white.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (255, 255, 255, 20)
+        cmp.materialFX = 'BLEND'
+        cmp.height = self.component.height
+        cmp.width = self.component.width
+        cmp.position = (0, 0, 0.9)
+        cmp.visible = False
+        self.component.addChild(cmp, 'background')
+        return
+
+    def setSize(self, w, h):
+        self.component.height = h
+        self.component.width = w
+        self.component.background.height = h
+        self.component.background.width = w
+
+    def _has_item(self, dropped):
+        if isinstance(dropped.script, soInventorySlot2) and dropped.script.itemData:
+            return True
+
+    def handleDragEnterEvent(self, comp, dragged):
+        if self._has_item(dragged):
+            self.startScrollLoop()
+            return True
+
+    def handleDragLeaveEvent(self, comp, dragged):
+        self.stopScrollLoop()
+        return True
+
+    def startScrollLoop(self):
+        self.callbackID = BigWorld.callback(0.5, self.scrolling)
+        self.component.background.visible = True
+
+    def stopScrollLoop(self):
+        if self.callbackID:
+            BigWorld.cancelCallback(self.callbackID)
+        self.component.background.visible = False
+
+    def scrolling(self):
+        self.onScrollEvent()
+        self.callbackID = BigWorld.callback(0.5, self.scrolling)
+
+    def onScrollEvent(self):
+        pass
+
+    def handleDropEvent(self, cmp, dropped):
+        self.stopScrollLoop()
+        if self._has_item(dropped):
+            self.onDropItem(dropped.script.draggedData)
+            return True
+        return False
+
+    def handleMouseLeaveEvent(self, comp):
+        self.stopScrollLoop()
+        return False
+
+
+class soInventoryScreen2(PyGUIBase, DraggableComponent, GUIPositions):
+    factoryString = 'soGUI.soInventoryScreen2'
+    ROWS = 6
+    COLS = 5
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        DraggableComponent.__init__(self, True, True, True, xoffset=0, yoffset=0)
+        GUIPositions.__init__(self)
+        component.script = self
+        self.ROWS = BWPersonality.settings.GUISettings.getInventorySize()[1]
+        self.COLS = BWPersonality.settings.GUISettings.getInventorySize()[0]
+        self._itemView = None
+        self.interfaceID = BWPersonality.GUICore.GUI_ID_INVENTORY
+        self.filterMask = INV_CONST.FILT_ALL
+        self.drag_data = None
+        self.setupRoot()
+        self.setupContent()
+        BigWorld.callback(0.0, self.checkNormalPosition)
+        return
+
+    def setupRoot(self):
+        sW, sH = BigWorld.screenSize()
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.height = 70 + self.ROWS * 64
+        cmp.width = 24 + self.COLS * 64
+        cmp.visible = False
+        cmp.textureName = ''
+        cmp.dragFocus = True
+        cmp.dropFocus = True
+        cmp.crossFocus = True
+        cmp.moveFocus = True
+        cmp.mouseButtonFocus = True
+        cmp.position = (1, 0.33, 0.5)
+
+    def setupContent(self):
+        itemView = soItemView(GUI.Window(), soInventorySlot2, slot_eventsHandler=self.slotHandler, eventsHandler=self.itemViewHandler, rowWidth=self.COLS, rows=self.ROWS, cols=self.COLS, hScroll=False, borderWidth=0, locked_data=temporary_blocked_items)
+        cmp = itemView.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.position = (5, 30, 0.5)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        self.component.addChild(cmp, 'itemView')
+        itemView.onBound()
+        itemView.setRestrictingComponent(None)
+        itemView.setItems(None)
+        self._itemView = itemView
+        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.height = self.component.height
+        cmp.width = self.component.width
+        cmp.position = (0, 0, 0.9)
+        self.component.addChild(cmp, 'iFrame')
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (18, 6, 0.3)
+        cmp.text = lc('GUI.Inventory.WINDOW_CAPTION')
+        self.component.addChild(cmp, 'iLabel')
+        cmp = soScrollArea(GUI.Window())
+        cmp = cmp.component
+        cmp.colour = (0, 255, 0, 255)
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.position = (1, 2, 0.2)
+        cmp.script.setSize(self.component.width - 30, 25)
+        self.component.addChild(cmp, 'scrollAreaUp')
+        cmp.script.onScrollEvent = self.itemViewScrollUp
+        cmp.script.onDropItem = self._moveItemUp
+        cmp = soScrollArea(GUI.Window())
+        cmp = cmp.component
+        cmp.colour = (0, 255, 0, 255)
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.position = (2, self.component.height - 3, 0.2)
+        cmp.script.setSize(self.component.width - 45, 34)
+        self.component.addChild(cmp, 'scrollAreaDown')
+        cmp.script.onScrollEvent = self.itemViewScrollDown
+        cmp.script.onDropItem = self._moveItemDown
+        closeBox = soButton(GUI.Window())
+        cmp = closeBox.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 18
+        cmp.height = 18
+        cmp.position = (self.component.width - 6 - cmp.width, 6, 0.3)
+        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.onBound()
+        closeBox.setVisualState('normal')
+        self.component.addChild(cmp, 'closeBox')
+        filterBtn = soButtonWTT(GUI.Window(), TTid='filtQuests')
+        filterBtn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        filterBtn.buttonActive = True
+        filterBtn.onClick = partial(self.filterHandler, INV_CONST.FILT_QUESTS)
+        cmp = filterBtn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 18
+        cmp.height = 18
+        cmp.position = (self.component.width - 28, 6, 0.3)
+        filterBtn.initVSC('soGUI/visual_styles/filterQuest.xml')
+        filterBtn.onBound()
+        filterBtn.setVisualState('active')
+        self.component.addChild(cmp, 'filtQuests')
+        filterBtn = soButtonWTT(GUI.Window(), TTid='filtArts')
+        filterBtn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        filterBtn.buttonActive = True
+        filterBtn.onClick = partial(self.filterHandler, INV_CONST.FILT_ARTS)
+        cmp = filterBtn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 18
+        cmp.height = 18
+        cmp.dropFocus = False
+        cmp.position = (self.component.width - 46, 6, 0.3)
+        filterBtn.initVSC('soGUI/visual_styles/filterArtifact.xml')
+        filterBtn.onBound()
+        filterBtn.setVisualState('active')
+        self.component.addChild(cmp, 'filtArts')
+        filterBtn = soButtonWTT(GUI.Window(), TTid='filtLoot')
+        filterBtn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        filterBtn.buttonActive = True
+        filterBtn.onClick = partial(self.filterHandler, INV_CONST.FILT_LOOT)
+        cmp = filterBtn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 18
+        cmp.height = 18
+        cmp.position = (self.component.width - 64, 6, 0.3)
+        filterBtn.initVSC('soGUI/visual_styles/filterMisc.xml')
+        filterBtn.onBound()
+        filterBtn.setVisualState('active')
+        self.component.addChild(cmp, 'filtLoot')
+        filterBtn = soButtonWTT(GUI.Window(), TTid='filtFood')
+        filterBtn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        filterBtn.buttonActive = True
+        filterBtn.onClick = partial(self.filterHandler, INV_CONST.FILT_FOOD)
+        cmp = filterBtn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 18
+        cmp.height = 18
+        cmp.position = (self.component.width - 82, 6, 0.3)
+        filterBtn.initVSC('soGUI/visual_styles/filterConsumables.xml')
+        filterBtn.onBound()
+        filterBtn.setVisualState('active')
+        self.component.addChild(cmp, 'filtFood')
+        filterBtn = soButtonWTT(GUI.Window(), TTid='filtGadgets')
+        filterBtn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        filterBtn.buttonActive = True
+        filterBtn.onClick = partial(self.filterHandler, INV_CONST.FILT_GADGETS)
+        cmp = filterBtn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 18
+        cmp.height = 18
+        cmp.position = (self.component.width - 100, 6, 0.3)
+        filterBtn.initVSC('soGUI/visual_styles/filterGadjet.xml')
+        filterBtn.onBound()
+        filterBtn.setVisualState('active')
+        self.component.addChild(cmp, 'filtGadgets')
+        filterBtn = soButtonWTT(GUI.Window(), TTid='filtClother')
+        filterBtn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        filterBtn.buttonActive = True
+        filterBtn.onClick = partial(self.filterHandler, INV_CONST.FILT_CLOTHER)
+        cmp = filterBtn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 18
+        cmp.height = 18
+        cmp.position = (self.component.width - 118, 6, 0.3)
+        filterBtn.initVSC('soGUI/visual_styles/filterArmor.xml')
+        filterBtn.onBound()
+        filterBtn.setVisualState('active')
+        self.component.addChild(cmp, 'filtClother')
+        filterBtn = soButtonWTT(GUI.Window(), TTid='filtWeapon')
+        filterBtn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        filterBtn.buttonActive = True
+        filterBtn.onClick = partial(self.filterHandler, INV_CONST.FILT_WEAPON)
+        cmp = filterBtn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 18
+        cmp.height = 18
+        cmp.position = (self.component.width - 136, 6, 0.3)
+        filterBtn.initVSC('soGUI/visual_styles/filterWeapons.xml')
+        filterBtn.onBound()
+        filterBtn.setVisualState('active')
+        self.component.addChild(cmp, 'filtWeapon')
+        self._moneyLabel = TextMoney(GUI.Window(), font='ruRU_Cyrvetica_Extra_10i.font')
+        cmp = self._moneyLabel.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.position = (130, self.component.height - 25, 0.3)
+        self.component.addChild(cmp, 'moneyLabel')
+        self._goldLabel = TextGold(GUI.Window(), font='ruRU_Cyrvetica_Extra_10i.font')
+        cmp = self._goldLabel.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.position = (130, self.component.height - 40, 0.3)
+        self.component.addChild(cmp, 'goldLabel')
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_Cyrvetica_Extra_10i.font'
+        cmp.colour = (118, 119, 103, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (21, self.component.height - 16, 0.3)
+        cmp.text = u''
+        self.component.addChild(cmp, 'weightLabel')
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_Cyrvetica_Extra_10i.font'
+        cmp.colour = (118, 119, 103, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (21, self.component.height - 30, 0.3)
+        cmp.text = u''
+        self.component.addChild(cmp, 'slotLabel')
+        cmp = GUI.Simple('soGUI/maps/Controls/inventory/weight.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.height = 10
+        cmp.width = 8
+        cmp.position = (8, self.component.height - 15, 0.9)
+        self.component.addChild(cmp, 'weightIcon')
+        cmp = GUI.Simple('soGUI/maps/Controls/inventory/slots.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.height = 10
+        cmp.width = 10
+        cmp.position = (8, self.component.height - 29, 0.9)
+        self.component.addChild(cmp, 'slotsIcon')
+        cmp = GUI.Simple('soGUI/maps/Controls/inventory/trashcan.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.height = 18
+        cmp.width = 15
+        cmp.dropFocus = True
+        cmp.mapping = ((0.0, 0.0),
+         (0.0, 0.5),
+         (1.0, 0.5),
+         (1.0, 0.0))
+        cmp.position = (self.component.width - 21, self.component.height - 26, 0.9)
+        cmp.script = self
+        self.component.addChild(cmp, 'trashCan')
+        cmp = GUI.Simple('textures/default/white.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (0, 0, 0, 210)
+        cmp.materialFX = 'BLEND'
+        cmp.height = self.component.height - 70
+        cmp.width = self.component.width - 4
+        cmp.position = (2, 30, 0.01)
+        self.component.addChild(cmp, 'darkScreen')
+        cmp.dragFocus = True
+        cmp.dropFocus = True
+        cmp.crossFocus = True
+        cmp.moveFocus = True
+        cmp.mouseButtonFocus = True
+        cmp.visible = 0
+        return
+
+    def handleScrollUP(self, component, dragged):
+        print 'scrollAup'
+
+    def lockWindow(self, value):
+        self.component.darkScreen.visible = value
+
+    def filterHandler(self, filter_mask):
+        self.filterMask = self.filterMask ^ filter_mask
+        BWPersonality.GUICore.inventoryEvent(INV_CONST.EVENT_FILTERCHANGE, self.filterMask)
+        self._updateFilters()
+
+    def handleKeyEvent(self, event):
+        if not self.component.visible:
+            return False
+        if not self.__last_dragged_comp:
+            return False
+        if event.key in (Keys.KEY_LSHIFT, Keys.KEY_RSHIFT):
+            self.__last_dragged_comp[0]._onEnterDrag(self.__last_dragged_comp[1])
+        return False
+
+    def _moveItemUp(self, item):
+        BWPersonality.GUICore.inventoryEvent(INV_CONST.EVENT_MOVE_UP, item)
+        self.delTempBlockItem(item['complexItemID'])
+
+    def _moveItemDown(self, item):
+        BWPersonality.GUICore.inventoryEvent(INV_CONST.EVENT_MOVE_DOWN, item)
+        self.delTempBlockItem(item['complexItemID'])
+
+    __last_dragged_comp = None
+
+    def slotHandler(self, event, data):
+        from soGUI import soSellSlot2, soSummarySlot2
+        from soGUI import soPCTradeSlot_me
+        from soGUI.soTradeInterface import TradeSellFingerSlot
+        if event == module_soItemView.EVENT_DRAGLEAVE:
+            if isinstance(data[0], soInventorySlot2):
+                data[0]._onLeaveDrag(data[1])
+                data[0].clearMarkAsAttachable()
+                self.__last_dragged_comp = None
+            return True
+        else:
+            if event == module_soItemView.EVENT_DRAGENTER:
+                if isinstance(data[1], soInventorySlot2):
+                    if isinstance(data[0], soInventorySlot2):
+                        data[0]._onEnterDrag(data[1])
+                        if data[1].haveItem():
+                            data[0].checkMarkAsAttachable(data[1].itemData)
+                        self.__last_dragged_comp = data
+                    return True
+                elif isinstance(data[1], soUserFireCacheSlot):
+                    return True
+                elif isinstance(data[1], soWarehouseSlot):
+                    return True
+                elif isinstance(data[1], soPrivateStoreSlot):
+                    return True
+                elif data[1].factoryString == 'soGUI.soItemCacheSlot':
+                    return True
+                elif isinstance(data[1], BarterPaySlot):
+                    return True
+                elif isinstance(data[1], soCharacterSlot):
+                    return True
+                elif isinstance(data[1], soGadgetSlot):
+                    return True
+                elif isinstance(data[1], soActionSlot):
+                    return True
+                elif isinstance(data[1], soSellSlot2):
+                    return True
+                elif isinstance(data[1], soSummarySlot2):
+                    return True
+                elif isinstance(data[1], soPCTradeSlot_me):
+                    return True
+                elif data[1].__class__.__name__ == 'soPCTradeSlot_me':
+                    return True
+                elif data[1].factoryString == 'soGUI.soItemSlot':
+                    return True
+                elif data[1].factoryString == 'soGUI.soPartSlot':
+                    return True
+                elif data[1].factoryString == 'soGUI.soInventorySlot2':
+                    return True
+                else:
+                    return False
+            if event == module_soItemView.EVENT_DROP:
+                if self.__last_dragged_comp:
+                    self.__last_dragged_comp[0]._onLeaveDrag()
+                    self.__last_dragged_comp = None
+                if isinstance(data[0], soInventorySlot2):
+                    data[0].clearMarkAsAttachable()
+                if isinstance(data[1], soInventorySlot2):
+                    BWPersonality.GUICore.inventoryEvent(INV_CONST.EVENT_MOVE, [data[0].itemData, data[1].draggedData])
+                    return True
+                elif isinstance(data[1], TradeSellFingerSlot):
+                    if BigWorld.player():
+                        BigWorld.player().removeToSell(data[1].itemData)
+                    return True
+                elif isinstance(data[1], soPrivateStoreSlot):
+                    data[1].cancelSell()
+                    return True
+                elif data[1].factoryString == 'soGUI.soItemCacheSlot':
+                    if BigWorld.player().can_take_item(data[1].itemData):
+                        if BWPersonality.GUICore.itemCacheGUI:
+                            BWPersonality.GUICore.itemCacheGUI.addBlockedItem(data[1].itemData, data[1])
+                        if BWPersonality.GUICore.itemLootCacheGUI:
+                            BWPersonality.GUICore.itemLootCacheGUI.addBlockedItem(data[1].itemData, data[1])
+                        data[1].take()
+                    return True
+                elif isinstance(data[1], soUserFireCacheSlot):
+                    data[1].take()
+                    return True
+                elif isinstance(data[1], soWarehouseSlot):
+                    BWPersonality.GUICore.WarehouseGUI.addBlockedItem(data[1].itemData, data[1])
+                    data[1].take()
+                    return True
+                elif isinstance(data[1], BarterPaySlot):
+                    data[1].cancelTrade()
+                    return True
+                elif isinstance(data[1], soCharacterSlot):
+                    data[1].unequip()
+                    return True
+                elif isinstance(data[1], soGadgetSlot):
+                    data[1].unequip()
+                    return True
+                elif isinstance(data[1], soActionSlot):
+                    data[1].remove()
+                    return True
+                elif isinstance(data[1], soSummarySlot2):
+                    if BWPersonality.GUICore.tradeGUI is not None:
+                        BWPersonality.GUICore.tradeGUI.handleSummaryToInventory(data[1].itemData)
+                        return True
+                    return False
+                elif isinstance(data[1], soSellSlot2):
+                    data[1].wannaBuy()
+                    return True
+                elif isinstance(data[1], soPCTradeSlot_me):
+                    data[1].cancelItem()
+                    return True
+                elif data[1].__class__.__name__ == 'soPCTradeSlot_me':
+                    data[1].cancelItem()
+                    return True
+                elif data[1].factoryString == 'soGUI.soItemSlot':
+                    data[1].take()
+                    return True
+                elif data[1].factoryString == 'soGUI.soTradeSummarySlot':
+                    data[1].toInventory()
+                    return True
+                elif data[1].factoryString == 'soGUI.soPartSlot':
+                    BWPersonality.GUICore.craftEvent(CraftGUI.EVENT_DELITEM, data[1].slotInfo)
+                    return True
+                else:
+                    return False
+            if event == module_soItemView.SLOTEVENT_MOUSELEAVE:
+                if isinstance(data, soInventorySlot2):
+                    GUI.mcursor().shape = 'arrow'
+                    BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_HIDE)
+                    data.clearMarkAsAttachable()
+                    return True
+            if event == module_soItemView.SLOTEVENT_MOUSEENTER:
+                if isinstance(data, soInventorySlot2):
+                    if BWPersonality.GUICore.repairMode and data.haveItem():
+                        GUI.mcursor().shape = 'repair'
+                    BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_SHOW)
+                    return True
+            if event == module_soItemView.SLOTEVENT_DBLCLICK:
+                if isinstance(data, soInventorySlot2):
+                    if data.itemData and BWPersonality.GUICore.tradeGUI and BWPersonality.GUICore.tradeGUI.component.visible:
+                        from gui_const import NPC_VENDOR
+                        BWPersonality.GUICore.tradeEvent(NPC_VENDOR.EVENT_WANNASELL, data.itemData)
+                    return True
+            if event == module_soItemView.SLOTEVENT_RCLICK:
+                if isinstance(data, soInventorySlot2):
+                    if tempBlocked(data.itemData):
+                        return False
+                    BWPersonality.GUICore.inventoryEvent(INV_CONST.EVENT_CONTEXT, data.itemData, data)
+                    return True
+            if event == module_soItemView.SLOTEVENT_LCLICK:
+                if BWPersonality.GUICore.repairMode:
+                    BWPersonality.GUICore.inventoryEvent(INV_CONST.EVENT_REPAIR, data.itemData)
+                    return True
+            if event == module_soItemView.EVENT_DRAGSTART:
+                if data.factoryString == 'soGUI.soInventorySlot2':
+                    if not data.itemData:
+                        return True
+                    self.addTempBlockItem(data.itemData, data)
+                    data.lockSlot(True)
+                    self.drag_data = (data, data.itemData, data.itemData['complexItemID'])
+                    return True
+            if event == module_soItemView.EVENT_DRAGSTOP:
+                if data.factoryString == 'soGUI.soInventorySlot2':
+                    player = BigWorld.player()
+                    if not self.drag_data:
+                        return False
+                    if self.drag_data[2] in player.locked_items:
+                        player.locked_items[self.drag_data[2]] = self.drag_data[0]
+                    else:
+                        if not getattr(self.drag_data[0], 'leave_locked', False):
+                            self.delTempBlockItem(self.drag_data[2])
+                            self.drag_data[0].lockSlot(False)
+                        self.drag_data = None
+                    return True
+            return False
+
+    def setSize(self, rows, cols):
+        self.ROWS = rows
+        self.COLS = cols
+        self.component.height = 70 + self.ROWS * 64
+        self.component.width = 24 + self.COLS * 64
+        self.component.iFrame.height = self.component.height
+        self.component.iFrame.width = self.component.width
+        self._itemView.change_size(self.COLS, self.ROWS)
+        self.component.scrollAreaUp.script.setSize(self.component.width - 30, 25)
+        self.component.scrollAreaDown.script.setSize(self.component.width - 45, 34)
+        self.component.scrollAreaDown.position = (2, self.component.height - 3, 0.2)
+        self.component.closeBox.position = (self.component.width - 6 - self.component.closeBox.width, 6, 0.3)
+        self.component.filtQuests.position = (self.component.width - 28, 6, 0.3)
+        self.component.filtArts.position = (self.component.width - 46, 6, 0.3)
+        self.component.filtLoot.position = (self.component.width - 64, 6, 0.3)
+        self.component.filtFood.position = (self.component.width - 82, 6, 0.3)
+        self.component.filtGadgets.position = (self.component.width - 100, 6, 0.3)
+        self.component.filtClother.position = (self.component.width - 118, 6, 0.3)
+        self.component.filtWeapon.position = (self.component.width - 136, 6, 0.3)
+        self.component.moneyLabel.position = (130, self.component.height - 25, 0.3)
+        self.component.goldLabel.position = (130, self.component.height - 40, 0.3)
+        self.component.weightLabel.position = (21, self.component.height - 16, 0.3)
+        self.component.slotLabel.position = (21, self.component.height - 30, 0.3)
+        self.component.weightIcon.position = (8, self.component.height - 15, 0.9)
+        self.component.slotsIcon.position = (8, self.component.height - 29, 0.9)
+        self.component.trashCan.position = (self.component.width - 21, self.component.height - 26, 0.9)
+        self.component.darkScreen.height = self.component.height - 70
+        self.component.darkScreen.width = self.component.width - 4
+        BigWorld.callback(0.0, self.checkNormalPosition)
+
+    def itemViewHandler(self, event, data):
+        from soGUI import soSellSlot2, soSummarySlot2
+        if event == module_soItemView.EVENT_DRAGENTER:
+            if data[1].factoryString == 'soGUI.soInventorySlot2':
+                return True
+            if data[1].factoryString == 'soGUI.soItemSlot':
+                return True
+            if data[1].factoryString == 'soGUI.soTradeSummarySlot':
+                return True
+        if event == module_soItemView.EVENT_DROP:
+            if data[1].factoryString == 'soGUI.soInventorySlot2':
+                return True
+            if data[1].factoryString == 'soGUI.soItemSlot':
+                data[1].take()
+                return True
+            if data[1].factoryString == 'soGUI.soWarehouseSlot':
+                data[1].take()
+                return True
+            if data[1].factoryString == 'soGUI.soTradeSummarySlot':
+                data[1].toInventory()
+                return True
+        return False
+
+    def _updateFilters(self):
+
+        def update_filter(script, filt):
+            script.script.buttonActive = bool(self.filterMask & filt)
+            script.script._updateVisualState()
+
+        update_filter(self.component.filtWeapon, INV_CONST.FILT_WEAPON)
+        update_filter(self.component.filtArts, INV_CONST.FILT_ARTS)
+        update_filter(self.component.filtQuests, INV_CONST.FILT_QUESTS)
+        update_filter(self.component.filtLoot, INV_CONST.FILT_LOOT)
+        update_filter(self.component.filtFood, INV_CONST.FILT_FOOD)
+        update_filter(self.component.filtGadgets, INV_CONST.FILT_GADGETS)
+        update_filter(self.component.filtClother, INV_CONST.FILT_CLOTHER)
+
+    def _setItems(self, items):
+        BWPersonality.GUICore.toolTipEvent(None, self.interfaceID, soToolTipComponent.EVENT_HIDE)
+        self.component.itemView.script.setItems(items)
+        return
+
+    def _setItem(self, item):
+        self.component.itemView.script.setItem(item)
+
+    def _setMoney(self, money):
+        self._moneyLabel.setValue(money[0])
+        self._goldLabel.setValue(money[1])
+
+    def _setWeight(self, weight):
+        self.component.weightLabel.text = '%.2f' % weight[0] + ' / ' + '%.2f' % weight[1]
+        self.component.slotLabel.text = str(weight[2]) + ' / ' + str(weight[3])
+
+    def _setFilterMask(self, filterMask):
+        self.filterMask = filterMask
+        self._updateFilters()
+
+    def partially_update(self, item):
+        self._setItem(item)
+
+    def update(self):
+        items = None
+        money = [0, 0]
+        weight = ''
+        filters = 0
+        if BWPersonality.GUICore.inventoryDataSection:
+            if BWPersonality.GUICore.inventoryDataSection.has_key('items'):
+                items = BWPersonality.GUICore.inventoryDataSection['items']
+            if BWPersonality.GUICore.inventoryDataSection.has_key('money'):
+                money = BWPersonality.GUICore.inventoryDataSection['money']
+            if BWPersonality.GUICore.inventoryDataSection.has_key('weight'):
+                weight = BWPersonality.GUICore.inventoryDataSection['weight']
+            if BWPersonality.GUICore.inventoryDataSection.has_key('filters'):
+                filters = BWPersonality.GUICore.inventoryDataSection['filters']
+        self._setItems(items)
+        self._setMoney(money)
+        self._setWeight(weight)
+        self._setFilterMask(filters)
+        return
+
+    def addTempBlockItem(self, item, data):
+        if not item:
+            return
+        if isinstance(data, list):
+            inv_slot = data[1]
+        else:
+            inv_slot = data
+        item_id = item['complexItemID']
+        temporary_blocked_items[item_id] = True
+
+        def clear_item():
+            if item_id in temporary_blocked_items:
+                del temporary_blocked_items[item_id]
+
+        BigWorld.callback(20, clear_item)
+        if inv_slot:
+            inv_slot.lockSlot(True)
+
+    def delTempBlockItem(self, item_id):
+        if item_id in temporary_blocked_items:
+            del temporary_blocked_items[item_id]
+        p = BigWorld.player()
+        item = ItemsUtils.GetComplexItemByID(p, item_id)
+        if item:
+            self.partially_update(item)
+
+    @QuestTester.debug_event(QuestTester.QD_ITEM_ADDED)
+    def onItemAdded(self, type, number, item_id):
+        self.delTempBlockItem(item_id)
+
+    def onItemLost(self, type, number, item_id):
+        pass
+
+    def show(self):
+        if self.component.parent is None:
+            BWPersonality.GUICore.worldLayer.addChild(self.component, 'inventory')
+        if not self.savedGUIPosition:
+            self.readGUIPostitons()
+        if self.savedGUIPosition:
+            self.component.position = self.savedGUIPosition
+        self.checkNormalPosition()
+        self.component.visible = True
+        BWPersonality.GUICore.setBestCursor()
+        BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_SHOW, self.interfaceID)
+        BWPersonality.GUICore.onWindowsState(self.interfaceID, self.component)
+        return
+
+    def hide(self):
+        self.component.visible = False
+        BWPersonality.GUICore.setBestCursor()
+        BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_HIDE, self.interfaceID)
+        BWPersonality.GUICore.onWindowsState(self.interfaceID, self.component)
+
+    def stopDragging(self):
+        self.savedGUIPosition = self.component.position
+        self.saveGUIPositions()
+        DraggableComponent.stopDragging(self)
+
+    def handleMouseButtonEvent(self, comp, event):
+        return DraggableComponent.handleMouseButtonEvent(self, comp, event)
+
+    def get_filled_slots(self):
+        """ \xd0\xb2\xd0\xb5\xd1\x80\xd0\xbd\xd1\x91\xd1\x82 \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xbe\xd0\xba \xd0\xbd\xd0\xb5\xd0\xbf\xd1\x83\xd1\x81\xd1\x82\xd1\x8b\xd1\x85 \xd1\x81\xd0\xbb\xd0\xbe\xd1\x82\xd0\xbe\xd0\xb2 """
+        return [ child[1].script for child in self.component.itemView.children if isinstance(child[1].script, soInventorySlot2) and child[1].script.haveItem() ]
+
+    def handleDragEnterEvent(self, cmp, dragged):
+        if cmp == self.component.trashCan and isinstance(dragged.script, soInventorySlot2):
+            self.component.trashCan.mapping = ((0.0, 0.5),
+             (0.0, 1.0),
+             (1.0, 1.0),
+             (1.0, 0.5))
+            return True
+        return False
+
+    def handleDragLeaveEvent(self, cmp, dragged):
+        self.component.trashCan.mapping = ((0.0, 0.0),
+         (0.0, 0.5),
+         (1.0, 0.5),
+         (1.0, 0.0))
+        return False
+
+    def handleDropEvent(self, cmp, dropped):
+        self.component.trashCan.mapping = ((0.0, 0.0),
+         (0.0, 0.5),
+         (1.0, 0.5),
+         (1.0, 0.0))
+        if cmp == self.component.trashCan and isinstance(dropped.script, soInventorySlot2):
+            BWPersonality.GUICore.inventoryEvent(INV_CONST.EVENT_DELETE, dropped.script.itemData)
+            return True
+        return False
+
+    def doReposition(self):
+        if not self.savedGUIPosition:
+            self.component.position = (1, 0.33, 0.5)
+
+    @PyGUIEvent('closeBox', 'onClick')
+    def onCloseBox(self):
+        self.hide()
+
+    def itemViewScrollUp(self):
+        if self._itemView:
+            self._itemView.scrolledUP()
+
+    def itemViewScrollDown(self):
+        if self._itemView:
+            self._itemView.scrolledDOWN()

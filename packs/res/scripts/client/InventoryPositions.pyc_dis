@@ -1,0 +1,119 @@
+# Embedded file name: ./scripts/client/InventoryPositions.py
+import pickle, os
+import ItemsUtils
+import utils
+import BigWorld
+POSITIONS_SAVED_PATH = os.path.join(utils.stalker_path(), 'usercontent/inventory/positon_items.pickle')
+
+class InventoryPositions:
+
+    def __init__(self):
+        self.inventoryPositionList = []
+        self._loaded_inventoryPos = None
+        self.InitItemPositions()
+        self._inventory_pos_callback = None
+        return
+
+    def InitItemPositions(self):
+        self.readItemPostitons()
+        if self._loaded_inventoryPos:
+            self.inventoryPositionList = self._loaded_inventoryPos.get(self.name, [])
+
+    def readItemPostitons(self):
+        if os.path.exists(POSITIONS_SAVED_PATH):
+            try:
+                with open(POSITIONS_SAVED_PATH, 'rb') as file:
+                    self._loaded_inventoryPos = pickle.load(file)
+            except Exception:
+                print 'ErrorFile::', POSITIONS_SAVED_PATH, 'exists, but is corrupted'
+
+    def saveItemPositions(self):
+        self.readItemPostitons()
+        if not self._loaded_inventoryPos:
+            self._loaded_inventoryPos = {self.name: self.inventoryPositionList}
+        else:
+            self._loaded_inventoryPos[self.name] = self.inventoryPositionList
+        settings_dir = os.path.dirname(POSITIONS_SAVED_PATH)
+        if not os.path.exists(settings_dir):
+            os.makedirs(settings_dir)
+        with open(POSITIONS_SAVED_PATH, 'wb') as file:
+            pickle.dump(self._loaded_inventoryPos, file)
+
+    def CheckAllItemsInPosList(self):
+        equip_list = ItemsUtils.GetEquipListIDs(self)
+        all_unequipped_items_ds = []
+        for item in self.CarryingItems:
+            if item['complexItemID'] not in equip_list:
+                if item['complexItemID'] not in self.inventoryPositionList:
+                    self.AddItemToSlotList(item['complexItemID'])
+                all_unequipped_items_ds.append(item['complexItemID'])
+
+        index = 0
+        length = len(self.inventoryPositionList) - 1
+        for index in range(length, -1, -1):
+            item_id = self.inventoryPositionList[index]
+            if item_id not in all_unequipped_items_ds:
+                self.RemoveItemSlotList(item_id)
+
+    def InsertItemDivided(self, from_item_id, new_item_id):
+        if from_item_id in self.inventoryPositionList:
+            pos = self.inventoryPositionList.index(from_item_id)
+            if new_item_id in self.inventoryPositionList:
+                self.inventoryPositionList.remove(new_item_id)
+            self.inventoryPositionList.insert(pos + 1, new_item_id)
+            self.setInventoryPosCallback()
+
+    def AddItemToSlotList(self, id):
+        self.inventoryPositionList.append(id)
+
+    def RemoveItemSlotList(self, id):
+        self.inventoryPositionList.remove(id)
+
+    def ChangeItemSlotNumber(self, old, new):
+        old_id = old['complexItemID']
+        new_id = new['complexItemID']
+        new_num = self.inventoryPositionList.index(new_id)
+        old_num = self.inventoryPositionList.index(old_id)
+        self.inventoryPositionList[new_num], self.inventoryPositionList[old_num] = self.inventoryPositionList[old_num], self.inventoryPositionList[new_num]
+        self.NeedToUpdateInventory(delay=0.0)
+        self.setInventoryPosCallback()
+
+    def displaceItemSlot(self, old_item, new_item):
+        old_id = old_item['complexItemID']
+        new_id = new_item['complexItemID']
+        new_num = self.inventoryPositionList.index(new_id)
+        old_num = self.inventoryPositionList.index(old_id)
+        self.inventoryPositionList.remove(old_id)
+        self.inventoryPositionList.insert(new_num, old_id)
+        self.NeedToUpdateInventory(delay=0.0)
+        self.setInventoryPosCallback()
+
+    def setlastItemSlotNumber(self, item):
+        item_id = item['complexItemID']
+        if item_id in self.inventoryPositionList:
+            self.inventoryPositionList.remove(item_id)
+            self.inventoryPositionList.append(item_id)
+        self.NeedToUpdateInventory(delay=0.0)
+        self.setInventoryPosCallback()
+
+    def setFirstItemSlotNumber(self, item):
+        item_id = item['complexItemID']
+        if item_id in self.inventoryPositionList:
+            self.inventoryPositionList.remove(item_id)
+            self.inventoryPositionList.insert(0, item_id)
+        self.NeedToUpdateInventory(delay=0.0)
+        self.setInventoryPosCallback()
+
+    def GetItemBySlotNumber(self, needed_slot_number):
+        id = self.inventoryPositionList[needed_slot_number]
+        item = ItemsUtils.GetComplexItemByID(self, id)
+        if item:
+            return item
+        del self.inventoryPositionList[needed_slot_number]
+
+    def setInventoryPosCallback(self):
+        if self._inventory_pos_callback:
+            BigWorld.cancelCallback(self._inventory_pos_callback)
+            self._inventory_pos_callback = None
+        self._inventory_pos_callback = BigWorld.callback(5.0, self.saveItemPositions)
+        return

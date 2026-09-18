@@ -1,0 +1,1069 @@
+# Embedded file name: ./scripts/client/soGUI/soClanScreen.py
+import BWPersonality
+import BigWorld
+import GUI
+import Helpers.PyGUI as PyGUI
+import soGUI
+import gui_jokes
+import colorCodes
+import UCManager
+import Helpers.PyGUI.DraggableComponent
+import Clan
+from soGUI.soButton import soButton, soButtonWTT, soButtonWFT
+from soGUI.soList import soList
+from Helpers.PyGUI import PyGUIEvent
+from Helpers.PyGUI.PyGUIBase import PyGUIBase
+from soGUI.soTabletScreen import soTabletScreen
+from soGUI.soTableComponent import tablePropsStructure
+from soGUI.soDropDownList import soDropDownList, soDropDownList2
+from soGUI.soScrollBar import soScrollBar, soScrollBar2
+from Localization import lc
+from soGUI.soCheckBox import soCheckBox
+from functools import partial
+from copy import deepcopy
+from soGUI.soEditField import soEditBox
+from soGUI.soTextField import soTextField2, soTextField3
+from soGUI.soTextField import soTxtFieldPropsStructure
+from soGUI.soClanTableComponent import ClanTableComponent, soTablePropsStructure, soTableElemPropsStructure
+from math import ceil, floor
+from Helpers.BWCoroutine import *
+DraggableComponent = Helpers.PyGUI.DraggableComponent.DraggableComponent
+
+class soClanScreen2(PyGUIBase, DraggableComponent):
+    factoryString = 'soGUI.soClanScreen2'
+    MODE_MEMBERS = 1
+    MODE_RANKS = 2
+    EVENT_RANKSELECT = 0
+    EVENT_EDITRIGHT = 1
+    EVENT_MOVERANK = 2
+    EVENT_ADDRANK = 3
+    EVENT_DELRANK = 4
+    EVENT_EDITRANK = 5
+    EVENT_BASESELECT = 6
+    EVENT_STAFFTYPESELECT = 7
+    EVENT_STAFFNAMESELECT = 8
+    EVENT_CHANGEPVPTIME = 9
+    EVENT_FIREPERSONEL = 10
+    EVENT_HIREPERSONEL = 11
+    UPDATE_TIME = 60
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        DraggableComponent.__init__(self, 1, 1, 1, xoffset=0, yoffset=0)
+        component.script = self
+        self.ICON_SIZE = 32
+        self._dct_ranks = {}
+        self.currentMode = None
+        self.membersWnd = None
+        self._clbID = 0
+        self.memberTable_captionDS = {'font': 'ruRU_calibri_default.font',
+         'color': (50, 50, 50, 255),
+         'hoverColor': (50, 50, 50, 255),
+         'selectColor': (50, 50, 50, 255),
+         'toolTipID': None,
+         'contentColor': (175, 166, 112, 255),
+         'contentColorHover': (175, 166, 112, 255),
+         'contentColorSelect': (175, 166, 112, 255)}
+        self.memberTable_dataDS = {'font': 'ruRU_calibri_default.font',
+         'color': (255, 255, 255, 0),
+         'hoverColor': (255, 255, 255, 0),
+         'selectColor': (28, 28, 28, 255),
+         'toolTipID': None,
+         'contentColor': (175, 166, 112, 255),
+         'contentColorHover': (249, 233, 137, 255),
+         'contentColorSelect': (249, 233, 137, 255)}
+        self._rights_clan = [(lc('PlayerAvatarForSoClanScreen.client.STRING_335_6'),
+          Clan.CLANRIGHT_EDITRANKS,
+          True,
+          False),
+         (lc('PlayerAvatarForSoClanScreen.client.STRING_336_6'),
+          Clan.CLANRIGHT_PROMOTE,
+          True,
+          False),
+         (lc('PlayerAvatarForSoClanScreen.client.STRING_337_6'),
+          Clan.CLANRIGHT_INVITE,
+          True,
+          False),
+         (lc('PlayerAvatarForSoClanScreen.client.STRING_338_6'),
+          Clan.CLANRIGHT_CLANKICK,
+          True,
+          False),
+         (lc('PlayerAvatarForSoClanScreen.client.STRING_341_6'),
+          Clan.CLANRIGHT_WARMASTER,
+          True,
+          False),
+         (lc('PlayerAvatarForSoClanScreen.client.STRING_342_6'),
+          Clan.CLANRIGHT_ITEMUSE,
+          True,
+          False),
+         (lc('PlayerAvatarForSoClanScreen.client.USED_DONATE_SHOP'),
+          Clan.CLANRIGHT_USED_DONATE_SHOP,
+          True,
+          False),
+         (lc('PlayerAvatarForSoClanScreen.client.CLANRIGHT_CAN_BASE_BUY_ENTITIES'),
+          Clan.CLANRIGHT_CAN_BASE_BUY_ENTITIES,
+          True,
+          False),
+         (lc('PlayerAvatarForSoClanScreen.client.CLANRIGHT_CAN_BASE_ADD_MONEY'),
+          Clan.CLANRIGHT_CAN_BASE_ADD_MONEY,
+          True,
+          False),
+         (lc('PlayerAvatarForSoClanScreen.client.CLANRIGHT_CAN_BASE_WITHDRAW_MONEY'),
+          Clan.CLANRIGHT_CAN_BASE_WITHDRAW_MONEY,
+          True,
+          False),
+         (lc('PlayerAvatarForSoClanScreen.client.CLANRIGHT_CAN_CHANGE_ICON'),
+          Clan.CLANRIGHT_CAN_CHANGE_ICON,
+          True,
+          False)]
+        self.rightsCheckBoxes = []
+        self._current_clan_rank = None
+        self._current_clan_rights = None
+        self._rights_changed = False
+        self.userRights = []
+        self.members = []
+        self._rights_data = []
+        self.membersData = {}
+        self.members_sort_index = 0
+        self.setupRoot()
+        self.setupContent()
+        self.setupGeneral()
+        self.setupMembers()
+        self.__updateMemberTimerID = None
+        self.sortType = [0, 0, 0]
+        self.switchToMode(self.MODE_MEMBERS)
+        return
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 792
+        cmp.height = 444
+        cmp.position = (0.0, 0.0, 0.1)
+        cmp.textureName = ''
+        cmp.visible = False
+        cmp.filterType = 'POINT'
+        cmp.pixelSnap = False
+        cmp.dragFocus = True
+        cmp.crossFocus = True
+        self.component.mouseButtonFocus = 1
+
+    def setupContent(self):
+        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 792
+        cmp.height = 444
+        cmp.position = (0, 0, 1.2)
+        self.component.addChild(cmp, 'wndFrame')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/closeBox.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 18
+        cmp.height = 18
+        cmp.position = (785, 6, 0.2)
+        self.component.addChild(cmp, 'closeBox')
+        btn.onBound()
+        btn._updateVisualState()
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.verticalAnchor = 'TOP'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.colourFormatting = True
+        cmp.multiline = False
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (5, 5, 0.2)
+        cmp.text = ''
+        self.component.wndFrame.addChild(cmp, 'nameLabel')
+        cmp = GUI.Simple('')
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = self.ICON_SIZE
+        cmp.height = self.ICON_SIZE
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (1, 0, 0.2)
+        cmp.texture = None
+        cmp.visible = False
+        self.component.wndFrame.addChild(cmp, 'clanIcon')
+        self.verticalIndentForBtn = 50
+        btn = soButtonWFT(GUI.Window())
+        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        btn.initVSC('soGUI/visual_styles/defaultTab.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 100
+        cmp.height = 21
+        cmp.position = (2, self.verticalIndentForBtn, 0.2)
+        cmp.label.text = lc('GUI.ClanGUI.MEMBERS_TAB_LABEL')
+        self.component.addChild(cmp, 'membersBtn')
+        btn.onBound()
+        btn.setVisualState('normal')
+        btn = soButtonWFT(GUI.Window())
+        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        btn.initVSC('soGUI/visual_styles/defaultTab.xml')
+        btn.onClick = self.onRightsBtnClick
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 100
+        cmp.height = 21
+        cmp.position = (102, self.verticalIndentForBtn, 0.2)
+        cmp.label.text = lc('GUI.Legacy.RIGHTS_LABEL')
+        self.component.addChild(cmp, 'rightsBtn')
+        btn.onBound()
+        btn.setVisualState('normal')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.onClick = self.onInviteClanClick
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 140
+        cmp.height = 25
+        cmp.position = (640, self.component.height - 32, 0.2)
+        cmp.visible = True
+        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.text = lc('GUI.ClanGUI.INVITE_TO_CLAN')
+        self.component.addChild(cmp, 'inviteToClanBtn')
+        btn.onBound()
+        btn.setVisualState('normal')
+        cb = soCheckBox(GUI.Window(), soGUI.CheckBoxPropsStructure(labelText=lc('GUI.ClanGUI.SHOW_ONLINE_ONLY'), labelColour=(175, 166, 112, 255)))
+        cmp = cb.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (10, self.component.height - 28, 0.2)
+        self.component.addChild(cmp, 'cbShowOnlyOnline')
+        cb.onStateChange = self.showOnlyOnlineMembers
+        cb.onBound()
+        return
+
+    def setupGeneral(self):
+        cmp = GUI.Window()
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 792
+        cmp.height = 444
+        cmp.position = (0, 0, 0.1)
+        cmp.textureName = ''
+        cmp.visible = False
+        self.component.addChild(cmp, 'generalWnd')
+        cmp = GUI.Window()
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 792
+        cmp.height = 521
+        cmp.position = (0, 0, 0.05)
+        cmp.textureName = ''
+        cmp.visible = False
+        RIGHT_WIDTH = 792
+        RIGHT_HEIGHT = 521
+        self.component.generalWnd.addChild(cmp, 'rightsWnd')
+        cmp = GUI.Simple('soGUI/maps/Colours/white.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (0, 0, 0, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = RIGHT_WIDTH
+        cmp.height = RIGHT_HEIGHT - 77
+        cmp.tiled = True
+        cmp.tileHeight = 1
+        cmp.tileWidth = 1
+        cmp.position = (0, 28, 1.0)
+        cmp.visible = 0
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'backImg')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.onClick = self.onSaveRightsBtnClick
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 157
+        cmp.height = 28
+        cmp.position = (419, RIGHT_HEIGHT - 114, 0.3)
+        cmp.visible = False
+        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.text = lc('GUI.Legacy.SAVE_RIGHTS_LABEL')
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'saveBtn')
+        btn.onBound()
+        btn.setVisualState('normal')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 157
+        cmp.height = 28
+        cmp.position = (260, RIGHT_HEIGHT - 114, 0.3)
+        cmp.visible = False
+        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.text = lc('GUI.Legacy.RESET_RIGHTS_LABEL')
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'btnClear')
+        btn.onBound()
+        btn.setVisualState('normal')
+        rightsList = soList(GUI.Window(), soGUI.ListPropsStructure(width=245, height=305, isMultiSel=False, selectCallBack=self.onRankSelect, sorted=False))
+        rightsList.component.horizontalPositionMode = rightsList.component.verticalPositionMode = 'PIXEL'
+        rightsList.component.widthMode = rightsList.component.heightMode = 'PIXEL'
+        rightsList.component.visible = True
+        rightsList.component.verticalAnchor = 'TOP'
+        rightsList.component.horizontalAnchor = 'LEFT'
+        rightsList.component.position = (7, 88, 0.1)
+        rightsList.component.listFrame.textureName = ''
+        rightsList.onRmb = self.onRmb
+        self.component.generalWnd.rightsWnd.addChild(rightsList.component, 'ranks')
+        rightsList.onBound()
+        cmp = GUI.Window()
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 515
+        cmp.height = 310
+        cmp.position = (253, 80, 0.2)
+        cmp.textureName = ''
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'rightsFrame')
+        btn.onBound()
+        btn.setVisualState('normal')
+        btn = soButtonWTT(GUI.Window(), 'rightsEditor_edit')
+        btn.initVSC('soGUI/visual_styles/btn_TPCRightsEditor.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.textureName = 'soGUI/maps/Controls/rightsEditor/button_edit.tga'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 28
+        cmp.height = 28
+        cmp.position = (200, 407, 0.1)
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'btnEdit')
+        btn.onBound()
+        btn.setVisualState('normal')
+        cmp = GUI.Simple('soGUI/maps/Controls/rightsEditor/del_grey.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.pixelSnap = False
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.tiled = True
+        cmp.tileHeight = 1
+        cmp.tileWidth = 1
+        cmp.width = 788
+        cmp.height = 1
+        cmp.position = (2, 50, 0.9)
+        cmp.materialFX = 'BLEND'
+        cmp.colour = (255, 255, 255, 255)
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'line1')
+        cmp = GUI.Simple('soGUI/maps/Controls/rightsEditor/del_grey.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.pixelSnap = False
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.tiled = True
+        cmp.tileHeight = 1
+        cmp.tileWidth = 1
+        cmp.width = 788
+        cmp.height = 1
+        cmp.position = (2, 84, 0.9)
+        cmp.materialFX = 'BLEND'
+        cmp.colour = (255, 255, 255, 255)
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'line2')
+        cmp = GUI.Simple('soGUI/maps/Controls/rightsEditor/del_grey.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.pixelSnap = False
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.tiled = True
+        cmp.tileHeight = 1
+        cmp.tileWidth = 1
+        cmp.width = 788
+        cmp.height = 1
+        cmp.position = (2, 400, 0.9)
+        cmp.materialFX = 'BLEND'
+        cmp.colour = (255, 255, 255, 255)
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'line3')
+        cmp = GUI.Simple('soGUI/maps/Controls/rightsEditor/del_grey.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.pixelSnap = False
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.tiled = True
+        cmp.tileHeight = 1
+        cmp.tileWidth = 1
+        cmp.width = 788
+        cmp.height = 1
+        cmp.position = (2, 439, 0.9)
+        cmp.materialFX = 'BLEND'
+        cmp.colour = (255, 255, 255, 255)
+        self.component.generalWnd.rightsWnd.addChild(cmp)
+        cmp = GUI.Simple('soGUI/maps/Controls/rightsEditor/del_grey.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.pixelSnap = False
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.tiled = True
+        cmp.tileHeight = 1
+        cmp.tileWidth = 1
+        cmp.width = 1
+        cmp.height = 410
+        cmp.position = (2, 50, 0.9)
+        cmp.materialFX = 'BLEND'
+        cmp.colour = (255, 255, 255, 255)
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'line4')
+        cmp = GUI.Simple('soGUI/maps/Controls/rightsEditor/del_grey.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.pixelSnap = False
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.tiled = True
+        cmp.tileHeight = 1
+        cmp.tileWidth = 1
+        cmp.width = 1
+        cmp.height = 390
+        cmp.position = (252, 50, 0.9)
+        cmp.materialFX = 'BLEND'
+        cmp.colour = (255, 255, 255, 255)
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'line5')
+        cmp = GUI.Simple('soGUI/maps/Controls/rightsEditor/del_grey.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.pixelSnap = False
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.tiled = True
+        cmp.tileHeight = 1
+        cmp.tileWidth = 1
+        cmp.width = 1
+        cmp.height = 390
+        cmp.position = (789, 50, 0.9)
+        cmp.materialFX = 'BLEND'
+        cmp.colour = (255, 255, 255, 255)
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'line6')
+        cmp = GUI.Simple('soGUI/maps/Controls/rightsEditor/del_green.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.pixelSnap = False
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.tiled = True
+        cmp.tileHeight = 1
+        cmp.tileWidth = 1
+        cmp.width = 788
+        cmp.height = 33
+        cmp.position = (3, 50, 1.0)
+        cmp.materialFX = 'BLEND'
+        cmp.colour = (255, 255, 255, 255)
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'frame1')
+        cmp = GUI.Simple('soGUI/maps/Controls/rightsEditor/del_green.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.pixelSnap = False
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.tiled = True
+        cmp.tileHeight = 1
+        cmp.tileWidth = 1
+        cmp.width = 788
+        cmp.height = 38
+        cmp.position = (3, 401, 1.0)
+        cmp.materialFX = 'BLEND'
+        cmp.colour = (255, 255, 255, 255)
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'frame2')
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
+        cmp.font = 'ruRU_calibri_default.font'
+        cmp.colour = (175, 166, 112, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (123, 66, 0.9)
+        cmp.text = lc('GUI.Legacy.RANKS_LABEL')
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'ranksLabel')
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
+        cmp.font = 'ruRU_calibri_default.font'
+        cmp.colour = (175, 166, 112, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (509, 66, 0.9)
+        cmp.text = lc('GUI.Legacy.RIGHTS_LABEL')
+        self.component.generalWnd.rightsWnd.addChild(cmp, 'rightsLabel')
+        cmp = GUI.Simple('textures/default/black.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        cmp.colour = (255, 255, 255, 150)
+        cmp.materialFX = 'BLEND'
+        cmp.height = 2
+        cmp.width = 2
+        cmp.position = (0, 0, 0.01)
+        cmp.dragFocus = True
+        cmp.dropFocus = True
+        cmp.crossFocus = True
+        cmp.moveFocus = True
+        cmp.mouseButtonFocus = True
+        cmp.visible = 0
+        self.component.generalWnd.addChild(cmp, 'darkScreen')
+        cmp = GUI.Simple('textures/default/black.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (255, 255, 255, 200)
+        cmp.materialFX = 'BLEND'
+        cmp.height = self.component.height - 26
+        cmp.width = self.component.width
+        cmp.position = (0, 26, 0.02)
+        cmp.dragFocus = True
+        cmp.dropFocus = True
+        cmp.crossFocus = True
+        cmp.moveFocus = True
+        cmp.mouseButtonFocus = True
+        cmp.visible = 0
+        self.component.addChild(cmp, 'lockScreen')
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
+        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        cmp.colour = (175, 166, 112, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (0, 0, 0.01)
+        cmp.text = lc('GUI.Legacy.LOCK_TEXT')
+        cmp.visible = 0
+        self.component.addChild(cmp, 'lockLabel')
+        cmp = GUI.Simple('soGUI/maps/loadingScreen/loadingCircle/loadingCircle.texanim')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (150, 150, 150, 220)
+        cmp.materialFX = 'BLEND'
+        cmp.height = 20
+        cmp.width = 20
+        cmp.position = (5, 5, 0.01)
+        self.component.generalWnd.darkScreen.addChild(cmp, 'darkScreenLogo')
+
+    def setupMembers(self):
+        cmp = GUI.Window()
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 792
+        cmp.height = 444
+        cmp.position = (0, 0, 1.0)
+        cmp.textureName = ''
+        cmp.visible = False
+        cmp.filterType = 'POINT'
+        cmp.pixelSnap = False
+        self.component.addChild(cmp, 'membersWnd')
+        self.membersWnd = cmp
+        rows = [{'props': soTableElemPropsStructure(dataStyles=self.memberTable_captionDS),
+          'data': [lc('GUI.Legacy.CLANMATE_NAME'), lc('GUI.Legacy.CLANMATE_RANK'), lc('GUI.Legacy.CLANMAE_STATE')]}]
+        tbl = ClanTableComponent(GUI.Window(), soGUI.ListPropsStructure(width=786, height=358, isMultiSel=False, leftOffset=4, selectCallBack=None, sorted=False))
+        cmp = tbl.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.position = (3, self.verticalIndentForBtn, 0.0)
+        self.component.membersWnd.addChild(cmp, 'membersTable')
+        tbl.onBound()
+        tbl.addRows(rows)
+        return
+
+    def _switchToTab(self, tab):
+        visMsk = [False,
+         False,
+         False,
+         False]
+        visMsk[tab] = True
+        self.component.membersBtn.script.buttonActive = visMsk[self.MODE_MEMBERS]
+        self.component.membersBtn.script._updateVisualState()
+        self.component.rightsBtn.script.buttonActive = visMsk[self.MODE_RANKS]
+        self.component.rightsBtn.script._updateVisualState()
+
+    def switchToMode(self, mode):
+        self._switchToTab(mode)
+        if self.currentMode == mode:
+            return
+        self.currentMode = mode
+        modeMask = [False,
+         False,
+         False,
+         False]
+        modeMask[mode] = True
+        self.membersWnd.visible = modeMask[self.MODE_MEMBERS]
+
+    def checkLock(self):
+        if not BigWorld.player().clanID:
+            self.component.lockScreen.visible = 1
+            self.component.lockLabel.visible = 1
+        else:
+            self.component.lockScreen.visible = 0
+            self.component.lockLabel.visible = 0
+
+    def show(self):
+        if self.component.parent is None:
+            BWPersonality.GUICore.worldLayer.addChild(self.component, 'clanScreen')
+        self.component.visible = True
+        self.loadClanIcon()
+        if self.component.inviteToClanBtn and not BigWorld.player().checkClanRights(Clan.FLAG_CAN_INVITE):
+            self.component.inviteToClanBtn.script.setDisabledState(True)
+        if self.component.wndFrame.nameLabel:
+            self.component.wndFrame.nameLabel.text = lc('PlayerAvatarForSoClanScreen.client.CLAN_NAME_CAPTION').format(BigWorld.player().clanName.decode('utf-8'))
+        BWPersonality.GUICore.setBestCursor()
+        self._updateMemberTable()
+        self.checkLock()
+        return
+
+    def hide(self):
+        self.onMembersClick()
+        self.component.visible = False
+        if self.component.inviteToClanBtn:
+            self.component.inviteToClanBtn.script.setDisabledState(False)
+        BWPersonality.GUICore.setBestCursor()
+
+    def _timeToString(self, secs):
+        hours = floor(secs / 3600.0)
+        minutes = floor((secs - hours * 3600.0) / 60.0)
+        seconds = secs - (hours * 3600.0 + minutes * 60.0)
+        outH = str(int(hours)) if hours > 9 else u'0' + str(int(hours))
+        outM = str(int(minutes)) if minutes > 9 else u'0' + str(int(minutes))
+        outS = str(int(seconds)) if seconds > 9 else u'0' + str(int(seconds))
+        return u'' + outH + u':' + outM + u':' + outS
+
+    def _updateRightsEditor(self):
+        for rightCmp in self.rightsCheckBoxes:
+            self.component.generalWnd.rightsWnd.rightsFrame.delChild(rightCmp)
+            rightCmp = None
+
+        self.rightsCheckBoxes = []
+        for i, right in enumerate(self._rights_clan):
+            cb = soCheckBox(GUI.Window(), soGUI.CheckBoxPropsStructure(labelText=right[0]))
+            cmp = cb.component
+            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+            cmp.horizontalAnchor = 'LEFT'
+            cmp.verticalAnchor = 'TOP'
+            cmp.colour = (255, 255, 255, 255)
+            cmp.materialFX = 'BLEND'
+            cmp.position = (18, 12 + i * 25, 0.4)
+            self.component.generalWnd.rightsWnd.rightsFrame.addChild(cmp, 'right' + str(right[1]))
+            cb.onStateChange = partial(self.rightChecked, right[1])
+            cb.onBound()
+            self.rightsCheckBoxes.append(cmp)
+            cb.disable()
+
+        self._dct_ranks = {}
+        self.component.generalWnd.rightsWnd.ranks.script.clear()
+        for rank in self._rights_data:
+            lc_caption = lc(rank['name'])
+            self._dct_ranks[lc_caption] = rank
+            self.component.generalWnd.rightsWnd.ranks.script.addElement(lc_caption)
+
+        return
+
+    def setMembers(self, data):
+        tbl = self.component.membersWnd.membersTable.script
+        for mEntry in data:
+            rank = data[mEntry][1]
+            status = self.getMemberStrStatus(data[mEntry][2])
+            name = mEntry
+            rowData = {'props': soTableElemPropsStructure(dataStyles=self.memberTable_dataDS),
+             'data': [name, rank, status]}
+            tbl.rewriteRow(rowData)
+
+        self.update()
+
+    def addMembers(self, data):
+        rows = []
+        tbl = self.component.membersWnd.membersTable.script
+        for mEntry in data:
+            rank = data[mEntry][1]
+            status = self.getMemberStrStatus(data[mEntry][2])
+            name = mEntry
+            rowData = {'props': soTableElemPropsStructure(dataStyles=self.memberTable_dataDS),
+             'data': [name, rank, status]}
+            rows.append(rowData)
+
+        if rows:
+            tbl.addRows(rows)
+
+    def showOnlyOnlineMembers(self):
+        self._updateMemberTable()
+
+    def delMembers(self, data):
+        rows = []
+        tbl = self.component.membersWnd.membersTable.script
+        for mName in data:
+            rows.append(mName)
+
+        if rows:
+            tbl.removeRows(rows)
+
+    def sortCaptionClick(self, col_indx, no_reverse = False):
+        rows = []
+        self.members_sort_index = col_indx
+        tbl = self.component.membersWnd.membersTable.script
+        tbl.clearRowRange(1)
+
+        def sortOfCaption(memb):
+            return memb[col_indx]
+
+        if self.sortType[col_indx] == 0 or no_reverse:
+            self.members.sort(key=sortOfCaption)
+            self.sortType[col_indx] = 1
+        else:
+            self.members.sort(key=sortOfCaption, reverse=True)
+            self.sortType[col_indx] = 0
+        for member in self.members:
+            rowData = {'props': soTableElemPropsStructure(dataStyles=self.memberTable_dataDS),
+             'data': [member[0], member[1], member[2]]}
+            rows.append(rowData)
+
+        tbl.addRows(rows)
+
+    def getDurationText(self, duration):
+        ret = u''
+        if duration:
+            day = int(duration / 86400)
+            if day > 0:
+                ret += u' {0} '.format(day) + lc('Clans.Messages.DAYS')
+                duration -= day * 86400
+            hours = int(duration / 3600)
+            if hours > 0:
+                ret += u' {0} '.format(hours) + lc('Clans.Messages.HOURS')
+                duration -= hours * 3600
+            minutes = int(duration / 60)
+            if minutes > 0:
+                ret += u' {0} '.format(minutes) + lc('Clans.Messages.MINUTES')
+                duration -= minutes * 60
+            elif not ret:
+                ret += u' ' + lc('Clans.Messages.LESS_THEN_MINUTE')
+        else:
+            ret += u' ' + lc('Clans.Messages.LESS_THEN_MINUTE')
+        return ret
+
+    def getMemberStrStatus(self, lastLogin):
+        from time import time
+        if lastLogin == 0:
+            return lc('Clans.Interface.ONLINE')
+        else:
+            return lc('Clans.Interface.LAST_TIME').format(self.getDurationText(int(time() - lastLogin)))
+
+    def _updateMemberTable(self):
+        if self.__updateMemberTimerID:
+            BigWorld.cancelCallback(self.__updateMemberTimerID)
+            self.__updateMemberTimerID = None
+        if BWPersonality.GUICore.clanDataSection is None:
+            return
+        else:
+            only_online = False
+            if self.component.cbShowOnlyOnline and self.component.cbShowOnlyOnline.script.isChecked():
+                only_online = True
+            if BWPersonality.GUICore.clanDataSection.has_key('members'):
+                self.membersData = BWPersonality.GUICore.clanDataSection['members']
+                rows = []
+                self.members = []
+                for member in BWPersonality.GUICore.clanDataSection['members']:
+                    if only_online and BWPersonality.GUICore.clanDataSection['members'][member][2] != 0:
+                        continue
+                    rank = BWPersonality.GUICore.clanDataSection['members'][member][1]
+                    name = member
+                    status = self.getMemberStrStatus(BWPersonality.GUICore.clanDataSection['members'][member][2])
+                    self.members.append((name, rank, status))
+
+                self.sortCaptionClick(self.members_sort_index, True)
+            if self.component.membersWnd.membersTable.visible:
+                self.__updateMemberTimerID = BigWorld.callback(self.UPDATE_TIME, self._updateMemberTable)
+            return
+
+    def update(self):
+        if BWPersonality.GUICore.clanDataSection is None:
+            return
+        else:
+            self._updateMemberTable()
+            if self.component.wndFrame.nameLabel:
+                self.component.wndFrame.nameLabel.text = lc('PlayerAvatarForSoClanScreen.client.CLAN_NAME_CAPTION').format(BigWorld.player().clanName.decode('utf-8'))
+            if self.component.inviteToClanBtn:
+                if BigWorld.player().checkClanRights(Clan.FLAG_CAN_INVITE):
+                    self.component.inviteToClanBtn.script.setDisabledState(False)
+                else:
+                    self.component.inviteToClanBtn.script.setDisabledState(True)
+            if self.component.generalWnd.rightsWnd.btnClear:
+                is_owner = bool(BigWorld.player().checkClanRights(Clan.FLAG_CLAN_OWNER))
+                self.component.generalWnd.rightsWnd.btnClear.visible = is_owner
+            data = BWPersonality.GUICore.clanDataSection
+            if self.component.generalWnd.rightsWnd.visible:
+                self._updateRightsEditor()
+                self.onRightsBtnClick()
+            self.checkLock()
+            self.loadClanIcon()
+            return
+
+    def rightChecked(self, rightID):
+        check = None
+
+        def _getBit(num, pos):
+            return (num & 1 << pos) >> pos
+
+        def _setBit(num, pos):
+            return num ^ 2 ** pos
+
+        if hasattr(self.component.generalWnd.rightsWnd.rightsFrame, 'right' + str(rightID)):
+            cmp = getattr(self.component.generalWnd.rightsWnd.rightsFrame, 'right' + str(rightID))
+            check = cmp.script.isChecked()
+        if check is None:
+            print 'ERROR: ClanRights Editor wasnt initialised properly: missing checkbox'
+            return
+        else:
+            sel = self.component.generalWnd.rightsWnd.ranks.script.getSelection()
+            if not sel:
+                return
+            lc_caption = sel[0]
+            rank = self._dct_ranks.get(lc_caption, None)
+            if not rank:
+                return
+            if rank['id'] == 1000:
+                return
+            self._current_clan_rights = _setBit(self._current_clan_rights, rightID)
+            self._rights_changed = True
+            self.component.generalWnd.rightsWnd.saveBtn.visible = 1
+            if self.component.generalWnd.rightsWnd.btnClear.visible:
+                self.component.generalWnd.rightsWnd.saveBtn.position.x = 419
+            else:
+                self.component.generalWnd.rightsWnd.saveBtn.position.x = 260
+            return
+
+    def onRankSelect(self):
+        if not hasattr(self.component.generalWnd.rightsWnd, 'ranks'):
+            return
+        else:
+            self.component.generalWnd.rightsWnd.saveBtn.visible = 0
+            self._rights_changed = False
+            sel = self.component.generalWnd.rightsWnd.ranks.script.getSelection()
+            access = BigWorld.player().checkClanRights(Clan.FLAG_CAN_EDIT_RIGHTS)
+            for rightCmp in self.rightsCheckBoxes:
+                if access:
+                    rightCmp.script.enable()
+                else:
+                    rightCmp.script.disable()
+                rightCmp.script.setInactive()
+
+            sel = self.component.generalWnd.rightsWnd.ranks.script.getSelection()
+            if not sel:
+                return
+            lc_caption = sel[0]
+            rank = self._dct_ranks.get(lc_caption, None)
+            if not rank:
+                return
+            if rank['id'] == 1000:
+                for rightCmp in self.rightsCheckBoxes:
+                    rightCmp.script.disable()
+                    rightCmp.script.setActive()
+
+                return
+            self._current_clan_rank = rank['id']
+            self._parse_rank_optons(rank['id'], rank['options'])
+            self._current_clan_rights = rank['options']
+            return
+
+    def onRmb(self, caption):
+        if not caption:
+            return
+        else:
+            rank = self._dct_ranks.get(caption, None)
+            if not rank:
+                return
+            BigWorld.player().clanRenameActionsRequest(caption)
+            return
+
+    def _parse_rank_optons(self, rankID, rankOptions):
+
+        def _getBit(num, pos):
+            return (num & 1 << pos) >> pos
+
+        def _setBit(num, pos):
+            return num ^ 2 ** pos
+
+        for i in range(0, len(self._rights_clan)):
+            if rankOptions & 1 << self._rights_clan[i][1]:
+                self.rightsCheckBoxes[i].script.setActive()
+
+    @PyGUIEvent('membersBtn', 'onClick')
+    def onMembersClick(self):
+        self.switchToMode(self.MODE_MEMBERS)
+        self.component.generalWnd.rightsWnd.visible = False
+        self.membersWnd.visible = True
+        self.component.generalWnd.rightsWnd.visible = False
+        self.component.generalWnd.visible = False
+
+    def setDataPremissions(self, data):
+        self.clearDarkScreen()
+        self._rights_data = data
+        self._updateRightsEditor()
+
+    def onRightsBtnClick(self):
+        self.switchToMode(self.MODE_RANKS)
+        self.wait()
+        BigWorld.player().cell.getClanPremissions()
+        self.membersWnd.visible = False
+        self.component.generalWnd.rightsWnd.visible = True
+        self.component.generalWnd.visible = True
+
+    def onSaveRightsBtnClick(self):
+
+        def _save_check(event):
+            if event == gui_jokes.askUserYesNo.YES:
+                BigWorld.player().cell.saveClanPremissions(self._current_clan_rank, self._current_clan_rights)
+                self._rights_changed = False
+                self.component.generalWnd.rightsWnd.saveBtn.visible = 0
+
+        if self._current_clan_rank is None:
+            return
+        elif self._current_clan_rights is None:
+            return
+        else:
+            gui_jokes.askUserYesNo(lc('GUI.Legacy.SAVE_RIGHTS_LABEL'), colorCodes.tf3_regular_text_color + lc('GUI.Legacy.SAVE_RIGHTS_TEXT'), _save_check)
+            return
+
+    def onInviteClanClick(self):
+
+        def onClanIntive(text):
+            BigWorld.player().inviteFriendToClan(text.encode('utf-8'))
+
+        gui_jokes.inputBox(lc('GUI.ClanGUI.INVITE_TO_CLAN_CAPTION'), lc('GUI.ClanGUI.INVITE_TO_CLAN_TEXT'), onClanIntive, active=True)
+
+    @PyGUIEvent('generalWnd.rightsWnd.btnEdit', 'onClick')
+    def onEditBtn(self):
+        sel = self.component.generalWnd.rightsWnd.ranks.script.getSelection()
+        if len(sel) > 0:
+            sel = sel[0]
+            BWPersonality.GUICore.clanEvent(self.EVENT_EDITRANK, sel)
+
+    @PyGUIEvent('generalWnd.rightsWnd.btnClear', 'onClick')
+    def onClearBtn(self):
+
+        def _clear_rights(event):
+            if event == gui_jokes.askUserYesNo.YES:
+                self._rights_changed = False
+                BigWorld.player().cell.resetClanPremissions()
+
+        gui_jokes.askUserYesNo(lc('GUI.Legacy.RESET_RIGHTS_LABEL'), colorCodes.tf3_regular_text_color + lc('GUI.Legacy.RESET_RIGHTS_TEXT'), _clear_rights)
+
+    @PyGUIEvent('membersWnd.membersTable', 'onElementEvent')
+    def onMembersElem(self, col, row, event, data):
+        tbl = self.component.membersWnd.membersTable.script
+        if row == 0:
+            self.sortCaptionClick(col)
+            return
+        if event == 'RIGHTMOUSE':
+            playerName = data['name']
+            BWPersonality.GUICore.clanMemberActionsRequest(playerName)
+        elif event == 'LEFTMOUSE':
+            pass
+
+    @PyGUIEvent('closeBox', 'onClick')
+    def onCloseBox(self):
+        self.hide()
+
+    def wait(self):
+        self.clearDarkScreen()
+        self.component.generalWnd.darkScreen.visible = True
+        self._clbID = BigWorld.callback(5, self.clearDarkScreen)
+
+    def clearDarkScreen(self):
+        if self._clbID:
+            BigWorld.cancelCallback(self._clbID)
+            self._clbID = 0
+        self.component.generalWnd.darkScreen.visible = False
+
+    def _drawIcon(self, imgID, feedName = '', texture = None):
+        if imgID and texture:
+            self.component.wndFrame.clanIcon.visible = True
+            self.component.wndFrame.clanIcon.texture = texture
+            self.component.wndFrame.nameLabel.position = (35, 5, 0.2)
+        else:
+            self.component.wndFrame.clanIcon.visible = False
+            self.component.wndFrame.clanIcon.texture = None
+            self.component.wndFrame.nameLabel.position = (5, 5, 0.2)
+        return
+
+    def loadClanIcon(self):
+        pl = BigWorld.player()
+        if pl:
+            iconID = pl.clanEmblemID
+            if iconID != 0:
+                feedNameCur = UCManager.ucmanager.loadImg(iconID, self._drawIcon)
+            else:
+                self._drawIcon(0)
+
+    def handleMouseButtonEvent(self, comp, event):
+        return DraggableComponent.handleMouseButtonEvent(self, comp, event)
+
+    def handleMouseEnterEvent(self, comp):
+        return True
+
+    def handleMouseLeaveEvent(self, comp):
+        return True

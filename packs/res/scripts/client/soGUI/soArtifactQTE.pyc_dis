@@ -1,0 +1,701 @@
+# Embedded file name: ./scripts/client/soGUI/soArtifactQTE.py
+import BigWorld
+import GUI
+import BWPersonality
+import Helpers.PyGUI as PyGUI
+import soGUI
+import colorCodes
+import traceback
+from Keys import *
+from copy import deepcopy
+from Items import ItemsCatalog
+import Math
+import ItemsUtils
+import time
+from Helpers.PyGUI.PyGUIBase import PyGUIBase
+from soGUI.soButton import soButton
+from Helpers.BWCoroutine import *
+from msgbox_templates import text_and_ok
+from Localization import lc
+from Helpers.PyGUI import PyGUIEvent
+from functools import partial
+from ChatChannelConfig import CHANNEL_CONSTS
+
+class soArtifactPoint(PyGUIBase):
+    factoryString = 'soGUI.soArtifactPoint'
+
+    def __init__(self, component, parent = None):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.parent = parent
+        self.artifactID = -1
+        self.onClick = lambda : None
+        self._listen_out_range = False
+        self.setupRoot()
+        self.setupVisual()
+        self.setupAlphaShader()
+        self.setupSelector()
+        self.blinkLoop().run()
+        self.colorLoop().run()
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.width = 25
+        cmp.height = 25
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.textureName = ''
+        cmp.mouseButtonFocus = True
+
+    def setupVisual(self):
+        cmp = GUI.Simple('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 23
+        cmp.height = 23
+        cmp.colour = (255, 150, 255, 255)
+        cmp.position = (0.0, 0.0, 0.1)
+        cmp.materialFX = 'BLEND'
+        cmp.textureName = 'soGUI/maps/ArtifactQTE/artifactPoint.dds'
+        self.component.addChild(cmp, 'visual')
+
+    def setupSelector(self):
+        cmp = GUI.Simple('soGUI/maps/ArtifactQTE/selector.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 25
+        cmp.height = 25
+        cmp.colour = (255, 255, 255, 255)
+        cmp.position = (0.0, 0.0, 0.0)
+        cmp.materialFX = 'BLEND'
+        cmp.visible = False
+        self.component.addChild(cmp, 'selector')
+
+    def setupAlphaShader(self):
+        shader = GUI.AlphaShader()
+        shader.mode = 'ALL'
+        shader.speed = 3
+        shader.alpha = 1.0
+        self.component.visual.addShader(shader, 'fader')
+
+    def setID(self, id):
+        self.artifactID = id
+
+    def getID(self):
+        return self.artifactID
+
+    def handleMouseButtonEvent(self, comp, event):
+        if not event.isMouseButton():
+            return False
+        down = event.isKeyDown()
+        key = event.key
+        position = event.cursorPosition
+        if key == KEY_LEFTMOUSE:
+            if down:
+                self.onClick()
+                return True
+        return False
+
+    def select(self):
+        self.component.selector.visible = True
+
+    def deselect(self):
+        self.component.selector.visible = False
+
+    def listenOutRange(self, value):
+        self._listen_out_range = value
+
+    @BWMemberCoroutine
+    def colorLoop(self):
+        yield BWWaitForPeriod(0.5)
+        while self.component.visible:
+            yield BWWaitForPeriod(0.1)
+            anomaly = BigWorld.entities.get(self.artifactID, None)
+            player = BigWorld.player()
+            if not anomaly or not player:
+                break
+            art_vect = anomaly.position - BigWorld.player().position
+            dist = art_vect.length
+            if self._listen_out_range:
+                if dist > ItemsUtils.EXTRACTION_RANGE:
+                    self.parent.onPointOutRange(self.artifactID)
+            if dist < ItemsUtils.EXTRACTION_RANGE:
+                color = (255, 255, 255, 255)
+            else:
+                color = (255, 150, 255, 255)
+            show_range = ItemsUtils.DETECTOR_RANGE
+            player_position = BigWorld.player().position
+            matrix = Math.Matrix()
+            matrix.setRotateYPR((-player.yaw, 0, 0))
+            pos = matrix.applyVector(art_vect) / show_range
+            self.component.position = (pos[0], pos[2], 0.0)
+            self.component.visual.colour = color
+
+        return
+
+    @BWMemberCoroutine
+    def blinkLoop(self):
+        yield BWWaitForPeriod(1.8)
+        while self.component.visible:
+            self.component.visual.fader.alpha = 0
+            yield BWWaitForPeriod(2.5)
+            self.component.visual.fader.alpha = 1.0
+            self.component.visual.fader.reset()
+
+
+class soArtifactQTE(PyGUIBase):
+    factoryString = 'soGUI.soArtifactQTE'
+    EVENT_SELECT = 0
+    EVENT_TAKE = 1
+    EVENT_SCANNED = 2
+    EVENT_CLOSED = 3
+    EVENT_SCAN_RESULT = 4
+    STATUS_IDLE = 0
+    STATUS_PLAY = 1
+    STATUS_FAIL = 2
+    STATUS_PREPARATION = 3
+    STATUS_WIN = 4
+    NOTIFY_ERROR_DIST = 10
+    NOTIFY_START_GAME = 20
+    KEYMAP = {KEY_UPARROW: 'soGUI/maps/ArtifactQTE/key_up.dds',
+     KEY_DOWNARROW: 'soGUI/maps/ArtifactQTE/key_down.dds',
+     KEY_LEFTARROW: 'soGUI/maps/ArtifactQTE/key_left.dds',
+     KEY_RIGHTARROW: 'soGUI/maps/ArtifactQTE/key_right.dds',
+     KEY_1: 'soGUI/maps/ArtifactQTE/key_1.dds',
+     KEY_2: 'soGUI/maps/ArtifactQTE/key_2.dds',
+     KEY_3: 'soGUI/maps/ArtifactQTE/key_3.dds',
+     KEY_4: 'soGUI/maps/ArtifactQTE/key_4.dds',
+     KEY_5: 'soGUI/maps/ArtifactQTE/key_5.dds',
+     KEY_6: 'soGUI/maps/ArtifactQTE/key_6.dds',
+     KEY_7: 'soGUI/maps/ArtifactQTE/key_7.dds',
+     KEY_8: 'soGUI/maps/ArtifactQTE/key_8.dds',
+     KEY_9: 'soGUI/maps/ArtifactQTE/key_9.dds',
+     KEY_0: 'soGUI/maps/ArtifactQTE/key_0.dds'}
+    STATUSMAP = {STATUS_IDLE: '',
+     STATUS_WIN: '',
+     STATUS_PLAY: 'soGUI/maps/ArtifactQTE/play.dds',
+     STATUS_FAIL: 'soGUI/maps/ArtifactQTE/fail.dds',
+     STATUS_PREPARATION: 'soGUI/maps/ArtifactQTE/preparation.dds'}
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self._last_indicator_time = 0
+        self._spotlineLoop_id = 0
+        self.sliderMP = None
+        self.spotlineMP = None
+        self.sliderData = None
+        self.QTEdata = {}
+        self.keyData = None
+        self.selectorData = None
+        self._fuel_full = False
+        self.status = soArtifactQTE.STATUS_IDLE
+        self.points = {}
+        self._deltaposition = [0, 0]
+        self._clbID = 0
+        self.setupRoot()
+        self.setupContent()
+        return
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.position = (-1.0, 0.0, 0.0)
+        cmp.width = 388
+        cmp.height = 700
+        cmp.textureName = ''
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.dragFocus = True
+        cmp.moveFocus = True
+
+    def setupContent(self):
+        cmp = GUI.Simple('soGUI/maps/ArtifactQTE/back.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = 388
+        cmp.height = 700
+        cmp.position = (0, 0, 1.0)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        self.component.addChild(cmp, 'background')
+        cmp = GUI.Window('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = 217
+        cmp.height = 217
+        cmp.position = (87, 120, 0.5)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        self.component.addChild(cmp, 'radarHolder')
+        cmp = GUI.Simple('soGUI/maps/ArtifactQTE/radarNet.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = 272
+        cmp.height = 304
+        cmp.position = (58, 62, 0.9)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        self.component.addChild(cmp, 'radarNet')
+        cmp = GUI.Simple('textures/default/white.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = 23
+        cmp.height = 15
+        cmp.position = (287, 66, 0.05)
+        cmp.colour = (150, 0, 0, 255)
+        cmp.materialFX = 'BLEND'
+        self.component.addChild(cmp, 'red_indicator')
+        self._red_ind_shad = GUI.AlphaShader()
+        self._red_ind_shad.start = -0.0
+        self._red_ind_shad.speed = 0.5
+        self._red_ind_shad.stop = 0.5
+        self._red_ind_shad.mode = 'ALL'
+        self._red_ind_shad.alpha = 0.0
+        cmp.addShader(self._red_ind_shad)
+        cmp = GUI.Simple('textures/default/white.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = 280
+        cmp.height = 510
+        cmp.position = (55, 53, 0.1)
+        cmp.colour = (0, 0, 0, 200)
+        cmp.materialFX = 'BLEND'
+        self.component.addChild(cmp, 'dark_fon')
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_default.font'
+        cmp.colour = (146, 209, 3, 200)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (262, 64, 0.8)
+        self.component.addChild(cmp, 'text_fuel')
+        cmp = GUI.Simple('soGUI/maps/ArtifactQTE/button_light_01.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = 40
+        cmp.height = 9
+        cmp.position = (86, 580, 0.01)
+        cmp.colour = (0, 0, 0, 0)
+        cmp.materialFX = 'BLEND'
+        cmp.visible = False
+        self.component.addChild(cmp, 'button_light1')
+        cmp = GUI.Simple('soGUI/maps/ArtifactQTE/button_light_01.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = 40
+        cmp.height = 9
+        cmp.position = (261, 580, 0.01)
+        cmp.colour = (0, 0, 0, 0)
+        cmp.materialFX = 'BLEND'
+        cmp.visible = False
+        self.component.addChild(cmp, 'button_light2')
+        cmp = GUI.Simple('soGUI/maps/ArtifactQTE/lamp_bottom_01.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = 32
+        cmp.height = 32
+        cmp.position = (181, 646, 0.01)
+        cmp.colour = (0, 0, 0, 0)
+        cmp.materialFX = 'BLEND'
+        cmp.visible = False
+        self.component.addChild(cmp, 'lamp_bottom')
+        cmp = GUI.Simple('soGUI/maps/ArtifactQTE/infos.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = 249
+        cmp.height = 187
+        cmp.position = (68, 366, 0.9)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        self.component.addChild(cmp, 'infoBar')
+        cmp = GUI.Simple('soGUI/maps/ArtifactQTE/spotLine.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.width = 217
+        cmp.height = 124
+        cmp.position = (-1.0, 1.0, 0.4)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        self.component.radarHolder.addChild(cmp, 'spotLine')
+        self.spotlineMP = Math.Matrix()
+        self.spotlineMP.translation = (0.0, 0.0, 0.0)
+        shader = GUI.MatrixShader()
+        shader.eta = 0
+        shader.blend = True
+        shader.target = self.spotlineMP
+        self.component.radarHolder.spotLine.addShader(shader, 'mover')
+        cmp = GUI.Window()
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = 227
+        cmp.height = 23
+        cmp.position = (80, 377, 0.5)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        self.component.addChild(cmp, 'sliderHolder')
+        cmp = GUI.Simple('soGUI/maps/ArtifactQTE/slider.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = 14
+        cmp.height = 23
+        cmp.position = (-1.0, 1.0, 0.8)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        self.component.sliderHolder.addChild(cmp, 'timeSlider')
+        for i in xrange(5):
+            cmp = GUI.Simple('')
+            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+            cmp.widthMode = cmp.heightMode = 'PIXEL'
+            cmp.horizontalAnchor = 'LEFT'
+            cmp.verticalAnchor = 'TOP'
+            cmp.width = 38
+            cmp.height = 38
+            cmp.position = (80 + i * 48, 392, 0.9)
+            cmp.colour = (255, 255, 255, 255)
+            cmp.materialFX = 'BLEND'
+            self.component.addChild(cmp, 'key' + str(i))
+
+        cmp = GUI.Simple('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = 71
+        cmp.height = 28
+        cmp.position = (107, 444, 0.8)
+        cmp.colour = (255, 255, 255, 100)
+        cmp.materialFX = 'BLEND'
+        self.component.addChild(cmp, 'statusMarker')
+        hintBox = soButton(GUI.Window())
+        comp = hintBox.component
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.colour = (130, 130, 130, 255)
+        comp.materialFX = 'BLEND'
+        comp.width = 25
+        comp.height = 25
+        comp.position = (294, 15, 0.0)
+        hintBox.initVSC('soGUI/visual_styles/helpBox.xml')
+        hintBox.onBound()
+        hintBox.setVisualState('normal')
+        self.component.addChild(comp, 'hintBox')
+        closeBox = soButton(GUI.Window())
+        cmp = closeBox.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.height = cmp.width = 25
+        cmp.position = (320, 15, 0.0)
+        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.onBound()
+        closeBox.setVisualState('normal')
+        self.component.addChild(cmp, 'closeBox')
+
+    def _updateFuelIndicator(self):
+        if time.time() - self._last_indicator_time < 1.0:
+            return
+        else:
+            self._last_indicator_time = time.time()
+            player = BigWorld.player()
+            ae = getattr(player, 'artefactExtractor', None)
+            if not ae:
+                return
+            item_dict = ae.item_dict
+            count = ItemsUtils.GetBatteryLevel(item_dict)
+            max_count = ItemsUtils.GetMaxBatteryLevel(item_dict)
+            off = count <= 0
+            if not off and self.component.red_indicator.visible:
+                player.cell.append_to_battery_consumers(item_dict['complexItemID'])
+            self.component.red_indicator.visible = off
+            self.component.dark_fon.visible = off
+            self.component.text_fuel.text = '%.1f%%' % (100.0 * count / max_count)
+            if off:
+                self._red_ind_shad.alpha = 1.0
+                self._red_ind_shad.reset()
+                self._red_ind_shad.alpha = 0.0
+            self.component.button_light1.visible = not off
+            self.component.button_light2.visible = not off
+            self.component.lamp_bottom.visible = not off
+            self._fuel_full = not off
+            return
+
+    def renderContents(self, slider = True, points = True, keyBinds = True, select = True, status = True):
+        try:
+            self._updateFuelIndicator()
+        except:
+            traceback.print_exc()
+
+        if slider:
+            cmp = self.component.sliderHolder.timeSlider
+            hPos = self.sliderData * 2.0 - 1.0
+            cmp.position = (hPos, 1.0, 0.8)
+        if not self._fuel_full and self.points:
+            self._clearPoints()
+        self.component.radarHolder.spotLine.visible = self._fuel_full
+        points = True
+        if points:
+            for anomaly_id, point_comp in self.points.items():
+                if anomaly_id not in self.QTEdata:
+                    point_comp.visible = False
+                    self.component.radarHolder.delChild(point_comp)
+                    del self.points[anomaly_id]
+
+            if self._fuel_full:
+                for anomaly_id, anomaly_pos in self.QTEdata.items():
+                    if anomaly_id not in self.points:
+                        pointObj = soArtifactPoint(GUI.Window(), self)
+                        cmp = pointObj.component
+                        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+                        self.component.radarHolder.addChild(cmp, 'point' + str(anomaly_id))
+                        pointObj.onBound()
+                        pointObj.setID(anomaly_id)
+                        pointObj.onClick = partial(self.processPoint, anomaly_id)
+                        self.points[anomaly_id] = cmp
+                        cmp.position = (anomaly_pos[0], anomaly_pos[1], 0.0)
+
+        if keyBinds:
+            if len(self.keyData) < 5:
+                for i in xrange(5):
+                    cmp = self.component.__getattribute__('key' + str(i))
+                    cmp.visible = False
+
+            i = 0
+            for key_name, key_visible, key_presses in self.keyData:
+                cmp = self.component.__getattribute__('key' + str(i))
+                cmp.textureName = self.KEYMAP[key_name]
+                cmp.visible = key_visible
+                cmp.colour[3] = 255 if key_presses else 100
+                i += 1
+
+        if select:
+            if hasattr(self.component.radarHolder, 'point' + str(self.selectorData)):
+                cmp = self.component.radarHolder.__getattribute__('point' + str(self.selectorData))
+                cmp.script.select()
+        if status:
+            self.component.statusMarker.textureName = self.STATUSMAP[self.status]
+
+    def onGameNotify(self, notify_id, data = None):
+        if notify_id == self.NOTIFY_ERROR_DIST:
+            self.onGameStatus(self.STATUS_FAIL)
+        elif notify_id == self.NOTIFY_START_GAME:
+            for anomaly_id, point_comp in self.points.items():
+                listen_out_range = data == anomaly_id
+                point_comp.script.listenOutRange(listen_out_range)
+
+    def onPointOutRange(self, anomaly_id):
+        self.points[anomaly_id].script.listenOutRange(False)
+        player = BigWorld.player()
+        ae = getattr(player, 'artefactExtractor', None)
+        if not ae:
+            return
+        else:
+            ae.stopGame()
+            self.onGameNotify(self.NOTIFY_ERROR_DIST)
+            player.putMessage(CHANNEL_CONSTS.SYSTEM, lc('soArtifactQTE.ERROR_DIST'))
+            return
+
+    _to_idle_id = 0
+
+    def onGameStatus(self, status, data = None):
+        if self._to_idle_id:
+            BigWorld.cancelCallback(self._to_idle_id)
+        STATUSMAP_LAMP = {self.STATUS_IDLE: (0, 0, 0, 0),
+         self.STATUS_PREPARATION: (255, 255, 0, 255),
+         self.STATUS_PLAY: (0, 0, 0, 0),
+         self.STATUS_FAIL: (255, 0, 0, 255),
+         self.STATUS_WIN: (0, 255, 0, 255)}
+        STATUSMAP_BTN = {self.STATUS_IDLE: (255, 0, 0, 0),
+         self.STATUS_PREPARATION: (255, 255, 0, 255),
+         self.STATUS_PLAY: (255, 0, 0, 0),
+         self.STATUS_FAIL: (255, 0, 0, 255),
+         self.STATUS_WIN: (0, 255, 0, 255)}
+        self.component.button_light1.colour = STATUSMAP_BTN[status]
+        self.component.button_light2.colour = STATUSMAP_BTN[status]
+        self.component.lamp_bottom.colour = STATUSMAP_LAMP[status]
+
+        def toIdel():
+            self._to_idle_id = 0
+            self.onGameStatus(self.STATUS_IDLE)
+            self._clearPoints()
+
+        if status in (self.STATUS_FAIL, self.STATUS_WIN):
+            self._to_idle_id = BigWorld.callback(0.5, toIdel)
+
+    def update(self):
+        data = BWPersonality.GUICore.artifactQTEDataSection
+        slider, points, keyBinds, select, status = (False,
+         False,
+         False,
+         False,
+         False)
+        if self.sliderData != data['slider']:
+            self.sliderData = data['slider']
+            slider = True
+        if self.QTEdata != data['QTEdata']:
+            self.QTEdata = deepcopy(data['QTEdata'])
+            points = True
+        if self.keyData != data['keyData']:
+            self.keyData = deepcopy(data['keyData'])
+            keyBinds = True
+        if self.selectorData != data['selector']:
+            self.selectorData = data['selector']
+            select = True
+        if self.status != data['QTEStatus']:
+            self.status = data['QTEStatus']
+            status = True
+        self.renderContents(slider, points, keyBinds, select, status)
+
+    def processPoint(self, point):
+        if self.status not in (self.STATUS_PLAY, self.STATUS_PREPARATION):
+            BWPersonality.GUICore.artifactQTEEvent(self.EVENT_SELECT, point)
+
+    def show(self):
+        if self.component.parent is None:
+            BWPersonality.GUICore.worldLayer.addChild(self.component, 'artifactQTE')
+        self.component.visible = True
+        self.spotlineLoop()
+        BWPersonality.GUICore.setBestCursor()
+        self.component.text_fuel.text = ''
+        self._red_ind_shad.alpha = 0.0
+        self._red_ind_shad.reset()
+        self._red_ind_shad.alpha = 0.0
+        return
+
+    def hide(self):
+        self.spotlineStop()
+        self.component.visible = False
+        off = True
+        self._fuel_full = not off
+        self.component.red_indicator.visible = off
+        self.component.dark_fon.visible = off
+        self.component.button_light1.visible = not off
+        self.component.button_light2.visible = not off
+        self.component.lamp_bottom.visible = not off
+        self._clearPoints()
+        self.QTEdata = {}
+        BWPersonality.GUICore.setBestCursor()
+        BWPersonality.GUICore.artifactQTEEvent(self.EVENT_CLOSED, None)
+        return
+
+    def _clearPoints(self):
+        for anomaly_id, point_comp in self.points.items():
+            point_comp.visible = False
+            self.component.radarHolder.delChild(point_comp)
+
+        self.points = {}
+
+    def scanComplete(self):
+        BWPersonality.GUICore.artifactQTEEvent(self.EVENT_SCANNED, None)
+        return
+
+    def spotlineStop(self):
+        if self._spotlineLoop_id:
+            BigWorld.cancelCallback(self._spotlineLoop_id)
+        self._spotlineLoop_id = 0
+
+    def spotlineLoop(self):
+        """ (???) \xd0\xa1\xd0\xbe\xd0\xbf\xd1\x80\xd0\xbe\xd0\xb3\xd1\x80\xd0\xb0\xd0\xbc\xd0\xbc\xd0\xb0 \xd0\xbe\xd1\x82\xd0\xb2\xd0\xb5\xd1\x87\xd0\xb0\xd1\x8e\xd1\x89\xd0\xb0\xd1\x8f \xd0\xb7\xd0\xb0 \xd1\x86\xd0\xb8\xd0\xba\xd0\xbb \xd0\xbf\xd0\xbe\xd0\xb8\xd1\x81\xd0\xba\xd0\xb0 \xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbc\xd0\xb5\xd1\x82\xd0\xb0."""
+        pixStartPoint = self.component.radarHolder.localToScreen((0, 0))
+        startPoint = pixStartPoint[1]
+        pixEndPoint = self.component.radarHolder.localToScreen((0, self.component.radarHolder.height + self.component.radarHolder.spotLine.height))
+        offset = startPoint - pixEndPoint[1]
+        self.spotlineStop()
+
+        def __tick():
+            if not self.component.visible:
+                return
+            self.spotlineMP.translation = (0, 0, 0)
+            self.component.radarHolder.spotLine.mover.reset()
+            self.scanComplete()
+            self._spotlineLoop_id = BigWorld.callback(2.5, __tick)
+            self.component.radarHolder.spotLine.mover.eta = 1.2
+            self.spotlineMP.translation = (0, -offset, 0)
+
+        __tick()
+
+    def _loop_test_line(self):
+        self.component.radarHolder.spotLine.mover
+
+    @PyGUIEvent('hintBox', 'onClick')
+    def onHintBox(self):
+        """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5\xd0\xbc \xd0\xbd\xd0\xb0\xd0\xb6\xd0\xb0\xd1\x82\xd0\xb8\xd0\xb8 \xd0\xba\xd0\xbd\xd0\xbe\xd0\xbf\xd0\xba\xd0\xb8-\xd0\xbf\xd0\xbe\xd0\xb4\xd1\x81\xd0\xba\xd0\xb0\xd0\xb7\xd0\xba\xd0\xb8."""
+        text_and_ok('soArtifactQTE.hintBox', lc('soArtifactQTE.MANUAL_TITLE'), colorCodes.tf3_regular_text_color + lc('soArtifactQTE.MANUAL_TEXT'))
+
+    @PyGUIEvent('closeBox', 'onClick')
+    def oncloseBox(self):
+        self.hide()
+        BWPersonality.GUICore.setMouseAltState(False)
+        BWPersonality.GUICore.setBestCursor()
+
+    def handleDragStartEvent(self, component):
+        """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd1\x85\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0\xd0\xb5\xd1\x88\xd1\x8c \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82."""
+        x, y = BWPersonality.game.mcursor.position
+        delta_x = self.component.position[0] - x
+        delta_y = self.component.position[1] - y
+        self._deltaposition = (delta_x, delta_y)
+        self._repeatMoveToCursor()
+        return True
+
+    def handleDragStopEvent(self, component):
+        """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd0\xbe\xd1\x82\xd0\xbf\xd1\x83\xd1\x81\xd0\xba\xd0\xb0\xd0\xb5\xd1\x88\xd1\x8c \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82."""
+        if self._clbID:
+            BigWorld.cancelCallback(self._clbID)
+        return True
+
+    def _moveToCursor(self):
+        """\xd0\x9f\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb2\xd0\xb8\xd0\xb4\xd0\xb6\xd0\xb5\xd1\x82 \xd0\xb7\xd0\xb0 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5\xd0\xbc \xd0\xba\xd1\x83\xd1\x80\xd1\x81\xd0\xbe\xd1\x80\xd0\xb0 \xd0\xbc\xd0\xb8\xd1\x88\xd0\xb8."""
+        x, y = BWPersonality.game.mcursor.position
+        sW, sH = BigWorld.screenSize()
+        x_position = self._deltaposition[0] + x
+        x = max(-1.2, min(x_position, 1.2 - 2 * self.component.width / sW))
+        y_position = self._deltaposition[1] + y
+        y = min(1.5 - self.component.height / sH, max(y_position, -1.9 + self.component.height / sH))
+        self.component.position = (x, y, self.component.position[2])
+
+    def _repeatMoveToCursor(self):
+        """\xd0\x9f\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82 \xd1\x87\xd0\xb5\xd1\x80\xd0\xb5\xd0\xb7 \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb9 \xd0\xb8\xd0\xbd\xd1\x82\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb0\xd0\xbb."""
+        if not self.component.visible:
+            return
+        elif self.component.parent is None:
+            return
+        else:
+            self._moveToCursor()
+            self._clbID = BigWorld.callback(0.01, self._repeatMoveToCursor)
+            return

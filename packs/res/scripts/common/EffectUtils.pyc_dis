@@ -1,0 +1,440 @@
+# Embedded file name: ./scripts/common/EffectUtils.py
+import copy
+import Stats
+import StatChanges
+
+class EFFECT_TYPE:
+    UNDEFINED, BUFF, DEBUFF = xrange(3)
+
+
+class ON_REAPPLY:
+    NONE, STACKS, DURATION, ALL = xrange(4)
+
+
+class SOURCE:
+    ITEMS, EXTERNAL, AVATAR_SPECIAL, CREATURE_SPECIAL, SPACE_SPECIAL = xrange(5)
+
+
+class DefaultSubEf(dict):
+
+    def __init__(self, **params):
+        from EffectData import defaultSubEffect
+        dict.__init__(self, defaultSubEffect)
+
+
+class SubEfClass:
+    _damageActive, _damagePassive, _healActive, _healPassive, _healPercentActive, _healPercentPassive, _directStatChangeActive, _directStatChangePassive, _statChange, _severeInjuryEff, _applyEffectActive, _applyEffectPassive, _safe, _stun, _removeEffectsActive, _removeEffectsPassive, _food, _staminaDeltaUsage, _burn, _addStat, _poisonScreen, _adrenaline, _water_drink, _SetPlayerHotRegionEff, _power_mod_cd, _chance_mod_cd, _transformation, _pvp_zone = xrange(28)
+
+    class AddStat(DefaultSubEf):
+        changeStats = [Stats.ch_HitPoints, Stats.ch_Stamina]
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultStatChange
+            dict.__init__(self, defaultStatChange)
+            self.update(params)
+            self['class'] = SubEfClass._addStat
+
+    class StatChange(DefaultSubEf):
+        saveStats = [Stats.ch_MoveSpeed, Stats.ch_Accuracy]
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultStatChange
+            dict.__init__(self, defaultStatChange)
+            self.update(params)
+            self['class'] = SubEfClass._statChange
+
+    class SevereInjuryEff(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultInjury
+            dict.__init__(self, defaultInjury)
+            self.update(params)
+            self['class'] = SubEfClass._severeInjuryEff
+
+    class DirectStatChange(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultDirectStatChange
+            dict.__init__(self, defaultDirectStatChange)
+            self.update(params)
+            self['class'] = SubEfClass._directStatChangePassive
+
+    class Damage(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultDamage
+            dict.__init__(self, defaultDamage)
+            self.update(params)
+            self['class'] = SubEfClass._damagePassive
+
+    class Heal(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultHeal
+            dict.__init__(self, defaultHeal)
+            self.update(params)
+            self['class'] = SubEfClass._healPassive
+
+    class HealPercent(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultHealPercent
+            dict.__init__(self, defaultHealPercent)
+            self.update(params)
+            self['class'] = SubEfClass._healPercentPassive
+
+    class ApplyEffect(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultApplyEffect
+            dict.__init__(self, defaultApplyEffect)
+            self.update(params)
+            self['class'] = SubEfClass._applyEffectPassive
+
+    class Safe(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultSafe
+            dict.__init__(self, defaultSafe)
+            self.update(params)
+            self['class'] = SubEfClass._safe
+
+    class Stun(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultStun
+            dict.__init__(self, defaultStun)
+            self.update(params)
+            self['class'] = SubEfClass._stun
+
+    class RemoveEffects(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultRemoveEffects
+            dict.__init__(self, defaultRemoveEffects)
+            self.update(params)
+            self['class'] = SubEfClass._removeEffectsPassive
+
+    class FoodEffects(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultFoodEffects
+            dict.__init__(self, defaultFoodEffects)
+            self.update(params)
+            self['class'] = SubEfClass._food
+
+    class WaterDrinkEff(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            dict.__init__(self, {})
+            self.update(params)
+            self['class'] = SubEfClass._water_drink
+
+    class SetPlayerHotRegionEffect(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            dict.__init__(self, {})
+            self.update(params)
+            self['class'] = SubEfClass._SetPlayerHotRegionEff
+
+    class BurnEffects(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultBurnEffects
+            dict.__init__(self, defaultBurnEffects)
+            self.update(params)
+            self['class'] = SubEfClass._burn
+
+    class TransformationEffects(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaulTransformation
+            dict.__init__(self, defaulTransformation)
+            self.update(params)
+            self['class'] = SubEfClass._transformation
+
+    class ChanceModCDEffects(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            dict.__init__(self, {})
+            self.update(params)
+            self['class'] = SubEfClass._chance_mod_cd
+
+    class PowerModCDEffects(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            dict.__init__(self, {})
+            self.update(params)
+            self['class'] = SubEfClass._power_mod_cd
+
+    class AdrenalineEffect(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            dict.__init__(self, {})
+            self.update(params)
+            self['class'] = SubEfClass._adrenaline
+
+    class PoisonScreenEffects(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            dict.__init__(self, {})
+            self.update(params)
+            self['class'] = SubEfClass._poisonScreen
+
+    class PVPZoneEffects(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            dict.__init__(self, {})
+            self.update(params)
+            self['class'] = SubEfClass._pvp_zone
+
+    class StaminaDeltaUsageEffect(DefaultSubEf):
+
+        def __init__(self, **params):
+            DefaultSubEf.__init__(self)
+            from EffectData import defaultStaminaDeltaUsageEffect
+            dict.__init__(self, defaultStaminaDeltaUsageEffect)
+            self.update(params)
+            self['class'] = SubEfClass._staminaDeltaUsage
+
+
+class Effect(dict):
+
+    def __init__(self, **params):
+        from EffectData import defaultEffect
+        dict.__init__(self, defaultEffect)
+        self.update(params)
+
+
+def getTickDuration():
+    return 0.5
+
+
+def getEffect(effectId):
+    from EffectData import EffectsConfig
+    if EffectsConfig.has_key(effectId):
+        return EffectsConfig[effectId]
+    else:
+        print '\tEffectUtils.getEffect: no such effect', effectId
+        return None
+        return None
+
+
+def parseEffectDamage(effects):
+    result = []
+    if not isinstance(effects, list):
+        effects = [effects]
+    for effect in effects:
+        damages = effect.get('passive', [])
+        damages.extend(effect.get('active', []))
+        if not damages:
+            continue
+        for eff in damages:
+            if eff.get('class') not in [SubEfClass._damagePassive, SubEfClass._damageActive]:
+                continue
+            damage_type = eff.get('type')
+            if damage_type and damage_type not in result:
+                result.append(damage_type)
+
+    return result
+
+
+def parseEffectApply(effects):
+    result = []
+    if not isinstance(effects, list):
+        effects = [effects]
+    for effect in effects:
+        actives = effect.get('passive', [])
+        actives.extend(effect.get('active', []))
+        if not actives:
+            continue
+        for eff in actives:
+            if eff.get('class') not in [SubEfClass._applyEffectActive, SubEfClass._applyEffectPassive]:
+                continue
+            sub_eff = getEffect(eff['type'])
+            if sub_eff:
+                tool_tip = sub_eff.get('name')
+                if tool_tip and tool_tip not in result:
+                    result.append(tool_tip)
+
+    return result
+
+
+def parseEffectStates(effects):
+    result = {}
+
+    def getDefaultStatVal():
+        return {StatChanges.ADD_BEFORE_MULT: 0,
+         StatChanges.MULT: 0,
+         StatChanges.ADD_AFTER_MULT: 0,
+         StatChanges.PERCENTS: 0,
+         StatChanges.SPECIFIED: 0}
+
+    def _parceBodyZone(dct, value, result):
+        for zone in dct:
+            if not result.has_key(zone):
+                result[zone] = {}
+            for defns in dct[zone]:
+                if not result[zone].has_key(defns):
+                    result[zone][defns] = 0
+                result[zone][defns] += eff.get('value') if eff.get('statChangeType') != StatChanges.PERCENTS else eff.get('value') * 10
+
+    if not isinstance(effects, list):
+        effects = [effects]
+    for effect in effects:
+        states = effect.get('passive')
+        if not states:
+            continue
+        for eff in states:
+            if eff.get('class') != SubEfClass._statChange:
+                continue
+            eff_stat = eff.get('stat_index')
+            if eff_stat is None:
+                continue
+            for stat in eff_stat:
+                if stat == Stats.ch_Defence:
+                    if not result.has_key(stat):
+                        result[stat] = {}
+                    _parceBodyZone(eff_stat[stat], eff.get('value'), result[stat])
+                else:
+                    if not result.has_key(stat):
+                        result[stat] = {'value': 0,
+                         'type': 0}
+                    result[stat]['value'] += eff.get('value', 0)
+                    result[stat]['type'] = eff.get('statChangeType')
+
+    return result
+
+
+def getBaseEffectParam(baseEffect, paramName = None):
+    """ Used to retrieve baseEffect data from globalData. If paramName == None, then return all baseEffect data """
+    if paramName == None:
+        return getEffect(baseEffect['id'])
+    else:
+        return getEffect(baseEffect['id']).get(paramName, None)
+        return
+
+
+def prepareEffectsConfig(EffectsConfig):
+    """ Prepares EffectData.EffectsConfig:
+            * Set ids for effects
+            * Convert durations in seconds to ticks
+            * Active/passive class select (it makes no sence to do this work by game designers)
+    """
+    for id, ef in EffectsConfig.items():
+        ef['id'] = id
+
+    for ef in [ ef for ef in EffectsConfig.values() if ef['stackDuration'] != -1 ]:
+        ef['stackDuration'] /= getTickDuration()
+
+    passive = [ subEf for ef in EffectsConfig.values() for subEf in ef['passive'] ]
+    active = [ subEf for ef in EffectsConfig.values() for subEf in ef['active'] ]
+    efPairs = [(SubEfClass._damagePassive, SubEfClass._damageActive),
+     (SubEfClass._healPassive, SubEfClass._healActive),
+     (SubEfClass._applyEffectPassive, SubEfClass._applyEffectActive),
+     (SubEfClass._removeEffectsPassive, SubEfClass._removeEffectsActive),
+     (SubEfClass._directStatChangePassive, SubEfClass._directStatChangeActive),
+     (SubEfClass._healPercentPassive, SubEfClass._healPercentActive)]
+    for subEf in active:
+        subEf['interval'] /= getTickDuration()
+        for pair in efPairs:
+            if subEf['class'] == pair[0]:
+                subEf['class'] = pair[1]
+                break
+
+    for baseEf in EffectsConfig.values():
+        if baseEf['sources'] and baseEf['stackDuration'] != -1:
+            print 'DESIGNER_WARNING: prepareEffectsConfig: baseEf %d with sources is not permanent (stackDuration != -1)' % baseEf['id']
+            baseEf['stackDuration'] = -1
+
+    stat_changers = [ ef for ef in passive if ef['class'] == SubEfClass._statChange ]
+    for subEf in stat_changers:
+        index = subEf['stat_index']
+        if not isinstance(index, list):
+            index = [index]
+        for i, val in enumerate(index):
+            if not isinstance(val, list):
+                index[i] = [val]
+
+        for val in index:
+            dicts = [ {} for i in xrange(len(index)) ]
+            dicts.append(True)
+            for i in xrange(len(index) - 1, -1, -1):
+                for val in index[i]:
+                    dicts[i][val] = dicts[i + 1]
+
+        subEf['stat_index'] = dicts[0]
+
+    testUnicueSubEffects(EffectsConfig)
+
+
+def testUnicueSubEffects(EffectsConfig):
+    import BigWorld
+    if BigWorld.component != 'cell':
+        return
+    from Effect.SubEffects import SubEffectClass
+    from Config.Effects import EffectNames
+    unic = {}
+
+    def getEffName(eff_id):
+        name = EffectNames.ID_TO_NAME.get(eff_id, '???')
+        return '%s[%s]' % (name, eff_id)
+
+    for eff_id, ef in EffectsConfig.items():
+        for subeff in ef['passive'] + ef['active']:
+            subeff_cls = SubEffectClass(subeff)
+            if subeff_cls and getattr(subeff_cls, 'MUST_BE_UNIQUE', False):
+                sub_name = subeff.__class__.__name__
+                unic[sub_name] = unic.get(sub_name, []) + [eff_id]
+
+    errors = []
+    for sub_name, eff_ids in unic.items():
+        if len(eff_ids) > 1:
+            errors.append([sub_name, eff_ids])
+
+    if errors:
+        print 'DESIGNER_WARNING! \xd0\x9d\xd0\xb5\xd1\x81\xd0\xba\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xba\xd0\xbe \xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82\xd0\xbe\xd0\xb2 \xd0\xb8\xd1\x81\xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd1\x83\xd1\x8e\xd1\x82 \xd0\xbe\xd0\xb4\xd0\xb8\xd0\xbd \xd0\xb8 \xd1\x82\xd0\xbe\xd1\x82 \xd0\xb6\xd0\xb5 \xd1\x81\xd1\x83\xd0\xb1-\xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82 \xd0\xbf\xd0\xbe\xd0\xbc\xd0\xb5\xd1\x87\xd0\xb5\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb9 \xd0\xba\xd0\xb0\xd0\xba \xd1\x83\xd0\xbd\xd0\xb8\xd0\xba\xd0\xb0\xd0\xbb\xd1\x8c\xd0\xbd\xd1\x8b\xd0\xb9'
+        print '\xd0\xad\xd1\x82\xd0\xbe \xd0\xbc\xd0\xbe\xd0\xb6\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd0\xb8\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd0\xb8 \xd0\xba \xd0\xbd\xd0\xb5\xd0\xbe\xd0\xb6\xd0\xb8\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xbc \xd0\xbf\xd0\xbe\xd1\x81\xd0\xbb\xd0\xb5\xd0\xb4\xd1\x81\xd1\x82\xd0\xb2\xd0\xb8\xd1\x8f\xd0\xbc \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xbf\xd1\x80\xd0\xb8\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb8 \xd1\x82\xd0\xb0\xd0\xba\xd0\xb8\xd1\x85 \xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82\xd0\xbe\xd0\xb2 \xd0\xbe\xd0\xb4\xd0\xbd\xd0\xbe\xd0\xb2\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xbd\xd0\xbe'
+        for sub_name, eff_ids in errors:
+            print '\xd0\xa1\xd1\x83\xd0\xb1-\xd1\x8d\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82:', sub_name, '  \xd0\xad\xd1\x84\xd1\x84\xd0\xb5\xd0\xba\xd1\x82\xd1\x8b:', '  '.join(map(getEffName, eff_ids))
+
+
+def spaceSpecialEffectsId(EffectsConfig):
+    eff_ids = []
+    space_ids = {}
+    for ef_id, ef in EffectsConfig.items():
+        if ef.get('sources') and SOURCE.SPACE_SPECIAL in ef['sources']:
+            if not ef.get('spaces'):
+                print 'DESIGNER_WARNING: spaceSpecialEffectsId: SPACE_SPECIAL eff %d - \xd0\xbd\xd0\xb5 \xd0\xb8\xd0\xbc\xd0\xb5\xd0\xb5\xd1\x82 \xd0\xba\xd0\xb0\xd1\x80\xd1\x82' % ef_id
+            else:
+                eff_ids.append(ef_id)
+                for space in ef['spaces']:
+                    if space not in space_ids:
+                        space_ids[space] = []
+                    space_ids[space].append(ef_id)
+
+        elif ef.get('spaces'):
+            print 'DESIGNER_WARNING: spaceSpecialEffectsId: ef %d - \xd0\xb8\xd0\xbc\xd0\xb5\xd0\xb5\xd1\x82 \xd0\xba\xd0\xb0\xd1\x80\xd1\x82\xd1\x8b, \xd0\xbd\xd0\xbe \xd0\xbd\xd0\xb5 \xd1\x8f\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82\xd1\x81\xd1\x8f SPACE_SPECIAL )' % ef_id
+
+    return (eff_ids, space_ids)

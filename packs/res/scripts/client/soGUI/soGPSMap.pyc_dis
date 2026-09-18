@@ -1,0 +1,1064 @@
+# Embedded file name: ./scripts/client/soGUI/soGPSMap.py
+from Localization import lc
+import BigWorld
+import GUI
+import BWPersonality
+import Helpers.PyGUI as PyGUI
+import soGUI
+from space_utils import getLokalizedSpaceNameByName
+from Helpers.PyGUI.PyGUIBase import PyGUIBase
+from soGUI.soTabletScreen import soTabletScreen
+from soGUI.soToolTipComponent import soToolTipComponent
+from copy import deepcopy
+from soGUI.soPanComponent import soPanComponent
+from soGUI.soButton import soButton, soButtonWTT
+from Helpers.PyGUI import PyGUIEvent
+from soGUI.soDropDownList import soDropDownList, soDropDownList2
+from functools import partial
+from MapNotes import MapNotes
+from Helpers.BWCoroutine import *
+from soGUI.data import GUIEvents
+from gui_const import GUI_ID
+from Keys import *
+from Helpers.PyGUI.DraggableComponent import DraggableComponent
+import colorCodes
+from msgbox_templates import text_and_ok
+MAPS_CONFIG = {'spaces/main': ('map_mainspace.dds', (1000, 1000), {}),
+ 'spaces/so_origins': ('minimap_so_origins.dds', (500, 500), {'zoom': (1.572, 4),
+                        'defaultPreset': 1}),
+ 'spaces/city_lubech': ('minimap_city_lubech.dds', (1500, 1500), {'zoom': (0.524, 2),
+                         'defaultPreset': 2,
+                         'shift': (2,
+                                   1,
+                                   2,
+                                   1)}),
+ 'spaces/city_lubech_2': ('minimap_city_lubech2.dds', (1200, 1400), {'zoom': (0.524, 2),
+                           'defaultPreset': 2}),
+ 'spaces/city_lubech_underground': ('minimap_city_lubech_underground.dds', (512, 512), {'zoom': (1.572, 4),
+                                     'defaultPreset': 2}),
+ 'spaces/WINTER_city_lubech_underground': ('minimap_city_lubech_underground.dds', (512, 512), {'zoom': (1.572, 4),
+                                            'defaultPreset': 2}),
+ 'spaces/outlands': ('minimap_outlands.dds', (4000, 4000), {'zoom': (0.1965, 0),
+                      'defaultPreset': 2}),
+ 'spaces/outlands_airport': ('minimap_outlands_airport.dds', (2000, 2000), {'zoom': (0.393, 2),
+                              'defaultPreset': 1}),
+ 'spaces/novaya': ('minimap_novaya.dds', (1400, 1400), {'zoom': (0.5615, 3),
+                    'defaultPreset': 1}),
+ 'spaces/vesuvius': ('minimap_vesuvius.dds', (2500, 2500), {'zoom': (0.315, 1),
+                      'defaultPreset': 4}),
+ 'spaces/volcano': ('minimap_volkano.dds', (500, 500), {'zoom': (1.572, 4),
+                     'defaultPreset': 2}),
+ 'spaces/tunguska': ('minimap_tunguska.dds', (2000, 2000), {'zoom': (0.393, 2),
+                      'defaultPreset': 1}),
+ 'spaces/tunguska_caravan': ('minimap_tunguska_caravan.dds', (10000, 2000), {'zoom': (0.7, 4),
+                              'defaultPreset': 2}),
+ 'spaces/steppe': ('minimap_steppe.dds', (2000, 2000), {'zoom': (0.393, 2),
+                    'defaultPreset': 1}),
+ 'spaces/steppe_dust': ('minimap_steppe_dust.dds', (2000, 2000), {'zoom': (0.393, 2),
+                         'defaultPreset': 1}),
+ 'spaces/pk_prison01': ('minimap_pk_prison01.dds', (400, 400), {'zoom': (1.965, 3),
+                         'defaultPreset': 3}),
+ 'spaces/swamp_2': ('minimap_swamp_2.dds', (5000, 5000), {'zoom': (0.1965, 0),
+                     'defaultPreset': 2}),
+ 'spaces/event_new_year_main_2017': ('minimap_city_lubech_winter.dds', (1500, 1500), {'zoom': (0.5615, 3),
+                                      'defaultPreset': -1}),
+ 'spaces/event_new_year_builder_2': ('minimap_event_new_year_builder_2.dds', (500, 500), {'zoom': (1.572, 4),
+                                      'defaultPreset': 1}),
+ 'spaces/dm_outlands_village': ('minimap_dm_outlands_village.dds', (4000, 4000), {'zoom': (0.1965, 0),
+                                 'defaultPreset': 1,
+                                 'shift': (4,
+                                           4,
+                                           4,
+                                           4)}),
+ 'spaces/dm_rocks': ('minimap_dm_rocks.dds', (500, 500), {'zoom': (0.393, 0),
+                      'defaultPreset': 1}),
+ 'spaces/dm_ryabinushka': ('minimap_dm_ryabinushka.dds', (400, 800), {'zoom': (0.393, 0),
+                            'defaultPreset': 1}),
+ 'spaces/dm_snowland': ('minimap_dm_snowland.dds', (500, 500), {'zoom': (0.393, 0),
+                         'defaultPreset': 1}),
+ 'spaces/testers': ('minimap_testers.dds', (400, 400), {'zoom': (1.965, 3),
+                     'defaultPreset': 3})}
+PATH_WORLDMAPS = 'soGUI/maps/worldMaps/'
+
+class soGPSMark(PyGUIBase, soToolTipComponent):
+    factoryString = 'soGUI.soGPSMark'
+    TYPEMAP = {MapNotes.TYPE_PLAYER: BigWorld.PyTextureProvider('soGUI/maps/Misc/mapMark_player.tga'),
+     MapNotes.TYPE_WANTED: BigWorld.PyTextureProvider('soGUI/maps/Misc/mapMark_wanted.tga'),
+     MapNotes.TYPE_CUSTOM: BigWorld.PyTextureProvider('soGUI/maps/Misc/mapMark_custom.tga'),
+     MapNotes.TYPE_AREA: BigWorld.PyTextureProvider('soGUI/maps/Misc/mapMark_city.tga'),
+     MapNotes.TYPE_AREA_AUTO: BigWorld.PyTextureProvider('soGUI/maps/Misc/mapMark_unlockPOI.tga'),
+     MapNotes.TYPE_NPC: BigWorld.PyTextureProvider('soGUI/maps/Misc/mapMark_questNPC.tga'),
+     MapNotes.TYPE_NPC_AUTO: BigWorld.PyTextureProvider('soGUI/maps/Misc/mapMark_questNPC.tga'),
+     MapNotes.TYPE_RESPAWN_POINT: BigWorld.PyTextureProvider('soGUI/maps/Misc/mapMark_respawn.tga'),
+     MapNotes.TYPE_UNCERTAIN_AREA: BigWorld.PyTextureProvider('soGUI/maps/Misc/uncertain_point/uncertainP.texanim')}
+    HIGHLIGHT_TEXTURE = BigWorld.PyTextureProvider('soGUI/maps/Misc/highlighter.tga')
+    APPEAR_SPEED = 0.1
+    APPEAR_START_SCALE = 0.1
+    APPEAR_END_SCALE = 1.0
+    APPEAR_ANIM_FRAMECOUNT = 10
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        soToolTipComponent.__init__(self, component, None, None)
+        component.script = self
+        self.pressed = False
+        self.__mouse_enter = False
+        self.markType = MapNotes.TYPE_CUSTOM
+        self.direction = 0.0
+        self.HLanim = None
+        self.color = (255, 255, 255, 125)
+        self.setupRoot()
+        self.setupIcon()
+        self.setupHighlighter()
+        return
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 30
+        cmp.height = 30
+        cmp.crossFocus = False
+        cmp.mouseButtonFocus = False
+        cmp.moveFocus = False
+
+    def setupIcon(self):
+        cmp = GUI.Simple('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 30
+        cmp.height = 30
+        cmp.position = (0.0, 0.0, 0.2)
+        cmp.crossFocus = True
+        cmp.mouseButtonFocus = True
+        cmp.moveFocus = True
+        cmp.script = self
+        self.component.addChild(cmp, 'icon')
+
+    def setupHighlighter(self):
+        cmp = GUI.Simple('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.colour = self.color
+        cmp.materialFX = 'BLEND'
+        cmp.width = 2.0
+        cmp.height = 2.0
+        cmp.position = (0.0, 0.0, 0.25)
+        cmp.visible = False
+        cmp.texture = self.HIGHLIGHT_TEXTURE
+        self.component.addChild(cmp, 'hl')
+
+    def setMarkInfo(self, id, type):
+        self.toolTipID = id
+        self.interfaceID = BWPersonality.GUICore.GUI_ID_PDAMAP
+        self.id = id
+        self.markType = type
+        self.component.icon.texture = self.TYPEMAP[type]
+
+    def setDirection(self, dir):
+        self.direction = dir
+        if self.markType is not MapNotes.TYPE_UNCERTAIN_AREA:
+            self.component.widthMode = self.component.heightMode = 'PIXEL'
+            self.component.width = self.component.height = 20
+        else:
+            w, h = self._calcHLSize()
+            self.component.widthMode = self.component.heightMode = 'CLIP'
+            self.component.width = w
+            self.component.height = h
+
+    def setColor(self, color):
+        self.color = color
+        if self.markType is MapNotes.TYPE_UNCERTAIN_AREA:
+            self.component.hl.colour = color
+
+    def isPlayer(self):
+        if self.markType == MapNotes.TYPE_PLAYER:
+            return True
+
+    def getCoords(self):
+        return (self.component.position.x, self.component.position.y)
+
+    def handleMouseEnterEvent(self, component):
+        if component is not self.component.icon:
+            return False
+        if self.markType is MapNotes.TYPE_UNCERTAIN_AREA:
+            self.component.hl.visible = True
+            self.HLanim = self.appearAnim()
+            self.HLanim.run()
+        self.pressed = self.pressed and BigWorld.isKeyDown(KEY_LEFTMOUSE)
+        self.__mouse_enter = True
+        soToolTipComponent.handleMouseEnterEvent(self, component)
+        return True
+
+    def handleMouseLeaveEvent(self, component):
+        if self.HLanim is not None:
+            self.HLanim.stop()
+            self.HLanim = None
+        self.component.hl.visible = False
+        self.__mouse_enter = False
+        soToolTipComponent.handleMouseLeaveEvent(self, component)
+        return True
+
+    def onVisibleChangeEvent(self, smp, visible):
+        if visible:
+            return False
+        self.handleMouseLeaveEvent(self.component)
+        return False
+
+    def handleMouseButtonEvent(self, comp, event):
+        key = event.key
+        down = event.isKeyDown()
+        if key == KEY_LEFTMOUSE:
+            if down:
+                self.onLeftClick()
+        if key == KEY_RIGHTMOUSE:
+            if down:
+                self.onRightClick()
+        return True
+
+    def handleMouseEvent(self, comp, event):
+        return True
+
+    def onLeftClick(self):
+        BWPersonality.GUICore.GPSEvent(soGUI.soGPSMap.EVENT_MARKLEFT, [self.id, self.markType])
+
+    def onRightClick(self):
+        BWPersonality.GUICore.GPSEvent(soGUI.soGPSMap.EVENT_MARKRIGHT, [self.id, self.markType])
+
+    def _calcHLSize(self):
+        parentSpace = self.component.parent.parent.script
+        aspect = parentSpace.width / parentSpace.height
+        zoom = parentSpace.zoomPresets[parentSpace.zoomPreset]
+        width = self.direction * zoom
+        height = self.direction * aspect * zoom
+        return [width, height]
+
+    enumerate
+
+    @BWMemberCoroutine
+    def appearAnim(self):
+        curScale = self.APPEAR_START_SCALE
+        step = (self.APPEAR_END_SCALE - self.APPEAR_START_SCALE) / float(self.APPEAR_ANIM_FRAMECOUNT)
+        while curScale < self.APPEAR_END_SCALE:
+            self.component.hl.width = 2.0 * curScale
+            self.component.hl.height = 2.0 * curScale
+            curScale += step
+            yield BWWaitForPeriod(self.APPEAR_SPEED / float(self.APPEAR_ANIM_FRAMECOUNT))
+
+        self.component.hl.width = 2.0
+        self.component.hl.height = 2.0
+
+
+class soSpaceMap(PyGUIBase, soPanComponent):
+    factoryString = 'soGUI.soSpaceMap'
+
+    def __init__(self, component, textureName, GPSobj, textureWidth = 100, textureHeight = 100, zoomPresets = [2.0, 1.0, 0.5], defaultPreset = 0, spaceID = None, width = 786, height = 482):
+        PyGUIBase.__init__(self, component)
+        soPanComponent.__init__(self, component)
+        component.script = self
+        self.W = width
+        self.H = height
+        self.width = textureWidth
+        self.height = textureHeight
+        self.spaceName = getLokalizedSpaceNameByName(spaceID)
+        self.texture = textureName
+        self.spaceID = spaceID
+        self.GPSparent = GPSobj
+        self.zoomPresets = zoomPresets
+        self.zoomPreset = defaultPreset
+        self.viewAnchor = (0.0, 0.0)
+        self.marks = {}
+        soSpaceMap.setupRoot(self)
+        self.setupMap()
+        self.updateMap()
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.W
+        cmp.height = self.H
+        cmp.position = (cmp.width / 2.0, 0, 0.2)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.visible = False
+        cmp.mouseButtonFocus = True
+        cmp.dragFocus = True
+        cmp.crossFocus = True
+        cmp.moveFocus = True
+
+    def setupMap(self):
+        cmp = GUI.Window()
+
+        def onTextureLoaded(resource):
+            cmp.texture = resource[self.texture]
+
+        try:
+            BigWorld.loadResourceListBG([self.texture], onTextureLoaded)
+        except:
+            print 'soGPSMap::error occured: engine can`t preload 1 recource unit, you must pass at least 2 '
+
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = self.width * self.zoomPresets[self.zoomPreset]
+        cmp.height = self.height * self.zoomPresets[self.zoomPreset]
+        cmp.position = (0.0, 0.0, 0.5)
+        cmp.angle = 180
+        cmp.flip = 1
+        self.component.addChild(cmp, 'spaceMap')
+
+    def addMark(self, id, type, coords, dir, col, pos = None):
+        mark = soGPSMark(GUI.Window())
+        cmp = mark.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        shift = (0.0, 0.0)
+        if not pos:
+            mark_id = id
+        else:
+            mark_id = (type, pos)
+        cmp.position = (coords[0] + shift[0], coords[1] + shift[1], 0.2)
+        self.component.spaceMap.addChild(cmp, 'mark' + str(mark_id))
+        self.marks[mark_id] = cmp
+        mark.setMarkInfo(mark_id, type)
+        mark.setDirection(dir)
+        mark.setColor(col)
+
+    def setSize(self, w, h):
+        self.component.width = w - 6
+        self.component.height = h - 77
+        self.component.position.x = self.component.width / 2
+        self.updateMap()
+
+    def removeMark(self, id):
+        if self.marks.has_key(id):
+            self.marks[id].script.clearAllChildren(self.marks[id])
+            self.marks[id].script = None
+            self.component.spaceMap.delChild(self.marks[id])
+            del self.marks[id]
+            return True
+        else:
+            return False
+
+    def removeAllMarks(self):
+        for mark in self.marks.keys():
+            if mark[0] == MapNotes.TYPE_WANTED:
+                continue
+            self.removeMark(mark)
+
+        return True
+
+    def updateMap(self):
+        self.component.spaceMap.width = max(self.width * self.zoomPresets[self.zoomPreset], self.component.width)
+        self.component.spaceMap.height = max(self.height * self.zoomPresets[self.zoomPreset], self.component.width)
+        self.component.widthMode = self.component.heightMode = 'LEGACY'
+        lW, lH = self.component.width, self.component.height
+        self.component.widthMode = self.component.heightMode = 'PIXEL'
+        self.component.spaceMap.widthMode = self.component.spaceMap.heightMode = 'LEGACY'
+        mW, mH = self.component.spaceMap.width, self.component.spaceMap.height
+        self.component.spaceMap.widthMode = self.component.spaceMap.heightMode = 'PIXEL'
+        sW, sH = (2.0, 2.0)
+        offsetW = (mW - lW) / sW
+        offsetH = (mH - lH) / sH
+        c_offsetW = mW / sW
+        c_offsetH = mH / sH
+        self.component.minScroll = (-offsetW, -offsetH)
+        self.component.maxScroll = (offsetW, offsetH)
+        self.centeringMinScroll = (-c_offsetW, -c_offsetH)
+        self.centeringMaxScroll = (c_offsetW, c_offsetH)
+
+    def updateMark(self, id, type, coords):
+        cmp = self.marks[id]
+        mark = cmp.script
+        mark.setMarkInfo(id, type)
+        cmp.position = (coords[0], coords[1], 0.2)
+
+    def hasMark(self, id):
+        if self.marks.has_key(id):
+            return True
+        else:
+            return False
+
+    def clearMarks(self):
+        self.marks.clear()
+        for mark in self.marks:
+            self.component.spaceMap.delChild(self.marks[mark])
+
+    def show(self):
+        self.component.visible = True
+
+    def hide(self):
+        self.component.visible = False
+
+    def handleMouseButtonEvent(self, comp, event):
+        key = event.key
+        down = event.isKeyDown()
+        pos = event.cursorPosition
+        handled = soPanComponent.handleMouseButtonEvent(self, comp, event)
+        cmp = self.component.spaceMap
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        clipPos = cmp.screenToLocal((pos[0], pos[1]))
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        if key == KEY_RIGHTMOUSE:
+            if down:
+                BWPersonality.GUICore.GPSEvent(soGUI.soGPSMap.EVENT_MAPCONTEXT, (clipPos, self.spaceID))
+        return True
+
+    def zoomIn(self, fromBtn = False):
+        if self.zoomPreset > 0:
+            self.zoomPreset -= 1
+            cmp = self.component.spaceMap
+            if not fromBtn:
+                mpos = GUI.mcursor().position
+                cmp.widthMode = cmp.heightMode = 'CLIP'
+                self.viewAnchor = cmp.screenToLocal((mpos[0], mpos[1]))
+                cmp.widthMode = cmp.heightMode = 'PIXEL'
+                self.updateMap()
+                self.GPSparent.centerOnMouse()
+            else:
+                self.component.widthMode = self.component.heightMode = 'CLIP'
+                cmp.widthMode = cmp.heightMode = 'CLIP'
+                sX, sY = self.component.localToScreen((0.0, 0.0))
+                self.viewAnchor = cmp.screenToLocal((sX - self.component.scroll.x, sY - self.component.scroll.y))
+                cmp.widthMode = cmp.heightMode = 'PIXEL'
+                self.component.widthMode = self.component.heightMode = 'PIXEL'
+                self.updateMap()
+                self.GPSparent.centerOnCenter()
+
+    def zoomOut(self, fromBtn = False):
+        if self.zoomPreset == len(self.zoomPresets) - 1:
+            return
+        checkZoom = self.zoomPresets[self.zoomPreset + 1]
+        if self.width * checkZoom >= self.component.width and self.height * checkZoom >= self.component.height:
+            self.zoomPreset += 1
+            cmp = self.component.spaceMap
+            if not fromBtn:
+                mpos = GUI.mcursor().position
+                cmp.widthMode = cmp.heightMode = 'CLIP'
+                self.viewAnchor = cmp.screenToLocal((mpos[0], mpos[1]))
+                cmp.widthMode = cmp.heightMode = 'PIXEL'
+                self.updateMap()
+                self.GPSparent.centerOnMouse()
+            else:
+                self.component.widthMode = self.component.heightMode = 'CLIP'
+                cmp.widthMode = cmp.heightMode = 'CLIP'
+                sX, sY = self.component.localToScreen((0.0, 0.0))
+                self.viewAnchor = cmp.screenToLocal((sX - self.component.scroll.x, sY - self.component.scroll.y))
+                cmp.widthMode = cmp.heightMode = 'PIXEL'
+                self.component.widthMode = self.component.heightMode = 'PIXEL'
+                self.updateMap()
+                self.GPSparent.centerOnCenter()
+
+    def getFriendlyName(self):
+        return self.spaceName
+
+    def handleMouseEvent(self, comp, event):
+        handled = soPanComponent.handleMouseEvent(self, comp, event)
+        dz = event.dz
+        if dz < 0:
+            self.zoomOut()
+        if dz > 0:
+            self.zoomIn()
+        return bool(handled)
+
+    def panUp(self):
+        sW, sH = BigWorld.screenSize()
+        dy = 25
+        self.component.scroll.y -= 2.0 / (sH / dy)
+
+    def panDown(self):
+        sW, sH = BigWorld.screenSize()
+        dy = -25
+        self.component.scroll.y -= 2.0 / (sH / dy)
+
+    def panLeft(self):
+        sW, sH = BigWorld.screenSize()
+        dx = -25
+        self.component.scroll.x -= 2.0 / (sW / dx)
+
+    def panRight(self):
+        sW, sH = BigWorld.screenSize()
+        dx = 25
+        self.component.scroll.x -= 2.0 / (sW / dx)
+
+    def fini(self):
+        self.GPSparent = None
+        return
+
+    def leaveMarks(self, comp):
+        for mark_id in self.marks:
+            self.marks[mark_id].script.handleMouseLeaveEvent(comp)
+
+    def handleMouseEnterEvent(self, comp):
+        handled = soPanComponent.handleMouseEnterEvent(self, comp)
+        self.leaveMarks(comp)
+        return bool(handled)
+
+    def handleMouseLeaveEvent(self, comp):
+        handled = soPanComponent.handleMouseLeaveEvent(self, comp)
+        return bool(handled)
+
+    def handleDragStartEvent(self, *args):
+        return False
+
+    def handleDragStopEvent(self, *args):
+        return False
+
+
+class soGPSMap(PyGUIBase, DraggableComponent):
+    factoryString = 'soGUI.soGPSMap'
+    EVENT_MAPCONTEXT = 0
+    EVENT_MARKLEFT = 1
+    EVENT_MARKRIGHT = 2
+    DIRECTION_UP = 0
+    DIRECTION_RIGHT = 1
+    DIRECTION_DOWN = 2
+    DIRECTION_LEFT = 3
+
+    def onIconsLoaded(self, resourceRefs):
+        self.iconTextures = resourceRefs
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        DraggableComponent.__init__(self, 1, 1, 1)
+        component.script = self
+        self.MAPS_CONFIG = MAPS_CONFIG
+        self.MAPLIST = dict()
+        w, h = BWPersonality.settings.GUISettings.getMapSize()
+        for space, _map in MAPS_CONFIG.items():
+            texture = _map[0]
+            path = PATH_WORLDMAPS + texture
+            keys = _map[-1]
+            width, height = _map[1]
+            presets = self._zoomSteps(*keys['zoom']) if keys else [2.0, 1.0, 0.5]
+            self.MAPLIST[space] = soSpaceMap(GUI.Window(), path, self, textureWidth=width, textureHeight=height, spaceID=space, zoomPresets=presets, defaultPreset=keys.get('defaultPreset', 0), width=w - 6, height=h - 77)
+
+        self.maps = {}
+        self.mapData = None
+        self.currentMap = None
+        self.charMap = 'spaces/so_origins'
+        self.wanted_map = None
+        self.wanted_data = None
+        self.charData = None
+        self.markData = {}
+        self._deltaposition = [0, 0]
+        self._clbID = 0
+        self.setupRoot()
+        self.setupMap()
+        self.setupMapControls()
+        self.setupStatusBar()
+        return
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.width, cmp.height = BWPersonality.settings.GUISettings.getMapSize()
+        cmp.position = (0.01, 0.01, 0.15)
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.textureName = ''
+        cmp.visible = False
+        cmp.dragFocus = True
+        cmp.moveFocus = True
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (14, 5, 0.3)
+        cmp.text = lc('soGPSMap.soGUI.WINDOW_CAPTION')
+        self.component.addChild(cmp, 'iLabel')
+
+    def setupMapControls(self):
+        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = self.component.width
+        cmp.height = self.component.height - 9
+        cmp.position = (0, 0, 1.2)
+        self.component.addChild(cmp, 'wndFrame')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/closeBox.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 18
+        cmp.height = 18
+        cmp.position = (self.component.width - 6, 6, 0.2)
+        self.component.addChild(cmp, 'closeBox')
+        btn.onBound()
+        btn._updateVisualState()
+        hintBox = soButton(GUI.Window())
+        comp = hintBox.component
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.horizontalAnchor = 'LEFT'
+        comp.verticalAnchor = 'TOP'
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.width = 18
+        comp.height = 18
+        comp.position = (self.component.width - 48, 6, 0.2)
+        hintBox.initVSC('soGUI/visual_styles/helpBox.xml')
+        hintBox.onBound()
+        hintBox.setVisualState('normal')
+        self.component.addChild(comp, 'hintBox')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/GPS_btns_small.xml')
+        btn.onClick = partial(self.zoomHandler, 0)
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.textureName = 'soGUI/maps/Controls/TabletPC/GPS/zoomIn.tga'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 25
+        cmp.height = 25
+        cmp.position = (self.component.width - 57, 32, 0.1)
+        self.component.addChild(cmp, 'zoomIn')
+        btn.onBound()
+        btn.setVisualState('normal')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/GPS_btns_small.xml')
+        btn.onClick = partial(self.zoomHandler, 1)
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.textureName = 'soGUI/maps/Controls/TabletPC/GPS/zoomOut.tga'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 25
+        cmp.height = 25
+        cmp.position = (self.component.width - 32, 32, 0.1)
+        self.component.addChild(cmp, 'zoomOut')
+        btn.onBound()
+        btn.setVisualState('normal')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/GPS_btns_small.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.textureName = 'soGUI/maps/Controls/TabletPC/GPS/centerOnPlayer.tga'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 25
+        cmp.height = 25
+        cmp.position = (self.component.width - 92, 32, 0.1)
+        self.component.addChild(cmp, 'centerOnPlayer')
+        btn.onBound()
+        btn.setVisualState('normal')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/GPS_btns_small.xml')
+        btn.onClick = partial(self.panBtnHandler, self.DIRECTION_UP)
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.textureName = 'soGUI/maps/Controls/TabletPC/GPS/arrow_up.tga'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 25
+        cmp.height = 25
+        cmp.position = ((self.component.width - 4) / 2, 32, 0.1)
+        self.component.addChild(cmp, 'panUp')
+        btn.onBound()
+        btn.setVisualState('normal')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/GPS_btns_small.xml')
+        btn.onClick = partial(self.panBtnHandler, self.DIRECTION_RIGHT)
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.textureName = 'soGUI/maps/Controls/TabletPC/GPS/arrow_right.tga'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 25
+        cmp.height = 25
+        cmp.position = (self.component.width - 31, (self.component.height - 24) / 2, 0.1)
+        self.component.addChild(cmp, 'panRight')
+        btn.onBound()
+        btn.setVisualState('normal')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/GPS_btns_small.xml')
+        btn.onClick = partial(self.panBtnHandler, self.DIRECTION_DOWN)
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.textureName = 'soGUI/maps/Controls/TabletPC/GPS/arrow_down.tga'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 25
+        cmp.height = 25
+        cmp.position = ((self.component.width - 4) / 2, self.component.height - 73, 0.1)
+        self.component.addChild(cmp, 'panDown')
+        btn.onBound()
+        btn.setVisualState('normal')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/GPS_btns_small.xml')
+        btn.onClick = partial(self.panBtnHandler, self.DIRECTION_LEFT)
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.textureName = 'soGUI/maps/Controls/TabletPC/GPS/arrow_left.tga'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 25
+        cmp.height = 25
+        cmp.position = (6, (self.component.height - 24) / 2, 0.1)
+        self.component.addChild(cmp, 'panLeft')
+        btn.onBound()
+        btn.setVisualState('normal')
+        ddl = soDropDownList2(GUI.Window(), width=200, height=25)
+        cmp = ddl.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.position = (self.component.width - 102 - cmp.width, 32, 0.1)
+        self.component.addChild(cmp, 'maps')
+        ddl.onBound()
+
+    def setupMap(self):
+        cmp = GUI.Window('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.component.width - 6
+        cmp.height = self.component.height - 69
+        cmp.position = (3, 30, 0.2)
+        cmp.textureName = ''
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        self.component.addChild(cmp, 'mapHolder')
+        for map in self.MAPLIST:
+            self.component.mapHolder.addChild(self.MAPLIST[map].component, map)
+            self.maps[map] = self.MAPLIST[map].component
+
+    def setupStatusBar(self):
+        pass
+
+    def setSize(self, w, h):
+        self.component.width = w
+        self.component.height = h
+        self.component.closeBox.position = (self.component.width - 6, 6, 0.2)
+        self.component.wndFrame.width = self.component.width
+        self.component.wndFrame.height = self.component.height - 9
+        self.component.hintBox.position = (self.component.width - 48, 6, 0.2)
+        self.component.zoomIn.position = (self.component.width - 57, 32, 0.1)
+        self.component.zoomOut.position = (self.component.width - 32, 32, 0.1)
+        self.component.centerOnPlayer.position = (self.component.width - 92, 32, 0.1)
+        self.component.panUp.position = ((self.component.width - 4) / 2, 32, 0.1)
+        self.component.panRight.position = (self.component.width - 31, (self.component.height - 24) / 2, 0.1)
+        self.component.panDown.position = ((self.component.width - 4) / 2, self.component.height - 73, 0.1)
+        self.component.panLeft.position = (6, (self.component.height - 24) / 2, 0.1)
+        self.component.maps.position = (self.component.width - 102 - self.component.maps.width, 32, 0.1)
+        self.component.mapHolder.size = (self.component.width - 6, self.component.height - 69)
+        for map, soMap in self.MAPLIST.items():
+            soMap.setSize(w, h)
+
+        self.centerOnCenter()
+
+    def doReposition(self):
+        w, h = BWPersonality.settings.GUISettings.getMapSize()
+        self.setSize(w, h)
+
+    def viewMap(self, space = 'spaces/city_lubech'):
+        if not self.maps.has_key(space):
+            return False
+        for map in self.maps:
+            self.maps[map].script.hide()
+
+        self.maps[space].script.show()
+        self.currentMap = space
+        self.component.maps.script.setSelectionByValue(space, silent=True)
+        return True
+
+    def updatePlayer(self, oldData):
+        self.maps[oldData['charSpace']].script.removeMark()
+
+    def addWantedMark(self, markname, mappos, map_name):
+        if self.wanted_map is not None and self.wanted_data is not None:
+            self.maps[self.wanted_map].script.removeMark(self.wanted_data[0:2])
+        self.wanted_map = map_name
+        self.wanted_data = (MapNotes.TYPE_WANTED, mappos, markname)
+        self.maps[map_name].script.addMark(markname, MapNotes.TYPE_WANTED, mappos, 0.0, (255, 255, 255, 255), mappos)
+        return
+
+    def update(self):
+        data = BWPersonality.GUICore.gpsDataSection
+        ID = 0
+        TYPE = 0
+        COORDS = 1
+        DIR = 2
+        COL = 3
+        POS = 1
+        if data.has_key('marks'):
+            for map_name in self.maps:
+                if not data['marks'].has_key(map_name) and self.maps.has_key(map_name):
+                    self.maps[map_name].script.removeAllMarks()
+                    if self.markData.has_key(map_name):
+                        self.markData[map_name] = []
+                        del self.markData[map_name]
+
+            for map_name in self.markData:
+                for key, mark in self.markData[map_name].items():
+                    if data['marks'].has_key(map_name) and self.maps.has_key(map_name) and key not in data['marks'][map_name]:
+                        if key == self.wanted_data:
+                            continue
+                        self.maps[map_name].script.removeMark(key)
+                        self.markData[map_name][key] = ()
+                        del self.markData[map_name][key]
+
+            for map_name in data['marks']:
+                if not self.MAPLIST.has_key(map_name):
+                    continue
+                for key, mark in data['marks'][map_name].items():
+                    if not self.markData.has_key(map_name):
+                        self.markData[map_name] = {}
+                    if key not in self.markData[map_name]:
+                        self.markData[map_name][key] = mark
+                        self.maps[map_name].script.addMark(mark[ID], key[TYPE], mark[COORDS], mark[DIR], mark[COL], key[POS])
+                    if key[TYPE] == MapNotes.TYPE_WANTED:
+                        print 'key[TYPE] == MapNotes.TYPE_WANTED', self.wanted_map, self.wanted_data
+                    if key[TYPE] == MapNotes.TYPE_PLAYER:
+                        self.charMap = map_name
+
+        if data.has_key('spaces'):
+            maps = []
+            for mapID in data['spaces']:
+                if not self.MAPLIST.has_key(mapID):
+                    continue
+                map = [mapID, self.MAPLIST[mapID].getFriendlyName()]
+                maps.append(map)
+
+            if maps:
+                self.component.maps.script.clear()
+                self.component.maps.script.addElements(maps)
+
+    def show(self):
+        if self.component.parent is None:
+            BWPersonality.GUICore.worldLayer.delChild('gpsMap')
+            BWPersonality.GUICore.worldLayer.addChild(self.component, 'gpsMap')
+        BWPersonality.GUICore.setBestCursor()
+        if BWPersonality.GUICore.gpsDataSection is not None:
+            self.viewMap(self.charMap)
+        else:
+            self.viewMap('spaces/city_lubech')
+        self.component.visible = True
+        BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_SHOW, GUI_ID.GUI_ID_GPSMAP)
+        return
+
+    def hide(self):
+        self.component.visible = False
+        self.component.maps.script.showList(False)
+        BWPersonality.GUICore.setBestCursor()
+        BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_HIDE, GUI_ID.GUI_ID_GPSMAP)
+
+    def panBtnHandler(self, dir = 0):
+        if dir == self.DIRECTION_UP:
+            self.MAPLIST[self.currentMap].panUp()
+        if dir == self.DIRECTION_DOWN:
+            self.MAPLIST[self.currentMap].panDown()
+        if dir == self.DIRECTION_LEFT:
+            self.MAPLIST[self.currentMap].panLeft()
+        if dir == self.DIRECTION_RIGHT:
+            self.MAPLIST[self.currentMap].panRight()
+
+    def zoomHandler(self, dir = 0):
+        """ 0 - in, 1 - out """
+        if dir:
+            self.MAPLIST[self.currentMap].zoomOut(True)
+        else:
+            self.MAPLIST[self.currentMap].zoomIn(True)
+
+    def centerOnCoords(self, coords, charMap):
+        if not self.MAPLIST.has_key(charMap):
+            return
+        charMap = self.MAPLIST[charMap]
+        if coords[0] <= 0:
+            hTScroll = charMap.centeringMinScroll[0] * coords[0]
+        else:
+            hTScroll = charMap.centeringMaxScroll[0] * coords[0]
+            hTScroll *= -1.0
+        if coords[1] <= 0:
+            vTScroll = charMap.centeringMinScroll[1] * coords[1]
+            vTScroll *= -1.0
+        else:
+            vTScroll = charMap.centeringMaxScroll[1] * coords[1]
+        charMap.component.scroll = (hTScroll, -vTScroll)
+
+    def centerOnPlayer(self):
+        if self.charMap:
+            self.viewMap(self.charMap)
+        else:
+            return
+        charMark = None
+        charMap = self.MAPLIST[self.charMap]
+        for mark in charMap.marks:
+            if charMap.marks[mark].script.isPlayer():
+                charMark = charMap.marks[mark].script
+
+        if not charMark:
+            return
+        else:
+            coords = charMark.getCoords()
+            if coords[0] <= 0:
+                hTScroll = charMap.centeringMinScroll[0] * coords[0]
+            else:
+                hTScroll = charMap.centeringMaxScroll[0] * coords[0]
+                hTScroll *= -1.0
+            if coords[1] <= 0:
+                vTScroll = charMap.centeringMinScroll[1] * coords[1]
+                vTScroll *= -1.0
+            else:
+                vTScroll = charMap.centeringMaxScroll[1] * coords[1]
+            charMap.component.scroll = (hTScroll, -vTScroll)
+            return
+
+    def centerOnMouse(self):
+        if not self.MAPLIST.has_key(self.currentMap):
+            return
+        currMap = self.MAPLIST[self.currentMap]
+        cmp = currMap.component.spaceMap
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        pos = currMap.viewAnchor
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        if pos[0] <= 0:
+            hTScroll = currMap.centeringMinScroll[0] * pos[0]
+        else:
+            hTScroll = currMap.centeringMaxScroll[0] * pos[0]
+            hTScroll *= -1.0
+        if pos[1] <= 0:
+            vTScroll = currMap.centeringMinScroll[1] * pos[1]
+            vTScroll *= -1.0
+        else:
+            vTScroll = currMap.centeringMaxScroll[1] * pos[1]
+        currMap.component.scroll = (hTScroll, -vTScroll)
+
+    def centerOnCenter(self):
+        if not self.MAPLIST.has_key(self.currentMap):
+            return
+        currMap = self.MAPLIST[self.currentMap]
+        cmp = currMap.component.spaceMap
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        pos = currMap.viewAnchor
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        if pos[0] <= 0:
+            hTScroll = currMap.centeringMinScroll[0] * pos[0]
+        else:
+            hTScroll = currMap.centeringMaxScroll[0] * pos[0]
+            hTScroll *= -1.0
+        if pos[1] <= 0:
+            vTScroll = currMap.centeringMinScroll[1] * pos[1]
+            vTScroll *= -1.0
+        else:
+            vTScroll = currMap.centeringMaxScroll[1] * pos[1]
+        currMap.component.scroll = (hTScroll, -vTScroll)
+
+    def fini(self):
+        soGPSMark.TYPEMAP = None
+        for spaceMap in self.MAPLIST:
+            self.MAPLIST[spaceMap].fini()
+
+        soGPSMap.MAPLIST = None
+        return
+
+    @PyGUIEvent('centerOnPlayer', 'onClick')
+    def centerBtnClick(self):
+        self.centerOnPlayer()
+
+    @PyGUIEvent('maps', 'onSelectedElement')
+    def onSpaceClick(self, mapID):
+        self.viewMap(mapID)
+
+    @PyGUIEvent('closeBox', 'onClick')
+    def onCloseBox(self):
+        self.hide()
+
+    @PyGUIEvent('hintBox', 'onClick')
+    def onHintBox(self):
+        """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xbd\xd0\xb0\xd0\xb6\xd0\xb0\xd1\x82\xd0\xb8\xd0\xb8 \xd0\xba\xd0\xbd\xd0\xbe\xd0\xbf\xd0\xba\xd0\xb8-\xd0\xbf\xd0\xbe\xd0\xb4\xd1\x81\xd0\xba\xd0\xb0\xd0\xb7\xd0\xba\xd0\xb8."""
+        text_and_ok('BarterWindowGUI.hintBox', lc('soGPSMap.soGUI.MANUAL_TITLE'), colorCodes.tf3_regular_text_color + lc('soGPSMap.soGUI.MANUAL_TEXT'))
+
+    def handleDragStartEvent(self, component):
+        """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd1\x85\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0\xd0\xb5\xd1\x88\xd1\x8c \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82."""
+        self.component.maps.script.showList(False)
+        x, y = BWPersonality.game.mcursor.position
+        delta_x = self.component.position[0] - x
+        delta_y = self.component.position[1] - y
+        self._deltaposition = (delta_x, delta_y)
+        self._repeatMoveToCursor()
+        return True
+
+    def handleDragStopEvent(self, component):
+        """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd0\xbe\xd1\x82\xd0\xbf\xd1\x83\xd1\x81\xd0\xba\xd0\xb0\xd0\xb5\xd1\x88\xd1\x8c \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82."""
+        BigWorld.cancelCallback(self._clbID)
+        return True
+
+    def _moveToCursor(self):
+        """\xd0\x9f\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb2\xd0\xb8\xd0\xb4\xd0\xb6\xd0\xb5\xd1\x82 \xd0\xb7\xd0\xb0 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5\xd0\xbc \xd0\xba\xd1\x83\xd1\x80\xd1\x81\xd0\xbe\xd1\x80\xd0\xb0 \xd0\xbc\xd0\xb8\xd1\x88\xd0\xb8."""
+        x, y = BWPersonality.game.mcursor.position
+        sW, sH = BigWorld.screenSize()
+        x_position = self._deltaposition[0] + x
+        x = max(-1 + self.component.width / sW, min(x_position, 1 - self.component.width / sW))
+        y_position = self._deltaposition[1] + y
+        y = min(1 - self.component.height / sH, max(y_position, -1 + self.component.height / sH))
+        self.component.position = (x, y, self.component.position[2])
+
+    def _repeatMoveToCursor(self):
+        """\xd0\x9f\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82 \xd1\x87\xd0\xb5\xd1\x80\xd0\xb5\xd0\xb7 \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb9 \xd0\xb8\xd0\xbd\xd1\x82\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb0\xd0\xbb."""
+        if not self.component.visible:
+            return
+        elif self.component.parent is None:
+            return
+        else:
+            self._moveToCursor()
+            self._clbID = BigWorld.callback(0.01, self._repeatMoveToCursor)
+            return
+
+    @staticmethod
+    def _zoomSteps(scale, steps = 0):
+        STEPS_COUNT = 7
+        GOLD_STEPS = [ round(1.382 ** g, 3) for g in range(STEPS_COUNT - 1, -1, -1) ]
+        return [ scale * x for x in GOLD_STEPS[steps:] ]

@@ -1,0 +1,21 @@
+# Embedded file name: ./scripts/common/GesturesCommon.py
+SIT_GESTURES = [18,
+ 19,
+ 20,
+ 21]
+
+class GesturesCommon:
+
+    def __init__(self):
+        pass
+
+    def isSitPose(self, sit_id):
+        return sit_id in SIT_GESTURES
+
+    def isSitting(self):
+        return self.usingGesture in SIT_GESTURES
+
+    def getSitPose(self):
+        if not self.usingGesture or self.usingGesture not in SIT_GESTURES:
+            return 0
+        return SIT_GESTURES.index(self.usingGesture) + 1

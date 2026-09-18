@@ -1,0 +1,72 @@
+# Embedded file name: ./scripts/client/AvatarItemHolder.py
+import BigWorld
+import ItemsUtils
+import StalkerModel
+from Items import ItemsCatalog
+from ItemHolder import ItemHolder
+
+class AvatarItemHolder(ItemHolder):
+
+    def onFalseItemInHands(self):
+        item_id = self.CurrentWeaponParam['ItemID']
+        item_type = self.CurrentWeaponParam['ItemType']
+        item = ItemsUtils.GetComplexItemByID(self, item_id)
+        self.SetEquippedWeaponParams(item_id, item_type, item)
+
+    def GetGrenadeThrowPossibility(self):
+        if not ItemsUtils.CheckEquippedGrenadeValidityClient(self):
+            return False
+        else:
+            item = ItemsUtils.GetComplexItemByID(self, self.ActiveThrowID)
+            if item == None:
+                if self == BigWorld.player():
+                    self.cell.wipeItem(self.ActiveThrowID)
+                return False
+            return True
+
+    def onQuestItemAction(self, item_id, quest_id):
+        if self == BigWorld.player():
+            self.cell.QuestItemAction(item_id, quest_id)
+
+    def GetActiveWeaponAccuracyDiff(self):
+        if not ItemsUtils.CheckEquippedItemValidityClient(self):
+            return ([-3000,
+              1200,
+              600,
+              3500,
+              3500],
+             0,
+             0,
+             0)
+        itemParam = self.CurrentWeaponParam
+        return ([itemParam['AccuracyBorder'],
+          itemParam['Kickback'],
+          itemParam['AccuracyRecoil'],
+          itemParam['MoveAccuracyLost'],
+          itemParam['MoveAccuracyLost']],
+         itemParam['GunType'],
+         itemParam['SkillLevel'],
+         self.ActiveItemType)
+
+    def actual_trade_data(self, selling_assortment, buying_klasses, buying_specs_assortment):
+        """\xd0\x9f\xd0\xbe\xd0\xbb\xd1\x83\xd1\x87\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x81 \xd1\x81\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb5\xd1\x80\xd0\xb0 \xd0\xb0\xd0\xba\xd1\x82\xd1\x83\xd0\xb0\xd0\xbb\xd1\x8c\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x82\xd0\xbe\xd1\x80\xd0\xb3\xd0\xbe\xd0\xb2\xd0\xbb\xd0\xb8."""
+        trader = BigWorld.entities[self.TraderID]
+        trader.update_trade_data(selling_assortment, buying_klasses, buying_specs_assortment)
+
+    def set_barter_data(self, BarterAssortment):
+        """\xd0\x9f\xd0\xbe\xd0\xbb\xd1\x83\xd1\x87\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x81 \xd1\x81\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb5\xd1\x80\xd0\xb0 \xd0\xb0\xd0\xba\xd1\x82\xd1\x83\xd0\xb0\xd0\xbb\xd1\x8c\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xb1\xd0\xb0\xd1\x80\xd1\x82\xd0\xb5\xd1\x80\xd0\xb0."""
+        trader = BigWorld.entities[self.TraderID]
+        trader.update_barter_data(BarterAssortment)
+
+    def set_coloriseEmblems(self, old):
+        """\xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd1\x80\xd0\xb8\xd1\x81\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb2\xd1\x81\xd0\xb5 \xd1\x8d\xd0\xbc\xd0\xb1\xd0\xbb\xd0\xb5\xd0\xbc\xd1\x8b \xd0\xb8 \xd1\x80\xd0\xb0\xd1\x81\xd0\xba\xd1\x80\xd0\xb0\xd1\x88\xd0\xb5\xd0\xbd\xd1\x8b\xd0\xb5 \xd1\x82\xd0\xb8\xd0\xbd\xd1\x82\xd1\x8b \xd0\xbd\xd0\xb0 \xd0\xb2\xd0\xb5\xd1\x89\xd0\xb0\xd1\x85 \xd0\xbf\xd0\xb5\xd1\x80\xd1\x81\xd0\xbe\xd0\xbd\xd0\xb0\xd0\xb6\xd0\xb0"""
+        StalkerModel.updateEmblems(self, old, self.coloriseEmblems)
+
+    def onEmblemEvent(self, event_id, data):
+        raise TypeError
+
+    def emblemsList(self, elist, flag):
+        raise TypeError
+
+    def setActiveArmorConditionList(self, armor_cond_list):
+        self.ActiveArmorConditionList = armor_cond_list

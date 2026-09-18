@@ -1,0 +1,95 @@
+# Embedded file name: ./scripts/client/soGUI/GUIPositions.py
+import pickle, os
+import ItemsUtils
+import utils
+import BigWorld
+import traceback
+import Math
+POSITIONS_SAVED_PATH = os.path.join(utils.stalker_path(), 'usercontent/inventory/positon_gui.pickle')
+
+class GUIPositions:
+
+    def __init__(self):
+        self.savedGUIPosition = None
+        self._loaded_GUIPos = None
+        self.InitGUIPositions()
+        return
+
+    def InitGUIPositions(self):
+        self.readGUIPostitons()
+        if self._loaded_GUIPos:
+            self.savedGUIPosition = self._loaded_GUIPos.get(self.factoryString, [])
+        self.checkGUIPosition()
+
+    def checkNormalPosition(self):
+        sW, sH = BigWorld.screenSize()
+        if self.component.horizontalAnchor == 'RIGHT':
+            if self.component.position.x > 1:
+                self.component.position.x = 1
+        elif self.component.horizontalAnchor == 'LEFT':
+            w = self.component.position.x + self.component.width / (sW / 2)
+            if w > 1:
+                self.component.position.x = 1 - self.component.width / (sW / 2)
+        elif self.component.horizontalAnchor == 'CENTER':
+            w = self.component.position.x + self.component.width / sW
+            if w > 1:
+                self.component.position.x = 1 - self.component.width / sW
+        if self.component.verticalAnchor == 'TOP':
+            h = self.component.position.y - self.component.height / (sH / 2)
+            if h < -1:
+                self.component.position.y = self.component.height / (sH / 2) - 1
+        elif self.component.verticalAnchor == 'BOTTOM':
+            if self.component.position.y < -1:
+                self.component.position.y = -1
+        elif self.component.verticalAnchor == 'CENTER':
+            h = self.component.position.y - self.component.height / sH
+            if h < -1:
+                self.component.position.y = self.component.height / sH - 1
+
+    def checkGUIPosition(self):
+
+        def check_positions(pos):
+            if abs(pos[0]) > 1 or abs(pos[1]) > 1:
+                self.resetPosition()
+
+        if self._loaded_GUIPos:
+            if isinstance(self.savedGUIPosition, tuple):
+                check_positions(self.savedGUIPosition)
+
+    def readGUIPostitons(self):
+        if os.path.exists(POSITIONS_SAVED_PATH):
+            try:
+                with open(POSITIONS_SAVED_PATH, 'rb') as file:
+                    self._loaded_GUIPos = pickle.load(file)
+            except Exception:
+                traceback.print_exc()
+
+    def saveGUIPositions(self):
+        self.readGUIPostitons()
+        if isinstance(self.savedGUIPosition, Math.Vector3):
+            self.savedGUIPosition = tuple(self.savedGUIPosition)
+        if not self._loaded_GUIPos:
+            self._loaded_GUIPos = {self.factoryString: self.savedGUIPosition}
+        else:
+            self._loaded_GUIPos[self.factoryString] = self.savedGUIPosition
+        settings_dir = os.path.dirname(POSITIONS_SAVED_PATH)
+        if not os.path.exists(settings_dir):
+            os.makedirs(settings_dir)
+        with open(POSITIONS_SAVED_PATH, 'wb') as file:
+            pickle.dump(self._loaded_GUIPos, file)
+
+    def resetPosition(self):
+        self.readGUIPostitons()
+        self.savedGUIPosition = None
+        if self._loaded_GUIPos and self._loaded_GUIPos.has_key(self.factoryString):
+            del self._loaded_GUIPos[self.factoryString]
+            settings_dir = os.path.dirname(POSITIONS_SAVED_PATH)
+            if not os.path.exists(settings_dir):
+                os.makedirs(settings_dir)
+            with open(POSITIONS_SAVED_PATH, 'wb') as file:
+                pickle.dump(self._loaded_GUIPos, file)
+        self.doReposition()
+        return
+
+    def doReposition(self):
+        pass

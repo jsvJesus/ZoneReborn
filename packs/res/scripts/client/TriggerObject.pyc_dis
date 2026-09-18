@@ -1,0 +1,127 @@
+# Embedded file name: ./scripts/client/TriggerObject.py
+"""
+Created on 05.10.2010
+
+@author: muzhig
+"""
+import BigWorld
+import FX
+import QuestDispatcher as qd
+import Constants
+import Helpers.Caps
+import Quest
+from utils import time_test
+from InteractiveObject import InteractiveObject
+from Localization import lc
+from ModelSelector import ModelSelector
+from functools import partial
+
+class TriggerObject(BigWorld.Entity, ModelSelector, InteractiveObject):
+    mark_height = 0.6
+
+    def __init__(self):
+        BigWorld.Entity.__init__(self)
+        self._ch_timerID = 0
+        self.name = lc(self.displayName)
+        self.hasPlayer = False
+        if self.activeFlags & Constants.ACTIVE_OBJECT_FLAG:
+            if self.talkFlag:
+                self.targetCaps = [Helpers.Caps.CAP_CAN_TALK]
+        InteractiveObject.__init__(self)
+        if self.qEffect:
+            self.qEffect = 'sfx/' + self.qEffect
+            if not self.qEffect.endswith('.xml'):
+                self.qEffect = self.qEffect + '.xml'
+
+    @time_test
+    def onEnterWorld(self, prereqs):
+        if self.high_precision:
+
+            def onLoadHighPrecisionModel(model):
+                self.onLoadModel(model)
+                self.model.scale = (self.scaleX, self.scaleY, self.scaleZ)
+                box = BigWorld.BoxAttachment()
+                box.minBounds = (-0.25, 0.0, -0.25)
+                box.maxBounds = (0.25, 0.5, 0.25)
+                self.model.root.attach(box)
+                self.skeletonCollider = BigWorld.SkeletonCollider()
+                self.skeletonCollider.addCollider(box)
+                if self.obstacle:
+
+                    def _onLoadObstacle(obst):
+                        if hasattr(obst, 'no_draw'):
+                            obst.no_draw = 'no_draw'
+                        self.addModel(obst)
+
+                    path = 'models/bolvan/box_trigger_05x05x05.model'
+                    BigWorld.fetchModelObstacle(path, self.matrix, 0, _onLoadObstacle)
+
+            BigWorld.fetchModel('models/bolvan/box_trigger_05x05x05.model', onLoadHighPrecisionModel)
+        elif self.obstacle:
+            self.setObstacleModel()
+        else:
+            self.setNormalModel(prereqs)
+        self.set_activeFlags(None)
+        from PlayerAvatar import PlayerAvatar
+        player = BigWorld.player()
+        if player and not isinstance(player, PlayerAvatar):
+            player = None
+        if not self.check_marker():
+            InteractiveObject.onEnterWorld(self)
+        return
+
+    def check_marker(self, attempts = 5):
+        if self.isDestroyed:
+            return
+        player = BigWorld.player()
+        if self._ch_timerID:
+            BigWorld.cancelCallback(self._ch_timerID)
+            self._ch_timerID = 0
+        if attempts > 0 and (not player or not player.client_quests.loaded):
+            self._ch_timerID = BigWorld.callback(1, partial(self.check_marker, attempts - 1))
+            return
+        opened_quests = BigWorld.player().client_quests.get_opened()
+        for quest_id in opened_quests:
+            quest = qd.getQuestOnID(quest_id)
+            if quest['Target']['QuestType'] == Quest.TYPE_TRIGGER_ACTION and quest['Target']['ObjectType'] == self.quest:
+                self.appendQuestMarker()
+                return True
+
+        return False
+
+    def set_activeFlags(self, v):
+        if self.activeFlags & Constants.ACTIVE_OBJECT_FLAG:
+            if self.talkFlag:
+                self.targetCaps = [Helpers.Caps.CAP_CAN_TALK]
+        else:
+            self.targetCaps = []
+
+    @time_test
+    def onLoadModel(self, model):
+        ModelSelector.onLoadModel(self, model)
+
+    def onLeaveWorld(self):
+        ModelSelector.onLeaveWorld(self)
+        self.model = None
+        if self._ch_timerID:
+            BigWorld.cancelCallback(self._ch_timerID)
+        self._ch_timerID = 0
+        self.skeletonCollider = None
+        return
+
+    def startQEffect(self):
+        if self.qEffect:
+            FX.bufferedOneShotEffect(self.qEffect, self.model)
+
+    def appendQuestMarker(self):
+        if Helpers.Caps.CAP_CAN_USE not in self.targetCaps:
+            self.targetCaps = self.targetCaps + [Helpers.Caps.CAP_CAN_USE]
+
+    def removeQuestMarker(self):
+        if Helpers.Caps.CAP_CAN_USE in self.targetCaps:
+            caps = list(self.targetCaps)
+            caps.remove(Helpers.Caps.CAP_CAN_USE)
+            self.targetCaps = caps
+
+    def set_talkFlag(self, old_value):
+        InteractiveObject.set_talkFlag(self, old_value)

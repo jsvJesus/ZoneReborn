@@ -1,0 +1,164 @@
+# Embedded file name: ./scripts/client/NPCAnimations.py
+import random
+import BigWorld
+import Durations
+import NPCAnimUtils
+from time import time
+from Gestures import Gestures
+from functools import partial
+from Items import ItemsCatalog
+import client_utils
+from math_bw import weighted_random
+ADDITIONAL_ANIM_TIME = 5.0
+
+class NPCAnimations(Gestures):
+
+    def __init__(self):
+        Gestures.__init__(self)
+        self._additional_action = None
+        self._additional_callback = None
+        self._additional_callback_next = None
+        if client_utils.isClientEntity(self.id):
+            self.playRandomAnimation()
+            return
+        else:
+            return
+
+    def get_animations(self):
+        return NPCAnimUtils.get_anim_data(self.npcActions)
+
+    def get_animation_data(self, index):
+        animations = self.get_animations()
+        if not animations or len(animations) <= index:
+            return
+        return animations[index]
+
+    def playRandomAnimation(self):
+        animations = self.get_animations()
+        chances = []
+        for anim in animations:
+            chances.append(anim['chance'])
+
+        anim_index = weighted_random(chances)
+        self.playedAnimationIndexList = anim_index + 1
+        self.playAnimationByIDInList(self.playedAnimationIndexList)
+
+    def stop_all_animations(self, force = False):
+        if self._current_action:
+            self._current_action.stop()
+            self._current_action = None
+        if self._action_callback:
+            BigWorld.cancelCallback(self._action_callback)
+            self._action_callback = None
+        if self._additional_callback:
+            BigWorld.cancelCallback(self._additional_callback)
+            self._additional_callback = None
+        if self._additional_callback_next:
+            BigWorld.cancelCallback(self._additional_callback_next)
+            self._additional_callback_next = None
+        if self._additional_action:
+            self._additional_action.stop()
+            self._additional_action = None
+        if self._stopped_action and not force:
+            callback = partial(self.EnableModelPitch, True)
+            self.playAnimation(self._stopped_action, self._stopped_action.duration, callback)
+        else:
+            self.EnableModelPitch(True)
+        self._stopped_action = None
+        return
+
+    def onEnterWorld(self, prereq):
+        self.playAnimationByIDInList(self.playedAnimationIndexList)
+
+    def playAdditionalAnim(self):
+        if self.isDestroyed or self.dialog_actions:
+            return
+        elif self.isDisableDialogs:
+            return
+        else:
+            if self._additional_callback:
+                BigWorld.cancelCallback(self._additional_callback)
+                self._additional_callback = None
+            if self._additional_callback_next:
+                BigWorld.cancelCallback(self._additional_callback_next)
+                self._additional_callback_next = None
+            if self._additional_action:
+                self._additional_action.stop()
+                self._additional_action = None
+            data = self.get_animation_data(self.playedAnimationIndexList - 1)
+            if not data:
+                return
+            elif not data.get('additional_animations'):
+                return
+            anim_name = random.choice(data.get('additional_animations'))
+            callback = None
+            time_ = random.uniform(0, ADDITIONAL_ANIM_TIME)
+            duration = time_ + data.get('additional_cooldown', ADDITIONAL_ANIM_TIME)
+            if isinstance(anim_name, str) or isinstance(anim_name, unicode):
+                self._additional_action = getattr(self.model, anim_name, None)
+                if self._additional_action:
+                    callback = partial(self.playAnimation, self._additional_action)
+                    duration += self._additional_action.duration
+            elif isinstance(anim_name, int):
+                item_duration = Durations.GetItemUseDuration(self, anim_name)
+                item_params = ItemsCatalog.GetItemParam(anim_name)
+                if item_params:
+                    item_duration = item_params.get('Action_use_time', item_duration)
+                    callback = partial(self.drawUsingItemAnimation, anim_name, item_duration)
+                    duration += item_duration
+            if callback:
+                self._additional_callback = BigWorld.callback(time_, callback)
+            self._additional_callback_next = BigWorld.callback(duration, self.playAdditionalAnim)
+            return
+
+    def playAnimationByIDInList(self, index, force_loop = False):
+        if self.isDisableDialogs:
+            return
+        if index:
+            self.EnableModelPitch(False)
+            data = self.get_animation_data(self.playedAnimationIndexList - 1)
+            if not data:
+                return
+            if isinstance(data['Animations'], list):
+                self.play_set_animations(data['Animations'], force_loop)
+            else:
+                self.play_one_animation(data['Animations'])
+            if self.model:
+                self.model.isCalcBoundBoxFromNodes = data.get('calcBoundingBox', 0)
+            if data.get('additional_animations'):
+                self.playAdditionalAnim()
+        else:
+            self.stopUsingItemAnimation()
+            self.stop_all_animations()
+
+    def stopUsingItemAnimation(self):
+        if self.isDestroyed:
+            return
+        else:
+            self.stopAnimation()
+            if self.is_dead():
+                return
+            if not self.model:
+                return
+            self.model.effectorright = getattr(self, 'autogunModel', None)
+            self.model.effectorleft = None
+            if self._current_action:
+                self.playAnimation(self._current_action)
+            return
+
+    def play_one_animation(self, anim_name):
+        if self.isDestroyed:
+            return
+        elif self.isDisableDialogs:
+            return
+        else:
+            self._current_action = getattr(self.model, anim_name, None)
+            if self._action_callback:
+                BigWorld.cancelCallback(self._action_callback)
+                self._action_callback = None
+            if self._current_action:
+                self.playAnimation(self._current_action)
+            return
+
+    def set_playedAnimationIndexList(self, old_value):
+        pass

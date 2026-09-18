@@ -1,0 +1,636 @@
+# Embedded file name: ./scripts/client/NPC.py
+"""
+Created on 17.08.2010
+
+@author: muzhig
+"""
+import BigWorld
+from utils_bw import if_not_destroyed
+from functools import partial
+import traceback
+from Avatar import Avatar
+import ItemsUtils
+from NPCs import NPCs
+import particles
+from Items import ItemsCatalog
+import StalkerModel
+from NPCs import NPCs
+from NPCAnimations import NPCAnimations
+from Trader import Trader
+from BaseTrader import BaseTrader
+import Helpers.Caps
+from random import random, randrange
+from InteractiveObject import InteractiveObject
+from CallbackHelpers import callback
+from Localization import lc
+from CueModel import CueModel
+import client_utils
+
+def catch_error(foo):
+    u""" """
+
+    def bar(self, *w, **kw):
+        try:
+            return foo(self, *w, **kw)
+        except:
+            print self, ':'
+            raise
+
+    return bar
+
+
+class NPC(Avatar, Trader, InteractiveObject, BaseTrader, NPCAnimations, CueModel):
+
+    def __init__(self):
+        Avatar.__init__(self)
+        Trader.__init__(self)
+        if self.npcName == 'clan_base_trader':
+            BaseTrader.__init__(self)
+        InteractiveObject.__init__(self)
+        NPCAnimations.__init__(self)
+        self.facingTracker1 = None
+        self.additionalModel = None
+        self.throw_callback_id = 0
+        self.autogunModel = None
+        self.dialog_actions = False
+        self.idPotHeadTrackIn = None
+        self.idPotHeadTrackOut = None
+        self.isBursting = False
+        return
+
+    def initTargetCaps(self):
+        pass
+
+    def prerequisites(self):
+        model_set, head_attachments, back_pack_attachments, weapon_back_attachments, weapon_pistol_attachments = ([],
+         [],
+         [],
+         [],
+         [])
+        res = []
+        for ex in (model_set,
+         head_attachments,
+         back_pack_attachments,
+         weapon_back_attachments,
+         weapon_pistol_attachments):
+            for e in ex:
+                if e is not None:
+                    res.append(e)
+
+        mdl = None
+        if mdl is not None:
+            if mdl is list:
+                try:
+                    for e in mdl:
+                        if e is not None:
+                            res.append(e)
+
+                except Exception as e:
+                    print 'error', e
+
+            else:
+                res.append(mdl)
+        return res
+
+    def onEnterWorld(self, prereq):
+        Avatar.onEnterWorld(self, prereq)
+        self.filter = BigWorld.AvatarDropFilter()
+        InteractiveObject.onEnterWorld(self)
+        if self.displayName:
+            self.name = lc(self.displayName)
+        elif NPCs.getName(self.npcName) != u'' and NPCs.getName(self.npcName) != '<NO DATA>':
+            self.name = NPCs.getName(self.npcName)
+        else:
+            self.name = NPCs.names_by_npcType.get(self.npcType, u'NPC')
+        if client_utils.isClientEntity(self.id):
+            self.loadWeapons()
+        self.default_headTracker = self.headTrackerEnable
+        self.update_targeting()
+
+    def loadWeapons(self):
+        if self.npcWeaponPrimary:
+            weapon = NPCs.Weapons.weapon_items.get(self.npcWeaponPrimary)
+            self.ActiveWeaponSet.PrimarySlotType = weapon['TypeID']
+            self.ActiveWeaponSet.PrimarySlotID = 1000
+        if self.npcWeaponSecondary:
+            weapon = NPCs.Weapons.weapon_items.get(self.npcWeaponSecondary)
+            self.ActiveWeaponSet.SecondarySlotType = weapon['TypeID']
+            self.ActiveWeaponSet.SecondarySlotID = 1000
+        if self.npcWeapon == 1:
+            self.ActiveItemID = 1000
+            self.ActiveItemType = self.ActiveWeaponSet.PrimarySlotType
+        elif self.npcWeapon == 2:
+            self.ActiveItemID = 1000
+            self.ActiveItemType = self.ActiveWeaponSet.SecondarySlotType
+        if self.ActiveItemType:
+            activeItemParams = ItemsCatalog.GetItemParam(self.ActiveItemType)
+            needed_ammo_type = activeItemParams['AmmoType']
+            for ammo_id in ItemsCatalog.AMMO_TYPE_IDS:
+                ammo_params = ItemsCatalog.GetItemParam(ammo_id, silence=True)
+                if ammo_params and ammo_params['AmmoType'] == needed_ammo_type:
+                    self.ActiveItemAmmoType = ammo_id
+                    break
+
+    def onLeaveWorld(self):
+        Avatar.onLeaveWorld(self)
+        if self.idPotHeadTrackIn:
+            BigWorld.delPot(self.idPotHeadTrackIn)
+        if self.idPotHeadTrackOut:
+            BigWorld.delPot(self.idPotHeadTrackOut)
+        self.potCallbackOut(0, 0)
+
+    def set_dead(self, old_value):
+        Avatar.set_dead(self, old_value)
+        if self.dead:
+            self.potCallbackOut(0, 0)
+        if self.model:
+            self.model.isCalcBoundBoxFromNodes = self.dead
+
+    def potCallbackOut(self, enteredTrap, handle):
+        if self.isDestroyed:
+            return
+        else:
+            if not enteredTrap:
+                if not self.model:
+                    return
+                if hasattr(self.model, 'facingTracker1') and self.model.facingTracker1:
+                    self.model.facingTracker1.nodeInfo = None
+            return
+
+    def potCallbackIn(self, enteredTrap, handle):
+        if not enteredTrap:
+            return
+        if self.dead:
+            return
+        if not self.model:
+            return
+        if hasattr(self.model, 'facingTracker1') and self.model.facingTracker1:
+            if self.model.facingTracker1.nodeInfo:
+                return
+        p = BigWorld.player()
+        if not p or p.__class__.__name__ != 'PlayerAvatar':
+            return
+        try:
+            matrix = self.model.head.matrix
+        except:
+            self.model.head = BigWorld.Model('')
+            matrix = self.model.head.matrix
+
+        if not hasattr(p, 'targetModelTrakerNPC'):
+            BigWorld.callback(0.5, partial(self.potCallbackIn, enteredTrap, handle))
+            return
+        pl_head_matrix = p.targetModelTrakerNPC.matrix
+        tracker = BigWorld.Tracker()
+        diffDirProvider = BigWorld.DiffDirProvider(matrix, pl_head_matrix)
+        tracker.directionProvider = diffDirProvider
+        secondaryNodes = [('HP_spine1', 0.15), ('spine', 0.15), ('neck', 0.3)]
+        nodeInfo = BigWorld.TrackerNodeInfo(self.model, 'HP_head', secondaryNodes, 'None', -500, 500, 1000, -1000, randrange(150, 300))
+        nodeInfo.maxYaw = 1.3 + randrange(-0.1, 0.4, int=float)
+        nodeInfo.minYaw = -0.7 + randrange(-0.1, 0.1, int=float)
+        nodeInfo.maxPitch = 0.6 + randrange(-0.1, 0.3, int=float)
+        nodeInfo.minPitch = -0.5 + randrange(-0.1, 0.1, int=float)
+        nodeInfo.angularHalflife = 0.001
+        tracker.nodeInfo = nodeInfo
+        self.model.facingTracker1 = tracker
+        tracker.relativeProvider = 0
+
+    def GetFiryingItemParams(self):
+        complexItemParams = ItemsCatalog.GetItemParam(self.ActiveItemType)
+        ammo_params = ItemsCatalog.GetItemParam(self.ActiveItemAmmoType)
+        fire_params = []
+        fire_params.append(complexItemParams['Accuracy'] + ammo_params.get('Accuracy', 0))
+        fire_params.append(complexItemParams['Range'])
+        fire_params.append(ammo_params['NumShots'])
+        fire_params.append(complexItemParams['RateOfFire'])
+        fire_params.append(ItemsUtils.GetFiryingItemSFXParams(self))
+        fire_params.append(complexItemParams['FireType'])
+        fire_params.append(complexItemParams['AccStandMods'])
+        return fire_params
+
+    @if_not_destroyed
+    def startBurst(self):
+        self.isBursting = True
+        Avatar.startBurst(self)
+
+    @if_not_destroyed
+    def endBurst(self):
+        self.isBursting = False
+        Avatar.endBurst(self)
+
+    @if_not_destroyed
+    def fire(self, is_burst = False):
+        Avatar.fire(self)
+
+    def onDeath(self, *args):
+        Avatar.onDeath(self, *args)
+        if self.throw_callback_id:
+            BigWorld.cancelCallback(self.throw_callback_id)
+            self.throw_callback_id = 0
+        BigWorld.player().forceStopDialogByNPC(self.id)
+        self.cancelDelayedActionOnLaunch()
+
+    def onRevive(self):
+        Avatar.onRevive(self)
+
+    def UpdateAvatarModel(self):
+        modelNames_dict = {}
+        if self.ActiveItemType:
+            weapon = ItemsCatalog.GetItemParam(self.ActiveItemType)
+            if weapon:
+                modelNames_dict = {}
+                for key in weapon['ModelNames']:
+                    tint_dict = weapon.get('Tint', {})
+                    modelNames_dict[key] = [weapon['ModelNames'][key], ItemsCatalog.HardPointsNames[key], tint_dict]
+
+                attachIDs = self.getWeaponAttachIDs()
+                for attachID in attachIDs:
+                    attach = ItemsCatalog.GetItemParam(attachID)
+                    for key in attach['ModelNames']:
+                        tint_dict = attach.get('Tint', {})
+                        modelNames_dict[key] = [attach['ModelNames'][key], ItemsCatalog.HardPointsNames[key], tint_dict]
+
+                gun_type = weapon['GunType']
+            self.fetchModelByNamesDict(modelNames_dict, self.onLoadGunModel)
+        else:
+            self.onLoadGunModel(None)
+        return
+
+    def getWeaponAttachIDs(self):
+        if self.ActiveItemType == self.ActiveWeaponSet.PrimarySlotType:
+            return self.npcWeaponPrimaryAttachItemIDs
+        elif self.ActiveItemType == self.ActiveWeaponSet.SecondarySlotType:
+            return self.npcWeaponSecondaryAttachItemIDs
+        else:
+            return []
+
+    def getModel(self):
+        models = []
+        onTheHead = []
+        backpack = []
+        tints = {}
+        head_tints = {}
+        tints_backpack = {}
+        models.append(NPCs.Heads.models[self.npcHead])
+        tint_head = NPCs.Heads.tint_head.get(self.npcHead)
+        if tint_head:
+            tints.update(tint_head)
+        cap = NPCs.Caps.models[self.npcCap]
+        tint_cap = NPCs.Caps.tint_cap.get(self.npcCap)
+        if tint_cap:
+            head_tints.update(tint_cap)
+        mask = NPCs.Masks.models[self.npcMask]
+        tint_mask = NPCs.Masks.tint_mask.get(self.npcMask)
+        if tint_mask:
+            head_tints.update(tint_mask)
+        if cap:
+            onTheHead.append(cap)
+        if mask:
+            onTheHead.append(mask)
+        models.append(NPCs.Bodies.models[self.npcBody])
+        tint_body = NPCs.Bodies.tint_body.get(self.npcBody)
+        if tint_body:
+            tints.update(tint_body)
+        backpack.append(NPCs.Backpacks.models[self.npcBackpack])
+        tints_back = NPCs.Backpacks.tint_back.get(self.npcBackpack)
+        if tints_back:
+            tints_backpack(tints_back)
+        models.append(NPCs.Hands.models[self.npcHands])
+        tint_hand = NPCs.Hands.tint_hand.get(self.npcHands)
+        if tint_hand:
+            tints.update(tint_hand)
+        armor = NPCs.Armors.models[self.npcArmor]
+        tint_armor = NPCs.Armors.tint_armor.get(self.npcArmor)
+        if tint_armor:
+            tints.update(tint_armor)
+        if armor:
+            models.append(armor)
+        models.append(NPCs.Legs.models[self.npcLegs])
+        tint_legs = NPCs.Legs.tint_legs.get(self.npcLegs)
+        if tint_legs:
+            tints.update(tint_legs)
+        models.append(NPCs.Boots.models[self.npcBoots])
+        tint_boots = NPCs.Boots.tint_boots.get(self.npcBoots)
+        if tint_boots:
+            tints.update(tint_boots)
+        models = [NPCs.BaseModel] + list(StalkerModel.unique_noempty(models))
+        onTheHead = list(StalkerModel.unique_noempty(onTheHead))
+        backpack = list(StalkerModel.unique_noempty(backpack))
+        return ((models, tints),
+         (onTheHead, head_tints),
+         (backpack, tints_backpack),
+         bool(armor))
+
+    def set_npcFlags(self, v):
+        self.removeCaps(Helpers.Caps.CAP_CAN_EXCHANGE)
+
+    def getEquippedItemType(self):
+        return ItemsUtils.GetEquippedItemType(self)
+
+    def getAvatarAnimationCaps(self):
+        equippedItemType = self.getEquippedItemType()
+        if equippedItemType in [ItemsCatalog.PISTOL, ItemsCatalog.REVOLVER]:
+            caps_list = []
+        elif equippedItemType in [ItemsCatalog.ASSAULT_RIFLE,
+         ItemsCatalog.SNIPER_RIFLE,
+         ItemsCatalog.SHOTGUN,
+         ItemsCatalog.MACHINE_GUN,
+         ItemsCatalog.SUB_MACHINE_GUN,
+         ItemsCatalog.RIFLE,
+         ItemsCatalog.GRENADE_LAUNCHER,
+         ItemsCatalog.ROCKET_LAUNCHER]:
+            caps_list = ['AutogunArmed']
+        else:
+            caps_list = ['Unarmed']
+        if self.dead:
+            caps_list.append('Dead')
+        if self.isDisableDialogs:
+            caps_list = ['NPC_DISABLE']
+        return caps_list
+
+    def getMarkHeight(self):
+        return self.mark_height
+
+    def GetEquippedItemModels(self, secondary_primary_active):
+        if secondary_primary_active == ItemsCatalog.ACTIVE:
+            complexItemType = self.ActiveItemType
+            if self.ActiveItemType == self.ActiveWeaponSet.PrimarySlotType:
+                complexItemID = self.ActiveWeaponSet.PrimarySlotID
+                tintID = self.ActiveWeaponSet.PrimarySlotTintID
+                attach_list = self.npcWeaponPrimaryAttachItemIDs
+            else:
+                complexItemID = self.ActiveWeaponSet.SecondarySlotID
+                tintID = self.ActiveWeaponSet.SecondarySlotTintID
+                attach_list = self.npcWeaponSecondaryAttachItemIDs
+        if secondary_primary_active == ItemsCatalog.SECONDARY:
+            complexItemType = self.ActiveWeaponSet.SecondarySlotType
+            complexItemID = self.ActiveWeaponSet.SecondarySlotID
+            tintID = self.ActiveWeaponSet.SecondarySlotTintID
+            attach_list = self.npcWeaponSecondaryAttachItemIDs
+        elif secondary_primary_active == ItemsCatalog.PRIMARY:
+            complexItemType = self.ActiveWeaponSet.PrimarySlotType
+            complexItemID = self.ActiveWeaponSet.PrimarySlotID
+            tintID = self.ActiveWeaponSet.PrimarySlotTintID
+            attach_list = self.npcWeaponPrimaryAttachItemIDs
+        complexItemParams = ItemsCatalog.GetItemParam(complexItemType)
+        if not complexItemParams:
+            return
+        else:
+            gun_type = complexItemParams['GunType']
+            model_dict = {}
+            item_core_model_dict = complexItemParams['ModelNames']
+            for key in item_core_model_dict:
+                tint_dict = {}
+                if complexItemParams.has_key('TintsNames'):
+                    tintName = ItemsUtils.getTintNameByID(tintID)
+                    if tintName is not None:
+                        tint_dict = {'tint_weapon': tintName}
+                elif complexItemParams.has_key('Tint'):
+                    tint_dict = complexItemParams['Tint']
+                model_dict[key] = [complexItemParams['ModelNames'][key], ItemsCatalog.HardPointsNames[key], tint_dict]
+
+            for attachID in attach_list:
+                attach = ItemsCatalog.GetItemParam(attachID)
+                for key in attach['ModelNames']:
+                    tint_dict = attach.get('Tint', {})
+                    model_dict[key] = [attach['ModelNames'][key], ItemsCatalog.HardPointsNames[key], tint_dict]
+
+            return model_dict
+
+    def onAvatarModelChanged(self):
+        Avatar.onAvatarModelChanged(self)
+        self.updateHeadTrackerPots()
+        if self.dead:
+            self.model.isCalcBoundBoxFromNodes = 1
+        self.playAnimationByIDInList(self.playedAnimationIndexList, True)
+
+    in_head_track_position = 5.0
+    out_head_track_position = 15.0
+
+    def updateHeadTrackerPots(self):
+        if self.idPotHeadTrackIn:
+            BigWorld.delPot(self.idPotHeadTrackIn)
+        if self.idPotHeadTrackOut:
+            BigWorld.delPot(self.idPotHeadTrackOut)
+        if self.headTrackerEnable:
+            self.idPotHeadTrackIn = BigWorld.addPot(self.matrix, self.in_head_track_position, self.potCallbackIn)
+            self.idPotHeadTrackOut = BigWorld.addPot(self.matrix, self.out_head_track_position, self.potCallbackOut)
+        else:
+            self.potCallbackOut(0, 0)
+
+    @catch_error
+    def SetAvatarModel(self):
+        (body, body_tints), (onTheHead, on_head_tints), (backpack, backpackTints), armored = self.getModel()
+        if self.isDisableDialogs:
+            body = list(body)
+            body.append('characters/items/misc/guitar_lod1.model')
+            body.append('models/bolvan/taburet_4_npc.model')
+
+        def onLoadHeadModel(model):
+            if not model:
+                print 'WARNING! fetchModel:onLoadHeadModel return None', self, self.id, self.position
+                return
+            if self.isDestroyed:
+                return
+            try:
+                self.model.head = model
+            except:
+                print 'NPC onTheHead', model
+                raise
+
+            for attrname, attrvalue in on_head_tints.items():
+                try:
+                    setattr(self.model.head, attrname, attrvalue)
+                except:
+                    print 'NPC unable to TINT model!', self, self.id, attrname, attrvalue
+
+        def onLoadBackpackModel(model):
+            if not model:
+                print 'WARNING! fetchModel:onLoadBackpackModel return None', self, self.id, self.position
+                return
+            if self.isDestroyed:
+                return
+            for tintattrname, tintattrvalue in backpackTints.items():
+                try:
+                    setattr(model, tintattrname, tintattrvalue)
+                except:
+                    print 'NPC unable to TINT model!', self, self.id, tintattrname, tintattrvalue
+
+            if armored:
+                self.model.backpack = model
+            else:
+                self.model.backpack_noarmor = model
+
+        def onLoadBodyModel(model):
+            if not model:
+                print 'WARNING! fetchModel:onLoadBodyModel return None', self, self.id, self.position
+                return
+            elif self.isDestroyed:
+                return
+            else:
+                self.model = model
+                if self.model_scale > 0:
+                    self.model.scale = (self.model_scale, self.model_scale, self.model_scale)
+                    self.model.moveScale = 1.0 / self.model_scale
+                    self.model.motors[0].matchModelScale = True
+                    self.model.motors[0].matchModelScaleInv = True
+                CueModel.onLoadModel(self, model)
+                for attrname, attrvalue in body_tints.items():
+                    try:
+                        setattr(self.model, attrname, attrvalue)
+                    except:
+                        print 'NPC unable to TINT model!', self, self.id, attrname, attrvalue
+
+                modelNames_dict = {}
+                if onTheHead:
+                    onTheHead.append(onLoadHeadModel)
+                    BigWorld.fetchModel(*onTheHead)
+                if backpack:
+                    backpack.append(onLoadBackpackModel)
+                    BigWorld.fetchModel(*backpack)
+                if self.ActiveItemType:
+                    weapon = ItemsCatalog.GetItemParam(self.ActiveItemType)
+                    if weapon:
+                        modelNames_dict = {}
+                        for key in weapon['ModelNames']:
+                            tint_dict = weapon.get('Tint', {})
+                            modelNames_dict[key] = [weapon['ModelNames'][key], ItemsCatalog.HardPointsNames[key], tint_dict]
+
+                        attachIDs = self.getWeaponAttachIDs()
+                        for attachID in attachIDs:
+                            attach = ItemsCatalog.GetItemParam(attachID)
+                            for key in attach['ModelNames']:
+                                tint_dict = attach.get('Tint', {})
+                                modelNames_dict[key] = [attach['ModelNames'][key], ItemsCatalog.HardPointsNames[key], tint_dict]
+
+                        gun_type = weapon['GunType']
+                    self.fetchModelByNamesDict(modelNames_dict, self.onLoadGunModel)
+                else:
+                    self.onLoadGunModel(None)
+                try:
+                    lfoot = self.model.node('lefttoebase')
+                    rfoot = self.model.node('righttoebase')
+                    footSoundPath = 'players/footsteps'
+                    self.footTriggers = [BigWorld.FootTrigger(0, footSoundPath), BigWorld.FootTrigger(1, footSoundPath)]
+                    lfoot.attach(self.footTriggers[0])
+                    rfoot.attach(self.footTriggers[1])
+
+                    def onLoadDust(dustSource):
+                        if self.isDestroyed:
+                            return
+                        if not self.model:
+                            return
+                        self.model.root.attach(dustSource)
+
+                    particles.createDustSourceBG(onLoadDust)
+                except:
+                    print "ERROR: Unable to set up foot triggers for model ['%s']" % "', '".join(self.model.sources)
+
+                self.add_collider()
+                self.set_npcFlags(None)
+                if self.npcFlags & NPCs.FLAG_NIGHT_HIGHLIGHT:
+                    self.createLight()
+                self.onAvatarModelChanged()
+                self.UpdateAvatarAnimationCaps()
+                if self.isDisableDialogs:
+                    self.model.UseGuitar()
+                return
+
+        body.append(onLoadBodyModel)
+        BigWorld.fetchModel(*body)
+
+    def onLoadGunModel(self, model):
+        if self.isDestroyed:
+            return
+        self.autogunModel = model
+        if self.autogunModel:
+            self.hp_barrel_node = self.autogunModel.node('HP_barrel')
+        self.model.effectorright = self.autogunModel
+        p_gun_model_dict, s_gun_model_dict = {}, {}
+        if self.ActiveWeaponSet.PrimarySlotType and self.ActiveWeaponSet.PrimarySlotType != self.ActiveItemType:
+            p_gun_model_dict = self.GetEquippedItemModels(ItemsCatalog.PRIMARY)
+        if self.ActiveWeaponSet.SecondarySlotType and self.ActiveWeaponSet.SecondarySlotType != self.ActiveItemType:
+            s_gun_model_dict = self.GetEquippedItemModels(ItemsCatalog.SECONDARY)
+        StalkerModel.UpdatePlayerWeaponAttachments(self, self.model, p_gun_model_dict, s_gun_model_dict)
+        self.UpdateAvatarAnimationCaps()
+
+    def reload(self, reload_type, time_mod, ammo_num, ammo_type = None, unload_ammo = None, modif = 1):
+        self.EnableModelPitch(False)
+        if self.isBursting:
+            self.endBurst()
+        Avatar.reload(self, reload_type, time_mod, ammo_num, ammo_type)
+        BigWorld.callback(time_mod, self.onReloadAnimationEnd)
+
+    def avatarReload(self, reload_type, time_to_reload, num_added_ammo):
+        Avatar.reload(self, reload_type, time_to_reload, num_added_ammo)
+
+    def onReloadAnimationEnd(self):
+        if self.isDestroyed:
+            return
+        self.EnableModelPitch(True)
+
+    def dropItem(self, id):
+        pass
+
+    def deleteItem(self, id):
+        pass
+
+    def prepareForTeleport(self):
+        pass
+
+    def afterTeleport(self):
+        pass
+
+    def set_talkFlag(self, old_value):
+        InteractiveObject.set_talkFlag(self, old_value)
+
+    def set_isDisableDialogs(self, old_value):
+        self.SetAvatarModel()
+        if self.isDisableDialogs:
+            self.model.UseGuitar()
+        else:
+            self.model.UseGuitar().stop()
+
+    def set_attack_active_target_id(self, old_value):
+        p = BigWorld.player()
+        if self.attack_active_target_id and p:
+            p.forceStopDialogByNPC(self.id)
+        self.update_targeting()
+
+    def update_targeting(self):
+        if not isinstance(self.filter, BigWorld.AvatarDropFilter):
+            return
+        if self.attack_active_target_id:
+            target = BigWorld.entities.get(self.attack_active_target_id)
+            if target:
+                self.filter.useTargetPosition = True
+                self.filter.targetMatrix = target.matrix
+                if self.model:
+                    self.potCallbackOut(0, 0)
+                    self.headTrackerEnable = False
+                    self.updateHeadTrackerPots()
+                    self.EnableModelPitch(True)
+                return
+        self.headTrackerEnable = self.default_headTracker
+        self.filter.useTargetPosition = False
+        self.updateHeadTrackerPots()
+
+    def throw_grenade(self, position, velocity, original_id, target_id, duration, grenade_type, frame):
+        """ \xd1\x81\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb5\xd1\x80 \xd1\x82\xd1\x80\xd0\xb5\xd0\xb1\xd1\x83\xd0\xb5\xd1\x82 \xd1\x80\xd0\xbe\xd0\xb4\xd0\xb8\xd1\x82\xd1\x8c \xd0\xb3\xd1\x80\xd0\xb0\xd0\xbd\xd0\xb0\xd1\x82\xd1\x83 \xd0\xb8 \xd1\x81\xd0\xbe\xd0\xbf\xd1\x80\xd0\xbe\xd0\xb2\xd0\xbe\xd0\xb4\xd0\xb8\xd1\x82\xd1\x8c \xd0\xb0\xd0\xbd\xd0\xb8\xd0\xbc\xd0\xb0\xd1\x86\xd0\xb8\xd0\xb5\xd0\xb9 \xd0\xb1\xd1\x80\xd0\xbe\xd1\x81\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x8f """
+        params = {'fromServer': True,
+         'originalID': original_id,
+         'targetID': target_id}
+        duration = self.model.TakeInGrenade.duration * 0.9 + self.model.Grenade_Swing.duration * 0.9 + self.model.Grenade_Throw.duration
+        callback = partial(self.throw, params, position, velocity, grenade_type)
+        self.throw_callback_id = BigWorld.callback(duration, callback)
+        self.model.effectorright = None
+        self.EnableModelPitch(False)
+        callback_throw = partial(self.DrawThrow, 0, velocity, frame)
+        callback_swing = partial(self.playAnimation, self.model.Grenade_Swing, self.model.Grenade_Swing.duration, callback_throw, False, 0.9)
+        self.playAnimation(self.model.TakeInGrenade, self.model.TakeInGrenade.duration, callback=callback_swing, offset_mult=0.9)
+        return
+
+    def stopUsingItemAnimation(self):
+        NPCAnimations.stopUsingItemAnimation(self)
+
+    def __str__(self):
+        return 'NPC:{0}, {1}, {2}'.format(self.id, self.npcName, self.position)

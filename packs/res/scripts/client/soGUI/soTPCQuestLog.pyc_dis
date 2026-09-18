@@ -1,0 +1,953 @@
+# Embedded file name: ./scripts/client/soGUI/soTPCQuestLog.py
+from Localization import lc
+import BigWorld
+import GUI
+import soGUI
+import BWPersonality
+import Constants
+from Helpers.PyGUI.PyGUIBase import PyGUIBase
+from soGUI.soButton import soButton, soButtonWFT, soButtonWTT
+from soGUI.soList_opened import soList_opened, soList_closed
+from soGUI.soTextField import soTextField3
+from Helpers.PyGUI import PyGUIEvent
+from soGUI.GUIPositions import GUIPositions
+from soGUI.data import GUIEvents
+from gui_const import GUI_ID
+from msgbox_templates import text_and_ok
+import colorCodes
+import Quest
+import QuestDispatcher as qd
+from ListWanted import ListWanted
+
+class soTPCQuestLog(PyGUIBase, GUIPositions):
+    factoryString = 'soGUI.soTPCQuestLog'
+    MODE_OPENED, MODE_COMPLETED, MODE_FAILED, MODE_WANTED = range(4)
+    EVENT_SELECT, EVENT_CANCEL, EVENT_SHARE, EVENT_TRACK = range(4)
+    SORT_DATE_DOWN, SORT_DATE_UP, SORT_AZ, SORT_ZA = range(4)
+    MAX_FAVORITE = 10
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        GUIPositions.__init__(self)
+        component.script = self
+        self.shown = False
+        self.mode = None
+        self.selectedCurrent = None
+        self.selectedCompleted = None
+        self.quest_loading = False
+        self.all_closed_quests_loaded = False
+        self.all_failed_quests_loaded = False
+        self.sort_mode = soTPCQuestLog.SORT_DATE_UP
+        self.favorite_dirty = False
+        self.clearing = False
+        self.favorite_quests = set()
+        self._deltaposition = [0, 0]
+        self._clbID = 0
+        self.setupRoot()
+        self.setupContent()
+        self.switchMode(self.MODE_OPENED)
+        self.interfaceID = BWPersonality.GUICore.GUI_ID_PDAQUEST
+        self.onSortRevClick()
+        BWPersonality.GUICore.addListener('contextMenuEvent', self.questbox_context_event)
+        return
+
+    def clear_all(self):
+        """ \xd1\x81\xd0\xb1\xd1\x80\xd0\xbe\xd1\x81\xd0\xb8\xd1\x82\xd1\x8c \xd1\x81\xd0\xbe\xd1\x81\xd1\x82\xd0\xbe\xd1\x8f\xd0\xbd\xd0\xb8\xd0\xb5 \xd0\xb6\xd1\x83\xd1\x80\xd0\xbd\xd0\xb0\xd0\xbb\xd0\xb0 """
+        self.clearing = True
+        self.all_closed_quests_loaded = False
+        self.all_failed_quests_loaded = False
+        if self.cur_list:
+            self.cur_list.clear()
+        self.update()
+        self.clearing = False
+
+    def setupRoot(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 792
+        cmp.height = 480
+        cmp.position = (0.0, 0, 0.2)
+        cmp.textureName = ''
+        cmp.visible = False
+        cmp.dragFocus = True
+        cmp.moveFocus = True
+        cmp.crossFocus = True
+        cmp.focus = True
+        cmp.mouseButtonFocus = True
+
+    def setupContent(self):
+        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 792
+        cmp.height = 480
+        cmp.position = (0, 0, 1.2)
+        self.component.addChild(cmp, 'wndFrame')
+        cmp = GUI.Frame2('soGUI/maps/Controls/TabletPC/questLog/doubleFrame.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 786
+        cmp.height = 393
+        cmp.position = (3, 50, 1.1)
+        cmp.visible = 1
+        self.component.addChild(cmp, 'doubleFrame')
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (14, 6, 0.3)
+        cmp.text = lc('GUI.QuestLog.WINDOW_CAPTION')
+        self.component.addChild(cmp, 'iLabel')
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/closeBox.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 18
+        cmp.height = 18
+        cmp.position = (784, 6, 0.2)
+        self.component.addChild(cmp, 'closeBox')
+        btn.onBound()
+        btn._updateVisualState()
+        hintBox = soButton(GUI.Window())
+        comp = hintBox.component
+        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
+        comp.widthMode = comp.heightMode = 'PIXEL'
+        comp.horizontalAnchor = 'RIGHT'
+        comp.verticalAnchor = 'TOP'
+        comp.colour = (255, 255, 255, 255)
+        comp.materialFX = 'BLEND'
+        comp.width = 18
+        comp.height = 18
+        comp.position = (762, 6, 0.2)
+        hintBox.initVSC('soGUI/visual_styles/helpBox.xml')
+        hintBox.onBound()
+        hintBox.setVisualState('normal')
+        self.component.addChild(comp, 'hintBox')
+        self.tab_width = self.component.width / 4
+        self.setup_opened()
+        self.setup_closed()
+        self.setup_failed()
+        self.setup_wanted()
+        txt = soTextField3(GUI.Window(), width=389, height=353, textWidth=-1, hScroll=False, vScroll=True, hideScroll=True, borderWidth=0, vOffset=0, hOffset=0, textureless=True, autosize=False)
+        cmp = txt.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.position = (380, 68, 0.2)
+        self.component.addChild(cmp, 'questDescr')
+        txt.onBound()
+        cmp = GUI.Frame2('soGUI/maps/Controls/TabletPC/questLog/descriptionFrame.tga')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 419
+        cmp.height = 383
+        cmp.position = (364, 55, 1.0)
+        self.component.addChild(cmp, 'descrFrame')
+        cmp = GUI.Simple('textures/default/black.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = 'CLIP'
+        cmp.heightMode = 'PIXEL'
+        cmp.colour = (255, 255, 255, 150)
+        cmp.materialFX = 'BLEND'
+        cmp.height = 480
+        cmp.width = 2
+        cmp.position = (0, 0, 0.01)
+        cmp.dragFocus = True
+        cmp.dropFocus = True
+        cmp.crossFocus = True
+        cmp.moveFocus = True
+        cmp.mouseButtonFocus = True
+        cmp.visible = False
+        self.component.addChild(cmp, 'darkScreen')
+        cmp = GUI.Simple('soGUI/maps/loadingScreen/loadingCircle/loadingCircle.texanim')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (150, 150, 150, 220)
+        cmp.materialFX = 'BLEND'
+        cmp.height = 20
+        cmp.width = 20
+        cmp.position = (5, 5, 0.01)
+        self.component.darkScreen.addChild(cmp, 'darkScreenLogo')
+        self._debug_button = soButton(GUI.Window())
+        cmp = self._debug_button.component
+        cmp.horizontalPositionMode = 'PIXEL'
+        cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 18
+        cmp.height = 18
+        cmp.position = (768, 30, 0.0)
+        self._debug_button.initVSC('soGUI/visual_styles/plusBtn.xml')
+        self._debug_button.onBound()
+        self._debug_button.setVisualState('normal')
+        self._debug_button.onClick = self._debug_clicked
+        self.component.addChild(cmp, '_debug_button')
+
+    def setup_opened(self):
+        btn = soButtonWFT(GUI.Window())
+        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        btn.initVSC('soGUI/visual_styles/defaultTab.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = self.tab_width
+        cmp.height = 21
+        cmp.position = (self.tab_width * 0, 50, 0.2)
+        cmp.label.text = lc('GUI.QuestLog.ACTIVE_QUESTS_TAB_LABEL')
+        self.component.addChild(cmp, 'currentBtn')
+        btn.onBound()
+        btn.setVisualState('normal')
+        panel = GUI.Window()
+        panel.horizontalPositionMode = panel.verticalPositionMode = 'CLIP'
+        panel.widthMode = panel.heightMode = 'CLIP'
+        panel.horizontalAnchor = panel.verticalAnchor = 'CENTER'
+        panel.width = panel.height = 2
+        panel.position = (0, 0, 0.1)
+        self.component.addChild(panel, 'opened_mode_panel')
+        btn = soButtonWTT(GUI.Window(), 'sort_normal')
+        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        btn.initVSC('soGUI/visual_styles/btn_TPCRightsEditor.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.textureName = 'soGUI/maps/Controls/rightsEditor/button_down.tga'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 28
+        cmp.height = 28
+        cmp.position = (20, 446, 0.2)
+        panel.addChild(cmp, 'sortNoBtn')
+        btn.onBound()
+        btn.onClick = self.onSortClick
+        btn.setVisualState('normal')
+        btn = soButtonWTT(GUI.Window(), 'sort_normal_rev')
+        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        btn.initVSC('soGUI/visual_styles/btn_TPCRightsEditor.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.textureName = 'soGUI/maps/Controls/rightsEditor/button_up.tga'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 28
+        cmp.height = 28
+        cmp.position = (49, 446, 0.2)
+        panel.addChild(cmp, 'sortDateBtn')
+        btn.onBound()
+        btn.onClick = self.onSortRevClick
+        btn.setVisualState('normal')
+        btn = soButtonWTT(GUI.Window(), 'sort_abc')
+        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        btn.initVSC('soGUI/visual_styles/btn_TPCRightsEditor.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.textureName = 'soGUI/maps/Controls/rightsEditor/button_A-Z.tga'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 28
+        cmp.height = 28
+        cmp.position = (78, 446, 0.2)
+        panel.addChild(cmp, 'sortABCBtn')
+        btn.onBound()
+        btn.onClick = self.onSortABCClick
+        btn.setVisualState('normal')
+        btn = soButtonWTT(GUI.Window(), 'sort_abc_rev')
+        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        btn.initVSC('soGUI/visual_styles/btn_TPCRightsEditor.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.textureName = 'soGUI/maps/Controls/rightsEditor/button_Z-A.tga'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 28
+        cmp.height = 28
+        cmp.position = (107, 446, 0.2)
+        panel.addChild(cmp, 'sortABCRevBtn')
+        btn.onBound()
+        btn.onClick = self.onSortABCRevClick
+        btn.setVisualState('normal')
+        openQuestList = soList_opened(GUI.Window(), soGUI.ListPropsStructure(width=365, height=399, isMultiSel=False, selectCallBack=self.onSelected, sorted=False), buttons_is_options=False)
+        openQuestList.component.horizontalPositionMode = openQuestList.component.verticalPositionMode = 'PIXEL'
+        openQuestList.component.widthMode = openQuestList.component.heightMode = 'PIXEL'
+        openQuestList.component.visible = True
+        openQuestList.component.verticalAnchor = 'TOP'
+        openQuestList.component.horizontalAnchor = 'LEFT'
+        openQuestList.component.position = (4, 50, 0.1)
+        openQuestList.component.listFrame.textureName = ''
+        openQuestList.component.mouseButtonFocus = 0
+        openQuestList.onRmb = self.onRmb
+        panel.addChild(openQuestList.component, 'openedList')
+        openQuestList.onBound()
+        self.cur_list = openQuestList
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 100
+        cmp.height = 32
+        cmp.position = (360, 445, 0.2)
+        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.text = lc('soTPCQuestLog.soGUI.STRING_280_19')
+        panel.addChild(cmp, 'cancelBtn')
+        btn.onBound()
+        btn.onClick = self.onCancelClick
+        btn.setDisabledState(True)
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 180
+        cmp.height = 32
+        cmp.position = (461, 445, 0.2)
+        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.text = lc('soTPCQuestLog.soGUI.ADD_FAV')
+        panel.addChild(cmp, 'favoriteBtn')
+        btn.onBound()
+        btn.onClick = self.onFavoriteClick
+        btn.setDisabledState(True)
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 100
+        cmp.height = 32
+        cmp.position = (642, 445, 0.2)
+        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.text = lc('soTPCQuestLog.soGUI.STRING_327_19')
+        panel.addChild(cmp, 'trackBtn')
+        btn.onBound()
+        btn.onClick = self.onTrackClick
+        btn.setDisabledState(True)
+
+    def setup_closed(self):
+        btn = soButtonWFT(GUI.Window())
+        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        btn.initVSC('soGUI/visual_styles/defaultTab.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = self.tab_width
+        cmp.height = 21
+        cmp.position = (self.tab_width * 1, 50, 0.2)
+        cmp.label.text = lc('GUI.QuestLog.COMPLETED_QUESTS_TAB_LABEL')
+        self.component.addChild(cmp, 'completedBtn')
+        btn.onBound()
+        btn.setVisualState('normal')
+        panel = GUI.Window()
+        panel.horizontalPositionMode = panel.verticalPositionMode = 'CLIP'
+        panel.widthMode = panel.heightMode = 'CLIP'
+        panel.horizontalAnchor = panel.verticalAnchor = 'CENTER'
+        panel.width = panel.height = 2
+        panel.position = (0, 0, 0.1)
+        self.component.addChild(panel, 'closed_mode_panel')
+        closeQuestList = soList_closed(GUI.Window(), soGUI.ListPropsStructure(width=365, height=399, isMultiSel=False, selectCallBack=self.onSelected, sorted=False), buttons_is_options=False)
+        closeQuestList.component.horizontalPositionMode = closeQuestList.component.verticalPositionMode = 'PIXEL'
+        closeQuestList.component.widthMode = closeQuestList.component.heightMode = 'PIXEL'
+        closeQuestList.component.visible = True
+        closeQuestList.component.verticalAnchor = 'TOP'
+        closeQuestList.component.horizontalAnchor = 'LEFT'
+        closeQuestList.component.position = (4, 50, 0.1)
+        closeQuestList.component.listFrame.textureName = ''
+        closeQuestList.component.mouseButtonFocus = 0
+        closeQuestList.onRmb = self.onRmb
+        closeQuestList.onElementsRedraw = self.check_need_load
+        panel.addChild(closeQuestList.component, 'closedList')
+        closeQuestList.onBound()
+
+    def setup_failed(self):
+        btn = soButtonWFT(GUI.Window())
+        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        btn.initVSC('soGUI/visual_styles/defaultTab.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = self.tab_width
+        cmp.height = 21
+        cmp.position = (self.tab_width * 2, 50, 0.2)
+        cmp.label.text = lc('GUI.QuestLog.FAILED_QUESTS_TAB_LABEL')
+        self.component.addChild(cmp, 'failedBtn')
+        btn.onBound()
+        btn.setVisualState('normal')
+        panel = GUI.Window()
+        panel.horizontalPositionMode = panel.verticalPositionMode = 'CLIP'
+        panel.widthMode = panel.heightMode = 'CLIP'
+        panel.horizontalAnchor = panel.verticalAnchor = 'CENTER'
+        panel.width = panel.height = 2
+        panel.position = (0, 0, 0.1)
+        self.component.addChild(panel, 'failed_mode_panel')
+        failed_list = soList_closed(GUI.Window(), soGUI.ListPropsStructure(width=365, height=399, isMultiSel=False, selectCallBack=self.onSelected, sorted=False), buttons_is_options=False)
+        failed_list.component.horizontalPositionMode = failed_list.component.verticalPositionMode = 'PIXEL'
+        failed_list.component.widthMode = failed_list.component.heightMode = 'PIXEL'
+        failed_list.component.visible = True
+        failed_list.component.verticalAnchor = 'TOP'
+        failed_list.component.horizontalAnchor = 'LEFT'
+        failed_list.component.position = (4, 50, 0.1)
+        failed_list.component.listFrame.textureName = ''
+        failed_list.component.mouseButtonFocus = 0
+        failed_list.onElementsRedraw = self.check_need_load
+        failed_list.onRmb = self.onRmb
+        panel.addChild(failed_list.component, 'failedList')
+        failed_list.onBound()
+
+    def setup_wanted(self):
+        btn = soButtonWFT(GUI.Window())
+        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+        btn.initVSC('soGUI/visual_styles/defaultTab.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = self.tab_width
+        cmp.height = 21
+        cmp.position = (self.tab_width * 3, 50, 0.2)
+        cmp.label.text = lc('GUI.QuestLog.WANTED_TAB_LABEL')
+        btn.onClick = lambda : self.switchMode(self.MODE_WANTED)
+        self.component.addChild(cmp, 'wantedBtn')
+        btn.onBound()
+        btn.setVisualState('normal')
+        panel = GUI.Window()
+        panel.horizontalPositionMode = panel.verticalPositionMode = 'CLIP'
+        panel.widthMode = panel.heightMode = 'CLIP'
+        panel.horizontalAnchor = panel.verticalAnchor = 'CENTER'
+        panel.width = panel.height = 2
+        panel.position = (0, 0, 0.1)
+        self.component.addChild(panel, 'wanted_mode_panel')
+        listw = ListWanted(GUI.Window())
+        cmp = listw.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 0, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 786
+        cmp.height = 393
+        cmp.visible = True
+        cmp.position = (3, 50, 0.2)
+        panel.addChild(cmp, 'listw')
+        listw.onBound()
+        btn = soButton(GUI.Window())
+        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        cmp = btn.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 100
+        cmp.height = 32
+        cmp.position = (642, 445, 0.2)
+        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.text = lc('GUI.QuestLog.UPDATE')
+        panel.addChild(cmp, 'updateWantedBtn')
+        btn.onClick = self.onUpdateWantedClick
+        btn.onBound()
+
+    def onRmb(self, caption):
+        if not BigWorld.isKeyDown(BigWorld.stringToKey('F2')) or not BigWorld.player().isAdminAccess():
+            return
+        interfaceID = BWPersonality.GUICore.GUI_ID_QUESTBOX
+        actions = {('fail', unicode(caption)): 'fail',
+         ('complete', unicode(caption)): 'complete'}
+        BWPersonality.GUICore.showContextMenu(interfaceID, actions)
+
+    def questbox_context_event(self, interfaceID, action, param, eventID, data = None):
+        if interfaceID != BWPersonality.GUICore.GUI_ID_QUESTBOX or not action:
+            return
+        questID = self.component.opened_mode_panel.openedList.script.getAttachment(action[1])['quest_id']
+        entity = BigWorld.player()
+        if action[0] == 'fail':
+            entity.cell.request_fail_quest(questID)
+        elif action[0] == 'complete':
+            entity.cell.checkQuestOnQuestID(questID)
+
+    def changeStyleSortBtn(self):
+        self.component.opened_mode_panel.sortNoBtn.script.setToggleState(False)
+        self.component.opened_mode_panel.sortDateBtn.script.setToggleState(False)
+        self.component.opened_mode_panel.sortABCBtn.script.setToggleState(False)
+        self.component.opened_mode_panel.sortABCRevBtn.script.setToggleState(False)
+
+    def setDescription(self, txt):
+        self.component.questDescr.script.setText(txt)
+        self.component.questDescr.script.setCursor(0, 0)
+
+    def switchMode(self, mode):
+        self.component.opened_mode_panel.visible = mode == self.MODE_OPENED
+        self.component.closed_mode_panel.visible = mode == self.MODE_COMPLETED
+        self.component.wanted_mode_panel.visible = mode == self.MODE_WANTED
+        self.component.failed_mode_panel.visible = mode == self.MODE_FAILED
+        self._setStateBtn(self.component.currentBtn, mode == self.MODE_OPENED)
+        self._setStateBtn(self.component.completedBtn, mode == self.MODE_COMPLETED)
+        self._setStateBtn(self.component.wantedBtn, mode == self.MODE_WANTED)
+        self._setStateBtn(self.component.failedBtn, mode == self.MODE_FAILED)
+        if self.mode != mode:
+            self.setDescription('')
+            self.component.questDescr.script.setCursor(0, 0)
+            self.mode = mode
+            self.update()
+
+    def _setStateBtn(self, btn, active = True, disabled = False):
+        btn.script.buttonActive = active
+        if disabled:
+            btn.script.setVisualState('disabled')
+            btn.script.buttonDisabled = True
+        else:
+            btn.script.setVisualState('active' if active else 'normal')
+            btn.script.buttonDisabled = False
+
+    def update(self):
+        if self.mode == self.MODE_WANTED:
+            self.component.questDescr.visible = False
+            self.component.descrFrame.visible = False
+            self.component.wanted_mode_panel.listw.script.update()
+            return
+        else:
+            self.component.questDescr.visible = True
+            self.component.descrFrame.visible = True
+            if self.mode == self.MODE_OPENED:
+                quests = self.get_opened_quests()
+                self.cur_list = self.component.opened_mode_panel.openedList.script
+                if BigWorld.isKeyDown(BigWorld.stringToKey('F2')) and BigWorld.player().isAdminAccess():
+                    quests = quests + self.get_hidden_quests()
+                sort_mode = self.sort_mode
+            elif self.mode == self.MODE_COMPLETED:
+                quests = self.get_closed_quests()
+                self.cur_list = self.component.closed_mode_panel.closedList.script
+                sort_mode = None
+            elif self.mode == self.MODE_FAILED:
+                quests = self.get_failed_quests()
+                self.cur_list = self.component.failed_mode_panel.failedList.script
+                sort_mode = None
+            selection = self.cur_list.getSelection()
+            if selection:
+                questName = selection[0]
+                questID = self.cur_list.getAttachment(questName)['quest_id']
+            previous_offset = self.cur_list.offset
+            self.cur_list.clear()
+            self.component.questDescr.script.setText(' ')
+            if BigWorld.player():
+                client_quests = BigWorld.player().client_quests
+                if sort_mode == soTPCQuestLog.SORT_DATE_UP:
+
+                    def compare(quest1, quest2):
+                        quest1_id = quest1['QuestID']
+                        quest2_id = quest2['QuestID']
+                        if quest1_id in self.favorite_quests and quest2_id not in self.favorite_quests:
+                            return -1
+                        if quest2_id in self.favorite_quests and quest1_id not in self.favorite_quests:
+                            return 1
+                        if not client_quests:
+                            return 0
+                        quest1_taken_time = client_quests.get_taken_time(quest1_id)
+                        quest2_taken_time = client_quests.get_taken_time(quest2_id)
+                        if quest1_taken_time > quest2_taken_time:
+                            return -1
+                        if quest1_taken_time < quest2_taken_time:
+                            return 1
+                        return 0
+
+                    quests = sorted(quests, cmp=compare)
+                elif sort_mode == soTPCQuestLog.SORT_DATE_DOWN:
+
+                    def compare(quest1, quest2):
+                        quest1_id = quest1['QuestID']
+                        quest2_id = quest2['QuestID']
+                        if quest1_id in self.favorite_quests and quest2_id not in self.favorite_quests:
+                            return -1
+                        if quest2_id in self.favorite_quests and quest1_id not in self.favorite_quests:
+                            return 1
+                        if not client_quests:
+                            return 0
+                        quest1_taken_time = client_quests.get_taken_time(quest1_id)
+                        quest2_taken_time = client_quests.get_taken_time(quest2_id)
+                        if quest1_taken_time > quest2_taken_time:
+                            return 1
+                        if quest1_taken_time < quest2_taken_time:
+                            return -1
+                        return 0
+
+                    quests = sorted(reversed(quests), cmp=compare)
+                elif sort_mode == soTPCQuestLog.SORT_AZ:
+
+                    def compare(quest1, quest2):
+                        quest1_id = quest1['QuestID']
+                        quest2_id = quest2['QuestID']
+                        if quest1_id in self.favorite_quests and quest2_id not in self.favorite_quests:
+                            return -1
+                        if quest2_id in self.favorite_quests and quest1_id not in self.favorite_quests:
+                            return 1
+                        if quest1['Title'] > quest2['Title']:
+                            return 1
+                        return -1
+
+                    quests = sorted(quests, cmp=compare)
+                elif sort_mode == soTPCQuestLog.SORT_ZA:
+
+                    def compare(quest1, quest2):
+                        quest1_id = quest1['QuestID']
+                        quest2_id = quest2['QuestID']
+                        if quest1_id in self.favorite_quests and quest2_id not in self.favorite_quests:
+                            return -1
+                        if quest2_id in self.favorite_quests and quest1_id not in self.favorite_quests:
+                            return 1
+                        if quest1['Title'] > quest2['Title']:
+                            return -1
+                        return 1
+
+                    quests = sorted(quests, cmp=compare)
+                for quest in quests:
+                    quest_id = quest['QuestID']
+                    favorite = quest_id in self.favorite_quests
+                    self.cur_list.addElement(quest['Title'], {'quest_id': quest_id,
+                     'favorite': favorite}, delayedRender=True)
+
+                self.cur_list.applyElements()
+                if self.mode == self.MODE_OPENED and quests and hasattr(self, 'favorite_quests'):
+                    ids = [ quest['QuestID'] for quest in quests ]
+                    fav_quests = self.favorite_quests.intersection(ids)
+                    if fav_quests != self.favorite_quests:
+                        self.favorite_quests = fav_quests
+                        self.favorite_dirty = True
+                if selection and questName != questID:
+                    self.cur_list.toggleByCaption(questName)
+                self.quest_loading and self.cur_list.vScrollMoved(previous_offset)
+            quests_amount = len(self.get_opened_quests())
+            quest_limit = ' ({0}/{1})'.format(quests_amount, Constants.QUESTS_LIMIT)
+            self.component.currentBtn.label.text = lc('GUI.QuestLog.ACTIVE_QUESTS_TAB_LABEL') + quest_limit
+            self._debug_button.component.visible = BigWorld.isKeyDown(BigWorld.stringToKey('F2')) and BigWorld.player().isAdminAccess()
+            self.onBound()
+            return
+
+    def get_opened_quests(self):
+        if BigWorld.player():
+            client_quests = BigWorld.player().client_quests
+            return client_quests or {}
+        return client_quests.get_journal_opened()
+
+    def get_closed_quests(self):
+        if BigWorld.player():
+            client_quests = BigWorld.player().client_quests
+            return client_quests or {}
+        return client_quests.get_journal_closed()
+
+    def get_failed_quests(self):
+        if BigWorld.player():
+            client_quests = BigWorld.player().client_quests
+            return client_quests or {}
+        return client_quests.get_journal_failed()
+
+    def get_hidden_quests(self):
+        if BigWorld.player():
+            client_quests = BigWorld.player().client_quests
+            return client_quests or {}
+        return client_quests.get_journal_hidden()
+
+    def _debug_clicked(self):
+        from gui_const import MESSAGEBOX
+
+        def callback_hanlder(event, data):
+            print 'callback hanlded'
+
+        cq = BigWorld.player().client_quests
+        text = 'opened: {0}\nclosed: {1}\nontest: {2}\nfreez: {3}\nfailed: {4}'.format(cq._opened, cq._closed, cq._ontest, cq._freeze, cq._failed)
+        controls = [{'type': MESSAGEBOX.ADDCONTROL_TEXTFIELD,
+          'ID': 'desc',
+          'text': text,
+          'hAnchor': MESSAGEBOX.ANCHOR_LEFT}]
+        BWPersonality.GUICore.showMsgBox(id or 'inputBox.default', isModal=False, x=0.0, y=0.0, width=800, caption='questsbox', forcePos=False, parent_gui_id=None, bind_to_parent=False, btn_set=[{'type': MESSAGEBOX.BTN_OK,
+          'width': 80}], timeout=-1, closeBox=True, defaultAction=MESSAGEBOX.BTN_YES, addControls=controls, callback=callback_hanlder)
+        return
+
+    def check_need_load(self):
+        """ \xd0\xb7\xd0\xb4\xd0\xb5\xd1\x81\xd1\x8c \xd0\xbe\xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xb5\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82\xd1\x81\xd1\x8f \xd0\xbd\xd0\xb5\xd0\xbe\xd0\xb1\xd1\x85\xd0\xbe\xd0\xb4\xd0\xb8\xd0\xbc\xd0\xbe\xd1\x81\xd1\x82\xd1\x8c \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xb3\xd1\x80\xd1\x83\xd0\xb7\xd0\xb8\xd1\x82\xd1\x8c \xd0\xb4\xd0\xbe\xd0\xbf\xd0\xbe\xd0\xbb\xd0\xbd\xd0\xb8\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd1\x8b """
+
+        def need_load(list_script):
+            return not self.clearing and not self.quest_loading and (len(list_script.elements) <= 20 or list_script.maxScroll - list_script.offset <= 1)
+
+        if self.mode == self.MODE_COMPLETED:
+            quests_list = self.component.closed_mode_panel.closedList.script
+            if not self.all_closed_quests_loaded and need_load(quests_list):
+                self.request_closed_quests()
+        elif self.mode == self.MODE_FAILED:
+            quests_list = self.component.failed_mode_panel.failedList.script
+            if not self.all_failed_quests_loaded and need_load(quests_list):
+                self.request_failed_quests()
+
+    def onSelected(self):
+        if len(self.cur_list.getSelection()) < 1:
+            BWPersonality.GUICore.questLogEvent(0, self.EVENT_SELECT)
+            return
+        questName = self.cur_list.getSelection()[0]
+        questID = self.cur_list.getAttachment(questName)['quest_id']
+        if questID == questName:
+            return
+        BWPersonality.GUICore.questLogEvent(questID, self.EVENT_SELECT)
+        questsettings = qd.getQuestOnID(questID)
+        if not questsettings:
+            disabled = True
+        else:
+            disabled = questsettings['Additional']['CantCancel']
+        if self.mode != self.MODE_OPENED:
+            disabled = True
+        else:
+            favorite_text = lc('soTPCQuestLog.soGUI.REM_FAV') if questID in self.favorite_quests else lc('soTPCQuestLog.soGUI.ADD_FAV')
+            self.component.opened_mode_panel.favoriteBtn.label.text = favorite_text
+            failed = BigWorld.player().client_quests.get_state(questID) == Quest.STATE_FAILED
+            if failed or questID not in self.favorite_quests and len(self.favorite_quests) >= soTPCQuestLog.MAX_FAVORITE:
+                self.component.opened_mode_panel.favoriteBtn.script.setDisabledState(True)
+            else:
+                self.component.opened_mode_panel.favoriteBtn.script.setDisabledState(False)
+        self.component.opened_mode_panel.cancelBtn.script.setDisabledState(disabled)
+
+    def doReposition(self):
+        self.component.position = (0.0, 0.0, 0.2)
+
+    def show(self):
+        if self.component.parent is None:
+            BWPersonality.GUICore.worldLayer.addChild(self.component, 'questLog')
+        if not self.savedGUIPosition:
+            self.readGUIPostitons()
+        if self.savedGUIPosition:
+            self.component.position = self.savedGUIPosition
+        self.checkNormalPosition()
+        self.component.visible = True
+        BWPersonality.GUICore.setBestCursor()
+        BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_SHOW, GUI_ID.GUI_ID_QUESTLOG)
+        if BigWorld.isKeyDown(BigWorld.stringToKey('F2')) and BigWorld.player().isAdminAccess() or not self.shown:
+            self.shown = True
+            self.update()
+        self.onBound()
+        return
+
+    def hide(self):
+        if not self.component.visible:
+            return
+        self.component.visible = False
+        BWPersonality.GUICore.setBestCursor()
+        BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_HIDE, GUI_ID.GUI_ID_QUESTLOG)
+        if self.favorite_dirty:
+            BigWorld.player().base.update_favorite(list(self.favorite_quests))
+        self.favorite_dirty = False
+
+    def updateWanted(self):
+        self.component.wanted_mode_panel.listw.script.updateWanted()
+
+    def onSortClick(self):
+        self.sort_mode = soTPCQuestLog.SORT_DATE_DOWN
+        self.changeStyleSortBtn()
+        self.component.opened_mode_panel.sortNoBtn.script.setToggleState(True)
+        self.update()
+
+    def onSortRevClick(self):
+        self.sort_mode = soTPCQuestLog.SORT_DATE_UP
+        self.changeStyleSortBtn()
+        self.component.opened_mode_panel.sortDateBtn.script.setToggleState(True)
+        self.update()
+
+    def onSortABCClick(self):
+        self.sort_mode = soTPCQuestLog.SORT_AZ
+        self.changeStyleSortBtn()
+        self.component.opened_mode_panel.sortABCBtn.script.setToggleState(True)
+        self.update()
+
+    def onSortABCRevClick(self):
+        self.sort_mode = soTPCQuestLog.SORT_ZA
+        self.changeStyleSortBtn()
+        self.component.opened_mode_panel.sortABCRevBtn.script.setToggleState(True)
+        self.update()
+
+    def onCancelClick(self):
+        BWPersonality.GUICore.questLogEvent(None, self.EVENT_CANCEL)
+        return
+
+    def onFavoriteClick(self):
+        selection = self.cur_list.getSelection()
+        if selection:
+            questID = self.cur_list.getAttachment(selection[0])['quest_id']
+            if questID in self.favorite_quests:
+                self.favorite_quests.remove(questID)
+            else:
+                self.favorite_quests.add(questID)
+            self.favorite_dirty = True
+            self.update()
+
+    def onUpdateWantedClick(self):
+        self.component.wanted_mode_panel.listw.script.update()
+
+    def onTrackClick(self):
+        BWPersonality.GUICore.questLogEvent(None, self.EVENT_TRACK)
+        return
+
+    def request_closed_quests(self):
+        """ \xd0\xbf\xd0\xbe\xd1\x81\xd0\xbb\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81 \xd0\xbd\xd0\xb0 \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x83\xd1\x87\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd0\xb7\xd0\xb0\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd1\x8b\xd1\x85 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd0\xbe\xd0\xb2 """
+        offset = len(self.component.closed_mode_panel.closedList.script.elements)
+        amount = max(10, 20 - offset)
+        self.load_block()
+        BigWorld.player().base.load_next_completed(offset, amount)
+
+    def request_failed_quests(self):
+        """ \xd0\xbf\xd0\xbe\xd1\x81\xd0\xbb\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81 \xd0\xbd\xd0\xb0 \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x83\xd1\x87\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd0\xbf\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb0\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xbd\xd1\x8b\xd1\x85 \xd0\xba\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd0\xbe\xd0\xb2 """
+        offset = len(self.component.failed_mode_panel.failedList.script.elements)
+        amount = max(10, 20 - offset)
+        self.load_block()
+        BigWorld.player().base.load_next_failed(offset, amount)
+
+    def load_block(self):
+        """ \xd0\xb0\xd0\xba\xd1\x82\xd0\xb8\xd0\xb2\xd0\xb8\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb7\xd0\xb0\xd0\xb3\xd1\x80\xd1\x83\xd0\xb7\xd0\xba\xd1\x83 \xd0\xb8 \xd0\xb7\xd0\xb0\xd0\xb1\xd0\xbb\xd0\xbe\xd0\xba\xd0\xb8\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb2\xd0\xb2\xd0\xbe\xd0\xb4 """
+        self.quest_loading = True
+        self.component.darkScreen.visible = True
+
+    def load_unblock(self, has_more):
+        """ \xd0\xb7\xd0\xb0\xd0\xb3\xd1\x80\xd1\x83\xd0\xb7\xd0\xba\xd0\xb0 \xd0\xb7\xd0\xb0\xd0\xba\xd0\xbe\xd0\xbd\xd1\x87\xd0\xb5\xd0\xbd\xd0\xb0, \xd1\x80\xd0\xb0\xd0\xb7\xd0\xb1\xd0\xbb\xd0\xbe\xd0\xba\xd0\xb8\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb2\xd0\xb2\xd0\xbe\xd0\xb4 """
+        self.quest_loading = False
+        self.component.darkScreen.visible = False
+        if self.mode == self.MODE_COMPLETED:
+            self.all_closed_quests_loaded = not has_more
+        elif self.mode == self.MODE_FAILED:
+            self.all_failed_quests_loaded = not has_more
+        self.check_need_load()
+
+    def got_favorite_quests(self, favorite_quests):
+        self.favorite_quests = set(favorite_quests)
+
+    @PyGUIEvent('completedBtn', 'onClick')
+    def onCompletedClick(self):
+        self.switchMode(self.MODE_COMPLETED)
+
+    @PyGUIEvent('currentBtn', 'onClick')
+    def onCurrentClick(self):
+        self.switchMode(self.MODE_OPENED)
+
+    @PyGUIEvent('failedBtn', 'onClick')
+    def onFailedClick(self):
+        self.switchMode(self.MODE_FAILED)
+
+    @PyGUIEvent('closeBox', 'onClick')
+    def onCloseBox(self):
+        self.hide()
+
+    @PyGUIEvent('hintBox', 'onClick')
+    def onHintBox(self):
+        """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xbd\xd0\xb0\xd0\xb6\xd0\xb0\xd1\x82\xd0\xb8\xd0\xb8 \xd0\xba\xd0\xbd\xd0\xbe\xd0\xbf\xd0\xba\xd0\xb8-\xd0\xbf\xd0\xbe\xd0\xb4\xd1\x81\xd0\xba\xd0\xb0\xd0\xb7\xd0\xba\xd0\xb8."""
+        text_and_ok('soTPCQuestLog.hintBox', lc('soTPCQuestLog.soGUI.MANUAL_TITLE'), colorCodes.tf3_regular_text_color + lc('soTPCQuestLog.soGUI.MANUAL_TEXT'))
+
+    def handleMouseButtonEvent(self, comp, event):
+        return True
+
+    def handleMouseEnterEvent(self, comp):
+        return True
+
+    def handleMouseLeaveEvent(self, comp):
+        return True
+
+    def handleDragStartEvent(self, component):
+        """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd1\x85\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0\xd0\xb5\xd1\x88\xd1\x8c \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82."""
+        x, y = BWPersonality.game.mcursor.position
+        delta_x = self.component.position[0] - x
+        delta_y = self.component.position[1] - y
+        self._deltaposition = (delta_x, delta_y)
+        self._repeatMoveToCursor()
+        return True
+
+    def handleDragStopEvent(self, component):
+        """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd0\xbe\xd1\x82\xd0\xbf\xd1\x83\xd1\x81\xd0\xba\xd0\xb0\xd0\xb5\xd1\x88\xd1\x8c \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82."""
+        BigWorld.cancelCallback(self._clbID)
+        self.onBound()
+        self.savedGUIPosition = self.component.position
+        self.saveGUIPositions()
+        return True
+
+    def _moveToCursor(self):
+        """\xd0\x9f\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb2\xd0\xb8\xd0\xb4\xd0\xb6\xd0\xb5\xd1\x82 \xd0\xb7\xd0\xb0 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5\xd0\xbc \xd0\xba\xd1\x83\xd1\x80\xd1\x81\xd0\xbe\xd1\x80\xd0\xb0 \xd0\xbc\xd0\xb8\xd1\x88\xd0\xb8."""
+        x, y = BWPersonality.game.mcursor.position
+        sW, sH = BigWorld.screenSize()
+        x_position = self._deltaposition[0] + x
+        x = min(1 - self.component.width / sW, max(x_position, -1 + self.component.width / sW))
+        y_position = self._deltaposition[1] + y
+        y = min(1 - self.component.height / sH, max(y_position, -1 + self.component.height / sH))
+        self.component.position = (x, y, self.component.position[2])
+
+    def _repeatMoveToCursor(self):
+        """\xd0\x9f\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82 \xd1\x87\xd0\xb5\xd1\x80\xd0\xb5\xd0\xb7 \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb9 \xd0\xb8\xd0\xbd\xd1\x82\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb0\xd0\xbb."""
+        if not self.component.visible:
+            return
+        elif self.component.parent is None:
+            return
+        else:
+            self._moveToCursor()
+            self._clbID = BigWorld.callback(0.01, self._repeatMoveToCursor)
+            return
+
+    def fini(self):
+        BWPersonality.GUICore.removeListener('contextMenuEvent', self.questbox_context_event)

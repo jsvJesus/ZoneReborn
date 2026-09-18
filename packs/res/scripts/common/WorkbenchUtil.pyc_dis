@@ -1,0 +1,45 @@
+# Embedded file name: ./scripts/common/WorkbenchUtil.py
+from Localization import lc
+import json
+import ResMgr
+TYPE_WORKBENCH_NONE = 0
+TYPE_WORKBENCH_NOOB = 1
+TYPE_WORKBENCH_CHEMICAL = 2
+TYPE_WORKBENCH_PRO = 3
+TYPE_WORKBENCH_ELECTRICAL = 4
+MODELS = {TYPE_WORKBENCH_NOOB: 'models/entities/craft_table01.model',
+ TYPE_WORKBENCH_CHEMICAL: 'models/entities/containers/medical_bag_01_entity.model',
+ TYPE_WORKBENCH_PRO: 'models/props/streetobjects/Billboard_01_lod1.model',
+ TYPE_WORKBENCH_ELECTRICAL: 'models/entities/containers/electronics_pile_02_entity.model'}
+LSNAMES = {TYPE_WORKBENCH_NOOB: 'Workbench.names.TYPE_WORKBENCH_NOOB',
+ TYPE_WORKBENCH_CHEMICAL: 'Workbench.names.TYPE_WORKBENCH_CHEMICAL',
+ TYPE_WORKBENCH_PRO: 'Workbench.names.TYPE_WORKBENCH_PRO',
+ TYPE_WORKBENCH_ELECTRICAL: 'Workbench.names.TYPE_WORKBENCH_ELECTRICAL'}
+ERRORMODEL = 'models/entities/containers/bag.model'
+path = 'scripts/common/data/Workbench.json'
+Workbench_config = {}
+
+def getNameModel(wtype):
+    return MODELS.get(wtype, ERRORMODEL)
+
+
+def getName(wtype, user = None):
+    key = LSNAMES.get(wtype, None)
+    if not key:
+        return '???'
+    else:
+        return lc(key, user=user)
+
+
+def _load_workbench_config():
+    global Workbench_config
+    py_data_section = ResMgr.openSection(path)
+    Workbench_config = json.loads(py_data_section.asBinary)
+
+
+def getReciept(type_name):
+    if not type_name:
+        return []
+    if not Workbench_config:
+        _load_workbench_config()
+    return Workbench_config.get(str(type_name), [])

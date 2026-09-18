@@ -1,0 +1,64 @@
+# Embedded file name: ./scripts/client/Trader.py
+import BigWorld
+import Helpers.Caps
+from SingleEntityTimedLight import SingleEntityTimedLight
+
+class Trader(SingleEntityTimedLight):
+    BARTER_CACHE = {}
+    TRADE_CACHE = {}
+
+    @staticmethod
+    def clear_cache(tradelist_name):
+        if tradelist_name and tradelist_name in Trader.TRADE_CACHE:
+            del Trader.TRADE_CACHE[tradelist_name]
+        if not tradelist_name:
+            Trader.TRADE_CACHE = {}
+
+    @staticmethod
+    def clear_barter_cache():
+        Trader.BARTER_CACHE = {}
+
+    def __init__(self):
+        if Helpers.Caps.CAP_CAN_TRADE not in self.targetCaps:
+            self.targetCaps += [Helpers.Caps.CAP_CAN_TRADE]
+        self.BarterAssortment = []
+        self.selling_assortment = []
+        self.buying_klasses = []
+        self.buying_specs_assortment = []
+
+    def update_barter_data(self, barterlist_name = ''):
+        """ \xd0\xbe\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb8\xd1\x82\xd1\x8c \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xbe \xd0\xb1\xd0\xb0\xd1\x80\xd1\x82\xd0\xb5\xd1\x80\xd0\xb5 """
+        if not barterlist_name:
+            key = self.id
+            key in Trader.BARTER_CACHE and self._apply_barter_data(Trader.BARTER_CACHE[key])
+        else:
+            self.cell.get_barter_data_for_client(BigWorld.player().id, barterlist_name)
+
+    def get_barter_data_for_client_result(self, barter_assortment, barter_list_name):
+        """ \xd1\x81\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb5\xd1\x80 \xd0\xbf\xd1\x80\xd0\xb8\xd1\x81\xd0\xbb\xd0\xb0\xd0\xbb \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xbe \xd0\xb1\xd0\xb0\xd1\x80\xd1\x82\xd0\xb5\xd1\x80\xd0\xb5 """
+        Trader.BARTER_CACHE[barter_list_name or self.id] = barter_assortment
+        self._apply_barter_data(barter_assortment)
+
+    def update_trade_data(self, tradelist_name = ''):
+        """ \xd0\xbe\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb8\xd1\x82\xd1\x8c \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xbe \xd1\x82\xd0\xbe\xd1\x80\xd0\xb3\xd0\xbe\xd0\xb2\xd0\xbb\xd0\xb5 """
+        if not tradelist_name:
+            key = self.id
+            key in Trader.TRADE_CACHE and self._apply_trade_data(*Trader.TRADE_CACHE[key])
+        else:
+            self.cell.get_trade_data_for_client(BigWorld.player().id, tradelist_name)
+
+    def get_trade_data_for_client_result(self, selling_assortment, buying_assortment, buying_klasses, trade_list_name):
+        """ \xd1\x81\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb5\xd1\x80 \xd0\xbf\xd1\x80\xd0\xb8\xd1\x81\xd0\xbb\xd0\xb0\xd0\xbb \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xbe \xd1\x82\xd0\xbe\xd1\x80\xd0\xb3\xd0\xbe\xd0\xb2\xd0\xbb\xd0\xb5 """
+        Trader.TRADE_CACHE[trade_list_name or self.id] = (selling_assortment, buying_assortment, buying_klasses)
+        self._apply_trade_data(selling_assortment, buying_assortment, buying_klasses)
+
+    def _apply_barter_data(self, barter_assortment):
+        self.BarterAssortment = barter_assortment
+        BigWorld.player().UpdateNPCBarter(upd_pack=True, upd_slots=True)
+
+    def _apply_trade_data(self, selling_assortment, buying_assortment, buying_klasses):
+        self.selling_assortment = selling_assortment
+        self.buying_specs_assortment = buying_assortment
+        self.buying_klasses = buying_klasses
+        BigWorld.player().ClearTrade()
+        BigWorld.player().UpdateTradeInterface(allow_empty=False)

@@ -1,0 +1,18 @@
+# Embedded file name: ./scripts/client/sitting_settings.py
+Stand = 0
+SitGround = 1
+SitBackpack = 2
+SitGroundX = 3
+SitLegs = 4
+animations = {SitGround: {'in': 'SitGroundAssIn',
+             'loop': 'SitGroundAssIdle',
+             'out': 'SitGroundAssOut'},
+ SitBackpack: {'in': 'SitBackpackIn',
+               'loop': 'SitBackpackIdle',
+               'out': 'SitBackpackOut'},
+ SitGroundX: {'in': 'SitGroundXIn',
+              'loop': 'SitGroundXIdle',
+              'out': 'SitGroundXOut'},
+ SitLegs: {'in': 'SitLegsIn',
+           'loop': 'SitLegsIdle',
+           'out': 'SitLegsOut'}}

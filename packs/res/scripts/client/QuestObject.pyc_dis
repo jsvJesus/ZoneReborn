@@ -1,0 +1,78 @@
+# Embedded file name: ./scripts/client/QuestObject.py
+__author__ = 'Madcat'
+import BigWorld
+from ModelSelector import ModelSelector
+import Quest
+from Quest import QuestCheckState
+from functools import partial
+from Helpers.Caps import CAP_EXCLUDE
+
+class QuestObject(BigWorld.Entity, ModelSelector):
+
+    def __init__(self):
+        BigWorld.Entity.__init__(self)
+
+    def onEnterWorld(self, prereqs):
+        self.targetCaps = [CAP_EXCLUDE]
+        if self.show_if != QuestCheckState.NO_QUEST:
+            self.hideModel()
+        self.check_state()
+
+    def check_state(self, attempts = 5):
+        if self.isDestroyed:
+            return
+        elif attempts > 0 and (not BigWorld.player() or not BigWorld.player().client_quests.loaded):
+            BigWorld.callback(1, partial(self.check_state, attempts - 1))
+            return
+        else:
+            if self.show_if != QuestCheckState.CLOSED:
+                quest_state = BigWorld.player().client_quests.get_state(self.questID)
+                if quest_state is None:
+                    return
+                self.onChangeQuest(quest_state)
+            else:
+                BigWorld.player().base.is_quest_closed(self.questID, self.id)
+            return
+
+    def on_got_closed_info(self, is_closed):
+        if is_closed:
+            self.onChangeQuest(Quest.STATE_CLOSED)
+
+    def showModel(self):
+        self.setObstacleModel()
+
+    def hideModel(self):
+        self.model = None
+        return
+
+    def onChangeQuest(self, state):
+        if self.show_if == QuestCheckState.NO_QUEST:
+            self.hideModel()
+        elif self.show_if == QuestCheckState.HAS_QUEST:
+            self.showModel()
+        elif self.show_if == QuestCheckState.OPENED:
+            if state == Quest.STATE_OPENED:
+                self.showModel()
+            else:
+                self.hideModel()
+        elif self.show_if == QuestCheckState.CLOSED:
+            if state == Quest.STATE_CLOSED:
+                self.showModel()
+            else:
+                self.hideModel()
+        elif self.show_if == QuestCheckState.FAILED:
+            if state == Quest.STATE_FAILED:
+                self.showModel()
+            else:
+                self.hideModel()
+        elif self.show_if == QuestCheckState.ON_TEST:
+            if state == Quest.STATE_ONTEST:
+                self.showModel()
+            else:
+                self.hideModel()
+
+    def onRemoveQuest(self):
+        if self.show_if == QuestCheckState.NO_QUEST:
+            self.showModel()
+        else:
+            self.hideModel()

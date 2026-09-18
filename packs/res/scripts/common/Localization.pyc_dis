@@ -1,0 +1,201 @@
+# Embedded file name: ./scripts/common/Localization.py
+"""????"""
+__author__ = 'Leviathan'
+import json
+import os
+import traceback
+try:
+    import BigWorld
+    from utils_bw import isinstance_ext, isClient
+except ImportError:
+    pass
+except AttributeError:
+    print 'AttributeError'
+    traceback.print_exc()
+
+import ResMgr
+LOCALIZATION_NAME_TO_CODE = {'russian': 0,
+ 'english': 1}
+LOCALIZATION_CODE_TO_NAME = dict(((v, k) for k, v in LOCALIZATION_NAME_TO_CODE.items()))
+language = 'russian'
+default_language = 'russian'
+try:
+    settings_filepath = '../settings.json'
+    if os.path.isfile(settings_filepath):
+        json_data = open(settings_filepath)
+        data = json.load(json_data)
+        language = data.get('language')
+        if language is None:
+            language = 'russian'
+    else:
+        language = 'russian'
+except:
+    traceback.print_exc()
+    language = 'russian'
+
+class Localization:
+    globalLanguage = language
+    print 'globalLanguage ', globalLanguage
+    loaded_loc_files = {}
+    loaded_loc_files_english = {}
+    commands = {}
+
+    def __init__(self, file_names = None):
+        self.reload(file_names)
+
+    def reload(self, file_names = None, force = False):
+        if file_names is None:
+            if force:
+                numb = 0
+                for filename in ResMgr.openSection('local')['Russian'].keys():
+                    fullpath = 'local/Russian/' + filename
+                    ResMgr.purge(fullpath)
+                    numb += 1
+
+                for filename in ResMgr.openSection('local')['English'].keys():
+                    fullpath = 'local/English/' + filename
+                    ResMgr.purge(fullpath)
+                    numb += 1
+
+                print 'purge %s files' % numb
+            if not ResMgr.openSection('local'):
+                print 'ERROR RELOAD LOCALIZATION'
+                return
+            self.loaded_loc_files = dict(((filename[:-4], section) for filename, section in ResMgr.openSection('local')['Russian'].items() if filename.endswith('.xml')))
+            self.loaded_loc_files_english = dict(((filename[:-4], section) for filename, section in ResMgr.openSection('local')['English'].items() if filename.endswith('.xml')))
+        else:
+            for file_name in file_names:
+                try:
+                    core_name = file_name[file_name.rindex('/') + 1:file_name.rindex('.')]
+                except ValueError:
+                    print 'Error loading localization file'
+                    continue
+
+                if force:
+                    ResMgr.purge(file_name, True)
+                self.loaded_loc_files[core_name] = ResMgr.openSection(file_name)
+                print 'Loaded localization:', file_name
+
+        return
+
+    def getXMLData(self, filename, language = None):
+        if not language:
+            language = self.globalLanguage
+        if language == 'russian':
+            return self.loaded_loc_files[filename]
+        else:
+            return self.loaded_loc_files_english[filename]
+
+    def GetLocalizationString(self, string, utf8, DEFAULT_STRING = None, language = None):
+        if DEFAULT_STRING == None:
+            if utf8:
+                DEFAULT_STRING = string
+            else:
+                try:
+                    DEFAULT_STRING = unicode(string)
+                except UnicodeDecodeError:
+                    DEFAULT_STRING = unicode(string, 'utf8')
+
+        strings_list = string.split('.')
+        localization_file_name = strings_list.pop(0)
+        if language != None:
+            lang = language
+        else:
+            lang = self.globalLanguage
+        try:
+            if lang == 'russian':
+                new_section = self.loaded_loc_files[localization_file_name]
+            else:
+                new_section = self.loaded_loc_files_english[localization_file_name]
+        except KeyError:
+            return DEFAULT_STRING
+
+        for obj_name in strings_list:
+            if new_section == None:
+                return DEFAULT_STRING
+            try:
+                new_section = new_section[obj_name]
+            except KeyError:
+                return DEFAULT_STRING
+
+        if new_section == None:
+            return DEFAULT_STRING
+        else:
+            return_string = new_section.asString
+            return_string = return_string.replace('\r', '')
+            if utf8:
+                return return_string
+            try:
+                return return_string.decode('utf-8')
+            except:
+                print 'error in:'
+                print 'string:', repr(string)
+                print 'localization_file_name:', repr(localization_file_name)
+                print 'return_string:', repr(return_string)
+                print 'lang:', repr(lang)
+                traceback.print_exc()
+                return 'ERROR'
+
+            return
+
+    def localization_code(self):
+        """\xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbe\xd0\xb4 \xd0\xbb\xd0\xbe\xd0\xba\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb7\xd0\xb0\xd1\x86\xd0\xb8\xd0\xb8."""
+        return LOCALIZATION_NAME_TO_CODE.get(self.globalLanguage, 0)
+
+    def helpForCommand(self, command):
+        notfound = ' /%s: not found info' % command
+        if not self.commands:
+            self.getCommandList()
+        print ':', [self.commands.get(command, notfound)]
+        return self.commands.get(command, notfound)
+
+    def getCommandList(self):
+        if not isClient() or not BigWorld.player():
+            return {}
+        player = BigWorld.player()
+        acces_level = getattr(player, 'clientAccessLevel', 0) or getattr(player, 'UserFromMasterPassword', 0)
+        self.commands = {}
+        data = self.getXMLData('ConsoleCommands')
+        for key, value in data['player_help'].items():
+            self.commands[key] = value.asString.decode('utf8')
+
+        if acces_level > 1:
+            for key, value in data['dev_help'].items():
+                self.commands[key] = 'dev: ' + value.asString.decode('utf8')
+
+        keys = self.commands.keys()
+        keys.sort()
+        return keys
+
+
+print 'Start loading localization'
+localization_object = Localization()
+
+def get_user_localization(entity):
+    """\xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb8\xd0\xbc\xd1\x8f \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c\xd1\x81\xd0\xba\xd0\xbe\xd0\xb9 \xd0\xbb\xd0\xbe\xd0\xba\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb7\xd0\xb0\xd1\x86\xd0\xb8\xd0\xb8."""
+    try:
+        localization_code = BigWorld.globalData['language', entity.id]
+        loc_name = LOCALIZATION_CODE_TO_NAME[localization_code]
+    except KeyError:
+        loc_name = language
+
+    return loc_name
+
+
+def get_localization_by_id(localization_code):
+    return LOCALIZATION_CODE_TO_NAME.get(localization_code, default_language)
+
+
+def lc(string, utf8 = False, default = None, language = None, user = None):
+    global localization_object
+    try:
+        if not isClient() and user is not None and isinstance_ext(user, ('Avatar', 'Account')):
+            language = get_user_localization(user)
+    except NameError:
+        pass
+
+    return localization_object.GetLocalizationString(string, utf8, default, language)
+
+
+def openLocalizeSection(filename, language = None):
+    return localization_object.getXMLData(filename, language)

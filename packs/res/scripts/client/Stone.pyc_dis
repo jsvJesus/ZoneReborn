@@ -1,0 +1,18 @@
+# Embedded file name: ./scripts/client/Stone.py
+import BigWorld
+from Throwable import Throwable
+
+class Stone(BigWorld.Entity, Throwable):
+
+    def __init__(self):
+        BigWorld.Entity.__init__(self)
+        Throwable.__init__(self)
+
+    def get_max_existence_time(self):
+        return 5.0
+
+    def throw(self):
+        result = Throwable.throw(self)
+        if not self.fromServer:
+            self.tick()
+        return result

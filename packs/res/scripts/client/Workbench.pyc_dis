@@ -1,0 +1,43 @@
+# Embedded file name: ./scripts/client/Workbench.py
+import BigWorld
+import Math
+import Pixie
+import random
+import ItemsUtils
+import time
+import GUI
+from Localization import lc
+from ItemHolder import ItemHolder
+from Helpers.Caps import CAP_OPEN_WORKBENCH
+import WorkbenchUtil
+
+class Workbench(BigWorld.Entity):
+    """" client/Workbench """
+
+    def __init__(self):
+        self.height = 1.0
+        BigWorld.Entity.__init__(self)
+        self.targetCaps = [CAP_OPEN_WORKBENCH]
+        self.name = u'?????'
+
+    def onLoadModel(self, model):
+        if self.isDestroyed:
+            return
+        self.model = model
+        self.height = Math.Matrix(self.model.bounds).get(1, 1) if model else 1.0
+
+    def onEnterWorld(self, prereqs):
+        self._redraw_Model()
+        BigWorld.addShadowEntity(self)
+        self.targetFullBounds = True
+
+    def onLeaveWorld(self):
+        BigWorld.delShadowEntity(self)
+
+    def set_workbenchType(self, old):
+        self._redraw_Model()
+
+    def _redraw_Model(self):
+        modelname = WorkbenchUtil.getNameModel(self.workbenchType)
+        BigWorld.fetchModelObstacle(modelname, self.matrix, 0, self.onLoadModel)
+        self.name = WorkbenchUtil.getName(self.workbenchType)
