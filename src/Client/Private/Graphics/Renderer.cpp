@@ -2766,6 +2766,11 @@ namespace client::graphics
             state_->lodInstances.size() *
                 3u);
 
+        //
+        // Static/non-LOD scene instances.
+        //
+        state_->renderInstances.insert(state_->renderInstances.end(), state_->instances.begin(), state_->instances.end());
+
         bool hasBounds = false;
 
         DirectX::XMFLOAT3 sceneMinimum{};
