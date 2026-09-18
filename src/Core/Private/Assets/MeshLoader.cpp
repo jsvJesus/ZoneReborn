@@ -315,6 +315,14 @@ namespace
         {
             vertexStride = 40;
         }
+        else if (format == "xyznuviiiwwtb")
+        {
+            vertexStride = 37;
+        }
+        else if (format == "xyznuviiiww")
+        {
+            vertexStride = 29;
+        }
         else
         {
             error =
@@ -457,6 +465,69 @@ namespace
                 vertex.packedNormal =
                     PackNormal(
                         normal);
+
+                continue;
+            }
+
+            if (format == "xyznuviiiwwtb")
+            {
+                //
+                // Stage 5:
+                // render the character in bind/static pose.
+                //
+                // Bone indices and weights are deliberately skipped here.
+                // They will become useful when skeletal animation is added.
+                //
+                if (!ReadValue(
+                        data,
+                        offset + 12,
+                        vertex.packedNormal) ||
+                    !ReadValue(
+                        data,
+                        offset + 16,
+                        vertex.u) ||
+                    !ReadValue(
+                        data,
+                        offset + 20,
+                        vertex.v) ||
+                    !ReadValue(
+                        data,
+                        offset + 29,
+                        vertex.packedTangent) ||
+                    !ReadValue(
+                        data,
+                        offset + 33,
+                        vertex.packedBinormal))
+                {
+                    error =
+                        "xyznuviiiwwtb vertex is truncated.";
+
+                    return false;
+                }
+
+                continue;
+            }
+
+            if (format == "xyznuviiiww")
+            {
+                if (!ReadValue(
+                        data,
+                        offset + 12,
+                        vertex.packedNormal) ||
+                    !ReadValue(
+                        data,
+                        offset + 16,
+                        vertex.u) ||
+                    !ReadValue(
+                        data,
+                        offset + 20,
+                        vertex.v))
+                {
+                    error =
+                        "xyznuviiiww vertex is truncated.";
+
+                    return false;
+                }
 
                 continue;
             }

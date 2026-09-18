@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include "Preview/WorldPreviewLoader.h"
+#include "Preview/CharacterDummyRenderDataBuilder.h"
 
 #include "Core/Log.h"
 
@@ -103,6 +104,24 @@ namespace client
                 core::Log::Error(
                     std::string(
                         "Unable to load personages_select: ") +
+                    stageError);
+
+                return false;
+            }
+
+            preview::CharacterDummyRenderDataBuilder
+                characterDummyBuilder;
+
+            if (!characterDummyBuilder.BuildDefault(
+                    runtime_.Resources(),
+                    characterSelectStage_.
+                        dummyTransform,
+                    scene,
+                    stageError))
+            {
+                core::Log::Error(
+                    std::string(
+                        "Unable to build CharacterDummy: ") +
                     stageError);
 
                 return false;
