@@ -6,6 +6,10 @@ const ROOT =
 const SWF_URL =
     ROOT +
     "/packs/res/extendedGUI/MainMenuGUI.swf";
+	
+const SWF_BASE =
+    ROOT +
+    "/packs/res/extendedGUI/";
 
 const STARTUP_IMAGE =
     ROOT +
@@ -1142,8 +1146,7 @@ async function startFlash()
 				SWF_URL,
 
 			base:
-				ROOT +
-				"/packs/res/",
+				SWF_BASE,
 
 			allowScriptAccess:
 				true,
@@ -1158,7 +1161,7 @@ async function startFlash()
 				true,
 
 			logLevel:
-				"debug",
+				"warn",
 
 			backgroundColor:
 				"#000000",
