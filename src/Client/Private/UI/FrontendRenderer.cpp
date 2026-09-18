@@ -5,42 +5,38 @@
 #include <d2d1.h>
 #include <d2d1helper.h>
 #include <dwrite.h>
+#include <dxgiformat.h>
 #include <wincodec.h>
 #include <wrl/client.h>
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <string>
+#include <vector>
 
 namespace
 {
     using Microsoft::WRL::ComPtr;
 
-    constexpr char LoginBackground[] =
+    constexpr char LoginBackgroundResource[] =
         "res/soGUI/maps/Login/login_bg.jpg";
 
-    D2D1_RECT_F ToD2DRect(
-        const client::ui::Rect& rect)
-    {
-        return D2D1::RectF(
-            rect.left,
-            rect.top,
-            rect.right,
-            rect.bottom);
-    }
+    constexpr char StartupLogoResource[] =
+        "res/soGUI/maps/loadingScreen/appStart.tga";
 
-    bool LoadBitmap(
+    bool LoadWicBitmap(
         IWICImagingFactory* imagingFactory,
-        ID2D1HwndRenderTarget* renderTarget,
+        ID2D1HwndRenderTarget* target,
         const std::filesystem::path& path,
-        ComPtr<ID2D1Bitmap>& result,
+        ComPtr<ID2D1Bitmap>& bitmap,
         std::string& error)
     {
-        result.Reset();
-
         ComPtr<IWICBitmapDecoder>
             decoder;
 
-        HRESULT hr =
+        HRESULT result =
             imagingFactory->
                 CreateDecoderFromFilename(
                     path.c_str(),
@@ -49,10 +45,10 @@ namespace
                     WICDecodeMetadataCacheOnLoad,
                     decoder.GetAddressOf());
 
-        if (FAILED(hr))
+        if (FAILED(result))
         {
             error =
-                "Unable to open frontend bitmap: " +
+                "Unable to open frontend image: " +
                 path.string();
 
             return false;
@@ -61,16 +57,15 @@ namespace
         ComPtr<IWICBitmapFrameDecode>
             frame;
 
-        hr =
-            decoder->
-                GetFrame(
-                    0,
-                    frame.GetAddressOf());
+        result =
+            decoder->GetFrame(
+                0,
+                frame.GetAddressOf());
 
-        if (FAILED(hr))
+        if (FAILED(result))
         {
             error =
-                "Unable to decode frontend bitmap.";
+                "Unable to decode frontend image.";
 
             return false;
         }
@@ -78,48 +73,46 @@ namespace
         ComPtr<IWICFormatConverter>
             converter;
 
-        hr =
+        result =
             imagingFactory->
                 CreateFormatConverter(
                     converter.GetAddressOf());
 
-        if (FAILED(hr))
+        if (FAILED(result))
         {
             error =
-                "Unable to create bitmap converter.";
+                "Unable to create WIC converter.";
 
             return false;
         }
 
-        hr =
-            converter->
-                Initialize(
-                    frame.Get(),
-                    GUID_WICPixelFormat32bppPBGRA,
-                    WICBitmapDitherTypeNone,
-                    nullptr,
-                    0.0,
-                    WICBitmapPaletteTypeMedianCut);
+        result =
+            converter->Initialize(
+                frame.Get(),
+                GUID_WICPixelFormat32bppPBGRA,
+                WICBitmapDitherTypeNone,
+                nullptr,
+                0.0,
+                WICBitmapPaletteTypeMedianCut);
 
-        if (FAILED(hr))
+        if (FAILED(result))
         {
             error =
-                "Unable to convert frontend bitmap.";
+                "Unable to convert frontend image.";
 
             return false;
         }
 
-        hr =
-            renderTarget->
-                CreateBitmapFromWicBitmap(
-                    converter.Get(),
-                    nullptr,
-                    result.GetAddressOf());
+        result =
+            target->CreateBitmapFromWicBitmap(
+                converter.Get(),
+                nullptr,
+                bitmap.GetAddressOf());
 
-        if (FAILED(hr))
+        if (FAILED(result))
         {
             error =
-                "Unable to create frontend bitmap.";
+                "Unable to create Direct2D bitmap.";
 
             return false;
         }
@@ -127,12 +120,329 @@ namespace
         return true;
     }
 
-    void DrawTextValue(
+    bool LoadTgaBitmap(
+        const core::resources::ResourceFileSystem& resources,
+        const char* logicalPath,
+        ID2D1HwndRenderTarget* target,
+        ComPtr<ID2D1Bitmap>& bitmap,
+        std::string& error)
+    {
+        std::vector<std::byte> file;
+
+        if (!resources.ReadBinary(
+                logicalPath,
+                file))
+        {
+            error =
+                std::string(
+                    "TGA resource not found: ") +
+                logicalPath;
+
+            return false;
+        }
+
+        if (file.size() <
+            18)
+        {
+            error =
+                "Invalid TGA header.";
+
+            return false;
+        }
+
+        const auto* bytes =
+            reinterpret_cast<
+                const std::uint8_t*>(
+                    file.data());
+
+        const std::uint8_t idLength =
+            bytes[0];
+
+        const std::uint8_t colorMapType =
+            bytes[1];
+
+        const std::uint8_t imageType =
+            bytes[2];
+
+        const std::uint16_t width =
+            static_cast<std::uint16_t>(
+                bytes[12] |
+                (bytes[13] << 8));
+
+        const std::uint16_t height =
+            static_cast<std::uint16_t>(
+                bytes[14] |
+                (bytes[15] << 8));
+
+        const std::uint8_t bitsPerPixel =
+            bytes[16];
+
+        const std::uint8_t descriptor =
+            bytes[17];
+
+        if (colorMapType !=
+            0)
+        {
+            error =
+                "Color mapped TGA is not supported.";
+
+            return false;
+        }
+
+        if (width ==
+                0 ||
+            height ==
+                0)
+        {
+            error =
+                "Invalid TGA size.";
+
+            return false;
+        }
+
+        const bool trueColor =
+            imageType ==
+            2;
+
+        const bool grayscale =
+            imageType ==
+            3;
+
+        if (!trueColor &&
+            !grayscale)
+        {
+            error =
+                "Unsupported TGA image type.";
+
+            return false;
+        }
+
+        std::size_t sourceBytesPerPixel =
+            0;
+
+        if (grayscale)
+        {
+            if (bitsPerPixel !=
+                8)
+            {
+                error =
+                    "Unsupported grayscale TGA format.";
+
+                return false;
+            }
+
+            sourceBytesPerPixel =
+                1;
+        }
+        else
+        {
+            if (bitsPerPixel ==
+                24)
+            {
+                sourceBytesPerPixel =
+                    3;
+            }
+            else if (
+                bitsPerPixel ==
+                32)
+            {
+                sourceBytesPerPixel =
+                    4;
+            }
+            else
+            {
+                error =
+                    "Unsupported TGA pixel format.";
+
+                return false;
+            }
+        }
+
+        const std::size_t pixelOffset =
+            18 +
+            static_cast<std::size_t>(
+                idLength);
+
+        const std::size_t requiredSize =
+            pixelOffset +
+            static_cast<std::size_t>(
+                width) *
+            static_cast<std::size_t>(
+                height) *
+            sourceBytesPerPixel;
+
+        if (requiredSize >
+            file.size())
+        {
+            error =
+                "Incomplete TGA image.";
+
+            return false;
+        }
+
+        std::vector<std::uint8_t>
+            pixels;
+
+        pixels.resize(
+            static_cast<std::size_t>(
+                width) *
+            static_cast<std::size_t>(
+                height) *
+            4);
+
+        const bool topOrigin =
+            (descriptor &
+             0x20) !=
+            0;
+
+        for (std::uint32_t y = 0;
+             y < height;
+             ++y)
+        {
+            const std::uint32_t sourceY =
+                topOrigin
+                    ? y
+                    : static_cast<
+                        std::uint32_t>(
+                            height - 1 - y);
+
+            for (std::uint32_t x = 0;
+                 x < width;
+                 ++x)
+            {
+                const std::size_t sourceIndex =
+                    pixelOffset +
+                    (
+                        static_cast<std::size_t>(
+                            sourceY) *
+                            width +
+                        x
+                    ) *
+                    sourceBytesPerPixel;
+
+                const std::size_t destinationIndex =
+                    (
+                        static_cast<std::size_t>(
+                            y) *
+                            width +
+                        x
+                    ) *
+                    4;
+
+                std::uint8_t blue =
+                    0;
+
+                std::uint8_t green =
+                    0;
+
+                std::uint8_t red =
+                    0;
+
+                std::uint8_t alpha =
+                    255;
+
+                if (grayscale)
+                {
+                    red =
+                        bytes[sourceIndex];
+
+                    green =
+                        red;
+
+                    blue =
+                        red;
+                }
+                else
+                {
+                    blue =
+                        bytes[
+                            sourceIndex];
+
+                    green =
+                        bytes[
+                            sourceIndex +
+                            1];
+
+                    red =
+                        bytes[
+                            sourceIndex +
+                            2];
+
+                    if (sourceBytesPerPixel ==
+                        4)
+                    {
+                        alpha =
+                            bytes[
+                                sourceIndex +
+                                3];
+                    }
+                }
+
+                const std::uint32_t a =
+                    alpha;
+
+                pixels[
+                    destinationIndex] =
+                    static_cast<std::uint8_t>(
+                        blue * a /
+                        255);
+
+                pixels[
+                    destinationIndex +
+                    1] =
+                    static_cast<std::uint8_t>(
+                        green * a /
+                        255);
+
+                pixels[
+                    destinationIndex +
+                    2] =
+                    static_cast<std::uint8_t>(
+                        red * a /
+                        255);
+
+                pixels[
+                    destinationIndex +
+                    3] =
+                    alpha;
+            }
+        }
+
+        const D2D1_BITMAP_PROPERTIES properties =
+            D2D1::BitmapProperties(
+                D2D1::PixelFormat(
+                    DXGI_FORMAT_B8G8R8A8_UNORM,
+                    D2D1_ALPHA_MODE_PREMULTIPLIED));
+
+        const HRESULT result =
+            target->CreateBitmap(
+                D2D1::SizeU(
+                    width,
+                    height),
+                pixels.data(),
+                static_cast<UINT32>(
+                    width) *
+                    4,
+                properties,
+                bitmap.GetAddressOf());
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create TGA bitmap.";
+
+            return false;
+        }
+
+        return true;
+    }
+
+    void DrawText(
         ID2D1HwndRenderTarget* target,
         IDWriteTextFormat* format,
         ID2D1SolidColorBrush* brush,
         const std::wstring& text,
-        const D2D1_RECT_F& rectangle)
+        const D2D1_RECT_F& rect)
     {
         if (text.empty())
         {
@@ -144,7 +454,7 @@ namespace
             static_cast<UINT32>(
                 text.size()),
             format,
-            rectangle,
+            rect,
             brush,
             D2D1_DRAW_TEXT_OPTIONS_CLIP,
             DWRITE_MEASURING_MODE_NATURAL);
@@ -164,15 +474,6 @@ namespace client::ui
         ComPtr<IDWriteFactory>
             writeFactory;
 
-        ComPtr<IDWriteTextFormat>
-            titleFormat;
-
-        ComPtr<IDWriteTextFormat>
-            normalFormat;
-
-        ComPtr<IDWriteTextFormat>
-            smallFormat;
-
         ComPtr<IWICImagingFactory>
             imagingFactory;
 
@@ -181,6 +482,30 @@ namespace client::ui
 
         ComPtr<ID2D1Bitmap>
             loginBackground;
+
+        ComPtr<ID2D1Bitmap>
+            startupLogo;
+
+        ComPtr<IDWriteTextFormat>
+            headerFormat;
+
+        ComPtr<IDWriteTextFormat>
+            labelFormat;
+
+        ComPtr<IDWriteTextFormat>
+            inputFormat;
+
+        ComPtr<IDWriteTextFormat>
+            smallFormat;
+
+        ComPtr<IDWriteTextFormat>
+            buttonFormat;
+
+        ComPtr<IDWriteTextFormat>
+            versionFormat;
+
+        ComPtr<IDWriteTextFormat>
+            symbolFormat;
 
         std::uint32_t width =
             0;
@@ -208,8 +533,7 @@ namespace client::ui
         const HWND window,
         const std::uint32_t width,
         const std::uint32_t height,
-        const core::resources::ResourceFileSystem&
-            resources,
+        const core::resources::ResourceFileSystem& resources,
         std::string& error)
     {
         Shutdown();
@@ -219,18 +543,19 @@ namespace client::ui
         state_ =
             std::make_unique<State>();
 
-        HRESULT hr =
+        HRESULT result =
             CoInitializeEx(
                 nullptr,
                 COINIT_APARTMENTTHREADED);
 
-        if (SUCCEEDED(hr))
+        if (SUCCEEDED(result))
         {
             state_->comOwned =
                 true;
         }
-        else if (hr !=
-                 RPC_E_CHANGED_MODE)
+        else if (
+            result !=
+            RPC_E_CHANGED_MODE)
         {
             error =
                 "COM initialization failed.";
@@ -238,32 +563,33 @@ namespace client::ui
             return false;
         }
 
-        hr =
+        result =
             D2D1CreateFactory(
                 D2D1_FACTORY_TYPE_SINGLE_THREADED,
                 state_->
                     d2dFactory.
                     GetAddressOf());
 
-        if (FAILED(hr))
+        if (FAILED(result))
         {
             error =
-                "Direct2D factory initialization failed.";
+                "Direct2D initialization failed.";
 
             return false;
         }
 
-        hr =
+        result =
             DWriteCreateFactory(
                 DWRITE_FACTORY_TYPE_SHARED,
                 __uuidof(
                     IDWriteFactory),
-                reinterpret_cast<IUnknown**>(
-                    state_->
-                        writeFactory.
-                        GetAddressOf()));
+                reinterpret_cast<
+                    IUnknown**>(
+                        state_->
+                            writeFactory.
+                            GetAddressOf()));
 
-        if (FAILED(hr))
+        if (FAILED(result))
         {
             error =
                 "DirectWrite initialization failed.";
@@ -271,7 +597,7 @@ namespace client::ui
             return false;
         }
 
-        hr =
+        result =
             CoCreateInstance(
                 CLSID_WICImagingFactory,
                 nullptr,
@@ -281,7 +607,7 @@ namespace client::ui
                         imagingFactory.
                         GetAddressOf()));
 
-        if (FAILED(hr))
+        if (FAILED(result))
         {
             error =
                 "WIC initialization failed.";
@@ -289,7 +615,7 @@ namespace client::ui
             return false;
         }
 
-        hr =
+        result =
             state_->
                 d2dFactory->
                 CreateHwndRenderTarget(
@@ -304,7 +630,7 @@ namespace client::ui
                         renderTarget.
                         GetAddressOf());
 
-        if (FAILED(hr))
+        if (FAILED(result))
         {
             error =
                 "Frontend render target initialization failed.";
@@ -312,7 +638,7 @@ namespace client::ui
             return false;
         }
 
-        hr =
+        result =
             state_->
                 renderTarget->
                 CreateSolidColorBrush(
@@ -322,7 +648,7 @@ namespace client::ui
                         brush.
                         GetAddressOf());
 
-        if (FAILED(hr))
+        if (FAILED(result))
         {
             error =
                 "Frontend brush initialization failed.";
@@ -330,84 +656,74 @@ namespace client::ui
             return false;
         }
 
-        hr =
-            state_->
-                writeFactory->
-                CreateTextFormat(
-                    L"Segoe UI",
-                    nullptr,
-                    DWRITE_FONT_WEIGHT_NORMAL,
-                    DWRITE_FONT_STYLE_NORMAL,
-                    DWRITE_FONT_STRETCH_NORMAL,
-                    32.0f,
-                    L"ru-RU",
+        auto createFormat =
+            [&](const wchar_t* family,
+                const float size,
+                const DWRITE_FONT_WEIGHT weight,
+                ComPtr<IDWriteTextFormat>& output)
+            {
+                return
                     state_->
-                        titleFormat.
-                        GetAddressOf());
+                        writeFactory->
+                        CreateTextFormat(
+                            family,
+                            nullptr,
+                            weight,
+                            DWRITE_FONT_STYLE_NORMAL,
+                            DWRITE_FONT_STRETCH_NORMAL,
+                            size,
+                            L"ru-RU",
+                            output.GetAddressOf());
+            };
 
-        if (FAILED(hr))
-        {
-            error =
-                "Frontend title font initialization failed.";
-
-            return false;
-        }
-
-        hr =
-            state_->
-                writeFactory->
-                CreateTextFormat(
-                    L"Segoe UI",
-                    nullptr,
+        if (FAILED(
+                createFormat(
+                    L"Arial Narrow",
+                    18.0f,
+                    DWRITE_FONT_WEIGHT_BOLD,
+                    state_->headerFormat)) ||
+            FAILED(
+                createFormat(
+                    L"Arial Narrow",
+                    18.0f,
+                    DWRITE_FONT_WEIGHT_BOLD,
+                    state_->labelFormat)) ||
+            FAILED(
+                createFormat(
+                    L"Arial Narrow",
+                    21.0f,
                     DWRITE_FONT_WEIGHT_NORMAL,
-                    DWRITE_FONT_STYLE_NORMAL,
-                    DWRITE_FONT_STRETCH_NORMAL,
-                    20.0f,
-                    L"ru-RU",
-                    state_->
-                        normalFormat.
-                        GetAddressOf());
-
-        if (FAILED(hr))
+                    state_->inputFormat)) ||
+            FAILED(
+                createFormat(
+                    L"Arial Narrow",
+                    16.0f,
+                    DWRITE_FONT_WEIGHT_NORMAL,
+                    state_->smallFormat)) ||
+            FAILED(
+                createFormat(
+                    L"Arial Narrow",
+                    21.0f,
+                    DWRITE_FONT_WEIGHT_BOLD,
+                    state_->buttonFormat)) ||
+            FAILED(
+                createFormat(
+                    L"Arial Narrow",
+                    12.0f,
+                    DWRITE_FONT_WEIGHT_NORMAL,
+                    state_->versionFormat)) ||
+            FAILED(
+                createFormat(
+                    L"Segoe UI Symbol",
+                    27.0f,
+                    DWRITE_FONT_WEIGHT_NORMAL,
+                    state_->symbolFormat)))
         {
             error =
                 "Frontend font initialization failed.";
 
             return false;
         }
-
-        hr =
-            state_->
-                writeFactory->
-                CreateTextFormat(
-                    L"Segoe UI",
-                    nullptr,
-                    DWRITE_FONT_WEIGHT_NORMAL,
-                    DWRITE_FONT_STYLE_NORMAL,
-                    DWRITE_FONT_STRETCH_NORMAL,
-                    16.0f,
-                    L"ru-RU",
-                    state_->
-                        smallFormat.
-                        GetAddressOf());
-
-        if (FAILED(hr))
-        {
-            error =
-                "Frontend small font initialization failed.";
-
-            return false;
-        }
-
-        state_->
-            titleFormat->
-            SetTextAlignment(
-                DWRITE_TEXT_ALIGNMENT_CENTER);
-
-        state_->
-            normalFormat->
-            SetParagraphAlignment(
-                DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
         state_->width =
             width;
@@ -416,34 +732,111 @@ namespace client::ui
             height;
 
         const core::resources::ResourceEntry*
-            backgroundEntry =
+            background =
                 resources.Find(
-                    LoginBackground);
+                    LoginBackgroundResource);
 
-        if (backgroundEntry ==
+        if (background ==
             nullptr)
         {
             error =
-                "Original login background not found: " +
-                std::string(
-                    LoginBackground);
+                "Original login background was not found.";
 
             return false;
         }
 
-        if (!LoadBitmap(
+        if (!LoadWicBitmap(
                 state_->
                     imagingFactory.
                     Get(),
                 state_->
                     renderTarget.
                     Get(),
-                backgroundEntry->
+                background->
                     physicalPath,
                 state_->
                     loginBackground,
                 error))
         {
+            return false;
+        }
+
+        if (!LoadTgaBitmap(
+                resources,
+                StartupLogoResource,
+                state_->
+                    renderTarget.
+                    Get(),
+                state_->
+                    startupLogo,
+                error))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    bool FrontendRenderer::RenderStartupSplash(
+        std::string& error)
+    {
+        error.clear();
+
+        ID2D1HwndRenderTarget* target =
+            state_->
+                renderTarget.
+                Get();
+
+        target->BeginDraw();
+
+        target->SetTransform(
+            D2D1::Matrix3x2F::Identity());
+
+        target->Clear(
+            D2D1::ColorF(
+                D2D1::ColorF::Black));
+
+        const float scaleX =
+            static_cast<float>(
+                state_->width) /
+            frontend::layout::
+                ReferenceWidth;
+
+        const float scaleY =
+            static_cast<float>(
+                state_->height) /
+            frontend::layout::
+                ReferenceHeight;
+
+        target->SetTransform(
+            D2D1::Matrix3x2F::Scale(
+                scaleX,
+                scaleY));
+
+        if (state_->
+            startupLogo)
+        {
+            target->DrawBitmap(
+                state_->
+                    startupLogo.
+                    Get(),
+                D2D1::RectF(
+                    340.0f,
+                    248.0f,
+                    660.0f,
+                    568.0f),
+                1.0f,
+                D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
+        }
+
+        const HRESULT result =
+            target->EndDraw();
+
+        if (FAILED(result))
+        {
+            error =
+                "Startup splash rendering failed.";
+
             return false;
         }
 
@@ -455,15 +848,6 @@ namespace client::ui
         std::string& error)
     {
         error.clear();
-
-        if (!state_ ||
-            !state_->renderTarget)
-        {
-            error =
-                "Frontend renderer is not initialized.";
-
-            return false;
-        }
 
         ID2D1HwndRenderTarget* target =
             state_->
@@ -484,320 +868,606 @@ namespace client::ui
             D2D1::ColorF(
                 D2D1::ColorF::Black));
 
-        if (state_->
-            loginBackground)
-        {
-            target->DrawBitmap(
-                state_->
-                    loginBackground.
-                    Get(),
-                D2D1::RectF(
-                    0.0f,
-                    0.0f,
-                    static_cast<float>(
-                        state_->width),
-                    static_cast<float>(
-                        state_->height)),
-                1.0f,
-                D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
-        }
+        const float scaleX =
+            static_cast<float>(
+                state_->width) /
+            frontend::layout::
+                ReferenceWidth;
+
+        const float scaleY =
+            static_cast<float>(
+                state_->height) /
+            frontend::layout::
+                ReferenceHeight;
+
+        target->SetTransform(
+            D2D1::Matrix3x2F::Scale(
+                scaleX,
+                scaleY));
+
+        target->DrawBitmap(
+            state_->
+                loginBackground.
+                Get(),
+            D2D1::RectF(
+                0.0f,
+                0.0f,
+                1280.0f,
+                768.0f),
+            1.0f,
+            D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
 
         brush->SetColor(
             D2D1::ColorF(
                 0.0f,
                 0.0f,
                 0.0f,
-                0.68f));
+                0.79f));
+
+        target->FillRectangle(
+            D2D1::RectF(
+                407.0f,
+                234.0f,
+                868.0f,
+                524.0f),
+            brush);
+
+        brush->SetColor(
+            D2D1::ColorF(
+                0.0f,
+                0.0f,
+                0.0f,
+                0.90f));
+
+        target->FillRectangle(
+            D2D1::RectF(
+                407.0f,
+                524.0f,
+                868.0f,
+                585.0f),
+            brush);
+
+        brush->SetColor(
+            D2D1::ColorF(
+                0.20f,
+                0.20f,
+                0.20f,
+                1.0f));
+
+        target->DrawLine(
+            D2D1::Point2F(
+                407.0f,
+                286.0f),
+            D2D1::Point2F(
+                868.0f,
+                286.0f),
+            brush,
+            1.0f);
+
+        const bool russian =
+            view.language ==
+            FrontendLanguage::Russian;
+
+        brush->SetColor(
+            D2D1::ColorF(
+                0.92f,
+                0.92f,
+                0.92f,
+                1.0f));
+
+        DrawText(
+            target,
+            state_->
+                headerFormat.
+                Get(),
+            brush,
+            russian
+                ? L"ВОЙДИТЕ"
+                : L"SIGN IN",
+            D2D1::RectF(
+                429.0f,
+                250.0f,
+                575.0f,
+                278.0f));
+
+        brush->SetColor(
+            D2D1::ColorF(
+                0.45f,
+                0.45f,
+                0.45f,
+                1.0f));
+
+        DrawText(
+            target,
+            state_->
+                smallFormat.
+                Get(),
+            brush,
+            russian
+                ? L"или"
+                : L"or",
+            D2D1::RectF(
+                577.0f,
+                251.0f,
+                610.0f,
+                278.0f));
+
+        brush->SetColor(
+            D2D1::ColorF(
+                0.02f,
+                0.67f,
+                0.86f,
+                1.0f));
+
+        DrawText(
+            target,
+            state_->
+                smallFormat.
+                Get(),
+            brush,
+            russian
+                ? L"Зарегистрируйтесь"
+                : L"Register",
+            D2D1::RectF(
+                612.0f,
+                251.0f,
+                790.0f,
+                278.0f));
+
+        brush->SetColor(
+            D2D1::ColorF(
+                0.94f,
+                0.94f,
+                0.94f,
+                1.0f));
+
+        DrawText(
+            target,
+            state_->
+                labelFormat.
+                Get(),
+            brush,
+            russian
+                ? L"сервер:"
+                : L"server:",
+            D2D1::RectF(
+                429.0f,
+                318.0f,
+                530.0f,
+                350.0f));
+
+        DrawText(
+            target,
+            state_->
+                labelFormat.
+                Get(),
+            brush,
+            russian
+                ? L"имя:"
+                : L"name:",
+            D2D1::RectF(
+                429.0f,
+                389.0f,
+                530.0f,
+                420.0f));
+
+        DrawText(
+            target,
+            state_->
+                labelFormat.
+                Get(),
+            brush,
+            russian
+                ? L"пароль:"
+                : L"password:",
+            D2D1::RectF(
+                429.0f,
+                439.0f,
+                530.0f,
+                470.0f));
+
+        const D2D1_COLOR_F fieldColor =
+            D2D1::ColorF(
+                0.80f,
+                0.80f,
+                0.80f,
+                1.0f);
+
+        brush->SetColor(
+            fieldColor);
+
+        target->FillRectangle(
+            D2D1::RectF(
+                547.0f,
+                310.0f,
+                807.0f,
+                352.0f),
+            brush);
+
+        target->FillRectangle(
+            D2D1::RectF(
+                547.0f,
+                381.0f,
+                847.0f,
+                422.0f),
+            brush);
+
+        target->FillRectangle(
+            D2D1::RectF(
+                547.0f,
+                431.0f,
+                847.0f,
+                472.0f),
+            brush);
+
+        brush->SetColor(
+            D2D1::ColorF(
+                0.63f,
+                0.63f,
+                0.63f,
+                1.0f));
+
+        target->FillRectangle(
+            D2D1::RectF(
+                807.0f,
+                310.0f,
+                847.0f,
+                352.0f),
+            brush);
+
+        brush->SetColor(
+            D2D1::ColorF(
+                0.12f,
+                0.12f,
+                0.12f,
+                1.0f));
+
+        DrawText(
+            target,
+            state_->
+                inputFormat.
+                Get(),
+            brush,
+            view.serverName,
+            D2D1::RectF(
+                558.0f,
+                317.0f,
+                800.0f,
+                348.0f));
+
+        DrawText(
+            target,
+            state_->
+                inputFormat.
+                Get(),
+            brush,
+            L"+",
+            D2D1::RectF(
+                820.0f,
+                315.0f,
+                842.0f,
+                348.0f));
+
+        DrawText(
+            target,
+            state_->
+                inputFormat.
+                Get(),
+            brush,
+            view.login,
+            D2D1::RectF(
+                558.0f,
+                388.0f,
+                838.0f,
+                418.0f));
+
+        std::wstring password;
+
+        password.assign(
+            view.password.size(),
+            L'\x2022');
+
+        DrawText(
+            target,
+            state_->
+                inputFormat.
+                Get(),
+            brush,
+            password,
+            D2D1::RectF(
+                558.0f,
+                438.0f,
+                838.0f,
+                468.0f));
+
+        if (view.focus ==
+            LoginFocus::Login)
+        {
+            brush->SetColor(
+                D2D1::ColorF(
+                    0.02f,
+                    0.67f,
+                    0.86f,
+                    1.0f));
+
+            target->DrawRectangle(
+                D2D1::RectF(
+                    546.0f,
+                    380.0f,
+                    848.0f,
+                    423.0f),
+                brush,
+                1.0f);
+        }
+
+        if (view.focus ==
+            LoginFocus::Password)
+        {
+            brush->SetColor(
+                D2D1::ColorF(
+                    0.02f,
+                    0.67f,
+                    0.86f,
+                    1.0f));
+
+            target->DrawRectangle(
+                D2D1::RectF(
+                    546.0f,
+                    430.0f,
+                    848.0f,
+                    473.0f),
+                brush,
+                1.0f);
+        }
+
+        brush->SetColor(
+            D2D1::ColorF(
+                0.92f,
+                0.92f,
+                0.92f,
+                1.0f));
+
+        DrawText(
+            target,
+            state_->
+                labelFormat.
+                Get(),
+            brush,
+            russian
+                ? L"запомнить меня:"
+                : L"remember me:",
+            D2D1::RectF(
+                656.0f,
+                488.0f,
+                794.0f,
+                518.0f));
+
+        brush->SetColor(
+            view.rememberLogin
+                ? D2D1::ColorF(
+                    0.05f,
+                    0.39f,
+                    0.09f,
+                    1.0f)
+                : D2D1::ColorF(
+                    0.20f,
+                    0.20f,
+                    0.20f,
+                    1.0f));
 
         target->FillRoundedRectangle(
             D2D1::RoundedRect(
                 D2D1::RectF(
-                    560.0f,
-                    220.0f,
-                    1040.0f,
-                    735.0f),
-                6.0f,
-                6.0f),
+                    798.0f,
+                    489.0f,
+                    848.0f,
+                    516.0f),
+                13.0f,
+                13.0f),
             brush);
 
         brush->SetColor(
             D2D1::ColorF(
-                0.78f,
-                0.78f,
-                0.72f,
+                0.92f,
+                0.92f,
+                0.92f,
                 1.0f));
 
-        DrawTextValue(
-            target,
-            state_->
-                titleFormat.
-                Get(),
-            brush,
-            L"ВХОД",
-            D2D1::RectF(
-                600.0f,
-                245.0f,
-                1000.0f,
-                290.0f));
+        const float knobLeft =
+            view.rememberLogin
+                ? 825.0f
+                : 801.0f;
 
-        const auto drawEdit =
-            [&](const Rect& rect,
-                const bool focused,
-                const std::wstring& text)
-            {
-                brush->SetColor(
-                    focused
-                        ? D2D1::ColorF(
-                            0.20f,
-                            0.20f,
-                            0.18f,
-                            0.94f)
-                        : D2D1::ColorF(
-                            0.08f,
-                            0.08f,
-                            0.07f,
-                            0.90f));
-
-                target->FillRectangle(
-                    ToD2DRect(
-                        rect),
-                    brush);
-
-                brush->SetColor(
-                    focused
-                        ? D2D1::ColorF(
-                            0.80f,
-                            0.70f,
-                            0.35f,
-                            1.0f)
-                        : D2D1::ColorF(
-                            0.35f,
-                            0.35f,
-                            0.32f,
-                            1.0f));
-
-                target->DrawRectangle(
-                    ToD2DRect(
-                        rect),
-                    brush,
-                    focused
-                        ? 2.0f
-                        : 1.0f);
-
-                brush->SetColor(
-                    D2D1::ColorF(
-                        0.90f,
-                        0.90f,
-                        0.86f,
-                        1.0f));
-
-                DrawTextValue(
-                    target,
-                    state_->
-                        normalFormat.
-                        Get(),
-                    brush,
-                    text,
-                    D2D1::RectF(
-                        rect.left +
-                            12.0f,
-                        rect.top +
-                            10.0f,
-                        rect.right -
-                            12.0f,
-                        rect.bottom));
-            };
-
-        drawEdit(
-            frontend::layout::
-                LoginEdit,
-            view.focus ==
-                LoginFocus::Login,
-            view.login.empty()
-                ? L"Логин"
-                : view.login);
-
-        std::wstring passwordText;
-
-        if (view.password.empty())
-        {
-            passwordText =
-                L"Пароль";
-        }
-        else
-        {
-            passwordText.assign(
-                view.password.size(),
-                L'\x2022');
-        }
-
-        drawEdit(
-            frontend::layout::
-                PasswordEdit,
-            view.focus ==
-                LoginFocus::Password,
-            passwordText);
-
-        brush->SetColor(
-            D2D1::ColorF(
-                0.08f,
-                0.08f,
-                0.07f,
-                0.95f));
-
-        target->FillRectangle(
-            D2D1::RectF(
-                620.0f,
-                463.0f,
-                640.0f,
-                483.0f),
+        target->FillEllipse(
+            D2D1::Ellipse(
+                D2D1::Point2F(
+                    knobLeft +
+                        10.0f,
+                    502.5f),
+                10.0f,
+                10.0f),
             brush);
 
         brush->SetColor(
-            D2D1::ColorF(
-                0.65f,
-                0.60f,
-                0.42f,
-                1.0f));
-
-        target->DrawRectangle(
-            D2D1::RectF(
-                620.0f,
-                463.0f,
-                640.0f,
-                483.0f),
-            brush);
-
-        if (view.rememberLogin)
-        {
-            brush->SetColor(
-                D2D1::ColorF(
-                    0.83f,
-                    0.72f,
-                    0.32f,
+            view.canLogin
+                ? D2D1::ColorF(
+                    0.74f,
+                    0.74f,
+                    0.74f,
+                    1.0f)
+                : D2D1::ColorF(
+                    0.26f,
+                    0.26f,
+                    0.26f,
                     1.0f));
 
-            target->FillRectangle(
-                D2D1::RectF(
-                    625.0f,
-                    468.0f,
-                    635.0f,
-                    478.0f),
-                brush);
-        }
-
-        brush->SetColor(
-            D2D1::ColorF(
-                0.82f,
-                0.82f,
-                0.78f,
-                1.0f));
-
-        DrawTextValue(
+        DrawText(
             target,
             state_->
-                smallFormat.
-                Get(),
-            brush,
-            L"Запомнить логин",
-            D2D1::RectF(
-                650.0f,
-                460.0f,
-                900.0f,
-                490.0f));
-
-        brush->SetColor(
-            D2D1::ColorF(
-                0.18f,
-                0.16f,
-                0.10f,
-                0.96f));
-
-        target->FillRectangle(
-            ToD2DRect(
-                frontend::layout::
-                    LoginButton),
-            brush);
-
-        brush->SetColor(
-            D2D1::ColorF(
-                0.72f,
-                0.62f,
-                0.30f,
-                1.0f));
-
-        target->DrawRectangle(
-            ToD2DRect(
-                frontend::layout::
-                    LoginButton),
-            brush,
-            1.5f);
-
-        brush->SetColor(
-            D2D1::ColorF(
-                0.95f,
-                0.92f,
-                0.80f,
-                1.0f));
-
-        DrawTextValue(
-            target,
-            state_->
-                normalFormat.
+                buttonFormat.
                 Get(),
             brush,
             view.authenticating
-                ? L"ПОДКЛЮЧЕНИЕ..."
-                : L"ВОЙТИ",
+                ? (
+                    russian
+                        ? L"ПОДКЛЮЧЕНИЕ..."
+                        : L"CONNECTING..."
+                  )
+                : (
+                    russian
+                        ? L"ВОЙТИ"
+                        : L"LOGIN"
+                  ),
             D2D1::RectF(
-                620.0f,
-                535.0f,
-                980.0f,
-                565.0f));
+                607.0f,
+                542.0f,
+                720.0f,
+                575.0f));
 
         brush->SetColor(
             D2D1::ColorF(
                 0.72f,
                 0.72f,
-                0.68f,
+                0.72f,
                 1.0f));
 
-        DrawTextValue(
+        DrawText(
             target,
             state_->
-                smallFormat.
+                symbolFormat.
                 Get(),
             brush,
-            L"Создать аккаунт",
+            L"\x2699",
             D2D1::RectF(
-                620.0f,
-                610.0f,
-                980.0f,
-                642.0f));
+                1084.0f,
+                7.0f,
+                1120.0f,
+                43.0f));
 
-        DrawTextValue(
+        brush->SetColor(
+            view.language ==
+                    FrontendLanguage::English
+                ? D2D1::ColorF(
+                    0.02f,
+                    0.67f,
+                    0.86f,
+                    1.0f)
+                : D2D1::ColorF(
+                    0.55f,
+                    0.55f,
+                    0.55f,
+                    1.0f));
+
+        DrawText(
             target,
             state_->
-                smallFormat.
+                inputFormat.
                 Get(),
             brush,
-            L"Восстановить аккаунт",
+            L"EN",
             D2D1::RectF(
-                620.0f,
-                655.0f,
-                980.0f,
-                687.0f));
+                1138.0f,
+                14.0f,
+                1168.0f,
+                42.0f));
+
+        brush->SetColor(
+            D2D1::ColorF(
+                0.52f,
+                0.52f,
+                0.52f,
+                1.0f));
+
+        DrawText(
+            target,
+            state_->
+                inputFormat.
+                Get(),
+            brush,
+            L"|",
+            D2D1::RectF(
+                1168.0f,
+                14.0f,
+                1178.0f,
+                42.0f));
+
+        brush->SetColor(
+            view.language ==
+                    FrontendLanguage::Russian
+                ? D2D1::ColorF(
+                    0.02f,
+                    0.67f,
+                    0.86f,
+                    1.0f)
+                : D2D1::ColorF(
+                    0.55f,
+                    0.55f,
+                    0.55f,
+                    1.0f));
+
+        DrawText(
+            target,
+            state_->
+                inputFormat.
+                Get(),
+            brush,
+            L"RU",
+            D2D1::RectF(
+                1179.0f,
+                14.0f,
+                1210.0f,
+                42.0f));
+
+        brush->SetColor(
+            D2D1::ColorF(
+                0.82f,
+                0.82f,
+                0.82f,
+                1.0f));
+
+        DrawText(
+            target,
+            state_->
+                inputFormat.
+                Get(),
+            brush,
+            L"X",
+            D2D1::RectF(
+                1240.0f,
+                14.0f,
+                1260.0f,
+                42.0f));
+
+        brush->SetColor(
+            D2D1::ColorF(
+                0.50f,
+                0.50f,
+                0.50f,
+                1.0f));
+
+        DrawText(
+            target,
+            state_->
+                versionFormat.
+                Get(),
+            brush,
+            view.version,
+            D2D1::RectF(
+                1183.0f,
+                735.0f,
+                1267.0f,
+                755.0f));
 
         if (!view.message.empty())
         {
             brush->SetColor(
                 D2D1::ColorF(
-                    0.92f,
-                    0.65f,
-                    0.34f,
+                    0.90f,
+                    0.52f,
+                    0.25f,
                     1.0f));
 
-            DrawTextValue(
+            DrawText(
                 target,
                 state_->
                     smallFormat.
@@ -805,10 +1475,87 @@ namespace client::ui
                 brush,
                 view.message,
                 D2D1::RectF(
-                    580.0f,
-                    695.0f,
-                    1020.0f,
-                    730.0f));
+                    407.0f,
+                    594.0f,
+                    868.0f,
+                    626.0f));
+        }
+
+        if (view.serverListOpen)
+        {
+            brush->SetColor(
+                D2D1::ColorF(
+                    0.0f,
+                    0.0f,
+                    0.0f,
+                    0.92f));
+
+            const float popupBottom =
+                310.0f +
+                static_cast<float>(
+                    view.servers.size()) *
+                36.0f;
+
+            target->FillRectangle(
+                D2D1::RectF(
+                    875.0f,
+                    310.0f,
+                    1120.0f,
+                    popupBottom),
+                brush);
+
+            for (std::size_t index = 0;
+                 index < view.servers.size();
+                 ++index)
+            {
+                const ui::Rect item =
+                    frontend::layout::
+                        ServerListItem(
+                            index);
+
+                if (index ==
+                    view.selectedServer)
+                {
+                    brush->SetColor(
+                        D2D1::ColorF(
+                            0.12f,
+                            0.12f,
+                            0.12f,
+                            1.0f));
+
+                    target->FillRectangle(
+                        D2D1::RectF(
+                            item.left,
+                            item.top,
+                            item.right,
+                            item.bottom),
+                        brush);
+                }
+
+                brush->SetColor(
+                    D2D1::ColorF(
+                        0.86f,
+                        0.86f,
+                        0.86f,
+                        1.0f));
+
+                DrawText(
+                    target,
+                    state_->
+                        smallFormat.
+                        Get(),
+                    brush,
+                    view.servers[
+                        index],
+                    D2D1::RectF(
+                        item.left +
+                            10.0f,
+                        item.top +
+                            7.0f,
+                        item.right -
+                            5.0f,
+                        item.bottom));
+            }
         }
 
         const HRESULT result =
@@ -817,7 +1564,7 @@ namespace client::ui
         if (FAILED(result))
         {
             error =
-                "Frontend login rendering failed.";
+                "Login screen rendering failed.";
 
             return false;
         }
@@ -825,132 +1572,43 @@ namespace client::ui
         return true;
     }
 
-    bool FrontendRenderer::RenderMainMenuCheckpoint(
-        const std::string& login,
+    bool FrontendRenderer::RenderBackground(
         std::string& error)
     {
         error.clear();
-
-        if (!state_ ||
-            !state_->renderTarget)
-        {
-            error =
-                "Frontend renderer is not initialized.";
-
-            return false;
-        }
 
         ID2D1HwndRenderTarget* target =
             state_->
                 renderTarget.
                 Get();
 
-        ID2D1SolidColorBrush* brush =
-            state_->
-                brush.
-                Get();
-
         target->BeginDraw();
+
+        target->SetTransform(
+            D2D1::Matrix3x2F::Identity());
 
         target->Clear(
             D2D1::ColorF(
                 D2D1::ColorF::Black));
 
-        if (state_->
-            loginBackground)
-        {
-            target->DrawBitmap(
-                state_->
-                    loginBackground.
-                    Get(),
-                D2D1::RectF(
-                    0.0f,
-                    0.0f,
-                    static_cast<float>(
-                        state_->width),
-                    static_cast<float>(
-                        state_->height)),
-                1.0f,
-                D2D1_BITMAP_INTERPOLATION_MODE_LINEAR);
-        }
+        target->SetTransform(
+            D2D1::Matrix3x2F::Scale(
+                static_cast<float>(
+                    state_->width) /
+                    1280.0f,
+                static_cast<float>(
+                    state_->height) /
+                    768.0f));
 
-        brush->SetColor(
-            D2D1::ColorF(
+        target->DrawBitmap(
+            state_->
+                loginBackground.
+                Get(),
+            D2D1::RectF(
                 0.0f,
                 0.0f,
-                0.0f,
-                0.72f));
-
-        target->FillRectangle(
-            D2D1::RectF(
-                450.0f,
-                300.0f,
-                1150.0f,
-                600.0f),
-            brush);
-
-        brush->SetColor(
-            D2D1::ColorF(
-                0.85f,
-                0.80f,
-                0.60f,
-                1.0f));
-
-        std::wstring text =
-            L"Авторизация успешна";
-
-        DrawTextValue(
-            target,
-            state_->
-                titleFormat.
-                Get(),
-            brush,
-            text,
-            D2D1::RectF(
-                500.0f,
-                350.0f,
-                1100.0f,
-                410.0f));
-
-        std::wstring loginText =
-            L"Аккаунт: ";
-
-        loginText.append(
-            login.begin(),
-            login.end());
-
-        DrawTextValue(
-            target,
-            state_->
-                normalFormat.
-                Get(),
-            brush,
-            loginText,
-            D2D1::RectF(
-                500.0f,
-                440.0f,
-                1100.0f,
-                480.0f));
-
-        brush->SetColor(
-            D2D1::ColorF(
-                0.70f,
-                0.70f,
-                0.68f,
-                1.0f));
-
-        DrawTextValue(
-            target,
-            state_->
-                smallFormat.
-                Get(),
-            brush,
-            L"Следующий экран: оригинальное главное меню",
-            D2D1::RectF(
-                500.0f,
-                510.0f,
-                1100.0f,
-                550.0f));
+                1280.0f,
+                768.0f));
 
         const HRESULT result =
             target->EndDraw();
@@ -958,7 +1616,7 @@ namespace client::ui
         if (FAILED(result))
         {
             error =
-                "Frontend rendering failed.";
+                "Frontend background rendering failed.";
 
             return false;
         }

@@ -10,6 +10,8 @@
 
 #include "Core/Runtime.h"
 
+#include <chrono>
+
 namespace client
 {
     class Application final
@@ -55,5 +57,8 @@ namespace client
         states::ClientState
             state_ =
                 states::ClientState::Boot;
+
+        std::chrono::steady_clock::time_point
+            splashStarted_;
     };
 }

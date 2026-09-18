@@ -2,11 +2,15 @@
 
 #include "Core/Log.h"
 
+#include <chrono>
 #include <string>
-#include <utility>
 
 namespace
 {
+    constexpr auto SplashDuration =
+        std::chrono::milliseconds(
+            1400);
+
     std::wstring ToWide(
         const std::string& value)
     {
@@ -31,9 +35,6 @@ namespace client
             return 1;
         }
 
-        core::Log::Info(
-            "Client frontend loop started");
-
         while (window_.ProcessMessages())
         {
             if (!Update())
@@ -56,9 +57,6 @@ namespace client
                 break;
             }
         }
-
-        core::Log::Info(
-            "Client frontend loop stopped");
 
         Shutdown();
 
@@ -106,16 +104,19 @@ namespace client
             runtime_.GameRoot());
 
         loginScreen_.Initialize(
+            runtime_.Resources(),
             rememberedLogin_.Load());
 
+        splashStarted_ =
+            std::chrono::
+                steady_clock::now();
+
         state_ =
-            states::ClientState::Login;
+            states::ClientState::
+                StartupSplash;
 
         core::Log::Info(
-            "Frontend initialized");
-
-        core::Log::Info(
-            "Client state: Login");
+            "Client state: StartupSplash");
 
         return true;
     }
@@ -124,111 +125,148 @@ namespace client
     {
         switch (state_)
         {
-            case states::ClientState::Login:
+            case states::ClientState::
+                StartupSplash:
             {
-                loginScreen_.Update(
-                    window_);
+                const auto now =
+                    std::chrono::
+                        steady_clock::now();
 
-                frontend::LoginRequest
-                    request;
-
-                if (loginScreen_.
-                    ConsumeLoginRequest(
-                        request))
+                if (now -
+                        splashStarted_ >=
+                    SplashDuration)
                 {
-                    loginScreen_.
-                        SetAuthenticating(
-                            true);
-
                     state_ =
-                        states::
-                            ClientState::
-                            Authenticating;
-
-                    const account::AuthResult result =
-                        authService_.
-                            Authenticate(
-                                request.login,
-                                request.password);
-
-                    if (!result.success)
-                    {
-                        loginScreen_.
-                            SetAuthenticating(
-                                false);
-
-                        loginScreen_.
-                            SetMessage(
-                                ToWide(
-                                    result.error));
-
-                        state_ =
-                            states::
-                                ClientState::
-                                Login;
-
-                        core::Log::Warning(
-                            "Authentication failed");
-
-                        return true;
-                    }
-
-                    accountSession_.
-                        Establish(
-                            result.login,
-                            result.sessionToken);
-
-                    if (request.rememberLogin)
-                    {
-                        rememberedLogin_.
-                            Save(
-                                result.login);
-                    }
-                    else
-                    {
-                        rememberedLogin_.
-                            Clear();
-                    }
-
-                    loginScreen_.
-                        SetAuthenticating(
-                            false);
-
-                    state_ =
-                        states::
-                            ClientState::
-                            MainMenu;
+                        states::ClientState::
+                            Login;
 
                     core::Log::Info(
-                        "Authentication successful");
-
-                    core::Log::Info(
-                        "Client state: MainMenu");
+                        "Client state: Login");
                 }
 
                 break;
             }
 
-            case states::ClientState::Authenticating:
+            case states::ClientState::
+                Login:
+            {
+                loginScreen_.Update(
+                    window_);
+
+                if (loginScreen_.
+                    ConsumeExitRequest())
+                {
+                    state_ =
+                        states::ClientState::
+                            Exit;
+
+                    break;
+                }
+
+                frontend::LoginRequest
+                    request;
+
+                if (!loginScreen_.
+                    ConsumeLoginRequest(
+                        request))
+                {
+                    break;
+                }
+
+                loginScreen_.
+                    SetAuthenticating(
+                        true);
+
+                state_ =
+                    states::ClientState::
+                        Authenticating;
+
+                const account::AuthResult result =
+                    authService_.
+                        Authenticate(
+                            request.login,
+                            request.password);
+
+                if (!result.success)
+                {
+                    loginScreen_.
+                        SetAuthenticating(
+                            false);
+
+                    loginScreen_.
+                        SetMessage(
+                            ToWide(
+                                result.error));
+
+                    state_ =
+                        states::ClientState::
+                            Login;
+
+                    core::Log::Warning(
+                        "Authentication failed");
+
+                    break;
+                }
+
+                accountSession_.
+                    Establish(
+                        result.login,
+                        result.sessionToken);
+
+                if (request.rememberLogin)
+                {
+                    rememberedLogin_.
+                        Save(
+                            result.login);
+                }
+                else
+                {
+                    rememberedLogin_.
+                        Clear();
+                }
+
+                loginScreen_.
+                    SetAuthenticating(
+                        false);
+
+                core::Log::Info(
+                    std::string(
+                        "Selected login cluster: ") +
+                    request.server);
+
+                state_ =
+                    states::ClientState::
+                        MainMenu;
+
+                core::Log::Info(
+                    "Client state: MainMenu");
+
+                break;
+            }
+
+            case states::ClientState::
+                Authenticating:
             {
                 break;
             }
 
-            case states::ClientState::MainMenu:
+            case states::ClientState::
+                MainMenu:
             {
-                if (window_.ConsumeKeyPress(
+                if (window_.
+                    ConsumeKeyPress(
                         VK_ESCAPE))
                 {
                     state_ =
-                        states::
-                            ClientState::
+                        states::ClientState::
                             Exit;
                 }
 
                 break;
             }
 
-            case states::ClientState::Exit:
+            case states::ClientState::
+                Exit:
             {
                 break;
             }
@@ -248,8 +286,26 @@ namespace client
 
         switch (state_)
         {
-            case states::ClientState::Login:
-            case states::ClientState::Authenticating:
+            case states::ClientState::
+                StartupSplash:
+            {
+                if (!frontendRenderer_.
+                    RenderStartupSplash(
+                        error))
+                {
+                    core::Log::Error(
+                        error);
+
+                    return false;
+                }
+
+                break;
+            }
+
+            case states::ClientState::
+                Login:
+            case states::ClientState::
+                Authenticating:
             {
                 if (!frontendRenderer_.
                     RenderLogin(
@@ -265,12 +321,11 @@ namespace client
                 break;
             }
 
-            case states::ClientState::MainMenu:
+            case states::ClientState::
+                MainMenu:
             {
                 if (!frontendRenderer_.
-                    RenderMainMenuCheckpoint(
-                        accountSession_.
-                            Login(),
+                    RenderBackground(
                         error))
                 {
                     core::Log::Error(
@@ -279,11 +334,6 @@ namespace client
                     return false;
                 }
 
-                break;
-            }
-
-            case states::ClientState::Exit:
-            {
                 break;
             }
 
@@ -305,6 +355,7 @@ namespace client
         runtime_.Shutdown();
 
         state_ =
-            states::ClientState::Exit;
+            states::ClientState::
+                Exit;
     }
 }

@@ -2,53 +2,130 @@
 
 #include "UI/FrontendView.h"
 
+#include <cstddef>
+
 namespace client::frontend::layout
 {
+    inline constexpr float
+        ReferenceWidth =
+            1280.0f;
+
+    inline constexpr float
+        ReferenceHeight =
+            768.0f;
+
+    inline constexpr ui::Rect LoginPanel
+    {
+        407.0f,
+        234.0f,
+        868.0f,
+        585.0f
+    };
+
+    inline constexpr ui::Rect RegisterLink
+    {
+        610.0f,
+        244.0f,
+        775.0f,
+        281.0f
+    };
+
+    inline constexpr ui::Rect ServerValue
+    {
+        547.0f,
+        310.0f,
+        807.0f,
+        352.0f
+    };
+
+    inline constexpr ui::Rect ServerButton
+    {
+        807.0f,
+        310.0f,
+        847.0f,
+        352.0f
+    };
+
     inline constexpr ui::Rect LoginEdit
     {
-        620.0f,
-        310.0f,
-        980.0f,
-        360.0f
+        547.0f,
+        381.0f,
+        847.0f,
+        422.0f
     };
 
     inline constexpr ui::Rect PasswordEdit
     {
-        620.0f,
-        385.0f,
-        980.0f,
-        435.0f
+        547.0f,
+        431.0f,
+        847.0f,
+        472.0f
     };
 
-    inline constexpr ui::Rect RememberLogin
+    inline constexpr ui::Rect RememberToggle
     {
-        620.0f,
-        458.0f,
-        850.0f,
-        492.0f
+        797.0f,
+        489.0f,
+        848.0f,
+        516.0f
     };
 
     inline constexpr ui::Rect LoginButton
     {
-        620.0f,
-        520.0f,
-        980.0f,
-        574.0f
+        407.0f,
+        524.0f,
+        868.0f,
+        585.0f
     };
 
-    inline constexpr ui::Rect CreateAccount
+    inline constexpr ui::Rect SettingsButton
     {
-        620.0f,
-        610.0f,
-        980.0f,
-        644.0f
+        1084.0f,
+        8.0f,
+        1118.0f,
+        43.0f
     };
 
-    inline constexpr ui::Rect RestoreAccount
+    inline constexpr ui::Rect EnglishButton
     {
-        620.0f,
-        655.0f,
-        980.0f,
-        689.0f
+        1135.0f,
+        10.0f,
+        1168.0f,
+        43.0f
     };
+
+    inline constexpr ui::Rect RussianButton
+    {
+        1174.0f,
+        10.0f,
+        1208.0f,
+        43.0f
+    };
+
+    inline constexpr ui::Rect ExitButton
+    {
+        1231.0f,
+        8.0f,
+        1263.0f,
+        43.0f
+    };
+
+    [[nodiscard]]
+    inline ui::Rect ServerListItem(
+        const std::size_t index)
+    {
+        const float top =
+            310.0f +
+            static_cast<float>(
+                index) *
+            36.0f;
+
+        return
+        {
+            875.0f,
+            top,
+            1120.0f,
+            top + 34.0f
+        };
+    }
 }

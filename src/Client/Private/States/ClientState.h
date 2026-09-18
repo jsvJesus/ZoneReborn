@@ -5,6 +5,7 @@ namespace client::states
     enum class ClientState
     {
         Boot,
+        StartupSplash,
         Login,
         Authenticating,
         MainMenu,

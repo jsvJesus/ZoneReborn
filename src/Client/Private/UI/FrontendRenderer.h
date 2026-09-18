@@ -31,8 +31,11 @@ namespace client::ui
             HWND window,
             std::uint32_t width,
             std::uint32_t height,
-            const core::resources::ResourceFileSystem&
-                resources,
+            const core::resources::ResourceFileSystem& resources,
+            std::string& error);
+
+        [[nodiscard]]
+        bool RenderStartupSplash(
             std::string& error);
 
         [[nodiscard]]
@@ -41,8 +44,7 @@ namespace client::ui
             std::string& error);
 
         [[nodiscard]]
-        bool RenderMainMenuCheckpoint(
-            const std::string& login,
+        bool RenderBackground(
             std::string& error);
 
         void Shutdown();

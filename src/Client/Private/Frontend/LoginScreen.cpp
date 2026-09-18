@@ -4,7 +4,7 @@
 
 #include <Windows.h>
 
-#include <algorithm>
+#include <cstddef>
 #include <utility>
 
 namespace
@@ -16,19 +16,37 @@ namespace
     constexpr std::size_t
         MaximumPasswordLength =
             64;
+
+    constexpr char
+        ServersResource[] =
+            "res/scripts/client/data/servers_config.json";
+
+    constexpr char
+        VersionResource[] =
+            "res/scripts/common/VersionSO.pyc";
 }
 
 namespace client::frontend
 {
     void LoginScreen::Initialize(
+        const core::resources::ResourceFileSystem& resources,
         const std::string& rememberedLogin)
     {
         login_.clear();
         password_.clear();
         message_.clear();
 
+        servers_.clear();
+        version_.clear();
+
+        selectedServer_ =
+            0;
+
         focus_ =
             ui::LoginFocus::Login;
+
+        language_ =
+            ui::FrontendLanguage::Russian;
 
         rememberLogin_ =
             false;
@@ -39,41 +57,29 @@ namespace client::frontend
         submitRequested_ =
             false;
 
+        exitRequested_ =
+            false;
+
+        serverListOpen_ =
+            false;
+
+        LoadServers(
+            resources);
+
+        LoadVersion(
+            resources);
+
         if (!rememberedLogin.empty())
         {
-            const int requiredLength =
-                MultiByteToWideChar(
-                    CP_UTF8,
-                    0,
-                    rememberedLogin.data(),
-                    static_cast<int>(
-                        rememberedLogin.size()),
-                    nullptr,
-                    0);
+            login_ =
+                FromUtf8(
+                    rememberedLogin);
 
-            if (requiredLength >
-                0)
-            {
-                login_.resize(
-                    static_cast<
-                        std::size_t>(
-                            requiredLength));
+            rememberLogin_ =
+                true;
 
-                MultiByteToWideChar(
-                    CP_UTF8,
-                    0,
-                    rememberedLogin.data(),
-                    static_cast<int>(
-                        rememberedLogin.size()),
-                    login_.data(),
-                    requiredLength);
-
-                rememberLogin_ =
-                    true;
-
-                focus_ =
-                    ui::LoginFocus::Password;
-            }
+            focus_ =
+                ui::LoginFocus::Password;
         }
     }
 
@@ -83,22 +89,61 @@ namespace client::frontend
         if (authenticating_)
         {
             window.ConsumeTextInput();
-
             return;
         }
 
-        POINT clickPosition{};
+        POINT click{};
 
         if (window.ConsumeLeftMousePress(
-                clickPosition))
+                click))
         {
             const float mouseX =
                 static_cast<float>(
-                    clickPosition.x);
+                    click.x) *
+                layout::ReferenceWidth /
+                static_cast<float>(
+                    window.Width());
 
             const float mouseY =
                 static_cast<float>(
-                    clickPosition.y);
+                    click.y) *
+                layout::ReferenceHeight /
+                static_cast<float>(
+                    window.Height());
+
+            if (serverListOpen_)
+            {
+                bool serverSelected =
+                    false;
+
+                for (std::size_t index = 0;
+                     index < servers_.size();
+                     ++index)
+                {
+                    if (layout::ServerListItem(
+                            index).
+                        Contains(
+                            mouseX,
+                            mouseY))
+                    {
+                        selectedServer_ =
+                            index;
+
+                        serverListOpen_ =
+                            false;
+
+                        serverSelected =
+                            true;
+
+                        break;
+                    }
+                }
+
+                if (serverSelected)
+                {
+                    return;
+                }
+            }
 
             if (layout::LoginEdit.Contains(
                     mouseX,
@@ -106,6 +151,9 @@ namespace client::frontend
             {
                 focus_ =
                     ui::LoginFocus::Login;
+
+                serverListOpen_ =
+                    false;
             }
             else if (
                 layout::PasswordEdit.Contains(
@@ -114,42 +162,97 @@ namespace client::frontend
             {
                 focus_ =
                     ui::LoginFocus::Password;
+
+                serverListOpen_ =
+                    false;
             }
             else if (
-                layout::RememberLogin.Contains(
+                layout::RememberToggle.Contains(
                     mouseX,
                     mouseY))
             {
                 rememberLogin_ =
                     !rememberLogin_;
+
+                serverListOpen_ =
+                    false;
+            }
+            else if (
+                layout::ServerValue.Contains(
+                    mouseX,
+                    mouseY) ||
+                layout::ServerButton.Contains(
+                    mouseX,
+                    mouseY))
+            {
+                serverListOpen_ =
+                    !serverListOpen_;
             }
             else if (
                 layout::LoginButton.Contains(
                     mouseX,
                     mouseY))
             {
+                serverListOpen_ =
+                    false;
+
                 Submit();
             }
             else if (
-                layout::CreateAccount.Contains(
+                layout::RegisterLink.Contains(
                     mouseX,
                     mouseY))
             {
+                serverListOpen_ =
+                    false;
+
                 message_ =
-                    L"Веб-регистрация пока недоступна. "
-                    L"Тестовый аккаунт: test / test123";
+                    Localized(
+                        L"Регистрация через сайт будет подключена позже.",
+                        L"Web registration will be connected later.");
             }
             else if (
-                layout::RestoreAccount.Contains(
+                layout::EnglishButton.Contains(
                     mouseX,
                     mouseY))
             {
+                SelectLanguage(
+                    ui::FrontendLanguage::English);
+            }
+            else if (
+                layout::RussianButton.Contains(
+                    mouseX,
+                    mouseY))
+            {
+                SelectLanguage(
+                    ui::FrontendLanguage::Russian);
+            }
+            else if (
+                layout::ExitButton.Contains(
+                    mouseX,
+                    mouseY))
+            {
+                exitRequested_ =
+                    true;
+            }
+            else if (
+                layout::SettingsButton.Contains(
+                    mouseX,
+                    mouseY))
+            {
+                serverListOpen_ =
+                    false;
+
                 message_ =
-                    L"Восстановление аккаунта "
-                    L"будет подключено позже.";
+                    Localized(
+                        L"Меню настроек будет восстановлено следующим экраном.",
+                        L"Settings menu will be restored next.");
             }
             else
             {
+                serverListOpen_ =
+                    false;
+
                 focus_ =
                     ui::LoginFocus::None;
             }
@@ -178,6 +281,21 @@ namespace client::frontend
         }
 
         if (window.ConsumeKeyPress(
+                VK_ESCAPE))
+        {
+            if (serverListOpen_)
+            {
+                serverListOpen_ =
+                    false;
+            }
+            else
+            {
+                exitRequested_ =
+                    true;
+            }
+        }
+
+        if (window.ConsumeKeyPress(
                 VK_BACK))
         {
             if (focus_ ==
@@ -195,10 +313,10 @@ namespace client::frontend
             }
         }
 
-        std::wstring text =
+        const std::wstring input =
             window.ConsumeTextInput();
 
-        if (text.empty())
+        if (input.empty())
         {
             return;
         }
@@ -207,7 +325,7 @@ namespace client::frontend
             ui::LoginFocus::Login)
         {
             for (const wchar_t character :
-                 text)
+                 input)
             {
                 if (login_.size() >=
                     MaximumLoginLength)
@@ -220,9 +338,7 @@ namespace client::frontend
                     character ==
                         L'\n' ||
                     character ==
-                        L'\t' ||
-                    character ==
-                        L' ')
+                        L'\t')
                 {
                     continue;
                 }
@@ -236,7 +352,7 @@ namespace client::frontend
             ui::LoginFocus::Password)
         {
             for (const wchar_t character :
-                 text)
+                 input)
             {
                 if (password_.size() >=
                     MaximumPasswordLength)
@@ -282,7 +398,31 @@ namespace client::frontend
         request.rememberLogin =
             rememberLogin_;
 
+        if (selectedServer_ <
+            servers_.size())
+        {
+            request.server =
+                ToUtf8(
+                    servers_[
+                        selectedServer_]);
+        }
+        else
+        {
+            request.server.clear();
+        }
+
         return true;
+    }
+
+    bool LoginScreen::ConsumeExitRequest() noexcept
+    {
+        const bool requested =
+            exitRequested_;
+
+        exitRequested_ =
+            false;
+
+        return requested;
     }
 
     void LoginScreen::SetMessage(
@@ -302,27 +442,312 @@ namespace client::frontend
 
     ui::LoginView LoginScreen::View() const
     {
-        ui::LoginView result;
+        ui::LoginView view;
 
-        result.login =
+        view.login =
             login_;
 
-        result.password =
+        view.password =
             password_;
 
-        result.message =
+        view.message =
             message_;
 
-        result.focus =
+        view.servers =
+            servers_;
+
+        view.selectedServer =
+            selectedServer_;
+
+        view.version =
+            version_;
+
+        view.focus =
             focus_;
 
-        result.rememberLogin =
+        view.language =
+            language_;
+
+        view.rememberLogin =
             rememberLogin_;
 
-        result.authenticating =
+        view.authenticating =
             authenticating_;
 
-        return result;
+        view.serverListOpen =
+            serverListOpen_;
+
+        view.canLogin =
+            !login_.empty() &&
+            !password_.empty();
+
+        if (selectedServer_ <
+            servers_.size())
+        {
+            view.serverName =
+                servers_[
+                    selectedServer_];
+        }
+
+        return view;
+    }
+
+    void LoginScreen::LoadServers(
+        const core::resources::ResourceFileSystem& resources)
+    {
+        std::string json;
+
+        if (!resources.ReadText(
+                ServersResource,
+                json))
+        {
+            servers_.push_back(
+                L"Local Test");
+
+            return;
+        }
+
+        std::size_t position =
+            0;
+
+        while (true)
+        {
+            position =
+                json.find(
+                    "\"name\"",
+                    position);
+
+            if (position ==
+                std::string::npos)
+            {
+                break;
+            }
+
+            const std::size_t colon =
+                json.find(
+                    ':',
+                    position);
+
+            if (colon ==
+                std::string::npos)
+            {
+                break;
+            }
+
+            const std::size_t firstQuote =
+                json.find(
+                    '"',
+                    colon + 1);
+
+            if (firstQuote ==
+                std::string::npos)
+            {
+                break;
+            }
+
+            const std::size_t secondQuote =
+                json.find(
+                    '"',
+                    firstQuote + 1);
+
+            if (secondQuote ==
+                std::string::npos)
+            {
+                break;
+            }
+
+            const std::string name =
+                json.substr(
+                    firstQuote + 1,
+                    secondQuote -
+                        firstQuote -
+                        1);
+
+            if (!name.empty())
+            {
+                servers_.push_back(
+                    FromUtf8(
+                        name));
+            }
+
+            position =
+                secondQuote + 1;
+        }
+
+        if (servers_.empty())
+        {
+            servers_.push_back(
+                L"Local Test");
+        }
+
+        for (std::size_t index = 0;
+             index < servers_.size();
+             ++index)
+        {
+            if (servers_[index] ==
+                L"Cluster SPB")
+            {
+                selectedServer_ =
+                    index;
+
+                break;
+            }
+        }
+    }
+
+    void LoginScreen::LoadVersion(
+        const core::resources::ResourceFileSystem& resources)
+    {
+        std::vector<std::byte> data;
+
+        if (!resources.ReadBinary(
+                VersionResource,
+                data))
+        {
+            version_ =
+                L"ver dev";
+
+            return;
+        }
+
+        const char marker[] =
+            "ver ";
+
+        for (std::size_t index = 0;
+             index + 4 < data.size();
+             ++index)
+        {
+            const char c0 =
+                static_cast<char>(
+                    std::to_integer<
+                        unsigned char>(
+                            data[index]));
+
+            const char c1 =
+                static_cast<char>(
+                    std::to_integer<
+                        unsigned char>(
+                            data[index + 1]));
+
+            const char c2 =
+                static_cast<char>(
+                    std::to_integer<
+                        unsigned char>(
+                            data[index + 2]));
+
+            const char c3 =
+                static_cast<char>(
+                    std::to_integer<
+                        unsigned char>(
+                            data[index + 3]));
+
+            if (c0 != marker[0] ||
+                c1 != marker[1] ||
+                c2 != marker[2] ||
+                c3 != marker[3])
+            {
+                continue;
+            }
+
+            std::string version;
+
+            for (std::size_t cursor = index;
+                 cursor < data.size();
+                 ++cursor)
+            {
+                const unsigned char value =
+                    std::to_integer<
+                        unsigned char>(
+                            data[cursor]);
+
+                if (value < 32 ||
+                    value > 126)
+                {
+                    break;
+                }
+
+                version.push_back(
+                    static_cast<char>(
+                        value));
+
+                if (version.size() >=
+                    32)
+                {
+                    break;
+                }
+            }
+
+            if (!version.empty())
+            {
+                version_ =
+                    FromUtf8(
+                        version);
+
+                return;
+            }
+        }
+
+        version_ =
+            L"ver dev";
+    }
+
+    void LoginScreen::Submit()
+    {
+        serverListOpen_ =
+            false;
+
+        message_.clear();
+
+        if (login_.empty())
+        {
+            message_ =
+                Localized(
+                    L"Введите имя.",
+                    L"Enter your name.");
+
+            focus_ =
+                ui::LoginFocus::Login;
+
+            return;
+        }
+
+        if (password_.empty())
+        {
+            message_ =
+                Localized(
+                    L"Введите пароль.",
+                    L"Enter your password.");
+
+            focus_ =
+                ui::LoginFocus::Password;
+
+            return;
+        }
+
+        submitRequested_ =
+            true;
+    }
+
+    void LoginScreen::SelectLanguage(
+        const ui::FrontendLanguage language)
+    {
+        language_ =
+            language;
+
+        message_.clear();
+    }
+
+    std::wstring LoginScreen::Localized(
+        const wchar_t* russian,
+        const wchar_t* english) const
+    {
+        if (language_ ==
+            ui::FrontendLanguage::Russian)
+        {
+            return russian;
+        }
+
+        return english;
     }
 
     std::string LoginScreen::ToUtf8(
@@ -333,7 +758,7 @@ namespace client::frontend
             return {};
         }
 
-        const int requiredLength =
+        const int length =
             WideCharToMultiByte(
                 CP_UTF8,
                 0,
@@ -345,17 +770,16 @@ namespace client::frontend
                 nullptr,
                 nullptr);
 
-        if (requiredLength <=
+        if (length <=
             0)
         {
             return {};
         }
 
-        std::string result;
-
-        result.resize(
+        std::string result(
             static_cast<std::size_t>(
-                requiredLength));
+                length),
+            '\0');
 
         WideCharToMultiByte(
             CP_UTF8,
@@ -364,40 +788,51 @@ namespace client::frontend
             static_cast<int>(
                 value.size()),
             result.data(),
-            requiredLength,
+            length,
             nullptr,
             nullptr);
 
         return result;
     }
 
-    void LoginScreen::Submit()
+    std::wstring LoginScreen::FromUtf8(
+        const std::string& value)
     {
-        message_.clear();
-
-        if (login_.empty())
+        if (value.empty())
         {
-            message_ =
-                L"Введите логин.";
-
-            focus_ =
-                ui::LoginFocus::Login;
-
-            return;
+            return {};
         }
 
-        if (password_.empty())
+        const int length =
+            MultiByteToWideChar(
+                CP_UTF8,
+                0,
+                value.data(),
+                static_cast<int>(
+                    value.size()),
+                nullptr,
+                0);
+
+        if (length <=
+            0)
         {
-            message_ =
-                L"Введите пароль.";
-
-            focus_ =
-                ui::LoginFocus::Password;
-
-            return;
+            return {};
         }
 
-        submitRequested_ =
-            true;
+        std::wstring result(
+            static_cast<std::size_t>(
+                length),
+            L'\0');
+
+        MultiByteToWideChar(
+            CP_UTF8,
+            0,
+            value.data(),
+            static_cast<int>(
+                value.size()),
+            result.data(),
+            length);
+
+        return result;
     }
 }
