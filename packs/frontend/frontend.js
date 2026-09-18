@@ -13,7 +13,7 @@ const SWF_BASE =
 
 const STARTUP_IMAGE =
     ROOT +
-    "/packs/res/soGUI/maps/loadingScreen/appStart.tga";
+    "/packs/res/soGUI/maps/loadingScreen/appStart3.tga";
 
 const SERVER_CONFIG =
     ROOT +
@@ -22,6 +22,16 @@ const SERVER_CONFIG =
 const LOCALES_CONFIG =
     ROOT +
     "/packs/res/local/localizations.json";
+	
+const CHAR_MAKER_CONFIG =
+    ROOT +
+    "/packs/res/scripts/client/data/charMakerCfg.json";
+
+const TEST_CHARACTERS_KEY =
+    "zone.test.characters";
+
+const TEST_CURRENT_CHARACTER_KEY =
+    "zone.test.currentCharacter";
 
 const VERSION_RESOURCE =
     ROOT +
@@ -36,6 +46,12 @@ const STARTUP_DURATION =
 
 let player =
     null;
+	
+let lastValidatedNickname =
+    "";
+
+let pendingCharacterAppearance =
+    {};
 
 let currentLocale =
     normalizeLocale(
@@ -729,45 +745,490 @@ window.gui_reset_position =
     };
 
 
+function loadTestCharacters()
+{
+    try
+    {
+        const raw =
+            localStorage.getItem(
+                TEST_CHARACTERS_KEY);
+
+        if (!raw)
+        {
+            return [];
+        }
+
+        const result =
+            JSON.parse(raw);
+
+        return Array.isArray(result)
+            ? result
+            : [];
+    }
+    catch
+    {
+        return [];
+    }
+}
+
+
+function saveTestCharacters(
+    characters)
+{
+    localStorage.setItem(
+        TEST_CHARACTERS_KEY,
+        JSON.stringify(
+            characters));
+}
+
+
+function getCurrentCharacterIndex(
+    characters)
+{
+    if (!characters.length)
+    {
+        return -1;
+    }
+
+    const saved =
+        Number.parseInt(
+            localStorage.getItem(
+                TEST_CURRENT_CHARACTER_KEY) ||
+            "0",
+            10);
+
+    if (!Number.isFinite(saved) ||
+        saved < 0 ||
+        saved >= characters.length)
+    {
+        return 0;
+    }
+
+    return saved;
+}
+
+
+function validateCharacterName(
+    nickname)
+{
+    if (nickname.length < 3 ||
+        nickname.length > 32)
+    {
+        return false;
+    }
+
+    //
+    // Latin + Cyrillic + numbers + _
+    //
+    if (!/^[A-Za-zА-Яа-яЁёІіЇїЄєҐґ0-9_]+$/u.test(
+            nickname))
+    {
+        return false;
+    }
+
+    //
+    // Оригинальное описание разрешает
+    // один символ "_".
+    //
+    const underscores =
+        nickname.match(/_/g);
+
+    if (underscores &&
+        underscores.length > 1)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+
+async function loadCharacterMakerConfig()
+{
+    const response =
+        await fetch(
+            CHAR_MAKER_CONFIG,
+            {
+                cache:
+                    "no-store"
+            });
+
+    if (!response.ok)
+    {
+        throw new Error(
+            "Unable to load charMakerCfg.json");
+    }
+
+    return await response.json();
+}
+
 // --------------------------------------------------
 // Character / account API
-//
-// На текущем временном аккаунте персонажей нет.
-// Поэтому отдаём реальное состояние:
-// empty character list.
 // --------------------------------------------------
 
 window.allCharactersInfo =
     function()
     {
+        const characters =
+            loadTestCharacters();
+
+        const currentId =
+            getCurrentCharacterIndex(
+                characters);
+
         transmitAsync(
             "allCharactersInfo",
             {
-                list: [],
-                currentId: 0
+                list:
+                    characters,
+
+                currentId:
+                    currentId
             });
 
-        transmitAsync(
-            "activateFirstCharWindow",
-            {});
+        //
+        // Оригинал открывает окно первого
+        // персонажа ТОЛЬКО если список пустой.
+        //
+        if (characters.length ===
+            0)
+        {
+            setTimeout(
+                () =>
+                {
+                    transmit(
+                        "activateFirstCharWindow",
+                        {});
+                },
+                180);
+        }
     };
 
 
 window.selectChar =
-    function()
+    function(rawArguments)
     {
+        const args =
+            unwrapArguments(
+                rawArguments);
+
+        const id =
+            Number(
+                args.id);
+
+        const characters =
+            loadTestCharacters();
+
+        if (Number.isInteger(id) &&
+            id >= 0 &&
+            id < characters.length)
+        {
+            localStorage.setItem(
+                TEST_CURRENT_CHARACTER_KEY,
+                String(id));
+        }
+    };
+
+
+window.checkAvatarName =
+    function(rawArguments)
+    {
+        const args =
+            unwrapArguments(
+                rawArguments);
+
+        const nickname =
+            String(
+                args.nick ||
+                "")
+                .trim();
+
+        const characters =
+            loadTestCharacters();
+
+        const syntaxValid =
+            validateCharacterName(
+                nickname);
+
+        const alreadyExists =
+            characters.some(
+                character =>
+                    String(
+                        character.name ||
+                        "")
+                        .toLowerCase() ===
+                    nickname.toLowerCase());
+
+        const valid =
+            syntaxValid &&
+            !alreadyExists;
+
+        if (valid)
+        {
+            lastValidatedNickname =
+                nickname;
+        }
+
+        let message =
+            "";
+
+        if (!syntaxValid)
+        {
+            message =
+                "Недопустимое имя персонажа";
+        }
+        else if (alreadyExists)
+        {
+            message =
+                "Такое имя уже занято";
+        }
+
+        transmitAsync(
+            "checkAvatarName",
+            {
+                nick:
+                    nickname,
+
+                message:
+                    message,
+
+                result:
+                    valid
+                        ? 1
+                        : 0
+            });
     };
 
 
 window.creatingChar =
+    async function()
+    {
+        try
+        {
+            const config =
+                await loadCharacterMakerConfig();
+
+            transmitAsync(
+                "creatingChar",
+                config);
+        }
+        catch (error)
+        {
+            trace(
+                "Character maker config failed: " +
+                error);
+
+            transmitAsync(
+                "creatingChar",
+                {});
+        }
+    };
+
+
+window.newCharView =
+    function(rawArguments)
+    {
+        const args =
+            unwrapArguments(
+                rawArguments);
+
+        if (args &&
+            typeof args ===
+                "object")
+        {
+            if (args.choiceGroup)
+            {
+                pendingCharacterAppearance[
+                    args.choiceGroup] =
+                        args.var;
+            }
+        }
+    };
+
+
+window.newFullCharView =
+    function(rawArguments)
+    {
+        const args =
+            unwrapArguments(
+                rawArguments);
+
+        pendingCharacterAppearance =
+            {
+                ...pendingCharacterAppearance,
+                random:
+                    args
+            };
+    };
+
+
+window.createChar =
     function()
     {
+        const nickname =
+            String(
+                lastValidatedNickname ||
+                "")
+                .trim();
+
+        if (!validateCharacterName(
+                nickname))
+        {
+            transmitAsync(
+                "createChar",
+                {
+                    errcode:
+                        1,
+
+                    msg:
+                        "Некорректное имя персонажа",
+
+                    success:
+                        0
+                });
+
+            return;
+        }
+
+        const characters =
+            loadTestCharacters();
+
+        const exists =
+            characters.some(
+                character =>
+                    String(
+                        character.name ||
+                        "")
+                        .toLowerCase() ===
+                    nickname.toLowerCase());
+
+        if (exists)
+        {
+            transmitAsync(
+                "createChar",
+                {
+                    errcode:
+                        2,
+
+                    msg:
+                        "Персонаж с таким именем уже существует",
+
+                    success:
+                        0
+                });
+
+            return;
+        }
+
+        const newCharacter = {
+            id:
+                characters.length,
+
+            name:
+                nickname,
+
+            maxspeed:
+                5.0,
+
+            maxhp:
+                100,
+
+            hp_regen:
+                1.0,
+
+            maxstamina:
+                100,
+
+            stamina_regen:
+                1.0,
+
+            maxweight:
+                50,
+
+            isTutorialPassed:
+                0,
+
+            deletion_remaining_time:
+                -1,
+
+            goldCredit:
+                0,
+
+            appearance:
+                pendingCharacterAppearance
+        };
+
+        characters.push(
+            newCharacter);
+
+        saveTestCharacters(
+            characters);
+
+        localStorage.setItem(
+            TEST_CURRENT_CHARACTER_KEY,
+            String(
+                characters.length -
+                1));
+
+        pendingCharacterAppearance =
+            {};
+
+        transmitAsync(
+            "createChar",
+            {
+                errcode:
+                    0,
+
+                msg:
+                    "",
+
+                success:
+                    1
+            });
+    };
+
+
+window.cancelCreateChar =
+    function()
+    {
+        pendingCharacterAppearance =
+            {};
     };
 
 
 window.deleteCharacter =
     function()
     {
+        const characters =
+            loadTestCharacters();
+
+        const index =
+            getCurrentCharacterIndex(
+                characters);
+
+        if (index < 0)
+        {
+            return;
+        }
+
+        characters.splice(
+            index,
+            1);
+
+        for (let i = 0;
+             i < characters.length;
+             ++i)
+        {
+            characters[i].id =
+                i;
+        }
+
+        saveTestCharacters(
+            characters);
+
+        localStorage.setItem(
+            TEST_CURRENT_CHARACTER_KEY,
+            "0");
     };
 
 
@@ -778,67 +1239,6 @@ window.restoreCharacter =
 
 
 window.updatePremium =
-    function()
-    {
-    };
-
-
-window.checkAvatarName =
-    function()
-    {
-    };
-
-
-window.newCharView =
-    function()
-    {
-    };
-
-
-window.newFullCharView =
-    function()
-    {
-    };
-
-
-window.createChar =
-    function()
-    {
-    };
-
-
-window.cancelCreateChar =
-    function()
-    {
-    };
-
-
-window.showNews =
-    function()
-    {
-        transmitAsync(
-            "showNews",
-            {
-                text: []
-            });
-    };
-
-
-window.reject_prem =
-    function()
-    {
-    };
-
-
-window.goToGame =
-    function()
-    {
-        postToHost(
-            "play");
-    };
-
-
-window.return_in_game =
     function()
     {
     };
