@@ -130,6 +130,11 @@ function transmit(
     eventName,
     data = {})
 {
+	trace(
+    "Host -> Flash event=" +
+    eventName +
+    " data=" +
+    safeDebugValue(data));
     if (!player)
     {
         return;
@@ -1247,6 +1252,176 @@ window.addEventListener(
             "Promise rejection: " +
             event.reason);
     });
+	
+// --------------------------------------------------
+// ExternalInterface diagnostics
+// --------------------------------------------------
 
+function safeDebugValue(value)
+{
+    try
+    {
+        return JSON.stringify(value);
+    }
+    catch
+    {
+        return String(value);
+    }
+}
+
+
+function traceGlobalFunction(name)
+{
+    const original =
+        window[name];
+
+    if (typeof original !==
+        "function")
+    {
+        return;
+    }
+
+    window[name] =
+        function(...args)
+        {
+            trace(
+                "ExternalInterface -> " +
+                name +
+                " args=" +
+                safeDebugValue(args));
+
+            try
+            {
+                const result =
+                    original.apply(
+                        this,
+                        args);
+
+                return result;
+            }
+            catch (error)
+            {
+                trace(
+                    "ExternalInterface ERROR -> " +
+                    name +
+                    ": " +
+                    (
+                        error &&
+                        error.stack
+                            ? error.stack
+                            : error
+                    ));
+
+                throw error;
+            }
+        };
+}
+
+function traceObjectFunction(
+    object,
+    objectName,
+    methodName)
+{
+    if (!object ||
+        typeof object[methodName] !==
+            "function")
+    {
+        return;
+    }
+
+    const original =
+        object[methodName];
+
+    object[methodName] =
+        function(...args)
+        {
+            trace(
+                "ExternalInterface -> " +
+                objectName +
+                "." +
+                methodName +
+                " args=" +
+                safeDebugValue(args));
+
+            try
+            {
+                return original.apply(
+                    this,
+                    args);
+            }
+            catch (error)
+            {
+                trace(
+                    "ExternalInterface ERROR -> " +
+                    objectName +
+                    "." +
+                    methodName +
+                    ": " +
+                    (
+                        error &&
+                        error.stack
+                            ? error.stack
+                            : error
+                    ));
+
+                throw error;
+            }
+        };
+}
+
+// Original top-level SO callbacks
+[
+    "getClientVersion",
+    "isInGame",
+    "getLocalizedResource",
+    "quitGame",
+    "doRestartGame",
+    "openURL",
+    "getLocalesList",
+    "show_dummy",
+    "hide_dummy",
+    "play_sound",
+
+    "getSettingsRange",
+    "getSettings",
+    "setDefaultKeyBindings",
+    "setSettings",
+    "showOptionsMenu",
+    "getDefaultOption",
+    "getKeybindLocalizeTable",
+    "getCurrentLocale",
+    "setCurrentLocale",
+    "getNewKeybind",
+    "gui_reset_position",
+
+    "allCharactersInfo",
+    "selectChar",
+    "creatingChar",
+    "deleteCharacter",
+    "goToGame",
+    "restoreCharacter",
+    "updatePremium",
+    "checkAvatarName",
+    "newCharView",
+    "newFullCharView",
+    "createChar",
+    "cancelCreateChar",
+    "showNews",
+    "reject_prem",
+    "return_in_game"
+].forEach(
+    traceGlobalFunction);
+
+// Login object callbacks
+[
+    "authenticateUser",
+    "getLogin",
+    "getServerList"
+].forEach(
+    method =>
+        traceObjectFunction(
+            window.ActionsWithLogin,
+            "ActionsWithLogin",
+            method));
 
 main();
