@@ -1212,6 +1212,51 @@ namespace client::frontend
                                             controller_ =
                                                 controller;
 
+                                            //
+                                            // WebView2 должен лежать поверх DX11,
+                                            // но не закрывать 3D сцену.
+                                            //
+                                            ComPtr<
+                                                ICoreWebView2Controller2>
+                                                    controller2;
+
+                                            if (SUCCEEDED(
+                                                    controller_.
+                                                        As(
+                                                            &controller2)) &&
+                                                controller2)
+                                            {
+                                                COREWEBVIEW2_COLOR
+                                                    transparent{};
+
+                                                transparent.A =
+                                                    0;
+
+                                                transparent.R =
+                                                    0;
+
+                                                transparent.G =
+                                                    0;
+
+                                                transparent.B =
+                                                    0;
+
+                                                const HRESULT backgroundResult =
+                                                    controller2->
+                                                        put_DefaultBackgroundColor(
+                                                            transparent);
+
+                                                if (FAILED(
+                                                        backgroundResult))
+                                                {
+                                                    core::Log::Warning(
+                                                        std::string(
+                                                            "Unable to make WebView2 transparent: ") +
+                                                        HResultText(
+                                                            backgroundResult));
+                                                }
+                                            }
+
                                             HRESULT webViewResult =
                                                 controller_->
                                                     get_CoreWebView2(

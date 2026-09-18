@@ -1,5 +1,7 @@
 #include "Application.h"
 
+#include "Preview/WorldPreviewLoader.h"
+
 #include "Core/Log.h"
 
 #include <string>
@@ -70,6 +72,79 @@ namespace client
                 "Remembered login storage initialization failed.");
         }
 
+        //
+        // Original SOnline character selection room.
+        //
+        {
+            std::string
+                stageError;
+
+            if (!preview::LoadCharacterSelectStage(
+                    runtime_.Resources(),
+                    "personages_select",
+                    characterSelectStage_,
+                    stageError))
+            {
+                core::Log::Error(
+                    stageError);
+
+                return false;
+            }
+
+            graphics::SceneRenderData
+                scene;
+
+            if (!preview::LoadWorldPreview(
+                    runtime_,
+                    "personages_select",
+                    scene,
+                    stageError))
+            {
+                core::Log::Error(
+                    std::string(
+                        "Unable to load personages_select: ") +
+                    stageError);
+
+                return false;
+            }
+
+            if (!renderer_.Initialize(
+                    window_.NativeHandle(),
+                    window_.Width(),
+                    window_.Height(),
+                    stageError))
+            {
+                core::Log::Error(
+                    std::string(
+                        "Character selection renderer init failed: ") +
+                    stageError);
+
+                return false;
+            }
+
+            rendererInitialized_ =
+                true;
+
+            if (!renderer_.SetScene(
+                    scene,
+                    stageError))
+            {
+                core::Log::Error(
+                    std::string(
+                        "Unable to upload personages_select: ") +
+                    stageError);
+
+                return false;
+            }
+
+            renderer_.SetCamera(
+                characterSelectStage_.
+                    camera);
+
+            core::Log::Info(
+                "Original personages_select scene initialized.");
+        }
+
         if (!frontend_.Initialize(
                 window_.NativeHandle(),
                 runtime_.GameRoot(),
@@ -93,6 +168,25 @@ namespace client
 
     bool Application::Update()
     {
+        if (rendererInitialized_)
+        {
+            std::string
+                renderError;
+
+            renderer_.SetCamera(
+                characterSelectStage_.
+                    camera);
+
+            if (!renderer_.Render(
+                    renderError))
+            {
+                core::Log::Error(
+                    renderError);
+
+                return false;
+            }
+        }
+        
         frontend_.Resize();
 
         std::string frontendError;
@@ -208,6 +302,11 @@ namespace client
     void Application::Shutdown()
     {
         frontend_.Shutdown();
+
+        renderer_.Shutdown();
+
+        rendererInitialized_ =
+            false;
 
         accountSession_.Clear();
 

@@ -587,25 +587,134 @@ window.openURL =
     };
 
 
+function getDummyPartId(
+    choiceGroup,
+    value)
+{
+    if (!value ||
+        typeof value !==
+            "object")
+    {
+        return 0;
+    }
+
+    if (choiceGroup ===
+        "01_head")
+    {
+        return Number(
+            value.head_id ||
+            0);
+    }
+
+    return Number(
+        value.item_type_ID ||
+        0);
+}
+
+
 window.show_dummy =
     function()
     {
+        trace(
+            "show_dummy");
+
+        postToHost(
+            "dummy_show");
     };
 
 
 window.hide_dummy =
     function()
     {
+        trace(
+            "hide_dummy");
+
+        postToHost(
+            "dummy_hide");
+    };
+	
+	
+window.rotate_dummy =
+    function(rawArguments)
+    {
+        const args =
+            unwrapArguments(
+                rawArguments);
+
+        let dx =
+            0;
+
+        let dy =
+            0;
+
+        if (Array.isArray(
+                args))
+        {
+            dx =
+                Number(
+                    args[0] ||
+                    0);
+
+            dy =
+                Number(
+                    args[1] ||
+                    0);
+        }
+
+        postToHost(
+            "dummy_rotate",
+            dx,
+            dy);
     };
 
 
 window.play_sound =
-    function()
+    function(rawArguments)
     {
-        //
-        // Frontend sounds подключим
-        // отдельно к оригинальным SO sfx.
-        //
+        const args =
+            unwrapArguments(
+                rawArguments);
+
+        let soundName =
+            "";
+
+        if (typeof args ===
+            "string")
+        {
+            soundName =
+                args;
+        }
+        else if (Array.isArray(
+                     args))
+        {
+            soundName =
+                String(
+                    args[0] ||
+                    "");
+        }
+        else if (args &&
+                 typeof args ===
+                     "object")
+        {
+            soundName =
+                String(
+                    args.name ||
+                    args.sound ||
+                    "");
+        }
+
+        if (!soundName)
+        {
+            return;
+        }
+
+        trace(
+            "play_sound: " +
+            soundName);
+
+        postToHost(
+            "ui_sound",
+            soundName);
     };
 
 
@@ -1032,17 +1141,33 @@ window.newCharView =
             unwrapArguments(
                 rawArguments);
 
-        if (args &&
-            typeof args ===
-                "object")
+        if (!args ||
+            typeof args !==
+                "object" ||
+            !args.choiceGroup)
         {
-            if (args.choiceGroup)
-            {
-                pendingCharacterAppearance[
-                    args.choiceGroup] =
-                        args.var;
-            }
+            return;
         }
+
+        pendingCharacterAppearance[
+            args.choiceGroup] =
+                args.var;
+
+        const partId =
+            getDummyPartId(
+                args.choiceGroup,
+                args.var);
+
+        trace(
+            "newCharView: " +
+            args.choiceGroup +
+            " -> " +
+            partId);
+
+        postToHost(
+            "dummy_part",
+            args.choiceGroup,
+            partId);
     };
 
 
@@ -1053,12 +1178,46 @@ window.newFullCharView =
             unwrapArguments(
                 rawArguments);
 
-        pendingCharacterAppearance =
+        if (!Array.isArray(
+                args))
+        {
+            return;
+        }
+
+        const fields =
+            [];
+
+        for (const entry of args)
+        {
+            if (!entry ||
+                !entry.choiceGroup)
             {
-                ...pendingCharacterAppearance,
-                random:
-                    args
-            };
+                continue;
+            }
+
+            pendingCharacterAppearance[
+                entry.choiceGroup] =
+                    entry.var;
+
+            const partId =
+                getDummyPartId(
+                    entry.choiceGroup,
+                    entry.var);
+
+            fields.push(
+                entry.choiceGroup);
+
+            fields.push(
+                partId);
+        }
+
+        trace(
+            "newFullCharView parts=" +
+            fields.length / 2);
+
+        postToHost(
+            "dummy_full",
+            ...fields);
     };
 
 
@@ -1557,7 +1716,10 @@ async function startFlash()
 				"warn",
 
 			backgroundColor:
-				"#000000",
+				null,
+				
+			wmode:
+				"transparent",
 
 			contextMenu:
 				"off",
@@ -1772,6 +1934,7 @@ function traceObjectFunction(
     "getLocalesList",
     "show_dummy",
     "hide_dummy",
+	"rotate_dummy",
     "play_sound",
 
     "getSettingsRange",

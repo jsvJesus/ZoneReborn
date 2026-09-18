@@ -9,6 +9,9 @@
 
 #include "Core/Runtime.h"
 
+#include "Graphics/Renderer.h"
+#include "Preview/CharacterSelectStage.h"
+
 namespace client
 {
     class Application final
@@ -48,5 +51,14 @@ namespace client
         states::ClientState
             state_ =
                 states::ClientState::Boot;
+
+        graphics::Renderer
+            renderer_;
+
+        preview::CharacterSelectStageData
+            characterSelectStage_;
+
+        bool rendererInitialized_ =
+            false;
     };
 }
