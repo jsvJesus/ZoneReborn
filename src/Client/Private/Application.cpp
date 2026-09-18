@@ -2,24 +2,7 @@
 
 #include "Core/Log.h"
 
-#include <chrono>
 #include <string>
-
-namespace
-{
-    constexpr auto SplashDuration =
-        std::chrono::milliseconds(
-            1400);
-
-    std::wstring ToWide(
-        const std::string& value)
-    {
-        return
-            std::wstring(
-                value.begin(),
-                value.end());
-    }
-}
 
 namespace client
 {
@@ -28,7 +11,7 @@ namespace client
         if (!Initialize())
         {
             core::Log::Error(
-                "Client initialization failed");
+                "Client initialization failed.");
 
             Shutdown();
 
@@ -42,13 +25,6 @@ namespace client
                 Shutdown();
 
                 return 2;
-            }
-
-            if (!Render())
-            {
-                Shutdown();
-
-                return 3;
             }
 
             if (state_ ==
@@ -87,10 +63,16 @@ namespace client
             return false;
         }
 
-        if (!frontendRenderer_.Initialize(
+        if (!rememberedLogin_.Initialize(
+                runtime_.GameRoot()))
+        {
+            core::Log::Warning(
+                "Remembered login storage initialization failed.");
+        }
+
+        if (!frontend_.Initialize(
                 window_.NativeHandle(),
-                window_.Width(),
-                window_.Height(),
+                runtime_.GameRoot(),
                 runtime_.Resources(),
                 error))
         {
@@ -100,246 +82,123 @@ namespace client
             return false;
         }
 
-        rememberedLogin_.Initialize(
-            runtime_.GameRoot());
-
-        loginScreen_.Initialize(
-            runtime_.Resources(),
-            rememberedLogin_.Load());
-
-        splashStarted_ =
-            std::chrono::
-                steady_clock::now();
-
         state_ =
-            states::ClientState::
-                StartupSplash;
+            states::ClientState::Frontend;
 
         core::Log::Info(
-            "Client state: StartupSplash");
+            "Client state: Frontend");
 
         return true;
     }
 
     bool Application::Update()
     {
-        switch (state_)
+        frontend_.Resize();
+
+        std::string frontendError;
+
+        if (frontend_.ConsumeFatalError(
+                frontendError))
         {
-            case states::ClientState::
-                StartupSplash:
-            {
-                const auto now =
-                    std::chrono::
-                        steady_clock::now();
+            core::Log::Error(
+                frontendError);
 
-                if (now -
-                        splashStarted_ >=
-                    SplashDuration)
-                {
-                    state_ =
-                        states::ClientState::
-                            Login;
-
-                    core::Log::Info(
-                        "Client state: Login");
-                }
-
-                break;
-            }
-
-            case states::ClientState::
-                Login:
-            {
-                loginScreen_.Update(
-                    window_);
-
-                if (loginScreen_.
-                    ConsumeExitRequest())
-                {
-                    state_ =
-                        states::ClientState::
-                            Exit;
-
-                    break;
-                }
-
-                frontend::LoginRequest
-                    request;
-
-                if (!loginScreen_.
-                    ConsumeLoginRequest(
-                        request))
-                {
-                    break;
-                }
-
-                loginScreen_.
-                    SetAuthenticating(
-                        true);
-
-                state_ =
-                    states::ClientState::
-                        Authenticating;
-
-                const account::AuthResult result =
-                    authService_.
-                        Authenticate(
-                            request.login,
-                            request.password);
-
-                if (!result.success)
-                {
-                    loginScreen_.
-                        SetAuthenticating(
-                            false);
-
-                    loginScreen_.
-                        SetMessage(
-                            ToWide(
-                                result.error));
-
-                    state_ =
-                        states::ClientState::
-                            Login;
-
-                    core::Log::Warning(
-                        "Authentication failed");
-
-                    break;
-                }
-
-                accountSession_.
-                    Establish(
-                        result.login,
-                        result.sessionToken);
-
-                if (request.rememberLogin)
-                {
-                    rememberedLogin_.
-                        Save(
-                            result.login);
-                }
-                else
-                {
-                    rememberedLogin_.
-                        Clear();
-                }
-
-                loginScreen_.
-                    SetAuthenticating(
-                        false);
-
-                core::Log::Info(
-                    std::string(
-                        "Selected login cluster: ") +
-                    request.server);
-
-                state_ =
-                    states::ClientState::
-                        MainMenu;
-
-                core::Log::Info(
-                    "Client state: MainMenu");
-
-                break;
-            }
-
-            case states::ClientState::
-                Authenticating:
-            {
-                break;
-            }
-
-            case states::ClientState::
-                MainMenu:
-            {
-                if (window_.
-                    ConsumeKeyPress(
-                        VK_ESCAPE))
-                {
-                    state_ =
-                        states::ClientState::
-                            Exit;
-                }
-
-                break;
-            }
-
-            case states::ClientState::
-                Exit:
-            {
-                break;
-            }
-
-            default:
-            {
-                break;
-            }
+            return false;
         }
 
-        return true;
-    }
+        frontend::FrontendEvent event;
 
-    bool Application::Render()
-    {
-        std::string error;
-
-        switch (state_)
+        while (frontend_.ConsumeEvent(
+            event))
         {
-            case states::ClientState::
-                StartupSplash:
+            switch (event.type)
             {
-                if (!frontendRenderer_.
-                    RenderStartupSplash(
-                        error))
+                case frontend::FrontendEventType::Login:
                 {
-                    core::Log::Error(
-                        error);
+                    const account::AuthResult result =
+                        authService_.
+                            Authenticate(
+                                event.login,
+                                event.password);
 
-                    return false;
+                    if (!result.success)
+                    {
+                        frontend_.
+                            SendLoginError(
+                                result.error);
+
+                        core::Log::Warning(
+                            "Authentication failed.");
+
+                        break;
+                    }
+
+                    accountSession_.
+                        Establish(
+                            result.login,
+                            result.sessionToken);
+
+                    if (event.rememberLogin)
+                    {
+                        rememberedLogin_.
+                            Save(
+                                result.login);
+                    }
+                    else
+                    {
+                        rememberedLogin_.
+                            Clear();
+                    }
+
+                    core::Log::Info(
+                        std::string(
+                            "Authentication successful: ") +
+                        result.login);
+
+                    core::Log::Info(
+                        std::string(
+                            "Selected server id: ") +
+                        event.serverId);
+
+                    frontend_.
+                        SendLoginAccepted();
+
+                    break;
                 }
 
-                break;
-            }
-
-            case states::ClientState::
-                Login:
-            case states::ClientState::
-                Authenticating:
-            {
-                if (!frontendRenderer_.
-                    RenderLogin(
-                        loginScreen_.View(),
-                        error))
+                case frontend::FrontendEventType::OpenUrl:
                 {
-                    core::Log::Error(
-                        error);
+                    //
+                    // Пока сайт ZoneReborn не готов,
+                    // ничего наружу не открываем.
+                    //
+                    core::Log::Info(
+                        std::string(
+                            "Frontend URL request: ") +
+                        event.url);
 
-                    return false;
+                    break;
                 }
 
-                break;
-            }
-
-            case states::ClientState::
-                MainMenu:
-            {
-                if (!frontendRenderer_.
-                    RenderBackground(
-                        error))
+                case frontend::FrontendEventType::Play:
                 {
-                    core::Log::Error(
-                        error);
+                    //
+                    // Подключим сюда Character /
+                    // Server / World flow следующим этапом.
+                    //
+                    core::Log::Info(
+                        "Frontend requested Play.");
 
-                    return false;
+                    break;
                 }
 
-                break;
-            }
+                case frontend::FrontendEventType::Exit:
+                {
+                    state_ =
+                        states::ClientState::Exit;
 
-            default:
-            {
-                break;
+                    break;
+                }
             }
         }
 
@@ -348,14 +207,14 @@ namespace client
 
     void Application::Shutdown()
     {
+        frontend_.Shutdown();
+
         accountSession_.Clear();
 
-        frontendRenderer_.Shutdown();
         window_.Shutdown();
         runtime_.Shutdown();
 
         state_ =
-            states::ClientState::
-                Exit;
+            states::ClientState::Exit;
     }
 }

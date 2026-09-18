@@ -3,14 +3,11 @@
 #include "Account/AccountSession.h"
 #include "Account/AuthService.h"
 #include "Account/RememberedLogin.h"
-#include "Frontend/LoginScreen.h"
+#include "Frontend/Frontend.h"
 #include "Platform/Window.h"
 #include "States/ClientState.h"
-#include "UI/FrontendRenderer.h"
 
 #include "Core/Runtime.h"
-
-#include <chrono>
 
 namespace client
 {
@@ -28,9 +25,6 @@ namespace client
         [[nodiscard]]
         bool Update();
 
-        [[nodiscard]]
-        bool Render();
-
         void Shutdown();
 
         core::Runtime
@@ -39,11 +33,8 @@ namespace client
         platform::Window
             window_;
 
-        ui::FrontendRenderer
-            frontendRenderer_;
-
-        frontend::LoginScreen
-            loginScreen_;
+        frontend::OriginalFrontend
+            frontend_;
 
         account::AuthService
             authService_;
@@ -57,8 +48,5 @@ namespace client
         states::ClientState
             state_ =
                 states::ClientState::Boot;
-
-        std::chrono::steady_clock::time_point
-            splashStarted_;
     };
 }
