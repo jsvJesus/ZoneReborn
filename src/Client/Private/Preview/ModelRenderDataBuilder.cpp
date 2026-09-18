@@ -444,23 +444,29 @@ namespace
         }
     }
 
-    client::graphics::SceneAlphaMode
-    ResolveAlphaMode(
+    client::graphics::SceneAlphaMode ResolveAlphaMode(
         const core::assets::VisualMaterial& material,
         const client::graphics::SceneTextureData& texture)
     {
-        if (!texture.hasTransparentPixels)
-        {
-            return
-                client::graphics::SceneAlphaMode::Opaque;
-        }
+        //
+        // В BigWorld наличие alpha-канала само по себе
+        // НЕ означает прозрачность.
+        //
+        // Особенно это важно для character/skinned
+        // материалов: alpha часто используется как
+        // вспомогательная mask/specular информация.
+        //
+        // Поэтому alpha mode определяем только по
+        // семантике материала/effect.
+        //
 
         if (LooksLikeBlendMaterial(
                 material,
                 texture.logicalPath))
         {
             return
-                client::graphics::SceneAlphaMode::Blend;
+                client::graphics::
+                    SceneAlphaMode::Blend;
         }
 
         if (LooksLikeCutoutMaterial(
@@ -468,17 +474,17 @@ namespace
                 texture.logicalPath))
         {
             return
-                client::graphics::SceneAlphaMode::Cutout;
+                client::graphics::
+                    SceneAlphaMode::Cutout;
         }
 
-        if (texture.hasZeroAlphaPixels)
-        {
-            return
-                client::graphics::SceneAlphaMode::Cutout;
-        }
-
+        //
+        // Никакого автоматического Cutout только
+        // потому, что DDS содержит нулевой alpha.
+        //
         return
-            client::graphics::SceneAlphaMode::Opaque;
+            client::graphics::
+                SceneAlphaMode::Opaque;
     }
 }
 

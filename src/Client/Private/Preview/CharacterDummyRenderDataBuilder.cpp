@@ -768,6 +768,98 @@ namespace
                     }
                 }
 
+                if (!mesh.vertices.empty())
+                {
+                    float minX =
+                        mesh.vertices.front().
+                            position.x;
+
+                    float minY =
+                        mesh.vertices.front().
+                            position.y;
+
+                    float minZ =
+                        mesh.vertices.front().
+                            position.z;
+
+                    float maxX =
+                        minX;
+
+                    float maxY =
+                        minY;
+
+                    float maxZ =
+                        minZ;
+
+                    for (const auto& vertex :
+                         mesh.vertices)
+                    {
+                        minX =
+                            std::min(
+                                minX,
+                                vertex.position.x);
+
+                        minY =
+                            std::min(
+                                minY,
+                                vertex.position.y);
+
+                        minZ =
+                            std::min(
+                                minZ,
+                                vertex.position.z);
+
+                        maxX =
+                            std::max(
+                                maxX,
+                                vertex.position.x);
+
+                        maxY =
+                            std::max(
+                                maxY,
+                                vertex.position.y);
+
+                        maxZ =
+                            std::max(
+                                maxZ,
+                                vertex.position.z);
+                    }
+
+                    core::Log::Info(
+                        std::string(
+                            "CharacterDummy mesh bounds [") +
+                        std::string(
+                            modelReference) +
+                        "]: min=(" +
+                        std::to_string(
+                            minX) +
+                        ", " +
+                        std::to_string(
+                            minY) +
+                        ", " +
+                        std::to_string(
+                            minZ) +
+                        "), max=(" +
+                        std::to_string(
+                            maxX) +
+                        ", " +
+                        std::to_string(
+                            maxY) +
+                        ", " +
+                        std::to_string(
+                            maxZ) +
+                        "), size=(" +
+                        std::to_string(
+                            maxX - minX) +
+                        ", " +
+                        std::to_string(
+                            maxY - minY) +
+                        ", " +
+                        std::to_string(
+                            maxZ - minZ) +
+                        ")");
+                }
+
                 client::graphics::SceneMesh
                     sceneMesh;
 
