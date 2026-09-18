@@ -16,6 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4191.47" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ClInclude Include="Private\Account\AccountSession.h" />
     <ClInclude Include="Private\Account\AuthService.h" />
     <ClInclude Include="Private\Account\RememberedLogin.h" />
@@ -78,10 +82,6 @@
     <None Include="Shaders\World\WorldFlare.hlsl" />
     <None Include="Shaders\World\WorldSky.hlsl" />
     <None Include="Shaders\World\WorldParticle.hlsl" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Private\UI\" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">
@@ -152,10 +152,6 @@
     <ItemGroup>
       <ClientShaderFiles Include="$(ProjectDir)Shaders\World\**\*.hlsl" />
       <ClientShaderFiles Include="$(ProjectDir)Shaders\World\**\*.hlsli" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.4191.47" />
     </ItemGroup>
 
     <MakeDir
