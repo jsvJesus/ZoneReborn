@@ -41,3 +41,20 @@ packs/res/textures/
 *.zip
 *.rar
 *.lib
+
+# ============================================================
+# WebView2 SDK required by Client
+# ============================================================
+
+!third_party/
+!third_party/WebView2/
+!third_party/WebView2/build/
+!third_party/WebView2/build/native/
+
+# Headers
+!third_party/WebView2/build/native/include/
+!third_party/WebView2/build/native/include/**
+
+# x64 static loader
+!third_party/WebView2/build/native/x64/
+!third_party/WebView2/build/native/x64/WebView2LoaderStatic.lib
