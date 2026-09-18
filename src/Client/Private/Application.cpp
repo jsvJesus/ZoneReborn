@@ -73,97 +73,6 @@ namespace client
                 "Remembered login storage initialization failed.");
         }
 
-        //
-        // Original SOnline character selection room.
-        //
-        {
-            std::string
-                stageError;
-
-            if (!preview::LoadCharacterSelectStage(
-                    runtime_.Resources(),
-                    "personages_select",
-                    characterSelectStage_,
-                    stageError))
-            {
-                core::Log::Error(
-                    stageError);
-
-                return false;
-            }
-
-            graphics::SceneRenderData
-                scene;
-
-            if (!preview::LoadWorldPreview(
-                    runtime_,
-                    "personages_select",
-                    scene,
-                    stageError))
-            {
-                core::Log::Error(
-                    std::string(
-                        "Unable to load personages_select: ") +
-                    stageError);
-
-                return false;
-            }
-
-            preview::CharacterDummyRenderDataBuilder
-                characterDummyBuilder;
-
-            if (!characterDummyBuilder.BuildDefault(
-                    runtime_.Resources(),
-                    characterSelectStage_.
-                        dummyTransform,
-                    scene,
-                    stageError))
-            {
-                core::Log::Error(
-                    std::string(
-                        "Unable to build CharacterDummy: ") +
-                    stageError);
-
-                return false;
-            }
-
-            if (!renderer_.Initialize(
-                    window_.NativeHandle(),
-                    window_.Width(),
-                    window_.Height(),
-                    stageError))
-            {
-                core::Log::Error(
-                    std::string(
-                        "Character selection renderer init failed: ") +
-                    stageError);
-
-                return false;
-            }
-
-            rendererInitialized_ =
-                true;
-
-            if (!renderer_.SetScene(
-                    scene,
-                    stageError))
-            {
-                core::Log::Error(
-                    std::string(
-                        "Unable to upload personages_select: ") +
-                    stageError);
-
-                return false;
-            }
-
-            renderer_.SetCamera(
-                characterSelectStage_.
-                    camera);
-
-            core::Log::Info(
-                "Original personages_select scene initialized.");
-        }
-
         if (!frontend_.Initialize(
                 window_.NativeHandle(),
                 runtime_.GameRoot(),
@@ -183,6 +92,120 @@ namespace client
             "Client state: Frontend");
 
         return true;
+    }
+
+    bool Application::InitializeCharacterSelectScene(
+        std::string& error)
+    {
+        error.clear();
+
+        if (rendererInitialized_)
+        {
+            return true;
+        }
+
+        core::Log::Info(
+            "Initializing original personages_select scene.");
+
+        if (!preview::LoadCharacterSelectStage(
+                runtime_.Resources(),
+                "personages_select",
+                characterSelectStage_,
+                error))
+        {
+            return false;
+        }
+
+        graphics::SceneRenderData
+            scene;
+
+        if (!preview::LoadWorldPreview(
+                runtime_,
+                "personages_select",
+                scene,
+                error))
+        {
+            error =
+                "Unable to load personages_select: " +
+                error;
+
+            return false;
+        }
+
+        preview::CharacterDummyRenderDataBuilder
+            characterDummyBuilder;
+
+        if (!characterDummyBuilder.BuildDefault(
+                runtime_.Resources(),
+                characterSelectStage_.
+                    dummyTransform,
+                scene,
+                error))
+        {
+            error =
+                "Unable to build CharacterDummy: " +
+                error;
+
+            return false;
+        }
+
+        if (!renderer_.Initialize(
+                window_.NativeHandle(),
+                window_.Width(),
+                window_.Height(),
+                error))
+        {
+            error =
+                "Character selection renderer init failed: " +
+                error;
+
+            return false;
+        }
+
+        if (!renderer_.SetScene(
+                scene,
+                error))
+        {
+            renderer_.Shutdown();
+
+            error =
+                "Unable to upload personages_select: " +
+                error;
+
+            return false;
+        }
+
+        renderer_.SetCamera(
+            characterSelectStage_.
+                camera);
+
+        rendererInitialized_ =
+            true;
+
+        core::Log::Info(
+            "Original personages_select scene activated.");
+
+        return true;
+    }
+
+
+    void Application::ShutdownCharacterSelectScene()
+    {
+        if (!rendererInitialized_)
+        {
+            return;
+        }
+
+        renderer_.Shutdown();
+
+        rendererInitialized_ =
+            false;
+
+        characterSelectStage_ =
+            {};
+
+        core::Log::Info(
+            "personages_select scene deactivated.");
     }
 
     bool Application::Update()
@@ -268,15 +291,32 @@ namespace client
                             "Authentication successful: ") +
                         result.login);
 
-                    core::Log::Info(
-                        std::string(
-                            "Selected server id: ") +
-                        event.serverId);
+                        core::Log::Info(std::string("Selected server id: ") +
+                            event.serverId);
 
-                    frontend_.
-                        SendLoginAccepted();
+                        std::string
+                            characterSceneError;
 
-                    break;
+                        if (!InitializeCharacterSelectScene(
+                                characterSceneError))
+                        {
+                            core::Log::Error(
+                                characterSceneError);
+
+                            accountSession_.
+                                Clear();
+
+                            frontend_.
+                                SendLoginError(
+                                    "Unable to initialize character selection scene.");
+
+                            break;
+                        }
+
+                        frontend_.
+                            SendLoginAccepted();
+
+                        break;
                 }
 
                 case frontend::FrontendEventType::OpenUrl:
@@ -294,16 +334,21 @@ namespace client
                 }
 
                 case frontend::FrontendEventType::Play:
-                {
-                    //
-                    // Подключим сюда Character /
-                    // Server / World flow следующим этапом.
-                    //
-                    core::Log::Info(
-                        "Frontend requested Play.");
+                    {
+                        core::Log::Info(
+                            "Frontend requested Play.");
 
-                    break;
-                }
+                        //
+                        // personages_select принадлежит только
+                        // character/account selection flow.
+                        //
+                        // Перед загрузкой игрового world он больше
+                        // не должен оставаться за WebView.
+                        //
+                        ShutdownCharacterSelectScene();
+
+                        break;
+                    }
 
                 case frontend::FrontendEventType::Exit:
                 {

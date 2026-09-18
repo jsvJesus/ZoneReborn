@@ -59,7 +59,8 @@ namespace client::platform
                 IDC_ARROW);
 
         windowClass.hbrBackground =
-            nullptr;
+            reinterpret_cast<HBRUSH>(
+                GetStockObject(BLACK_BRUSH));
 
         windowClass.lpszClassName =
             WindowClassName;

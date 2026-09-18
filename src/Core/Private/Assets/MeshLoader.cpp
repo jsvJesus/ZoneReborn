@@ -668,7 +668,17 @@ namespace
                 return false;
             }
 
-            if (streamName == "colour")
+            const bool isColourStream =
+                streamName == "colour" ||
+                streamName.ends_with(
+                    ".colour");
+
+            const bool isUv2Stream =
+                streamName == "uv2" ||
+                streamName.ends_with(
+                    ".uv2");
+
+            if (isColourStream)
             {
                 const std::size_t expectedSize =
                     output.vertices.size() *
@@ -703,7 +713,7 @@ namespace
                 continue;
             }
 
-            if (streamName == "uv2")
+            if (isUv2Stream)
             {
                 constexpr std::size_t UvStride =
                     sizeof(float) * 2;

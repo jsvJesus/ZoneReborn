@@ -60,5 +60,11 @@ namespace client
 
         bool rendererInitialized_ =
             false;
+
+        [[nodiscard]]
+        bool InitializeCharacterSelectScene(
+            std::string& error);
+
+        void ShutdownCharacterSelectScene();
     };
 }
