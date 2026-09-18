@@ -35,15 +35,35 @@ package ui
       {
          var localeButton:PushButton = null;
          var divider:Label = null;
-         var count:uint = 0;
          var locale:Locale = null;
+         var ordered:Array = [];
+         var count:uint = 0;
          Locale.core.addEventListener(Locale.CHANGED,this.onLocaleChanged);
-         var preWidth:uint = Locale.locales.length * this.itemWidth + (Locale.locales.length - 1) * this.itemSpacing;
-         Logger.LogToChannel(Logger.LOCALIZATION,this.width,this.height);
          this.helper = new Dictionary();
          this.buttons = new Array();
          this.spacing = this.itemSpacing;
          for each(locale in Locale.locales)
+         {
+            if(locale.id == "russian")
+            {
+               ordered.push(locale);
+            }
+         }
+         for each(locale in Locale.locales)
+         {
+            if(locale.id == "english")
+            {
+               ordered.push(locale);
+            }
+         }
+         for each(locale in Locale.locales)
+         {
+            if(locale.id != "russian" && locale.id != "english")
+            {
+               ordered.push(locale);
+            }
+         }
+         for each(locale in ordered)
          {
             localeButton = new ClearButton(this,0,0,locale.shortcut,this.doLocaleSwitch);
             localeButton.setSize(30,26);
@@ -51,32 +71,14 @@ package ui
             this.buttons.push(localeButton);
             this.makeLanguageButton(localeButton);
             count++;
-            if(count < Locale.locales.length)
+            if(count < ordered.length)
             {
                divider = new Label(this);
                divider.size = 21;
                divider.color = 11184810;
-               divider.setSize(30,26);
+               divider.setSize(20,26);
                divider.text = "|";
             }
-         }
-         if(!Base.isScaleform)
-         {
-            localeButton = new ClearButton(this,0,0,"RU",this.doLocaleSwitch);
-            localeButton.setSize(30,26);
-            this.helper[localeButton] = "RU";
-            this.buttons.push(localeButton);
-            this.makeLanguageButton(localeButton);
-            divider = new Label(this);
-            divider.size = 18;
-            divider.color = 11184810;
-            divider.setSize(30,26);
-            divider.text = "|";
-            localeButton = new ClearButton(this,0,0,"EN",this.doLocaleSwitch);
-            localeButton.setSize(30,26);
-            this.helper[localeButton] = "EN";
-            this.buttons.push(localeButton);
-            this.makeLanguageButton(localeButton);
          }
          this.actualize();
       }
@@ -110,21 +112,17 @@ package ui
       
       private function doLocaleSwitch(event:Event) : void
       {
-         var lid:String = null;
-         Logger.LogToChannel(Logger.LOCALIZATION,this.helper[event.target]);
-         if(!Base.isScaleform)
+         var lid:String = this.helper[event.target];
+         Logger.LogToChannel(Logger.LOCALIZATION,"LanguageSelector switch:",lid);
+         if(lid == null || lid == "")
          {
-            this.Locale_current_id = this.helper[event.target];
-            this.actualize();
+            return;
          }
-         else
+         if(Locale.current != null && Locale.current.id == lid)
          {
-            lid = this.helper[event.target];
-            Base.navigator.showDialog("extendedGUI.Dialogs.Warning","extendedGUI.Dialogs.needRestartLocale",true,[new DialogButtonItem("extendedGUI.Dialogs.restart",function():void
-            {
-               Locale.setLocaleById(lid);
-            },0.61),new DialogButtonItem("extendedGUI.Dialogs.Cancel",null,0.39)]);
+            return;
          }
+         Locale.setLocaleById(lid);
       }
    }
 }

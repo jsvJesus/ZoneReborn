@@ -321,8 +321,8 @@ package ui
          this.debugBtnsBox.y = 10;
          this.debugBtnsBox.x = Base.stage.stageWidth - this.debugBtnsBox.width - 10;
          this.debugBtnsBox.draw();
-         this.optionBtn.y = 12;
-         this.optionBtn.x = Base.stage.stageWidth - this.languageSelector.width + 10;
+         this.optionBtn.y = this.debugBtnsBox.y + 3;
+         this.optionBtn.x = this.debugBtnsBox.x + this.languageSelector.x - this.optionBtn.width - 8;
          this.accountLabel.draw_back();
          Logger.LogToChannel(Logger.LOCALIZATION,"from header",this.languageSelector.width,this.languageSelector.height);
          this.drawBackground();

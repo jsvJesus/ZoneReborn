@@ -37,7 +37,7 @@ package ui
       
       protected var appears:Array;
       
-      private var _breadCrumb:BreadCrumb;
+      private var _breadCrumb:BreadCrumb = new BreadCrumb(this);
       
       protected var _enabled:Boolean = true;
       
@@ -45,7 +45,6 @@ package ui
       
       public function Screen(id:String, depth:uint = 0, use3D:Boolean = false)
       {
-         this._breadCrumb = new BreadCrumb(this);
          this.id = id;
          this.depth = depth;
          this.use3D = use3D;
@@ -117,7 +116,10 @@ package ui
       
       protected function updateRotation() : void
       {
-         this.rotationY = this.rotationY;
+         if(Base.isScaleform)
+         {
+            this.rotationY = this.rotationY;
+         }
       }
       
       public function prepare(... args) : void
@@ -152,6 +154,16 @@ package ui
       {
          var tl:TimelineMax = null;
          this.is_loaded = false;
+         if(!Base.isScaleform)
+         {
+            TweenMax.killTweensOf(this);
+            this.visible = true;
+            this.alpha = 1;
+            this.x = 0;
+            this.y = 0;
+            this.onShowComplete();
+            return;
+         }
          if(Boolean(this.appears) && Boolean(this.appears.length))
          {
             tl = new TimelineMax({"delay":SHOW_DELAY});
@@ -177,6 +189,16 @@ package ui
       {
          var tl:TimelineMax = null;
          this.is_loaded = false;
+         if(!Base.isScaleform)
+         {
+            TweenMax.killTweensOf(this);
+            this.visible = true;
+            this.alpha = 1;
+            this.x = 0;
+            this.y = 0;
+            this.onShowComplete();
+            return;
+         }
          if(Boolean(this.appears) && Boolean(this.appears.length))
          {
             tl = new TimelineMax({"delay":SHOW_DELAY});
@@ -201,6 +223,17 @@ package ui
       public function hideUp(onCompleteFunction:Function = null) : void
       {
          var tl:TimelineMax = null;
+         if(!Base.isScaleform)
+         {
+            TweenMax.killTweensOf(this);
+            this.alpha = 0;
+            this.visible = false;
+            if(onCompleteFunction != null)
+            {
+               onCompleteFunction();
+            }
+            return;
+         }
          if(Boolean(this.appears) && Boolean(this.appears.length))
          {
             tl = new TimelineMax();
@@ -223,6 +256,17 @@ package ui
       public function hideDown(onCompleteFunction:Function = null) : void
       {
          var tl:TimelineMax = null;
+         if(!Base.isScaleform)
+         {
+            TweenMax.killTweensOf(this);
+            this.alpha = 0;
+            this.visible = false;
+            if(onCompleteFunction != null)
+            {
+               onCompleteFunction();
+            }
+            return;
+         }
          if(Boolean(this.appears) && Boolean(this.appears.length))
          {
             tl = new TimelineMax();

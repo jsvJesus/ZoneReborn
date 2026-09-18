@@ -36,7 +36,7 @@ package ui
       
       public var is_auth:Boolean = false;
       
-      public var items:Object;
+      public var items:Object = new Object();
       
       public var alerts_helper:Dictionary = new Dictionary();
       
@@ -76,9 +76,9 @@ package ui
       
       public var focus:Focus;
       
-      private var backgroundBitmap:BitmapData;
+      private var backgroundBitmap:BitmapData = new noised_half_black_png() as BitmapData;
       
-      private var background:Shape;
+      private var background:Shape = new Shape();
       
       private var backgroundPicture:Background;
       
@@ -91,9 +91,6 @@ package ui
       public function Navigator(showHeader:Boolean = true, showFooter:Boolean = true, showBackground:Boolean = true)
       {
          FManager = new FocusManager();
-         this.items = new Object();
-         this.backgroundBitmap = new noised_half_black_png() as BitmapData;
-         this.background = new Shape();
          this.background.alpha = 0.1;
          if(showBackground)
          {
@@ -160,7 +157,8 @@ package ui
       {
          var i:uint = 0;
          ease = ease == null ? Expo.easeOut : ease;
-         for(var delay:Number = delayInit; i < what.length; )
+         var delay:Number = delayInit;
+         while(i < what.length)
          {
             what[i].alpha = 0;
             what[i].z = depth;
@@ -181,7 +179,8 @@ package ui
          ease = ease == null ? Expo.easeIn : ease;
          var delay:Number = delayInit;
          what = what.reverse();
-         for(var tweens:Array = new Array(); i < what.length; )
+         var tweens:Array = new Array();
+         while(i < what.length)
          {
             tweens.push(TweenMax.to(what[i],duration,{
                "alpha":0,
@@ -329,9 +328,14 @@ package ui
       protected function killOldScreen() : void
       {
          Logger.LogToChannel(Logger.WARNING,"Navigator.killOldScreen",this.oldScreen);
-         if(this.oldScreen)
+         if(this.oldScreen != null)
          {
-            setTimeout(this.leftSide.removeChild,0,this.oldScreen);
+            TweenMax.killTweensOf(this.oldScreen);
+            if(this.leftSide.contains(this.oldScreen))
+            {
+               this.leftSide.removeChild(this.oldScreen);
+            }
+            this.oldScreen = null;
          }
       }
       
@@ -345,17 +349,36 @@ package ui
       {
          this.crumbs.visible = true;
          TweenMax.killTweensOf(Base.background);
-         TweenMax.to(Base.background,2.5,{
-            "alpha":0.2,
-            "ease":Expo.easeOut,
-            "onComplete":this.hideBackground
-         });
+         if(Base.isScaleform)
+         {
+            TweenMax.to(Base.background,2.5,{
+               "alpha":0.2,
+               "ease":Expo.easeOut,
+               "onComplete":this.hideBackground
+            });
+         }
+         else
+         {
+            Base.background.visible = true;
+            Base.background.alpha = 1;
+         }
          var targetScreen:NewCharScreen = this.getScreen(MainMenuGUI.NEW_CHAR_SCREEN);
          this.focus.target = null;
+         if(this.currentScreen != null && this.currentScreen != targetScreen)
+         {
+            this.oldScreen = this.currentScreen;
+            this.killOldScreen();
+         }
          if(targetScreen)
          {
-            this.leftSide.addChild(targetScreen);
+            if(!this.leftSide.contains(targetScreen))
+            {
+               this.leftSide.addChild(targetScreen);
+            }
             this._currentScreen = targetScreen;
+            targetScreen.visible = true;
+            targetScreen.alpha = 1;
+            targetScreen.x = 0;
             if(_deeper)
             {
                targetScreen.showUp();
@@ -426,7 +449,15 @@ package ui
                Base.navigator.header.accountLabel.visible = true;
             }
             Base.navigator.header.optionBtn.visible = false;
-            Base.background.visible = false;
+            if(Base.isScaleform)
+            {
+               Base.background.visible = false;
+            }
+            else
+            {
+               Base.background.visible = true;
+               Base.background.alpha = 1;
+            }
          }
          var targetScreen:Screen = this.getScreen(id);
          Logger.LogToChannel(Logger.DEBUG,"Navigator.showScreen");
@@ -698,6 +729,7 @@ package ui
                {
                   Logger.LogToChannel(Logger.DEBUG,"Naigator say goBack");
                   this.currentScreen.goBack();
+                  break;
                }
          }
       }

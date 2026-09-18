@@ -418,7 +418,7 @@ package
          background.y = 0;
          background.width = stage.stageWidth;
          background.height = stage.stageHeight;
-         Base.stage.addChild(background);
+         Base.stage.addChildAt(background,0);
       }
    }
 }
