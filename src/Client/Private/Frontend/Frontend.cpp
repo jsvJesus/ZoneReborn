@@ -394,6 +394,146 @@ namespace
         const core::resources::DataSection&
             section);
 
+    std::string Base64Encode(
+        const std::span<
+            const std::byte> data)
+    {
+        static constexpr char Table[] =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz"
+            "0123456789+/";
+
+        if (data.empty())
+        {
+            return {};
+        }
+
+        std::string result;
+
+        result.reserve(
+            ((data.size() + 2) / 3) * 4);
+
+        std::size_t index =
+            0;
+
+        while (index + 3 <=
+               data.size())
+        {
+            const std::uint32_t value =
+                (
+                    static_cast<std::uint32_t>(
+                        std::to_integer<
+                            unsigned char>(
+                                data[index])) <<
+                    16u
+                ) |
+                (
+                    static_cast<std::uint32_t>(
+                        std::to_integer<
+                            unsigned char>(
+                                data[index + 1])) <<
+                    8u
+                ) |
+                static_cast<std::uint32_t>(
+                    std::to_integer<
+                        unsigned char>(
+                            data[index + 2]));
+
+            result.push_back(
+                Table[
+                    (value >> 18u) &
+                    0x3Fu]);
+
+            result.push_back(
+                Table[
+                    (value >> 12u) &
+                    0x3Fu]);
+
+            result.push_back(
+                Table[
+                    (value >> 6u) &
+                    0x3Fu]);
+
+            result.push_back(
+                Table[
+                    value &
+                    0x3Fu]);
+
+            index +=
+                3;
+        }
+
+        const std::size_t remaining =
+            data.size() -
+            index;
+
+        if (remaining ==
+            1)
+        {
+            const std::uint32_t value =
+                static_cast<std::uint32_t>(
+                    std::to_integer<
+                        unsigned char>(
+                            data[index])) <<
+                16u;
+
+            result.push_back(
+                Table[
+                    (value >> 18u) &
+                    0x3Fu]);
+
+            result.push_back(
+                Table[
+                    (value >> 12u) &
+                    0x3Fu]);
+
+            result.push_back(
+                '=');
+
+            result.push_back(
+                '=');
+        }
+        else if (remaining ==
+                 2)
+        {
+            const std::uint32_t value =
+                (
+                    static_cast<std::uint32_t>(
+                        std::to_integer<
+                            unsigned char>(
+                                data[index])) <<
+                    16u
+                ) |
+                (
+                    static_cast<std::uint32_t>(
+                        std::to_integer<
+                            unsigned char>(
+                                data[index + 1])) <<
+                    8u
+                );
+
+            result.push_back(
+                Table[
+                    (value >> 18u) &
+                    0x3Fu]);
+
+            result.push_back(
+                Table[
+                    (value >> 12u) &
+                    0x3Fu]);
+
+            result.push_back(
+                Table[
+                    (value >> 6u) &
+                    0x3Fu]);
+
+            result.push_back(
+                '=');
+        }
+
+        return result;
+    }
+
     std::string SerializeSectionValue(
         const core::resources::DataSection&
             section)
@@ -471,22 +611,15 @@ namespace
         }
 
         if (const auto* binary =
-                section.AsBinary())
+        section.AsBinary())
         {
-            if (binary->empty())
-            {
-                return "\"\"";
-            }
-
-            const std::string value(
-                reinterpret_cast<
-                    const char*>(
-                        binary->data()),
-                binary->size());
-
             return
                 JsonString(
-                    value);
+                    Base64Encode(
+                        std::span<
+                            const std::byte>(
+                                binary->data(),
+                                binary->size())));
         }
 
         return "\"\"";
