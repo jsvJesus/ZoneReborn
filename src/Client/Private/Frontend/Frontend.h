@@ -3,8 +3,9 @@
 #include "Core/Resources/ResourceFileSystem.h"
 
 #include <Windows.h>
+#include <objbase.h>
+#include <wrl.h>
 #include <WebView2.h>
-#include <wrl/client.h>
 
 #include <deque>
 #include <filesystem>

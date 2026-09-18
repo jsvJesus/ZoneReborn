@@ -1,7 +1,7 @@
 Z:\SOnline\src\Client\Private\Account\AuthService.cpp;Z:\SOnline\src\Client\x64\Release\AuthService.obj
 Z:\SOnline\src\Client\Private\Account\RememberedLogin.cpp;Z:\SOnline\src\Client\x64\Release\RememberedLogin.obj
 Z:\SOnline\src\Client\Private\Application.cpp;Z:\SOnline\src\Client\x64\Release\Application.obj
-Z:\SOnline\src\Client\Private\Frontend\LoginScreen.cpp;Z:\SOnline\src\Client\x64\Release\LoginScreen.obj
+Z:\SOnline\src\Client\Private\Frontend\Frontend.cpp;Z:\SOnline\src\Client\x64\Release\Frontend.obj
 Z:\SOnline\src\Client\Private\Graphics\ParticleRenderer.cpp;Z:\SOnline\src\Client\x64\Release\ParticleRenderer.obj
 Z:\SOnline\src\Client\Private\Graphics\Renderer.cpp;Z:\SOnline\src\Client\x64\Release\Renderer.obj
 Z:\SOnline\src\Client\Private\Graphics\Shaders\ShaderCompiler.cpp;Z:\SOnline\src\Client\x64\Release\ShaderCompiler.obj
@@ -20,4 +20,3 @@ Z:\SOnline\src\Client\Private\Preview\SpeedTreeRenderDataBuilder.cpp;Z:\SOnline\
 Z:\SOnline\src\Client\Private\Preview\TerrainRenderDataBuilder.cpp;Z:\SOnline\src\Client\x64\Release\TerrainRenderDataBuilder.obj
 Z:\SOnline\src\Client\Private\Preview\WaterRenderDataBuilder.cpp;Z:\SOnline\src\Client\x64\Release\WaterRenderDataBuilder.obj
 Z:\SOnline\src\Client\Private\Preview\WorldPreviewLoader.cpp;Z:\SOnline\src\Client\x64\Release\WorldPreviewLoader.obj
-Z:\SOnline\src\Client\Private\UI\FrontendRenderer.cpp;Z:\SOnline\src\Client\x64\Release\FrontendRenderer.obj
