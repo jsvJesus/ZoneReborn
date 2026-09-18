@@ -1,20 +1,21 @@
 #pragma once
 
-#include "Graphics/Renderer.h"
-#include "Input/CameraController.h"
+#include "Account/AccountSession.h"
+#include "Account/AuthService.h"
+#include "Account/RememberedLogin.h"
+#include "Frontend/LoginScreen.h"
 #include "Platform/Window.h"
+#include "States/ClientState.h"
+#include "UI/FrontendRenderer.h"
 
 #include "Core/Runtime.h"
-
-#include <string>
 
 namespace client
 {
     class Application final
     {
     public:
-        explicit Application(
-            std::string spaceName);
+        Application() = default;
 
         int Run();
 
@@ -22,10 +23,13 @@ namespace client
         [[nodiscard]]
         bool Initialize();
 
-        void Shutdown();
+        [[nodiscard]]
+        bool Update();
 
-        std::string
-            spaceName_;
+        [[nodiscard]]
+        bool Render();
+
+        void Shutdown();
 
         core::Runtime
             runtime_;
@@ -33,10 +37,23 @@ namespace client
         platform::Window
             window_;
 
-        graphics::Renderer
-            renderer_;
+        ui::FrontendRenderer
+            frontendRenderer_;
 
-        input::CameraController
-            cameraController_;
+        frontend::LoginScreen
+            loginScreen_;
+
+        account::AuthService
+            authService_;
+
+        account::AccountSession
+            accountSession_;
+
+        account::RememberedLogin
+            rememberedLogin_;
+
+        states::ClientState
+            state_ =
+                states::ClientState::Boot;
     };
 }

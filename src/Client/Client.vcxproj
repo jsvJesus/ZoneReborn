@@ -16,8 +16,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ClInclude Include="Private\Account\AccountSession.h" />
+    <ClInclude Include="Private\Account\AuthService.h" />
+    <ClInclude Include="Private\Account\RememberedLogin.h" />
     <ClInclude Include="Private\Application.h" />
     <ClInclude Include="Private\Diagnostics\ResourceValidation.h" />
+    <ClInclude Include="Private\Frontend\LoginLayout.h" />
+    <ClInclude Include="Private\Frontend\LoginScreen.h" />
     <ClInclude Include="Private\Graphics\CameraView.h" />
     <ClInclude Include="Private\Graphics\ParticleRenderer.h" />
     <ClInclude Include="Private\Graphics\Renderer.h" />
@@ -36,10 +41,16 @@
     <ClInclude Include="Private\Preview\TerrainRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\WaterRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\WorldPreviewLoader.h" />
+    <ClInclude Include="Private\States\ClientState.h" />
+    <ClInclude Include="Private\UI\FrontendRenderer.h" />
+    <ClInclude Include="Private\UI\FrontendView.h" />
   </ItemGroup>
 
   <ItemGroup>
+    <ClCompile Include="Private\Account\AuthService.cpp" />
+    <ClCompile Include="Private\Account\RememberedLogin.cpp" />
     <ClCompile Include="Private\Application.cpp" />
+    <ClCompile Include="Private\Frontend\LoginScreen.cpp" />
     <ClCompile Include="Private\Graphics\ParticleRenderer.cpp" />
     <ClCompile Include="Private\Graphics\Renderer.cpp" />
     <ClCompile Include="Private\Graphics\Shaders\ShaderCompiler.cpp" />
@@ -58,6 +69,7 @@
     <ClCompile Include="Private\Preview\TerrainRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WaterRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WorldPreviewLoader.cpp" />
+    <ClCompile Include="Private\UI\FrontendRenderer.cpp" />
   </ItemGroup>
 
   <ItemGroup>
@@ -121,7 +133,7 @@
     </ClCompile>
 
     <Link>
-      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;windowscodecs.lib;ole32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;d3dcompiler.lib;windowscodecs.lib;ole32.lib;d2d1.lib;dwrite.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>

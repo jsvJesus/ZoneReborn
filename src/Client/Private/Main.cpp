@@ -4,15 +4,9 @@
 
 #include <exception>
 #include <iostream>
-#include <string>
-#include <utility>
 
 namespace
 {
-    constexpr const char*
-        DefaultSpace =
-            "so_origins"; // Map loader
-
     void WaitOnFailure()
     {
         std::cout
@@ -24,32 +18,15 @@ namespace
     }
 }
 
-int main(
-    const int argc,
-    char* argv[])
+int main()
 {
     int exitCode =
         0;
 
     try
     {
-        std::string spaceName =
-            DefaultSpace;
-
-        if (argc >=
-                2 &&
-            argv[1] !=
-                nullptr &&
-            argv[1][0] !=
-                '\0')
-        {
-            spaceName =
-                argv[1];
-        }
-
-        client::Application application(
-            std::move(
-                spaceName));
+        client::Application
+            application;
 
         exitCode =
             application.Run();

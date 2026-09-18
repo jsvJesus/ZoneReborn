@@ -65,10 +65,11 @@ namespace client::platform
             WindowClassName;
 
         if (RegisterClassExW(
-                &windowClass) == 0)
+                &windowClass) ==
+            0)
         {
             error =
-                "Unable to register render window class.";
+                "Unable to register window class.";
 
             instance_ =
                 nullptr;
@@ -101,7 +102,7 @@ namespace client::platform
                 FALSE))
         {
             error =
-                "Unable to calculate render window size.";
+                "Unable to calculate window size.";
 
             Shutdown();
 
@@ -135,7 +136,7 @@ namespace client::platform
             nullptr)
         {
             error =
-                "Unable to create render window.";
+                "Unable to create client window.";
 
             Shutdown();
 
@@ -150,6 +151,17 @@ namespace client::platform
 
         mouseWheelDelta_ =
             0;
+
+        mousePosition_ =
+            {};
+
+        leftMousePressed_ =
+            false;
+
+        keyPressed_.fill(
+            false);
+
+        textInput_.clear();
 
         ShowWindow(
             window_,
@@ -196,10 +208,29 @@ namespace client::platform
 
         mouseWheelDelta_ =
             0;
+
+        mousePosition_ =
+            {};
+
+        leftMousePressed_ =
+            false;
+
+        keyPressed_.fill(
+            false);
+
+        textInput_.clear();
     }
 
     bool Window::ProcessMessages()
     {
+        leftMousePressed_ =
+            false;
+
+        keyPressed_.fill(
+            false);
+
+        textInput_.clear();
+
         MSG message{};
 
         while (PeekMessageW(
@@ -255,6 +286,59 @@ namespace client::platform
                 WHEEL_DELTA);
     }
 
+    std::wstring Window::ConsumeTextInput()
+    {
+        std::wstring result =
+            std::move(
+                textInput_);
+
+        textInput_.clear();
+
+        return result;
+    }
+
+    bool Window::ConsumeKeyPress(
+        const UINT virtualKey) noexcept
+    {
+        if (virtualKey >=
+            keyPressed_.size())
+        {
+            return false;
+        }
+
+        const bool pressed =
+            keyPressed_[
+                virtualKey];
+
+        keyPressed_[
+            virtualKey] =
+                false;
+
+        return pressed;
+    }
+
+    bool Window::ConsumeLeftMousePress(
+        POINT& position) noexcept
+    {
+        if (!leftMousePressed_)
+        {
+            return false;
+        }
+
+        position =
+            mousePosition_;
+
+        leftMousePressed_ =
+            false;
+
+        return true;
+    }
+
+    POINT Window::MousePosition() const noexcept
+    {
+        return mousePosition_;
+    }
+
     LRESULT CALLBACK Window::WindowProcedure(
         const HWND window,
         const UINT message,
@@ -291,6 +375,42 @@ namespace client::platform
         {
             switch (message)
             {
+                case WM_MOUSEMOVE:
+                {
+                    instance->mousePosition_.x =
+                        static_cast<short>(
+                            LOWORD(
+                                lParam));
+
+                    instance->mousePosition_.y =
+                        static_cast<short>(
+                            HIWORD(
+                                lParam));
+
+                    break;
+                }
+
+                case WM_LBUTTONDOWN:
+                {
+                    instance->mousePosition_.x =
+                        static_cast<short>(
+                            LOWORD(
+                                lParam));
+
+                    instance->mousePosition_.y =
+                        static_cast<short>(
+                            HIWORD(
+                                lParam));
+
+                    instance->leftMousePressed_ =
+                        true;
+
+                    SetFocus(
+                        window);
+
+                    return 0;
+                }
+
                 case WM_MOUSEWHEEL:
                 {
                     const auto wheelDelta =
@@ -300,6 +420,42 @@ namespace client::platform
 
                     instance->mouseWheelDelta_ +=
                         wheelDelta;
+
+                    return 0;
+                }
+
+                case WM_KEYDOWN:
+                {
+                    if (wParam <
+                        instance->
+                            keyPressed_.
+                            size())
+                    {
+                        instance->
+                            keyPressed_[
+                                static_cast<
+                                    std::size_t>(
+                                        wParam)] =
+                            true;
+                    }
+
+                    break;
+                }
+
+                case WM_CHAR:
+                {
+                    const wchar_t character =
+                        static_cast<wchar_t>(
+                            wParam);
+
+                    if (character >=
+                        32)
+                    {
+                        instance->
+                            textInput_.
+                            push_back(
+                                character);
+                    }
 
                     return 0;
                 }

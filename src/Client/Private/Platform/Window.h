@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 
+#include <array>
 #include <cstdint>
 #include <string>
 
@@ -40,6 +41,20 @@ namespace client::platform
         [[nodiscard]]
         float ConsumeMouseWheelDelta() noexcept;
 
+        [[nodiscard]]
+        std::wstring ConsumeTextInput();
+
+        [[nodiscard]]
+        bool ConsumeKeyPress(
+            UINT virtualKey) noexcept;
+
+        [[nodiscard]]
+        bool ConsumeLeftMousePress(
+            POINT& position) noexcept;
+
+        [[nodiscard]]
+        POINT MousePosition() const noexcept;
+
     private:
         static LRESULT CALLBACK WindowProcedure(
             HWND window,
@@ -61,6 +76,17 @@ namespace client::platform
 
         int mouseWheelDelta_ =
             0;
+
+        POINT mousePosition_{};
+
+        bool leftMousePressed_ =
+            false;
+
+        std::array<bool, 256>
+            keyPressed_{};
+
+        std::wstring
+            textInput_;
 
         bool classRegistered_ =
             false;
