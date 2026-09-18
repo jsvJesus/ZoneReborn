@@ -659,14 +659,7 @@ namespace client
                     {
                         core::Log::Info(
                             "Frontend requested Play.");
-
-                        //
-                        // personages_select принадлежит только
-                        // character/account selection flow.
-                        //
-                        // Перед загрузкой игрового world он больше
-                        // не должен оставаться за WebView.
-                        //
+                        
                         ShutdownCharacterSelectScene();
 
                         break;

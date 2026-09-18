@@ -5,6 +5,7 @@
 #include "Core/Resources/PackedSectionReader.h"
 #include "Core/Resources/ResourcePath.h"
 
+#include <cstddef>
 #include <limits>
 #include <string>
 #include <utility>
@@ -249,6 +250,97 @@ namespace
         return true;
     }
 
+    bool ReadTextValue(
+    const core::resources::DataSection& section,
+    std::string& output)
+    {
+        output.clear();
+
+        //
+        // Обычная PackedSection string.
+        //
+        if (const std::string* value =
+                section.AsString();
+            value != nullptr)
+        {
+            output =
+                *value;
+        }
+        //
+        // Некоторые старые SO/BigWorld ресурсы могут
+        // приезжать как integer, хотя логически поле
+        // используется как текстовое.
+        //
+        else if (const std::int64_t* value =
+                     section.AsInteger();
+                 value != nullptr)
+        {
+            output =
+                std::to_string(
+                    *value);
+        }
+        //
+        // То же самое для boolean.
+        //
+        else if (const bool* value =
+                     section.AsBoolean();
+                 value != nullptr)
+        {
+            output =
+                *value
+                    ? "true"
+                    : "false";
+        }
+        //
+        // И главное для старых packed ресурсов:
+        // строка иногда может оказаться raw/blob.
+        //
+        else if (const auto* value =
+                     section.AsBinary();
+                 value != nullptr)
+        {
+            output.reserve(
+                value->size());
+
+            for (const std::byte byte :
+                 *value)
+            {
+                const unsigned char ch =
+                    std::to_integer<
+                        unsigned char>(
+                            byte);
+
+                //
+                // C-style terminator.
+                //
+                if (ch == 0)
+                {
+                    break;
+                }
+
+                output.push_back(
+                    static_cast<char>(
+                        ch));
+            }
+        }
+        else
+        {
+            return false;
+        }
+
+        //
+        // На случай если PackedSection string
+        // содержит \0 внутри размера descriptor.
+        //
+        while (!output.empty() &&
+               output.back() == '\0')
+        {
+            output.pop_back();
+        }
+
+        return !output.empty();
+    }
+
     bool ReadNodeRecursive(
         const core::resources::DataSection& section,
         const std::int32_t parentIndex,
@@ -272,14 +364,17 @@ namespace
             return false;
         }
 
-        const std::string* name =
-            identifier->AsString();
+        std::string name;
 
-        if (name == nullptr ||
-            name->empty())
+        if (!ReadTextValue(
+                *identifier,
+                name))
         {
             error =
-                "Visual node contains invalid identifier.";
+                "Visual node contains invalid identifier. "
+                "DataSection value type index=" +
+                std::to_string(
+                    identifier->value.index());
 
             return false;
         }
@@ -299,7 +394,8 @@ namespace
             node;
 
         node.identifier =
-            *name;
+            std::move(
+                name);
 
         node.parentIndex =
             parentIndex;
@@ -381,18 +477,31 @@ namespace
         }
 
         for (const auto* node :
-             section.FindChildren("node"))
+            section.FindChildren("node"))
         {
-            const std::string* value =
-                node->AsString();
-
-            if (value == nullptr)
+            if (node == nullptr)
             {
+                continue;
+            }
+
+            std::string value;
+
+            if (!ReadTextValue(
+                    *node,
+                    value))
+            {
+                error =
+                    "Visual renderSet contains invalid node reference. "
+                    "DataSection value type index=" +
+                    std::to_string(
+                        node->value.index());
+
                 return false;
             }
 
             output.nodes.push_back(
-                *value);
+                std::move(
+                    value));
         }
 
         for (const auto* geometry :
