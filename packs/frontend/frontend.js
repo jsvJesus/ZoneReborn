@@ -405,7 +405,7 @@ async function buildServerList()
                 });
 
                 if (serverInfo.name ===
-                    "Cluster SPB")
+                    "Cluster EU")
                 {
                     result.defaultServerId =
                         id;

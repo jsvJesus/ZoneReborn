@@ -1,8 +1,11 @@
 package com.dvalimona.components
 {
    import flash.display.DisplayObjectContainer;
-   import flash.events.*;
-   import flash.text.*;
+   import flash.events.Event;
+   import flash.text.TextField;
+   import flash.text.TextFieldAutoSize;
+   import flash.text.TextFormat;
+   import flash.text.TextFormatAlign;
    
    public class Label extends Component
    {
@@ -91,6 +94,7 @@ package com.dvalimona.components
          {
             this._tf.autoSize = TextFieldAutoSize.NONE;
             this._tf.width = _width;
+            this._tf.height = _height;
          }
          _height = this._tf.textHeight + 5;
          _width = this._text.length > 0 ? _width : 0;

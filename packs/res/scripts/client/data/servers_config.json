@@ -1,14 +1,14 @@
 {
 	"customers_servers": [
 		{
-			"name": "Cluster MSK",
+			"name": "Cluster UA",
 			"server": {
 				"online": 1,
 				"host": "spb2.stalker.so:15231"
 				}
 		},
 		{
-			"name": "Cluster SPB",
+			"name": "Cluster EU",
 			"server": {
 				"online": 1,
 				"host": "spb-test.stalker.so:15231"

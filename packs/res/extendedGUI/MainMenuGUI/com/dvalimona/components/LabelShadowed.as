@@ -58,8 +58,10 @@ package com.dvalimona.components
          {
             _tf.autoSize = TextFieldAutoSize.NONE;
             _tf.width = _width;
+            _tf.height = _height;
             this._tfShadow.autoSize = TextFieldAutoSize.NONE;
             this._tfShadow.width = _width;
+            this._tfShadow.height = _height;
          }
          _height = _tf.textHeight + 5;
          _width = _text.length > 0 ? _width : 0;

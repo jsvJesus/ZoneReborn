@@ -43,7 +43,7 @@ package ui.components
       
       private var back:ui.components.BlackPanel;
       
-      private var label:LabelShadowed;
+      private var label:Label;
       
       private var minus:PushButton;
       
@@ -143,8 +143,10 @@ package ui.components
       {
          var temp:Array = nonSorted;
          var sorted:Array = temp.sortOn("ranger",[Array.NUMERIC]);
-         for(var i:uint = 0; i < sorted.length; i++)
+         var i:uint = 0;
+         while(i < sorted.length)
          {
+            i++;
          }
          return sorted;
       }
@@ -168,10 +170,10 @@ package ui.components
       
       override protected function addChildren() : void
       {
-         this.back = new BlackPanel();
+         this.back = new ui.components.BlackPanel();
          this.back.visible = true;
          this.addChild(this.back);
-         this.label = new LabelShadowed();
+         this.label = new Label();
          this.label.text = "";
          this.label.size = 22;
          this.label.autoSize = false;
@@ -231,13 +233,15 @@ package ui.components
       public function setByFieldValue(field:String, value:*) : void
       {
          var item:Object = null;
-         for(var i:uint = 0; i < this.items.length; i++)
+         var i:uint = 0;
+         while(i < this.items.length)
          {
             if(this.items[i][field] == value)
             {
                this.count = i;
                break;
             }
+            i++;
          }
       }
       
