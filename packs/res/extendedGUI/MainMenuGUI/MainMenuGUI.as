@@ -142,6 +142,11 @@ package
       {
          Logger.LogToChannel(Logger.DEBUG,"Auth.onAuthSuccess.");
          Base.setLoginBackgroundVisible(false);
+         if(Base.background != null)
+         {
+            Base.background.visible = false;
+            Base.background.alpha = 0;
+         }
          navigator.showScreen(ROOT_SCREEN);
       }
    }

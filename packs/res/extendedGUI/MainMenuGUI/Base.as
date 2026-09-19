@@ -123,6 +123,7 @@ package
          if(background != null)
          {
             background.visible = value;
+            background.alpha = value ? 1 : 0;
          }
       }
       
@@ -430,6 +431,7 @@ package
          background.width = stage.stageWidth;
          background.height = stage.stageHeight;
          background.visible = LOGIN_BACKGROUND_VISIBLE;
+         background.alpha = LOGIN_BACKGROUND_VISIBLE ? 1 : 0;
          Base.stage.addChildAt(background,0);
       }
    }
