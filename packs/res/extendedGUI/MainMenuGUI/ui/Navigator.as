@@ -443,7 +443,7 @@ package ui
                Base.navigator.header.gold.visible = true;
                Base.navigator.header.accountLabel.visible = true;
             }
-            Base.navigator.header.optionBtn.visible = test123;
+            Base.navigator.header.optionBtn.visible = false;
             if(Base.background != null)
             {
                TweenMax.killTweensOf(Base.background);
