@@ -341,26 +341,21 @@ package ui
       
       internal function hideBackground() : *
       {
-         Base.background.visible = false;
-         Base.background.alpha = 1;
+         if(Base.background != null)
+         {
+            Base.background.visible = false;
+            Base.background.alpha = 0;
+         }
       }
       
       public function showCreateCharScreen(charName:String) : *
       {
          this.crumbs.visible = true;
-         TweenMax.killTweensOf(Base.background);
-         if(Base.isScaleform)
+         if(Base.background != null)
          {
-            TweenMax.to(Base.background,2.5,{
-               "alpha":0.2,
-               "ease":Expo.easeOut,
-               "onComplete":this.hideBackground
-            });
-         }
-         else
-         {
-            Base.background.visible = true;
-            Base.background.alpha = 1;
+            TweenMax.killTweensOf(Base.background);
+            Base.background.visible = false;
+            Base.background.alpha = 0;
          }
          var targetScreen:NewCharScreen = this.getScreen(MainMenuGUI.NEW_CHAR_SCREEN);
          this.focus.target = null;
@@ -448,15 +443,12 @@ package ui
                Base.navigator.header.gold.visible = true;
                Base.navigator.header.accountLabel.visible = true;
             }
-            Base.navigator.header.optionBtn.visible = false;
-            if(Base.isScaleform)
+            Base.navigator.header.optionBtn.visible = test123;
+            if(Base.background != null)
             {
+               TweenMax.killTweensOf(Base.background);
                Base.background.visible = false;
-            }
-            else
-            {
-               Base.background.visible = true;
-               Base.background.alpha = 1;
+               Base.background.alpha = 0;
             }
          }
          var targetScreen:Screen = this.getScreen(id);
