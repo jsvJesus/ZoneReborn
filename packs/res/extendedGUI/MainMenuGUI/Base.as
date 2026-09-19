@@ -47,6 +47,8 @@ package
       
       public static var Bullets:Font;
       
+      public static var LOGIN_BACKGROUND_VISIBLE:Boolean = true;
+      
       public static const RESET_KEY_CODE:uint = Keyboard.F11;
       
       public static const STAGE_RESIZE:String = "overrided_stage_resize";
@@ -113,6 +115,15 @@ package
          Base.self = this;
          Logger.LogToChannel(Logger.DEFAULT,"MainMenuGUI; version: ",VERSION,";",Capabilities.os,";",Capabilities.playerType,";",Capabilities.version);
          this.addEventListener(Event.ADDED_TO_STAGE,this.onAddedToStageHadler);
+      }
+      
+      public static function setLoginBackgroundVisible(value:Boolean) : void
+      {
+         LOGIN_BACKGROUND_VISIBLE = value;
+         if(background != null)
+         {
+            background.visible = value;
+         }
       }
       
       public static function get isScaleform() : Boolean
@@ -418,6 +429,7 @@ package
          background.y = 0;
          background.width = stage.stageWidth;
          background.height = stage.stageHeight;
+         background.visible = LOGIN_BACKGROUND_VISIBLE;
          Base.stage.addChildAt(background,0);
       }
    }

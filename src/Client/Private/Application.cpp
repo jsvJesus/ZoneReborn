@@ -290,9 +290,7 @@ namespace client
     {
         error.clear();
 
-        graphics::SceneRenderData
-            scene =
-                characterSelectBaseScene_;
+        graphics::SceneRenderData scene = characterSelectBaseScene_;
 
         characterDummyFirstInstance_ =
             scene.instances.size();

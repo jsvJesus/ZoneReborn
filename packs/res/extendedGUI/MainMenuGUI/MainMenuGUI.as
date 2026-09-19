@@ -134,12 +134,14 @@ package
       protected function onAuthFail(arg1:Event) : void
       {
          Logger.LogToChannel(Logger.DEBUG,"Auth.onAuthFail.");
+         Base.setLoginBackgroundVisible(true);
          navigator.showScreen(LOGIN_SCREEN);
       }
       
       protected function onAuthSuccess(arg1:Event) : void
       {
          Logger.LogToChannel(Logger.DEBUG,"Auth.onAuthSuccess.");
+         Base.setLoginBackgroundVisible(false);
          navigator.showScreen(ROOT_SCREEN);
       }
    }
