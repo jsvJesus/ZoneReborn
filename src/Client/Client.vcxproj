@@ -147,13 +147,6 @@
     <IntDir>$(SolutionDir).build\obj\$(Platform)\$(Configuration)\Client\</IntDir>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
-    <TargetName>ZoneReborn</TargetName>
-
-    <OutDir>$(SolutionDir)x64\Final\</OutDir>
-    <IntDir>$(ProjectDir)x64\Final\</IntDir>
-  </PropertyGroup>
-
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 
     <ClCompile>
@@ -243,7 +236,6 @@
     </ClCompile>
 
     <Link>
-
       <AdditionalLibraryDirectories>
         $(ProjectDir)..\..\third_party\WebView2\build\native\x64;
         $(ProjectDir)..\..\third_party\fmod;
@@ -266,14 +258,10 @@
       </AdditionalDependencies>
 
       <SubSystem>Console</SubSystem>
-
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>false</GenerateDebugInformation>
-
-      <LinkTimeCodeGeneration>
-        UseLinkTimeCodeGeneration
-      </LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
 
   </ItemDefinitionGroup>
