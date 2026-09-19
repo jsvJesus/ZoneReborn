@@ -52,11 +52,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ClCompile Include="Private\Account\AuthService.cpp" />
-    <ClCompile Include="Private\Account\RememberedLogin.cpp" />
-    <ClCompile Include="Private\Application.cpp" />
-    <ClCompile Include="Private\Audio\AudioSystem.cpp" />
-    <ClCompile Include="Private\Frontend\Frontend.cpp" />
+    <ClCompile Include="Private\Account\AuthService.cpp" Condition="'$(Configuration)|$(Platform)'=='Final|x64'" />
+    <ClCompile Include="Private\Account\RememberedLogin.cpp" Condition="'$(Configuration)|$(Platform)'=='Final|x64'" />
+    <ClCompile Include="Private\Application.cpp" Condition="'$(Configuration)|$(Platform)'=='Final|x64'" />
+    <ClCompile Include="Private\Audio\AudioSystem.cpp" Condition="'$(Configuration)|$(Platform)'=='Final|x64'" />
+    <ClCompile Include="Private\Frontend\Frontend.cpp" Condition="'$(Configuration)|$(Platform)'=='Final|x64'" />
+
+    <ClCompile Include="Private\Studio\Application.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    
     <ClCompile Include="Private\Graphics\ParticleRenderer.cpp" />
     <ClCompile Include="Private\Graphics\Renderer.cpp" />
     <ClCompile Include="Private\Graphics\Shaders\ShaderCompiler.cpp" />
@@ -77,7 +80,6 @@
     <ClCompile Include="Private\Preview\TerrainRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WaterRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WorldPreviewLoader.cpp" />
-    <ClCompile Include="Private\Studio\Application.cpp" />
   </ItemGroup>
 
   <ItemGroup>
@@ -135,9 +137,14 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>Studio</TargetName>
+    <OutDir>$(SolutionDir)..\game\Studio\</OutDir>
+    <IntDir>$(SolutionDir).build\obj\$(Platform)\$(Configuration)\Client\</IntDir>
+  </PropertyGroup>
 
-    <OutDir>$(SolutionDir)x64\Release\</OutDir>
-    <IntDir>$(ProjectDir)x64\Release\</IntDir>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
+    <TargetName>ZoneReborn</TargetName>
+    <OutDir>$(SolutionDir)..\game\</OutDir>
+    <IntDir>$(SolutionDir).build\obj\$(Platform)\$(Configuration)\Client\</IntDir>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
@@ -150,6 +157,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
 
     <ClCompile>
+      <DebugInformationFormat>None</DebugInformationFormat>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
@@ -166,13 +174,11 @@
       </PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      
+
       <AdditionalIncludeDirectories>
         $(ProjectDir);
         $(ProjectDir)Private;
         $(ProjectDir)..\Core\Public;
-        $(ProjectDir)..\..\third_party\WebView2\build\native\include;
-        $(ProjectDir)..\..\third_party\fmod;
         %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
       
@@ -180,13 +186,6 @@
     </ClCompile>
 
     <Link>
-      
-      <AdditionalLibraryDirectories>
-        $(ProjectDir)..\..\third_party\WebView2\build\native\x64;
-        $(ProjectDir)..\..\third_party\fmod;
-        %(AdditionalLibraryDirectories)
-      </AdditionalLibraryDirectories>
-
       <AdditionalDependencies>
         d3d11.lib;
         dxgi.lib;
@@ -202,7 +201,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
 
@@ -211,6 +210,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
 
     <ClCompile>
+      <DebugInformationFormat>None</DebugInformationFormat>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
@@ -269,7 +269,7 @@
 
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
 
       <LinkTimeCodeGeneration>
         UseLinkTimeCodeGeneration
@@ -312,16 +312,12 @@
 
   <ImportGroup Label="ExtensionTargets" />
 
-  <Target Name="CopyAudioRuntime" AfterTargets="Build">
+  <Target Name="CopyAudioRuntime" AfterTargets="Build" Condition="'$(Configuration)|$(Platform)'=='Final|x64'">
     <ItemGroup>
       <AudioRuntimeFiles Include="$(ProjectDir)..\..\third_party\fmod\dll\fmodex64.dll" />
       <AudioRuntimeFiles Include="$(ProjectDir)..\..\third_party\fmod\dll\fmod_event64.dll" />
     </ItemGroup>
-
-    <Copy
-            SourceFiles="@(AudioRuntimeFiles)"
-            DestinationFolder="$(OutDir)"
-            SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(AudioRuntimeFiles)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
   </Target>
 
 </Project>

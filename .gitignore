@@ -12,6 +12,7 @@ __pycache__/
 
 # Full client resources intentionally do not belong in this source archive.
 game/
+/src/.build/
 packs/res/audio/
 packs/res/models/
 packs/res/textures/
