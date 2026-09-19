@@ -43,6 +43,7 @@
     <ClInclude Include="Private\Preview\WaterRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\WorldPreviewLoader.h" />
     <ClInclude Include="Private\States\ClientState.h" />
+    <ClInclude Include="Resources\Resource.h" />
   </ItemGroup>
 
   <ItemGroup>
@@ -82,6 +83,10 @@
     <None Include="Shaders\World\WorldFlare.hlsl" />
     <None Include="Shaders\World\WorldSky.hlsl" />
     <None Include="Shaders\World\WorldParticle.hlsl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\ZoneReborn.rc" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">
@@ -130,6 +135,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       
       <AdditionalIncludeDirectories>
+        $(ProjectDir);
         $(ProjectDir)Private;
         $(ProjectDir)..\Core\Public;
         $(ProjectDir)..\..\third_party\WebView2\build\native\include;
@@ -167,6 +173,16 @@
     </Link>
 
   </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <ClInclude Include="Resources\Resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\ZoneReborn.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\zreborn_ico.ico" />
+  </ItemGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 

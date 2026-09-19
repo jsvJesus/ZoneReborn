@@ -112,11 +112,7 @@ namespace client
 
         std::string error;
 
-        if (!window_.Initialize(
-                1600,
-                900,
-                L"Zone Reborn",
-                error))
+        if (!window_.Initialize(1600, 900, L"Zone Reborn", error))
         {
             core::Log::Error(
                 error);

@@ -1,4 +1,5 @@
 #include "Platform/Window.h"
+#include "Resources/Resource.h"
 
 namespace
 {
@@ -53,6 +54,34 @@ namespace client::platform
         windowClass.hInstance =
             instance_;
 
+        windowClass.hIcon =
+            static_cast<HICON>(
+                LoadImageW(
+                    instance_,
+                    MAKEINTRESOURCEW(
+                        IDI_CLIENT_ICON),
+                    IMAGE_ICON,
+                    GetSystemMetrics(
+                        SM_CXICON),
+                    GetSystemMetrics(
+                        SM_CYICON),
+                    LR_DEFAULTCOLOR |
+                    LR_SHARED));
+
+        windowClass.hIconSm =
+            static_cast<HICON>(
+                LoadImageW(
+                    instance_,
+                    MAKEINTRESOURCEW(
+                        IDI_CLIENT_ICON),
+                    IMAGE_ICON,
+                    GetSystemMetrics(
+                        SM_CXSMICON),
+                    GetSystemMetrics(
+                        SM_CYSMICON),
+                    LR_DEFAULTCOLOR |
+                    LR_SHARED));
+
         windowClass.hCursor =
             LoadCursorW(
                 nullptr,
@@ -81,51 +110,78 @@ namespace client::platform
         classRegistered_ =
             true;
 
-        const DWORD style =
-            WS_OVERLAPPED |
-            WS_CAPTION |
-            WS_SYSMENU |
-            WS_MINIMIZEBOX;
+        const POINT monitorPoint
+{
+    0,
+    0
+};
 
-        RECT rectangle
-        {
-            0,
-            0,
-            static_cast<LONG>(
-                width),
-            static_cast<LONG>(
-                height)
-        };
+        const HMONITOR monitor =
+            MonitorFromPoint(
+                monitorPoint,
+                MONITOR_DEFAULTTOPRIMARY);
 
-        if (!AdjustWindowRect(
-                &rectangle,
-                style,
-                FALSE))
+        if (monitor ==
+            nullptr)
         {
             error =
-                "Unable to calculate window size.";
+                "Unable to obtain primary monitor.";
 
             Shutdown();
 
             return false;
         }
 
+        MONITORINFO monitorInfo{};
+
+        monitorInfo.cbSize =
+            sizeof(
+                monitorInfo);
+
+        if (!GetMonitorInfoW(
+                monitor,
+                &monitorInfo))
+        {
+            error =
+                "Unable to obtain primary monitor information.";
+
+            Shutdown();
+
+            return false;
+        }
+
+        const RECT& monitorRectangle =
+            monitorInfo.rcMonitor;
+
         const int windowWidth =
-            rectangle.right -
-            rectangle.left;
+            monitorRectangle.right -
+            monitorRectangle.left;
 
         const int windowHeight =
-            rectangle.bottom -
-            rectangle.top;
+            monitorRectangle.bottom -
+            monitorRectangle.top;
+
+        if (windowWidth <= 0 ||
+            windowHeight <= 0)
+        {
+            error =
+                "Primary monitor has invalid dimensions.";
+
+            Shutdown();
+
+            return false;
+        }
+
+        constexpr DWORD style = WS_OVERLAPPEDWINDOW;
 
         window_ =
             CreateWindowExW(
-                0,
+                WS_EX_APPWINDOW,
                 WindowClassName,
                 title,
                 style,
-                CW_USEDEFAULT,
-                CW_USEDEFAULT,
+                monitorRectangle.left,
+                monitorRectangle.top,
                 windowWidth,
                 windowHeight,
                 nullptr,
@@ -145,10 +201,12 @@ namespace client::platform
         }
 
         width_ =
-            width;
+            static_cast<std::uint32_t>(
+                windowWidth);
 
         height_ =
-            height;
+            static_cast<std::uint32_t>(
+                windowHeight);
 
         mouseWheelDelta_ =
             0;
@@ -164,9 +222,7 @@ namespace client::platform
 
         textInput_.clear();
 
-        ShowWindow(
-            window_,
-            SW_SHOW);
+        ShowWindow(window_, SW_MAXIMIZE);
 
         UpdateWindow(
             window_);

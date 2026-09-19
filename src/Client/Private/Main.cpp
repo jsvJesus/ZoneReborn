@@ -4,6 +4,7 @@
 
 #include <exception>
 #include <iostream>
+#include <Windows.h>
 
 namespace
 {
@@ -20,8 +21,9 @@ namespace
 
 int main()
 {
-    int exitCode =
-        0;
+    SetProcessDPIAware();
+    
+    int exitCode = 0;
 
     try
     {
