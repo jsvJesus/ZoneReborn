@@ -20,6 +20,7 @@
     <ClInclude Include="Private\Account\AuthService.h" />
     <ClInclude Include="Private\Account\RememberedLogin.h" />
     <ClInclude Include="Private\Application.h" />
+    <ClInclude Include="Private\Audio\AudioSystem.h" />
     <ClInclude Include="Private\Diagnostics\ResourceValidation.h" />
     <ClInclude Include="Private\Frontend\Frontend.h" />
     <ClInclude Include="Private\Graphics\CameraView.h" />
@@ -49,6 +50,7 @@
     <ClCompile Include="Private\Account\AuthService.cpp" />
     <ClCompile Include="Private\Account\RememberedLogin.cpp" />
     <ClCompile Include="Private\Application.cpp" />
+    <ClCompile Include="Private\Audio\AudioSystem.cpp" />
     <ClCompile Include="Private\Frontend\Frontend.cpp" />
     <ClCompile Include="Private\Graphics\ParticleRenderer.cpp" />
     <ClCompile Include="Private\Graphics\Renderer.cpp" />
@@ -108,10 +110,7 @@
   <ImportGroup Label="Shared" />
 
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import
-            Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props"
-            Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')"
-            Label="LocalAppDataPlatform" />
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
 
   <PropertyGroup Label="UserMacros" />
@@ -134,6 +133,7 @@
         $(ProjectDir)Private;
         $(ProjectDir)..\Core\Public;
         $(ProjectDir)..\..\third_party\WebView2\build\native\include;
+        $(ProjectDir)..\..\third_party\fmod;
         %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
       
@@ -144,6 +144,7 @@
       
       <AdditionalLibraryDirectories>
         $(ProjectDir)..\..\third_party\WebView2\build\native\x64;
+        $(ProjectDir)..\..\third_party\fmod;
         %(AdditionalLibraryDirectories)
       </AdditionalLibraryDirectories>
 
@@ -157,6 +158,8 @@
         user32.lib;
         shlwapi.lib;
         version.lib;
+        fmod_event64.lib;
+        fmodex64_vc.lib;
         %(AdditionalDependencies)
       </AdditionalDependencies>
       
@@ -188,6 +191,7 @@
       <ClientShaderFiles Include="$(ProjectDir)Shaders\World\**\*.hlsl" />
       <ClientShaderFiles Include="$(ProjectDir)Shaders\World\**\*.hlsli" />
     </ItemGroup>
+    
 
     <MakeDir
             Directories="$(OutDir)Shaders\World" />
@@ -200,5 +204,17 @@
   </Target>
 
   <ImportGroup Label="ExtensionTargets" />
+
+  <Target Name="CopyAudioRuntime" AfterTargets="Build">
+    <ItemGroup>
+      <AudioRuntimeFiles Include="$(ProjectDir)..\..\third_party\fmod\dll\fmodex64.dll" />
+      <AudioRuntimeFiles Include="$(ProjectDir)..\..\third_party\fmod\dll\fmod_event64.dll" />
+    </ItemGroup>
+
+    <Copy
+            SourceFiles="@(AudioRuntimeFiles)"
+            DestinationFolder="$(OutDir)"
+            SkipUnchangedFiles="true" />
+  </Target>
 
 </Project>

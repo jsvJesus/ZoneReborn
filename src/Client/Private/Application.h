@@ -7,6 +7,7 @@
 #include "Platform/Window.h"
 #include "States/ClientState.h"
 
+#include "Audio/AudioSystem.h"
 #include "Core/Runtime.h"
 
 #include "Graphics/Renderer.h"
@@ -38,6 +39,8 @@ namespace client
 
         platform::Window
             window_;
+
+        audio::AudioSystem audio_;
 
         frontend::OriginalFrontend
             frontend_;

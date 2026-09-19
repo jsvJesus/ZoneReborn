@@ -139,6 +139,18 @@ namespace client
             return false;
         }
 
+        if (!audio_.Initialize(
+                runtime_.GameRoot(),
+                error))
+        {
+            core::Log::Warning(
+                std::string(
+                    "Audio initialization failed: ") +
+                error);
+
+            error.clear();
+        }
+
         state_ =
             states::ClientState::Frontend;
 
@@ -331,6 +343,22 @@ namespace client
 
     bool Application::Update()
     {
+        if (audio_.IsInitialized())
+        {
+            std::string audioError;
+
+            if (!audio_.Update(
+                    audioError))
+            {
+                core::Log::Warning(
+                    std::string(
+                        "Audio update failed: ") +
+                    audioError);
+
+                audio_.Shutdown();
+            }
+        }
+        
         if (rendererInitialized_)
         {
             std::string
@@ -453,6 +481,23 @@ namespace client
 
                     break;
                 }
+
+            case frontend::FrontendEventType::UiSound:
+                    {
+                        std::string audioError;
+
+                        if (!audio_.PlayUiSound(
+                                event.soundName,
+                                audioError))
+                        {
+                            core::Log::Warning(
+                                std::string(
+                                    "UI sound failed: ") +
+                                audioError);
+                        }
+
+                        break;
+                    }
 
                 case frontend::FrontendEventType::DummyShow:
                 {
@@ -653,7 +698,8 @@ namespace client
                     {
                         core::Log::Info(
                             "Frontend requested Play.");
-                        
+
+                        audio_.StopMenuMusic();
                         ShutdownCharacterSelectScene();
 
                         break;
@@ -680,6 +726,8 @@ namespace client
 
         rendererInitialized_ =
             false;
+
+        audio_.Shutdown();
 
         accountSession_.Clear();
 

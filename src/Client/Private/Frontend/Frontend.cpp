@@ -1812,8 +1812,7 @@ namespace client::frontend
             return;
         }
 
-        if (command ==
-            "open_url")
+        if (command == "open_url")
         {
             FrontendEvent event;
 
@@ -1834,8 +1833,23 @@ namespace client::frontend
             return;
         }
 
-        if (command ==
-            "dummy_show")
+        if (command == "ui_sound")
+        {
+            if (fields.size() < 2 || fields[1].empty())
+            {
+                core::Log::Warning("Frontend sent an empty ui_sound event");
+                return;
+            }
+
+            FrontendEvent event;
+            event.type = FrontendEventType::UiSound;
+            event.soundName = fields[1];
+
+            events_.push_back(std::move(event));
+            return;
+        }
+
+        if (command == "dummy_show")
         {
             FrontendEvent event;
 

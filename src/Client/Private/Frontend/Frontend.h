@@ -23,6 +23,8 @@ namespace client::frontend
         OpenUrl,
         Play,
 
+        UiSound,
+
         DummyShow,
         DummyHide,
         DummyPart,
@@ -39,6 +41,7 @@ namespace client::frontend
         std::string password;
         std::string serverId;
         std::string url;
+        std::string soundName;
 
         std::string dummyGroup;
 
