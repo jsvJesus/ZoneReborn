@@ -610,44 +610,66 @@ namespace client
 
                     break;
                 }
-            
+
                 case frontend::FrontendEventType::DummyFull:
-                {
-                    if (!rendererInitialized_)
                     {
+                        if (!rendererInitialized_)
+                        {
+                            break;
+                        }
+
+                        preview::CharacterDummyAppearance
+                            newAppearance;
+
+                        for (const auto& part :
+                             event.dummyParts)
+                        {
+                            if (!newAppearance.SetPart(
+                                    part.first,
+                                    part.second))
+                            {
+                                core::Log::Warning(
+                                    std::string(
+                                        "Unknown CharacterDummy group in full rebuild: ") +
+                                    part.first);
+
+                                continue;
+                            }
+
+                            core::Log::Info(
+                                std::string(
+                                    "CharacterDummy full part: ") +
+                                part.first +
+                                " -> " +
+                                std::to_string(
+                                    part.second));
+                        }
+
+                        characterDummyAppearance_ =
+                            newAppearance;
+
+                        core::Log::Info(
+                            std::string(
+                                "CharacterDummy full rebuild, parts=") +
+                            std::to_string(
+                                event.dummyParts.size()));
+
+                        std::string
+                            rebuildError;
+
+                        if (!RebuildCharacterDummy(
+                                rebuildError))
+                        {
+                            core::Log::Error(
+                                std::string(
+                                    "CharacterDummy full rebuild failed: ") +
+                                rebuildError);
+
+                            return false;
+                        }
+
                         break;
                     }
-
-                    for (const auto& part :
-                         event.dummyParts)
-                    {
-                        characterDummyAppearance_.
-                            SetPart(
-                                part.first,
-                                part.second);
-                    }
-
-                    core::Log::Info(
-                        std::string(
-                            "CharacterDummy full rebuild, parts=") +
-                        std::to_string(
-                            event.dummyParts.size()));
-
-                    std::string rebuildError;
-
-                    if (!RebuildCharacterDummy(
-                            rebuildError))
-                    {
-                        core::Log::Error(
-                            std::string(
-                                "CharacterDummy full rebuild failed: ") +
-                            rebuildError);
-
-                        return false;
-                    }
-
-                    break;
-                }
             
                 case frontend::FrontendEventType::DummyRotate:
                 {

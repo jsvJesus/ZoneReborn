@@ -918,6 +918,88 @@ function getCurrentCharacterIndex(
     return saved;
 }
 
+function getCharacterAppearanceEntries(
+    appearance)
+{
+    if (!appearance ||
+        typeof appearance !==
+            "object")
+    {
+        return [];
+    }
+
+    if (Array.isArray(
+            appearance.random))
+    {
+        return appearance.random;
+    }
+
+    const entries =
+        [];
+
+    for (const [
+             choiceGroup,
+             value
+         ] of Object.entries(
+             appearance))
+    {
+        if (!choiceGroup ||
+            choiceGroup ===
+                "random" ||
+            !value ||
+            typeof value !==
+                "object")
+        {
+            continue;
+        }
+
+        entries.push(
+            {
+                choiceGroup:
+                    choiceGroup,
+
+                var:
+                    value
+            });
+    }
+
+    return entries;
+}
+
+function buildStoredCharacterAppearance()
+{
+    const random =
+        [];
+
+    for (const [
+             choiceGroup,
+             value
+         ] of Object.entries(
+             pendingCharacterAppearance))
+    {
+        if (!choiceGroup ||
+            !value ||
+            typeof value !==
+                "object")
+        {
+            continue;
+        }
+
+        random.push(
+            {
+                choiceGroup:
+                    choiceGroup,
+
+                var:
+                    value
+            });
+    }
+
+    return {
+        random:
+            random
+    };
+}
 
 function sendCurrentCharacterAppearance()
 {
@@ -929,27 +1011,33 @@ function sendCurrentCharacterAppearance()
             characters);
 
     if (currentId < 0 ||
-        currentId >= characters.length)
+        currentId >=
+            characters.length)
     {
         return;
     }
 
-    const appearance =
-        characters[currentId] &&
-        characters[currentId].appearance;
+    const character =
+        characters[
+            currentId];
 
-    const random =
-        appearance &&
-        Array.isArray(appearance.random)
-            ? appearance.random
-            : [];
+    if (!character)
+    {
+        return;
+    }
 
-    const fields = [];
+    const entries =
+        getCharacterAppearanceEntries(
+            character.appearance);
 
-    for (const entry of random)
+    const fields =
+        [];
+
+    for (const entry of entries)
     {
         if (!entry ||
-            !entry.choiceGroup)
+            !entry.choiceGroup ||
+            !entry.var)
         {
             continue;
         }
@@ -959,23 +1047,38 @@ function sendCurrentCharacterAppearance()
                 entry.choiceGroup,
                 entry.var);
 
-        if (!Number.isFinite(partId) ||
+        if (!Number.isFinite(
+                partId) ||
             partId <= 0)
         {
             continue;
         }
 
         fields.push(
-            entry.choiceGroup,
+            entry.choiceGroup);
+
+        fields.push(
             partId);
     }
 
-    if (fields.length !== 0)
+    if (fields.length === 0)
     {
-        postToHost(
-            "dummy_full",
-            ...fields);
+        trace(
+            "Character appearance is empty for id=" +
+            currentId);
+
+        return;
     }
+
+    trace(
+        "Sending CharacterDummy appearance: id=" +
+        currentId +
+        ", parts=" +
+        fields.length / 2);
+
+    postToHost(
+        "dummy_full",
+        ...fields);
 }
 
 
@@ -1378,7 +1481,7 @@ window.createChar =
                 0,
 
             appearance:
-                pendingCharacterAppearance
+				buildStoredCharacterAppearance()
         };
 
         characters.push(
