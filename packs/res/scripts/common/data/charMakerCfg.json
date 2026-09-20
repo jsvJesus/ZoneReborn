@@ -1,0 +1,44 @@
+{
+	"01_jacket": [
+		{
+			"texture": "../soGUI/frame/character_creation/jacket/body_tourist_thin.png",
+			"item_id": 30100
+		},
+		{
+			"texture": "../soGUI/frame/character_creation/jacket/body_gorka_1.png",
+			"item_id": 36030
+		}
+	],
+	"02_pants": [
+		{
+			"texture": "../soGUI/frame/character_creation/pants/legs_mabuta.png",
+			"item_id": 30105
+		},
+		{
+			"texture": "../soGUI/frame/character_creation/pants/legs_gorka1.png",
+			"item_id": 36035
+		}
+	],
+	"03_under-shirt": [
+		{
+			"texture": "../soGUI/frame/character_creation/jacket/body_beluga.png",
+			"item_id": 24030
+		}
+	],
+	"04_under-pants": [
+		{
+			"texture": "../soGUI/frame/character_creation/pants/legs_beluga.png",
+			"item_id": 24035
+		}
+	],
+	"05_foot": [
+		{
+			"texture": "../soGUI/frame/character_creation/shoes/boots_kedy.png",
+			"item_id": 52030
+		},
+		{
+			"texture": "../soGUI/frame/character_creation/shoes/boots_adidas.png",
+			"item_id": 54810
+		}
+	]
+}
