@@ -1,12 +1,12 @@
 {
 	"model" : "characters/creatures/verlioka/verlioka_lod1.model",
-	"colliders" : "scripts/common/data/Creatures/Colliders/Verlioka.xml",
+	"colliders" : "characters/creatures/verlioka/hitbox_general.xml",
 	"radius" : 1.0,
 	"velocity" : 4.0,
 	"health" : 400,
 	"name" : "Monster.name.VERLI",
 	"experience" : 10,
-	"loot" : "Verlioka_1",
+	"loot" : "empty",
 
 	"combos" : [
 

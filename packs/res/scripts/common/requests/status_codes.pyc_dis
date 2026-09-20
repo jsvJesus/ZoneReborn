@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/status_codes.py
+# Embedded file name: ./common/requests/status_codes.py
 from .structures import LookupDict
 _codes = {100: ('continue',),
  101: ('switching_protocols',),

@@ -1,13 +1,13 @@
-# Embedded file name: ./scripts/client/soGUI/data/TextureFeed.py
+# Embedded file name: ./client/soGUI/data/TextureFeed.py
 import BigWorld
 from math import floor
-BUFFS_TEXTUREPATH = 'soGUI/maps/Icons/bufs/icon_buffs_atlas.dds'
-ICON_WIDTH = 21
-ICON_HEIGHT = 21
-ICON_HSPACING = 1
-ICON_VSPACING = 1
-ICONROW_WIDTH = 11
-ORIGIN = (1, 1)
+BUFFS_TEXTUREPATH = 'soGUI/frame/effects/icon_buffs_atlas.dds'
+ICON_WIDTH = 30
+ICON_HEIGHT = 30
+ICON_HSPACING = 2
+ICON_VSPACING = 2
+ICONROW_WIDTH = 16
+ORIGIN = (0, 0)
 
 class BuffFeeder(object):
 
@@ -75,8 +75,8 @@ class BuffFeeder(object):
          'debuff_campfire',
          'buff_flask',
          'debuff_flask',
-         'buff_food',
-         'debuff_food',
+         'buff_EMPTY_1',
+         'debuff_EMPTY_1',
          'buff_artifact',
          'debuff_artifact',
          'buff_pain',
@@ -180,8 +180,16 @@ class BuffFeeder(object):
          'buff_temperature_chill',
          'debuff_temperature_chill',
          'debuff_water_speed',
+         'debuff_hunger_light',
+         'debuff_hunger_medium',
+         'debuff_hunger_heavy',
+         'debuff_hunger',
+         'debuff_thirst_light',
+         'debuff_thirst_medium',
+         'debuff_thirst_heavy',
          'debuff_thirst',
-         'buff_pvp']
+         'buff_pvp',
+         'buff_createfire']
         self.buffMap = {}
         for i, buff in enumerate(self.buffList):
             row = int(floor(i / ICONROW_WIDTH))

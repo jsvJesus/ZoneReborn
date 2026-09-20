@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soBaseTrader.py
+# Embedded file name: ./client/soGUI/soBaseTrader.py
 import traceback
 import BigWorld
 import BWPersonality
@@ -42,7 +42,7 @@ class soBaseTrader(PyGUIBase):
     def setupContent(self):
         sW, sH = BigWorld.screenSize()
         h = sH - 70
-        FRAME_TEXTURE = 'soGUI/maps/Controls/inventory/inventoryFrame2.tga'
+        FRAME_TEXTURE = 'soGUI/frame/basic_frame_1.dds'
         self.frameCmp = GUI.Frame2(FRAME_TEXTURE)
         self.frameCmp.horizontalPositionMode = self.frameCmp.verticalPositionMode = 'PIXEL'
         self.frameCmp.widthMode = self.frameCmp.heightMode = 'PIXEL'
@@ -67,7 +67,7 @@ class soBaseTrader(PyGUIBase):
         cmp.height = 18
         cmp.position = (self.WIDTH - 5, 5, 0)
         cmp.script.onClick = lambda : BWPersonality.GUICore.showBasetrader(False)
-        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.initVSC('soGUI/elements/closeBox.xml')
         closeBox.onBound()
         closeBox.setVisualState('normal')
         self.component.addChild(cmp, 'closeBox')
@@ -76,7 +76,7 @@ class soBaseTrader(PyGUIBase):
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
             cmp.horizontalAnchor = 'LEFT'
             cmp.verticalAnchor = 'TOP'
-            cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+            cmp.font = 'RobotoCondensedRegular_14.font'
             cmp.colour = (255, 255, 255, 255)
             cmp.text = item
             cmp.position = (10, 8 + (i + 1) * 25, 0.5)
@@ -85,7 +85,7 @@ class soBaseTrader(PyGUIBase):
             text.horizontalPositionMode = text.verticalPositionMode = 'PIXEL'
             text.horizontalAnchor = 'LEFT'
             text.verticalAnchor = 'TOP'
-            text.font = 'ruRU_Cyrvetica_Extra_14i.font'
+            text.font = 'RobotoCondensedRegular_14.font'
             text.colour = (255, 255, 255, 255)
             text.text = ''
             text.position = (200, 8 + (i + 1) * 25, 0.5)

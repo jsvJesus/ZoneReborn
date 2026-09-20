@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/msg_mgr.py
+# Embedded file name: ./client/soGUI/msg_mgr.py
 """\xd0\x9c\xd0\xbe\xd0\xb4\xd1\x83\xd0\xbb\xd1\x8c \xd1\x80\xd0\xb5\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb7\xd1\x83\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xbe\xd0\xb1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xbe\xd1\x82\xd0\xba\xd0\xb8 \xd1\x81\xd0\xbe\xd0\xbe\xd0\xb1\xd1\x89\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb9 \xd0\xb8\xd0\xb7/\xd0\xb2 \xd1\x87\xd0\xb0\xd1\x82\xd0\xb0 \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8f."""
 import re
 import time
@@ -6,7 +6,7 @@ import BigWorld
 import BWPersonality
 import msgchecker
 import ResMgr
-import utils
+import sounds_manager
 from ChatChannelConfig import ChannelConsts
 from Settings import Settings
 from Localization import lc
@@ -45,9 +45,8 @@ class MessageManager(object):
     """\xd0\x9a\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xbe\xd0\xb1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xbe\xd1\x82\xd0\xba\xd0\xb8, \xd1\x84\xd0\xb8\xd0\xbb\xd1\x8c\xd1\x82\xd1\x80\xd0\xb0\xd1\x86\xd0\xb8\xd0\xb8 \xd0\xb8 \xd0\xbe\xd1\x82\xd0\xbf\xd1\x80\xd0\xb0\xd0\xb2\xd0\xba\xd0\xb8 \xd1\x81\xd0\xbe\xd0\xbe\xd0\xb1\xd1\x89\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb9."""
     chatabuse = AttrFromSettings('chatabuse', False)
 
-    def __init__(self, chat, player):
+    def __init__(self, chat):
         self._chat = chat
-        self._player = player
         self._msg_checker = msgchecker.ClientMsgChecker()
         bad_words_path = 'scripts/client/data/Chat/badwords.txt'
         text = ResMgr.openSection(bad_words_path).asBinary
@@ -57,21 +56,17 @@ class MessageManager(object):
         comment_patt = re.compile(u'-.*?-', re.MULTILINE | re.UNICODE)
         self._words_filter = words_filter.WordsFilter(words, u'*', url_patt, comment_patt)
 
-    def print_msg(self, channel_id, text, sender = u''):
+    def print_msg(self, channel_id, text, sender = u'', additional = u''):
         """\xd0\x92\xd1\x8b\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd0\xb8 \xd1\x81\xd0\xbe\xd0\xbe\xd0\xb1\xd1\x89\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd0\xb2 \xd1\x87\xd0\xb0\xd1\x82\xd0\xb5."""
         friend = None
         if CHANNEL_CONST.WHISPER == channel_id:
-            if sender in self._player.blackList:
-                return
-            sound = BigWorld.getSound('ui/boop')
-            if sound:
-                sound.play()
-            friend = sender in [ name for name, _ in self._player.friendsList ]
+            friend = BigWorld.player().is_friend(sender)
         data = self._wrap_msg_data(channel_id, text)
         if friend is not None:
             data['friend'] = friend
         if sender:
             data['sender'] = sender
+        data['additional'] = additional
         return data
 
     def replace_bad_words(self, string):
@@ -87,7 +82,7 @@ class MessageManager(object):
             self._return_msg(channel_id, text, receiver)
         do_send, system_text = self._check_text(text, channel_id)
         if do_send:
-            self._player.send_message(channel_id, text, receiver)
+            BigWorld.player().send_message(channel_id, text, receiver)
         else:
             not_be_delivered = lc('Common.chat.WILL_NOT_BE_DELIVERED', utf8=True)
             msg = '{0} {1}'.format(system_text, not_be_delivered)

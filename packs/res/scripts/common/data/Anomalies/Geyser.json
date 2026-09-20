@@ -1,25 +1,37 @@
 {
-    "difficultyMax": 20, 
-    "difficultyMin": 10, 
-    "lifetimeMax": 1440.0, 
-    "lifetimeMin": 720.0,
-    "loot":"empty",
+    "lifetimeMin": 14000.0, 
+    "lifetimeMax": 18000.0, 
+    "loot":"Geyser",
     "damage": {
-        "body_zone": "LEG_LOWER", 
-        "distribution": "RADIAL", 
+        "body_zone": "TORSO", 
+        "distribution": "FLAT", 
         "frequency": 3.0, 
         "penetration": 100.0, 
-        "type": "WATER", 
-        "value": 10.0
+        "type": "GRAVITATION", 
+        "value": 25.0
     }, 
-    "effects": [[ "Anomaly_Noob_visible", 1 ]], 
+    "effects": [[ "Anomaly_Katapulta", 1 ]], 
     "invisible": 0, 
-    "nudge_interval": 1, 
-    "nudge_type": "NONE", 
+    "nudge_type": "CATAPULT", 
+    "nudge_interval": 0.7, 
+    "nudge_velocity": 11,
+    "nudge_height": 9,
+    "nudge_vertical_range": 3.0,
+    "nudge_grab_duration": 2.0,
+    "height_up": 3,
+    "height_down": 0.5,
     "radius": 5.0, 
-    "radiusOut": 10.0, 
-    "sfx_inside": "sfx/Anomalys/geyzer.xml", 
+    "radiusOut": 10.0,
+    "radiation_effect": "Radioactivity",
+    "radiation_effect_stack_min": 1,
+    "radiation_effect_stack_max": 5,    "sfx_inside": "sfx/Anomalys/geyzer.xml", 
     "sfx_main": "sfx/Anomalys/geyzer_idle.xml", 
-    "sfx_artifact_wall": "sfx/Anomalys/artefact_wall.xml", 
+    
+    "wall_artifact":{
+        "sfx_wall":"sfx/Anomalys/artefact_wall.xml",
+        "wall_effect":2077,
+        "wall_radius":2.5
+    },
+ 
     "sfx_main_interval": [ 3, 6 ]
 }

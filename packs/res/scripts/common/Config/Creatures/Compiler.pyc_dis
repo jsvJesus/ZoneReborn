@@ -1,58 +1,11 @@
-# Embedded file name: ./scripts/common/Config/Creatures/Compiler.py
+# Embedded file name: ./common/Config/Creatures/Compiler.py
 import ResMgr
-from utils import get_first, is_identifier
+from utils import get_first
 from Config.Compiler import ConfigCompiler, ICompiler, COMPILER, StringCompiler
 from Config.Creatures.Constants import *
-from Config.Creatures.CommonConfig import COLLIDERS_PATH, stat_rate, stat_base, colliders_files
+from Config.Creatures.CommonConfig import stat_rate, stat_base
 import Colliders
 import re
-
-class PredicateCompiler(ICompiler):
-    str_to_operator = {'less': ' < ',
-     'more': ' > ',
-     'equal': ' == '}
-
-    def compile(self, name, value):
-        return eval(self.parse_predicate(value))
-
-    def parse_predicate(self, pred_data):
-        parsed_predicate = 'lambda self:'
-
-        def parse_recursive(pred_data, join_str = 'None'):
-            parsed_conds = []
-            for data in map(self.prepare_predicate, pred_data):
-                pred_name = data['name']
-                if pred_name == 'or':
-                    parsed_cond = parse_recursive(data['predicates'], ' or ')
-                elif pred_name == 'and':
-                    parsed_cond = parse_recursive(data['predicates'], ' and ')
-                elif pred_name == 'state':
-                    state_ind = self.get_index(STATES, data['value'])
-                    parsed_cond = 'self.get_logic_param("state") == ' + str(state_ind)
-                elif is_identifier(pred_name):
-                    oper = self.str_to_operator[data['operator']]
-                    parsed_cond = "self.get_logic_param('" + pred_name + "')" + oper + str(data['value'])
-                else:
-                    parsed_cond = 'None'
-                parsed_conds.append(parsed_cond)
-
-            return '(' + join_str.join(parsed_conds) + ')'
-
-        parsed_predicate += parse_recursive([pred_data])
-        parse_recursive = None
-        return parsed_predicate
-
-    def prepare_predicate(self, pred_data):
-        if not isinstance(pred_data, list) and not isinstance(pred_data, tuple):
-            return pred_data
-        elif pred_data[0] == 'or' or pred_data[0] == 'and':
-            return {'name': pred_data[0],
-             'predicates': pred_data[1]}
-        else:
-            return {'name': pred_data[0],
-             'operator': pred_data[1],
-             'value': pred_data[2]}
-
 
 class CriteriaCompiler(ICompiler):
     replaces = ['targets_count',
@@ -88,15 +41,22 @@ class ModelPathCompiler(StringCompiler):
         self.set_param('model_path', model_path)
 
 
+class ColliderPathCompiler(StringCompiler):
+
+    def precompile(self, name, value):
+        file_path = self.compile(name, value)
+        self.set_param(HITBOX_PATH, file_path or self.default)
+
+
 class CollidersCompiler(ICompiler):
 
     def is_generator(self):
         return True
 
     def generate(self):
-        model_path = self.get_param('model_path')
-        file_path = COLLIDERS_PATH + colliders_files[model_path]
-        return Colliders.get_colliders_cfg(file_path)
+        file_name = self.get_param(HITBOX_PATH)
+        config_path = 'characters/creatures/' + file_name
+        return Colliders.get_colliders_cfg(config_path)
 
 
 class CapsCompiler(ICompiler):
@@ -122,7 +82,6 @@ conditions_def = {'compiler': COMPILER.LIST,
                     'items': {'to_state': {'compiler': COMPILER.NAME_TO_INDEX,
                                            'indexed_dict': 'states',
                                            'required': True},
-                              'predicate': {'compiler': PredicateCompiler},
                               'criteria': {'compiler': CriteriaCompiler}}}}
 config_definition = {'compiler': COMPILER.CONFIG,
  'items': {NAME: {'compiler': COMPILER.LOCALIZATION,
@@ -130,22 +89,50 @@ config_definition = {'compiler': COMPILER.CONFIG,
                   'compile_default': True},
            MODEL: {'compiler': ModelPathCompiler,
                    'default': ''},
+           HITBOX_PATH: {'compiler': ColliderPathCompiler,
+                         'default': ''},
+           HITBOX_FIX: {'compiler': COMPILER.STRING,
+                        'default': ''},
            COLLIDERS: {'compiler': CollidersCompiler},
            MODEL_SCALE: {'compiler': COMPILER.FLOAT,
                          'default': 1},
+           NAVMESH_GIRTH: {'compiler': COMPILER.FLOAT,
+                           'default': 0.5},
            COEF_LEVEL: {'compiler': COMPILER.FLOAT,
                         'default': 99},
            FOOTSTEPS_SOUND: {'compiler': COMPILER.STRING,
                              'default': ''},
-           FOOT_NODES: {'compiler': COMPILER.LIST,
-                        'default': []},
+           IDLESOUNDRADIUS: {'compiler': COMPILER.FLOAT,
+                             'default': 2.0},
+           DISABLE_CHECK_ESCAPE_STUCK: {'compiler': COMPILER.BOOL,
+                                        'default': False},
+           CUE_FOOTSTEP_NODE: {'compiler': COMPILER.DICT,
+                               'default': [],
+                               'key_compiler': {'compiler': COMPILER.STRING},
+                               'value_compiler': {'compiler': COMPILER.STRING}},
+           RANDOM_SPOTS: {'compiler': COMPILER.DICT,
+                          'default': {}},
+           CUE_SOUNDS: {'compiler': COMPILER.DICT,
+                        'default': {},
+                        'key_compiler': {'compiler': COMPILER.STRING},
+                        'value_compiler': {'compiler': COMPILER.STRING}},
+           FALL_SOUND: {'compiler': COMPILER.STRING,
+                        'default': ''},
+           CUE_FALL_NODE: {'compiler': COMPILER.DICT,
+                           'default': [],
+                           'key_compiler': {'compiler': COMPILER.STRING},
+                           'value_compiler': {'compiler': COMPILER.STRING}},
            EXPERIENCE: {'compiler': COMPILER.FLOAT,
                         'default': 0},
+           IGNORE_PREMIUM_ADDITIONAL_CYCLES: {'compiler': COMPILER.BOOL,
+                                              'default': False},
            KARMA: {'compiler': COMPILER.FLOAT,
                    'default': 10},
            HEALTH: {'compiler': COMPILER.FLOAT,
                     'default': 1,
                     'mult_param': 'health_coef'},
+           HEALTH_WITHOUT_POPS: {'compiler': COMPILER.FLOAT,
+                                 'default': 1},
            AGRO_RANGE: {'compiler': COMPILER.FLOAT,
                         'default': 1},
            LOSE_AGRO_RANGE: {'compiler': COMPILER.FLOAT,
@@ -159,10 +146,26 @@ config_definition = {'compiler': COMPILER.CONFIG,
                      'default': {}},
            EVENTS: {'compiler': COMPILER.DICT,
                     'default': {}},
+           AVATAR_IGNORE: {'compiler': COMPILER.INT,
+                           'default': 0},
+           ATTACK_OBJECTS: {'compiler': COMPILER.INT,
+                            'default': 0},
+           ATTACK_EVENT_BREAKABLE: {'compiler': COMPILER.INT,
+                                    'default': 0},
+           ATTACK_DOOR: {'compiler': COMPILER.INT,
+                         'default': 0},
+           ATTACK_TRANSPORT: {'compiler': COMPILER.INT,
+                              'default': 0},
+           TRANSPORT_HIT_SFX: {'compiler': COMPILER.DICT,
+                               'default': {}},
            HEIGHT: {'compiler': COMPILER.FLOAT,
                     'default': 1},
            HEIGHT_IDLE: {'compiler': COMPILER.FLOAT,
                          'default': 1},
+           SOUND_PITCH: {'compiler': COMPILER.FLOAT,
+                         'default': 0.0},
+           SOUND_VOLUME: {'compiler': COMPILER.FLOAT,
+                          'default': 1.0},
            WIDTH_IDLE: {'compiler': COMPILER.FLOAT,
                         'default': 1},
            DEPTH_IDLE: {'compiler': COMPILER.FLOAT,
@@ -175,6 +178,8 @@ config_definition = {'compiler': COMPILER.CONFIG,
                          'default': [0, 0.1, 0]},
            RADIUS_MODEL: {'compiler': COMPILER.FLOAT,
                           'default': 0.2},
+           ALING_TO_GROUND_SMART: {'compiler': COMPILER.BOOL,
+                                   'default': True},
            COLLIDE_DIST: {'compiler': COMPILER.FLOAT,
                           'default': 3.0},
            ROLL_PARAM: {'compiler': COMPILER.LIST,
@@ -187,6 +192,14 @@ config_definition = {'compiler': COMPILER.CONFIG,
                             'default': [10, 20]},
            INTERACTION_DISTANCE: {'compiler': COMPILER.FLOAT,
                                   'default': 1},
+           STIPPLE_DISTANCE: {'compiler': COMPILER.FLOAT,
+                              'default': 0},
+           PERMANENT_STIPPLE: {'compiler': COMPILER.BOOL,
+                               'default': 0},
+           ENTER_STIPPLE_SFX: {'compiler': COMPILER.STRING,
+                               'default': ''},
+           LEAVE_STIPPLE_SFX: {'compiler': COMPILER.STRING,
+                               'default': ''},
            MELEE_DISTANCE: {'compiler': COMPILER.FLOAT,
                             'default': 1},
            MELEE_HEIGHT: {'compiler': COMPILER.FLOAT,
@@ -202,15 +215,44 @@ config_definition = {'compiler': COMPILER.CONFIG,
                            'default': [TYPE_SEARCH]},
            ASSIST: {'compiler': COMPILER.DICT,
                     'default': None},
+           CLAN: {'compiler': COMPILER.STRING},
+           ENEMIES: {'compiler': COMPILER.LIST,
+                     'default': []},
+           DISTANCE_USE_TARGET_FILTER: {'compiler': COMPILER.FLOAT,
+                                        'default': 0},
+           BUTCH_DYE: {'compiler': COMPILER.LIST,
+                       'default': []},
            TINTS: {'compiler': COMPILER.LIST,
                    'default': [],
                    'value_compiler': {'compiler': COMPILER.DICT,
                                       'key_compiler': {'compiler': COMPILER.STRING},
                                       'value_compiler': {'compiler': COMPILER.STRING}}},
+           ENDLIVE_ANIMATION: {'compiler': COMPILER.LIST,
+                               'default': ''},
+           DECOMPOSE_SFX: {'compiler': COMPILER.STRING,
+                           'default': ''},
+           RECOMPOSE_SFX: {'compiler': COMPILER.STRING,
+                           'default': ''},
+           DECOMPOSE_ENDLIVE_SFX: {'compiler': COMPILER.STRING,
+                                   'default': ''},
+           DECOMPOSE_FADE_TIME: {'compiler': COMPILER.FLOAT,
+                                 'default': 5.0},
+           FLY_CORPS_SFX: {'compiler': COMPILER.STRING,
+                           'default': ''},
+           FLY_CORPS_TIME: {'compiler': COMPILER.FLOAT,
+                            'default': 5.0},
+           BLEED_EFFECT_SFX: {'compiler': COMPILER.STRING,
+                              'default': ''},
            DMG_BLEED_SFX: {'compiler': COMPILER.DICT,
                            'default': {}},
            DEATH_BLEED: {'compiler': COMPILER.LIST,
                          'default': []},
+           STURDINESS: {'compiler': COMPILER.DICT,
+                        'default': {},
+                        'key_compiler': {'compiler': COMPILER.STRING},
+                        'value_compiler': {'compiler': COMPILER.DICT,
+                                           'key_compiler': {'compiler': COMPILER.DAMAGE},
+                                           'value_compiler': {'compiler': COMPILER.FLOAT}}},
            DEFENCE: {'compiler': COMPILER.DICT,
                      'default': {},
                      'key_compiler': {'compiler': COMPILER.STRING},
@@ -219,6 +261,8 @@ config_definition = {'compiler': COMPILER.CONFIG,
                                         'value_compiler': {'compiler': COMPILER.FLOAT}}},
            MULTIPLIER: {'compiler': COMPILER.DICT,
                         'default': {'default': 1}},
+           VULNERABILITY_AMMO: {'compiler': COMPILER.LIST,
+                                'default': []},
            LOOT: {'compiler': COMPILER.STRING,
                   'default': ''},
            STATES: {'compiler': COMPILER.DICT,
@@ -231,6 +275,8 @@ config_definition = {'compiler': COMPILER.CONFIG,
                                                                       'default': {}},
                                                  'persistent_actions': {'compiler': COMPILER.LIST,
                                                                         'default': []},
+                                                 'actions_random': {'compiler': COMPILER.BOOL,
+                                                                    'default': False},
                                                  'speed': {'compiler': COMPILER.DICT,
                                                            'default': {}},
                                                  'movement_types': {'compiler': COMPILER.LIST,
@@ -297,6 +343,7 @@ config_definition = {'compiler': COMPILER.CONFIG,
                                                                   'default': None},
                                                  SKILL_CAST_RANGE: {'compiler': COMPILER.FLOAT},
                                                  SKILL_AOE_RADIUS: {'compiler': COMPILER.FLOAT},
+                                                 SKILL_AOE_ATTACK_CHANCE: {'compiler': COMPILER.FLOAT},
                                                  SKILL_STOP_MOVEMENT: {'compiler': COMPILER.FLOAT,
                                                                        'default': 0.0},
                                                  SKILL_ACTIONS: {'compiler': COMPILER.LIST,
@@ -304,7 +351,11 @@ config_definition = {'compiler': COMPILER.CONFIG,
                                                  SKILL_TRAJECTORY: {'compiler': COMPILER.DICT,
                                                                     'default': None},
                                                  SKILL_PENETRATE_WALLS: {'compiler': COMPILER.BOOL,
-                                                                         'default': False}}}},
+                                                                         'default': False},
+                                                 SKILL_HEAL_RATIO: {'compiler': COMPILER.FLOAT,
+                                                                    'default': 0.0},
+                                                 SKILL_LEAVE_SFX: {'compiler': COMPILER.STRING},
+                                                 SKILL_ENTER_SFX: {'compiler': COMPILER.STRING}}}},
            TRACKER: {'compiler': COMPILER.DICT,
                      'default': {}}}}
 

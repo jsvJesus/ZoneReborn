@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/QuestObjectUDO.py
+# Embedded file name: ./client/QuestObjectUDO.py
 import BigWorld
 
 class QuestObjectUDO(BigWorld.UserDataObject):

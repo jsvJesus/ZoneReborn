@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/Balance.py
+# Embedded file name: ./common/Balance.py
 __author__ = 'Madcat'
 import ResMgr
 BALANCE_FILE = 'scripts/common/data/Balance.xml'

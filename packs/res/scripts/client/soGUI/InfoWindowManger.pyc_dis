@@ -1,15 +1,14 @@
-# Embedded file name: ./scripts/client/soGUI/InfoWindowManger.py
+# Embedded file name: ./client/soGUI/InfoWindowManger.py
 import BigWorld
 import BWPersonality
 import GUI
-import random
 import traceback
 import InfoWindow
-import copy
 import msgbox_templates
 import ItemsUtils
-from Helpers.PyGUI.PyGUIBase import PyGUIBase
 from gui_const import MESSAGEBOX
+from soHyperLinkComponent import soHyperLinkComponent as HyperLink
+DEFAULT_Z_POSITION = 0.11
 
 class InfoWindowManger(object):
     instance = None
@@ -20,7 +19,7 @@ class InfoWindowManger(object):
         return cls.instance
 
     def __init__(self):
-        self._depth = 0.11
+        self._depth = DEFAULT_Z_POSITION
         self._windiows = {}
         self._cahsitem = {}
         self._itemID2WID = {}
@@ -43,9 +42,11 @@ class InfoWindowManger(object):
     def closeTop(self):
         if not self._windiows:
             return
-        ww = [ (x.component.position[2], x) for x in self._windiows.values() ]
-        ww.sort(key=lambda x: x[1])
-        ww[-1][1].destroy()
+        ww = [ (x.last_depth, x) for x in self._windiows.values() ]
+        ww.sort(key=lambda x: x[0])
+        ww[0][1].destroy()
+        if not self._windiows:
+            self._depth = DEFAULT_Z_POSITION
 
     def isVisible(self):
         return len(self._windiows)
@@ -59,8 +60,18 @@ class InfoWindowManger(object):
             BWPersonality.GUICore.addListener('hlinkEvent', self.hlinkEventListener)
             self.__listen_is_bind = True
         item = dict(item)
+
+        def is_equal(item, item_c):
+            for key in item:
+                if key == 'creationTime':
+                    continue
+                if item[key] != item_c[key]:
+                    return False
+
+            return True
+
         for wid, savedItem in self._cahsitem.items():
-            if savedItem == item or item['complexItemID'] > 0 and item['complexItemID'] == savedItem['complexItemID']:
+            if savedItem == item or item['complexItemID'] > 0 and item['complexItemID'] == savedItem['complexItemID'] or is_equal(item, savedItem):
                 if wid in self._windiows:
                     self._windiows[wid].show(item)
                     return self._windiows[wid]
@@ -83,13 +94,15 @@ class InfoWindowManger(object):
         for item in items:
             wid = self._itemID2WID.get(self.get_item_key(item))
             if wid and wid in self._cahsitem:
-                if self._cahsitem[wid] != dict(item):
+                if self._cahsitem[wid]['complexItemID'] == item['complexItemID']:
                     self._cahsitem[wid] = dict(item)
                     self._windiows[wid].show(dict(item), move_top=False)
 
     def closeAll(self):
         for w in self._windiows.values():
             w.destroy()
+
+        self._depth = DEFAULT_Z_POSITION
 
     def onDestoyItemInfoWindow(self, wid):
         try:
@@ -103,33 +116,58 @@ class InfoWindowManger(object):
             traceback.print_exc()
 
     def hlinkEventListener(self, event, data):
-        if event == 2:
-            if data and len(data) == 2 and data[0]:
-                link = data[0]
-                if 'INFO:TYPE:' in link:
+        interface_id = data[1]
+        if event == HyperLink.EVENT_CLICK and (not interface_id or interface_id == 'soGUI.ComplexTextField'):
+            link = data[0]
+            if not link:
+                return
+            if 'INFO:TYPE:' in link:
+                p = BigWorld.player()
+                if not p.isDestroyed and not p.dead:
                     _, _, type_id = link.split(':', 3)
                     type_id = int(type_id)
                     item = ItemsUtils.CreateComplexItem(-1, type_id, [], [], 0)
                     item['creationTime'] = 0
                     self.showInfo(item)
-                elif 'CREATEID:' in link:
-                    _, type_id = link.split(':', 2)
+            if 'INFO:WEAPON_ATTACH:' in link:
+                p = BigWorld.player()
+                if not p.isDestroyed and not p.dead:
+                    _, _, weapon_id, attach_id = link.split(':')
+                    weapon_id = int(weapon_id)
+                    attach_id = int(attach_id)
+                    wid = self._itemID2WID.get(weapon_id)
+                    if not wid:
+                        return
+                    item = self._cahsitem.get(wid)
+                    if not item:
+                        return
+                    import clweapon
+                    weapon = clweapon.ClWeapon(item)
+                    att = weapon.findAttach(attach_id)
+                    if att._subitem:
+                        item = ItemsUtils.ConvertSubItemToItem(att._subitem)
+                    else:
+                        item = ItemsUtils.CreateComplexItem(attach_id, att.getItemType())
+                        item['creationTime'] = 0
+                    self.showInfo(item, isAttach=True)
+            elif 'CREATEID:' in link:
+                _, type_id = link.split(':', 2)
 
-                    def _callback(event, data):
-                        if event == MESSAGEBOX.EVENT_BTNPRESS:
-                            if data['btn'] == MESSAGEBOX.BTN_OK:
-                                count = data['add_controls']['edit_box']
-                                if count.isdigit():
-                                    BWPersonality.GUICore.chatConsole.run_command('/item {0} {1}'.format(type_id, count))
+                def _callback(event, data):
+                    if event == MESSAGEBOX.EVENT_BTNPRESS:
+                        if data['btn'] == MESSAGEBOX.BTN_OK:
+                            count = data['add_controls']['edit_box']
+                            if count.isdigit():
+                                BWPersonality.GUICore.chatConsole.run_command('/item {0} {1}'.format(type_id, count))
 
-                    def number_check(newStr, wholeText, offset):
-                        full_text = wholeText[0:offset] + newStr + wholeText[offset:]
-                        if not full_text.isdigit():
-                            return False
-                        if wholeText:
-                            if int(full_text) > 0:
-                                return True
-                            return False
-                        return True
+                def number_check(newStr, wholeText, offset):
+                    full_text = wholeText[0:offset] + newStr + wholeText[offset:]
+                    if not full_text.isdigit():
+                        return False
+                    if wholeText:
+                        if int(full_text) > 0:
+                            return True
+                        return False
+                    return True
 
-                    msgbox_templates.input_box_ok_cancel('InfoWind.debugItem', u'\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e', u'\u0421\u043a\u043e\u043b\u044c\u043a\u043e \u043f\u0440\u0435\u0434\u043c\u0435\u0442\u043e\u0432?', callback=_callback, default='1', input_validator=number_check)
+                msgbox_templates.input_box_ok_cancel('InfoWind.debugItem', u'\u041a\u043e\u043b\u0438\u0447\u0435\u0441\u0442\u0432\u043e', u'\u0421\u043a\u043e\u043b\u044c\u043a\u043e \u043f\u0440\u0435\u0434\u043c\u0435\u0442\u043e\u0432?', callback=_callback, default='1', input_validator=number_check)

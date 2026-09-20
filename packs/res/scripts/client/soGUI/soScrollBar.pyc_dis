@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soScrollBar.py
+# Embedded file name: ./client/soGUI/soScrollBar.py
 import GUI
 import BigWorld
 import soGUI
@@ -355,11 +355,11 @@ class soScrollBar(PyGUIBase, soVisualStateComponent):
         self.scrollBtnDN.component.materialFX = 'BLEND'
         self.scrollBtnDN.component.focus = True
         if self.isHorizontal:
-            self.scrollBtnUP.initVSC('soGUI/visual_styles/scrollBtnLEFT.xml')
-            self.scrollBtnDN.initVSC('soGUI/visual_styles/scrollBtnRIGHT.xml')
+            self.scrollBtnUP.initVSC('soGUI/elements/scroll_bar_1_left.xml')
+            self.scrollBtnDN.initVSC('soGUI/elements/scroll_bar_1_right.xml')
         else:
-            self.scrollBtnUP.initVSC('soGUI/visual_styles/scrollBtnUP.xml')
-            self.scrollBtnDN.initVSC('soGUI/visual_styles/scrollBtnDN.xml')
+            self.scrollBtnUP.initVSC('soGUI/elements/scroll_bar_1_up.xml')
+            self.scrollBtnDN.initVSC('soGUI/elements/scroll_bar_1_down.xml')
         self.scrollBtnDN.onBound()
         self.scrollBtnUP.onBound()
         self.scrollBtnDN.setVisualState('normal')
@@ -530,8 +530,9 @@ class soScrollerButton(PyGUIBase, DraggableComponent):
 class soScrollBar2(PyGUIBase, soVisualStateComponent):
     factoryString = 'soGUI.soScrollBar2'
     visualStateString = 'soGUI.soScrollBarVisualState2'
+    auto_hide = False
 
-    def __init__(self, component, steps = 10, width = 16, height = 100, style = 'soGUI/visual_styles/defaultScrollBar.xml', horizontal = False, sendOnMove = True):
+    def __init__(self, component, steps = 10, width = 16, height = 100, style = 'soGUI/elements/scroll_bar_1.xml', horizontal = False, sendOnMove = True, auto_hide = False):
         PyGUIBase.__init__(self, component)
         soVisualStateComponent.__init__(self, component, self.visualStateString)
         component.script = self
@@ -540,7 +541,9 @@ class soScrollBar2(PyGUIBase, soVisualStateComponent):
         self.steps = steps
         self.isHorizontal = horizontal
         self.sendOnMove = sendOnMove
+        self.auto_hide = auto_hide
         self.btnComponent = None
+        self.scrollMoved = lambda value: None
         self.scrollUp = lambda : None
         self.scrollDown = lambda : None
         self.scrollLeft = lambda : self._onBtnsClick(-1)
@@ -577,10 +580,10 @@ class soScrollBar2(PyGUIBase, soVisualStateComponent):
         cmp.tileHeight = 1 if not self.isHorizontal else 16
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
-        if self.style == 'soGUI/visual_styles/defaultScrollBar.xml':
-            cmp.textureName = 'soGUI/maps/Controls/scroll/scrollbar.tga'
+        if self.style == 'soGUI/elements/scroll_bar_1.xml':
+            cmp.textureName = 'soGUI/elements/scroll_bar_1_bar.dds'
         else:
-            cmp.textureName = 'soGUI/maps/Controls/scroll/scrollbar1.tga'
+            cmp.textureName = 'soGUI/elements/scroll_bar_2_bar.dds'
         cmp.width = 16 if not self.isHorizontal else self.height - 32
         cmp.height = self.height - 32 if not self.isHorizontal else 16
         cmp.position = (0, 16, 0.5) if not self.isHorizontal else (16, 0, 0.5)
@@ -631,15 +634,16 @@ class soScrollBar2(PyGUIBase, soVisualStateComponent):
         self.btnComponent = cmp
         self.component.scrollerHold.addChild(cmp, 'btn')
         btn = soButton(GUI.Window())
-        if self.style == 'soGUI/visual_styles/defaultScrollBar.xml':
+        if self.style == 'soGUI/elements/scroll_bar_1.xml':
             if self.isHorizontal:
-                btn.initVSC('soGUI/visual_styles/scrollBtnLEFT.xml')
+                btn.initVSC('soGUI/elements/scroll_bar_1_left.xml')
             else:
-                btn.initVSC('soGUI/visual_styles/scrollBtnUP.xml')
+                btn.initVSC('soGUI/elements/scroll_bar_1_up.xml')
         else:
-            btn.initVSC('soGUI/visual_styles/scrollBtnUPForSettings.xml')
+            btn.initVSC('soGUI/elements/scroll_bar_2_up.xml')
         btn.setVisualState('normal')
         btn.soundControlName = 'ArrowBtn'
+        btn.onClick = self.scrolledUP
         cmp = btn.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
@@ -653,15 +657,16 @@ class soScrollBar2(PyGUIBase, soVisualStateComponent):
         self.component.addChild(cmp, 'btnUP')
         btn.onBound()
         btn = soButton(GUI.Window())
-        if self.style == 'soGUI/visual_styles/defaultScrollBar.xml':
+        if self.style == 'soGUI/elements/scroll_bar_1.xml':
             if self.isHorizontal:
-                btn.initVSC('soGUI/visual_styles/scrollBtnRIGHT.xml')
+                btn.initVSC('soGUI/elements/scroll_bar_1_right.xml')
             else:
-                btn.initVSC('soGUI/visual_styles/scrollBtnDN.xml')
+                btn.initVSC('soGUI/elements/scroll_bar_1_down.xml')
         else:
-            btn.initVSC('soGUI/visual_styles/scrollBtnDNForSettings.xml')
+            btn.initVSC('soGUI/elements/scroll_bar_2_down.xml')
         btn.setVisualState('normal')
         btn.soundControlName = 'ArrowBtn'
+        btn.onClick = self.scrolledDN
         cmp = btn.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
@@ -682,19 +687,23 @@ class soScrollBar2(PyGUIBase, soVisualStateComponent):
         if self.steps <= 0:
             return
         if self.isHorizontal:
-            self.btnComponent.position.x = self.posMap[int(val)]
+            self.btnComponent.position.x = self.posMap[min(int(val), len(self.posMap) - 1)]
         else:
-            self.btnComponent.position.y = self.posMap[int(val)]
+            self.btnComponent.position.y = self.posMap[min(int(val), len(self.posMap) - 1)]
         self.value = int(val)
 
     def setSteps(self, steps):
         if steps <= 0:
+            if self.auto_hide:
+                self.component.visible = False
             self.component.btnUP.script.buttonDisabled = True
             self.component.btnUP.script.setVisualState('disabled')
             self.component.btnDN.script.buttonDisabled = True
             self.component.btnDN.script.setVisualState('disabled')
             self.btnComponent.visible = False
         else:
+            if self.auto_hide:
+                self.component.visible = True
             self.component.btnUP.script.buttonDisabled = False
             self.component.btnUP.script.setVisualState('normal')
             self.component.btnDN.script.buttonDisabled = False
@@ -770,17 +779,12 @@ class soScrollBar2(PyGUIBase, soVisualStateComponent):
             self.scrollMoved(bestMark)
         return
 
-    def scrollMoved(self, val):
-        return None
-
-    @PyGUIEvent('btnUP', 'onClick')
     def scrolledUP(self):
         if self.isHorizontal:
             self.scrollLeft()
         else:
             self.scrollUp()
 
-    @PyGUIEvent('btnDN', 'onClick')
     def scrolledDN(self):
         if self.isHorizontal:
             self.scrollRight()

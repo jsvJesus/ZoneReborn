@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/FlashGUIBase.py
+# Embedded file name: ./client/soGUI/FlashGUIBase.py
 """\xd0\x9c\xd0\xbe\xd0\xb4\xd1\x83\xd0\xbb\xd1\x8c \xd1\x80\xd0\xb5\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb7\xd1\x83\xd0\xb5\xd1\x82 \xd0\xb1\xd0\xb0\xd0\xb7\xd0\xbe\xd0\xb2\xd1\x8b\xd0\xb5 \xd0\xb0\xd0\xb1\xd1\x81\xd1\x82\xd1\x80\xd0\xb0\xd0\xba\xd1\x82\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xba\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81\xd1\x8b \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xba\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81\xd0\xbe\xd0\xb2 \xd0\xb2\xd0\xb7\xd0\xb0\xd0\xb8\xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xb9\xd1\x81\xd1\x82\xd0\xb2\xd1\x83\xd1\x8e\xd1\x89\xd0\xb8\xd1\x85 \xd1\x81 \xd1\x84\xd0\xbb\xd1\x8d\xd1\x88."""
 __all__ = ['FlashGUIBase', 'FlashScriptGUIBase']
 import abc
@@ -59,7 +59,6 @@ class FlashScriptGUIBase(IFlashGUI, PyGUI.PyGUIBase):
     def __init__(self, component, *args, **kw):
         """\xd0\x9a\xd0\xbe\xd0\xbd\xd1\x81\xd1\x82\xd1\x80\xd1\x83\xd0\xba\xd1\x82\xd0\xbe\xd1\x80."""
         PyGUI.PyGUIBase.__init__(self, component)
-        self.localizations_path = 'local/localizations.json'
         self.class_name = self.__class__.__name__
         self._layer = None
         return
@@ -204,7 +203,6 @@ class FlashGUIBase(PyGUI.PyGUIBase):
     def __init__(self, component, *args, **kw):
         """\xd0\x9a\xd0\xbe\xd0\xbd\xd1\x81\xd1\x82\xd1\x80\xd1\x83\xd0\xba\xd1\x82\xd0\xbe\xd1\x80."""
         PyGUI.PyGUIBase.__init__(self, component)
-        self.localizations_path = 'local/localizations.json'
         self.destination_instances = {}
         self.commands = {}
 
@@ -291,12 +289,10 @@ class FlashGUIBase(PyGUI.PyGUIBase):
                 destination = func_name.split('.')
                 if len(destination) > 1:
                     results = self._invoke_method_of_external_instance(destination, args)
+                elif func_name in self.commands:
+                    results = self.commands[func_name](*args)
                 else:
-                    try:
-                        results = self.commands[func_name](*args)
-                    except KeyError:
-                        results = getattr(self, func_name)(*args)
-
+                    results = getattr(self, func_name)(*args)
             except Exception:
                 traceback.print_exc()
                 traceback.print_stack()
@@ -423,9 +419,13 @@ class FlashGUIBase(PyGUI.PyGUIBase):
             print 'FlashGUIBase::_dict_from_localization', 'Incorrect file: %s' % filename
             raise
 
-        try:
-            dct = json.loads(py_data_section.asBinary)
-        except (UnicodeDecodeError, json.JSONEncoder, ValueError):
-            dct = py_data_section2dict(py_data_section)
+        if py_data_section is None:
+            print 'ERROR LOAD Localization', (filename, language)
+            return {}
+        else:
+            try:
+                dct = json.loads(py_data_section.asBinary)
+            except (UnicodeDecodeError, json.JSONEncoder, ValueError):
+                dct = py_data_section2dict(py_data_section)
 
-        return dct
+            return dct

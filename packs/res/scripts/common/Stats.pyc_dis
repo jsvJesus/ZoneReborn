@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/Stats.py
+# Embedded file name: ./common/Stats.py
 __author__ = 'leviathan'
 from StatChanges import StatChanges
 import cmath
@@ -9,8 +9,9 @@ PLUS_INFINITY = float('+inf')
 MINUS_INFINITY = float('-inf')
 MAX_SPEED_NO_SPRINT = 5.09
 MAX_SPEED_SPRINT = 10.0
-NUM_STATS = 21
-ch_HitPoints, ch_MaxHitPoints, ch_CombatPoints, ch_MaxCombatPoints, ch_Stamina, ch_MaxStamina, ch_MoveSpeed, ch_Accuracy, ch_HitPointsRegeneration, ch_StaminaRegeneration, ch_CombatPointsRegeneration, ch_MaxWeight, ch_Defence, ch_Penetration, ch_DamageAbsorb, ch_Strength, ch_Agility, ch_Perception, ch_Intelligence, ch_Endurance, ch_Psy = xrange(NUM_STATS)
+MIN_SPRINT_STAMINA = 20.0
+NUM_STATS = 15
+ch_HitPoints, ch_MaxHitPoints, ch_CombatPoints, ch_MaxCombatPoints, ch_Stamina, ch_MaxStamina, ch_MoveSpeed, ch_Accuracy, ch_HitPointsRegeneration, ch_StaminaRegeneration, ch_CombatPointsRegeneration, ch_MaxWeight, ch_Defence, ch_Penetration, ch_DamageAbsorb = xrange(NUM_STATS)
 LIST_PERMANENT, LIST_TEMPORARY = xrange(2)
 CharacteristicsNames = ['HitPoints',
  'MaxHitPoints',
@@ -26,19 +27,7 @@ CharacteristicsNames = ['HitPoints',
  'MaxWeight',
  'Defence',
  'Penetration',
- 'DamageAbsorb',
- 'Strength',
- 'Agility',
- 'Perception',
- 'Intelligence',
- 'Endurance',
- 'Psy']
-DEFAULT_STATS = {'Strength': 5,
- 'Agility': 5,
- 'Perception': 5,
- 'Intelligence': 5,
- 'Endurance': 5,
- 'Psy': 5}
+ 'DamageAbsorb']
 
 def GetDictValueListKey(dict, list_key):
     current_tree = dict
@@ -260,17 +249,19 @@ class CommonCharacteristics:
         if not isinstance(stat_index, list):
             stat_index = [stat_index]
         core_stat_index = stat_index[0]
+        old_value = self.GetStatValue(core_stat_index)
         stat_name = CharacteristicsNames[core_stat_index]
         property_name = 'ch_' + stat_name
         stat_entry = getattr(self, property_name, None)
-        if stat_entry != None:
+        if stat_entry == None:
+            return
+        else:
             stat_max = stat_entry['Maximum']
             stat_min = stat_entry['Minimum']
             if stat_entry.has_key('Default'):
                 default = stat_entry['Default']
             else:
                 default = None
-            root_stat_point = stat_entry
             if stat_index[1:]:
                 stat_dict = convertArrayListToDicts(stat_entry, True)
                 current_tree = GetDictValueListKey(stat_dict, stat_index[1:])
@@ -293,10 +284,8 @@ class CommonCharacteristics:
                         setattr(self, property_name, new_stat_entry)
                         break
 
-        else:
+            self.OnStatValueChanged(core_stat_index, old_value, self.GetStatValue(core_stat_index))
             return
-        self.OnStatValueChanged(core_stat_index, self.GetStatValue(core_stat_index))
-        return
 
     def SetStatValue(self, stat_index, new_value, notify_all = True):
         """
@@ -306,53 +295,53 @@ class CommonCharacteristics:
             if not isinstance(stat_index, list):
                 stat_index = [stat_index]
             core_stat_index = stat_index.pop(0)
+            old_value = self.GetStatValue(core_stat_index)
             if new_value == self.GetStatValue(core_stat_index):
                 return
             stat_name = CharacteristicsNames[core_stat_index]
             property_name = 'ch_' + stat_name
             stat_entry = dict(getattr(self, property_name, {}))
-            if stat_entry:
-                stat_max = stat_entry['Maximum']
-                stat_min = stat_entry['Minimum']
-                if stat_entry.has_key('Default'):
-                    default = stat_entry['Default']
-                else:
-                    default = None
-                if stat_index:
-                    old_stat_value = convertArrayListToDicts(stat_entry)
-                    curr_tree = old_stat_value
-                    for key in stat_index[:-1]:
-                        curr_tree = curr_tree[key]
-
-                    curr_tree[stat_index[-1]] = new_value
-                    new_value = old_stat_value
-                if IsEntryComplexStat(stat_entry):
-                    stat_entry = convertDictListToArrays([new_value], True)[0]
-                    if default is not None:
-                        stat_entry['Default'] = default
-                    stat_entry['Maximum'] = stat_max
-                    stat_entry['Minimum'] = stat_min
-                else:
-                    if not cmath.isinf(stat_entry['Maximum']):
-                        if new_value > stat_entry['Maximum']:
-                            new_value = stat_entry['Maximum']
-                            self.OnStatMaxValue(core_stat_index, new_value)
-                    if not cmath.isinf(stat_entry['Minimum']):
-                        if new_value < stat_entry['Minimum']:
-                            new_value = stat_entry['Minimum']
-                            self.OnStatMinValue(core_stat_index, new_value)
-                    stat_entry['CurrentValue'] = new_value
-                    stat_entry['TemporaryOffset'] = 0.0
-                old_stat_dict = dict(getattr(self, property_name, {}))
-                for key, value in stat_entry.items():
-                    if old_stat_dict[key] != value:
-                        setattr(self, property_name, stat_entry)
-                        break
-
-            else:
+            if not stat_entry:
                 return
+            stat_max = stat_entry['Maximum']
+            stat_min = stat_entry['Minimum']
+            if stat_entry.has_key('Default'):
+                default = stat_entry['Default']
+            else:
+                default = None
+            if stat_index:
+                old_stat_value = convertArrayListToDicts(stat_entry)
+                curr_tree = old_stat_value
+                for key in stat_index[:-1]:
+                    curr_tree = curr_tree[key]
+
+                curr_tree[stat_index[-1]] = new_value
+                new_value = old_stat_value
+            if IsEntryComplexStat(stat_entry):
+                stat_entry = convertDictListToArrays([new_value], True)[0]
+                if default is not None:
+                    stat_entry['Default'] = default
+                stat_entry['Maximum'] = stat_max
+                stat_entry['Minimum'] = stat_min
+            else:
+                if not cmath.isinf(stat_entry['Maximum']):
+                    if new_value > stat_entry['Maximum']:
+                        new_value = stat_entry['Maximum']
+                        self.OnStatMaxValue(core_stat_index, new_value)
+                if not cmath.isinf(stat_entry['Minimum']):
+                    if new_value < stat_entry['Minimum']:
+                        new_value = stat_entry['Minimum']
+                        self.OnStatMinValue(core_stat_index, new_value)
+                stat_entry['CurrentValue'] = new_value
+                stat_entry['TemporaryOffset'] = 0.0
+            old_stat_dict = dict(getattr(self, property_name, {}))
+            for key, value in stat_entry.items():
+                if old_stat_dict[key] != value:
+                    setattr(self, property_name, stat_entry)
+                    break
+
             if notify_all:
-                self.OnStatValueChanged(core_stat_index, self.GetStatValue(core_stat_index))
+                self.OnStatValueChanged(core_stat_index, old_value, self.GetStatValue(core_stat_index))
         return
 
     def SetStatDefaultValue(self, stat_index, value):
@@ -379,11 +368,12 @@ class CommonCharacteristics:
             if stat_entry['Maximum'] == value:
                 return
             if stat_entry != None:
+                old_value = self.GetStatValue(stat_index)
                 stat_entry['Maximum'] = value
                 if not cmath.isinf(value):
                     if stat_entry['CurrentValue'] > value:
                         stat_entry['CurrentValue'] = value
-                        self.OnStatValueChanged(stat_index, value)
+                        self.OnStatValueChanged(stat_index, old_value, value)
                 setattr(self, property_name, stat_entry)
             else:
                 print 'No stat', stat_name
@@ -398,13 +388,14 @@ class CommonCharacteristics:
             property_name = 'ch_' + stat_name
             stat_entry = getattr(self, property_name, None)
             if stat_entry != None:
+                old_value = self.GetStatValue(stat_index)
                 if stat_entry['Minimum'] == value:
                     return
                 stat_entry['Minimum'] = value
                 if not cmath.isinf(value):
                     if stat_entry['CurrentValue'] < value:
                         stat_entry['CurrentValue'] = value
-                        self.OnStatValueChanged(stat_index, value)
+                        self.OnStatValueChanged(stat_index, old_value, value)
                 setattr(self, property_name, stat_entry)
             else:
                 print 'No stat', stat_name
@@ -453,9 +444,11 @@ class CommonCharacteristics:
         else:
             core_index = stat_index
         event_func_name = 'On' + CharacteristicsNames[core_index] + 'ChangeLoopback'
-        return self.StartEventRoutine(event_func_name, stat_index, stat_change_object)
+        st_ch = self.StartEventRoutine(event_func_name, stat_index, stat_change_object)
+        self.applyAmuletStats(core_index, st_ch)
+        return st_ch
 
-    def OnStatValueChanged(self, stat_index, new_value):
+    def OnStatValueChanged(self, stat_index, old_value, new_value):
         if isinstance(stat_index, list):
             core_index = stat_index[0]
         else:
@@ -463,6 +456,14 @@ class CommonCharacteristics:
         event_func_name = 'On' + CharacteristicsNames[core_index] + 'Changed'
         self.StartEventRoutine(event_func_name, stat_index, new_value)
         self.EventOnStatChanged(stat_index, new_value)
+        if CharacteristicsNames[core_index] == 'HitPoints' and new_value != old_value:
+            self.on_health_changed(old_value, new_value)
+
+    def on_health_changed(self, old_value, new_value):
+        pass
 
     def EventOnStatChanged(self, stat_index, new_value):
+        pass
+
+    def applyAmuletStats(self, core_index, st_ch):
         pass

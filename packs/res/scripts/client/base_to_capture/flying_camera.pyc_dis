@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/base_to_capture/flying_camera.py
+# Embedded file name: ./client/base_to_capture/flying_camera.py
 """
 \xd0\x9c\xd0\xbe\xd0\xb4\xd1\x83\xd0\xbb\xd1\x8c \xd1\x80\xd0\xb5\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb7\xd1\x83\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81, \xd0\xba\xd0\xbe\xd1\x82\xd0\xbe\xd1\x80\xd1\x8b\xd0\xb9 \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xbd\xd0\xb8\xd0\xbc\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xba\xd0\xb0\xd0\xbc\xd0\xb5\xd1\x80\xd1\x83
 \xd0\xbd\xd0\xb0\xd0\xb4 \xd0\xb1\xd0\xb0\xd0\xb7\xd0\xbe\xd0\xb9 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd0\xbc\xd0\xbe\xd1\x82\xd1\x80\xd0\xb0 \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xbe\xd0\xb2 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xbf\xd0\xbe\xd0\xba\xd1\x83\xd0\xbf\xd0\xba\xd0\xb8.
@@ -9,16 +9,17 @@ import CameraNode
 import Math
 import math
 import BWPersonality
-from PlayerAvatar import DEFAULT_FOV
 import UCManager
 import StalkerModel
+import ResourceLoader
+import player_speed_settings
 
 class BaseToCaptureFlyingCam(object):
     """\xd0\x9a\xd0\xb0\xd0\xbc\xd0\xb5\xd1\x80\xd0\xb0 \xd0\xbb\xd0\xb5\xd1\x82\xd0\xb0\xd1\x8e\xd1\x89\xd0\xb0\xd1\x8f \xd0\xba \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xb0\xd0\xbc."""
     MIN_TIME_STEP = 0.1
     VELOCITY = 7
-    flag_model_path = 'models\\misc\\signs\\flag_anim.model'
-    flag_new_path = 'models\\misc\\signs\\flag\\flag.model'
+    flag_model_path = 'models/misc/signs/flag_anim.model'
+    flag_new_path = 'models/misc/signs/flag/flag.model'
 
     def __init__(self, base_node_name, camera_points):
         self._base_node_name = base_node_name
@@ -27,10 +28,16 @@ class BaseToCaptureFlyingCam(object):
         self._flying_cam = None
         self._loop_id = None
         self._action_after_stopping = lambda : None
-        self._flag_model_out_of_range = BigWorld.Model(self.flag_model_path)
-        self._new_flag_model = BigWorld.Model(self.flag_new_path)
-        self._flag_model_out_of_range.pasted__lambert43_skinned = 'disable'
-        self._flag_model_out_of_range.node('newflag').attach(self._new_flag_model)
+        self._flag_model_out_of_range = None
+
+        def on_load(prereqs):
+            self._flag_model_out_of_range = prereqs.produce(0)
+            self._new_flag_model = prereqs.produce(1)
+            self._flag_model_out_of_range.pasted__lambert43_skinned = 'disable'
+            self._flag_model_out_of_range.node('newflag').attach(self._new_flag_model)
+
+        resource_list = ((ResourceLoader.MODEL, self.flag_model_path), (ResourceLoader.MODEL, self.flag_new_path))
+        ResourceLoader.asyncLoad(resource_list, on_load)
         BWPersonality.GUICore.targettingGUI.builder_dot(True)
 
         def camera_nodes_gen():
@@ -90,11 +97,16 @@ class BaseToCaptureFlyingCam(object):
         steps_count = int(divider) + 1
         return steps_count
 
-    def _run_moving(self, end_m):
+    def on_moving_end(self):
+        pass
+
+    def on_finish_fly(self):
+        pass
+
+    def _run_moving(self, end_m, base_m = None):
         """\xd0\x97\xd0\xb0\xd0\xbf\xd1\x83\xd1\x81\xd1\x82\xd0\xb8\xd1\x82\xd1\x8c \xd0\xb4\xd0\xb2\xd0\xb8\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd0\xba\xd0\xb0\xd0\xbc\xd0\xb5\xd1\x80\xd1\x8b."""
 
         def _get_camera_matrix(cam):
-            fov = DEFAULT_FOV
             try:
                 cam = Math.Matrix(cam)
             except TypeError:
@@ -110,19 +122,21 @@ class BaseToCaptureFlyingCam(object):
 
             return cam
 
-        base_m = self.camera_nodes[self._base_node_name]
-        fov = DEFAULT_FOV
+        self._action_after_stopping = None
+        if not base_m:
+            base_m = self.camera_nodes[self._base_node_name]
+        fov = player_speed_settings.FOV.DEFAULT_FOV
         if hasattr(end_m, 'fov'):
             fov = math.radians(getattr(end_m, 'fov'))
         elif isinstance(end_m, dict) and 'fov' in end_m:
-            fov = math.radians(cam['fov'])
+            fov = math.radians(end_m['fov'])
         BigWorld.projection().rampFov(fov, 4.0)
         base_m = _get_camera_matrix(base_m)
         end_m = _get_camera_matrix(end_m)
         steps_count = self._get_steps_count(self.current_cam_matrix, end_m)
         points = self.getPointsBezierFlying(self.current_cam_matrix, base_m, end_m)
         if points is None:
-            callback = functools.partial(self._set_cam_position_loop_linear, self.current_cam_matrix, end_m, steps_count, steps_count)
+            callback = lambda : self._set_cam_position_loop_linear(self.current_cam_matrix, end_m, steps_count, steps_count)
         else:
             callback = functools.partial(self._set_cam_position_loop_Bezier, self.current_cam_matrix, end_m, steps_count, 0, points)
         self._loop_id = BigWorld.callback(0, callback)
@@ -133,11 +147,15 @@ class BaseToCaptureFlyingCam(object):
 
     def _set_cam_position_loop_linear(self, init_start_m, end_m, divider, steps_count):
         """\xd0\x9f\xd0\xb5\xd1\x82\xd0\xbb\xd1\x8f \xd1\x81\xd0\xbc\xd0\xb5\xd1\x89\xd0\xb0\xd1\x8e\xd1\x89\xd0\xb0\xd1\x8f \xd0\xbf\xd0\xbe\xd0\xb7\xd0\xb8\xd1\x86\xd0\xb8\xd1\x8e \xd0\xba\xd0\xb0\xd0\xbc\xd0\xb5\xd1\x80\xd1\x8b."""
-        if steps_count == 1:
+        if self._loop_id:
+            BigWorld.cancelCallback(self._loop_id)
             self._loop_id = None
+        if steps_count == 1:
             self._move_cam(end_m)
-            self._action_after_stopping()
+            if self._action_after_stopping:
+                self._action_after_stopping()
             self._action_after_stopping = lambda : None
+            self.on_moving_end()
             return
         else:
             pos_matr = Math.Matrix()
@@ -149,7 +167,7 @@ class BaseToCaptureFlyingCam(object):
             pos_matr.preMultiply(rot_matr)
             self._move_cam(pos_matr)
             steps_count -= 1
-            callback = functools.partial(self._set_cam_position_loop_linear, init_start_m, end_m, divider, steps_count)
+            callback = lambda : self._set_cam_position_loop_linear(init_start_m, end_m, divider, steps_count)
             self._loop_id = BigWorld.callback(0, callback)
             return
 
@@ -158,7 +176,8 @@ class BaseToCaptureFlyingCam(object):
         if current_step == len(points) - 1:
             self._loop_id = None
             self._move_cam(end_m)
-            self._action_after_stopping()
+            if self._action_after_stopping:
+                self._action_after_stopping()
             self._action_after_stopping = lambda : None
             return
         else:
@@ -179,6 +198,7 @@ class BaseToCaptureFlyingCam(object):
         """\xd0\x90\xd0\xb2\xd0\xb0\xd1\x80\xd0\xb8\xd0\xb9\xd0\xbd\xd0\xb0\xd1\x8f \xd0\xbe\xd1\x81\xd1\x82\xd0\xb0\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xba\xd0\xb0 \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x91\xd1\x82\xd0\xb0."""
         if self._loop_id:
             BigWorld.cancelCallback(self._loop_id)
+            self._loop_id = None
         player = BigWorld.player()
         player.flag_demonstr_cam = False
         player.moving_locked = False
@@ -187,24 +207,29 @@ class BaseToCaptureFlyingCam(object):
         self._init_cam = None
         self._action_after_stopping = lambda : None
         BigWorld.target.source = BigWorld.camera().invViewMatrix
-        BigWorld.projection().rampFov(DEFAULT_FOV, 1.0)
+        BigWorld.projection().rampFov(player_speed_settings.FOV.DEFAULT_FOV, 1.0)
         BWPersonality.GUICore.targettingGUI.builder_dot(False)
+        self.on_finish_fly()
         return
 
-    def come_back_to_earth(self):
+    def come_back_to_earth(self, with_center = True):
         """\xd0\x92\xd0\xb5\xd1\x80\xd0\xbd\xd1\x83\xd1\x82\xd1\x8c\xd1\x81\xd1\x8f \xd0\xb2 \xd1\x81\xd1\x82\xd0\xb0\xd1\x80\xd1\x83\xd1\x8e \xd0\xbf\xd0\xbe\xd0\xb7\xd0\xb8\xd1\x86\xd0\xb8\xd1\x8e \xd0\xbd\xd0\xb0 \xd0\xb7\xd0\xb5\xd0\xbc\xd0\xbb\xd0\xb5."""
         if self._loop_id:
             BigWorld.cancelCallback(self._loop_id)
-        self._run_moving(self._get_init_cam_matrix())
+            self._loop_id = None
+        center_point = None if with_center else self._get_init_cam_matrix()
+        self._run_moving(self._get_init_cam_matrix(), center_point)
         self._action_after_stopping = self.emergency_stop
         self.del_flag_model()
+        return
 
     def take_wing(self):
         """\xd0\x92\xd0\xb7\xd0\xbb\xd0\xb5\xd0\xbb\xd0\xb5\xd1\x82\xd1\x8c \xd0\xbd\xd0\xb0\xd0\xb4 \xd0\xb7\xd0\xb5\xd0\xbc\xd0\xbb\xd0\xb5\xd0\xb9 \xd0\xb2 \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x83\xd1\x8e \xd1\x82\xd0\xbe\xd1\x87\xd0\xba\xd1\x83."""
-        if self._init_cam is not None:
-            msg = '\xd0\x9a\xd0\xb0\xd0\xbc\xd0\xb5\xd1\x80\xd0\xb0 \xd1\x83\xd0\xb6\xd0\xb5 \xd0\xb2 \xd0\xb2\xd0\xbe\xd0\xb7\xd0\xb4\xd1\x83\xd1\x85\xd0\xb5, \xd1\x81\xd0\xbf\xd0\xb5\xd1\x80\xd0\xb2\xd0\xb0 \xd0\xbd\xd1\x83\xd0\xb6\xd0\xbd\xd0\xbe \xd0\xb2\xd0\xb5\xd1\x80\xd0\xbd\xd1\x83\xd1\x82\xd1\x8c\xd1\x81\xd1\x8f \xd0\xb2 \xd0\xbd\xd0\xb0\xd1\x87\xd0\xb0\xd0\xbb\xd1\x8c\xd0\xbd\xd1\x83\xd1\x8e \xd0\xbf\xd0\xbe\xd0\xb7\xd0\xb8\xd1\x86\xd0\xb8\xd1\x8e.'
-            raise Exception(msg)
-        self._set_cam_init_position(BigWorld.camera())
+        if self._loop_id:
+            BigWorld.cancelCallback(self._loop_id)
+            self._loop_id = None
+        if self._init_cam is None:
+            self._set_cam_init_position(BigWorld.camera())
         player = BigWorld.player()
         player.flag_demonstr_cam = True
         player.moving_locked = True
@@ -216,28 +241,36 @@ class BaseToCaptureFlyingCam(object):
         self.del_flag_model()
         if self._loop_id:
             BigWorld.cancelCallback(self._loop_id)
+            self._loop_id = None
         self._run_moving(self.camera_nodes[self._base_node_name])
+        return
 
-    def go_to_next_camera_point(self, name, flag_pos, type_active, flag_id):
+    def go_to_next_camera_point(self, name, flag_data = None, with_center = True):
         """
         \xd0\x9f\xd0\xb5\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd1\x81\xd1\x82\xd0\xb8\xd1\x82\xd1\x8c\xd1\x81\xd1\x8f \xd0\xb2 \xd0\xbf\xd0\xbe\xd0\xb7\xd0\xb8\xd1\x86\xd0\xb8\xd1\x8e \xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd0\xbc\xd0\xbe\xd1\x82\xd1\x80\xd0\xb0 \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xb0 \xd1\x81 
         \xd1\x83\xd0\xbd\xd0\xb8\xd0\xba\xd0\xb0\xd0\xbb\xd1\x8c\xd0\xbd\xd1\x8b\xd0\xbc \xd0\xb8\xd0\xb4\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb8\xd1\x84\xd0\xb8\xd0\xba\xd0\xb0\xd1\x82\xd0\xbe\xd1\x80\xd0\xbe\xd0\xbc unique_str_id.
         """
-        flag = BigWorld.entities.get(flag_id, None)
         self.del_flag_model()
-        if not flag and type_active:
-            self._flag_model_out_of_range.position = flag_pos
-            BigWorld.addModel(self._flag_model_out_of_range)
-            self._flag_model_out_of_range.pasted__lambert43_skinned = 'disable'
-            self._flag_model_out_of_range.RaiseBC(0, None, 1, 599, 599, 1)
-            self._new_flag_model.visible = True
-            self._new_flag_model.flag_color = 'blue'
-            self._new_flag_model.Wave()
-            self.load_clan_emblem()
+        if flag_data:
+            type_active, flag_id, flag_pos = flag_data
+            flag = BigWorld.entities.get(flag_id, None)
+            if not flag and type_active and self._flag_model_out_of_range and self._new_flag_model:
+                self._flag_model_out_of_range.position = flag_pos
+                BigWorld.addModel(self._flag_model_out_of_range)
+                self._flag_model_out_of_range.pasted__lambert43_skinned = 'disable'
+                self._flag_model_out_of_range.RaiseBC(0, None, 1, 599, 599, 1)
+                self._new_flag_model.visible = True
+                self._new_flag_model.flag_color = 'blue'
+                self._new_flag_model.Wave()
+                self.load_clan_emblem()
         if self._loop_id:
             BigWorld.cancelCallback(self._loop_id)
+            self._loop_id = None
         next_point = self._camera_points[name]
-        self._run_moving(next_point)
+        if not with_center:
+            self._run_moving(next_point, next_point)
+        else:
+            self._run_moving(next_point)
         return
 
     def del_flag_model(self):
@@ -245,11 +278,14 @@ class BaseToCaptureFlyingCam(object):
             BigWorld.delModel(self._flag_model_out_of_range)
 
     def _drawIcon(self, imgID = 0, feedName = '', texture = None):
-        if imgID and texture:
-            StalkerModel.setFeed(self._new_flag_model, None, 'flag_color', feedName)
+        if not self._new_flag_model:
+            return
         else:
-            StalkerModel.setFeed(self._new_flag_model, None, 'flag_color', 'feed_disabled')
-        return
+            if imgID and texture:
+                StalkerModel.setFeed(self._new_flag_model, None, 'flag_color', feedName, texture)
+            else:
+                StalkerModel.setFeed(self._new_flag_model, None, 'flag_color', 'feed_disabled', texture)
+            return
 
     def load_clan_emblem(self):
         player = BigWorld.player()
@@ -293,7 +329,7 @@ class BaseToCaptureFlyingCam(object):
                         t = 1
                     X = 0
                     Z = 0
-                    for i in range(0, len(arr)):
+                    for i in xrange(0, len(arr)):
                         b = getBezierBasis(i, len(arr) - 1, t)
                         X += arr[i][0] * b
                         Z += arr[i][2] * b

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/Grenade.py
+# Embedded file name: ./client/Grenade.py
 """
 Created on 05.10.2010
 
@@ -9,20 +9,21 @@ import BigWorld
 from Math import Vector3, Matrix
 import FX
 import math
-import sfx
 from Damager import Damager
 import SFXer
 from Throwable import Throwable
 import ItemsUtils
 from Victim import Victim
-from sfx.SfxCatalog import SFX_HIT_CATALOG
+from SfxCatalog import SFX_HIT_CATALOG
+from Helpers.Caps import CAP_EXCLUDE
+from client_utils import readable_space_pos
 UP_VECTOR = Vector3(0.01, 1, -0.05)
 UP_VECTOR.normalise()
 
 class Grenade(BigWorld.Entity, Throwable, Damager):
-    SMALL_SPLASH_SFX = 'sfx\\weapons\\grenades\\explode_underwater_surface_3.xml'
-    AVARAGE_SPLASH_SFX = 'sfx\\weapons\\grenades\\explode_underwater_surface_2.xml'
-    LARGE_SPLASH_SFX = 'sfx\\weapons\\grenades\\explode_underwater_surface_1.xml'
+    SMALL_SPLASH_SFX = 'sfx/weapons/grenades/explode_underwater_surface_3.xml'
+    AVARAGE_SPLASH_SFX = 'sfx/weapons/grenades/explode_underwater_surface_2.xml'
+    LARGE_SPLASH_SFX = 'sfx/weapons/grenades/explode_underwater_surface_1.xml'
     SMALL_TO_AVARAGE_BORDER = 1.0
     AVARAGE_TO_LARGE_BORDER = 5.0
     BLEED_SFX = 'sfx/hits/body_hit.xml'
@@ -32,20 +33,38 @@ class Grenade(BigWorld.Entity, Throwable, Damager):
         Throwable.__init__(self)
         self.exploded_effect_shown = False
         self.detonated = False
+        self._contact_counter = 0
         self.contact_data = None
-        self._expl_models = []
+        self._detonate_timer_id = None
+        self.targetCaps = [CAP_EXCLUDE]
         return
 
+    def __repr__(self):
+        if self.isDestroyed:
+            return 'Grenade[%s]Destroyed' % self.id
+        return 'Grenade[%s] at %s' % (self.id, readable_space_pos(self))
+
+    def onEnterWorld(self, prereqs):
+        Throwable.onEnterWorld(self, prereqs)
+        if self.prematureExplosion:
+            self.collided = True
+            self._detonate_timer_id = BigWorld.callback(0.001, self.detonate)
+        BigWorld.player().addListener('onEnterSpace', self._on_space_change)
+
+    def _on_space_change(self):
+        self.removeSelfEnt()
+
     def onLeaveWorld(self):
+        self.show_model_sfx(False)
         if hasattr(self, 'sPersistentSFX'):
             self.sPersistentSFX.stop()
             self.sPersistentSFX.detach()
             del self.sPersistentSFX
-        for m in self._expl_models:
-            self.delModel(m)
-
-        self._expl_models = None
-        return
+        player = BigWorld.player()
+        if hasattr(player, 'removeListener'):
+            player.removeListener('onEnterSpace', self._on_space_change)
+        if self._detonate_timer_id:
+            BigWorld.cancelCallback(self._detonate_timer_id)
 
     def get_max_existence_time(self):
         if self.grenade_type <= 0:
@@ -60,10 +79,10 @@ class Grenade(BigWorld.Entity, Throwable, Damager):
         if self.controled_by_this_client:
             explode_time = ItemsUtils.GetExplosionDamage(self.grenade_type)['explodeTime']
             if explode_time:
-                BigWorld.callback(explode_time, self.detonate)
+                self._detonate_timer_id = BigWorld.callback(explode_time, self.detonate)
 
-    def throw(self):
-        result = Throwable.throw(self)
+    def throw(self, override_start_pos = None):
+        result = Throwable.throw(self, override_start_pos)
         if self.controled_by_this_client:
             self.tick()
         return result
@@ -72,9 +91,19 @@ class Grenade(BigWorld.Entity, Throwable, Damager):
         """ \xd0\xba\xd0\xbe\xd0\xbd\xd1\x82\xd1\x80\xd0\xbe\xd0\xbb\xd0\xb8\xd1\x80\xd1\x83\xd0\xb5\xd0\xbc\xd0\xb0\xd1\x8f \xd1\x8d\xd1\x82\xd0\xb8\xd0\xbc \xd0\xba\xd0\xbb\xd0\xb8\xd0\xb5\xd0\xbd\xd1\x82\xd0\xbe\xd0\xbc \xd0\xb3\xd1\x80\xd0\xb0\xd0\xbd\xd0\xb0\xd1\x82\xd0\xb0 \xd1\x87\xd1\x82\xd0\xbe-\xd1\x82\xd0\xbe \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb5\xd0\xbb\xd0\xb0 """
         if self.detonated:
             return
-        invincible_time = self.params.get('invincible_time', 0.0)
-        if invincible_time and BigWorld.time() - self.spawn_time <= invincible_time:
-            return
+        self._contact_counter += 1
+        if tagertId:
+            target = BigWorld.entities.get(tagertId)
+            if target:
+                if not self.params.get('explode_contacts_entities', True):
+                    return
+                allowed_targets = self.params.get('allowed_targets', [])
+                if target.__class__.__name__ not in allowed_targets:
+                    return
+            elif self._contact_counter < self.params.get('explode_contacts_environment', 1):
+                return
+            invincible_time = self.params.get('invincible_time', 0.0)
+            return invincible_time and BigWorld.time() - self.spawn_time <= invincible_time and None
         self.set_contact_data(pos, direction, vel, tagertId, body_zone, mat_id)
         self.detonate()
 
@@ -102,7 +131,6 @@ class Grenade(BigWorld.Entity, Throwable, Damager):
             if collision:
                 mat_id = collision[2]
             else:
-                print 'Grenade (ERROR): out of the map', top_pos, bottom_pos
                 mat_id = 0
             return (self.get_cur_position(),
              Vector3(UP_VECTOR),
@@ -112,33 +140,61 @@ class Grenade(BigWorld.Entity, Throwable, Damager):
              mat_id)
 
     def detonate(self):
-        if self.detonated:
+        if self.isDestroyed:
             return
-        self.detonated = True
-        if not self.params.get('explodeInWater', True) and self.under_water:
-            return
-        pos, direction, vel, target_id, body_zone, mat_id = self.get_contact_data()
-        water_collision = BigWorld.waterCollide(self.spaceID, pos, pos - (0, 10, 0))
-        water_dist = pos.y - water_collision[0].y if water_collision else 1000
-        collision_data = {'target_id': target_id,
-         'mat_id': mat_id,
-         'position': pos,
-         'direction': direction,
-         'water_dist': water_dist}
-        if self.creature_controlled:
-            owner = BigWorld.entity(self.ownerID)
-            if owner:
-                owner.cell.grenade_exploded(self.originalID, self.skillID, collision_data)
-                self.explode_effect(pos, mat_id, direction)
-        elif self.npc_controlled:
-            owner = BigWorld.entity(self.ownerID)
-            if owner:
-                owner.cell.grenade_exploded(self.originalID, self.grenade_type, collision_data)
         else:
-            player = BigWorld.player()
-            if player and player.__class__.__name__ == 'PlayerAvatar':
-                player.cell.grenade_exploded(self.id, self.grenade_type, collision_data)
-                self.explode_effect(pos, mat_id, direction)
+            self._detonate_timer_id = None
+            if self.detonated:
+                return
+            self.detonated = True
+            if not self.params.get('explodeInWater', True) and self.under_water:
+                return
+            pos, direction, vel, target_id, body_zone, mat_id = self.get_contact_data()
+            water_collision = BigWorld.waterCollide(pos, pos - (0, 10, 0))
+            water_dist = pos.y - water_collision[0].y if water_collision else 1000
+            collision_data = {'target_id': 0 if ItemsUtils.is_entity_client(target_id) else target_id,
+             'mat_id': mat_id,
+             'position': pos,
+             'direction': direction,
+             'water_dist': water_dist}
+            if self.creature_controlled:
+                owner = BigWorld.entity(self.ownerID)
+                if owner:
+                    try:
+                        owner.cell.grenade_exploded(self.originalID, self.skillID, collision_data)
+                    except Exception as e:
+                        print 'ERROR FOR', self
+                        print 'owner', owner
+                        print self.originalID, self.skillID
+                        print 'collision_data', collision_data
+                        raise
+
+                    self.explode_effect(pos, mat_id, direction)
+            elif self.npc_controlled:
+                owner = BigWorld.entity(self.ownerID)
+                if owner:
+                    owner.cell.grenade_exploded(self.originalID, self.grenade_type, collision_data)
+            else:
+                player = BigWorld.player()
+                if player:
+                    is_player = player.id == self.ownerID
+                    if is_player:
+                        if player._is_connection_activite:
+                            try:
+                                from ny_grenade_config import SPEC_NY_GRENADE_TYPES
+                                if self.grenade_type in SPEC_NY_GRENADE_TYPES or not player.checkPVPZoneForKill():
+                                    player.cell.grenade_exploded(self.id, self.grenade_type, collision_data)
+                            except Exception as e:
+                                print collision_data
+                                raise e
+
+                    (is_player or self.prematureExplosion) and self.explode_effect(pos, mat_id, direction)
+            radius = self.params.get('DamageRadius')
+            for ent in self.entitiesInRange(radius, 'ClientMortalModel'):
+                ent.on_grenaded(pos, self.grenade_type)
+
+            BigWorld.callback(1.0, self.removeSelfEnt)
+            return
 
     def play_material_sound(self, mat_id):
         if not self.exploded_effect_shown:
@@ -149,8 +205,22 @@ class Grenade(BigWorld.Entity, Throwable, Damager):
             return
         else:
             self.exploded_effect_shown = True
-            self.bouncer = None
+            if getattr(self, 'bouncer', None):
+                b = self.bouncer
+
+                def del_bouncer():
+                    if self.isDestroyed:
+                        return
+                    if self.model and b in self.model.motors:
+                        self.model.delMotor(b)
+
+                BigWorld.callback(0, del_bouncer)
+                self.bouncer = None
             self.model.visible = False
+            if self.params.get('hideModelSfxAfterExplode'):
+                self.show_model_sfx(False)
+            elif getattr(self, 'model_sfx', None):
+                self.model.visibleAttachments = True
             under_water_sfx = self.params.get('explodeSFX_underwater')
             explode_sfxes = []
             if under_water_sfx and self.under_water:
@@ -165,16 +235,26 @@ class Grenade(BigWorld.Entity, Throwable, Damager):
             if explode_sfxes:
                 explosion_model = BigWorld.Model('')
                 m = Matrix()
-                m.setRotateYPR(Vector3(direction.yaw, direction.pitch + math.pi * 0.5, 0))
+                if not self.params.get('explodeSFXNoRotate'):
+                    m.setRotateYPR(Vector3(direction.yaw, direction.pitch + math.pi * 0.5, 0))
                 m_translation = Matrix()
                 m_translation.setTranslate(position + direction * 0.1)
                 m.postMultiply(m_translation)
                 explosion_model.setWorldTransform(m)
-                self.addModel(explosion_model)
-                self._expl_models.append(explosion_model)
+                explosion_model.pushBoundingBox((-5, -2, -5), (5, 4, 5))
+                BigWorld.addModel(explosion_model)
+                kw = {}
+                kw['maxDuration'] = self.params.get('explodeSFXDuration', 31.0)
+                kw['DecalInfo'] = [position + direction, position - direction]
+                kw['forceDecal'] = True
+                kw['useSoundSpeed'] = True
                 for explode_sfx in explode_sfxes:
-                    sfx.bufferedOneShotSFX(explode_sfx, explosion_model, DecalInfo=[position - direction, position + direction], forceDecal=True)
+                    FX.bufferedOneShotEffect(explode_sfx, explosion_model, **kw)
 
+                def clearExplModels():
+                    BigWorld.delModel(explosion_model)
+
+                BigWorld.callback(kw['maxDuration'], clearExplModels)
             if self.under_water:
                 depth = self.splash_model.position.y - self.model.position.y
                 if depth < Grenade.SMALL_TO_AVARAGE_BORDER:
@@ -183,7 +263,7 @@ class Grenade(BigWorld.Entity, Throwable, Damager):
                     water_sfx = Grenade.AVARAGE_SPLASH_SFX
                 else:
                     water_sfx = Grenade.SMALL_SPLASH_SFX
-                FX.OneShot(water_sfx).go(self.splash_model)
+                FX.bufferedOneShotEffect(water_sfx, self.splash_model)
             radius = self.params.get('DamageRadius')
             if radius:
                 draw_ratio = 0.1
@@ -195,7 +275,7 @@ class Grenade(BigWorld.Entity, Throwable, Damager):
                         attempts = 0
                 if attempts:
                     player = BigWorld.player()
-                    for _ in range(attempts):
+                    for _ in xrange(attempts):
                         vec = Vector3(random.uniform(-1, 1), random.uniform(-1, 1), random.uniform(-1, 1))
                         if vec.lengthSquared > 1.0:
                             continue
@@ -231,7 +311,8 @@ class Grenade(BigWorld.Entity, Throwable, Damager):
             victim = BigWorld.entities.get(victimID)
             if victim:
                 coin = random.random()
-                Victim.on_grenaded(victim, self.model.position, collision_data['target_id'], collision_data)
+                if isinstance(victim, Victim):
+                    Victim.on_grenaded(victim, self.model.position, collision_data['target_id'], collision_data)
                 if victim.__class__.__name__ == 'Avatar':
                     if victim.active_transform and victim.active_transform.raw_configs.get('isHelicopter'):
                         continue

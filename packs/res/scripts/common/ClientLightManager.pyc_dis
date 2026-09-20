@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/ClientLightManager.py
+# Embedded file name: ./common/ClientLightManager.py
 import BigWorld
 from client_lights.light import STATE_UND, STATE_OFF, STATE_ON
 import TriggerLogic
@@ -24,7 +24,7 @@ class LightManager(object):
     data = {}
 
     def __init__(self):
-        pass
+        self.spaceID = 0
 
     def checkUDO(self, udos, depth = 150, parent_udo = None, count_check = 0):
         if not udos:
@@ -46,8 +46,15 @@ class LightManager(object):
                     else:
                         sub_udos = udo.targetNodes
                 except BigWorld.UnresolvedUDORefException:
-                    if count_check > 5:
-                        print 'not load ', udo, udo.guid, depth, parent_udo, count_check
+                    if count_check > 5 and not count_check % 5:
+                        parent_pos = parent_udo.position if parent_udo else 'NONE POS'
+                        print 'checkUDO:not load ', [udo,
+                         udo.guid,
+                         depth,
+                         parent_udo,
+                         parent_pos,
+                         count_check,
+                         _tmp]
                     return False
 
                 if not self.checkUDO(sub_udos, depth=depth - 1, parent_udo=parent_udo, count_check=count_check):
@@ -59,6 +66,15 @@ class LightManager(object):
         if parent.isDestroyed:
             print 'AHTUN parent.isDestroyed', parent, parent.id
             return
+        if count_check > 100:
+            print 'parent', parent, parent.id, parent.position
+            import BWPersonality
+            print 'parent spaceID', parent.spaceID, BWPersonality.spaceName(self.spaceID)
+            c = BigWorld.camera()
+            print 'camera', c, c.position, c.spaceID
+            print 'state', state
+            print 'count_check', count_check
+            raise ValueError, 'count_check > 100'
         if not self.checkUDO(udos, count_check=count_check):
             BigWorld.callback(1.0, lambda : self.createLights(udos, parent, state, callback, count_check + 1))
             return

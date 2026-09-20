@@ -1,11 +1,14 @@
-# Embedded file name: ./scripts/client/player_builder.py
+# Embedded file name: ./client/player_builder.py
 import BigWorld
 import BWPersonality
+from time import time
 import Keys
 import Math
+from Math import Matrix, Vector3
 import math
 import SFXer
-import cPickle
+import pickle
+import pyson
 import os
 import itertools
 from Sandbag import BOXS, getBoxByID
@@ -18,24 +21,27 @@ from Localization import lc
 from builder import update_gui_quantity_block
 from utils_bw import if_not_destroyed
 import utils_bw
+import sand_bag_optimize
+import draw_utils_extend
+import sounds_manager
 import ChatChannelConfig
 CHANNEL_CONSTS = ChatChannelConfig.ChannelConsts()
-binds_block = [Keys.KEY_1,
- Keys.KEY_2,
- Keys.KEY_3,
- Keys.KEY_4,
+drawer = draw_utils_extend.LinesHolder(20)
+binds_block = [Keys.KEY_4,
  Keys.KEY_5,
  Keys.KEY_6,
  Keys.KEY_7,
  Keys.KEY_8,
- Keys.KEY_9]
+ Keys.KEY_9,
+ Keys.KEY_0,
+ Keys.KEY_MINUS,
+ Keys.KEY_EQUALS,
+ Keys.KEY_BACKSPACE]
 binds_block = dict(((key, x) for x, key in enumerate(binds_block)))
 SAVE_PATH = u'../usercontent/boxs'
 
 def isAvatarFound():
-    for ent in BigWorld.entities.values():
-        if ent.__class__.__name__ == 'Avatar':
-            return True
+    return len(BigWorld.player()._avatars_ids_set)
 
 
 class PlayerBuilder(object):
@@ -52,15 +58,16 @@ class PlayerBuilder(object):
     lst_endpos = Math.Vector3(0, 0, 0)
     lst_startpos = Math.Vector3(0, 0, 0)
     last_spawn_position = Math.Vector3(0, 0, 0)
+    __gluing_timer_id = 0
 
     def __init__(self):
         pass
 
-    def sendCreateBlock(self, entityID, position, angles, boxID, buffered = False):
+    def sendCreateBlock(self, model_id, position, angles, boxID, buffered = False):
         if not isAvatarFound():
             self.__buffer_blocks = []
             return
-        box = {'id': entityID,
+        box = {'id': model_id,
          'pos': position,
          'angle': angles,
          'boxID': boxID}
@@ -77,7 +84,8 @@ class PlayerBuilder(object):
             return
         send = self.__buffer_blocks[:Constants.BUFFER_BLOCKS_SIZE]
         self.__buffer_blocks = self.__buffer_blocks[Constants.BUFFER_BLOCKS_SIZE:]
-        print '_sendCreateBlockLoop', len(send), len(self.__buffer_blocks)
+        if self.__buffer_blocks:
+            BWPersonality.gpd.sendHightMessage('remained:%s' % len(self.__buffer_blocks))
         self.cell.createBlocks(send, len(self.__buffer_blocks))
 
     def sendDeleteBlock(self, owner_id, server_block_id):
@@ -88,10 +96,9 @@ class PlayerBuilder(object):
     def clearAllBlocks(self, send = False):
         if BWPersonality.game.block_builder_data:
             print 'clear %s blocks' % len(BWPersonality.game.block_builder_data)
-        for entity_id in BWPersonality.game.block_builder_data.keys():
-            BigWorld.destroyEntity(entity_id)
-
+        sand_bag_optimize.clear_all()
         BWPersonality.game.block_server_local = {}
+        BWPersonality.game.block_local_server = {}
         BWPersonality.game.block_builder_data = {}
         BWPersonality.game.block_respawn_colors = {}
         if send and isAvatarFound():
@@ -99,36 +106,36 @@ class PlayerBuilder(object):
         update_gui_quantity_block()
 
     def createBlock(self, position, angles, boxID, buffered = False):
-        entityID = self.createBuildBlock(0, position, angles, boxID)
-        self.sendCreateBlock(entityID, position, angles, boxID, buffered)
+        sounds_manager.playSound('ui/hover')
 
-    def deleteBlock(self, entity):
+        def on_add_block(serv_id, unical_id, box, matrix, model, position, angles):
+            self.registerBuildBlock(unical_id, unical_id, position, angles, boxID)
+            self.sendCreateBlock(unical_id, position, angles, boxID)
+            update_gui_quantity_block()
+
+        sand_bag_optimize.add_block_manual(0, boxID, position, angles, on_add_block)
+
+    def deleteBlock(self, model_id):
         if self.dead:
-            BWPersonality.gpd.sendLowerMessage('Action prohibited')
+            BWPersonality.gpd.sendHightMessage('Action prohibited')
             return
         else:
-            local_ent_id = entity.id
-            server_block_id = entity.serverID
-            owner_id = entity.ownerID
-            try:
-                entity.onStartDeleteBlock(owner_local=True)
-            except:
-                traceback.print_exc()
-
-            BigWorld.destroyEntity(local_ent_id)
-            self.deleteRespawnBox(local_ent_id)
-            if not server_block_id:
-                server_block_id = local_ent_id
-            key = (owner_id, server_block_id)
-            BWPersonality.game.block_server_local.pop(key, None)
-            BWPersonality.game.block_builder_data.pop(local_ent_id, None)
-            self.sendDeleteBlock(owner_id, server_block_id)
+            sand_bag_optimize.delete_block(model_id)
+            sounds_manager.playSound('ui/hover')
+            self.deleteRespawnBox(model_id)
+            BWPersonality.game.block_builder_data.pop(model_id, None)
+            key = BWPersonality.game.block_local_server.pop(model_id, None)
             update_gui_quantity_block()
+            if not key:
+                return
+            BWPersonality.game.block_server_local.pop(key, None)
+            owner_id, server_block_id = key
+            self.sendDeleteBlock(owner_id, server_block_id)
             return
 
     def setActiveBoxID(self, boxID):
         BWPersonality.GUICore.targettingGUI.builder_dot(bool(boxID))
-        self.clearLines()
+        drawer.clear()
         self._active_create_box_id = boxID
         if self._build_model:
             self.delModel(self._build_model)
@@ -142,23 +149,7 @@ class PlayerBuilder(object):
                     print box
                     raise
 
-                try:
-                    for dye, tint_name in box.get('tint', {}).items():
-                        setattr(self._build_model, dye, tint_name)
-
-                except:
-                    print 'box:', box
-                    traceback.print_exc()
-
                 self.addModel(self._build_model)
-                try:
-                    for action in box.get('animations', []):
-                        self._build_model.action(action)()
-
-                except:
-                    print 'box:', box
-                    traceback.print_exc()
-
         try:
             if boxID > 0:
                 BigWorld.camera().pivotMaxDist = 1.3
@@ -176,7 +167,6 @@ class PlayerBuilder(object):
         if not BWPersonality.GUICore._builder_menu:
             return
         key = event.key
-        mods = event.modifiers
         down = event.isKeyDown()
         if BWPersonality.GUICore._builder_menu.component.visible:
             if key in binds_block:
@@ -198,21 +188,29 @@ class PlayerBuilder(object):
                 m = Math.Matrix(self._build_model.matrix)
                 angles = (m.roll, m.pitch, m.yaw)
                 if self.dead:
-                    BWPersonality.gpd.sendLowerMessage('Action prohibited')
+                    BWPersonality.gpd.sendHightMessage('Action prohibited')
                     return
-                self.createBlock(self._latpos_build, angles, self._active_create_box_id, buffered=False)
+                if hasattr(self, '_latpos_build'):
+                    self.createBlock(self._latpos_build, angles, self._active_create_box_id, buffered=False)
+                else:
+                    print '[WARNING] no _latpos_build', self
+                BigWorld.callback(0.1, self.onUpdateLookPointBuilder)
             return True
         if key == Keys.KEY_RIGHTMOUSE:
             if down:
                 if self._build_model:
                     self._build_model.visible = False
             else:
-                if self._build_model:
-                    self._build_model.visible = True
-                t = BigWorld.target()
-                if t.__class__.__name__ == 'Sandbag':
-                    self.deleteBlock(t)
-                    self.clearLines()
+
+                def show():
+                    if self._build_model and not BigWorld.isKeyDown(Keys.KEY_RIGHTMOUSE):
+                        self._build_model.visible = True
+
+                BigWorld.callback(0.4, show)
+                model_id = sand_bag_optimize.getTargetSandBag()
+                if model_id:
+                    self.deleteBlock(model_id)
+                    drawer.clear()
             return True
         return False
 
@@ -221,7 +219,7 @@ class PlayerBuilder(object):
         if BWPersonality.GUICore._builder_menu:
             if dz and BWPersonality.GUICore._builder_menu.MouseScrollEvent(dz):
                 return True
-        if self._active_create_box_id <= 0:
+        if self._active_create_box_id == 0:
             return False
         if dz and self._build_model:
             dz = 1 if dz > 0 else -1
@@ -261,7 +259,7 @@ class PlayerBuilder(object):
             if pos[1] < 0.26:
                 pos[1] = 0.5
             if self.grid_box:
-                for x in range(3):
+                for x in xrange(3):
                     delta = pos[x] % self.grid_box
                     if delta > self.grid_box / 2.0:
                         pos[x] += grid - delta
@@ -313,25 +311,26 @@ class PlayerBuilder(object):
             self._build_model.stipple = True
 
     def updateDeleteBoxMarker(self):
-        self.clearLines()
-        t = BigWorld.target()
-        if t.__class__.__name__ != 'Sandbag':
+        drawer.clear()
+        model_id = sand_bag_optimize.getTargetSandBag()
+        if not model_id:
             return
+        model = sand_bag_optimize._id_obstacle[model_id]
         color = (1, 0, 0, 1)
-        if t and t.model:
-            bb = Math.Matrix(t.model.bounds)
-            self.model.addLineDraw(bb.applyPoint((0, 1, 0)), bb.applyPoint((0, 0, 0)), color, 1)
-            self.model.addLineDraw(bb.applyPoint((1, 1, 0)), bb.applyPoint((1, 0, 0)), color, 1)
-            self.model.addLineDraw(bb.applyPoint((0, 1, 1)), bb.applyPoint((0, 0, 1)), color, 1)
-            self.model.addLineDraw(bb.applyPoint((1, 1, 1)), bb.applyPoint((1, 0, 1)), color, 1)
-            self.model.addLineDraw(bb.applyPoint((1, 1, 0)), bb.applyPoint((1, 1, 1)), color, 1)
-            self.model.addLineDraw(bb.applyPoint((1, 0, 0)), bb.applyPoint((1, 0, 1)), color, 1)
-            self.model.addLineDraw(bb.applyPoint((0, 1, 0)), bb.applyPoint((0, 1, 1)), color, 1)
-            self.model.addLineDraw(bb.applyPoint((0, 0, 0)), bb.applyPoint((0, 0, 1)), color, 1)
-            self.model.addLineDraw(bb.applyPoint((0, 0, 0)), bb.applyPoint((1, 0, 0)), color, 1)
-            self.model.addLineDraw(bb.applyPoint((0, 1, 0)), bb.applyPoint((1, 1, 0)), color, 1)
-            self.model.addLineDraw(bb.applyPoint((0, 1, 1)), bb.applyPoint((1, 1, 1)), color, 1)
-            self.model.addLineDraw(bb.applyPoint((0, 0, 1)), bb.applyPoint((1, 0, 1)), color, 1)
+        if model:
+            bb = Math.Matrix(model.bounds)
+            drawer.add(bb.applyPoint((0, 1, 0)), bb.applyPoint((0, 0, 0)), color, 1)
+            drawer.add(bb.applyPoint((1, 1, 0)), bb.applyPoint((1, 0, 0)), color, 1)
+            drawer.add(bb.applyPoint((0, 1, 1)), bb.applyPoint((0, 0, 1)), color, 1)
+            drawer.add(bb.applyPoint((1, 1, 1)), bb.applyPoint((1, 0, 1)), color, 1)
+            drawer.add(bb.applyPoint((1, 1, 0)), bb.applyPoint((1, 1, 1)), color, 1)
+            drawer.add(bb.applyPoint((1, 0, 0)), bb.applyPoint((1, 0, 1)), color, 1)
+            drawer.add(bb.applyPoint((0, 1, 0)), bb.applyPoint((0, 1, 1)), color, 1)
+            drawer.add(bb.applyPoint((0, 0, 0)), bb.applyPoint((0, 0, 1)), color, 1)
+            drawer.add(bb.applyPoint((0, 0, 0)), bb.applyPoint((1, 0, 0)), color, 1)
+            drawer.add(bb.applyPoint((0, 1, 0)), bb.applyPoint((1, 1, 0)), color, 1)
+            drawer.add(bb.applyPoint((0, 1, 1)), bb.applyPoint((1, 1, 1)), color, 1)
+            drawer.add(bb.applyPoint((0, 0, 1)), bb.applyPoint((1, 0, 1)), color, 1)
 
     def onSpaceChangeRoutie(self, name):
         print 'onSpaceChangeRoutie', name, self.isBuilderSpace()
@@ -353,6 +352,7 @@ class PlayerBuilder(object):
             self._send_blocks_timer = 0
         self.__buffer_blocks = []
         BWPersonality.game.block_server_local = {}
+        BWPersonality.game.block_local_server = {}
         BWPersonality.game.block_builder_data = {}
         BWPersonality.game.block_respawn_colors = {}
         self.setActiveBoxID(0)
@@ -360,15 +360,18 @@ class PlayerBuilder(object):
         BWPersonality.GUICore.showBuildMenu(False)
         if self.isBuilderSpace():
             BigWorld.callback(1.0, lambda : BWPersonality.GUICore.showBuildMenu(True))
+            self.cancelSubmodelGluing()
+            self._submodel_gluing_timer()
         update_gui_quantity_block()
 
     def onLeaveWorldBuilder(self):
         try:
             if BWPersonality.game.block_builder_data:
-                self.saveBuidData(u'backup.boxs')
+                self.saveBuidData(u'backup.boxs2')
         except:
             traceback.print_exc()
 
+        self.cancelSubmodelGluing()
         self.clearAllBlocks(send=False)
         self.__buffer_blocks = []
         BWPersonality.game.block_server_local = {}
@@ -380,12 +383,20 @@ class PlayerBuilder(object):
         update_gui_quantity_block()
         BWPersonality.GUICore.showBuildMenu(False)
 
+    def _submodel_gluing_timer(self):
+        sand_bag_optimize.gluing()
+        self.__gluing_timer_id = BigWorld.callback(5, self._submodel_gluing_timer)
+
+    def cancelSubmodelGluing(self):
+        if self.__gluing_timer_id:
+            BigWorld.cancelCallback(self.__gluing_timer_id)
+            self.__gluing_timer_id = 0
+
     def loadBuidData(self, path):
         if self._loadBuidData_timer:
             BigWorld.cancelCallback(self._loadBuidData_timer)
         self._load_data_path = path
         if isAvatarFound():
-            print 'run command /startloadbuild'
             self.runCommand(u'/startloadbuild')
             self._loadBuidData_timer = BigWorld.callback(Constants.TIMEOUT_BUILD, self._goLoad)
         else:
@@ -403,33 +414,24 @@ class PlayerBuilder(object):
     def _localLoadData(self):
         self._loadBuidData_timer = 0
         print '_localLoadData: ', repr(self._load_data_path)
+        t = time()
         with open(self._load_data_path, 'rb') as fh:
-            data = cPickle.load(fh)
+            if self._load_data_path.endswith('.boxs2'):
+                data = pyson.loads(fh.read())
+            else:
+                data = pickle.load(fh)
+        print 'read time: ', time() - t
         self.clearAllBlocks(send=True)
-        self._loaded_data_buffer = data
-        self._buf_all_blocks = len(data)
-        self._local_create_from_buffer_loop()
 
-    _lcfbloop = 0
+        def on_fetch_complete(load_out_data, tmp):
+            for unical_id, (position, angles, boxID) in load_out_data.items():
+                self.registerBuildBlock(unical_id, unical_id, position, angles, boxID)
+                self.sendCreateBlock(unical_id, position, angles, boxID, buffered=True)
 
-    def _local_create_from_buffer_loop(self):
-        BigWorld.cancelCallback(self._lcfbloop)
-        if not self._loaded_data_buffer:
-            BWPersonality.gpd.sendLowerMessage('')
-            print 'done load'
-            self._sendCreateBlockLoop()
-            return
-        loaded_n = self._buf_all_blocks - len(self._loaded_data_buffer)
-        BWPersonality.gpd.sendLowerMessage('')
-        count = 0
-        while len(self._loaded_data_buffer) and count < 50:
-            count += 1
-            data = self._loaded_data_buffer.pop()
-            position, angles, boxID = data
-            self.createBlock(position, angles, boxID, buffered=True)
-            BWPersonality.gpd.sendLowerMessage('loaded %s/%s' % (loaded_n, self._buf_all_blocks))
+            update_gui_quantity_block()
 
-        self._lcfbloop = BigWorld.callback(0.5, self._local_create_from_buffer_loop)
+        sand_bag_optimize.clear_all()
+        sand_bag_optimize.load_all(data, on_fetch_complete)
 
     def clearBuidData(self):
         if self._loadBuidData_timer:
@@ -445,7 +447,6 @@ class PlayerBuilder(object):
         self.clearAllBlocks(send=True)
 
     def saveBuidData(self, path):
-        self = BigWorld.player()
         full_path = os.path.join(SAVE_PATH, path)
         print 'save boxs', len(BWPersonality.game.block_builder_data), repr(full_path)
         file_dir = os.path.dirname(full_path)
@@ -453,7 +454,7 @@ class PlayerBuilder(object):
             os.makedirs(file_dir)
         if BWPersonality.game.block_builder_data:
             with open(full_path, 'wb') as fh:
-                cPickle.dump(BWPersonality.game.block_builder_data.values(), fh)
+                fh.write(pyson.dumps(BWPersonality.game.block_builder_data.values()))
 
     def showOnLoadBuidDialog(self, fromAvatar):
         self = BigWorld.player()
@@ -461,7 +462,6 @@ class PlayerBuilder(object):
 
         def listener(event, data):
             if data['btn'] == MESSAGEBOX.BTN_CANCEL:
-                print 'run command /cancelloadbuild'
                 self.runCommand(u'/cancelloadbuild')
 
         BWPersonality.GUICore.closeMessageBox(msgbox_id)
@@ -490,7 +490,6 @@ class PlayerBuilder(object):
 
         def listener(event, data):
             if data['btn'] == MESSAGEBOX.BTN_CANCEL:
-                print 'run command /cancelloadbuild'
                 self.runCommand(u'/cancelloadbuild')
 
         BWPersonality.GUICore.closeMessageBox(msgbox_id)
@@ -519,14 +518,10 @@ class PlayerBuilder(object):
         self._loadBuidData_timer = 0
         BWPersonality.GUICore.closeMessageBox('_showOnLoadBuidDialog')
         msg = lc('builder.msg_player_cancel_action').format(charname)
-        BWPersonality.gpd.sendMessage(msg)
+        BWPersonality.gpd.sendHightMessage(msg, MT.SYSTEM)
         self.putMessage(CHANNEL_CONSTS.SYSTEM, msg)
         if BWPersonality.GUICore._builder_menu:
             BWPersonality.GUICore._builder_menu.onCancelStartLoadTimer(charname)
-
-    def clearLines(self):
-        if self.model:
-            self.model.clearLines()
 
     box_spawn_color = None
 

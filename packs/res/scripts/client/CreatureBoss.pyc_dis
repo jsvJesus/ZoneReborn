@@ -1,14 +1,32 @@
-# Embedded file name: ./scripts/client/CreatureBoss.py
+# Embedded file name: ./client/CreatureBoss.py
 import BigWorld
-import Math
-import math
+from Creature import Creature
+from EntityHealthBar import EntityHealthBar
 
-class CreatureBoss(BigWorld.Entity):
+class CreatureBoss(Creature, EntityHealthBar):
 
     def __init__(self):
-        BigWorld.Entity.__init__(self)
-        self.model = None
-        return
+        Creature.__init__(self)
+        EntityHealthBar.__init__(self)
+        self.load_udos()
 
-    def onEnterWorld(self, prereqs):
-        self.model = BigWorld.Model('characters/creatures/spider/spider.model')
+    def load_udos(self):
+        try:
+            for udo in self.udos:
+                udo.setObstacle(True)
+                udo.activate()
+
+        except BigWorld.UnresolvedUDORefException:
+            BigWorld.callback(2.0, self.load_udos)
+
+    def open_udos(self):
+        try:
+            for udo in self.udos:
+                udo.setObstacle(False)
+
+        except BigWorld.UnresolvedUDORefException:
+            BigWorld.callback(2.0, self.open_udos)
+
+    def on_death(self, source_data, item_type, noSound = False):
+        Creature.on_death(self, source_data, item_type, noSound)
+        self.open_udos()

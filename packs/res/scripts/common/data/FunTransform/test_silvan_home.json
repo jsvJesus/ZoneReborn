@@ -120,9 +120,9 @@
 			"sfx_apply_effect_hit":"sfx/Mob/Silvan/attack.xml",
 			"sfx_end_animation":"",
 
-			"apply_effect_id": 516,
-			"apply_effect_stack": 5,
-			"apply_effect_chance": 1.0,
+			"apply_effect_id": 0,
+			"apply_effect_stack": 0,
+			"apply_effect_chance": 0.0,
 			"lock_move":true
 		},
 		{

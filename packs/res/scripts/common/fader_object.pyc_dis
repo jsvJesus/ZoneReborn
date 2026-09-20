@@ -1,5 +1,6 @@
-# Embedded file name: ./scripts/common/fader_object.py
+# Embedded file name: ./common/fader_object.py
 import BigWorld
+import traceback
 
 class Fader(object):
     """docstring for Fader"""
@@ -43,8 +44,8 @@ class Fader(object):
             try:
                 self.__timer_id = BigWorld.callback(self._tick_time, self._tick)
             except:
-                print self._tick_time, self._tick
-                raise
+                print (self._tick_time, self._tick)
+                traceback.print_exc()
 
     def setValue(self, value):
         self._current_value = value
@@ -53,4 +54,9 @@ class Fader(object):
         if self.__timer_id:
             BigWorld.cancelCallback(self.__timer_id)
             self.__timer_id = None
+        return
+
+    def destroy(self):
+        self.stop()
+        self._callback = None
         return

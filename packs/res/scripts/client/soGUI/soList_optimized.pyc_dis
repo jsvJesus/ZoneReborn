@@ -1,23 +1,16 @@
-# Embedded file name: ./scripts/client/soGUI/soList_optimized.py
-import BWPersonality
+# Embedded file name: ./client/soGUI/soList_optimized.py
+from Math import Vector3
 import BigWorld
 import GUI
 import Helpers.PyGUI as PyGUI
-from Helpers.PyGUI import Utils
 import soGUI
-from soGUI.soScrollBar import soScrollBar
 from soGUI.soButton import soButton
-from Helpers.PyGUI.VisualStateComponent import VisualState, VisualStateComponent
-from soGUI.soVisualStateComponent import soVisualStateComponent
 from functools import partial
 from Helpers.PyGUI import PyGUIEvent
-from Helpers.PyGUI import PyGUIBase
-import Math
-import math
-from math import floor, ceil
 import Keys
+import math_bw
 from soGUI.soScrollBar import soScrollBar2
-from Helpers.PyGUI.PyGUIBase import PyGUIBase
+from copy import deepcopy
 SORT_NORMAL = 0
 SORT_NORMAL_REV = 1
 SORT_ABC = 2
@@ -25,7 +18,7 @@ SORT_ABC_REV = 3
 
 class ListPropsStructure(object):
 
-    def __init__(self, width = 200, height = 400, topOffset = 5, leftOffset = 5, lineOffset = 0, elemHeight = 20, scrollWidth = 16, listFont = 'ruRU_calibri_default.font', elemStyle = 'soGUI/visual_styles/listElement.xml', isMultiSel = True, needScroll = True, selectCallBack = None, nuSelectionCB = None, sorted = True, colorFont = (175, 166, 112, 255)):
+    def __init__(self, width = 200, height = 400, topOffset = 5, leftOffset = 5, lineOffset = 0, elemHeight = 20, scrollWidth = 16, listFont = 'RobotoCondensedRegular_16.font', elemStyle = 'soGUI/elements/listElement.xml', isMultiSel = True, needScroll = True, selectCallBack = None, nuSelectionCB = None, sorted = True, colorFont = (175, 166, 112, 255)):
         self.width = width
         self.height = height
         self.colorFont = colorFont
@@ -33,7 +26,7 @@ class ListPropsStructure(object):
         self.leftOffset = leftOffset
         self.lineOffset = lineOffset
         self.elementHeight = elemHeight
-        self.texture = 'soGUI/maps/Controls/listFrame.tga'
+        self.texture = 'soGUI/elements/listFrame.dds'
         self.textureMappings = (0.0, 0.0, 400.0, 200.0)
         self.isMultiSelect = isMultiSel
         self.scrollWidth = scrollWidth
@@ -48,7 +41,7 @@ class ListPropsStructure(object):
 class soListElement(soButton):
     factoryString = 'soGUI.soListElement'
 
-    def __init__(self, component, rootComp = None, fontLabel = 'ruRU_calibri_large.font', isOptions = True):
+    def __init__(self, component, rootComp = None, fontLabel = 'RobotoCondensedRegular_18.font', isOptions = True):
         self.font = fontLabel
         soButton.__init__(self, component, fontLabel=self.font, isOptions=isOptions)
         component.script = self
@@ -99,7 +92,7 @@ class soListElement(soButton):
 class soList_optimized(PyGUI.Window):
     factoryString = 'soGUI.soList'
 
-    def __init__(self, component, props = ListPropsStructure(), default_frame_skin = 'soGUI/maps/con_frame.tga', buttons_is_options = True):
+    def __init__(self, component, props = ListPropsStructure(), default_frame_skin = 'soGUI/frame/con_frame.dds', buttons_is_options = True):
         PyGUI.Window.__init__(self, component)
         component.script = self
         self.frameComp = None
@@ -156,7 +149,11 @@ class soList_optimized(PyGUI.Window):
 
     def setupFrame(self):
         if self.frameComp is None:
-            self.frameComp = GUI.Frame2(self.default_frame_skin)
+            if self.default_frame_skin:
+                self.frameComp = GUI.Frame2(self.default_frame_skin)
+            else:
+                self.frameComp = GUI.Simple(u'')
+            self.component.addChild(self.frameComp, 'listFrame')
         self.frameComp.widthMode = self.frameComp.heightMode = 'PIXEL'
         self.frameComp.width = self.frameWidth
         self.frameComp.height = self.frameHeight
@@ -167,21 +164,27 @@ class soList_optimized(PyGUI.Window):
         self.frameComp.colour = (255, 255, 255, 255)
         self.frameComp.visible = True
         self.frameComp.position = (-1.0, 1.0, 0.5)
-        self.component.addChild(self.frameComp, 'listFrame')
         return
 
     def setupScroll(self):
         if not self.needScroll:
             return
         else:
-            if self.vScroll is None:
-                self.vScroll = soScrollBar2(GUI.Window(), width=16, height=self.frameComp.height - self.scrollWidth)
+            if self.vScroll:
+                self.component.listFrame.delChild('vScroll')
+                self.vScroll.scrollMoved = None
+                self.vScroll.scrolledDOWN = None
+                self.vScroll.scrolledUP = None
+            self.vScroll = soScrollBar2(GUI.Window(), width=16, height=self.frameComp.height - self.scrollWidth)
+            self.vScroll.scrollMoved = self.vScrollMoved
+            self.vScroll.scrolledDOWN = self.scrolledDOWN
+            self.vScroll.scrolledUP = self.scrolledUP
+            self.component.listFrame.addChild(self.vScroll.component, 'vScroll')
             cmp = self.vScroll.component
             cmp.horizontalAnchor = 'RIGHT'
             cmp.verticalAnchor = 'TOP'
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
             cmp.position = (self.frameWidth - self.leftOffset, self.topOffset, 0.6)
-            self.component.listFrame.addChild(cmp, 'vScroll')
             self.vScroll.setVisualState('normal')
             self.vScroll.onBound()
             self.vScroll.setSteps(0)
@@ -190,6 +193,7 @@ class soList_optimized(PyGUI.Window):
     def setupElemHolder(self):
         if self.elementHolder is None:
             self.elementHolder = GUI.Window()
+            self.frameComp.addChild(self.elementHolder, 'elementHolder')
         self.elementHolder.widthMode = self.elementHolder.heightMode = 'PIXEL'
         self.elementHolder.width = self.frameComp.width - self.leftOffset * 2 - self.scrollWidth
         self.elementHolder.height = self.frameComp.height - self.topOffset * 2
@@ -202,7 +206,6 @@ class soList_optimized(PyGUI.Window):
         self.elementHolder.visible = True
         self.visibleCount = int(self.elementHolder.height / self.elementHeight)
         self.elementHolder.scroll.set(0.0, 0.0)
-        self.frameComp.addChild(self.elementHolder, 'elementHolder')
         self.initElements()
         return
 
@@ -233,7 +236,7 @@ class soList_optimized(PyGUI.Window):
             elem.visible = False
 
         i = 0
-        for elem in range(start, end):
+        for elem in xrange(start, end):
             self.apply_single_element(i, elem)
             i += 1
 
@@ -279,10 +282,17 @@ class soList_optimized(PyGUI.Window):
     def get_button_label_position(self, component):
         return (-1.0 + soGUI.getPixelWidth(component), 0.0, 0.0)
 
+    def on_element_inited(self, elem_comp):
+        pass
+
+    def get_elem_class(self):
+        return soListElement
+
     def initElements(self):
         self.clearAllChildren(self.elementHolder)
-        for elem in range(0, self.visibleCount):
-            elemComp = soListElement(GUI.Window(), self.component, fontLabel=self.textFont, isOptions=self.buttons_is_options)
+        self.elemComps = []
+        for elem in xrange(0, self.visibleCount):
+            elemComp = self.get_elem_class()(GUI.Window(), self.component, fontLabel=self.textFont, isOptions=self.buttons_is_options)
             elemComp.component.verticalPositionMode = elemComp.component.horizontalPositionMode = 'CLIP'
             elemComp.component.widthMode = elemComp.component.heightMode = 'PIXEL'
             elemComp.component.horizontalAnchor = 'LEFT'
@@ -307,6 +317,7 @@ class soList_optimized(PyGUI.Window):
             elemComp._updateVisualState()
             self.elemComps.append(elemComp)
             self.elementHolder.addChild(elemComp.component, 'element' + str(elem))
+            self.on_element_inited(elemComp)
 
     def toggleElement(self, elemNum, silent = False):
         elemCaption = self.indexes[int(self.offset + elemNum)]
@@ -403,18 +414,19 @@ class soList_optimized(PyGUI.Window):
         return None
 
     def scrollUp(self):
-        newVal = self.vScroll.getValue() - 1
-        if newVal >= self.minScroll:
-            self.vScroll.setValue(newVal)
-            self.offset = newVal
-            self.applyElements(False)
+        self.set_scroll_value(self.get_scroll_value() - 1)
 
     def scrollDown(self):
-        newVal = self.vScroll.getValue() + 1
-        if newVal <= self.maxScroll:
-            self.vScroll.setValue(newVal)
-            self.offset = newVal
-            self.applyElements(False)
+        self.set_scroll_value(self.get_scroll_value() + 1)
+
+    def get_scroll_value(self):
+        return self.vScroll.getValue()
+
+    def set_scroll_value(self, value):
+        value = math_bw.clamp(value, self.minScroll, self.maxScroll)
+        self.vScroll.setValue(value)
+        self.offset = value
+        self.applyElements(False)
 
     def handleMouseEnterEvent(self, comp):
         self.wheelFocus = True
@@ -437,18 +449,39 @@ class soList_optimized(PyGUI.Window):
             return True
         return False
 
+    def set_height(self, height):
+        if self.frameHeight == height:
+            return
+        elements = deepcopy(self.elements)
+        attachments = deepcopy(self.attachments)
+        indexes = deepcopy(self.indexes)
+        prev_pos = Vector3(self.component.position)
+        prev_mode = (self.component.horizontalPositionMode, self.component.verticalPositionMode)
+        self.frameHeight = height
+        self.setupRoot()
+        self.setupFrame()
+        self.setupScroll()
+        self.setupElemHolder()
+        self.component.horizontalPositionMode, self.component.verticalPositionMode = prev_mode
+        self.component.position = prev_pos
+        self.elements = elements
+        self.attachments = attachments
+        self.indexes = indexes
+        self.applyElements(False)
+
     def onRmb(self, caption):
         return None
 
-    @PyGUIEvent('listFrame.vScroll', 'scrollUp')
+    @property
+    def size(self):
+        return len(self.elements)
+
     def scrolledUP(self):
         self.scrollUp()
 
-    @PyGUIEvent('listFrame.vScroll', 'scrollDown')
     def scrolledDOWN(self):
         self.scrollDown()
 
-    @PyGUIEvent('listFrame.vScroll', 'scrollMoved')
     def vScrollMoved(self, newVal):
         self.offset = newVal
         self.vScroll.setValue(newVal)

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soTableComponent.py
+# Embedded file name: ./client/soGUI/soTableComponent.py
 import BigWorld
 import GUI
 import soGUI
@@ -85,7 +85,7 @@ class tablePropsStructure(object):
 class soTableItem(PyGUIBase):
     factoryString = 'soGUI.soTableItem'
 
-    def __init__(self, component, w, h, font = 'ruRU_calibri_default.font', type = ITEMTYPE_TEXT):
+    def __init__(self, component, w, h, font = 'RobotoCondensedRegular_16.font', type = ITEMTYPE_TEXT):
         PyGUIBase.__init__(self, component)
         component.script = self
         self.width = w
@@ -243,7 +243,7 @@ class soTableComponent(PyGUIBase, soVisualStateComponent):
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         self.component.addChild(self.vScroll.component, 'vScroll')
-        self.vScroll.initVSC('scripts/client/soGUI/schemas/soScrollBar_default.xml')
+        self.vScroll.initVSC('scripts/elements/scroll_bar_1.xml')
         self.vScroll.setVisualState('normal')
         self.vScroll.onBound()
         self.vScroll.makeLayout()
@@ -319,7 +319,7 @@ class soTableComponent(PyGUIBase, soVisualStateComponent):
                 xPos += _w
 
             cmp.position = (xPos, self.borderWidth, 0.5)
-            cmp.label.font = 'ruRU_calibri_default.font'
+            cmp.label.font = 'RobotoCondensedRegular_16.font'
             cmp.label.colour = (255, 255, 255, 255)
             cmp.label.text = self.colData[col][colCaption]
             self.component.addChild(cmp, col)
@@ -579,7 +579,7 @@ class soTablePropsStructure(object):
 
 class soTableElemPropsStructure(object):
 
-    def __init__(self, spanLeft = 0, spanDown = 0, dataType = ITEMTYPE_TEXT, dataStyles = {'font': 'ruRU_calibri_default.font',
+    def __init__(self, spanLeft = 0, spanDown = 0, dataType = ITEMTYPE_TEXT, dataStyles = {'font': 'RobotoCondensedRegular_16.font',
  'color': (255, 255, 255, 255)}, rights = ['READ']):
         self.dataType = dataType
         self.dataStyles = dataStyles
@@ -633,8 +633,14 @@ class soTableElem(PyGUIBase, soToolTipComponent):
             cmp.materialFX = 'BLEND'
             cmp.multiline = True
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
-            cmp.verticalAnchor = cmp.horizontalAnchor = 'CENTER'
-            cmp.position = (0.0, 0.0, 0.2)
+            alignment = self.props.dataStyles.get('alignment')
+            if alignment:
+                cmp.verticalAnchor = alignment['verticalAnchor']
+                cmp.horizontalAnchor = alignment['horizontalAnchor']
+                cmp.position = (-0.9, 0.0, 0.2)
+            else:
+                cmp.verticalAnchor = cmp.horizontalAnchor = 'CENTER'
+                cmp.position = (0.0, 0.0, 0.2)
             self.component.addChild(cmp, 'textOut')
         elif self.props.dataType == ITEMTYPE_PICTURE:
             cmp = GUI.Simple('')
@@ -929,9 +935,9 @@ class soTableComponent2(PyGUIBase):
         self.minMaxV = [0, 0]
         self.minMaxH = [0, 0]
         self.delayedRender = 0
-        self.elemBackGroundTextureProvider = BigWorld.PyTextureProvider('soGUI/maps/Colours/white.tga')
-        self.markUpTextureProvider = BigWorld.PyTextureProvider('soGUI/maps/Colours/white.tga')
-        self.secretElemTextureProvider = BigWorld.PyTextureProvider('soGUI/maps/Controls/Table/classified_cell.tga')
+        self.elemBackGroundTextureProvider = BigWorld.PyTextureProvider('soGUI/white.dds')
+        self.markUpTextureProvider = BigWorld.PyTextureProvider('soGUI/white.dds')
+        self.secretElemTextureProvider = BigWorld.PyTextureProvider('soGUI/items/item_locked.dds')
         self.selectorColour = (255, 125, 56, 255)
         self.markUpColour = self.props.innerBorderColor
         self.setupRoot()
@@ -1030,7 +1036,7 @@ class soTableComponent2(PyGUIBase):
         scroll.setSteps(0)
 
     def setupScrollForSettings(self):
-        scroll = soScrollBar2(GUI.Window(), width=16, height=self.props.tableHeight - self.props.outerBorderWidth * 2 - 50, steps=0, style='soGUI/visual_styles/ScrollBarSettings.xml')
+        scroll = soScrollBar2(GUI.Window(), width=16, height=self.props.tableHeight - self.props.outerBorderWidth * 2 - 50, steps=0, style='soGUI/elements/scroll_bar_2.xml')
         cmp = scroll.component
         cmp.verticalAnchor = 'TOP'
         cmp.horizontalAnchor = 'RIGHT'
@@ -1058,7 +1064,7 @@ class soTableComponent2(PyGUIBase):
         scroll.setSteps(0)
 
     def setupScrollForFriendList(self):
-        scroll = soScrollBar2(GUI.Window(), width=16, height=self.props.tableHeight - 2, steps=0, style='soGUI/visual_styles/ScrollBarSettings.xml')
+        scroll = soScrollBar2(GUI.Window(), width=16, height=self.props.tableHeight - 2, steps=0, style='soGUI/elements/scroll_bar_2.xml')
         cmp = scroll.component
         cmp.verticalAnchor = 'TOP'
         cmp.horizontalAnchor = 'RIGHT'

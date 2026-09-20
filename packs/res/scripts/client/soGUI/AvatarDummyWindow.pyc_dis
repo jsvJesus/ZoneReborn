@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/AvatarDummyWindow.py
+# Embedded file name: ./client/soGUI/AvatarDummyWindow.py
 """\xd0\x9c\xd0\xbe\xd0\xb4\xd1\x83\xd0\xbb\xd1\x8c \xd1\x80\xd0\xb5\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb7\xd1\x83\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82 \xd1\x81 \xd1\x82\xd0\xb5\xd0\xba\xd1\x81\xd1\x82\xd1\x83\xd1\x80\xd0\xbe\xd0\xb9 \xd0\xbc\xd0\xb0\xd0\xbd\xd0\xb5\xd0\xba\xd0\xb5\xd0\xbd\xd0\xb0 \xd0\xb0\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0\xd1\x80\xd0\xb0."""
 __author__ = 'burov_alexey'
 import AvatarDummyInRender
@@ -277,14 +277,11 @@ class DummyWindow(Singlton, PyGUIBase, flash_utils.FlashInteractor):
     def light_source_callback(self, current_light):
         self._model_renderer.addAmbientColor(tuple([current_light] * 4))
 
-    def getDefaultModels(self):
-        return self.avatar_dummy.getDefaultModels()
-
     def _create_model_renderer(self):
         """\xd0\xa1\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd1\x82\xd1\x8c \xd1\x80\xd0\xb5\xd0\xbd\xd0\xb4\xd0\xb5\xd1\x80\xd0\xb5\xd1\x80 \xd0\xbf\xd0\xbe\xd0\xb4 \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd0\xba\xd0\xb8 \xd0\xbc\xd0\xb0\xd0\xbd\xd0\xb5\xd0\xba\xd0\xb5\xd0\xbd\xd0\xb0."""
         sW, sH = BigWorld.screenSize()
         self._model_renderer = BigWorld.PyModelRenderer(sW, sH)
-        for _ in range(10):
+        for _ in xrange(10):
             self._model_renderer.delDirectionLight(0)
             self._model_renderer.delOmniLight(0)
 
@@ -448,7 +445,6 @@ class DummyWindow(Singlton, PyGUIBase, flash_utils.FlashInteractor):
         self._model_renderer.models = [self._model]
         self._model.zoomExtents(True)
         self._model_renderer.dynamic = True
-        self._model_renderer.render()
         self.component.renderDummy.texture = self._model_renderer.texture
         self._model.IdleUnarmed()
         if self.avatar_dummy.primary_gun_model:
@@ -482,15 +478,6 @@ class DummyWindow(Singlton, PyGUIBase, flash_utils.FlashInteractor):
     def show_debug_fon(self, doShow = True):
         """\xd0\x92\xd0\xba\xd0\xbb\xd1\x8e\xd1\x87\xd0\xb8\xd1\x82\xd1\x8c \xd1\x84\xd0\xbe\xd0\xbd \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb0 \xd0\xb2 \xd0\xba\xd0\xbe\xd1\x82\xd0\xbe\xd1\x80\xd0\xbe\xd0\xbc \xd1\x81\xd1\x82\xd0\xbe\xd0\xb8\xd1\x82 \xd0\xbc\xd0\xb0\xd0\xbd\xd0\xb5\xd0\xba\xd0\xb5\xd0\xbd."""
         self.component.tmpFON.visible = doShow
-
-    def show_default_character_model(self):
-        """\xd0\xa1\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd1\x82\xd1\x8c \xd0\xbc\xd0\xb0\xd0\xbd\xd0\xb5\xd0\xba\xd0\xb5\xd0\xbd\xd0\xb0 \xd1\x81 \xd0\xb2\xd0\xbd\xd0\xb5\xd1\x88\xd0\xbd\xd0\xb8\xd0\xbc \xd0\xb4\xd0\xb5\xd1\x84\xd0\xbe\xd0\xbb\xd1\x82\xd0\xbd\xd1\x8b\xd0\xbc \xd0\xb2\xd0\xb8\xd0\xb4\xd0\xbe\xd0\xbc."""
-        self.avatar_dummy.reset()
-        data = BWPersonality.game.GUICore.getCurrentCharMakerAppearance()
-        self.avatar_dummy.set_default_models_from_gui(data)
-        self._model = self.avatar_dummy.model
-        self._update_model()
-        self.light_manager.set_max_light(True)
 
     @flash_utils.send_to_flashscript
     def component_size_and_position(self):
@@ -527,7 +514,7 @@ class DummyWindow(Singlton, PyGUIBase, flash_utils.FlashInteractor):
         self.viewMatrix.preMultiply(self.matrixyaw)
         self.viewMatrix.postMultiply(self.matrixpos)
         self._model_renderer.viewMatrix = self.viewMatrix
-        for _ in range(10):
+        for _ in xrange(10):
             self._model_renderer.delOmniLight(0)
 
         inv = Math.Matrix(self.viewMatrix)

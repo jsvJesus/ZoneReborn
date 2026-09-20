@@ -1,8 +1,7 @@
-# Embedded file name: ./scripts/client/Sandbag.py
+# Embedded file name: ./client/Sandbag.py
 import BigWorld
 import Math
 import SFXer
-import Pixie
 import traceback
 from Helpers.Caps import CAP_DRAWWELL
 from Localization import lc
@@ -93,7 +92,7 @@ BOXS = [{'icon': 'soGUI/maps/Icons/event/box_builder/icon_human.dds',
   'size': (1, 1, 1),
   'boxID': 6},
  {'icon': 'soGUI/maps/Icons/event/box_builder/icon_icecube.dds',
-  'model': 'models/events/box_builder/box_1x1_ice_2_lod1.model',
+  'model': 'models/events/box_builder/box_1x1_ice_lod1.model',
   'name': u'ice 2',
   'size': (1, 1, 1),
   'boxID': 7},
@@ -488,8 +487,7 @@ BOXS = [{'icon': 'soGUI/maps/Icons/event/box_builder/icon_human.dds',
   'size': (1, 1, 1),
   'boxID': 101,
   'tint': {'pasted__lambert43_skinned': 'box_red'},
-  'animations': ['Wave'],
-  'animations_sequence': ['RaiseBOX', 'RaisedUpBOX'],
+  'animations': ['Wave', 'RaisedUp'],
   'no_physics': True,
   'respawn_color': RESP_FLAGS.RED},
  {'icon': 'soGUI/maps/Icons/event/box_builder/icon_flag_green.dds',
@@ -498,8 +496,7 @@ BOXS = [{'icon': 'soGUI/maps/Icons/event/box_builder/icon_human.dds',
   'size': (1, 1, 1),
   'boxID': 102,
   'tint': {'pasted__lambert43_skinned': 'box_green'},
-  'animations': ['Wave'],
-  'animations_sequence': ['RaiseBOX', 'RaisedUpBOX'],
+  'animations': ['Wave', 'RaisedUp'],
   'no_physics': True,
   'respawn_color': RESP_FLAGS.GREEN},
  {'icon': 'soGUI/maps/Icons/event/box_builder/icon_flag_blue.dds',
@@ -508,8 +505,7 @@ BOXS = [{'icon': 'soGUI/maps/Icons/event/box_builder/icon_human.dds',
   'size': (1, 1, 1),
   'boxID': 103,
   'tint': {'pasted__lambert43_skinned': 'box_blue'},
-  'animations': ['Wave'],
-  'animations_sequence': ['RaiseBOX', 'RaisedUpBOX'],
+  'animations': ['Wave', 'RaisedUp'],
   'no_physics': True,
   'respawn_color': RESP_FLAGS.BLUE},
  {'icon': 'soGUI/maps/Icons/event/box_builder/icon_flag_yellow.dds',
@@ -518,15 +514,22 @@ BOXS = [{'icon': 'soGUI/maps/Icons/event/box_builder/icon_human.dds',
   'size': (1, 1, 1),
   'boxID': 104,
   'tint': {'pasted__lambert43_skinned': 'box_yellow'},
-  'animations': ['Wave'],
-  'animations_sequence': ['RaiseBOX', 'RaisedUpBOX'],
+  'animations': ['Wave', 'RaisedUp'],
   'no_physics': True,
   'respawn_color': RESP_FLAGS.YELLOW}]
+BOXS_DICT = {}
+for box in BOXS:
+    if box['boxID'] in BOXS_DICT:
+        raise Exception('duplicate box %s' % box['boxID'])
+    box['can_unite'] = True
+    if box.get('tint') or box.get('animations') or box.get('no_physics'):
+        box['can_unite'] = False
+    if not box.get('model'):
+        box['can_unite'] = False
+    BOXS_DICT[box['boxID']] = box
 
 def getBoxByID(boxID):
-    for box in BOXS:
-        if box['boxID'] == boxID:
-            return box
+    return BOXS_DICT.get(boxID)
 
 
 class Sandbag(BigWorld.Entity):
@@ -534,44 +537,34 @@ class Sandbag(BigWorld.Entity):
     def __init__(self):
         self.height = 0
         BigWorld.Entity.__init__(self)
+        self.filter = BigWorld.NoneFilter()
+
+    def prerequisites(self):
+        box = BOXS_DICT.get(self.modelType)
+        if not box:
+            print self, 'not found box %s' % self.modelType
+            return
+        return [box['model']]
 
     def onEnterWorld(self, prereqs):
-        self._redraw_Model()
+        box = BOXS_DICT.get(self.modelType)
+        if box:
+            if box['model'] not in prereqs.failedIDs:
+                self.model = prereqs[box['model']]
+            else:
+                print self, 'error load model %r id =%s' % (box['model'], self.modelType)
+        if self.model:
+            self.height = Math.Matrix(self.model.bounds).get(1, 1)
+            animations = box.get('animations')
+            if animations:
+                try:
+                    for action in animations:
+                        self.model.action(action)()
 
-    def onLeaveWorld(self):
-        BigWorld.delShadowEntity(self)
+                except:
+                    print 'box:', box
+                    traceback.print_exc()
 
-    def damage(self, complexItemType):
-        self.cell.damage(BigWorld.player().id, complexItemType)
-
-    def onDead(self):
-        self.model = BigWorld.Model('')
-        SFXer.AddPixieToEntity(self, 'particles/_ice_cube_dead2.xml', node=self.model.root)
-
-    def onStartDeleteBlock(self, owner_local = True):
-        SFXer.onSandbagDelete(self)
-
-    def onLoadModel(self, model):
-        self.model = model
-        self.height = Math.Matrix(self.model.bounds).get(1, 1)
-
-    def _redraw_Model(self):
-        if self.modelType:
-            self.loadBOX(self.modelType)
-            return
-        if self.health > 0:
-            modelname = 'models/props/ng/ice_cube.model'
-            BigWorld.fetchModelObstacle(modelname, self.matrix, 0, self.onLoadModel)
-        else:
-            self.model = BigWorld.Model('')
-
-    def loadBOX(self, boxID):
-        box = getBoxByID(boxID)
-        if not box:
-            return
-
-        def onLoadModelBox(model):
-            self.model = model
             tint = box.get('tint')
             if tint:
                 try:
@@ -582,32 +575,18 @@ class Sandbag(BigWorld.Entity):
                     print 'box:', box
                     traceback.print_exc()
 
-            animations_sequence = box.get('animations_sequence')
-            animations = box.get('animations')
-            if animations_sequence:
-                root = self.model
-                try:
-                    for action in animations_sequence:
-                        root = getattr(root, action)()
+            if not box.get('no_physics'):
+                self.model.isObstacle = True
+        if not self.model:
+            self.model = BigWorld.Model('models/bolvan/helpers/xyz.model')
 
-                except:
-                    print 'box:', box
-                    traceback.print_exc()
+    def onLeaveWorld(self):
+        self.model = None
+        return
 
-            if animations:
-                try:
-                    for action in animations:
-                        self.model.action(action)()
+    def damage(self, complexItemType):
+        self.cell.damage(BigWorld.player().id, complexItemType)
 
-                except:
-                    print 'box:', box
-                    traceback.print_exc()
-
-        def onLoadObstacleModel(obst_model):
-            self.phy_model = obst_model
-            self.addModel(self.phy_model)
-            self.phy_model.visible = False
-
-        BigWorld.fetchModel(box['model'], onLoadModelBox)
-        if not box.get('no_physics'):
-            BigWorld.fetchModelObstacle(box['model'], self.matrix, 0, onLoadObstacleModel)
+    def onDead(self):
+        self.model = BigWorld.Model('')
+        SFXer.AddPixieToEntity(self, 'particles/_ice_cube_dead2.xml', node=self.model.root)

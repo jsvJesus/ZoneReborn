@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/EditorHelpText.py
+# Embedded file name: ./client/EditorHelpText.py
 import BigWorld
 
 class EditorHelpText(BigWorld.UserDataObject):

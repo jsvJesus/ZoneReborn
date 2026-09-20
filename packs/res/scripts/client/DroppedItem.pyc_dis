@@ -1,15 +1,15 @@
-# Embedded file name: ./scripts/client/DroppedItem.py
+# Embedded file name: ./client/DroppedItem.py
 from Localization import lc
 import BigWorld
 from ItemHolder import ItemHolder
 from Items import ItemsCatalog
 import ItemsUtils
 import GUI
-import Pixie
-import copy
 from Helpers.Caps import CAP_CAN_PICKUP
 import traceback
 from functools import partial
+import Constants
+from soGUI.soInworldMarkers import soInworldMarker
 
 class DroppedItem(BigWorld.Entity, ItemHolder):
 
@@ -20,6 +20,7 @@ class DroppedItem(BigWorld.Entity, ItemHolder):
         self._messageAttachment = None
         self.name = lc('DroppedItem.client.VOID_ITEM')
         self._pix_model = None
+        self.__weapon = None
         return
 
     def onLoadPS(self, ps):
@@ -35,6 +36,8 @@ class DroppedItem(BigWorld.Entity, ItemHolder):
             if item_params.has_key('OnFlorTint'):
                 tints = item_params['OnFlorTint']
         else:
+            if 'ModelNames' not in item_params:
+                return ('characters2/items/loot/shells_box.model', {})
             item_model = self.getModelNameByNamesDict(item_params['ModelNames'].values())
             if item_params.has_key('Tint'):
                 tints = item_params['Tint']
@@ -74,6 +77,9 @@ class DroppedItem(BigWorld.Entity, ItemHolder):
                 return
             else:
                 self.model = model
+                item = self.CarryingItems[0]
+                item_type = item['complexItemType']
+                item_class = ItemsCatalog.GetItemClass(item_type)
                 if self.getParticleName() not in prereqs.failedIDs:
                     try:
                         ps = prereqs[self.getParticleName()]
@@ -110,24 +116,30 @@ class DroppedItem(BigWorld.Entity, ItemHolder):
                 if md.__class__.__name__ == 'list':
                     md.append(onLoadSimpleModel)
                     BigWorld.fetchModel(*md)
-                elif item_class in [ItemsCatalog.ARTIFACT]:
-                    BigWorld.fetchModel(md, onLoadSimpleModel)
                 else:
-                    BigWorld.fetchModelObstacle(md, self.matrix, 0, onLoadSimpleModel)
+                    BigWorld.fetchModel(md, onLoadSimpleModel)
             except:
                 print 'md', repr(md), dict(item)
                 self.lasterrmd = md
                 traceback.print_exc()
-                BigWorld.fetchModel('characters/items/loot/shells_box.model', onLoadSimpleModel)
+                BigWorld.fetchModel('characters2/items/loot/shells_box.model', onLoadSimpleModel)
 
         def createModelFromCarryingItems(callback):
             if item_class != ItemsCatalog.WEAPON:
                 callback(None)
                 return
             else:
-                item_params = ItemsCatalog.GetItemParam(item_type)
-                model_dict = ItemsUtils.getWeaponModelDct(item, item_params)
-                self.fetchModelByNamesDict(model_dict, callback)
+                import clweapon
+                self.__weapon = clweapon.ClWeapon(item)
+                try:
+                    m = self.__weapon.getModel()
+                except:
+                    print dict(item)
+                    traceback.print_exc()
+                    BigWorld.fetchModel('characters2/items/loot/shells_box.model', onLoadModel)
+                    return
+
+                callback(m)
                 return
 
         def onLoadModelFromCarryingItems(model):
@@ -198,4 +210,21 @@ class DroppedItem(BigWorld.Entity, ItemHolder):
             self._pix_model.root.attachments = []
             self.delModel(self._pix_model)
             self._pix_model = None
+        if self.__weapon:
+            self.__weapon.destroy()
+        self.__weapon = None
         return
+
+    def get_target_mark(self, distance):
+        if distance > Constants.INTERACTION_DISTANCE:
+            return None
+        elif CAP_CAN_PICKUP not in self.targetCaps:
+            return None
+        else:
+            return soInworldMarker.MARKER_USE
+
+    def get_hightlight(self, distance):
+        if distance > Constants.HILITE_MARKS_DISTANCE:
+            return None
+        else:
+            return True

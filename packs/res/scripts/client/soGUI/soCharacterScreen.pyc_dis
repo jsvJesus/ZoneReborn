@@ -1,41 +1,71 @@
-# Embedded file name: ./scripts/client/soGUI/soCharacterScreen.py
+# Embedded file name: ./client/soGUI/soCharacterScreen.py
 import BigWorld
 import GUI
 import BWPersonality
-import soGUI
-import math
-import StalkerModel
+import traceback
 import Stats
-import Helpers.PyGUI as PyGUI
+import InventoryNames
 from Helpers.PyGUI import PyGUIBase
-from Helpers.Listener import Listenable
+from copy import copy
+from soGUI import MouseShaper
 from functools import partial
-from soGUI.soButton import soButton, soButtonWFT, soButtonWTT
-from soGUI.soScrollBar import soScrollBar
+from soGUI.soButton import soButton, soButtonWFT
 from Helpers.PyGUI import PyGUIEvent
-from Helpers.BWCoroutine import *
+from Helpers.BWCoroutine import BWMemberCoroutine, BWWaitForPeriod
+from FiringDefs import DamageTypes
 from soGUI.soToolTipComponent import soToolTipComponent
 from soGUI.GUIPositions import GUIPositions
 from Items import ItemsCatalog
 import ItemsUtils
-from soGUI.data import GUIEvents
-from soGUI.soItemView import soItemView, soItemSlot
-import soGUI.soItemView as module_soItemView
-from Math import Vector4, Matrix
-from Helpers.BWCoroutine import *
-from math import ceil, floor
-from soGUI.soList import soList2, soList2ElementBase
-from Keys import *
+from soGUI.soItemView import soItemSlot
+from soGUI.soItemView import LOCKED_COLOR
+from gui_const import ITSLOT
+from Math import Vector4
+from math import floor
+from math import sqrt
+from Keys import KEY_LEFTMOUSE, KEY_RIGHTMOUSE
 from Localization import lc
-from client_utils import get_entity_name
 from soGUI.soTextField import soTextField3
 import Helpers.PyGUI.DraggableComponent
 import colorCodes
-from msgbox_templates import text_and_ok
-from CharacterUtils import GetCritChancePower
 from gui_const import INV_CONST
+from EquipSlotsConfigs import EquipSlotTypes as EST
+import ClothAttachSlotsConfig as CASC
+import itertools
+import EffectUtils
+from soGUI.achivstab.achivstab import AchivsTab
 DraggableComponent = Helpers.PyGUI.DraggableComponent.DraggableComponent
-LOCK_ICON = BigWorld.PyTextureProvider('soGUI/maps/Icons/equipment/locked.dds')
+LOCK_ICON = 'soGUI/maps/Icons/equipment/locked.dds'
+LOADED_TEXTURES = {}
+
+def onTextureLoaded(resource):
+    for i in textures_path:
+        LOADED_TEXTURES[i] = resource[i]
+
+
+textures_path = ['soGUI/frame/tt_frame_2.dds',
+ 'soGUI/frame/equipment/background.dds',
+ 'soGUI/frame/tt_frame_3.dds',
+ 'soGUI/frame/basic_frame_1.dds',
+ 'soGUI/maps/Icons/equipment/locked.dds',
+ 'soGUI/frame/equipment/pvp_elem_frame.dds',
+ 'soGUI/frame/equipment/progress_PvP_emp.dds',
+ 'soGUI/frame/equipment/progress_PvP.dds',
+ 'textures/default/white.dds',
+ 'soGUI/frame/equipment/radio_slot.dds']
+BigWorld.loadResourceListBG(textures_path, onTextureLoaded)
+text_color_highlight = u'<color=255255255255>'
+main_color = colorCodes.tf3_gray_text
+
+def hightlight(text, *params):
+    params = list(params)
+    params[0] = text_color_highlight + unicode(params[0])
+    return text.format(*params) + main_color
+
+
+def wrap_hightlight(text):
+    return text_color_highlight + text + main_color
+
 
 class HeadWindow(PyGUIBase):
 
@@ -52,234 +82,21 @@ class HeadWindow(PyGUIBase):
         return self.callbackOnMBE(comp, event)
 
 
-class soRepElemFilter(soList2ElementBase):
-    factoryString = 'soGUI.soRepElemFilter'
-    EVENT_ACTIVATE = 0
-    EVENT_DEACTIVATE = 1
-
-    def __init__(self, component, id, data):
-        soList2ElementBase.__init__(self, component, id, data)
-        component.script = self
-
-    def setupRoot(self):
-        soList2ElementBase.setupRoot(self)
-        cmp = self.component
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.width = 399
-        cmp.height = 21
-        cmp.position.x = 0
-        cmp.position.z = 0.1
-        cmp.horizontalAnchor = 'LEFT'
-
-    def setupContent(self):
-        btn = soButton(GUI.Window(''))
-        cmp = btn.component
-        cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.width = 399
-        cmp.height = 21
-        cmp.position = (0, 0, 0.4)
-        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
-        btn.initVSC('soGUI/visual_styles/repListFilterBtn.xml')
-        btn.onBound()
-        btn.buttonActive = True
-        btn._updateVisualState()
-        btn.onClick = self._btnHandler
-        cmp.label.horizontalAnchor = 'LEFT'
-        cmp.label.position.x = -0.8
-        cmp.label.text = self.elemData['caption']
-        self.component.addChild(cmp, 'btn')
-
-    def _btnHandler(self):
-        if self.component.btn.script.buttonActive:
-            self.elementEvent(self.EVENT_ACTIVATE, self)
-        else:
-            self.elementEvent(self.EVENT_DEACTIVATE, self)
-
-    def enable(self):
-        self.component.btn.script.buttonDisabled = False
-        self.component.btn.script._updateVisualState()
-        return False
-
-    def disable(self):
-        self.component.btn.script.buttonDisabled = True
-        self.component.btn.script._updateVisualState()
-        return False
-
-    def applyElemData(self):
-        self.component.btn.label.text = self.elemData['caption']
-
-
-class soRepElemProgress(soList2ElementBase):
-    factoryString = 'soGUI.soRepElemProgress'
-    EVENT_HIDEREP = 0
-    EVENT_SHOWREP = 1
-    EVENT_CONTEXT = 2
-    EVENT_TTSHOW = 3
-    EVENT_TTHIDE = 4
-
-    def __init__(self, component, id, data):
-        soList2ElementBase.__init__(self, component, id, data)
-        component.script = self
-        self.pressed = False
-        self.lastPressed = 0
-
-    def setupRoot(self):
-        soList2ElementBase.setupRoot(self)
-        cmp = self.component
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.width = 399
-        cmp.height = 50
-        cmp.position.x = 0
-        cmp.position.z = 0.1
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.mouseButtonFocus = True
-        cmp.crossFocus = True
-
-    def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/CharScreen/repElemFrame.tga')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 399
-        cmp.height = 50
-        cmp.position = (0.0, 0.0, 0.9)
-        self.component.addChild(cmp, 'dFrame')
-        cmp = GUI.Window('soGUI/maps/Controls/CharScreen/repProgress.tga')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 379
-        cmp.height = 11
-        cmp.position = (10, 28, 0.5)
-        self.component.addChild(cmp, 'pbar')
-        cmp = GUI.Simple('soGUI/maps/Controls/CharScreen/slider.tga')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'CENTER'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 11
-        cmp.height = 7
-        cmp.position = (self.elemData['progress'], 1.0, 0.45)
-        self.component.pbar.addChild(cmp, 'slider')
-        cmp = GUI.Text('faction name')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'CENTER'
-        cmp.colour = (175, 166, 112, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
-        cmp.position = (32, 17, 0.45)
-        cmp.text = self.elemData['name']
-        self.component.addChild(cmp, 'fname')
-        cmp = GUI.Text('0')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'CENTER'
-        cmp.verticalAnchor = 'CENTER'
-        cmp.colour = (175, 166, 112, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
-        cmp.position = (199, 35, 0.45)
-        cmp.text = self.elemData['reputationPoints']
-        self.component.addChild(cmp, 'repPoints')
-        cmp = GUI.Text('relations')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'RIGHT'
-        cmp.verticalAnchor = 'CENTER'
-        cmp.colour = (175, 166, 112, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
-        cmp.position = (self.component.width - 10, 17, 0.45)
-        cmp.text = self.elemData['relations']
-        self.component.addChild(cmp, 'frelations')
-        btn = soButtonWTT(GUI.Window(''), 'hide_reputation')
-        cmp = btn.component
-        cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.width = 9
-        cmp.height = 9
-        cmp.position = (13, 13, 0.4)
-        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
-        btn.initVSC('soGUI/visual_styles/repListHide.xml')
-        btn.onBound()
-        btn.buttonActive = self.elemData['hidden']
-        btn._updateVisualState()
-        btn.onClick = self._hideRepHandler
-        self.component.addChild(cmp, 'hideRep')
-
-    def applyElemData(self):
-        self.component.pbar.slider.position = (self.elemData['progress'], 1.0, 0.45)
-        self.component.fname.text = self.elemData['name']
-        self.component.frelations.text = self.elemData['relations']
-        self.component.repPoints.text = self.elemData['reputationPoints']
-        self.component.hideRep.script.buttonActive = self.elemData['hidden']
-        self.component.hideRep.script._updateVisualState()
-
-    def _hideRepHandler(self):
-        if self.component.hideRep.script.buttonActive:
-            self.elementEvent(self.EVENT_HIDEREP, self)
-        else:
-            self.elementEvent(self.EVENT_SHOWREP, self)
-
-    def handleMouseLeaveEvent(self, cmp):
-        self.elementEvent(self.EVENT_TTHIDE, self)
-        return True
-
-    def handleMouseEnterEvent(self, cmp):
-        self.elementEvent(self.EVENT_TTSHOW, self)
-        return True
-
-    def handleMouseButtonEvent(self, cmp, event):
-        if not event.isMouseButton():
-            return False
-        if event.isKeyDown():
-            if event.key == KEY_LEFTMOUSE or event.key == KEY_RIGHTMOUSE:
-                self.pressed = True
-                if BigWorld.time() - self.lastPressed <= BWPersonality.GUICore.mouseDoubleClickSpeed:
-                    self.onDblClick()
-                self.lastPressed = BigWorld.time()
-        if event.isKeyUp() and self.pressed:
-            if event.key == KEY_LEFTMOUSE:
-                self.onLClick()
-            elif event.key == KEY_RIGHTMOUSE:
-                self.onRClick()
-        return True
-
-    def onDblClick(self):
-        return None
-
-    def onLClick(self):
-        return None
-
-    def onRClick(self):
-        self.elementEvent(self.EVENT_CONTEXT, self)
-
-
 class soCharacterSlot(soItemSlot):
     factoryString = 'soGUI.soCharacterSlot'
     SLOTWIDTH = 64
     SLOTHEIGHT = 64
 
-    def __init__(self, component, slotIndex, itemData = None, frameVisible = False):
-        self.frameVisible = frameVisible
+    def __init__(self, component, slotIndex, itemData = None):
         soItemSlot.__init__(self, component, slotIndex, itemData, centerDProxy=True)
         component.script = self
+        self.weaponID = 0
         self.fake = False
         self.fake_icon = None
         self.dragProxy = self.component.dragProxy
         self.proxyHolder = self.component
         self.proxyName = 'dragProxy'
+        self._secondary = False
         self._onDragStart = self.onDragStart
         self._onDragStop = self.onDragStop
         return
@@ -293,24 +110,24 @@ class soCharacterSlot(soItemSlot):
         cmp.width = self.SLOTWIDTH
         cmp.height = self.SLOTHEIGHT
         cmp.dragFocus = True
-        cmp.dropFocus = False
+        cmp.dropFocus = True
         cmp.crossFocus = True
         cmp.moveFocus = True
         cmp.mouseButtonFocus = True
 
     def setupContent(self):
-        if self.frameVisible:
-            cmp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
-            cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
-            cmp.horizontalAnchor = 'LEFT'
-            cmp.verticalAnchor = 'TOP'
-            cmp.widthMode = cmp.heightMode = 'PIXEL'
-            cmp.width = self.SLOTWIDTH
-            cmp.height = self.SLOTHEIGHT
-            cmp.colour = (255, 255, 255, 255)
-            cmp.materialFX = 'BLEND'
-            cmp.position = (0, 0, 0.9)
-            self.component.addChild(cmp, 'frameCmp')
+        cmp = GUI.Frame2('soGUI/items/cell.dds')
+        cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.SLOTWIDTH
+        cmp.height = self.SLOTHEIGHT
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (0, 0, 0.9)
+        cmp.visible = False
+        self.component.addChild(cmp, 'frameCmp')
         cmp = GUI.Simple('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -334,7 +151,19 @@ class soCharacterSlot(soItemSlot):
         cmp.materialFX = 'BLEND'
         cmp.position = (0, 0, 0.4)
         self.component.addChild(cmp, 'itemIcon')
-        cmp = GUI.Simple('soGUI/maps/Controls/inventory/broken.tga')
+        cmp = GUI.Simple('soGUI/items/marker_green.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = 25
+        cmp.height = 25
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.visible = False
+        cmp.position = (self.SLOTWIDTH - 25, 0, 0.2)
+        self.component.addChild(cmp, 'marker_on')
+        cmp = GUI.Simple('soGUI/items/broken.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -348,15 +177,6 @@ class soCharacterSlot(soItemSlot):
         self.component.addChild(cmp, 'itemBroken')
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'BOTTOM'
-        cmp.font = 'ruRU_Cyrvetica_Extra_10i.font'
-        cmp.colour = (175, 166, 112, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.position = (4, self.SLOTHEIGHT - 4, 0.3)
-        self.component.addChild(cmp, 'itemName')
-        cmp = GUI.Text('')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'TOP'
         cmp.font = 'ruRU_Cyrvetica_Extra_10i.font'
@@ -364,53 +184,83 @@ class soCharacterSlot(soItemSlot):
         cmp.materialFX = 'BLEND'
         cmp.position = (self.SLOTWIDTH - 5, 5, 0.3)
         self.component.addChild(cmp, 'itemCount')
+        oil = GUI.Simple('soGUI/maps/Icons/item_oil.dds')
+        oil.verticalPositionMode = oil.horizontalPositionMode = 'PIXEL'
+        oil.horizontalAnchor = 'RIGHT'
+        oil.verticalAnchor = 'TOP'
+        oil.widthMode = oil.heightMode = 'PIXEL'
+        oil.width = oil.texture.width
+        oil.height = oil.texture.height
+        oil.colour = (255, 255, 255, 255)
+        oil.materialFX = 'BLEND'
+        oil.position = (self.SLOTWIDTH - 3, 3, 0.05)
+        oil.visible = False
+        self.component.addChild(oil, 'oil')
+
+    def on_out_screen_drop(self):
+        self.unequip()
+
+    def handleDropEvent(self, comp, dropped):
+        if dropped.script is None:
+            return False
+        elif getattr(dropped.script, 'factoryString') != 'soGUI.soInventorySlot2':
+            return False
+        else:
+            return soItemSlot.handleDropEvent(self, comp, dropped)
+
+    def update_frameCmp(self):
+        self.component.frameCmp.visible = self.haveItem()
 
     def _applyItemData(self):
+        self.cancelForceRedrawAfter()
+        self.update_frameCmp()
+        self.component.oil.visible = False
         if self.haveItem():
             item_type = self.itemData['complexItemType']
-            item_id = self.itemData['complexItemID']
             item_class = ItemsCatalog.GetItemClass(item_type)
             item_params = ItemsCatalog.GetItemParam(item_type)
-            item_level = item_params['Level']
-            iconName = item_params['IconName']
-            if BWPersonality.GUICore.iconTextures is not None:
-                if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
-                    if BWPersonality.GUICore.iconTextures.has_key(iconName):
-                        self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures[iconName]
-                    else:
-                        self.component.itemIcon.textureName = iconName
-            else:
-                self.component.itemIcon.textureName = iconName
-            self.component.itemName.colour = (175, 166, 112, 255)
-            self.fake_icon = self.component.itemIcon.texture
-            countStr = ItemsUtils.GetDisplayValue(self.itemData)
-            friendlyName = ItemsUtils.GetItemName(item_type, fGetShortName=True, tintItem=self.itemData)
-            fake = BigWorld.player().IsItemFake(self.itemData)
-            item_state = ItemsUtils.GetItemConditionPercent(BigWorld.player(), self.itemData)
-            if item_state <= 0.5 and not fake:
-                self.component.itemBroken.visible = True
-            else:
-                self.component.itemBroken.visible = False
-            if item_class == ItemsCatalog.ARTIFACT:
-                depleet_time = ItemsUtils.GetArtefactDepleetionTime(self.itemData, item_params, BWPersonality.gpd.time_diff)
-                inconstantParam = ItemsUtils.GetComplexItemInconstanParams(self.itemData)
-                if inconstantParam.get(ItemsCatalog.INC_ARTEFACT_DEAD, 0) or depleet_time < 0.0 or depleet_time is None:
-                    self.component.itemName.colour = (0, 0, 0, 255)
+            if not ItemsUtils.GetIconName(self.itemData):
+                iconName = 'nottexture.dds'
+                if BWPersonality.GUICore.iconTextures is not None:
+                    if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
+                        if BWPersonality.GUICore.iconTextures.has_key(iconName):
+                            self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures[iconName]
+                        else:
+                            self.component.itemIcon.textureName = iconName
+                else:
+                    self.component.itemIcon.textureName = iconName
+                self.fake_icon = self.component.itemIcon.texture
+                countStr = ItemsUtils.GetDisplayValue(self.itemData)
+                fake = BigWorld.player().IsItemFake(self.itemData)
+                item_state = ItemsUtils.GetItemConditionRatio(BigWorld.player(), self.itemData)
+                if item_state <= 0.5 and not fake:
                     self.component.itemBroken.visible = True
                 else:
                     self.component.itemBroken.visible = False
-            item_lock = BigWorld.player().ItemLocked(self.itemData)
-            self.component.itemName.text = friendlyName
-            self.component.itemCount.text = countStr
+                if item_class == ItemsCatalog.ARTIFACT:
+                    depleet_time = ItemsUtils.GetArtefactDepleetionTime(self.itemData, item_params, BWPersonality.gpd.time_diff)
+                    inconstantParam = ItemsUtils.GetComplexItemInconstanParams(self.itemData)
+                    if inconstantParam.get(ItemsCatalog.INC_ARTEFACT_DEAD, 0) or depleet_time < 0.0 or depleet_time is None:
+                        self.component.itemBroken.visible = True
+                    else:
+                        self.component.itemBroken.visible = False
+                item_lock = BigWorld.player().ItemLocked(self.itemData)
+                self.component.marker_on.visible = BigWorld.player().it_is_active_gadget(self.itemData['complexItemID'])
+                self.component.itemCount.text = countStr
+                if item_class == ItemsCatalog.WEAPON:
+                    oil_time_left = ItemsUtils.getGreaseOilWeaponLeftTime(self.itemData, diffTime=BWPersonality.gpd.time_diff)
+                    self.component.oil.visible = oil_time_left and True
+                    self.forceRedrawAfter(oil_time_left + 3.0)
             self.fakeSlot(fake)
             self.lockSlot(item_lock)
         else:
             self.component.itemIcon.textureName = ''
-            self.component.itemName.text = ''
             self.component.itemCount.text = ''
             self.fake_icon = None
             self.fakeSlot(True)
             self.lockSlot(True)
+            self.component.itemBroken.visible = False
+            self.component.marker_on.visible = False
         self.dragProxy.texture = self.component.itemIcon.texture
         return
 
@@ -426,6 +276,9 @@ class soCharacterSlot(soItemSlot):
 
     def unequip(self):
         BWPersonality.GUICore.charScreenEvent(soCharacterScreen2.EVENT_UNEQUIP, self.itemData)
+
+    def equipItem(self, *e):
+        pass
 
     def onDragStart(self):
         if self.haveItem():
@@ -445,27 +298,35 @@ class soCharacterSlot(soItemSlot):
 
     def fakeSlot(self, isFake = False):
         self.fake = isFake
-        if self.fake:
-            self.component.itemIcon.colour = (255, 255, 255, 128)
-            self.component.itemName.visible = False
-        else:
-            self.component.itemIcon.colour = (255, 255, 255, 255)
-            self.component.itemName.visible = True
+        self.update_item_color()
 
     def toActionBar(self, slotN, slot_element = None):
         prev_item_id = 0
         prev_item_type = 0
-        BWPersonality.GUICore.inventoryEvent(INV_CONST.EVENT_TOQUICKBAR, [self.itemData,
+        BWPersonality.GUICore.inventoryEvent(INV_CONST.A_TOQUICKBAR, [self.itemData,
          slotN,
          prev_item_id,
          prev_item_type])
 
     def lockSlot(self, doLock):
         soItemSlot.lockSlot(self, doLock)
-        if self.locked:
+        self.update_item_color()
+
+    def set_secondary(self, secondary):
+        self._secondary = secondary
+        self.update_item_color()
+
+    def update_item_color(self):
+        if self.itemData and self.itemData.get('error_item', False):
+            self.component.itemIcon.colour = (255, 100, 100, 100)
+        elif self.locked:
             self.component.itemIcon.colour = (125, 125, 125, 255)
         elif self.fake:
             self.component.itemIcon.colour = (255, 255, 255, 128)
+        elif self._secondary:
+            self.component.itemIcon.colour = (255, 255, 255, 60)
+        elif BigWorld.player() and BigWorld.player().isFadedItem(self.itemData):
+            self.component.itemIcon.colour = LOCKED_COLOR
         else:
             self.component.itemIcon.colour = (255, 255, 255, 255)
 
@@ -486,10 +347,48 @@ class soCharacterSlot(soItemSlot):
         return True
 
 
+class soVisibleAttachSlot(soCharacterSlot):
+
+    def __init__(self, component, slotIndex, itemData = None):
+        soCharacterSlot.__init__(self, component, slotIndex, itemData)
+        self.component.dropFocus = True
+        cmp = GUI.Simple('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.SLOTWIDTH
+        cmp.height = self.SLOTHEIGHT
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (0, 0, 0.1)
+        cmp.visible = False
+        cmp.texture = LOADED_TEXTURES.get(CASC.get_slot_icon(slotIndex))
+        self.component.addChild(cmp, 'itemBackground')
+
+    def update_frameCmp(self):
+        self.component.frameCmp.visible = self.haveItem()
+        self.component.itemBackground.visible = not self.haveItem()
+
+
+class soEquipSlot(soCharacterSlot):
+
+    def handleDropEvent(self, comp, dropped):
+        if dropped.script is None:
+            return False
+        elif getattr(dropped.script, 'factoryString') != 'soGUI.soInventorySlot2':
+            return False
+        else:
+            if self.itemData and dropped.script.itemData:
+                if BigWorld.player().charge_gadget_with_item(self.itemData, dropped.script.itemData):
+                    return True
+            return soCharacterSlot.handleDropEvent(self, comp, dropped)
+
+
 class soGadgetSlot(soCharacterSlot):
 
-    def __init__(self, component, slotIndex, itemData = None, frameVisible = False):
-        soCharacterSlot.__init__(self, component, slotIndex, itemData, frameVisible)
+    def __init__(self, component, slotIndex, itemData = None):
+        soCharacterSlot.__init__(self, component, slotIndex, itemData)
         self.component.dropFocus = True
 
     def lockSlot(self, doLock):
@@ -497,13 +396,14 @@ class soGadgetSlot(soCharacterSlot):
         if self.locked:
             if self.fake:
                 self.component.itemIcon.colour = (255, 255, 255, 255)
-                self.component.itemIcon.texture = LOCK_ICON
+                self.component.itemIcon.texture = LOADED_TEXTURES.get(LOCK_ICON, None)
             else:
                 if self.fake_icon:
                     self.component.itemIcon.texture = self.fake_icon
                 self.component.itemIcon.colour = (125, 125, 125, 255)
         else:
             self.component.itemIcon.colour = (255, 255, 255, 255)
+        return
 
     def handleDragEnterEvent(self, comp, dragged):
         return True
@@ -511,19 +411,21 @@ class soGadgetSlot(soCharacterSlot):
     def handleDragLeaveEvent(self, comp, dragged):
         return True
 
+    def on_out_screen_drop(self):
+        self.unequip()
+
     def handleDropEvent(self, comp, dropped):
-        from soGUI.soInventorySlot2 import soInventorySlot2
         if dropped.script is None:
             return False
-        elif isinstance(dropped.script, soInventorySlot2):
-            if self.checkChargeGadget(self.itemData, dropped.script.itemData):
-                return
-            dropped.script.equipItem()
+        elif getattr(dropped.script, 'factoryString') != 'soGUI.soInventorySlot2':
+            return False
+        elif self.checkChargeEquippedItem(self.itemData, dropped.script.itemData):
             return True
         else:
+            dropped.script.equipItem()
             return True
 
-    def checkChargeGadget(self, item_battery, item_charge):
+    def checkChargeEquippedItem(self, item_battery, item_charge):
         if not item_battery or not item_charge:
             return False
         if BigWorld.player().charge_gadget_with_item(item_battery, item_charge):
@@ -531,16 +433,165 @@ class soGadgetSlot(soCharacterSlot):
         return False
 
 
+class soEquipmentWindow(PyGUIBase):
+
+    def __init__(self, component, slot_handler, slotClass):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.slot_handler = slot_handler
+        self.setupContent()
+        self.slotClass = slotClass
+
+    def handleMouseEnterEvent(self, cmp):
+        return True
+
+    def handleMouseLeaveEvent(self, cmp):
+        return True
+
+    def handleDragEnterEvent(self, cmp, dragged):
+        return True
+
+    def handleDropEvent(self, comp, dropped):
+        if dropped.script is None:
+            return False
+        elif getattr(dropped.script, 'factoryString') != 'soGUI.soInventorySlot2':
+            return False
+        else:
+            dropped.script.equipItem()
+            return True
+
+    def setupContent(self):
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.heightMode = 'CLIP'
+        cmp.widthMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = cmp.height = 2.0
+        cmp.position = (-1, 1, 0.1)
+        eqWnd = cmp
+        cmp = GUI.Frame2('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.height = 375
+        cmp.width = 800
+        cmp.position = (3, 50, 0.8)
+        eqWnd.addChild(cmp, 'dFrame')
+        cmp.dropFocus = True
+        cmp.crossFocus = True
+        cmp.dragFocus = True
+        cmp.texture = LOADED_TEXTURES.get('soGUI/frame/tt_frame_2.dds')
+        cmp.script = self
+        cmp = GUI.Simple('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 554
+        cmp.height = 531
+        cmp.position = (16, 51, 0.7)
+        eqWnd.addChild(cmp, 'charDoll')
+        cmp.texture = LOADED_TEXTURES.get('soGUI/frame/equipment/background.dds')
+        cmp = GUI.Window('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 570
+        cmp.height = 93
+        cmp.position = (4, 510, 0.1)
+        eqWnd.addChild(cmp, 'gadgetsWnd')
+        cmp.dropFocus = True
+        cmp.script = self
+
+    def setupSlots(self):
+        eqWnd = self.component
+        posMap = {soCharacterScreen2.INDEX_PRIMARY: (330, 288, 0.5),
+         soCharacterScreen2.INDEX_PRIMARY2: (331, 356, 0.5),
+         soCharacterScreen2.INDEX_SECONDARY: (191, 356, 0.5)}
+        slot_index = 105
+        _equipment_slots = []
+
+        def create_slot(slot_type, position):
+            slot = soEquipSlot(GUI.Window(), slot_type)
+            slot.component.position = position
+            slot.slotEvent = self.slot_handler
+            slot.slot_type = slot_type
+            eqWnd.addChild(slot.component)
+            _equipment_slots.append(slot)
+
+        _visible_attaches_slots = {}
+
+        def create_attaches_slot(slot_type):
+            slot = soVisibleAttachSlot(GUI.Window(), slot_type)
+            position = CASC.get_slot_position(slot_type)
+            slot.component.position = position
+            slot.slotEvent = self.slot_handler
+            slot.slot_type = slot_type
+            slot.visible = False
+            eqWnd.addChild(slot.component)
+            _visible_attaches_slots[slot_type] = slot
+
+        for i in xrange(4):
+            create_slot(slot_index, (158 + i * 69, 66, 0.5))
+            slot_index += 1
+
+        for j in xrange(3):
+            for i in xrange(2):
+                create_slot(slot_index, (21 + 68 * i, 152 + 68 * j, 0.5))
+                slot_index += 1
+
+        for j in xrange(5):
+            for i in xrange(2):
+                create_slot(slot_index, (434 + 68 * i, 152 + 68 * j, 0.5))
+                slot_index += 1
+
+        create_slot(slot_index, (191, 220, 0.5))
+        slot_index += 1
+        create_slot(slot_index, (191, 288, 0.5))
+        slot_index += 1
+        create_slot(slot_index, (330, 152, 0.5))
+        slot_index += 1
+        create_slot(133, (330, 220, 0.5))
+        for slot_type in CASC.CLOTH_ATTACH_SLOTS_CONFIG.keys():
+            create_attaches_slot(slot_type)
+
+        slots = {}
+        for slotIndex in posMap.keys():
+            slot = self.slotClass(GUI.Window(), slotIndex)
+            slot.weaponID = soCharacterScreen2.WEPONIDMAP.get(slotIndex, 0)
+            slot.slotEvent = self.slot_handler
+            cmp = slot.component
+            cmp.position = posMap[slotIndex]
+            eqWnd.addChild(cmp, 'slot' + str(slotIndex))
+            slots[slotIndex] = slot
+
+        for i, slotIndex in enumerate(soCharacterScreen2.GADGET_SLOTS):
+            slot = soGadgetSlot(GUI.Window(), slotIndex)
+            slot.slotEvent = self.slot_handler
+            cmp = slot.component
+            cmp.position = (16 + i * 69, 0, 0.3)
+            eqWnd.gadgetsWnd.addChild(cmp, 'slot' + str(slotIndex))
+            slots[slotIndex] = slot
+
+        return (slots, _equipment_slots, _visible_attaches_slots)
+
+
 class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
     factoryString = 'soGUI.soCharacterScreen2'
-    TAB_EQUIPMENT = 0
-    TAB_REPUTATION = 1
-    TAB_PVPSTATS = 2
-    TAB_DEFENCE = 3
-    INDEX_FACE = 0
+    TAB_COUNT = 4
+    TAB_EQUIPMENT, TAB_ACHIVS, TAB_PVPSTATS, TAB_DEFENCE = xrange(TAB_COUNT)
     INDEX_HEAD = 1
-    INDEX_PRIMARY = 2
-    INDEX_SECONDARY = 3
     INDEX_BACKPACK = 4
     INDEX_PALMS = 5
     INDEX_ARMOR = 6
@@ -553,13 +604,28 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
     INDEX_GADGET4 = 13
     INDEX_GADGET5 = 14
     INDEX_GADGET6 = 15
+    INDEX_GADGET7 = 16
+    INDEX_GADGET8 = 17
+    INDEX_FACE = 16
+    INDEX_PRIMARY = 50
+    INDEX_PRIMARY2 = 51
+    INDEX_SECONDARY = 52
+    GADGET_SLOTS = [INDEX_GADGET1,
+     INDEX_GADGET2,
+     INDEX_GADGET3,
+     INDEX_GADGET4,
+     INDEX_GADGET5,
+     INDEX_GADGET6,
+     INDEX_GADGET7,
+     INDEX_GADGET8]
+    WEPONIDMAP = {INDEX_PRIMARY: ItemsUtils.getWeaponSlotIDByName('PrimarySlot'),
+     INDEX_PRIMARY2: ItemsUtils.getWeaponSlotIDByName('Primary2Slot'),
+     INDEX_SECONDARY: ItemsUtils.getWeaponSlotIDByName('SecondarySlot')}
     INDEX_NUM = 16
     EVENT_UNEQUIP = 0
     EVENT_USE = 1
     EVENT_CONTEXT = 2
     EVENT_REPAIR = 3
-    EVENT_HIDEREP = 4
-    EVENT_REPCONTEXT = 5
     CHARSTATID_STRENGTH = 0
     CHARSTATID_INTELLECT = 1
     CHARSTATID_DEXTIRITY = 2
@@ -569,15 +635,10 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
     charStatsColMap = {'normal': Vector4(175, 166, 112, 255),
      'lowered': Vector4(145, 65, 50, 255),
      'buffed': Vector4(100, 140, 25, 255)}
-    statsLabels = {CHARSTATID_STRENGTH: lc('soCharacterScreen.soGUI.CHARACTER_CHARACTERISTIC_STRENGTH'),
-     CHARSTATID_INTELLECT: lc('soCharacterScreen.soGUI.CHARACTER_CHARACTERISTIC_INTELLIGENCE'),
-     CHARSTATID_DEXTIRITY: lc('soCharacterScreen.soGUI.CHARACTER_CHARACTERISTIC_DEXTERITY'),
-     CHARSTATID_CONSTITUTION: lc('soCharacterScreen.soGUI.CHARACTER_CHARACTERISTIC_CONSTITUTION'),
-     CHARSTATID_PERCEPTION: lc('soCharacterScreen.soGUI.CHARACTER_CHARACTERISTIC_PERCEPTION'),
-     CHARSTATID_PSIONICS: lc('soCharacterScreen.soGUI.CHARACTER_CHARACTERISTIC_PSIONICS')}
     tabLabels = {TAB_EQUIPMENT: lc('soCharacterScreen.soGUI.EQUIPMENT_TAB_LABEL'),
-     TAB_REPUTATION: lc('soCharacterScreen.soGUI.REPUTATION_TAB_LABEL'),
-     TAB_PVPSTATS: lc('soCharacterScreen.soGUI.PVP_STATISTICS_TAB_LABEL')}
+     TAB_ACHIVS: lc('soCharacterScreen.soGUI.ACHIVS_TAB_LABEL'),
+     TAB_PVPSTATS: lc('soCharacterScreen.soGUI.PVP_STATISTICS_TAB_LABEL'),
+     TAB_DEFENCE: lc('soCharacterScreen.soGUI.STATS_TAB')}
 
     def __init__(self, component):
         PyGUIBase.__init__(self, component)
@@ -589,16 +650,37 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
         self.slots = {}
         self.statLabelCmps = {}
         self.pvpFlagTimer = 0
+        self._char_name = u''
         self.pvpTicker = None
-        self.repData = {}
         self.currentTab = self.TAB_EQUIPMENT
         self.statsTab = None
         self.setupRoot()
+        right_slots_border = 588
+        bottom_slots_border = 438
+        bottom_space = 192
+        self.component.width = right_slots_border
+        self.component.height = bottom_slots_border + bottom_space
         self.setupContent()
-        self.setupSlots()
-        self.setupStats()
         self.setupTabBtns()
-        self._extendGadgetsWnd(True)
+        self.component.closeBox.position = (right_slots_border - 28, 6, 0.3)
+        self.component.hintBox.position = (self.component.closeBox.position[0] - 20, 6, 0.3)
+        eq_wnd = self.component.wnd0
+        self.component.mFrame.width = right_slots_border
+        self.component.mFrame.height = bottom_slots_border + bottom_space
+        eq_wnd.width = right_slots_border
+        eq_wnd.dFrame.width = right_slots_border - 6
+        eq_wnd.dFrame.height = bottom_slots_border + bottom_space - 85
+        pvp_wnd = self.component.wnd2
+        pvp_wnd.dFrame.width = eq_wnd.dFrame.width
+        pvp_wnd.dFrame.height = eq_wnd.dFrame.height
+        for i in xrange(5):
+            getattr(pvp_wnd, 'elemFrame' + str(i)).width = right_slots_border - 12
+
+        stat_wnd = self.component.wnd3
+        stat_wnd.statFrame.width = eq_wnd.dFrame.width
+        stat_wnd.statFrame.height = eq_wnd.dFrame.height
+        stat_wnd.statFrame.txt.script.setSize(right_slots_border - 28, bottom_slots_border + bottom_space - 92)
+        stat_wnd.statFrame.txt.position = (21, 56, 0.2)
         return
 
     def setupRoot(self):
@@ -609,7 +691,7 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
         cmp.verticalAnchor = 'CENTER'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
-        cmp.width = 427
+        cmp.width = 800
         cmp.height = 520
         cmp.textureName = ''
         cmp.position = (0.01, 0.02, 0.5)
@@ -618,9 +700,6 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
         cmp.crossFocus = True
         cmp.dragFocus = True
         cmp.dropFocus = True
-
-    def onTextureLoaded(self, cmp, texture_name, resource):
-        cmp.texture = resource[texture_name]
 
     def setupContent(self):
         cmp = GUI.Frame2('')
@@ -634,164 +713,21 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
         cmp.width = 427
         cmp.position = (0, 0, 0.9)
         self.component.addChild(cmp, 'mFrame')
-        BigWorld.loadResourceListBG(['soGUI/maps/Controls/inventory/inventoryFrame2.tga'], partial(self.onTextureLoaded, cmp, 'soGUI/maps/Controls/inventory/inventoryFrame2.tga'))
+        cmp.texture = LOADED_TEXTURES.get('soGUI/frame/basic_frame_1.dds')
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (18, 6, 0.3)
         cmp.text = u''
         self.component.addChild(cmp, 'charName')
-        cmp = GUI.Window()
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
-        cmp.widthMode = cmp.heightMode = 'CLIP'
-        cmp.horizontalAnchor = 'CENTER'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = cmp.height = 2.0
-        cmp.position = (0.0, 1.0, 0.1)
+        eqWnd = soEquipmentWindow(GUI.Window(), self._slot_handler, soCharacterSlot)
+        cmp = eqWnd.component
         self.component.addChild(cmp, 'wnd' + str(self.TAB_EQUIPMENT))
-        eqWnd = cmp
-        cmp = GUI.Frame2('')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.height = 375
-        cmp.width = 421
-        cmp.position = (3, 50, 0.8)
-        eqWnd.addChild(cmp, 'dFrame')
-        cmp.dropFocus = True
-        cmp.crossFocus = True
-        cmp.dragFocus = True
-        cmp.script = self
-        BigWorld.loadResourceListBG(['soGUI/maps/Controls/CharScreen/eqDecFrame.tga'], partial(self.onTextureLoaded, cmp, 'soGUI/maps/Controls/CharScreen/eqDecFrame.tga'))
-        cmp = GUI.Simple('')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 394
-        cmp.height = 361
-        cmp.position = (16, 49, 0.7)
-        eqWnd.addChild(cmp, 'charDoll')
-        BigWorld.loadResourceListBG(['soGUI/maps/Controls/CharScreen/char.jpg'], partial(self.onTextureLoaded, cmp, 'soGUI/maps/Controls/CharScreen/char.jpg'))
-        cmp = GUI.Window('')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 400
-        cmp.height = 93
-        cmp.position = (14, 351, 0.85)
-        eqWnd.addChild(cmp, 'gadgetsWnd')
-        cmp.dropFocus = True
-        cmp.script = self
-        gadgetsMP = Matrix()
-        gadgetsMP.translation = (0.0, 0.0, 0.0)
-        shader = GUI.MatrixShader()
-        shader.eta = 0
-        shader.blend = True
-        shader.target = gadgetsMP
-        cmp.addShader(shader, 'mover')
-        cmp = GUI.Frame2('soGUI/maps/Controls/CharScreen/eqBtFrame.tga')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 400
-        cmp.height = 73
-        cmp.position = (0, 0, 0.9)
-        eqWnd.gadgetsWnd.addChild(cmp, 'frame')
-        BigWorld.loadResourceListBG(['soGUI/maps/Controls/CharScreen/eqBtFrame.tga'], partial(self.onTextureLoaded, cmp, 'soGUI/maps/Controls/CharScreen/eqBtFrame.tga'))
-        btn = soButtonWFT(GUI.Window(''))
-        cmp = btn.component
-        cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'BOTTOM'
-        cmp.width = 108
-        cmp.height = 21
-        cmp.position = (10, 93, 0.4)
-        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
-        btn.initVSC('soGUI/visual_styles/upturnedTab_charScreen.xml')
-        btn.onBound()
-        btn.setVisualState('normal')
-        cmp.label.text = lc('soCharacterScreen.soGUI.GADGETS_TAB_LABEL')
-        cmp.label.pixelSnap = False
-        eqWnd.gadgetsWnd.addChild(cmp, 'gadgetsTabBtn')
-        cmp = GUI.Window('')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.visible = False
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 200
-        cmp.height = 106
-        cmp.position = (217, 387, 0.85)
-        eqWnd.addChild(cmp, 'statsWnd')
-        statsMP = Matrix()
-        statsMP.translation = (0.0, 0.0, 0.0)
-        shader = GUI.MatrixShader()
-        shader.eta = 0
-        shader.blend = True
-        shader.target = statsMP
-        cmp.addShader(shader, 'mover')
-        cmp = GUI.Frame2('')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 200
-        cmp.height = 86
-        cmp.position = (0, 0, 0.9)
-        eqWnd.statsWnd.addChild(cmp, 'frame')
-        BigWorld.loadResourceListBG(['soGUI/maps/Controls/CharScreen/eqBtFrame.tga'], partial(self.onTextureLoaded, cmp, 'soGUI/maps/Controls/CharScreen/eqBtFrame.tga'))
-        btn = soButtonWFT(GUI.Window(''))
-        cmp = btn.component
-        cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'RIGHT'
-        cmp.verticalAnchor = 'BOTTOM'
-        cmp.width = 120
-        cmp.height = 21
-        cmp.position = (190, 106, 0.4)
-        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
-        btn.initVSC('soGUI/visual_styles/upturnedTab_charScreen.xml')
-        btn.onBound()
-        btn.setVisualState('normal')
-        cmp.label.text = lc('soCharacterScreen.soGUI.CHARACTERISTICS_TAB_LABEL')
-        eqWnd.statsWnd.addChild(cmp, 'statsTabBtn')
-        cmp = GUI.Simple('')
-        hw = HeadWindow(cmp, lambda c, e: DraggableComponent.handleMouseButtonEvent(self, c, e))
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.colour = (21, 21, 19, 0)
-        cmp.materialFX = 'BLEND'
-        cmp.position = (0, 0, 0.9)
-        cmp.visible = 1
-        cmp.mouseButtonFocus = 1
-        self.component.addChild(cmp, 'headb')
-        cmp.width, cmp.height = (427, 25)
-        BigWorld.loadResourceListBG(['textures/default/white.dds'], partial(self.onTextureLoaded, cmp, 'textures/default/white.dds'))
+        self.slots, self._equipment_slots, self._visible_attaches_slots = eqWnd.setupSlots()
         closeBox = soButton(GUI.Window())
         cmp = closeBox.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
@@ -803,7 +739,7 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
         cmp.width = 18
         cmp.height = 18
         cmp.position = (403, 6, 0.3)
-        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.initVSC('soGUI/elements/closeBox.xml')
         closeBox.onBound()
         closeBox.setVisualState('normal')
         self.component.addChild(cmp, 'closeBox')
@@ -818,10 +754,19 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
         comp.width = 18
         comp.height = 18
         comp.position = (381, 6, 0.3)
-        hintBox.initVSC('soGUI/visual_styles/helpBox.xml')
+        hintBox.initVSC('soGUI/elements/helpBox.xml')
         hintBox.onBound()
         hintBox.setVisualState('normal')
         self.component.addChild(comp, 'hintBox')
+        comp = GUI.Window()
+        comp.horizontalPositionMode, comp.verticalPositionMode = ('CLIP', 'CLIP')
+        comp.widthMode, comp.heightMode = ('CLIP', 'CLIP')
+        comp.horizontalAnchor, comp.verticalAnchor = ('CENTER', 'BOTTOM')
+        comp.width, comp.height = (2.0, 1.83)
+        comp.position = (0, -1, 0.1)
+        comp.visible = False
+        self.component.addChild(comp, 'wnd' + str(self.TAB_ACHIVS))
+        AchivsTab(comp)
         cmp = GUI.Window()
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
         cmp.widthMode = cmp.heightMode = 'CLIP'
@@ -844,7 +789,7 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
         cmp.width = 423
         cmp.position = (3, 50, 0.8)
         pvpWnd.addChild(cmp, 'dFrame')
-        BigWorld.loadResourceListBG(['soGUI/maps/Controls/CharScreen/eqDecFrame.tga'], partial(self.onTextureLoaded, cmp, 'soGUI/maps/Controls/CharScreen/eqDecFrame.tga'))
+        cmp.texture = LOADED_TEXTURES.get('soGUI/frame/tt_frame_2.dds')
         for i in xrange(5):
             cmp = GUI.Frame2('')
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
@@ -857,92 +802,25 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
             cmp.width = 416
             cmp.position = (6, 53 + i * 65, 0.4)
             pvpWnd.addChild(cmp, 'elemFrame' + str(i))
-            BigWorld.loadResourceListBG(['soGUI/maps/Controls/CharScreen/pvp_elem_frame.tga'], partial(self.onTextureLoaded, cmp, 'soGUI/maps/Controls/CharScreen/pvp_elem_frame.tga'))
+            cmp.texture = LOADED_TEXTURES.get('soGUI/frame/equipment/pvp_elem_frame.dds')
             cmp = GUI.Text('')
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
             cmp.horizontalAnchor = 'LEFT'
             cmp.verticalAnchor = 'CENTER'
-            cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
-            cmp.colour = (175, 166, 112, 255)
+            cmp.font = 'RobotoCondensedRegular_14.font'
+            cmp.colour = (146, 146, 146, 200)
             cmp.materialFX = 'BLEND'
-            cmp.position = (13, 66 + i * 65, 0.3)
-            pvpWnd.addChild(cmp, 'elem_1_' + str(i))
+            cmp.position = (13, 86 + i * 65, 0.3)
+            pvpWnd.addChild(cmp, 'elem_' + str(i))
             cmp = GUI.Text('')
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
             cmp.horizontalAnchor = 'LEFT'
             cmp.verticalAnchor = 'CENTER'
-            cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
-            cmp.colour = (175, 166, 112, 255)
+            cmp.font = 'RobotoCondensedRegular_14.font'
+            cmp.colour = (255, 255, 255, 200)
             cmp.materialFX = 'BLEND'
-            cmp.position = (200, 66 + i * 65, 0.3)
-            pvpWnd.addChild(cmp, 'val_1_' + str(i))
-            if i != 0:
-                cmp = GUI.Text('')
-                cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-                cmp.horizontalAnchor = 'LEFT'
-                cmp.verticalAnchor = 'TOP'
-                cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
-                cmp.colour = (175, 166, 112, 255)
-                cmp.materialFX = 'BLEND'
-                cmp.position = (13, 83 + i * 65, 0.3)
-                pvpWnd.addChild(cmp, 'elem_2_' + str(i))
-                cmp = GUI.Text('')
-                cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-                cmp.horizontalAnchor = 'LEFT'
-                cmp.verticalAnchor = 'TOP'
-                cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
-                cmp.colour = (175, 166, 112, 255)
-                cmp.materialFX = 'BLEND'
-                cmp.position = (200, 83 + i * 65, 0.3)
-                pvpWnd.addChild(cmp, 'val_2_' + str(i))
-            else:
-                cmp = GUI.Simple('')
-                cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-                cmp.widthMode = cmp.heightMode = 'PIXEL'
-                cmp.horizontalAnchor = 'LEFT'
-                cmp.verticalAnchor = 'TOP'
-                cmp.colour = (255, 255, 255, 255)
-                cmp.materialFX = 'BLEND'
-                cmp.width = 401
-                cmp.height = 11
-                cmp.position = (13, 81, 0.35)
-                pvpWnd.addChild(cmp, 'pgBack')
-                BigWorld.loadResourceListBG(['soGUI/maps/Controls/CharScreen/progress_PvP_emp.tga'], partial(self.onTextureLoaded, cmp, 'soGUI/maps/Controls/CharScreen/progress_PvP_emp.tga'))
-                cmp = GUI.Simple('')
-                cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-                cmp.widthMode = cmp.heightMode = 'PIXEL'
-                cmp.horizontalAnchor = 'LEFT'
-                cmp.verticalAnchor = 'TOP'
-                cmp.colour = (255, 255, 255, 255)
-                cmp.materialFX = 'BLEND'
-                cmp.width = 401
-                cmp.height = 11
-                cmp.position = (13, 81, 0.35)
-                pvpWnd.addChild(cmp, 'elem_2_0')
-                BigWorld.loadResourceListBG(['soGUI/maps/Controls/CharScreen/progress_PvP.tga'], partial(self.onTextureLoaded, cmp, 'soGUI/maps/Controls/CharScreen/progress_PvP.tga'))
-                shader = GUI.ClipShader()
-                shader.value = 1.0
-                shader.speed = 0
-                cmp.addShader(shader, 'clipper')
-            if i != 1:
-                cmp = GUI.Text('')
-                cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-                cmp.horizontalAnchor = 'LEFT'
-                cmp.verticalAnchor = 'TOP'
-                cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
-                cmp.colour = (175, 166, 112, 255)
-                cmp.materialFX = 'BLEND'
-                cmp.position = (13, 98 + i * 65, 0.3)
-                pvpWnd.addChild(cmp, 'elem_3_' + str(i))
-                cmp = GUI.Text('')
-                cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-                cmp.horizontalAnchor = 'LEFT'
-                cmp.verticalAnchor = 'TOP'
-                cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
-                cmp.colour = (175, 166, 112, 255)
-                cmp.materialFX = 'BLEND'
-                cmp.position = (200, 98 + i * 65, 0.3)
-                pvpWnd.addChild(cmp, 'val_3_' + str(i))
+            cmp.position = (200, 86 + i * 65, 0.3)
+            pvpWnd.addChild(cmp, 'val_' + str(i))
 
         cmp = GUI.Window()
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
@@ -967,8 +845,8 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
         cmp.position = (3, 50, 0.8)
         self.statsTab.addChild(cmp, 'statFrame')
         statFrame = cmp
-        BigWorld.loadResourceListBG(['soGUI/maps/Controls/CharScreen/eqDecFrame.tga'], partial(self.onTextureLoaded, cmp, 'soGUI/maps/Controls/CharScreen/eqDecFrame.tga'))
-        txt = soTextField3(GUI.Window(), width=400, height=435, textWidth=-1, hScroll=False, vScroll=True, hideScroll=False, borderWidth=0, vOffset=2, hOffset=2, textureless=False, autosize=False)
+        cmp.texture = LOADED_TEXTURES.get('soGUI/frame/tt_frame_2.dds')
+        txt = soTextField3(GUI.Window(), width=561, height=435, textWidth=-1, hScroll=False, vScroll=True, hideScroll=False, borderWidth=0, vOffset=2, hOffset=2, textureless=False, autosize=False)
         cmp = txt.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -978,172 +856,63 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
         self.defenceTxt = txt
         txt.onBound()
         txt.setText(u'')
-        cmp = GUI.Window()
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
-        cmp.widthMode = cmp.heightMode = 'CLIP'
-        cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = cmp.height = 2.0
-        cmp.position = (0.0, 0.0, 0.1)
-        cmp.visible = False
-        self.component.addChild(cmp, 'wnd' + str(self.TAB_REPUTATION))
-        repWnd = cmp
-        cmp = GUI.Frame2('')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 423
-        cmp.height = 444
-        cmp.position = (3, 50, 0.8)
-        repWnd.addChild(cmp, 'dFrame')
-        BigWorld.loadResourceListBG(['soGUI/maps/Controls/CharScreen/eqDecFrame.tga'], partial(self.onTextureLoaded, cmp, 'soGUI/maps/Controls/CharScreen/eqDecFrame.tga'))
-        repList = soList2(GUI.Window(), width=415, height=436, elemHandler=self._repElemHandler)
-        cmp = repList.component
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.position = (6, 54, 0.2)
-        repWnd.addChild(cmp, 'repList')
-        repList.onBound()
-
-    def _repElemHandler(self, event, data):
-        if isinstance(data, soRepElemFilter):
-            if event == soRepElemFilter.EVENT_DEACTIVATE:
-                repWnd = getattr(self.component, 'wnd' + str(self.TAB_REPUTATION))
-                repList = repWnd.repList.script
-                repList.removeElems(self.repData[data.id][0])
-                self.repData[data.id][1] = True
-            elif event == soRepElemFilter.EVENT_ACTIVATE:
-                repWnd = getattr(self.component, 'wnd' + str(self.TAB_REPUTATION))
-                repList = repWnd.repList.script
-                idx = repList.getIndex(data.getID())
-                repList.insertElems(idx + 1, self.repData[data.id][0])
-                self.repData[data.id][1] = False
-        if isinstance(data, soRepElemProgress):
-            if event == soRepElemProgress.EVENT_CONTEXT:
-                BWPersonality.GUICore.reputationEvent(self.EVENT_REPCONTEXT, data.getID())
-            if event == soRepElemProgress.EVENT_TTSHOW:
-                BWPersonality.GUICore.toolTipEvent(data.getID(), BWPersonality.GUICore.GUI_ID_REPSTATS, soToolTipComponent.EVENT_SHOW)
-            if event == soRepElemProgress.EVENT_TTHIDE:
-                BWPersonality.GUICore.toolTipEvent(data.getID(), BWPersonality.GUICore.GUI_ID_REPSTATS, soToolTipComponent.EVENT_HIDE)
-            if event == soRepElemProgress.EVENT_HIDEREP:
-                BWPersonality.GUICore.reputationEvent(self.EVENT_HIDEREP, [data.getID(), True])
-            if event == soRepElemProgress.EVENT_SHOWREP:
-                BWPersonality.GUICore.reputationEvent(self.EVENT_HIDEREP, [data.getID(), False])
 
     def setupTabBtns(self):
-        btn = soButtonWFT(GUI.Window(''))
-        cmp = btn.component
-        cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.width = 101
-        cmp.height = 21
-        cmp.position = (7, 30, 0.4)
-        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
-        btn.initVSC('soGUI/visual_styles/charScreenTab.xml')
-        btn.onBound()
-        btn.buttonActive = True
-        btn._updateVisualState()
-        btn.onClick = partial(self._switchToTab, self.TAB_EQUIPMENT)
-        cmp.label.text = self.tabLabels[self.TAB_EQUIPMENT]
-        self.component.addChild(cmp, 'equipmentTab')
-        btn = soButtonWFT(GUI.Window(''))
-        cmp = btn.component
-        cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.width = 101
-        cmp.height = 21
-        cmp.position = (108, 30, 0.4)
-        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
-        btn.initVSC('soGUI/visual_styles/charScreenTab.xml')
-        btn.onBound()
-        btn._updateVisualState()
-        btn.onClick = partial(self._switchToTab, self.TAB_REPUTATION)
-        cmp.label.text = self.tabLabels[self.TAB_REPUTATION]
-        self.component.addChild(cmp, 'repTab')
-        btn = soButtonWFT(GUI.Window(''))
-        cmp = btn.component
-        cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.width = 101
-        cmp.height = 21
-        cmp.position = (209, 30, 0.4)
-        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
-        btn.initVSC('soGUI/visual_styles/charScreenTab.xml')
-        btn.onBound()
-        btn._updateVisualState()
-        btn.onClick = partial(self._switchToTab, self.TAB_PVPSTATS)
-        cmp.label.text = self.tabLabels[self.TAB_PVPSTATS]
-        self.component.addChild(cmp, 'pvpTab')
-        btn = soButtonWFT(GUI.Window(''))
-        cmp = btn.component
-        cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.width = 101
-        cmp.height = 21
-        cmp.position = (309, 30, 0.4)
-        btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
-        btn.initVSC('soGUI/visual_styles/charScreenTab.xml')
-        btn.onBound()
-        btn._updateVisualState()
-        btn.onClick = partial(self._switchToTab, self.TAB_DEFENCE)
-        cmp.label.text = lc('soCharacterScreen.soGUI.STATS_TAB').replace(':', '')
-        self.component.addChild(cmp, 'statDefenceTab')
+        width = 588.0
+        button_width = width / 4
 
-    def setupSlots(self):
-        eqWnd = getattr(self.component, 'wnd' + str(self.TAB_EQUIPMENT))
-        posMap = {self.INDEX_FACE: (299, 60, 0.5),
-         self.INDEX_HEAD: (61, 61, 0.5),
-         self.INDEX_SECONDARY: (16, 339, 0.5),
-         self.INDEX_PRIMARY: (16, 271, 0.5),
-         self.INDEX_PALMS: (16, 203, 0.5),
-         self.INDEX_ARMOR: (16, 135, 0.5),
-         self.INDEX_BACKPACK: (346, 135, 0.5),
-         self.INDEX_CHEST: (346, 203, 0.5),
-         self.INDEX_LEGS: (346, 271, 0.5),
-         self.INDEX_FEET: (346, 339, 0.5)}
-        for slotIndex in posMap.keys():
-            slot = soCharacterSlot(GUI.Window(), slotIndex, None)
-            slot.slotEvent = self._slotHandler
-            cmp = slot.component
-            cmp.position = posMap[slotIndex]
-            eqWnd.addChild(cmp, 'slot' + str(slotIndex))
-            self.slots[slotIndex] = slot
+        def create_tab(x_pos, active, tab_type, name):
+            btn = soButtonWFT(GUI.Window(''))
+            comp = btn.component
+            comp.verticalPositionMode, comp.horizontalPositionMode = ('PIXEL', 'PIXEL')
+            comp.widthMode, comp.heightMode = ('PIXEL', 'PIXEL')
+            comp.horizontalAnchor, comp.verticalAnchor = ('LEFT', 'TOP')
+            comp.width, comp.height = button_width, 21
+            comp.position = (x_pos, 30, 0.4)
+            btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
+            btn.initVSC('soGUI/elements/tab_2.xml')
+            btn.onBound()
+            btn.buttonActive = active
+            btn._updateVisualState()
+            btn.onClick = partial(self._switchToTab, tab_type)
+            comp.label.text = self.tabLabels[tab_type]
+            self.component.addChild(comp, name)
 
-        for i, slotIndex in enumerate([self.INDEX_GADGET1,
-         self.INDEX_GADGET2,
-         self.INDEX_GADGET3,
-         self.INDEX_GADGET4,
-         self.INDEX_GADGET5,
-         self.INDEX_GADGET6]):
-            slot = soGadgetSlot(GUI.Window(), slotIndex, None, frameVisible=True)
-            slot.slotEvent = self._slotHandler
-            cmp = slot.component
-            cmp.position = (5 + i * 65, 3, 0.3)
-            eqWnd.gadgetsWnd.addChild(cmp, 'slot' + str(slotIndex))
-            self.slots[slotIndex] = slot
+        create_tab(button_width * 0, True, self.TAB_EQUIPMENT, 'equipmentTab')
+        create_tab(button_width * 1, False, self.TAB_ACHIVS, 'achivesTab')
+        create_tab(button_width * 2, False, self.TAB_PVPSTATS, 'pvpTab')
+        create_tab(button_width * 3, False, self.TAB_DEFENCE, 'statDefenceTab')
+
+    def update_equipment_slots(self, force_update = False):
+        p = BigWorld.player()
+        for slot in self._equipment_slots:
+            if slot.itemData:
+                cur_item_id = slot.itemData['complexItemID']
+                if not EST.get_slot_data(p, slot.slot_type)['itemID']:
+                    needed_item_id = None
+                    update_lock = True
+                    if needed_item_id:
+                        if cur_item_id != needed_item_id or force_update and needed_item_id:
+                            item = ItemsUtils.GetComplexItemByID(p, needed_item_id)
+                            if not item:
+                                print "soCharacterScreen (ERROR): can't update euqipment slots, bad item", needed_item_id
+                                return
+                            slot.setContent(item)
+                            slot_types = ItemsCatalog.GetItemParam(item['complexItemType'])['SlotType']
+                            slot_type = slot_types and slot_types[0]
+                            slot.set_secondary(slot_type != slot.slot_type)
+                            update_lock = False
+                    elif cur_item_id:
+                        slot.setContent(None)
+                        update_lock = False
+                    update_lock and slot.haveItem() and slot.lockSlot(BigWorld.player().ItemLocked(slot.itemData))
+                else:
+                    slot.lockSlot(True)
 
         return
 
     def lockGadgetSlots(self, lock = False, count = 0):
-        _gadget_slots = [self.INDEX_GADGET1,
-         self.INDEX_GADGET2,
-         self.INDEX_GADGET3,
-         self.INDEX_GADGET4,
-         self.INDEX_GADGET5,
-         self.INDEX_GADGET6]
+        _gadget_slots = copy(self.GADGET_SLOTS)
         if not count:
             lock = False
         if lock:
@@ -1155,12 +924,7 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
 
     def getLockedGadgetIds(self, count):
         _ids = []
-        _gadget_slots = [self.INDEX_GADGET1,
-         self.INDEX_GADGET2,
-         self.INDEX_GADGET3,
-         self.INDEX_GADGET4,
-         self.INDEX_GADGET5,
-         self.INDEX_GADGET6]
+        _gadget_slots = copy(self.GADGET_SLOTS)
         _gadget_slots.reverse()
         for i, slotIndex in enumerate(_gadget_slots):
             if i >= count:
@@ -1171,135 +935,70 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
 
         return _ids
 
-    def setupStats(self):
-        eqWnd = getattr(self.component, 'wnd' + str(self.TAB_EQUIPMENT))
-        for i, statID in enumerate([self.CHARSTATID_STRENGTH,
-         self.CHARSTATID_INTELLECT,
-         self.CHARSTATID_DEXTIRITY,
-         self.CHARSTATID_CONSTITUTION,
-         self.CHARSTATID_PERCEPTION,
-         self.CHARSTATID_PSIONICS]):
-            cmp = GUI.Text('')
-            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-            cmp.horizontalAnchor = 'LEFT'
-            cmp.verticalAnchor = 'TOP'
-            cmp.colour = self.charStatsColMap['normal']
-            cmp.materialFX = 'BLEND'
-            cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
-            cmp.text = self.statsLabels[statID]
-            cmp.position = (8, 8 + i * 12, 0.5)
-            eqWnd.statsWnd.addChild(cmp, 'stat' + str(statID))
-            cmp.crossFocus = True
-            cmp.script = self
-            self.statLabelCmps[cmp] = statID
-            cmp = GUI.Text('')
-            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-            cmp.horizontalAnchor = 'RIGHT'
-            cmp.verticalAnchor = 'TOP'
-            cmp.colour = self.charStatsColMap['normal']
-            cmp.materialFX = 'BLEND'
-            cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
-            cmp.text = u'0'
-            cmp.position = (190, 8 + i * 12, 0.5)
-            eqWnd.statsWnd.addChild(cmp, 'statValue' + str(statID))
-
-    def _updateRepGroups(self, data):
-        repWnd = getattr(self.component, 'wnd' + str(self.TAB_REPUTATION))
-        repWnd.repList.script.clear()
-        elems = []
-        for group in data:
-            elem = [group[0], soRepElemFilter, {'caption': group[1]}]
-            elems.append(elem)
-            self.repData[group[0]] = [[], False]
-
-        repWnd.repList.script.addElems(elems)
-
-    def _updateReps(self, data):
-        repWnd = getattr(self.component, 'wnd' + str(self.TAB_REPUTATION))
-        repList = repWnd.repList.script
-        for repGroup in data:
-            idx = repList.getIndex(repGroup)
-            if idx is not None:
-                elems = []
-                self.repData[repGroup][0] = []
-                if not len(data[repGroup]):
-                    repList.disableElems([[repGroup]])
-                else:
-                    repList.enableElems([[repGroup]])
-                for rep in data[repGroup]:
-                    elem = [rep['fracID'], soRepElemProgress, rep]
-                    elems.append(elem)
-                    self.repData[repGroup][0].append(elem)
-
-                if not self.repData[repGroup][1]:
-                    repList.insertElems(idx + 1, elems)
-
-        return
-
-    def _updateRepData(self, data):
-        repWnd = getattr(self.component, 'wnd' + str(self.TAB_REPUTATION))
-        repList = repWnd.repList.script
-        elems = []
-        for rep in data:
-            elem = [rep[0], {'name': rep[1],
-              'relations': rep[2],
-              'progress': rep[3],
-              'hidden': rep[4]}]
-            elems.append(elem)
-
-        repList.updateElems(elems)
-
     def upldateLockItems(self):
         for slot in self.slots:
             self.slots[slot].updateLock()
 
         self._updateLockGadgets()
 
+    def partially_update(self, data):
+        if data.has_key('items'):
+            self._partiallyUpdateItems(data['items'])
+        if data.has_key('attachSlots'):
+            self._partiallyUpdateAttachSlots(data['attachSlots'])
+
+    def _partiallyUpdateItems(self, items):
+        for slot in itertools.chain(self.slots.values(), self._equipment_slots):
+            if not slot.haveItem():
+                continue
+            for item in items:
+                if item['complexItemID'] != slot.itemData['complexItemID']:
+                    continue
+                slot.setContent(item)
+
     def _updateItems(self, data):
-        for index, item in enumerate(data):
-            self.slots[index].setContent(item)
+        for slot_id, item in data.items():
+            if slot_id in self.slots:
+                self.slots[slot_id].setContent(item)
 
         self._updateLockGadgets()
 
-    def _updateName(self, data):
-        self.component.charName.text = data
+    def _partiallyUpdateAttachSlots(self, items):
+        for slot_id in self._visible_attaches_slots:
+            slot = self._visible_attaches_slots[slot_id]
+            if not slot.haveItem():
+                continue
+            for item in items:
+                if item['complexItemID'] != slot.itemData['complexItemID']:
+                    continue
+                slot.setContent(item)
 
-    def _getStats(self, data):
-        text = u''
-        for index, stat in enumerate(data):
-            text += self.statsLabels[index] + '   \t' + str(stat[0]) + '\n'
+    def _updateAttachSlots(self, data):
+        for slot in self._visible_attaches_slots.values():
+            slot.component.visible = False
 
-        return text
+        for slot_id, item in data.items():
+            if slot_id in self._visible_attaches_slots:
+                self._visible_attaches_slots[slot_id].component.visible = True
+                self._visible_attaches_slots[slot_id].setContent(item)
 
-    def _updateStats(self, data):
-        eqWnd = getattr(self.component, 'wnd' + str(self.TAB_EQUIPMENT))
-        for index, stat in enumerate(data):
-            valueLabel = getattr(eqWnd.statsWnd, 'statValue' + str(index), None)
-            if valueLabel:
-                valueLabel.text = str(stat[0])
-                if stat[1] > 0:
-                    valueLabel.colour = self.charStatsColMap['buffed']
-                elif stat[1] < 0:
-                    valueLabel.colour = self.charStatsColMap['lowered']
-                else:
-                    valueLabel.colour = self.charStatsColMap['normal']
-
-        return
+    def _updateName(self):
+        self.component.charName.text = self._char_name + BWPersonality.get_action_key('ToggleCharacterGUI')
 
     def _updatePvP(self, data):
         pvpWnd = getattr(self.component, 'wnd' + str(self.TAB_PVPSTATS))
-        getattr(pvpWnd, 'elem_1_' + str(1)).text = lc('soCharacterScreen.soGUI.killedInPVP')
-        getattr(pvpWnd, 'val_1_' + str(1)).text = str(data[0])
-        getattr(pvpWnd, 'val_1_' + str(1)).visible = 1
-        getattr(pvpWnd, 'elem_1_' + str(1)).visible = 1
-        getattr(pvpWnd, 'elem_1_' + str(2)).text = lc('soCharacterScreen.soGUI.killedInPK')
-        getattr(pvpWnd, 'val_1_' + str(2)).text = str(data[1])
-        getattr(pvpWnd, 'val_1_' + str(2)).visible = 1
-        getattr(pvpWnd, 'elem_1_' + str(2)).visible = 1
-        getattr(pvpWnd, 'elem_1_' + str(3)).text = lc('soCharacterScreen.soGUI.karma')
-        getattr(pvpWnd, 'val_1_' + str(3)).text = str(data[2])
-        getattr(pvpWnd, 'val_1_' + str(3)).visible = 1
-        getattr(pvpWnd, 'elem_1_' + str(3)).visible = 1
+        getattr(pvpWnd, 'elem_1').text = lc('soCharacterScreen.soGUI.killedInPVP')
+        getattr(pvpWnd, 'val_1').text = str(data[0])
+        getattr(pvpWnd, 'val_1').visible = 1
+        getattr(pvpWnd, 'elem_1').visible = 1
+        getattr(pvpWnd, 'elem_2').text = lc('soCharacterScreen.soGUI.killedInPK')
+        getattr(pvpWnd, 'val_2').text = str(data[1])
+        getattr(pvpWnd, 'val_2').visible = 1
+        getattr(pvpWnd, 'elem_2').visible = 1
+        getattr(pvpWnd, 'elem_3').text = lc('soCharacterScreen.soGUI.karma')
+        getattr(pvpWnd, 'val_3').text = str(data[2])
+        getattr(pvpWnd, 'val_3').visible = 1
+        getattr(pvpWnd, 'elem_3').visible = 1
 
     def _setPvPExpireTime(self, t):
         self.pvpFlagTimer = t
@@ -1308,112 +1007,72 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
         self.pvpTicker = self.pvpFlagTicker()
         self.pvpTicker.run()
 
-    _gadget_extended = False
-
-    def _extendGadgetsWnd(self, doExtend = True):
-        self._gadget_extended = doExtend
-        eqWnd = getattr(self.component, 'wnd' + str(self.TAB_EQUIPMENT))
-        sw, sh = BigWorld.screenSize()
-        translation = (0.0, 0.0, 0.0)
-        closedY = 400
-        openedY = 473
-        offset = 2.0 / (sh / (openedY - closedY))
-        if doExtend:
-            translation = (0.0, -offset, 0.0)
-        eqWnd.gadgetsWnd.mover.eta = 0.15
-        eqWnd.gadgetsWnd.mover.target.translation = translation
-
-    def _extendStatsWnd(self, doExtend = True):
-        eqWnd = getattr(self.component, 'wnd' + str(self.TAB_EQUIPMENT))
-        sw, sh = BigWorld.screenSize()
-        translation = (0.0, 0.0, 0.0)
-        closedY = 387
-        openedY = 473
-        offset = 2.0 / (sh / (openedY - closedY))
-        if doExtend:
-            translation = (0.0, -offset, 0.0)
-        eqWnd.statsWnd.mover.eta = 0.15
-        eqWnd.statsWnd.mover.target.translation = translation
-
-    def _toggleGadgetsWnd(self):
-        eqWnd = getattr(self.component, 'wnd' + str(self.TAB_EQUIPMENT))
-        self._extendGadgetsWnd(not self._gadget_extended)
-
-    def _toggleStatsWnd(self):
-        eqWnd = getattr(self.component, 'wnd' + str(self.TAB_EQUIPMENT))
-        self._extendStatsWnd(eqWnd.statsWnd.statsTabBtn.script.buttonActive)
-
     def _switchToTab(self, tab):
-        eqWnd = getattr(self.component, 'wnd' + str(self.TAB_EQUIPMENT))
-        pvpWnd = getattr(self.component, 'wnd' + str(self.TAB_PVPSTATS))
-        repWnd = getattr(self.component, 'wnd' + str(self.TAB_REPUTATION))
-        defenceWnd = getattr(self.component, 'wnd' + str(self.TAB_DEFENCE))
         self.component.equipmentTab.script.buttonActive = False
-        self.component.repTab.script.buttonActive = False
         self.component.pvpTab.script.buttonActive = False
         self.component.statDefenceTab.script.buttonActive = False
-        eqWnd.visible = False
+        self.component.achivesTab.script.buttonActive = False
+        for i in xrange(self.TAB_COUNT):
+            self.get_comp(i).visible = False
+
+        self.get_comp(tab).visible = True
         if tab is self.TAB_EQUIPMENT:
-            eqWnd.visible = True
-            pvpWnd.visible = False
-            repWnd.visible = False
-            defenceWnd.visible = False
             self.component.equipmentTab.script.buttonActive = True
         elif tab is self.TAB_PVPSTATS:
-            eqWnd.visible = False
-            pvpWnd.visible = True
-            repWnd.visible = False
-            defenceWnd.visible = False
             self.component.pvpTab.script.buttonActive = True
-        elif tab is self.TAB_REPUTATION:
-            eqWnd.visible = False
-            pvpWnd.visible = False
-            repWnd.visible = True
-            defenceWnd.visible = False
-            self.component.repTab.script.buttonActive = True
         elif tab is self.TAB_DEFENCE:
-            eqWnd.visible = False
-            pvpWnd.visible = False
-            repWnd.visible = False
-            defenceWnd.visible = True
             self.component.statDefenceTab.script.buttonActive = True
             self.updateDefenceWindow()
+        elif tab is self.TAB_ACHIVS:
+            self.component.achivesTab.script.buttonActive = True
         self.component.equipmentTab.script._updateVisualState()
-        self.component.repTab.script._updateVisualState()
         self.component.pvpTab.script._updateVisualState()
         self.component.statDefenceTab.script._updateVisualState()
-        if self.currentTab != tab:
-            if self.currentTab == self.TAB_EQUIPMENT:
-                BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_HIDE, BWPersonality.GUICore.GUI_ID_CHARSCREEN)
-            elif self.currentTab == self.TAB_PVPSTATS:
-                BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_HIDE, BWPersonality.GUICore.GUI_ID_REPSTATS)
-            elif self.currentTab == self.TAB_REPUTATION:
-                BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_HIDE, BWPersonality.GUICore.GUI_ID_PVPSTATS)
-            if tab == self.TAB_EQUIPMENT:
-                BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_SHOW, BWPersonality.GUICore.GUI_ID_CHARSCREEN)
-            elif tab == self.TAB_PVPSTATS:
-                BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_SHOW, BWPersonality.GUICore.GUI_ID_REPSTATS)
-            elif tab == self.TAB_REPUTATION:
-                BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_SHOW, BWPersonality.GUICore.GUI_ID_PVPSTATS)
+        self.component.achivesTab.script._updateVisualState()
+        script = self.get_script(self.currentTab)
+        if hasattr(script, 'on_hide'):
+            script.on_hide()
         self.currentTab = tab
+        script = self.get_script(self.currentTab)
+        if hasattr(script, 'on_show'):
+            script.on_show()
 
-    def update(self):
+    def get_comp(self, index):
+        return getattr(self.component, 'wnd' + str(index))
+
+    def get_script(self, index):
+        return self.get_comp(index).script
+
+    def updateSlotsColour(self):
+        for slot in self._equipment_slots:
+            slot.update_item_color()
+
+        for slot in self._visible_attaches_slots.values():
+            slot.update_item_color()
+
+        for slot in self.slots.values():
+            slot.update_item_color()
+
+    def update(self, force_update = False):
         data = BWPersonality.GUICore.characterScreenDataSection
+        if not data:
+            return
         if data.has_key('items'):
-            self._updateItems(data['items'])
+            try:
+                self._updateItems(data['items'])
+            except:
+                import traceback
+                traceback.print_exc()
+
         if data.has_key('displayName'):
-            self._updateName(data['displayName'])
-        if data.has_key('charStats'):
-            self._updateStats(data['charStats'])
+            self._char_name = data['displayName']
+            self._updateName()
         if data.has_key('pvp'):
             self._updatePvP(data['pvp'])
-        if data.has_key('rep_groups'):
-            self._updateRepGroups(data['rep_groups'])
-        if data.has_key('rep_factions'):
-            self._updateReps(data['rep_factions'])
-        if data.has_key('rep_updates'):
-            self._updateRepData(data['rep_updates'])
+        if data.has_key('attachSlots'):
+            self._updateAttachSlots(data['attachSlots'])
         self._updateLockGadgets()
+        self.update_equipment_slots(force_update=force_update)
 
     def _updateLockGadgets(self):
         p = BigWorld.player()
@@ -1426,80 +1085,104 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
             self.lockGadgetSlots(False, count)
 
     def updateDefenceWindow(self):
-        text = u''
+        text = colorCodes.tf3_gray_text
         entity = BigWorld.player()
         if not entity or not entity.__class__.__name__ == 'PlayerAvatar':
             self.defenceTxt.setText(u'')
             return
-        else:
-            data = BigWorld.player().GetAllStatsList()
-            if data:
-                text = lc('soCharacterScreen.soGUI.MAIN_STATS') + u'\n\n'
-                text += self._getStats(data) + u'\n'
-            text += lc('soCharacterScreen.soGUI.STATS_LIST') + u'\n\n'
-            text += lc('soCharacterScreen.soGUI.HP_VALUE') + '  %.1f  /  %.1f\n' % (entity.GetStatValue(Stats.ch_HitPoints), entity.GetStatValue(Stats.ch_MaxHitPoints))
-            text += lc('soCharacterScreen.soGUI.HP_REGEN') + u'  %.1f\n' % entity.GetStatValue(Stats.ch_HitPointsRegeneration)
-            text += lc('soCharacterScreen.soGUI.STAMINA_VALUE') + u'  %.1f  /  %.1f\n' % (entity.GetStatValue(Stats.ch_Stamina), entity.GetStatValue(Stats.ch_MaxStamina))
-            text += lc('soCharacterScreen.soGUI.STAMINA_REGEN') + u'  %.1f\n' % entity.GetStatValue(Stats.ch_StaminaRegeneration)
-            text += lc('soCharacterScreen.soGUI.SPEED_VALUE') + u'  %.1f\n' % entity.GetStatValue(Stats.ch_MoveSpeed)
-            text += lc('soCharacterScreen.soGUI.MAX_WEIGHT_VALUE') + u'  %.1f\n' % entity.GetStatValue(Stats.ch_MaxWeight)
-            text += lc('soCharacterScreen.soGUI.HUNGRY_VALUE') + u'  %.1f%%\n' % (entity.hungry * 100)
-            text += lc('soCharacterScreen.soGUI.THIRST_VALUE') + u'  %.1f%%\n' % (entity.thirst * 100)
-            crit_chance, damage_koeff = GetCritChancePower(entity, None)
-            text += lc('soCharacterScreen.soGUI.CRIT_RATE') + u'  %.1f%%\n' % (crit_chance * 100)
-            text += lc('soCharacterScreen.soGUI.CRIT_POWER') + u'  %.1f%%\n' % (damage_koeff * 100)
-            text += '\n\n'
-            text += lc('soCharacterScreen.soGUI.DEFENCES_LIST') + '\n\n'
+        text += lc('soCharacterScreen.soGUI.STATS_LIST') + u'\n\n'
+        text += lc('soCharacterScreen.soGUI.HP_VALUE') + wrap_hightlight('  %.1f  /  %.1f\n' % (entity.GetStatValue(Stats.ch_HitPoints), entity.GetStatValue(Stats.ch_MaxHitPoints)))
+        text += lc('soCharacterScreen.soGUI.HP_REGEN') + wrap_hightlight(u'  %.1f\n' % entity.GetStatValue(Stats.ch_HitPointsRegeneration))
+        text += lc('soCharacterScreen.soGUI.STAMINA_VALUE') + wrap_hightlight(u'  %.1f  /  %.1f\n' % (entity.GetStatValue(Stats.ch_Stamina), entity.GetStatValue(Stats.ch_MaxStamina)))
+        text += lc('soCharacterScreen.soGUI.STAMINA_REGEN') + wrap_hightlight(u'  %.1f\n' % entity.GetStatValue(Stats.ch_StaminaRegeneration))
+        text += lc('soCharacterScreen.soGUI.SPEED_VALUE') + wrap_hightlight(u'  %.1f\n' % entity._last_maxSpeed)
+        text += lc('soCharacterScreen.soGUI.MAX_WEIGHT_VALUE') + wrap_hightlight(u'  %.1f\n' % entity.GetStatValue(Stats.ch_MaxWeight))
+        text += lc('soCharacterScreen.soGUI.HUNGRY_VALUE') + wrap_hightlight(u'  %.1f%%\n' % (entity.hungry * 100))
+        text += lc('soCharacterScreen.soGUI.THIRST_VALUE') + wrap_hightlight(u'  %.1f%%\n' % (entity.thirst * 100))
+        text += '\n\n'
+        text += lc('soCharacterScreen.soGUI.DEFENCES_LIST') + '\n\n'
+        defenc = {}
+        try:
             defenc = entity.GetStatValue(Stats.ch_Defence)
-            for body_part in defenc.keys():
+        except:
+            print '-------'
+            traceback.print_exc()
+            print '-------'
+
+        effects = entity.current_effects
+        sturdiness_mod = 0
+        for effect_id, data in effects.items():
+            for sub in EffectUtils.getEffect(effect_id)['passive']:
+                if sub['className'] == 'SturdinessMod':
+                    sturdiness_mod += sub['value'] * data['stacks']
+
+        def getBodyDef(body_part):
+            res = u''
+            part_defence_dict = defenc.get(body_part, {})
+            sturdiness = sturdiness_mod + entity.get_perk_action_val('STURDINESS')
+            armor_item_type, armor_item_id = ItemsUtils.get_armor_on_body_zone(entity, body_part)
+            if armor_item_type:
+                item = ItemsUtils.GetComplexItemByID(entity, armor_item_id)
+                param = ItemsCatalog.GetItemParam(armor_item_type)
+                cond_ratio = ItemsUtils.GetItemConditionRatio(entity, item)
+                cond_ratio = min(1, cond_ratio / 0.7)
+                sturdiness += int(round(param.get('bodyzone_sturdiness', {}).get(body_part, 0) * cond_ratio))
+            if sturdiness:
+                res += '|   + ' + hightlight(lc('Inventory.client.STURDINESS'), sturdiness) + '\n'
+            for damage_type in InventoryNames.DamageNames.keys():
+                if damage_type == DamageTypes.BULLET:
+                    continue
+                perk_defence = entity.get_perk_action_val('DEFENCE_DAMAGE_TYPE', damage_type=damage_type)
+                if part_defence_dict.get(damage_type) or perk_defence:
+                    defence = part_defence_dict.get(damage_type, 0) / 10
+                    defence = sqrt(defence ** 2 + perk_defence ** 2)
+                    defence = min(70.0, defence)
+                    res += u'|   + ' + entity.GetDamageName(damage_type)
+                    res += text_color_highlight
+                    res += u' : %.1f%%\n' % defence
+                    res += main_color
+
+            return res
+
+        for body_part in InventoryNames.VisibleParts:
+            res = getBodyDef(body_part)
+            if res:
                 text += '| ' + entity.GetBodyPartName(body_part) + u' : \n'
-                part_defence_dict = defenc[body_part]
-                for key in part_defence_dict:
-                    if part_defence_dict[key]:
-                        text += u'|   + ' + entity.GetDamageName(key) + u' : %.1f ' % min(70.0, part_defence_dict[key] / 10) + '%\n'
+                text += res + u'\n'
 
-                text += u'\n'
-
-            self.defenceTxt.setText(text)
-            return
+        self.defenceTxt.setText(text)
 
     def show(self):
         if self.component.parent is None:
             BWPersonality.GUICore.worldLayer.addChild(self.component, 'charScreen')
-        if not self.savedGUIPosition:
-            self.readGUIPostitons()
-        if self.savedGUIPosition:
-            self.component.position = self.savedGUIPosition
-        self.checkNormalPosition()
+        self._updateName()
+        GUIPositions.show(self)
         self.component.visible = True
-        self.updateDefenceWindow()
         BWPersonality.GUICore.setBestCursor()
-        if self.component.equipmentTab.script.buttonActive:
-            BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_SHOW, BWPersonality.GUICore.GUI_ID_CHARSCREEN)
-        elif self.component.repTab.script.buttonActive:
-            BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_SHOW, BWPersonality.GUICore.GUI_ID_REPSTATS)
-        elif self.component.pvpTab.script.buttonActive:
-            BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_SHOW, BWPersonality.GUICore.GUI_ID_PVPSTATS)
+        if self.component.statDefenceTab.script.buttonActive:
+            self.updateDefenceWindow()
         self._updateLockGadgets()
         if not self.defenceTimerID:
             self.defenceTimerID = BigWorld.callback(1, self._updateRepeat)
+        script = self.get_script(self.currentTab)
+        if hasattr(script, 'on_show'):
+            script.on_show()
         return
+
+    def reset_position(self):
+        self.component.position = (0.01, 0.02, 0.5)
 
     def hide(self):
         self.component.visible = False
         BWPersonality.GUICore.setBestCursor()
-        if self.component.equipmentTab.script.buttonActive:
-            BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_HIDE, BWPersonality.GUICore.GUI_ID_CHARSCREEN)
-        elif self.component.repTab.script.buttonActive:
-            BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_HIDE, BWPersonality.GUICore.GUI_ID_REPSTATS)
-        elif self.component.pvpTab.script.buttonActive:
-            BWPersonality.GUICore.generalGUIEvent(GUIEvents.EVENT_HIDE, BWPersonality.GUICore.GUI_ID_PVPSTATS)
         BigWorld.cancelCallback(self.defenceTimerID)
         self.defenceTimerID = 0
+        script = self.get_script(self.currentTab)
+        if hasattr(script, 'on_hide'):
+            script.on_hide()
 
     def doReposition(self):
         self.component.position = (0.01, 0.02, 0.5)
-        self._extendGadgetsWnd(self._gadget_extended)
 
     def _updateRepeat(self):
         self.defenceTimerID = 0
@@ -1508,48 +1191,74 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
             self.updateDefenceWindow()
         self.defenceTimerID = BigWorld.callback(1, self._updateRepeat)
 
-    def _slotHandler(self, event, data):
-        if event == module_soItemView.SLOTEVENT_RCLICK:
-            if data.itemData and data.itemData.get('complexItemID') > 0:
-                BWPersonality.GUICore.charScreenEvent(self.EVENT_CONTEXT, data.itemData)
+    def _slot_handler(self, event, data):
+        if event == ITSLOT.SLOTEVENT_DRAGENTER:
             return True
-        if event == module_soItemView.SLOTEVENT_DBLCLICK:
-            BWPersonality.GUICore.charScreenEvent(self.EVENT_USE, data.itemData)
+        elif event == ITSLOT.SLOTEVENT_DRAGLEAVE:
             return True
-        if event == module_soItemView.SLOTEVENT_LCLICK:
-            if BWPersonality.GUICore.repairMode:
-                BWPersonality.GUICore.charScreenEvent(self.EVENT_REPAIR, data.itemData)
-                return True
         else:
-            if event == module_soItemView.SLOTEVENT_MOUSEENTER:
-                if BWPersonality.GUICore.repairMode and data.haveItem():
-                    GUI.mcursor().shape = 'repair'
-                BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_SHOW)
-                return True
-            if event == module_soItemView.SLOTEVENT_MOUSELEAVE:
-                GUI.mcursor().shape = 'arrow'
-                BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_HIDE)
-                return True
-        return False
+            if event == ITSLOT.SLOTEVENT_DROP:
+                char_slot, invent_slot = data
+                if not hasattr(invent_slot, 'itemData'):
+                    return True
+                if invent_slot.itemData:
+                    item_type = invent_slot.itemData.get('complexItemType')
+                    if getattr(char_slot, 'itemData', None):
+                        char_slot_item_type = char_slot.itemData.get('complexItemType')
+                        item_class = ItemsCatalog.GetItemClass(item_type)
+                        item_category = ItemsCatalog.GetItemCategory(item_type)
+                        player = BigWorld.player()
+                        if item_class == ItemsCatalog.CLOTH:
+                            if not hasattr(char_slot, 'slot_type'):
+                                return False
+                            BWPersonality.GUICore.inventoryEvent(INV_CONST.A_EQUIP, invent_slot.itemData, index=char_slot.slot_type)
+                            return True
+                        if item_class == ItemsCatalog.PART:
+                            if not getattr(invent_slot, 'itemData', None):
+                                return False
+                            if not getattr(char_slot, 'itemData', None):
+                                return False
+                            BWPersonality.GUICore.inventoryEvent(INV_CONST.A_ATTACH, (invent_slot.itemData, char_slot.itemData))
+                        else:
+                            if isinstance(char_slot, soVisibleAttachSlot) and player and item_category in CASC.get_possible_categories(char_slot.slot_type):
+                                player.equipVisibleAttach(invent_slot.itemData['complexItemID'], char_slot.slot_type)
+                                return True
+                            if ItemsUtils.canGreaseOilWeapon(char_slot_item_type, item_type) and player:
+                                player.askStartWeaponGreaseOil(invent_slot.itemData, char_slot.itemData)
+                                return True
+                            if ItemsUtils.CanRepairByKit(char_slot.itemData, invent_slot.itemData) and player:
+                                player.askStartItemRepair(invent_slot.itemData, char_slot.itemData)
+                                return True
+                            if hasattr(invent_slot, 'equipItem') and char_slot.weaponID:
+                                invent_slot.equipItem(char_slot.weaponID)
+                                return True
+                    if event == ITSLOT.SLOTEVENT_RCLICK:
+                        if data.itemData and data.itemData.get('complexItemID') > 0:
+                            BWPersonality.GUICore.charScreenEvent(self.EVENT_CONTEXT, data.itemData)
+                        return True
+                    if event == ITSLOT.SLOTEVENT_MOUSEENTER:
+                        if BWPersonality.GUICore.repairMode and data.haveItem():
+                            MouseShaper.set_shape('repair')
+                        BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_SHOW)
+                        return True
+                    if event == ITSLOT.SLOTEVENT_MOUSELEAVE:
+                        MouseShaper.set_shape('arrow')
+                        BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_HIDE)
+                        return True
+                    if event == ITSLOT.SLOTEVENT_DBLCLICK:
+                        BWPersonality.GUICore.charScreenEvent(self.EVENT_USE, data.itemData)
+                        return True
+                    event == ITSLOT.SLOTEVENT_LCLICK and BWPersonality.GUICore.repairMode and BWPersonality.GUICore.charScreenEvent(self.EVENT_REPAIR, data.itemData)
+                    return True
+            return
 
     def handleDragEnterEvent(self, cmp, dragged):
-        from soGUI.soInventorySlot2 import soInventorySlot2
         if dragged.script is None:
             return False
-        elif isinstance(dragged.script, soInventorySlot2):
-            return True
+        elif getattr(dragged.script, 'factoryString') != 'soGUI.soInventorySlot2':
+            return False
         else:
-            return False
-
-    def handleDropEvent(self, cmp, dropped):
-        from soGUI.soInventorySlot2 import soInventorySlot2
-        if dropped.script is None:
-            return False
-        elif isinstance(dropped.script, soInventorySlot2):
-            dropped.script.equipItem()
             return True
-        else:
-            return False
 
     def handleMouseLeaveEvent(self, cmp):
         if cmp in self.statLabelCmps:
@@ -1591,14 +1300,6 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
         self.pvpTicker = None
         return
 
-    @PyGUIEvent('wnd' + str(TAB_EQUIPMENT) + '.gadgetsWnd.gadgetsTabBtn', 'onClick')
-    def onArtifactsTabBtn(self):
-        self._toggleGadgetsWnd()
-
-    @PyGUIEvent('wnd' + str(TAB_EQUIPMENT) + '.statsWnd.statsTabBtn', 'onClick')
-    def onStatsTabBtn(self):
-        self._toggleStatsWnd()
-
     @PyGUIEvent('closeBox', 'onClick')
     def onCloseBox(self):
         self.hide()
@@ -1606,11 +1307,10 @@ class soCharacterScreen2(PyGUIBase, DraggableComponent, GUIPositions):
     @PyGUIEvent('hintBox', 'onClick')
     def onHintBox(self):
         """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xbd\xd0\xb0\xd0\xb6\xd0\xb0\xd1\x82\xd0\xb8\xd0\xb8 \xd0\xba\xd0\xbd\xd0\xbe\xd0\xbf\xd0\xba\xd0\xb8-\xd0\xbf\xd0\xbe\xd0\xb4\xd1\x81\xd0\xba\xd0\xb0\xd0\xb7\xd0\xba\xd0\xb8."""
-        text_and_ok('soCharacterScreen.soGUI.hintBox', lc('soCharacterScreen.soGUI.MANUAL_TITLE'), colorCodes.tf3_regular_text_color + lc('soCharacterScreen.soGUI.MANUAL_TEXT'))
+        BWPersonality.GUICore.openGUIHelp('soCharacterScreen')
 
     def stopDragging(self):
-        self.savedGUIPosition = self.component.position
-        self.saveGUIPositions()
+        GUIPositions.stopDragging(self)
         DraggableComponent.stopDragging(self)
 
     def handleMouseButtonEvent(self, comp, event):

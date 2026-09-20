@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/cam_control.py
+# Embedded file name: ./client/cam_control.py
 import BigWorld
 import Math
 import math
@@ -10,7 +10,7 @@ MATH_2PI = math.pi * 2.0
 def clampAngles(start, end):
     end = Math.Vector3(end)
     rot = end - Math.Vector3(start)
-    for i in range(3):
+    for i in xrange(3):
         if rot[i] <= -MATH_PI:
             end[i] += MATH_2PI
         elif rot[i] > MATH_PI:
@@ -83,7 +83,7 @@ class SplineCamera(LinearCamera):
             if cam in _all_cams:
                 if len(self.poslist) < 2:
                     return False
-                for x in range(3):
+                for x in xrange(3):
                     self.poslist.append(self.poslist[x])
                     self.rotlist.append(self.rotlist[x])
 

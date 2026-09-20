@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/sound_volume.py
+# Embedded file name: ./client/soGUI/sound_volume.py
 import re
 import os
 import subprocess
@@ -37,7 +37,7 @@ class SoundVolume(PyGUIBase):
         cmp.colour = (255, 255, 255, 500)
         cmp.materialFX = 'BLEND'
         cmp.visible = True
-        cmp = GUI.Simple('textures\\default\\white.dds')
+        cmp = GUI.Simple('textures/default/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
         cmp.widthMode = cmp.heightMode = 'CLIP'
         cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
@@ -58,7 +58,7 @@ class SoundVolume(PyGUIBase):
     def create_level(self, key):
         pos_y = len(self._levels) * 30 + 20
         self.component.height = pos_y + 30
-        cmp = GUI.Simple('textures\\default\\white.dds')
+        cmp = GUI.Simple('textures/default/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -70,7 +70,7 @@ class SoundVolume(PyGUIBase):
         cmp.position = (0, pos_y, 0.5)
         bar = cmp
         self.component.addChild(cmp, 'bar_%s' % key)
-        cmp = GUI.Simple('textures\\default\\white.dds')
+        cmp = GUI.Simple('textures/default/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -80,10 +80,10 @@ class SoundVolume(PyGUIBase):
         cmp.width = 5
         cmp.height = 25
         cmp.position = (0, pos_y, 0.6)
-        tagert = cmp
+        target = cmp
         self.component.addChild(cmp, 'tagert_%s' % key)
         cmp = GUI.Text('')
-        cmp.font = 'ruRU_calibri_default.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
@@ -94,7 +94,7 @@ class SoundVolume(PyGUIBase):
         self.component.addChild(cmp, 'text_%s' % key)
         self._levels[key] = {'pos_y': pos_y,
          'bar': bar,
-         'tagert': tagert,
+         'target': target,
          'text': text}
 
     def clear(self):
@@ -105,7 +105,7 @@ class SoundVolume(PyGUIBase):
             self.create_level(key)
         comp = self._levels[key]
         if tagert_volume is not None:
-            comp['tagert'].position[0] = tagert_volume * self.width
+            comp['target'].position[0] = tagert_volume * self.width
         comp['bar'].width = volume * self.width
         comp['text'].text = u'%s: %.2f' % (key, volume)
         return

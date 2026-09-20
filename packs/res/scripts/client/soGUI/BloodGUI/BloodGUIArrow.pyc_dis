@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/BloodGUI/BloodGUIArrow.py
+# Embedded file name: ./client/soGUI/BloodGUI/BloodGUIArrow.py
 import BigWorld
 import GUI
 from Math import Matrix, Vector2
@@ -6,7 +6,7 @@ import math
 import Helpers.PyGUI as PyGUI
 from random import random
 import math_bw
-from soGUI.BloodGUI.BloodGUI import BloodGUI
+from soGUI.BloodGUI.BloodGUI import BloodGUI, DEFAULT_COLOUR
 
 class Arrow:
     """ \xd0\xbe\xd1\x82\xd0\xb4\xd0\xb5\xd0\xbb\xd1\x8c\xd0\xbd\xd0\xb0\xd1\x8f \xd1\x81\xd1\x82\xd1\x80\xd0\xb5\xd0\xbb\xd0\xba\xd0\xb0 \xd0\xb4\xd0\xb0\xd0\xbc\xd0\xb0\xd0\xb3\xd0\xb0 """
@@ -15,7 +15,7 @@ class Arrow:
     FROM_CENTER_DIST = 0.3
     OFFSET = Vector2(0.0, 0.0)
     ARROW_LENGTH = 2.0
-    IMAGE_PATH = 'soGUI/maps/Misc/DamageBloodVector.tga'
+    IMAGE_PATH = 'soGUI/maps/damage_vector/DamageBloodVector.tga'
 
     def __init__(self, parent, name):
         self.parent = parent
@@ -33,7 +33,7 @@ class Arrow:
         self.arrow.height = arrow_height
         self.arrow.width = self.arrow.height * texture_ratio
         self.arrow.position = (screen_width * 0.5, screen_height * 0.5, 0.5)
-        self.arrow.colour = (255, 255, 255, 255)
+        self.arrow.colour = DEFAULT_COLOUR
         self.arrow.materialFX = 'BLEND'
         self.matrix = Matrix()
         self.rotate_matrix = Matrix()
@@ -56,13 +56,15 @@ class Arrow:
         self.jump_ratio = 0.0
         return
 
-    def start(self, damager_position, damager_id, damage_level):
+    def start(self, damager_position, damager_id, damage_level, colour = DEFAULT_COLOUR):
         """ \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x83\xd1\x81\xd1\x82\xd0\xb8\xd1\x82\xd1\x8c \xd1\x81\xd1\x82\xd1\x80\xd0\xb5\xd0\xbb\xd0\xba\xd1\x83 """
         self.damager_position = damager_position
         self.damager_id = damager_id
         self.jump_ratio = 1.0
         damage_level = math_bw.clamp(damage_level, 0, 1)
         self.damage_scale = damage_level * 3.0 + 1.2
+        self.arrow.colour = colour
+        self._colour = colour
         if self.force_stoppped:
             self.force_stoppped = False
             self.jump_ratio = 0.0
@@ -92,6 +94,8 @@ class Arrow:
             self.rotate_matrix.setRotateZ(angle)
         except:
             print repr(angle), repr(self.damager_position)
+            print repr(BigWorld.player())
+            print BigWorld.player().position
             raise
 
         self.center_disp_matrix.setTranslate((0, Arrow.FROM_CENTER_DIST + self.jump_ratio, 0))

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/Teleportable.py
+# Embedded file name: ./client/Teleportable.py
 """
         Teleport interface for entities, that can be reresented on clients. 
         For other entities just use entity.teleport()

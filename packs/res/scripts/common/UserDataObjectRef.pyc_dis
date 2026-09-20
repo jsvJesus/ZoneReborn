@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/UserDataObjectRef.py
+# Embedded file name: ./common/UserDataObjectRef.py
 import BigWorld
 
 class UserDataObjectRef(BigWorld.UserDataObject):

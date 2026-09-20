@@ -1,6 +1,6 @@
 {
 	"model" : "characters/creatures/dog/dog.model",
-	"colliders" : "scripts/common/data/Creatures/Colliders/Dog.xml",
+	"colliders" : "characters/creatures/dog/hitbox_general.xml",
 	"radius" : 1.0,
 	"health" : 200,
 	"velocity" : 8.0,
@@ -111,6 +111,7 @@
 
 		{
 			"class" : "DeadState",
+			"entry_action" : "Dog_Die",
 			"persistent_action" : "Dog_Dead",
 			"on_exit" : "self.model.Dog_Dead.stop()",
 			"transitions" : [

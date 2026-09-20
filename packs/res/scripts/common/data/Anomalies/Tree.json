@@ -1,6 +1,4 @@
 {
-    "difficultyMax": 20, 
-    "difficultyMin": 10, 
     "lifetimeMax": 1440.0, 
     "lifetimeMin": 720.0, 
     "loot":"empty",
@@ -20,6 +18,12 @@
     "radiusOut": 10.0, 
     "sfx_inside": "sfx/Anomalys/tree_up.xml", 
     "sfx_main": "sfx/Anomalys/shimmer.xml", 
-    "sfx_artifact_wall": "sfx/Anomalys/artefact_wall.xml", 
+    
+    "wall_artifact":{
+        "sfx_wall":"sfx/Anomalys/artefact_wall.xml",
+        "wall_effect":2077,
+        "wall_radius":2.5
+    },
+ 
     "sfx_main_interval": [ 3, 6 ]
 }

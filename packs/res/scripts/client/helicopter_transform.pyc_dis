@@ -1,27 +1,26 @@
-# Embedded file name: ./scripts/client/helicopter_transform.py
+# Embedded file name: ./client/helicopter_transform.py
 import BigWorld
-import BWPersonality
 import Constants
-import funEventsCommon
-from ChatChannelConfig import CHANNEL_CONSTS
-import Stats
+import BWPersonality
 import traceback
 from FunTransform import FunTransformation
 import SFXer
 import FX
 import random
-import sfx
 import Math
 from Math import Matrix, Vector3
 import math
-import utils
 from utils import ignoreError
 import time
 from Items import ItemsCatalog
 from thermal_trap import ThermalTrap
-import Pixie
 from math_bw import angle_between_vectors
 import Keys
+from draw_utils_extend import LinesHolder
+import sounds_manager
+from FX.persistent_ext_bg import loadPersistentExtAsync
+HELICOPTER_BURN_DAMAGE_SFX = 'sfx/weapons/shot/helicopter_burn_damage.xml'
+HELICOPTER_BURN_SFX = 'sfx/weapons/shot/helicopter_burn.xml'
 isKeyDown = BigWorld.isKeyDown
 
 class EV:
@@ -55,7 +54,7 @@ def clamp(magnitude, value):
 
 def _gener(x, y):
     while 1:
-        for i in range(x, y):
+        for i in xrange(x, y):
             yield i
 
 
@@ -132,16 +131,12 @@ class Helicopter(object):
                 self._heat_trap_left_node = self._model.node('HEAT_TRAP_L')
                 self._heat_trap_right_node = self._model.node('HEAT_TRAP_R')
                 self._roket_guns = {}
-                for x in range(1, 5):
+                for x in xrange(1, 5):
                     self._roket_guns[x] = self._model.node('ROCKET_%s' % x)
 
-                self._sound1 = BigWorld.playSound('transport/helicopter/mi_24/motor_1', self._model)
-                if self._sound1:
-                    self._sound1.autoDetach = False
+                self._sound1 = sounds_manager.playSound('transport/helicopter/mi_24/motor_1', self._model)
                 if not self.isControlled:
-                    self._sound2 = BigWorld.playSound('transport/helicopter/mi_24/motor_2', self._model)
-                if self._sound2:
-                    self._sound2.autoDetach = False
+                    self._sound2 = sounds_manager.playSound('transport/helicopter/mi_24/motor_2', self._model)
                 self.entity.add_collider()
                 self._model.fly()
                 self._model.wheels_up_loop()
@@ -152,6 +147,8 @@ class Helicopter(object):
                 if self._lock_yaw is not None:
                     self.hel_yaw = self._lock_yaw
                 BigWorld.addAlwaysUpdateModel(self._model)
+                if self.entity.model:
+                    self.entity.model.motors[0].turnModelToEntity = True
                 self._tick(10)
                 return
 
@@ -161,12 +158,13 @@ class Helicopter(object):
             if not self.entity:
                 return
             self._obst_model = model
+            self._obst_model.isObstacle = True
             model.visible = 0
             self.entity.addModel(model)
 
         bsp_path = 'models/transport/mi_24_test/mi_24_static.model'
         if not self.isControlled:
-            BigWorld.fetchModelObstacle(bsp_path, self.entity.matrix, 1, onLoadObstacle)
+            BigWorld.fetchModel(bsp_path, onLoadObstacle)
 
     @ignoreError
     def onReset(self):
@@ -188,9 +186,7 @@ class Helicopter(object):
             BigWorld.delAlwaysUpdateModel(self._model)
             self.entity.delModel(self._model)
             self._model = None
-        if self._draw_model:
-            self.entity.delModel(self._draw_model)
-            self._draw_model = None
+        self._lines_holder.clear()
         if self._obst_model:
             self.entity.delModel(self._obst_model)
             self._obst_model = None
@@ -216,12 +212,70 @@ class Helicopter(object):
             self.updatePropGui()
             if self._is_fpscam:
                 cam = BigWorld.camera()
-                cam.pivotPosition = (0, 0.3, 0)
+                pivotPosition = (0, 0.3, 0)
+                cam.pivotPosition = pivotPosition
+                cam.pivotPositionMinPitch = pivotPosition
+                cam.pivotPositionMaxPitch = pivotPosition
                 cam.pivotMaxDist = -5
+                cam.pivotMaxDistMinPitch = cam.pivotMaxDist
+                cam.pivotMaxDistMaxPitch = cam.pivotMaxDist
             else:
                 self.entity._PlayerTransformation__set_camera()
                 BWPersonality.GUICore._fly_cam_tr._resetFov()
-        return False
+        if event.key == Keys.KEY_1:
+            if isDown:
+                self._fireThermalTrap()
+                self.entity.cell.helicopterEvent(EV.TH_TRAP, 1, 0, (0, 0, 0))
+            return True
+        elif event.key == Keys.KEY_4:
+            if isDown:
+                to_whells = not self._wheels_status
+                self._wheelsChange(to_whells)
+                self.entity.cell.applyTransformationProperty(EV.WHEELS, 1 if to_whells else -1000)
+                self._prop[EV.WHEELS] = self._wheels_status
+                self.updatePropGui()
+            return True
+        elif event.key == Keys.KEY_5:
+            if isDown:
+                if self._fly_stop_status:
+                    to_fly_stop = False
+                else:
+                    to_fly_stop = self.hel_yaw
+                    if not to_fly_stop:
+                        to_fly_stop = 0.001
+                self._flyStop(to_fly_stop)
+                self.entity.cell.applyTransformationProperty(EV.FLY_STOP, to_fly_stop or -1000)
+                self._prop[EV.FLY_STOP] = to_fly_stop
+                self.updatePropGui()
+            return True
+        elif event.key == Keys.KEY_6:
+            if isDown:
+                if self._lock_yaw is None:
+                    self._lock_yaw = self.entity.yaw
+                    val = self._lock_yaw
+                else:
+                    self._lock_yaw = None
+                    val = -1000.0
+                self._prop[EV.LOCK_YAW] = self._lock_yaw
+                self.updatePropGui()
+                self.entity.cell.applyTransformationProperty(EV.LOCK_YAW, val)
+            return True
+        elif event.key == Keys.KEY_7:
+            if isDown:
+                self._panic_rotate = not self._panic_rotate
+                self.entity.cell.applyTransformationProperty(EV.PANIC_ROTATE, 1 if self._panic_rotate else -1000)
+                self._prop[EV.PANIC_ROTATE] = self._panic_rotate
+                self.updatePropGui()
+            return True
+        elif event.key == Keys.KEY_9:
+            if isDown:
+                self._onHelicopterBurnForever(not self._is_burn_forever)
+                self.entity.cell.applyTransformationProperty(EV.BURN, 1 if self._is_burn_forever else -1000)
+                self._prop[EV.BURN] = self._is_burn_forever
+                self.updatePropGui()
+            return True
+        else:
+            return False
 
     def handleMouseEventTransform(self, event):
         if event.dz:
@@ -242,70 +296,16 @@ class Helicopter(object):
 
     @ignoreError
     def onActionEvent(self, actionName, okayToGo, event):
-        if actionName in ('QuickSlot1', 'QuickLine1'):
+        if actionName == 'RightMouseButton':
             if okayToGo:
-                self._fireThermalTrap()
-                self.entity.cell.helicopterEvent(EV.TH_TRAP, 1, 0, (0, 0, 0))
-            return True
-        elif actionName in ('QuickSlot4', 'QuickLine4'):
+                self.startFireRoket()
+            else:
+                self.stopFireRoket()
+        if actionName == 'LeftMouseButton':
             if okayToGo:
-                to_whells = not self._wheels_status
-                self._wheelsChange(to_whells)
-                self.entity.cell.applyTransformationProperty(EV.WHEELS, 1 if to_whells else -1000)
-                self._prop[EV.WHEELS] = self._wheels_status
-                self.updatePropGui()
-            return True
-        elif actionName in ('QuickSlot5', 'QuickLine5'):
-            if okayToGo:
-                if self._fly_stop_status:
-                    to_fly_stop = False
-                else:
-                    to_fly_stop = self.hel_yaw
-                    if not to_fly_stop:
-                        to_fly_stop = 0.001
-                self._flyStop(to_fly_stop)
-                self.entity.cell.applyTransformationProperty(EV.FLY_STOP, to_fly_stop or -1000)
-                self._prop[EV.FLY_STOP] = to_fly_stop
-                self.updatePropGui()
-            return True
-        elif actionName in ('QuickSlot6', 'QuickLine6'):
-            if okayToGo:
-                if self._lock_yaw is None:
-                    self._lock_yaw = self.entity.yaw
-                    val = self._lock_yaw
-                else:
-                    self._lock_yaw = None
-                    val = -1000.0
-                self._prop[EV.LOCK_YAW] = self._lock_yaw
-                self.updatePropGui()
-                self.entity.cell.applyTransformationProperty(EV.LOCK_YAW, val)
-            return True
-        elif actionName in ('QuickSlot7', 'QuickLine7'):
-            if okayToGo:
-                self._panic_rotate = not self._panic_rotate
-                self.entity.cell.applyTransformationProperty(EV.PANIC_ROTATE, 1 if self._panic_rotate else -1000)
-                self._prop[EV.PANIC_ROTATE] = self._panic_rotate
-                self.updatePropGui()
-            return True
-        elif actionName in ('QuickSlot9', 'QuickLine9'):
-            if okayToGo:
-                self._onHelicopterBurnForever(not self._is_burn_forever)
-                self.entity.cell.applyTransformationProperty(EV.BURN, 1 if self._is_burn_forever else -1000)
-                self._prop[EV.BURN] = self._is_burn_forever
-                self.updatePropGui()
-            return True
-        else:
-            if actionName == 'RightMouseButton':
-                if okayToGo:
-                    self.startFireRoket()
-                else:
-                    self.stopFireRoket()
-            if actionName == 'LeftMouseButton':
-                if okayToGo:
-                    self.startMachineGun()
-                else:
-                    self.stopMachineGun()
-            return
+                self.startMachineGun()
+            else:
+                self.stopMachineGun()
 
     def onFireHelicopterRoket(self, weaponNodeID, position, velocity, clientGrenadeID, grenade_type):
         if self.isControlled:
@@ -314,7 +314,7 @@ class Helicopter(object):
          'fromServer': True}, position, velocity, grenade_type)
 
         def sound_rocket():
-            BigWorld.playSound('transport/helicopter/mi_24/shot_rocket', self._model)
+            sounds_manager.playSound('transport/helicopter/mi_24/shot_rocket', self._model)
 
         BigWorld.callback(0.5, sound_rocket)
         fire_sfx = 'sfx/weapons/shot/helicopter_rocket_%s.xml' % weaponNodeID
@@ -332,14 +332,21 @@ class Helicopter(object):
     _fx_burn = None
     _burned = False
     _brn_id = 0
+    _fx_burn_loading = False
 
     def onHelicopterBurn(self):
         """ \xd0\x92\xd1\x80\xd0\xb5\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xbd\xd0\xbe\xd0\xb5 \xd0\xb3\xd0\xbe\xd1\x80\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd0\xbe\xd1\x82 \xd0\xbf\xd0\xbe\xd0\xbf\xd0\xb0\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd0\xb8 \xd0\xb8\xd0\xb3\xd1\x80\xd0\xbe\xd0\xba\xd0\xbe\xd0\xb2"""
         if not self._model:
             return
-        if not self._fx_burn:
-            self._fx_burn = FX.PersistentExt('sfx/weapons/shot/helicopter_burn_damage.xml')
-            self._fx_burn.attach(self._model)
+        if not self._fx_burn and not self._fx_burn_loading:
+
+            def on_load(prereqs):
+                self._fx_burn = FX.PersistentExt(HELICOPTER_BURN_DAMAGE_SFX, prereqs)
+                self._fx_burn.attach(self._model)
+                self._fx_burn_loading = False
+
+            self._fx_burn_loading = True
+            loadPersistentExtAsync([HELICOPTER_BURN_DAMAGE_SFX], on_load)
 
         def stopBurn():
             if not self._model:
@@ -347,11 +354,11 @@ class Helicopter(object):
             self._fx_burn.stop()
             self._burned = False
 
-        if not self._burned:
+        if not self._burned and self._fx_burn:
             self._fx_burn.go()
-        self._burned = True
-        BigWorld.cancelCallback(self._brn_id)
-        self._brn_id = BigWorld.callback(15, stopBurn)
+            self._burned = True
+            BigWorld.cancelCallback(self._brn_id)
+            self._brn_id = BigWorld.callback(15, stopBurn)
 
     def onHelicopterEvent(self, event_id, event_status, event_value, event_dir):
         if event_id == EV.TH_TRAP:
@@ -407,6 +414,7 @@ class Helicopter(object):
 
     _is_burn_forever = False
     _fx_burn_forever = None
+    _fx_burn_forever_loading = False
 
     def _onHelicopterBurnForever(self, status, inited = False):
         status = bool(status)
@@ -415,12 +423,19 @@ class Helicopter(object):
         if not self._model:
             return
         self._is_burn_forever = status
-        if not self._fx_burn_forever:
-            self._fx_burn_forever = FX.PersistentExt('sfx/weapons/shot/helicopter_burn.xml')
-            self._fx_burn_forever.attach(self._model)
+        if not self._fx_burn_forever and not self._fx_burn_forever_loading:
+
+            def on_load(prereqs):
+                self._fx_burn_forever = FX.PersistentExt(HELICOPTER_BURN_SFX, prereqs)
+                self._fx_burn_forever.attach(self._model)
+                self._fx_burn_forever_loading = False
+
+            self._fx_burn_forever_loading = True
+            loadPersistentExtAsync([HELICOPTER_BURN_SFX], on_load)
         if self._is_burn_forever:
-            self._fx_burn_forever.go()
-        else:
+            if self._fx_burn_forever:
+                self._fx_burn_forever.go()
+        elif self._fx_burn_forever:
             self._fx_burn_forever.stop()
 
     _wheels_status = False
@@ -497,19 +512,18 @@ class Helicopter(object):
 
             BigWorld.callback(7, callb_st_f)
 
+    def __rtick(self):
+        self._rockFireID = BigWorld.callback(0.3, self.__rtick)
+        self.fireRoket()
+        self._clb_f0 = BigWorld.callback(0.03, self.fireRoket)
+        self._clb_f1 = BigWorld.callback(0.06, self.fireRoket)
+        self._clb_f2 = BigWorld.callback(0.09, self.fireRoket)
+
     def startFireRoket(self):
         if self._rockFireID:
             return
-
-        def _rtick():
-            self._rockFireID = BigWorld.callback(0.3, _rtick)
-            self.fireRoket()
-            self._clb_f0 = BigWorld.callback(0.03, self.fireRoket)
-            self._clb_f1 = BigWorld.callback(0.06, self.fireRoket)
-            self._clb_f2 = BigWorld.callback(0.09, self.fireRoket)
-
         self.fireRoket()
-        self._rockFireID = BigWorld.callback(0.5, _rtick)
+        self._rockFireID = BigWorld.callback(0.5, self.__rtick)
 
     def stopFireRoket(self):
         BigWorld.cancelCallback(self._rockFireID)
@@ -540,7 +554,7 @@ class Helicopter(object):
             self.entity.cell.fireHelicopterRoket(weaponNodeID, position, velocity, clientGrenadeID, grenade_type)
 
             def sound_rocket():
-                BigWorld.playSound('transport/helicopter/mi_24/shot_rocket', self._model)
+                sounds_manager.playSound('transport/helicopter/mi_24/shot_rocket', self._model)
 
             BigWorld.callback(0.3, sound_rocket)
 
@@ -592,10 +606,10 @@ class Helicopter(object):
         gun_dir.setPitchYaw(gun_dir.pitch + random.uniform(-rand_gun, rand_gun), gun_dir.yaw + random.uniform(-rand_gun, rand_gun))
 
         def sound1():
-            BigWorld.playSound('transport/helicopter/mi_24/shot_gun_1', self._model)
+            sounds_manager.playSound('transport/helicopter/mi_24/shot_gun_1', self._model)
 
         def sound2():
-            BigWorld.playSound('transport/helicopter/mi_24/shot_gun_2', self._model)
+            sounds_manager.playSound('transport/helicopter/mi_24/shot_gun_2', self._model)
 
         BigWorld.callback(0.5, sound1)
         src = gun_pos
@@ -629,7 +643,6 @@ class Helicopter(object):
         pos = self.entity.position
         yaw = self.entity.yaw
         dpos = self._prev_pos - pos
-        dyaw = self._prev_yaw - yaw
         self._prev_yaw = yaw
         self._prev_pos = pos
         dpos[1] = 0
@@ -637,8 +650,6 @@ class Helicopter(object):
             yaw = self._lock_yaw
         if self._fly_stop_status:
             yaw = self._fly_stop_status
-        prev_yaw = yaw
-        prev_hel_yaw = self.hel_yaw
         d_hyaw = yaw - self.hel_yaw
         if d_hyaw > math.pi:
             d_hyaw -= PI2
@@ -691,7 +702,7 @@ class Helicopter(object):
             else:
                 roll_side = -1
             d_rool = abs(d_rool)
-            d_rool = min(d_rool, 1.9)
+            d_rool = min(d_rool, 1.3)
             self._body_roll += roll_side * d_rool * 0.1
         return
 
@@ -763,11 +774,10 @@ class Helicopter(object):
 
     def __mark_players(self):
         camera = BigWorld.camera()
-        campos = camera.position
         camdir = camera.direction
         dirr = camdir * Vector3(0, 1, 0)
         for e in BigWorld.entities.values():
-            if e.__class__.__name__ == 'Creature':
+            if e.__class__.__name__ in Constants.CREATURE_CLASSES:
                 color = (0, 1, 1, 1)
             elif e.__class__.__name__ == 'Avatar':
                 color = (1, 0, 0, 1)
@@ -778,14 +788,14 @@ class Helicopter(object):
             if getattr(e, 'dead', False):
                 continue
             pos = e.position + (0, 0.1, 0) - camdir * 2
-            self._draw_model.addLineDraw(pos - dirr, dirr + pos, color, 1)
+            self._lines_holder.add(pos - dirr, dirr + pos, color, 1)
             if not getattr(e, 'canTakeDamage', True):
-                self._draw_model.addLineDraw(pos - dirr, dirr + pos + (0, 0.2, 0), (1, 1, 1, 1), 1)
-                self._draw_model.addLineDraw(pos - dirr + (0, 0.2, 0), dirr + pos, (1, 1, 1, 1), 1)
+                self._lines_holder.add(pos - dirr, dirr + pos + (0, 0.2, 0), (1, 1, 1, 1), 1)
+                self._lines_holder.add(pos - dirr + (0, 0.2, 0), dirr + pos, (1, 1, 1, 1), 1)
 
     _show_laser = False
     _show_players = False
-    _draw_model = None
+    _lines_holder = LinesHolder()
 
     @ignoreError
     def _rotateGun(self, root_matrix):
@@ -796,21 +806,14 @@ class Helicopter(object):
             gun_pos = gun.translation
             gun_dir = gun.applyToAxis(0)
             if self.isControlled:
-                if self._draw_model and self._draw_model.inWorld:
-                    self._draw_model.clearLines()
-                if self._show_laser or self._show_players:
-                    if not self._draw_model or not self._draw_model.inWorld:
-                        self._draw_model = BigWorld.Model('')
-                        self.entity.addModel(self._draw_model)
-                    camera = BigWorld.camera()
-                    self._draw_model.position = camera.position + camera.direction * 3
+                self._lines_holder.clear()
                 if self._show_players:
                     self.__mark_players()
                 if self._show_laser:
                     dirr = Vector3()
                     prev_point = None
                     fist_pos = None
-                    for i in range(30):
+                    for i in xrange(30):
                         angl = PI2 * (i / 30.0)
                         dirr.setPitchYaw(angl, 0)
                         v = gun.applyVector(dirr)
@@ -818,19 +821,19 @@ class Helicopter(object):
                         if res:
                             col_pos = res[0]
                             if prev_point:
-                                self._draw_model.addLineDraw(prev_point + (0, 0.5, 0), col_pos + (0, 0.5, 0), (1, 1, 0, 1), 1)
+                                self._lines_holder.add(prev_point + (0, 0.5, 0), col_pos + (0, 0.5, 0), (1, 1, 0, 1), 1)
                             prev_point = col_pos
                             if not fist_pos:
                                 fist_pos = col_pos
 
                     if fist_pos and prev_point:
-                        self._draw_model.addLineDraw(prev_point + (0, 0.5, 0), fist_pos + (0, 0.5, 0), (1, 1, 0, 1), 1)
-                    self._draw_model.addLineDraw(gun_pos, gun_pos + gun_dir * 500, (1, 0, 0, 1), 0)
+                        self._lines_holder.add(prev_point + (0, 0.5, 0), fist_pos + (0, 0.5, 0), (1, 1, 0, 1), 1)
+                    self._lines_holder.add(gun_pos, gun_pos + gun_dir * 500, (1, 0, 0, 1), 0)
                     for rok_node in self._roket_guns.values():
                         rok = Math.Matrix(rok_node)
                         rok_pos = rok.translation
                         rok_dir = rok.applyToAxis(0)
-                        self._draw_model.addLineDraw(rok_pos, rok_pos + rok_dir * 500, (1, 1, 0, 1), 0)
+                        self._lines_holder.add(rok_pos, rok_pos + rok_dir * 500, (1, 1, 0, 1), 0)
 
             d_hyaw = self.hel_yaw - self._prev_yaw
             if d_hyaw > math.pi:
@@ -886,5 +889,5 @@ class Helicopter(object):
                 self._model.setWorldTransform(matrix)
                 self._rotateGun(matrix)
             if self._obst_model:
-                self._obst_model.matrix = matrix
+                self._obst_model.setWorldTransform(matrix)
             return

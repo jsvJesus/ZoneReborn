@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/chardet/hebrewprober.py
+# Embedded file name: ./common/requests/packages/chardet/hebrewprober.py
 from charsetprober import CharSetProber
 import constants
 FINAL_KAF = '\xea'

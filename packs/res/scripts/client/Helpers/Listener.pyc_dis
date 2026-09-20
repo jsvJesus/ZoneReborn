@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/Helpers/Listener.py
+# Embedded file name: ./client/Helpers/Listener.py
 import copy
 
 class Listenable:
@@ -18,6 +18,9 @@ class Listenable:
     def removeListener(self, eventName, fn):
         self.listeners.removeListener(eventName, fn)
 
+    def clearAllListeners(self, eventName):
+        self.listeners.clearAllListeners(eventName)
+
 
 class _Listeners(object):
 
@@ -35,6 +38,10 @@ class _Listeners(object):
                 self.listeners[eventName].remove(fn)
             if not len(self.listeners[eventName]):
                 del self.listeners[eventName]
+
+    def clearAllListeners(self, eventName):
+        self.listeners.pop(eventName, None)
+        return
 
     def __getattribute__(self, name):
         try:

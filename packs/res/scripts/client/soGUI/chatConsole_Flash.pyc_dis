@@ -1,17 +1,19 @@
-# Embedded file name: ./scripts/client/soGUI/chatConsole_Flash.py
+# Embedded file name: ./client/soGUI/chatConsole_Flash.py
 """\xd0\x9c\xd0\xbe\xd0\xb4\xd1\x83\xd0\xbb\xd1\x8c \xd1\x80\xd0\xb5\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb7\xd1\x83\xd0\xb5\xd1\x82 \xd0\xbe\xd0\xba\xd0\xbd\xd0\xbe \xd1\x87\xd0\xb0\xd1\x82\xd0\xb0."""
 import BigWorld
 import BingAPItransl
 import BWPersonality
 import ResMgr
+from soGUI import MouseShaper
 import Localization
 import utils
+import sounds_manager as sounds
 from ChatChannelConfig import ChannelConfig, ChannelConsts
 from Settings import Settings
 from . import msg_mgr
 from .FlashGUIBase import FlashScriptGUIBase
 from .flash_utils import FlashTeamWorker
-import cPickle as pickle
+import pyson
 import functools
 import json
 import os
@@ -65,11 +67,11 @@ class ChatConsoleFlash(FlashScriptGUIBase, FlashTeamWorker):
         self.class_name = self.__class__.__name__
         layer = BWPersonality.GUICore.flashWorldLayerChat
         self.bind_to_parrent_layer(layer)
-        self._colors_path = 'scripts\\client\\data\\colors.json'
-        self._default_settings_path = 'scripts\\client\\data\\Chat\\DefaultChatSettings.json'
-        self._abs_user_settings_path = os.path.join(utils.stalker_path(), 'usercontent\\ChatSettings\\chat_settings.pickle')
-        player = BigWorld.player()
-        self._msg_manager = msg_mgr.MessageManager(self, player)
+        self._colors_path = 'scripts/client/data/colors.json'
+        self._default_settings_path = 'scripts/client/data/Chat/DefaultChatSettings.json'
+        self._abs_user_settings_path = os.path.join(utils.stalker_path(), 'usercontent/ChatSettings/chat_settings.pyson')
+        self._sound_settings_path = os.path.join(utils.stalker_path(), 'usercontent/ChatSettings/chat_sound_settings.pyson')
+        self._msg_manager = msg_mgr.MessageManager(self)
         self._channel_confs = ChannelConfig()
         self._chat_mode = 'hidden'
         self._modal_mode = False
@@ -77,6 +79,14 @@ class ChatConsoleFlash(FlashScriptGUIBase, FlashTeamWorker):
         self._current_cursor = ''
         self._message_cache = []
         self.is_ready = False
+        self.__sound_settings_cache = {}
+
+    def desttroyMee(self):
+        self._msg_manager._chat = None
+        self._msg_manager = None
+        self.viewX = None
+        self.movieX = None
+        return
 
     @FlashTeamWorker.exchanging_method
     def access_level(self):
@@ -120,13 +130,25 @@ class ChatConsoleFlash(FlashScriptGUIBase, FlashTeamWorker):
     @FlashTeamWorker.exchanging_method
     def default_settings(self):
         """\xd0\xa1\xd0\xb1\xd1\x80\xd0\xbe\xd1\x81\xd0\xb8\xd1\x82\xd1\x8c \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c\xd1\x81\xd0\xba\xd0\xb8\xd0\xb5 \xd0\xbd\xd0\xb0\xd1\x81\xd1\x82\xd1\x80\xd0\xbe\xd0\xb9\xd0\xba\xd0\xb8 \xd1\x87\xd0\xb0\xd1\x82\xd0\xb0."""
-        if os.path.exists(self._abs_user_settings_path):
-            try:
-                os.remove(self._abs_user_settings_path)
-            except Exception:
-                traceback.print_exc()
+        for i in [self._abs_user_settings_path, self._sound_settings_path]:
+            if os.path.exists(i):
+                try:
+                    os.remove(i)
+                except Exception:
+                    traceback.print_exc()
 
         return self._default_settings()
+
+    @FlashTeamWorker.exchanging_method
+    def sound_settings(self):
+        s_list = set(CHANNEL_CONST.sounds.keys())
+        full_lits = set(CHANNEL_CONST.const_names.keys())
+        self.__sound_settings_cache['active'] = [CHANNEL_CONST.WHISPER]
+        if os.path.exists(self._sound_settings_path):
+            with open(self._sound_settings_path, 'rb') as fh:
+                self.__sound_settings_cache = pyson.loads(fh.read())
+        return {'active': self.__sound_settings_cache['active'],
+         'locked': list(full_lits - s_list)}
 
     def externalInterfaceHandler(self, *args, **kws):
         FlashTeamWorker.externalInterfaceHandler(self, *args, **kws)
@@ -178,8 +200,10 @@ class ChatConsoleFlash(FlashScriptGUIBase, FlashTeamWorker):
         """\xd0\xa1\xd0\xba\xd1\x80\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x84\xd0\xbb\xd1\x8d\xd1\x88-\xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82"""
         self.visible = False
         self.component.focus = False
-        self.component.crossFocus = False
-        self.component.moveFocus = False
+
+    @FlashTeamWorker.sending_method
+    def clear(self):
+        return True
 
     def hideChatOnEnter(self, enable = True):
         if enable:
@@ -246,26 +270,32 @@ class ChatConsoleFlash(FlashScriptGUIBase, FlashTeamWorker):
         return string
 
     @FlashTeamWorker.sending_method
-    def print_msg(self, channel_id, text, sender = ''):
+    def print_msg(self, channel_id, text, sender = '', additional = u''):
         """\xd0\x92\xd1\x8b\xd0\xb2\xd0\xb5\xd1\x81\xd1\x82\xd0\xb8 \xd1\x81\xd0\xbe\xd0\xbe\xd0\xb1\xd1\x89\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd0\xb2 \xd1\x87\xd0\xb0\xd1\x82\xd0\xb5."""
         if self.debug_print_off:
             return False
-        data = self._msg_manager.print_msg(channel_id, text, sender)
+        data = self._msg_manager.print_msg(channel_id, text, sender, additional)
+        sound_name = CHANNEL_CONST.sounds.get(channel_id)
+        if sound_name and channel_id in self.__sound_settings_cache['active']:
+            sounds.playSound(sound_name)
         return data
 
-    def print_msg_to_chat(self, channel_id, text, sender = ''):
+    def print_msg_to_chat(self, channel_id, text, sender = '', additional = u''):
         if self.debug_print_off:
             return False
         if self.is_ready:
-            self.print_msg(channel_id, text, sender)
+            self.print_msg(channel_id, text, sender, additional)
         else:
-            self._message_cache.append((channel_id, text, sender))
+            self._message_cache.append((channel_id,
+             text,
+             sender,
+             additional))
             BigWorld.callback(1.5, self.check_ready_chat)
 
     def check_ready_chat(self):
         if self.is_ready:
-            for channel_id, text, sender in self._message_cache:
-                self.print_msg(channel_id, text, sender)
+            for channel_id, text, sender, additional in self._message_cache:
+                self.print_msg(channel_id, text, sender, additional)
 
             self._message_cache = []
         else:
@@ -282,7 +312,7 @@ class ChatConsoleFlash(FlashScriptGUIBase, FlashTeamWorker):
             if channels_known:
                 channels_missing = set(channels_default) - set(channels_known)
             else:
-                channels_missing = set(channels_default) - set(range(11))
+                channels_missing = set(channels_default) - set(xrange(11))
                 pickle_data['MainWindow']['channels_known'] = channels_default
             pickle_data['MainWindow']['channals'].extend(channels_missing)
             return pickle_data
@@ -291,13 +321,14 @@ class ChatConsoleFlash(FlashScriptGUIBase, FlashTeamWorker):
         if os.path.exists(self._abs_user_settings_path):
             try:
                 with open(self._abs_user_settings_path, 'rb') as fh:
-                    loaded_data = pickle.load(fh)
+                    loaded_data = pyson.loads(fh.read())
                     user_data = appendNewChannels(loaded_data)
             except Exception:
                 traceback.print_exc()
 
         if user_data is None:
             user_data = self._default_settings()
+        print '!!!read_user_settings!!!'
         return user_data
 
     @FlashTeamWorker.exchanging_method
@@ -316,21 +347,23 @@ class ChatConsoleFlash(FlashScriptGUIBase, FlashTeamWorker):
     def ready(self):
         """\xd0\xa4\xd0\xbb\xd1\x8d\xd1\x88 \xd0\xb2\xd1\x8b\xd0\xb7\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x8d\xd1\x82\xd1\x83 \xd1\x84\xd1\x83\xd0\xbd\xd0\xba\xd1\x86\xd0\xb8\xd1\x8e, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd0\xb3\xd0\xbe\xd1\x82\xd0\xbe\xd0\xb2\xd0\xb0 \xd0\xbf\xd1\x80\xd0\xb8\xd0\xbd\xd0\xb8\xd0\xbc\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd1\x8b."""
         self.hide_chat()
+        self.show_notification(' _  ', 0.2)
         self._print_msg_about_help()
-        self.access_level()
         self.is_ready = True
+        self.access_level()
+        self.sound_settings()
 
     @FlashTeamWorker.receiving_method
     def set_cursor(self, cursor_data):
         """\xd0\xa3\xd1\x81\xd1\x82\xd0\xb0\xd0\xbd\xd0\xb0\xd0\xb2\xd0\xbb\xd0\xb8\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbd\xd1\x83\xd0\xb6\xd0\xbd\xd1\x8b\xd0\xb9 \xd0\xba\xd1\x83\xd1\x80\xd1\x81\xd0\xbe\xd1\x80 \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x80\xd0\xb5\xd1\x81\xd0\xb0\xd0\xb9\xd0\xb7\xd0\xb0 \xd0\xbe\xd0\xba\xd0\xbd\xd0\xb0 \xd1\x87\xd0\xb0\xd1\x82\xd0\xb0"""
         if cursor_data == 'default':
             if self._current_cursor:
-                GUI.mcursor().shape = self._current_cursor
-            self._current_cursor = ''
+                MouseShaper.set_shape(self._current_cursor)
+                self._current_cursor = ''
         else:
             if not self._current_cursor:
-                self._current_cursor = GUI.mcursor().shape
-            GUI.mcursor().shape = cursor_data
+                self._current_cursor = 'arrow'
+            MouseShaper.set_shape(cursor_data)
 
     @FlashTeamWorker.sending_method
     def returned_msg(self, msg_data):
@@ -350,13 +383,23 @@ class ChatConsoleFlash(FlashScriptGUIBase, FlashTeamWorker):
         player.runCommand(text)
 
     @FlashTeamWorker.receiving_method
+    def report(self, user):
+        BWPersonality.GUICore.show_wimp_win(user.decode('utf-8'))
+
+    @FlashTeamWorker.receiving_method
+    def update_sounds_settings(self, data):
+        self.__sound_settings_cache['active'] = data
+
+    @FlashTeamWorker.receiving_method
     def save_user_settings(self, user_data):
         """\xd0\xa1\xd0\xbe\xd1\x85\xd1\x80\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x82\xd1\x8c \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c\xd1\x81\xd0\xba\xd0\xb8\xd0\xb5 \xd0\xbd\xd0\xb0\xd1\x81\xd1\x82\xd1\x80\xd0\xbe\xd0\xb9\xd0\xba\xd0\xb8 \xd0\xbe\xd0\xba\xd0\xbe\xd0\xbd \xd1\x87\xd0\xb0\xd1\x82\xd0\xb0."""
         settings_dir = os.path.dirname(self._abs_user_settings_path)
         if not os.path.exists(settings_dir):
             os.makedirs(settings_dir)
         with open(self._abs_user_settings_path, 'wb') as fh:
-            pickle.dump(user_data, fh)
+            fh.write(pyson.dumps(user_data))
+        with open(self._sound_settings_path, 'wb') as fh:
+            fh.write(pyson.dumps(self.__sound_settings_cache))
 
     @FlashTeamWorker.sending_method
     def save_settings(self):
@@ -364,9 +407,10 @@ class ChatConsoleFlash(FlashScriptGUIBase, FlashTeamWorker):
         return True
 
     @FlashTeamWorker.sending_method
-    def show_notification(self, text):
+    def show_notification(self, text, show_time = 0):
         """\xd0\xbe\xd1\x82\xd0\xbf\xd1\x80\xd0\xb0\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd1\x83\xd0\xb2\xd0\xb5\xd0\xb4\xd0\xbe\xd0\xbc\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd1\x84\xd0\xbb\xd0\xb5\xd1\x88\xd0\xb0 \xd1\x81\xd0\xb2\xd0\xb5\xd1\x80\xd1\x85\xd1\x83 \xd0\xbe\xd0\xba\xd0\xbd\xd0\xb0"""
-        return text
+        return {'text': text,
+         'show_time': show_time}
 
     @FlashTeamWorker.receiving_method
     def send_msg(self, channel_id, text, receiver = ''):
@@ -383,8 +427,6 @@ class ChatConsoleFlash(FlashScriptGUIBase, FlashTeamWorker):
         """\xd0\x9f\xd0\xbe\xd0\xba\xd0\xb0\xd0\xb7\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x84\xd0\xbb\xd1\x8d\xd1\x88-\xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82"""
         self.visible = True
         self.component.focus = True
-        self.component.crossFocus = True
-        self.component.moveFocus = True
 
     def show_chat(self):
         """\xd0\x9f\xd0\xbe\xd0\xba\xd0\xb0\xd0\xb7\xd0\xb0\xd1\x82\xd1\x8c \xd0\xbe\xd0\xba\xd0\xbd\xd0\xbe \xd1\x87\xd0\xb0\xd1\x82\xd0\xb0."""
@@ -430,5 +472,29 @@ class ChatConsoleFlash(FlashScriptGUIBase, FlashTeamWorker):
         self.print_msg(CHANNEL_CONST.SYSTEM, help_advice)
 
     @FlashTeamWorker.receiving_method
+    def on_paste_warning(self):
+        warning_msg = Localization.lc('PlayerAvatar.client.chat_msg_paste_warning')
+        self.print_msg(CHANNEL_CONST.SYSTEM, warning_msg)
+
+    @FlashTeamWorker.receiving_method
     def showError(self, text):
         pass
+
+    @FlashTeamWorker.receiving_method
+    def set_radio_mode(self, value):
+        """\xd0\xa3\xd1\x81\xd1\x82\xd0\xb0\xd0\xbd\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x81\xd0\xbe\xd1\x81\xd1\x82\xd0\xbe\xd1\x8f\xd0\xbd\xd0\xb8\xd0\xb5 \xd1\x84\xd0\xb8\xd0\xbb\xd1\x8c\xd1\x82\xd1\x80\xd0\xb0\xd1\x86\xd0\xb8\xd0\xb8 \xd0\xbc\xd0\xb0\xd1\x82\xd0\xb0."""
+        player = BigWorld.player()
+        if not player or player.__class__.__name__ != 'PlayerAvatar':
+            return
+        player.onRadioSayStart() if value else player.onRadioSayStop()
+
+    @FlashTeamWorker.receiving_method
+    def set_ime_mode(self, value):
+        """\xd0\xa4\xd0\xbe\xd0\xba\xd1\x83\xd1\x81 \xd0\xbd\xd0\xb0 \xd0\xbf\xd0\xbe\xd0\xbb\xd0\xb5 \xd0\xb2\xd0\xb2\xd0\xbe\xd0\xb4\xd0\xb0, \xd0\xbd\xd1\x83\xd0\xb6\xd0\xbd\xd0\xbe \xd0\xb2\xd0\xba\xd0\xbb\xd1\x8e\xd1\x87\xd0\xb8\xd1\x82\xd1\x8c/\xd0\xb2\xd1\x8b\xd0\xba\xd0\xbb\xd1\x8e\xd1\x87\xd0\xb8\xd1\x82\xd1\x8c IME"""
+        BigWorld.ime.enabled = value
+
+    @FlashTeamWorker.sending_method
+    def ime_event(self, text, candidates, selected_index):
+        return {'candidates': candidates,
+         'selectedIndex': selected_index,
+         'composition': text}

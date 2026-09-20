@@ -1,30 +1,37 @@
-# Embedded file name: ./scripts/client/HideModelUDO.py
+# Embedded file name: ./client/HideModelUDO.py
 import BigWorld
 import ResMgr
 import Math
 import traceback
+import json
+section = ResMgr.openSection('scripts/common/EnumProps/ModelSelector.json')
+CONFIG = json.loads(section.asBinary)['model_index']['values']
 
 class HideModelUDO(BigWorld.UserDataObject):
 
     def __init__(self):
         BigWorld.UserDataObject.__init__(self)
 
-    SOURCE = None
-
     @staticmethod
-    def parse_model(item):
-        """ \xd0\xbf\xd0\xb0\xd1\x80\xd1\x81\xd0\xb8\xd1\x82 UDO \xd0\xb2 \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd1\x8c """
-        model_path = None
+    def parse_model(item, asyncCallback = None):
+        """ \xd0\xbf\xd0\xb0\xd1\x80\xd1\x81\xd0\xb8\xd1\x82 UDO \xd0\xb2 \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd1\x8c 
+        \xd0\xb5\xd1\x81\xd0\xbb\xd0\xb8  \xd1\x83\xd0\xba\xd0\xb0\xd0\xb7\xd0\xb0\xd0\xbd asyncCallback - \xd0\xb7\xd0\xb0\xd0\xb3\xd1\x80\xd1\x83\xd0\xb7\xd0\xba\xd0\xb0 \xd0\xb2 \xd0\xb4\xd1\x80\xd1\x83\xd0\xb3\xd0\xbe\xd0\xbc \xd0\xbf\xd0\xbe\xd1\x82\xd0\xbe\xd0\xba\xd0\xb5
+        """
+        model_path = str(next((model for index, model in CONFIG if index == item.modelSelect), None))
         tint = None
-        if not HideModelUDO.SOURCE:
-            source = ResMgr.openSection('scripts/client/data/editor.xml')
-        for i in source.values():
-            if item.modelSelect == i['value'].asInt:
-                model_path = i['path'].asString
-                if i['tint'] != None:
-                    tint = i['tint'].asString
-                break
 
+        def apply_tint(model, tint):
+            if tint:
+                tint = tint.split()
+                try:
+                    setattr(model, tint[0], tint[1])
+                except:
+                    traceback.print_exc()
+
+        if item.tint:
+            tint = item.tint
+        if not model_path:
+            print 'HideModelUDO WARNING not model_path', item
         if model_path:
             r_matrix = Math.Matrix()
             r_matrix.setRotateYPR((item.yaw, item.pitch, item.roll))
@@ -36,16 +43,23 @@ class HideModelUDO(BigWorld.UserDataObject):
             m.set(r_matrix)
             m.postMultiply(s_matrix)
             m.postMultiply(t_matrix)
-            model = BigWorld.PyModelObstacle(model_path, m, 0)
-            if item.tint:
-                tint = item.tint
-            if tint:
-                tint = tint.split()
-                try:
-                    setattr(model, tint[0], tint[1])
-                except:
-                    traceback.print_exc()
+            if asyncCallback:
 
+                def onLoad(model):
+                    if not model:
+                        print 'ERROR LOAD MODEL:', repr(model_path), item, item.position
+                        raise ValueError
+                    apply_tint(model, tint)
+                    model.setWorldTransform(m)
+                    model.isObstacle = True
+                    asyncCallback(model, item, model_path)
+
+                BigWorld.fetchModel(model_path, onLoad)
+                return
+            model = BigWorld.Model(model_path)
+            model.setWorldTransform(m)
+            model.isObstacle = True
+            apply_tint(model, tint)
             return model
         else:
             return

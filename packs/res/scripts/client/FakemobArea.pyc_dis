@@ -1,10 +1,9 @@
-# Embedded file name: ./scripts/client/FakemobArea.py
+# Embedded file name: ./client/FakemobArea.py
 import BigWorld
 from Helpers.BWCoroutine import BWWaitForPeriod, BWMemberCoroutine
 from random import random, uniform
 import math
-models_by_enum_type = {0: 'characters/creatures/spider/spider.model',
- 1: 'characters/creatures/bear/bear_polar.model'}
+from client_utils import readable_space_pos
 
 class FakemobArea(BigWorld.Entity):
     DEBUG_MODE = False
@@ -21,6 +20,11 @@ class FakemobArea(BigWorld.Entity):
         self.spiders_amount = 0
         return
 
+    def __repr__(self):
+        if self.isDestroyed:
+            return 'FakemobArea[%s]Destroyed' % self.id
+        return 'FakemobArea[%s] at %s' % (self.id, readable_space_pos(self))
+
     def hit_pot(self, entered_trap, handle):
         p = BigWorld.player()
         if entered_trap:
@@ -28,7 +32,6 @@ class FakemobArea(BigWorld.Entity):
             if not hasattr(p, 'marked_by_spider_area'):
                 p.marked_by_spider_area = set()
             p.marked_by_spider_area.add(self.id)
-            p.start_stepping()
             self.spawn_corutine.run()
         else:
             if self.spawn_corutine:
@@ -43,7 +46,7 @@ class FakemobArea(BigWorld.Entity):
             if self.spiders_amount >= self.amount:
                 yield BWWaitForPeriod(1.0)
                 continue
-            for _ in range(4):
+            for _ in xrange(4):
                 if self.spawn_spider():
                     break
 
@@ -71,7 +74,7 @@ class FakemobArea(BigWorld.Entity):
             scale = uniform(self.scale_min, self.scale_max)
             velocity = uniform(self.velocity_min, self.velocity_max)
             step_size = p.S_STEP_TIME * velocity
-            p.add_spider_by_position(collision[0], step_size=step_size, scale=scale, model_path=models_by_enum_type[self.model_path], tint=self.model_tint, event_listener=self)
+            p.add_mob_by_position(collision[0], step_size=step_size, scale=scale, model_index=self.model_path, tint=self.model_tint, event_listener=self)
             self.spiders_amount += 1
             return True
         return False

@@ -1,20 +1,17 @@
-# Embedded file name: ./scripts/client/soGUI/openFileDialog.py
+# Embedded file name: ./client/soGUI/openFileDialog.py
 import re
 import os
 import subprocess
 import GUI
-import Math
 import Keys
 import BWPersonality
 import BigWorld
-import Helpers.PyGUI as PyGUI
 from Helpers.PyGUI.PyGUIBase import PyGUIBase
-import soGUI
-import random
 from soGUI.soItemView import soItemView, soItemSlot
-from soGUI.soButton import soButton, soButtonWTT
-import locale
+from soGUI.soButton import soButton
 import traceback
+from gui_const import ITSLOT
+from soGUI.soEditField import soEditField2
 
 class FileLinkSlot(soItemSlot):
     factoryString = 'soGUI.FileLinkSlot'
@@ -36,11 +33,11 @@ class FileLinkSlot(soItemSlot):
 
     def setupContent(self):
         soItemSlot.setupContent(self)
-        cmp = GUI.Simple('soGUI\\maps\\Colours\\white.bmp')
+        cmp = GUI.Simple('soGUI/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = horizontalAnchor = 'TOP'
+        cmp.verticalAnchor = 'TOP'
         cmp.materialFX = 'BLEND'
         cmp.colour = (255, 255, 255, 70)
         cmp.width = self.SLOTWIDTH - 1
@@ -48,11 +45,11 @@ class FileLinkSlot(soItemSlot):
         cmp.position = (0, 0, 0.9)
         cmp.visible = 1
         self.component.addChild(cmp, 'fon')
-        cmp = GUI.Simple('soGUI\\maps\\Colours\\white.bmp')
+        cmp = GUI.Simple('soGUI/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'CENTER'
-        cmp.verticalAnchor = horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
         cmp.materialFX = 'BLEND'
         cmp.colour = (255, 255, 255, 255)
         cmp.width = cmp.height = 20
@@ -60,7 +57,7 @@ class FileLinkSlot(soItemSlot):
         cmp.visible = 1
         self.component.addChild(cmp, 'icon')
         cmp = GUI.Text('filename')
-        cmp.font = 'ruRU_calibri_default.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
@@ -136,19 +133,20 @@ class OpenFileDialog(PyGUIBase):
         cmp.colour = (255, 255, 255, 500)
         cmp.materialFX = 'BLEND'
         cmp.visible = True
-        cmpt = GUI.Frame2('soGUI/maps/Controls/msgBox/windowFrame.tga')
+        cmp.focus = True
+        cmpt = GUI.Frame2('soGUI/frame/basic_frame_no_footer.dds')
         cmpt.widthMode = cmpt.heightMode = 'PIXEL'
-        cmpt.horizontalPositionMode = cmpt.verticalPositionMode = 'CLIP'
-        cmpt.horizontalAnchor = cmpt.verticalAnchor = 'CENTER'
+        cmpt.horizontalPositionMode = cmpt.verticalPositionMode = 'PIXEL'
+        cmpt.horizontalAnchor, cmpt.verticalAnchor = ('LEFT', 'TOP')
         cmpt.width = self.width
         cmpt.height = self.height
-        cmpt.position = (0, 0, 0.8)
+        cmpt.position = (int(W / 2 - self.width / 2), int(H / 2 - self.height / 2), 0.8)
         cmpt.visible = True
         cmpt.colour = (255, 255, 255, 250)
         cmpt.materialFX = 'BLEND'
         self.component.addChild(cmpt, 'dFrame')
         bBack = soButton(GUI.Window())
-        bBack.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        bBack.initVSC('soGUI/elements/button_1.xml')
         cmp = bBack.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
@@ -165,7 +163,7 @@ class OpenFileDialog(PyGUIBase):
         bBack.onBound()
         bBack._updateVisualState()
         cmp = GUI.Text('')
-        cmp.font = 'ruRU_calibri_default.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
@@ -188,7 +186,7 @@ class OpenFileDialog(PyGUIBase):
         self.itemView = itemView
         self.itemView.setItems(None)
         bok = soButton(GUI.Window())
-        bok.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        bok.initVSC('soGUI/elements/button_1.xml')
         cmp = bok.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
@@ -205,7 +203,7 @@ class OpenFileDialog(PyGUIBase):
         bok.onBound()
         bok._updateVisualState()
         bcanc = soButton(GUI.Window())
-        bcanc.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        bcanc.initVSC('soGUI/elements/button_1.xml')
         cmp = bcanc.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
@@ -258,20 +256,19 @@ class OpenFileDialog(PyGUIBase):
         self._showDirectory(full_path)
         return
 
-    def callback(self, path):
-        print '->', [path]
-
     def _showDirectory(self, path):
         self.component.showpath.text = ''
         if path:
             path = os.path.abspath(path)
+            if os.path.isfile(path):
+                path = os.path.dirname(path)
             self.component.showpath.text = path
         self._last_root = path
         self._current_files = []
         if not path:
-            for drive, caption in self._windows_logical_discs():
+            for drive in self._windows_logical_discs():
                 self._current_files.append({'isdir': 1,
-                 'name': u'%s      %s' % (drive, caption),
+                 'name': drive,
                  'full_path': drive})
 
         else:
@@ -304,9 +301,9 @@ class OpenFileDialog(PyGUIBase):
         return not self.filters or ext.lower() in self.filters
 
     def slotHandler(self, eventID, slot):
-        if eventID == 9:
+        if eventID == ITSLOT.SLOTEVENT_LCLICK:
             self.selectFile(slot.getPath())
-        if eventID == 10:
+        if eventID == ITSLOT.SLOTEVENT_DBLCLICK:
             self.chooseFile(slot.getPath())
 
     def itemViewHandler(self, *e):
@@ -323,31 +320,64 @@ class OpenFileDialog(PyGUIBase):
         BWPersonality.GUICore.generalLayer.addChild(self.component, 'openFileDialog')
         self.component.visible = True
         self._showDirectory(self._last_root)
+        if init_dir and os.path.isfile(init_dir):
+            self.selectFile(init_dir)
 
     def hide(self):
         self.component.visible = False
 
     def _windows_logical_discs(self):
-        print 'subprocess+ ofd'
-        drivelist_proc = subprocess.Popen('wmic logicaldisk get DeviceID, VolumeName', shell=True, stdout=subprocess.PIPE)
-        drivelist, _err = drivelist_proc.communicate()
-        drive_lines = drivelist.split('\n')
+        import string
         logical_discs = []
-        for info in drive_lines:
-            disk_name = re.search('^\\S\\:', info)
-            if disk_name:
-                disk_name = unicode(disk_name.group() + u'\\')
-                volumeName = info.split(' ', 1)[1].strip()
-                try:
-                    volumeName = volumeName.decode('cp866')
-                except:
-                    print 'volumeName:', [volumeName]
-                    traceback.print_exc()
-                    volumeName = u' '
-
-                logical_discs.append((disk_name, volumeName))
+        for d in string.ascii_uppercase:
+            disk_name = u'%s:\\' % d
+            if os.path.exists(disk_name):
+                logical_discs.append(disk_name)
 
         return logical_discs
+
+
+class SaveFileDialog(OpenFileDialog):
+    factoryString = 'soGUI.SaveFileDialog'
+
+    def setupRoot(self):
+        OpenFileDialog.setupRoot(self)
+        self.component.bok.label.text = 'save'
+        self.component.dFrame.horizontalPositionMode = 'PIXEL'
+        self.component.dFrame.verticalPositionMode = 'PIXEL'
+        x_pos = self.component.dFrame.position[0] - self.component.dFrame.width * 0.5 + 8
+        y_pos = self.component.dFrame.position[1] + self.component.dFrame.height * 0.5 - 8
+        edit_field = soEditField2(GUI.Window(), width=240, height=18)
+        edit_field.initVSC('soGUI/elements/button_1.xml')
+        cmp = edit_field.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (200, 200, 200, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (x_pos, y_pos, 0.0)
+        self.component.addChild(cmp, 'edit_field')
+
+    def onOkBtn(self):
+        file_name = self.component.edit_field.script.getValue()
+        if not file_name:
+            return
+        if not file_name.endswith(self.filters[0]):
+            file_name += self.filters[0]
+        self.hide()
+        self.callback(os.path.join(self._last_root, file_name))
+
+    def selectFile(self, full_path):
+        OpenFileDialog.selectFile(self, full_path)
+        if full_path and os.path.isfile(full_path):
+            file_name = os.path.basename(full_path)
+            file_name = os.path.splitext(file_name)[0]
+            self.component.edit_field.script.setValue(file_name)
+
+    def hide(self):
+        OpenFileDialog.hide(self)
+        self.component.edit_field.script.setActive(False)
 
 
 class BackGround(PyGUIBase):
@@ -382,9 +412,6 @@ class BackGround(PyGUIBase):
     def handleMouseLeaveEvent(self, component):
         return True
 
-    def handleMouseLeaveEvent(self, component):
-        return True
-
     def setupRoot(self):
         cmp = self.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
@@ -400,7 +427,7 @@ class BackGround(PyGUIBase):
         cmp.dragFocus = True
         cmp.moveFocus = True
         cmp.dropFocus = True
-        cmp = GUI.Simple('textures\\default\\white.dds')
+        cmp = GUI.Simple('textures/default/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
         cmp.widthMode = cmp.heightMode = 'CLIP'
         cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'

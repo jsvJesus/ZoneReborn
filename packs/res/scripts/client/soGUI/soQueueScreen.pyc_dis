@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soQueueScreen.py
+# Embedded file name: ./client/soGUI/soQueueScreen.py
 from Localization import lc
 import BigWorld
 import GUI
@@ -34,7 +34,7 @@ class soQueueScreen(PyGUIBase):
         cmp.tileWidth = 1
         cmp.tileHeight = 1
         cmp.tiled = True
-        cmp.textureName = 'soGUI/maps/Colours/black.bmp'
+        cmp.textureName = 'soGUI/black.dds'
         cmp.mouseButtonFocus = True
         cmp.focus = True
         cmp.crossFocus = True
@@ -50,7 +50,7 @@ class soQueueScreen(PyGUIBase):
         self.component.addChild(cmp, 'frameHolder')
 
     def setupFrame(self):
-        cmp = GUI.Frame2('soGUI/maps/con_frame.tga')
+        cmp = GUI.Frame2('soGUI/frame/con_frame.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
         cmp.widthMode = cmp.heightMode = 'CLIP'
         cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
@@ -69,7 +69,7 @@ class soQueueScreen(PyGUIBase):
         txt.onBound()
         txt.setText(u'<alignment=center>jsdfhgjsdhgfjsagdjfhg sjdfgsjdfhgsjdh fgjshdfgjshdfjshfgjsfd<n>sadfasdfasdfasdfsadfasfd')
         cancelBtn = soButton(GUI.Window())
-        cancelBtn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        cancelBtn.initVSC('soGUI/elements/button_1.xml')
         cancelBtn.onBound()
         cancelBtn.component.label.text = lc('soQueueScreen.soGUI.STRING_105_35')
         cmp = cancelBtn.component

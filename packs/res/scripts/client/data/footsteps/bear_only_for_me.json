@@ -31,7 +31,7 @@
 
 
 
-	"by_marterial_kind": {
+	"by_material_kind": {
 		"11": {
 			"footprint_bear_rf": {
 				"sound": "players/footsteps/flesh", 
@@ -142,19 +142,19 @@
 			}, 
 		"17": {
 			"footprint_bear_rf": {
-				"sound": "players/footsteps/dirt_mud", 
+				"sound": "players/footsteps/mud", 
 				"sfx": ""
 				}, 
 			"footprint_bear_lb": {
-				"sound": "players/footsteps/dirt_mud", 
+				"sound": "players/footsteps/mud", 
 				"sfx": ""
 				}, 
 			"footprint_bear_rb": {
-				"sound": "players/footsteps/dirt_mud", 
+				"sound": "players/footsteps/mud", 
 				"sfx": ""
 				}, 
 			"footprint_bear_lf": {
-				"sound": "players/footsteps/dirt_mud", 
+				"sound": "players/footsteps/mud", 
 				"sfx": ""
 				}
 			}, 
@@ -230,6 +230,24 @@
 				"sfx": ""
 				}
 			}, 
+		"120": {
+			"footprint_bear_rf": {
+				"sound": "players/footsteps/wood",
+				"sfx": ""
+				},
+			"footprint_bear_lb": {
+				"sound": "players/footsteps/wood",
+				"sfx": ""
+				},
+			"footprint_bear_rb": {
+				"sound": "players/footsteps/wood",
+				"sfx": ""
+				},
+			"footprint_bear_lf": {
+				"sound": "players/footsteps/wood",
+				"sfx": ""
+				}
+			},
 		"0": {
 			"footprint_bear_rf": {
 				"sound": "players/footsteps/stone", 

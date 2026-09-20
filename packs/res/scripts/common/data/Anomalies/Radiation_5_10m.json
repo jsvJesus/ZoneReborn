@@ -1,6 +1,4 @@
 {
-    "difficultyMax": 2, 
-    "difficultyMin": 1, 
     "lifetimeMax": 30000.0, 
     "lifetimeMin": 18000.0, 
     "loot":"empty",
@@ -19,11 +17,11 @@
     "radius": 5.0, 
     "radiusOut": 10.0, 
     "radiation_effect": "Radioactivity",
-    "radiation_effect_stack_min": 1,
+    "radiation_effect_stack_min": 2,
     "radiation_effect_stack_max": 5,
-    "sfx_inside": "", 
+    "sfx_inside": "sfx/Anomalys/radioactivity.xml", 
     "sfx_main": "", 
-    "sfx_artifact_wall": "", 
+      
     "sfx_main_interval": [ 0, 0 ],
     "stone_hit_effect": "",
     "destroy_stone": false,

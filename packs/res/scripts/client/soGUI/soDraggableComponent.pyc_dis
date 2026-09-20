@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soDraggableComponent.py
+# Embedded file name: ./client/soGUI/soDraggableComponent.py
 import BigWorld
 import GUI
 import BWPersonality
@@ -6,6 +6,7 @@ import Helpers.PyGUI as PyGUI
 from Helpers.PyGUI.PyGUIBase import PyGUIBase
 from Math import Vector2, Vector3
 import soGUI
+import traceback
 
 class soDraggableComponent(object):
 
@@ -36,6 +37,17 @@ class soDraggableComponent(object):
         self.dragProxy.verticalPositionMode = self.dragProxyData[1]
         self.dragProxy.horizontalAnchor = self.dragProxyData[3]
         self.dragProxy.verticalAnchor = self.dragProxyData[4]
+        try:
+            if self.dragProxy.parent:
+                print 'WARNING! dragProxy already attached'
+                print 'dragProxy', self.dragProxy
+                print 'parent', self.dragProxy.parent
+                print 'holder', self.proxyHolder
+                traceback.print_stack()
+                self.dragProxy.parent.delChild(self.dragProxy)
+        except:
+            traceback.print_exc()
+
         self.proxyHolder.addChild(self.dragProxy, self.proxyName)
         self.dragProxy.position = self.dragProxyData[2]
 

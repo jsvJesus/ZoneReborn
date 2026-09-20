@@ -1,8 +1,9 @@
-# Embedded file name: ./scripts/client/soGUI/data/TTFeed.py
+# Embedded file name: ./client/soGUI/data/TTFeed.py
 from Localization import lc
 import BWPersonality
 from soGUI.soToolTipComponent import soToolTipComponent
 import collections
+import colorCodes as cc
 
 class TTFeeder(object):
 
@@ -19,6 +20,10 @@ class TTFeeder(object):
          'rightsEditor_delete': lc('TTFeed.data.STRING_21_28'),
          'rightsEditor_clear': lc('TTFeed.data.CLEAR'),
          'rightsEditor_edit': lc('TTFeed.data.STRING_22_26'),
+         'motto_edit': lc('TTFeed.data.motto_edit'),
+         'message_edit': lc('TTFeed.data.message_edit'),
+         'load_icon': lc('TTFeed.data.load_icon'),
+         'level_btn': lc('TTFeed.data.level_btn'),
          'party_frames_hidebuffs': lc('TTFeed.data.STRING_23_31'),
          'party_frames_showbuffs': lc('TTFeed.data.STRING_24_31'),
          'party_frames_maximize_member': lc('TTFeed.data.STRING_25_37'),
@@ -43,12 +48,18 @@ class TTFeeder(object):
          'filtFood': lc('ItemCategories.food'),
          'filtGadgets': lc('ItemCategories.gadgets'),
          'filtClother': lc('ItemCategories.clother'),
-         'filtWeapon': lc('ItemCategories.weapon')}
+         'filtWeapon': lc('ItemCategories.weapon'),
+         'recipefilter_none': lc('CraftWin.ui.tooltip.none'),
+         'recipefilter_mech': lc('CraftWin.ui.tooltip.mech'),
+         'recipefilter_solder': lc('CraftWin.ui.tooltip.solder'),
+         'recipefilter_labor': lc('CraftWin.ui.tooltip.labor'),
+         'recr_edit': lc('clan_win.Recruit.Block.ttedit'),
+         'recr_del': lc('clan_win.Recruit.Block.ttdel')}
 
     def toolTipEvent(self, id, iid, event):
         if event == soToolTipComponent.EVENT_SHOW:
             if not isinstance(id, collections.Hashable):
                 return
             if self.TTMap.has_key(id):
-                BWPersonality.GUICore.showToolTip(self.TTMap[id], None)
+                BWPersonality.GUICore.showToolTip(cc.active_xml + self.TTMap[id], None, tooltipID=iid)
         return

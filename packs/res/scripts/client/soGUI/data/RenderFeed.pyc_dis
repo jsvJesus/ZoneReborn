@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/data/RenderFeed.py
+# Embedded file name: ./client/soGUI/data/RenderFeed.py
 import BigWorld
 import CameraNode
 import Math
@@ -70,5 +70,4 @@ class PaperDollFeed(object):
         psr.cameras = [BigWorld.camera()]
         psr.dynamic = True
         self.textureProvider = psr
-        self.textureProvider.render()
         self.callBack(self.textureProvider)

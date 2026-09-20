@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/editMoney.py
+# Embedded file name: ./client/soGUI/editMoney.py
 import BigWorld
 import BWPersonality
 from Helpers.PyGUI.PyGUIBase import PyGUIBase
@@ -28,10 +28,14 @@ class soEditBoxMoney(soEditBox):
         return num
 
     def setValue(self, value):
+        if isinstance(value, (float, int)):
+            value = int(value)
         if isinstance(value, (str, unicode)):
             value = value.split('.', 1)[0]
             if not value.isdigit():
                 value = 0
+        else:
+            value = 0
         value = int(value)
         self.money_value = value
         soEditBox.setValue(self, unicode(value))

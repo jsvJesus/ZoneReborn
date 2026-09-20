@@ -1,18 +1,17 @@
-# Embedded file name: ./scripts/client/soGUI/builder_menu.py
+# Embedded file name: ./client/soGUI/builder_menu.py
 import BigWorld
 import BWPersonality
 import GUI
 import Keys
 import os
-import cPickle
 import traceback
 import gui_jokes
 import soGUI
 from soGUI.soItemView import soItemView, soItemSlot
-from soGUI.soItemView import SLOTEVENT_LCLICK, SLOTEVENT_DRAGSTOP
+from gui_const import ITSLOT
 from Helpers.PyGUI.DraggableComponent import DraggableComponent
 from Helpers.PyGUI import PyGUIBase
-from soGUI.soButton import soButton, soButtonWTT, soButtonWFT
+from soGUI.soButton import soButton, soButtonWFT
 from openFileDialog import OpenFileDialog
 from soGUI.soCheckBox import soCheckBox
 from soGUI.soDropDownList import soDropDownList, soDropDownList2, DropDownListPropsStructure
@@ -58,7 +57,7 @@ class BoxSlot(soItemSlot):
         cmp.mouseButtonFocus = True
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        cmp = GUI.Frame2('soGUI/items/cell.dds')
         cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -69,7 +68,7 @@ class BoxSlot(soItemSlot):
         cmp.materialFX = 'BLEND'
         cmp.position = (0, 0, 0.9)
         self.component.addChild(cmp, 'frameCmp')
-        cmp = GUI.Simple('soGUI/maps/Controls/inventory/bfg_slot.tga')
+        cmp = GUI.Simple('soGUI/items/bfg_slot.dds')
         cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -150,7 +149,7 @@ class SettingsBuild(PyGUIBase):
         cmp.mouseButtonFocus = True
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        cmp = GUI.Frame2('soGUI/items/cell.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -194,7 +193,7 @@ class SettingsBuild(PyGUIBase):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
+        cmp.font = 'ArialNarrow_12.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (80, 45, 0.5)
@@ -221,7 +220,7 @@ class SettingsBuild(PyGUIBase):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
+        cmp.font = 'ArialNarrow_12.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (80, 75, 0.5)
@@ -250,7 +249,7 @@ class SettingsBuild(PyGUIBase):
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
         cmp.multiline = True
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
+        cmp.font = 'ArialNarrow_12.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (120, 93, 0.5)
@@ -259,13 +258,13 @@ class SettingsBuild(PyGUIBase):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
+        cmp.font = 'ArialNarrow_12.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (15, 150, 0.5)
         self.component.addChild(cmp, 'team_label')
-        for index in range(1, 5):
-            rb = soRadioButton2(GUI.Window(), btnW=18, btnH=18, radioGroup='radiogr_RESP_FLAGS', labelText=RESP_FLAGS.lcString(index), bvisual_styles='soGUI/visual_styles/radioButton.xml')
+        for index in xrange(1, 5):
+            rb = soRadioButton2(GUI.Window(), btnW=18, btnH=18, radioGroup='radiogr_RESP_FLAGS', labelText=RESP_FLAGS.lcString(index), bvisual_styles='soGUI/elements/radioButton.xml')
             rb.onBound()
             cmp = rb.component
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
@@ -286,7 +285,7 @@ class SettingsBuild(PyGUIBase):
         cmp.width = 18
         cmp.height = 18
         cmp.position = (self.component.width - 26, 6, 0.3)
-        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.initVSC('soGUI/elements/closeBox.xml')
         closeBox.onBound()
         closeBox.onClick = self.hide
         closeBox.setVisualState('normal')
@@ -314,10 +313,6 @@ class SettingsBuild(PyGUIBase):
 
     def onSelectedColor(self, value):
         component = BWPersonality.GUICore.targettingGUI.component
-        component.heapUP.colour = value
-        component.heapRIGHT.colour = value
-        component.heapDOWN.colour = value
-        component.heapLEFT.colour = value
         component.heapCENTER.colour = value
 
     def show(self):
@@ -333,7 +328,7 @@ class SettingsBuild(PyGUIBase):
         self.component.angles_list.script.setSelectionByValue(player.angle_box, silent=True)
         team = BigWorld.player().box_spawn_color
         self.changeTeam(0, 0)
-        for index in range(1, 5):
+        for index in xrange(1, 5):
             rb = getattr(self.component, 'radio_%s' % index)
             if team == index:
                 rb.script.setActive()
@@ -401,7 +396,7 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         self.updateViewer()
         cmp.dragFocus = False
         cmp.dropFocus = False
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        cmp = GUI.Frame2('soGUI/items/cell.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -424,7 +419,7 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         cmp.height = 18
         cmp.position = (self.component.width - 9, 6, 0.3)
         infotext = lc('builder_menu.INFO').replace(']@', '>').replace('@[', '<')
-        helpBox.initVSC('soGUI/visual_styles/helpBox.xml')
+        helpBox.initVSC('soGUI/elements/helpBox.xml')
         helpBox.onBound()
         helpBox.setVisualState('normal')
         helpBox.onClick = lambda : text_and_ok('BuilderMenuInfo', lc('builder_menu.TITLE'), infotext)
@@ -440,7 +435,7 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         cmp.width = 18
         cmp.height = 18
         cmp.position = (self.component.width - 26 - 18 - 4, 6, 0.3)
-        settings_box.initVSC('soGUI/visual_styles/chatSettingsBtn.xml')
+        settings_box.initVSC('soGUI/elements/settings.xml')
         settings_box.onBound()
         settings_box.onClick = lambda : self.settings_window.show()
         settings_box.setVisualState('normal')
@@ -458,7 +453,7 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         cmp.label.text = lc('builder_menu.tab_name_box')
         cmp.position = (165, 30, 0.2)
         btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
-        btn.initVSC('soGUI/visual_styles/charScreenTab.xml')
+        btn.initVSC('soGUI/elements/tab_2.xml')
         btn.onClick = lambda : self.swithTabToFly(False)
         btn.onBound()
         btn._updateVisualState()
@@ -476,7 +471,7 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         cmp.label.text = lc('builder_menu.tab_name_cam')
         cmp.position = (226, 30, 0.2)
         btn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
-        btn.initVSC('soGUI/visual_styles/charScreenTab.xml')
+        btn.initVSC('soGUI/elements/tab_2.xml')
         btn.onClick = lambda : self.swithTabToFly(True)
         btn.onBound()
         btn._updateVisualState()
@@ -485,7 +480,7 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (18, 6, 0.3)
@@ -524,12 +519,12 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         cb.onStateChange = self.onHookCbtnChange
         btn = soButton(GUI.Window())
         cmp = btn.component
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
         cmp.label.text = lc('builder_menu.save')
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
@@ -544,7 +539,7 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        cmp.font = 'RobotoCondensedRegular_14.font'
         cmp.colour = (118, 119, 103, 150)
         cmp.materialFX = 'BLEND'
         cmp.position = (20, self.component.height - 130, 0.1)
@@ -552,12 +547,12 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         self.component.addChild(cmp, 'save_name')
         btn = soButton(GUI.Window())
         cmp = btn.component
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
         cmp.label.text = lc('builder_menu.button_save_as')
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
@@ -570,12 +565,12 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         btn.onBound()
         btn = soButton(GUI.Window())
         cmp = btn.component
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'TOP'
-        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
         cmp.label.text = lc('builder_menu.button_invite')
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
@@ -588,12 +583,12 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         btn.onBound()
         btn = soButton(GUI.Window())
         cmp = btn.component
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'TOP'
-        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
         cmp.label.text = lc('builder_menu.button_clear')
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
@@ -606,12 +601,12 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         btn.onBound()
         btn = soButton(GUI.Window())
         cmp = btn.component
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
         cmp.label.text = lc('builder_menu.button_open')
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
@@ -624,12 +619,12 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         btn.onBound()
         btn = soButton(GUI.Window())
         cmp = btn.component
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'TOP'
-        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
         cmp.label.text = lc('builder_menu.button_leave')
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
@@ -784,7 +779,7 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
             if not fname:
                 return
             fname = ''.join((char for char in fname if char not in '\\/:*?<>|%^@"\''))
-            fname = u'%s_save.boxs' % fname
+            fname = u'%s.boxs2' % fname
             full_path = os.path.join(SAVE_PATH, fname)
             if not os.path.exists(full_path):
                 self._save(fname)
@@ -816,7 +811,7 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
 
     def open(self):
         dialog = OpenFileDialog(GUI.Window())
-        dialog.show(callback=self._onOpenFile, init_dir=SAVE_PATH, filters=['.boxs'])
+        dialog.show(callback=self._onOpenFile, init_dir=SAVE_PATH, filters=['.boxs', '.boxs2'])
 
     def _onOpenFile(self, path):
         print '_onOpenFile', [path]
@@ -838,7 +833,7 @@ class BuilderMenu(PyGUIBase, DraggableComponent):
         self.itemView.setItems(self._blocs_or_cam)
 
     def slotHandler(self, event, data):
-        if event == SLOTEVENT_LCLICK:
+        if event == ITSLOT.SLOTEVENT_LCLICK:
             if data.itemData:
                 active_id = data.itemData['boxID']
             else:

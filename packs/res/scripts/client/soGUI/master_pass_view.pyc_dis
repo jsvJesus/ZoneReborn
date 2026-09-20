@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/master_pass_view.py
+# Embedded file name: ./client/soGUI/master_pass_view.py
 import BigWorld
 import BWPersonality
 import GUI
@@ -26,7 +26,7 @@ class MasterPassStr(PyGUIBase):
         cmp.position = (0.0, 1, 0.0)
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        cmp = GUI.Frame2('soGUI/items/cell.dds')
         cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -40,7 +40,7 @@ class MasterPassStr(PyGUIBase):
         cmp = GUI.Text('MASTER PASSWORD')
         cmp.horizontalAnchor = 'CENTER'
         cmp.verticalAnchor = 'CENTER'
-        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        cmp.font = 'RobotoCondensedRegular_14.font'
         cmp.colour = (175, 150, 150, 250)
         cmp.materialFX = 'BLEND'
         cmp.position = (0, 0, 0.3)
@@ -66,7 +66,7 @@ class MasterPassStr(PyGUIBase):
 
     def _getServerName(self, server_address):
         data = BWPersonality.GUICore.loginFlash.login_actions.servers_by_id.values()
-        for name, addr in data:
+        for name, addr, _, _ in data:
             if addr == server_address:
                 return name
 

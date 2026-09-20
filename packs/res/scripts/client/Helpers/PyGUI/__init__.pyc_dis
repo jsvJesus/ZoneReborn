@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/Helpers/PyGUI/__init__.py
+# Embedded file name: ./client/Helpers/PyGUI/__init__.py
 from PyGUIBase import PyGUIBase
 from Button import Button, ButtonVisualState
 from CheckBox import CheckBox
@@ -17,13 +17,12 @@ from Window import Window
 from Window import DraggableWindow
 from Window import EscapableWindow
 from Console import Console
+from TextureGUICashe import getGUITexture
 import EditUtils
 import Test
 import TextStyles
 import Utils
 import VisualStateComponent
-from Helpers.videoFeeds import s_videoFeeds
-from Helpers.videoFeeds import VideoFeed
 from Helpers.ProgressBar import IProgressBar
 from Helpers.ProgressBar import ProgressBar
 from Helpers.ProgressBar import ChunkLoadingProgressBar

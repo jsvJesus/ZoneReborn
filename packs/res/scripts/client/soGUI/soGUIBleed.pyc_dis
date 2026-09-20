@@ -1,12 +1,11 @@
-# Embedded file name: ./scripts/client/soGUI/soGUIBleed.py
+# Embedded file name: ./client/soGUI/soGUIBleed.py
 import BigWorld
 import BWPersonality
 import GUI
-import random
 import soGUI
 import Stats
 from Helpers.PyGUI import PyGUIBase
-from Math import Matrix
+import sounds_manager
 from Settings import Settings
 
 class ClassName(object):
@@ -64,7 +63,7 @@ class soBleedGUI(PyGUIBase):
         cmp.visible = False
 
     def setupContent(self):
-        path = 'soGUI/maps/blood/%s.tga'
+        path = 'soGUI/maps/blood/%s.dds'
         for name in self.BLOOD_NAMES:
             self.createCmp(name, path % name)
 
@@ -73,7 +72,7 @@ class soBleedGUI(PyGUIBase):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = horizontalAnchor = 'TOP'
+        cmp.verticalAnchor = self.horizontalAnchor = 'TOP'
         cmp.materialFX = 'BLEND'
         cmp.colour = (255, 255, 255, 255)
         sW, sH = BigWorld.screenSize()
@@ -91,7 +90,7 @@ class soBleedGUI(PyGUIBase):
             self.isVisible = True
             self.loadSound()
             if self.component.parent is None:
-                BWPersonality.GUICore.worldLayer.addChild(self.component, 'bleedGUI')
+                BWPersonality.GUICore.effectsLayer.addChild(self.component, 'bleedGUI')
             self.bleed_time = self.SUNC_TIME
             self.component.visible = True
             self.component.frame.visible = True
@@ -101,11 +100,9 @@ class soBleedGUI(PyGUIBase):
 
     def loadSound(self):
         if not self.sound_fast:
-            self.sound_fast = BigWorld.getSound('players/heartbeat/fast')
-            self.sound_fast.autoDetach = False
+            self.sound_fast = sounds_manager.getSound('players/heartbeat/fast')
         if not self.sound_slow:
-            self.sound_slow = BigWorld.getSound('players/heartbeat/slow')
-            self.sound_slow.autoDetach = False
+            self.sound_slow = sounds_manager.getSound('players/heartbeat/slow')
 
     def updateBlood(self):
         BigWorld.callback(self.BLINK_TIME, self.updateBlood)
@@ -145,13 +142,13 @@ class soBleedGUI(PyGUIBase):
         if self.isSlow:
             self.sound_fast.stop()
             self.sound_slow.play()
-            self.sound_slow.volume = Settings().getSfxVolume()
+            self.sound_slow.volume = Settings().getEnvironmentVolume()
             self.SUNC_TIME = self.SLOW_TIME
             self.component.frame.colour = (100, 0, 0, 255)
         else:
             self.sound_fast.play()
             self.sound_slow.stop()
-            self.sound_fast.volume = Settings().getSfxVolume()
+            self.sound_fast.volume = Settings().getEnvironmentVolume()
             self.SUNC_TIME = self.FAST_TIME
             self.component.frame.colour = (170, 41, 17, 255)
         if self.timer_speed_heart:

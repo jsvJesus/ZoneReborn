@@ -1,14 +1,5 @@
-# Embedded file name: ./scripts/client/ClanWarehouse.py
+# Embedded file name: ./client/ClanWarehouse.py
 import BigWorld
-import Math
-import Pixie
-import random
-import ItemsUtils
-import time
-import GUI
-from Localization import lc
-from ItemHolder import ItemHolder
-from Helpers.Caps import CAP_CAN_OPEN_AND_EXPLORE_USER_FIRE
 import BWPersonality
 
 class ClanWarehouse:
@@ -23,12 +14,20 @@ class ClanWarehouse:
     def setNested_storedClanItems(self, path, oldValue):
         BigWorld.player().NeedToUpdateItemCache()
 
-    def getStoredItems(self, clanID):
-        for warehouse in self.storedClanItems:
-            if warehouse.clanID == clanID:
-                return warehouse
-
     def showClanManagerNPCGUI(self):
         BWPersonality.GUICore.showClanManagerNPCGUI(True, self.id)
-        BWPersonality.GUICore.setClanManagerNPCData({'name': self.npcName,
-         'cost': '2000000'})
+
+    def request_warehouse_data1(self, first_index, amount):
+        self.cell.request_warehouse_data2(first_index, amount)
+
+    def got_warehouse_data2(self, items, index, total, money):
+        BWPersonality.GUICore.clan_manager_win.got_warehouse_data3(items, index, total, money)
+
+    def on_item_appended2(self):
+        BWPersonality.GUICore.clan_manager_win.on_item_appended3()
+
+    def on_item_removed2(self, item_index):
+        BWPersonality.GUICore.clan_manager_win.on_item_removed3(item_index)
+
+    def on_money_changed2(self, money):
+        BWPersonality.GUICore.clan_manager_win.on_money_changed2(money)

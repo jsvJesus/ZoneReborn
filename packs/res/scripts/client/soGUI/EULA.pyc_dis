@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/EULA.py
+# Embedded file name: ./client/soGUI/EULA.py
 import BigWorld
 import GUI
 import BWPersonality
@@ -55,7 +55,7 @@ class EULAGUI(PyGUIBase):
         cmpt.position = (0.0, 0.0, 0.0)
         cmpt.visible = False
         cmpt.materialFX = 'BLEND'
-        cmpt = GUI.Frame2('soGUI/maps/charCreation/fon_tisnenie.tga')
+        cmpt = GUI.Frame2('soGUI/elements/tt_frame.dds')
         cmpt.widthMode = cmpt.heightMode = 'PIXEL'
         cmpt.horizontalPositionMode = cmpt.verticalPositionMode = 'CLIP'
         cmpt.horizontalAnchor = cmpt.verticalAnchor = 'CENTER'
@@ -77,7 +77,7 @@ class EULAGUI(PyGUIBase):
         self.component.eula_frame.addChild(cmp, 'eula')
         txt.onBound()
         txt.setText(u'')
-        cbps = soGUI.CheckBoxPropsStructure(labelText=u'', font='ruRU_Cyrvetica_Extra_14i.font', labelColour=(175, 166, 112, 255), checkBoxW=20, checkBoxH=20, labelLeftOffset=0)
+        cbps = soGUI.CheckBoxPropsStructure(labelText=u'', font='RobotoCondensedRegular_14.font', labelColour=(175, 166, 112, 255), checkBoxW=20, checkBoxH=20, labelLeftOffset=0)
         cb = MyCheckBox(GUI.Window(), cbps)
         cmp = cb.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'

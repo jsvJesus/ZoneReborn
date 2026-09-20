@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/Codes.py
+# Embedded file name: ./common/Codes.py
 from Localization import lc
 
 class AccountResponses:
@@ -29,21 +29,26 @@ class AccountResponses:
 
 
 class ShopProcedureResult:
-    OK, ERROR, ERROR_PENDING, ERROR_CACHE, ERROR_CATALOG_INDEX, ERROR_SELLERNAME, ERROR_PRICE, ERROR_STATUS, ERROR_ITEMNOTFOUND, ERROR_SELLERNOTFOUND, ERROR_ITEMREMOVE0, ERROR_ITEMREMOVE1, ERROR_ITEMREMOVE2, ERROR_ITEMREMOVE3, ERROR_ITEMREMOVE4, ERROR_ITEMREMOVE5, ERROR_TIMEOUT, ERROR_PENDING_SELLER, ERROR_SELLER_IS_BUYER = range(19)
+    OK, ERROR, ERROR_PENDING, ERROR_CACHE, ERROR_CATALOG_INDEX, ERROR_SELLERNAME, ERROR_PRICE, ERROR_STATUS, ERROR_ITEMNOTFOUND, ERROR_SELLERNOTFOUND, ERROR_ITEMREMOVE0, ERROR_ITEMREMOVE1, ERROR_ITEMREMOVE2, ERROR_ITEMREMOVE3, ERROR_ITEMREMOVE4, ERROR_ITEMREMOVE5, ERROR_TIMEOUT, ERROR_NODBID, ERROR_ITEM_HASH, ERROR_SENDER_NOT_READY, FAIL_BANK_OVERFLOW = xrange(21)
 
     @staticmethod
     def to_message(error_code):
-        if error_code == ShopProcedureResult.ERROR_PENDING_SELLER:
-            return 'Seller is busy. Try later.'
         if error_code == ShopProcedureResult.ERROR_CACHE:
-            return 'Item not found.'
-        return 'Shop procedure error. Error code: ' + str(error_code)
+            return lc('Codes.ShopResponses.ShopErrorCache').encode('utf8')
+        if error_code == ShopProcedureResult.FAIL_BANK_OVERFLOW:
+            return lc('Codes.ShopResponses.FAIL_BANK_OVERFLOW').encode('utf8')
+        return lc('Codes.ShopResponses.FAIL_BUY').format(error_code).encode('utf8')
+
+
+class PaintResult:
+    OK, NONAME, EXPIRE, NOTFOUND, NOMONEY = xrange(5)
+
+    @staticmethod
+    def to_message(error_code):
+        return 'Paint error. Error code: ' + str(error_code)
 
 
 class ShopResponses:
-    STATUS_SALE = 1
-    STATUS_SOLD = 2
-    STATUS_ITEM_OUTOFTIME = 3
     EVERYTHING_OK = 0
     SLOT_OVERFLOW = 1
     ALREADY_IN_SHOP = 2
@@ -67,10 +72,15 @@ class ShopResponses:
     FAIL_SHOP_CATALOG_OVERFLOW = 19
     GIFTS_OVERFLOW = 20
     FAIL_SHOP_DUPLICATEID = 21
+    FAIL_BASE_VALIDATION = 22
+    SLOT_OVERFLOW0 = 23
+    SLOT_OVERFLOW1 = 24
+    READONLY = 25
     msg = {FAIL_NO_MONEY: lc('Codes.ShopResponses.FAIL_NO_MONEY'),
      EVERYTHING_OK: lc('Codes.ShopResponses.EVERYTHING_OK'),
      PLACED_OK: lc('Codes.ShopResponses.PLACED_OK'),
-     SLOT_OVERFLOW: lc('Codes.ShopResponses.SLOT_OVERFLOW'),
+     SLOT_OVERFLOW0: lc('Codes.ShopResponses.SLOT_OVERFLOW0'),
+     SLOT_OVERFLOW1: lc('Codes.ShopResponses.SLOT_OVERFLOW1'),
      ALREADY_IN_SHOP: lc('Codes.ShopResponses.ALREADY_IN_SHOP'),
      AVATARNAME_NOTFOUND: lc('Codes.ShopResponses.AVATARNAME_NOTFOUND'),
      ITEM_STATUS_NO_SALE: lc('Codes.ShopResponses.ITEM_STATUS_NO_SALE'),
@@ -89,43 +99,109 @@ class ShopResponses:
      FAIL_INVALID_OPERATION: lc('Codes.ShopResponses.FAIL_INVALID_OPERATION'),
      FAIL_SHOP_CATALOG_OVERFLOW: lc('Codes.ShopResponses.FAIL_SHOP_CATALOG_OVERFLOW'),
      GIFTS_OVERFLOW: lc('Codes.ShopResponses.GIFTS_OVERFLOW'),
-     FAIL_SHOP_DUPLICATEID: lc('Codes.ShopResponses.FAIL_SHOP_DUPLICATEID')}
+     FAIL_SHOP_DUPLICATEID: lc('Codes.ShopResponses.FAIL_SHOP_DUPLICATEID'),
+     FAIL_BASE_VALIDATION: lc('Codes.ShopResponses.FAIL_INVALID_OPERATION'),
+     READONLY: lc('Codes.ShopResponses.READONLY')}
 
 
-class HunterResponses:
-    DELETE_AD_OK = 1
-    DELETE_AD_NOT_FOUND = 2
-    GET_MY_WANTED = 3
-    GET_WANTED_POSITION = 4
-    WANTED_NOT_FOUND = 5
-    SUBSCRIPTION_OK = 6
-    WANTEDKILLEDANDIMPRISONED_OK = 7
-    SUBMIT_FAIL_VICTIMNAME = 8
-    SUBMIT_FAIL_WANTEDNAME = 9
-    SUBMIT_OK = 10
-    REPORT_NOT_WANTED = 11
-    MAX_OFFENFER = 21
-    MIN_PRICE = 22
-    NO_CREDITNUMBER = 23
-    OFFENDER_REMOVE = 24
-    WANTED_REMOVE = 25
-    YOU_KILLED_AND_IMPRISONED = 26
-    WANTED_THIS_I = 27
-    msg = {DELETE_AD_OK: lc('Codes.HunterResponses.DELETE_AD_OK'),
-     DELETE_AD_NOT_FOUND: lc('Codes.HunterResponses.DELETE_AD_NOT_FOUND'),
-     GET_MY_WANTED: lc('Codes.HunterResponses.GET_MY_WANTED'),
-     GET_WANTED_POSITION: lc('Codes.HunterResponses.GET_WANTED_POSITION'),
-     WANTED_NOT_FOUND: lc('Codes.HunterResponses.WANTED_NOT_FOUND'),
-     SUBSCRIPTION_OK: lc('Codes.HunterResponses.SUBSCRIPTION_OK'),
-     WANTEDKILLEDANDIMPRISONED_OK: lc('Codes.HunterResponses.WANTEDKILLEDANDIMPRISONED_OK'),
-     SUBMIT_FAIL_VICTIMNAME: lc('Codes.HunterResponses.SUBMIT_FAIL_VICTIMNAME'),
-     SUBMIT_FAIL_WANTEDNAME: lc('Codes.HunterResponses.SUBMIT_FAIL_WANTEDNAME'),
-     SUBMIT_OK: lc('Codes.HunterResponses.SUBMIT_OK'),
-     REPORT_NOT_WANTED: lc('Codes.HunterResponses.REPORT_NOT_WANTED'),
-     MAX_OFFENFER: lc('Codes.HunterResponses.MAX_OFFENFER'),
-     MIN_PRICE: lc('Codes.HunterResponses.MIN_PRICE'),
-     NO_CREDITNUMBER: lc('Codes.HunterResponses.NO_CREDITNUMBER'),
-     OFFENDER_REMOVE: lc('Codes.HunterResponses.OFFENDER_REMOVE'),
-     WANTED_REMOVE: lc('Codes.HunterResponses.WANTED_REMOVE'),
-     YOU_KILLED_AND_IMPRISONED: lc('Codes.HunterResponses.YOU_KILLED_AND_IMPRISONED'),
-     WANTED_THIS_I: lc('Codes.HunterResponses.WANTED_THIS_I')}
+class CabmanNotifications:
+
+    @staticmethod
+    def get_message(event):
+        if event == CabmanNotifications.SOON_TELEPORT:
+            return lc('Cabman.process.CABMAN_DEPART')
+        if event == CabmanNotifications.TOO_FAR:
+            return lc('Cabman.process.CABMAN_TOOFAR')
+
+    SOON_TELEPORT, TOO_FAR = xrange(2)
+
+
+class TransportProcess:
+    INTERACT_OK, INTERACT_NOT_WAITING, INTERACT_NO_ROOM, INTERACT_NO_TICKET, CANT_LEAVE, SUMMON_BUSY, SUBSCRIBED, UNSUBSCRIBED, ST_BUSY, ST_WAITING, ST_LAZY, ST_STATION, ST_ARRIVE, ST_DEPART, BELL_TERMINAL_LAZY, BILL_TERMINAL_WAITING, BILL_STATION, BILL_SOMEWHERE, BELL_LEAVE, BELL_LAZY = xrange(20)
+
+    @staticmethod
+    def get_message(code):
+        if code == TransportProcess.INTERACT_NO_TICKET:
+            return lc('Transport.interactions.noticked')
+        if code == TransportProcess.INTERACT_NOT_WAITING:
+            return lc('Transport.interactions.notwait')
+        if code == TransportProcess.INTERACT_NO_ROOM:
+            return lc('Transport.interactions.noroom')
+        if code == TransportProcess.INTERACT_OK:
+            return lc('Transport.interactions.ok')
+        if code == TransportProcess.SUMMON_BUSY:
+            return lc('Transport.interactions.busy')
+        if code == TransportProcess.CANT_LEAVE:
+            return lc('Transport.interactions.cantleave')
+        return u'transport process error: ' + str(code)
+
+    @staticmethod
+    def compile_event(code, int_data = 0, float_data = 0):
+        return {'code': code,
+         'int_data': int_data,
+         'float_data': float_data}
+
+
+AUCTION_STAKE_NONE = 0
+AUCTION_STAKE_WIN = 1
+AUCTION_STAKE_SPOILED = 2
+
+class AuctionErrors:
+    NOT_FREE, SMALL_STEP1, SMALL_STEP2, MIN_STAKE, HAS_OLD_STAKE = xrange(5)
+
+
+class BadActions:
+    NOT_TRADABLE, NOT_MOVABLE, IS_EQUIPPED, LIMIT, OTHER = xrange(1, 6)
+
+
+class LogType:
+    NoLog = 0
+    LogChat = 1
+    LogCassChange = 4
+    LogCassGain = 6
+    LogCass = LogCassGain | LogCassChange
+    LogAll = LogCass | LogChat
+
+    @staticmethod
+    def need_log_cassandra_item_changed(log_type):
+        return bool(log_type & LogType.LogCassChange)
+
+    @staticmethod
+    def need_log_cassandra_item_gained(log_type):
+        return bool(log_type & LogType.LogCassGain)
+
+    @staticmethod
+    def need_log_chat(log_type):
+        return bool(log_type & LogType.LogChat)
+
+
+class InventoryActionProhibitError:
+    Ok, Hood, Visor, Equip, Item = range(5)
+
+    @staticmethod
+    def get_message(code, item_type):
+        """ client only """
+        import ItemsUtils
+        itemname = ItemsUtils.GetItemName(item_type)
+        if code == InventoryActionProhibitError.Visor:
+            return lc('Inventory.client.prohibit_action_visor').format(itemname=itemname)
+        elif code == InventoryActionProhibitError.Hood:
+            return lc('Inventory.client.prohibit_action_hood').format(itemname=itemname)
+        elif code == InventoryActionProhibitError.Equip:
+            return lc('Inventory.client.prohibit_action').format(itemname=itemname)
+        else:
+            return
+            return
+
+
+class CUSTOM_DISCONNECT_CODE:
+    DIF_VERSION = 1
+    DIF_VERSION_STEAM = 11
+    PREVENTIVE_WORK = 2
+    INACTIVITY_TIMER = 3
+    FULL_SERVER = 333
+    CONNETCION_ERROR = 500
+
+    @staticmethod
+    def get_message(code):
+        return lc('BWPersonality.client.disconnect_%s' % code)

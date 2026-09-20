@@ -1,27 +1,20 @@
-# Embedded file name: ./scripts/client/soGUI/soList.py
-import BWPersonality
+# Embedded file name: ./client/soGUI/soList.py
 import BigWorld
 import GUI
 import Helpers.PyGUI as PyGUI
-from Helpers.PyGUI import Utils
 import soGUI
-from soGUI.soScrollBar import soScrollBar
 from soGUI.soButton import soButton
-from Helpers.PyGUI.VisualStateComponent import VisualState, VisualStateComponent
-from soGUI.soVisualStateComponent import soVisualStateComponent
 from functools import partial
 from Helpers.PyGUI import PyGUIEvent
 from Helpers.PyGUI import PyGUIBase
-import Math
 import math
-from math import floor, ceil
+from math import ceil
 import Keys
 from soGUI.soScrollBar import soScrollBar2
-from Helpers.PyGUI.PyGUIBase import PyGUIBase
 
 class ListPropsStructure(object):
 
-    def __init__(self, width = 200, height = 400, topOffset = 5, leftOffset = 5, lineOffset = 0, elemStyle = 'soGUI/visual_styles/listElement.xml', elemHeight = 20, scrollWidth = 16, listFont = 'ruRU_calibri_default.font', isMultiSel = True, needScroll = True, selectCallBack = None, nuSelectionCB = None, sorted = True, colorFont = (175, 166, 112, 255)):
+    def __init__(self, width = 200, height = 400, topOffset = 5, leftOffset = 5, lineOffset = 0, elemStyle = 'soGUI/elements/listElement.xml', elemHeight = 20, scrollWidth = 16, listFont = 'RobotoCondensedRegular_16.font', isMultiSel = True, needScroll = True, selectCallBack = None, nuSelectionCB = None, sorted = True, colorFont = (175, 166, 112, 255)):
         self.width = width
         self.height = height
         self.colorFont = colorFont
@@ -29,7 +22,7 @@ class ListPropsStructure(object):
         self.leftOffset = leftOffset
         self.lineOffset = lineOffset
         self.elementHeight = elemHeight
-        self.texture = 'soGUI/maps/Controls/listFrame.tga'
+        self.texture = 'soGUI/elements/listFrame.dds'
         self.textureMappings = (0.0, 0.0, 400.0, 200.0)
         self.isMultiSelect = isMultiSel
         self.scrollWidth = scrollWidth
@@ -44,7 +37,7 @@ class ListPropsStructure(object):
 class soListElement(soButton):
     factoryString = 'soGUI.soListElement'
 
-    def __init__(self, component, rootComp = None, fontLabel = 'ruRU_calibri_large.font'):
+    def __init__(self, component, rootComp = None, fontLabel = 'RobotoCondensedRegular_18.font'):
         self.font = fontLabel
         soButton.__init__(self, component, fontLabel=self.font, isOptions=True)
         component.script = self
@@ -77,7 +70,7 @@ class soListElement(soButton):
 class soList(PyGUI.Window):
     factoryString = 'soGUI.soList'
 
-    def __init__(self, component, props = ListPropsStructure(), default_frame_skin = 'soGUI/maps/con_frame.tga'):
+    def __init__(self, component, props = ListPropsStructure(), default_frame_skin = 'soGUI/frame/con_frame.dds'):
         PyGUI.Window.__init__(self, component)
         component.script = self
         self.frameComp = None
@@ -95,6 +88,7 @@ class soList(PyGUI.Window):
         self.frameTexture = props.texture
         self.frameMapping = props.textureMappings
         self.elementHeight = props.elementHeight
+        self.elementClass = soListElement
         self.scrollWidth = props.scrollWidth
         self.isMultiSel = props.isMultiSelect
         self.needScroll = props.needScroll
@@ -181,6 +175,10 @@ class soList(PyGUI.Window):
         self.frameComp.addChild(self.elementHolder, 'elementHolder')
         return
 
+    def set_element_class(self, elementClass):
+        self.elementClass = elementClass
+        self.applyElements()
+
     def applyElements(self):
         self.clearAllChildren(self.elementHolder)
         i = 0
@@ -188,21 +186,19 @@ class soList(PyGUI.Window):
         if self.sorted:
             elemList.sort()
         for elem in elemList:
-            elemComp = soListElement(GUI.Window(), self.component, fontLabel=self.textFont)
-            elemComp.component.verticalPositionMode = elemComp.component.horizontalPositionMode = 'CLIP'
+            elemComp = self.elementClass(GUI.Window(), self.component, fontLabel=self.textFont)
+            elemComp.component.verticalPositionMode = 'PIXEL'
+            elemComp.component.horizontalPositionMode = 'CLIP'
             elemComp.component.widthMode = elemComp.component.heightMode = 'PIXEL'
             elemComp.component.horizontalAnchor = 'LEFT'
             elemComp.component.verticalAnchor = 'TOP'
             elemComp.component.width = self.elementHolder.width
             elemComp.component.height = self.elementHeight
-            elemComp.component.tiled = True
-            elemComp.component.tileWidth = 1
-            elemComp.component.tileHeight = 20
-            elemComp.component.position = (-1.0, 1.0 - soGUI.getPixelHeight(self.elementHolder) * self.elementHeight * i, 0.0)
+            elemComp.component.position = (-1.0, self.elementHeight * i, 0.0)
             elemComp.component.visible = True
             elemComp.component.materialFX = 'BLEND'
             elemComp.buttonStyle = soButton.TOGGLEBUTTON_STYLE
-            elemComp.initVSC('soGUI/visual_styles/listElement.xml')
+            elemComp.initVSC('soGUI/elements/listElement.xml')
             elemComp.onBound()
             if self.elements[elem] == 0:
                 elemComp.buttonActive = False
@@ -222,6 +218,7 @@ class soList(PyGUI.Window):
             elemComp._updateVisualState()
             self.elementHolder.addChild(elemComp.component, 'element' + str(i))
             i += 1
+            elemComp.onBound()
 
         screenH = BigWorld.screenHeight()
         itemH = self.elementHeight + self.lineOffset
@@ -318,6 +315,12 @@ class soList(PyGUI.Window):
 
         return retVal
 
+    def getLast(self):
+        if not self.indexes:
+            return None
+        else:
+            return self.indexes[-1]
+
     def getAttachment(self, elemCaption):
         if self.attachments.has_key(elemCaption):
             return self.attachments[elemCaption]
@@ -330,14 +333,14 @@ class soList(PyGUI.Window):
     def scrollUp(self):
         if self.elementHolder.scroll.y < self.elementHolder.minScroll.y:
             self.elementHolder.scroll.y = self.elementHolder.minScroll.y
-        if self.elementHolder.scroll.y > self.elementHolder.minScroll.y:
+        if self.elementHolder.scroll.y - self.elementHolder.minScroll.y > 0.001:
             self.elementHolder.scroll.y -= self.scrollStep
             self.vScroll.setValue(self.vScroll.getValue() - 1)
 
     def scrollDown(self):
         if self.elementHolder.scroll.y > self.elementHolder.maxScroll.y:
             self.elementHolder.scroll.y = self.elementHolder.maxScroll.y
-        if self.elementHolder.scroll.y < self.elementHolder.maxScroll.y:
+        if self.elementHolder.scroll.y - self.elementHolder.maxScroll.y < -0.001:
             self.elementHolder.scroll.y += self.scrollStep
             self.vScroll.setValue(self.vScroll.getValue() + 1)
 
@@ -432,6 +435,12 @@ class soList2ElementBase(PyGUIBase):
         self.elemData = data
         self.applyElemData()
 
+    def OnListChangeWidth(self, width):
+        pass
+
+    def OnGotParent(self):
+        pass
+
 
 class soList2(PyGUIBase):
     factoryString = 'soGUI.soList2'
@@ -464,6 +473,27 @@ class soList2(PyGUIBase):
         cmp.width = self.width
         cmp.height = self.height
         cmp.moveFocus = True
+
+    def setWidth(self, width):
+        self.width = width
+        self.component.width = width
+        self.component.elemHolder.width = self.width - self.borderWidth * 2
+        if self.vScroll:
+            self.component.elemHolder.width -= 16
+        self.component.vScroll.position = (self.width - self.borderWidth, self.borderWidth, 0.6)
+        for element in self.elements:
+            element.OnListChangeWidth(width)
+
+    def setHeight(self, height):
+        self.height = height
+        self.component.height = height
+        self.component.elemHolder.height = self.height - self.borderWidth * 2
+        if self.hScroll:
+            self.component.elemHolder.height -= 16
+        vSHeight = self.height - self.borderWidth * 2 if not self.hScroll else self.height - self.borderWidth * 2 - 16
+        self.component.vScroll.script.setHeight(vSHeight)
+        self.reArrangeElems()
+        self._updateScrolls()
 
     def setupContent(self):
         cmp = GUI.Window('')
@@ -677,6 +707,7 @@ class soList2(PyGUIBase):
         elemObj = elem[1](GUI.Window(), elem[0], elem[2])
         elemObj.elementEvent = self.elemHandler
         self.component.elemHolder.addChild(elemObj.component, 'elem_' + str(elem[0]))
+        elemObj.OnGotParent()
         return elemObj
 
     def _eraseElem(self, elem):

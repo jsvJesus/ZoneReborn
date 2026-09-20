@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/choiceTeam.py
+# Embedded file name: ./client/soGUI/choiceTeam.py
 import BigWorld
 import BWPersonality
 import GUI
@@ -7,6 +7,7 @@ import Keys
 import Helpers.PyGUI as PyGUI
 import weakref
 from bwdebug import *
+from Localization import lc, get_lang_short
 import soGUI.ScaleformDemo
 
 class choiceTeamGUI(PyGUI.PyGUIBase):
@@ -41,14 +42,26 @@ class choiceTeamGUI(PyGUI.PyGUIBase):
         return self.flashClip.visible
 
     def externalInterfaceHandler(self, cmd, args):
-        if cmd == 'choiceTeam':
-            print 'choiceTeam', args[0]
+        player = BigWorld.player()
+        if player is None:
             self.hide()
-            BigWorld.player().base.changeTeam(int(args[0]))
+            return
+        else:
+            if cmd == 'choiceTeam':
+                self.hide()
+                player.base.changeTeam(int(args[0]))
+            if cmd == 'ready':
+                self.update_local()
+            return
 
     def show(self, blackBG):
         self.flashClip.visible = True
         self.bk.show(blackBG)
+
+    def update_local(self):
+        text = lc('GUI.PVP.choiseTeam')
+        is_zh = get_lang_short() == 'ZH'
+        self.flashClip.script.viewX.invoke(('setLocal', text, is_zh))
 
     def hide(self):
         self.flashClip.visible = False
@@ -72,7 +85,7 @@ class Background(PyGUI.PyGUIBase):
         cmp.verticalAnchor = 'CENTER'
         cmp.colour = (255, 0, 0, 150)
         cmp.materialFX = 'BLEND'
-        cmp.textureName = 'soGUI/maps/Colours/black.bmp'
+        cmp.textureName = 'soGUI/black.dds'
         cmp.width = cmp.height = 2.0
         cmp.position = (0.0, 0.0, 0.9)
         cmp.visible = False

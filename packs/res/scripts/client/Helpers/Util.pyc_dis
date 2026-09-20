@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/Helpers/Util.py
+# Embedded file name: ./client/Helpers/Util.py
 import BigWorld
 
 def entitiesFromChunk(sectionName):

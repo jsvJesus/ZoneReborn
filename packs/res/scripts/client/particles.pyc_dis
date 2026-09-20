@@ -1,8 +1,10 @@
-# Embedded file name: ./scripts/client/particles.py
+# Embedded file name: ./client/particles.py
 """This module provides utility functions for particle systems."""
 import BigWorld
 import random
 import Pixie
+import traceback
+import ResMgr
 
 def createBloodDroop():
     return Pixie.create('particles/blood_drops.xml')
@@ -305,3 +307,86 @@ def flickeringLight():
     pulse.diffuse = 1
     pulse.visible = True
     return pulse
+
+
+psa_names = ('SourcePSA',)
+
+class Pix:
+
+    def __init__(self, node, ps_path, callback_onload = None, paused = True, purge = False):
+        self._node = node
+        self._ps = None
+        self._attached = False
+        self._rate = {}
+        self._paused = paused
+        self._ps_path = ps_path
+
+        def onLoad(presq):
+            self._ps = presq[ps_path]
+            self._save_rate()
+            if self._paused:
+                self.pause()
+            else:
+                self.play()
+            if callback_onload:
+                callback_onload(self)
+
+        if not ps_path:
+            raise AssertionError
+            purge and ResMgr.purge(ps_path)
+        BigWorld.loadResourceListBG((ps_path,), onLoad)
+        return
+
+    def _save_rate(self):
+        for i in xrange(self._ps.nSystems()):
+            system = self._ps.system(i)
+            for a_index, action in enumerate(system.actions):
+                if action.__name__ in psa_names:
+                    try:
+                        self._rate[i, a_index] = action.rate
+                    except Exception as e:
+                        print 'Error for', self, self._ps_path
+                        print 'i', i, 'a_index', a_index, 'action', action
+                        traceback.print_exc()
+                        print
+
+    def setPaused(self, paused):
+        if paused:
+            self.pause()
+        else:
+            self.play()
+
+    def pause(self):
+        self._paused = True
+        if not self._ps:
+            return
+        for i in xrange(self._ps.nSystems()):
+            system = self._ps.system(i)
+            for a_index, action in enumerate(system.actions):
+                if action.__name__ in psa_names:
+                    action.rate = 0
+
+    def play(self):
+        self._paused = False
+        if not self._ps:
+            return
+        if not self._attached:
+            self._node.attach(self._ps)
+            self._attached = True
+        for i in xrange(self._ps.nSystems()):
+            system = self._ps.system(i)
+            for a_index, action in enumerate(system.actions):
+                if action.__name__ in psa_names:
+                    action.rate = self._rate[i, a_index]
+
+    def destroy(self):
+        if self._attached:
+            try:
+                self._node.detach(self._ps)
+            except:
+                traceback.print_exc()
+
+            self._attached = False
+        self._node = None
+        self._ps = None
+        return

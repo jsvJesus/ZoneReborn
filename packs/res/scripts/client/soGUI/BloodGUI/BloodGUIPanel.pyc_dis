@@ -1,10 +1,10 @@
-# Embedded file name: ./scripts/client/soGUI/BloodGUI/BloodGUIPanel.py
+# Embedded file name: ./client/soGUI/BloodGUI/BloodGUIPanel.py
 import BigWorld
 import GUI
 import Helpers.PyGUI as PyGUI
 from Helpers.BWCoroutine import BWCoroutine, BWWaitForPeriod
 import math
-from soGUI.BloodGUI.BloodGUI import BloodGUI
+from soGUI.BloodGUI.BloodGUI import BloodGUI, DEFAULT_COLOUR
 import math_bw
 
 class Panel(object):
@@ -13,7 +13,7 @@ class Panel(object):
     MIN_INTENCITY = 0.8
     MAX_INTENCITY = 1.0
     ONE_STRIPE = True
-    MODE_HORIZONTAL, MODE_VERTICAL, MODE_BOTH = range(3)
+    MODE_HORIZONTAL, MODE_VERTICAL, MODE_BOTH = xrange(3)
 
     def __init__(self, name, parent, path):
         self.name = name
@@ -24,6 +24,8 @@ class Panel(object):
         self.panel.widthMode = 'CLIP'
         self.panel.heightMode = 'CLIP'
         self.panel.materialFX = 'BLEND'
+        self.panel.colour = DEFAULT_COLOUR
+        self._colour = DEFAULT_COLOUR
         self._scale = 0.0
         self._alpha = 0.0
         self.animation_corutine = None
@@ -46,9 +48,11 @@ class Panel(object):
         self.mode = Panel.MODE_BOTH
         self.scale = 1.0
 
-    def start(self, damage_level):
+    def start(self, damage_level, colour = DEFAULT_COLOUR):
         self.intensity = math_bw.lerp(Panel.MIN_INTENCITY, Panel.MAX_INTENCITY, damage_level)
         self.alpha = self.intensity
+        self.panel.colour = colour
+        self._colour = colour
         if self.animation_corutine:
             self.scale = min(self.scale, self.intensity)
         else:
@@ -99,10 +103,10 @@ class Panel(object):
         if value <= 0 and self._alpha > 0 and self.parent.component.hasChild(self.panel, False):
             self.parent.component.delChild(self.name)
         self._alpha = max(0.0, value)
-        self.panel.colour = (255,
-         255,
-         255,
-         255 * self._alpha)
+        self.panel.colour = (self._colour[0],
+         self._colour[1],
+         self._colour[2],
+         self._colour[3] * self._alpha)
 
     @property
     def component(self):
@@ -128,52 +132,52 @@ class BloodGUIPanel(PyGUI.PyGUIBase):
 
     def setup_content(self):
         screen_ratio = BigWorld.screenWidth() / BigWorld.screenHeight()
-        top_panel = Panel('top_panel', self, 'soGUI/maps/Misc/DamageVector/DamageTop.tga')
+        top_panel = Panel('top_panel', self, 'soGUI/maps/damage_vector/DamageTop.tga')
         top_panel.component.horizontalAnchor = 'CENTER'
         top_panel.component.verticalAnchor = 'TOP'
         top_panel.component.position = (0, 1, 0)
         top_panel.component.width = 2
         top_panel.align_height(screen_ratio)
-        bottom_panel = Panel('bottom_panel', self, 'soGUI/maps/Misc/DamageVector/DamageBottom.tga')
+        bottom_panel = Panel('bottom_panel', self, 'soGUI/maps/damage_vector/DamageBottom.tga')
         bottom_panel.component.horizontalAnchor = 'CENTER'
         bottom_panel.component.verticalAnchor = 'BOTTOM'
         bottom_panel.component.position = (0, -1, 0)
         bottom_panel.component.width = 2
         bottom_panel.align_height(screen_ratio)
-        left_panel = Panel('left_panel', self, 'soGUI/maps/Misc/DamageVector/DamageLeft.tga')
+        left_panel = Panel('left_panel', self, 'soGUI/maps/damage_vector/DamageLeft.tga')
         left_panel.component.horizontalAnchor = 'LEFT'
         left_panel.component.verticalAnchor = 'CENTER'
         left_panel.component.position = (-1, 0, 0)
         left_panel.component.height = 2
         left_panel.align_width(screen_ratio)
-        right_panel = Panel('right_panel', self, 'soGUI/maps/Misc/DamageVector/DamageRight.tga')
+        right_panel = Panel('right_panel', self, 'soGUI/maps/damage_vector/DamageRight.tga')
         right_panel.component.horizontalAnchor = 'RIGHT'
         right_panel.component.verticalAnchor = 'CENTER'
         right_panel.component.position = (1, 0, 0)
         right_panel.component.height = 2
         right_panel.align_width(screen_ratio)
-        top_right_panel = Panel('top_right_panel', self, 'soGUI/maps/Misc/DamageVector/DamageTopRight.tga')
+        top_right_panel = Panel('top_right_panel', self, 'soGUI/maps/damage_vector/DamageTopRight.tga')
         top_right_panel.component.horizontalAnchor = 'RIGHT'
         top_right_panel.component.verticalAnchor = 'TOP'
         top_right_panel.component.position = (1, 1, 0)
         top_right_panel.component.height = 1.1
         top_right_panel.component.width = 1.1
         top_right_panel.align_both(screen_ratio)
-        top_left_panel = Panel('top_left_panel', self, 'soGUI/maps/Misc/DamageVector/DamageTopLeft.tga')
+        top_left_panel = Panel('top_left_panel', self, 'soGUI/maps/damage_vector/DamageTopLeft.tga')
         top_left_panel.component.horizontalAnchor = 'LEFT'
         top_left_panel.component.verticalAnchor = 'TOP'
         top_left_panel.component.position = (-1, 1, 0)
         top_left_panel.component.height = 1.1
         top_left_panel.component.width = 1.1
         top_left_panel.align_both(screen_ratio)
-        bottom_right_panel = Panel('bottom_right_panel', self, 'soGUI/maps/Misc/DamageVector/DamageBottomRight.tga')
+        bottom_right_panel = Panel('bottom_right_panel', self, 'soGUI/maps/damage_vector/DamageBottomRight.tga')
         bottom_right_panel.component.horizontalAnchor = 'RIGHT'
         bottom_right_panel.component.verticalAnchor = 'BOTTOM'
         bottom_right_panel.component.position = (1, -1, 0)
         bottom_right_panel.component.height = 1.1
         bottom_right_panel.component.width = 1.1
         bottom_right_panel.align_both(screen_ratio)
-        bottom_left_panel = Panel('bottom_left_panel', self, 'soGUI/maps/Misc/DamageVector/DamageBottomLeft.tga')
+        bottom_left_panel = Panel('bottom_left_panel', self, 'soGUI/maps/damage_vector/DamageBottomLeft.tga')
         bottom_left_panel.component.horizontalAnchor = 'LEFT'
         bottom_left_panel.component.verticalAnchor = 'BOTTOM'
         bottom_left_panel.component.position = (-1, -1, 0)
@@ -201,10 +205,19 @@ class BloodGUIPanel(PyGUI.PyGUIBase):
                     index -= len(self.panels)
                 self.panels[index].start(damage_level)
             else:
-                for i in range(index - 1, index + 2):
+                for i in xrange(index - 1, index + 2):
                     if i >= len(self.panels):
                         i -= len(self.panels)
                     self.panels[i].start(damage_level)
+
+    def draw_fall_damage(self, damage_level):
+        self.panels[0].start(damage_level)
+        self.panels[1].start(damage_level * 0.01)
+        self.panels[-1].start(damage_level * 0.01)
+
+    def draw_colored_damage(self, colour):
+        for panel in self.panels:
+            panel.start(0.1, colour)
 
     def doReposition(self):
         child_names = [ child[0] for child in self.component.children ]

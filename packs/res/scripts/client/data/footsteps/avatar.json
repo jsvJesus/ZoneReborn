@@ -1,298 +1,340 @@
 {
 	"cue_to_node":{
-		 "FootPrintLeft": "lefttoebase", 
-		 "FootPrintRight": "righttoebase"
+		 "footprint_l": "LeftToeBase",
+		 "footprint_r": "RightToeBase"
 		},
 
 
-	"water_node_hips_stay": "rightleg",
-	"water_node_hips_crouch": "spine",
-	"water_node_head": "HP_spine1",
-	"add_water_node_head_height": 1.0,
+	"water_node_hips_stay": "Hips",
+	"water_node_hips_crouch": "Spine",
+	"water_node_head": "Head",
+	"add_water_node_knee_height": 0.3,
 
 
 	"sfx_splashing_water":"sfx/waterFoot/splashingWater.xml",
+	"fall_speed_splashing_water": 3.0,
 	"sfx_foot_in_water_lev1":"sfx/waterFoot/water_foot.xml",
+	"sfx_foot_in_water_levKnee":"sfx/waterFoot/water_knee.xml",
 	"sfx_foot_in_water_lev2":{
-			"FootPrintLeft":"sfx/waterFoot/water_hips_left.xml",
-			"FootPrintRight":"sfx/waterFoot/water_hips_right.xml"
+			"footprint_l":"sfx/waterFoot/underwater_hips_left.xml",
+			"footprint_r":"sfx/waterFoot/underwater_hips_right.xml"
 			},
 
 	"sfx_foot_in_water_lev3":{
-			"FootPrintLeft":"sfx/waterFoot/water_head_left.xml",
-			"FootPrintRight":"sfx/waterFoot/water_head_right.xml"
+			"footprint_l":"sfx/waterFoot/underwater_head_left.xml",
+			"footprint_r":"sfx/waterFoot/underwater_head_right.xml"
 			},
 
 
 
 
-	"by_marterial_kind":{
+	"by_material_kind":{
 		"0": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/stone",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/stone",
 				"sfx": ""
 				}
 			}, 
 		"1": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/wood",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/wood",
 				"sfx": ""
 				}
 			}, 
 		"2": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/stone",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/stone",
 				"sfx": ""
 				}
 			}, 
 		"3": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/chain",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/chain",
 				"sfx": ""
 				}
 			}, 
 		"4": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/light_metal",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/light_metal",
 				"sfx": ""
 				}
 			}, 
 		"5": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/heavy_metal",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/heavy_metal",
 				"sfx": ""
 				}
 			}, 
 		"6": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/glass",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/glass",
 				"sfx": ""
 				}
 			}, 
 		"7": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/dirt",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/dirt",
 				"sfx": ""
 				}
 			}, 
 		"8": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/grass",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/grass",
 				"sfx": ""
 				}
 			}, 
 		"9": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/snow",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/snow",
 				"sfx": ""
 				}
 			}, 
 		"10": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/water_foot",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/water_foot",
 				"sfx": ""
 				}
 			}, 
 		"11": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/flesh",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/flesh",
 				"sfx": ""
 				}
 			}, 
 		"12": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/rubber",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/rubber",
 				"sfx": ""
 				}
 			}, 
 		"13": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/gravel",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/gravel",
 				"sfx": ""
 				}
 			}, 
 		"14": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/rubber",
 				"sfx": ""
 			}, 
-		"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/rubber",
 				"sfx": ""
 				}
 			}, 
 		"15": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/stone_tile",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/stone_tile",
 				"sfx": ""
 				}
 			}, 
 		"16": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/garbage",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/garbage",
 				"sfx": ""
 				}
 			}, 
 		"17": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/mud",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/mud",
 				"sfx": ""
 				}
 			}, 
 		"18": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/grass",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/grass",
 				"sfx": ""
 				}
 			}, 
 		"19": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/sand",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/sand",
 				"sfx": ""
 				}
 			}, 
 		"20": {
-			"FootPrintLeft": {
-				"sound": "",
+			"footprint_l": {
+				"sound": "players/footsteps/ice",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
-				"sound": "",
+			"footprint_r": {
+				"sound": "players/footsteps/ice",
 				"sfx": ""
 				}
 			}, 
 		"21": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/carpet",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/carpet",
 				"sfx": ""
 				}
 			}, 
+        "23": {
+			"footprint_l": {
+				"sound": "players/footsteps/concrete",
+				"sfx": ""
+				}, 
+			"footprint_r": {
+				"sound": "players/footsteps/concrete",
+				"sfx": ""
+				}
+			}, 
+        "25": {
+			"footprint_l": {
+				"sound": "players/footsteps/paper",
+				"sfx": ""
+				}, 
+			"footprint_r": {
+				"sound": "players/footsteps/paper",
+				"sfx": ""
+				}
+			}, 			
+		"139": {
+			"footprint_l": {
+				"sound": "",
+				"sfx": ""
+				}, 
+			"footprint_r": {
+				"sound": "",
+				"sfx": ""
+				}
+			}, 
 		"200": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/light_metal",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/light_metal",
 				"sfx": ""
 				}
 			}, 
 		"201": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/heavy_metal",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/heavy_metal",
 				"sfx": ""
 				}
 			}, 
 		"202": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/glass",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/glass",
 				"sfx": ""
 				}
 			}, 
 		"203": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/rubber",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
 				"sound": "players/footsteps/rubber",
 				"sfx": ""
 				}
 			}, 
 		"204": {
-			"FootPrintLeft": {
+			"footprint_l": {
 				"sound": "players/footsteps/wood",
 				"sfx": ""
 				}, 
-			"FootPrintRight": {
+			"footprint_r": {
+				"sound": "players/footsteps/wood",
+				"sfx": ""
+				}
+			},
+		"120": {
+			"footprint_l": {
+				"sound": "players/footsteps/wood",
+				"sfx": ""
+				}, 
+			"footprint_r": {
 				"sound": "players/footsteps/wood",
 				"sfx": ""
 				}

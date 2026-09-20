@@ -1,5 +1,5 @@
-# Embedded file name: ./scripts/common/Config/Skills.py
+# Embedded file name: ./common/Config/Skills.py
 
 
 class SkillsTypes:
-    DIRECT, THROW, MELEE = ('DIRECT', 'THROW', 'MELEE')
+    DIRECT, THROW, MELEE, TELEPORT = ('DIRECT', 'THROW', 'MELEE', 'TELEPORT')

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/TimeWork.py
+# Embedded file name: ./common/TimeWork.py
 from time import strptime
 from time import localtime
 from time import gmtime

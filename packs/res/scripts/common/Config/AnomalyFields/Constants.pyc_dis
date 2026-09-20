@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/Config/AnomalyFields/Constants.py
+# Embedded file name: ./common/Config/AnomalyFields/Constants.py
 
 
 class PATTERN_CHANGE_TYPE:
@@ -7,7 +7,6 @@ class PATTERN_CHANGE_TYPE:
 
 CELLS = 'cells'
 GROUPS = 'groups'
-COLORS = 'colors'
 LIST_PATTERN = 'pattern'
 LIST_GROUP = 'group'
 ANOM_NAME = 'name'

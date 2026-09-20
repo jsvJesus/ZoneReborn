@@ -2,20 +2,30 @@
 
 	"avatar_name_lc":"FunTransform.names.test_rat",
 	"hide_in_world_marker": true,
-	"set_model": "characters/creatures/rat-mutant/rat_lod1.model",
+	"set_model": "characters/creatures/rat/rat_lod1.model",
 	"set_model_tint": {
 		"body_tint_rat": "gray"
 		},
 	"collide_boxs": "scripts/common/data/Creatures/Colliders/Rat.xml",
-	"model_scale": 1.0,
+	"persistent_effects":[268],
+	"model_scale": 2.5,
+	"other_disable_interact":true,
 	"hide_weapon": true,
-	"hide_gui":["munitionsGUI", "systemBar", "actionBar"
+	"hide_gui":["munitionsGUI", "systemBar", "actionBar", "emotionsGUI", "inventory", "charScreen", "minimap"
 				],
 
 	"walk_speed":  0.0,
-	"run_speed":   1.7,
-	"sprint_speed":5.0,
+	"run_speed":   2.7,
+	"run_speed_back":   1.0,
+	"sprint_speed":7.0,
 	"crouch_speed":1.0,
+
+	"phy_acelerate_down": 25.0,
+	"phy_walk_acelerate": 25.0,
+	"phy_sprint_acelerate": 170.0,
+	"body_twist":10.0,
+	"ignore_fall":true,
+	"fix_last_foot_twist":true,
 
 	"post_proccess":"",
 
@@ -28,99 +38,75 @@
 	"drop_on_dead_loot_bbox_name":"",
 
 
-	"camera_pivot_position": [0.01, 0.2, -0.30],
-	"camera_pivot_dist": 0.1,
+	"camera_pivot_position": [0.0, 0.25, 1.25],
+	"camera_pivot_dist": "DEF",
 	"camera_node": "DEF",
 
+	"physics_modelWidth":"DEF",
+	"physics_modelDepth":"DEF",
+	"physics_modelHeight_Standing":"DEF",
+	"physics_modelHeight_Crouched":"DEF",
+	"physics_scrambleHeight":"DEF",
 
-	"physics_modelWidth":0.1,
-	"physics_modelDepth":0.2,
-	"physics_modelHeight_Standing":0.1,
-	"physics_modelHeight_Crouched":0.1,
-	"physics_scrambleHeight":0.05,
+	"lock_mouse_scroll_weapon":true,
+
+	"help_text":"FunTransform.help.all",
 
 
-	"lock_aciton":[
-		"ThrowGrenade",
-		"Crouch","ToggleCrouch",
-		"SitGround","SitBackpack","SitGroundX","SitLegs"
-		],
-	"unlock_aciton":[],
+	"lock_aciton":[ "ALL_ACTION"],
+
+	"unlock_aciton":["MoveForward", "MoveBackward", "Sprint", "LookAround", "ReleaseCursor", "PVPScoreBar"],
 
 	"random_actions":[],
+
 	
-	"bored_actions_interval_sec": 15.0,
-	"bored_actions":[
-		{ 	
-			"action_name":"_bored_prosto_anim_",
-			"action_class":"ANIMATION",
-			"chance": 0.5,
-			"stamina_cost":0,
-			"animation":"Idle1",
-
-			"time_start_effect": 0.5,
-			"time_end_animation": 2.0,
-			"time_reuse_delay": 0,
-
-			"sfx_start_animation":"sfx/Mob/Rat/idle.xml",
-			"sfx_apply_effect_boner":"",
-			"sfx_apply_effect_hit":"",
-			"sfx_end_animation":"",
-
-			"apply_effect_id": 0,
-			"apply_effect_stack": 0,
-			"apply_effect_chance": 1.0,
-			"lock_move":true
-		}
-	],
-
 
 	"actions":[
 		{
 			"action_name":"LeftMouseButton",
-			"action_class":"SECTOR_MELEE",
+			"action_class":"BOX_MELEE",
 			"stamina_cost":1,
-			"animation": "Rat_AttackRun",
+			"animation": "AttackMele",
 
 			"time_start_effect": 0.5,
 			"time_end_animation": 0.019,
-			"time_reuse_delay": 0.0,
+			"time_reuse_delay": 1.0,
 
 			"sfx_start_animation":"",
 			"sfx_apply_effect_boner":"sfx/Mob/Rat/attack.xml",
 			"sfx_apply_effect_hit":"",
 			"sfx_end_animation":"",
 
-			"radius":0.25,
-			"angles_sector": [-20, 20],
-			"height_attack_limit":[-0.5, 0.5],
-			"damage":[1,1],
+			"dist_attack":0.1,
+			"box_width": [-0.1, 0.1],
+			"box_height":[-5.0, 5.0],
+			"damage":[50,55],
 
 			"apply_effect_id": 0,
 			"apply_effect_stack": 1,
 			"apply_effect_chance": 0.01,
-			"lock_move":false
+			"lock_move":true
 
 		},
 		{
 			"action_name":"RightMouseButton",
-			"action_class":"SECTOR_MELEE",
+			"action_class":"BOX_MELEE",
 			"stamina_cost":1,
 			"animation": "Rat_AttackTooth",
 
 			"time_start_effect": 0.5,
 			"time_end_animation": 0.019,
-			"time_reuse_delay": 0.0,
+			"time_reuse_delay": 1.0,
 
 			"sfx_start_animation":"sfx/Mob/Rat/attack.xml",
 			"sfx_apply_effect_boner":"",
 			"sfx_apply_effect_hit":"",
 			"sfx_end_animation":"",
 
-			"radius":0.25,
-			"angles_sector": [-20, 20],
-			"height_attack_limit":[-0.5, 0.5],
-			"damage":[1,1],
+			"dist_attack":0.3,
+			"box_width": [-0.2, 0.2],
+			"box_height":[-5.0, 5.0],
+			"damage":[50,55],
 
 			"apply_effect_id": 0,
 			"apply_effect_stack": 1,

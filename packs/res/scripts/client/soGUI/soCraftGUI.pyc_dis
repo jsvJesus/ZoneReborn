@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soCraftGUI.py
+# Embedded file name: ./client/soGUI/soCraftGUI.py
 from Localization import lc
 import BigWorld
 import GUI
@@ -41,6 +41,7 @@ class soPartSlot(PyGUIBase, DraggableComponent):
     def __init__(self, component):
         PyGUIBase.__init__(self, component)
         DraggableComponent.__init__(self, True, True, False)
+        self.isDragging = False
         component.script = self
         self.icon = None
         self.count = None
@@ -81,10 +82,11 @@ class soPartSlot(PyGUIBase, DraggableComponent):
         cmp.dragFocus = True
         cmp.crossFocus = False
         cmp.moveFocus = True
-        cmp.mouseButtonFocus = False
+        cmp.mouseButtonFocus = True
+        cmp.dropFocus = False
 
     def setupFrame(self):
-        cmp = GUI.Frame2('soGUI/maps/con_frame.tga')
+        cmp = GUI.Frame2('soGUI/items/cell.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -109,6 +111,18 @@ class soPartSlot(PyGUIBase, DraggableComponent):
         cmp.position = (0, 0, 0.1)
         self.component.addChild(cmp, 'icon')
         self.icon = cmp
+        cmp = GUI.Simple('textures/default/white.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (100, 0, 0, 150)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 60
+        cmp.height = 60
+        cmp.position = (2, 2, 0.2)
+        self.component.addChild(cmp, 'broken')
+        self.broken = cmp
 
     def setupCount(self):
         cmp = GUI.Text('')
@@ -122,6 +136,17 @@ class soPartSlot(PyGUIBase, DraggableComponent):
         cmp.position = (1.0, -1.0, 0.05)
         self.component.addChild(cmp, 'count')
         self.count = cmp
+
+    def handleMouseButtonEvent(self, comp, event):
+        down = event.isKeyDown()
+        if down:
+            self.pushed = True
+        else:
+            self.pushed = False
+        if self.isDragging:
+            dragHandle = DraggableComponent.handleMouseButtonEvent(self, comp, event)
+            return dragHandle
+        return True
 
     def handleDragStartEvent(self, *args):
         event = guiKeyEvent(KEY_LEFTMOUSE, True, None)
@@ -150,6 +175,9 @@ class soPartSlot(PyGUIBase, DraggableComponent):
     def setIcon(self, path):
         self.icon.textureName = path
 
+    def markAsBroken(self, value):
+        self.broken.visible = value
+
     def setCount(self, count):
         if count > -1:
             self.count.text = str(count)
@@ -159,6 +187,7 @@ class soPartSlot(PyGUIBase, DraggableComponent):
     def empty(self):
         self.setSlotInfo(None)
         self.setCount(-1)
+        self.markAsBroken(False)
         self.icon.textureName = ''
         return
 
@@ -173,6 +202,7 @@ class CraftGUI(PyGUIBase, DraggableComponent):
     EVENT_CLEAR = 5
     EVENT_AUTOFILL = 6
     EVENT_CANCEL = 7
+    EVENT_REMOVE_ITEM = 8
 
     def __init__(self, component, recipes_type = None):
         PyGUIBase.__init__(self, component)
@@ -181,7 +211,7 @@ class CraftGUI(PyGUIBase, DraggableComponent):
         self.MAXSLOT_I = 3
         self.MAXSLOT_Y = 5
         self.MAXSLOT = self.MAXSLOT_I * self.MAXSLOT_Y
-        self.recipes_type = WorkbenchUtil.getReciept(recipes_type)
+        self.recipes_type = []
         self.setupRoot()
         self.setupControls()
         self.setupSlots()
@@ -206,7 +236,7 @@ class CraftGUI(PyGUIBase, DraggableComponent):
         cmp.crossFocus = True
 
     def setupControls(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        cmp = GUI.Frame2('soGUI/frame/basic_frame_1.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -221,7 +251,7 @@ class CraftGUI(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (180, 5, 0.3)
@@ -247,10 +277,10 @@ class CraftGUI(PyGUIBase, DraggableComponent):
         cmp.position = (8, 417, 0.1)
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
-        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
         cmp.label.text = lc('soCraftGUI.soGUI.STRING_300_19')
         self.component.addChild(cmp, 'craftBtn')
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         btn.onBound()
         btn.setVisualState('normal')
         btn = soButton(GUI.Window())
@@ -265,10 +295,10 @@ class CraftGUI(PyGUIBase, DraggableComponent):
         cmp.colour = (255, 255, 255, 255)
         cmp.visible = False
         cmp.materialFX = 'BLEND'
-        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
         cmp.label.text = lc('soCraftGUI.soGUI.CANCEL_CRAFT')
         self.component.addChild(cmp, 'cancelBtn')
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         btn.onBound()
         btn.setVisualState('normal')
         btn = soButton(GUI.Window())
@@ -279,13 +309,13 @@ class CraftGUI(PyGUIBase, DraggableComponent):
         cmp.verticalAnchor = 'TOP'
         cmp.width = 179
         cmp.height = 29
-        cmp.position = (366, 417, 0.1)
+        cmp.position = (362, 417, 0.1)
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
-        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
         cmp.label.text = lc('soCraftGUI.soGUI.STRING_322_19')
         self.component.addChild(cmp, 'clearBtn')
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         btn.onBound()
         btn.setVisualState('normal')
         btn = soButton(GUI.Window())
@@ -300,7 +330,7 @@ class CraftGUI(PyGUIBase, DraggableComponent):
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         self.component.addChild(cmp, 'closeBox')
-        btn.initVSC('soGUI/visual_styles/closeBox.xml')
+        btn.initVSC('soGUI/elements/closeBox.xml')
         btn.onBound()
         btn.setVisualState('normal')
         hintBox = soButton(GUI.Window())
@@ -314,11 +344,11 @@ class CraftGUI(PyGUIBase, DraggableComponent):
         comp.width = 18
         comp.height = 18
         comp.position = (self.component.width - 23 - 22, 7, 0.1)
-        hintBox.initVSC('soGUI/visual_styles/helpBox.xml')
+        hintBox.initVSC('soGUI/elements/helpBox.xml')
         hintBox.onBound()
         hintBox.setVisualState('normal')
         self.component.addChild(comp, 'hintBox')
-        txt = soTextField3(GUI.Window(), width=532, height=141, textWidth=512, textureless=True)
+        txt = soTextField3(GUI.Window(), width=525, height=141, textWidth=512, textureless=True)
         cmp = txt.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -326,14 +356,14 @@ class CraftGUI(PyGUIBase, DraggableComponent):
         cmp.position = (14, 268, 0.5)
         self.component.addChild(cmp, 'textFld')
         txt.onBound()
-        cmp = GUI.Simple('soGUI/maps/Controls/window_frame/craftTextFrame.tga')
+        cmp = GUI.Simple('soGUI/maps/Controls/window_frame/craftTextFrame.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.width = 537
+        cmp.width = 530
         cmp.height = 149
-        cmp.position = (8, 265, 0.6)
+        cmp.position = (10, 265, 0.6)
         self.component.addChild(cmp, 'textFrame')
         cb = soCheckBox(GUI.Window(), soGUI.CheckBoxPropsStructure(labelText=lc('soCraftGUI.soGUI.STRING_374_73'), labelColour=(175, 166, 112, 255)))
         cmp = cb.component
@@ -342,10 +372,10 @@ class CraftGUI(PyGUIBase, DraggableComponent):
         cmp.verticalAnchor = 'TOP'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
-        cmp.position = (10, 246, 0.4)
+        cmp.position = (10, 242, 0.4)
         self.component.addChild(cmp, 'autofill')
         cb.onBound()
-        cmp = GUI.Simple('soGUI/maps/Controls/window_frame/craftRecipeFrame.tga')
+        cmp = GUI.Simple('soGUI/maps/Controls/window_frame/craftRecipeFrame.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -390,7 +420,7 @@ class CraftGUI(PyGUIBase, DraggableComponent):
         if self.component.parent is None:
             BWPersonality.GUICore.worldLayer.addChild(self.component, 'craftGUI')
         self.component.visible = True
-        self.recipes_type = WorkbenchUtil.getReciept(recipes_type)
+        self.recipes_type = []
         self.update(after_show=True)
         BWPersonality.GUICore.setBestCursor()
         return
@@ -424,38 +454,47 @@ class CraftGUI(PyGUIBase, DraggableComponent):
             recDDL.setSelectionByText(recipe_name, True, True)
             BWPersonality.GUICore.craftEvent(self.EVENT_SELECT, recipes[0])
             return
-        items = data['items']
-        for i in xrange(self.MAXSLOT):
-            cmp = self.component.__getattribute__('partSlot' + str(i))
-            cmp.script.empty()
-
-        for i in xrange(len(items)):
-            cmp = self.component.__getattribute__('partSlot' + str(i))
-            item = ItemsUtils.GetComplexItemByID(BigWorld.player(), items[i])
-            item_type = item['complexItemType']
-            item_id = item['complexItemID']
-            item_class = ItemsCatalog.GetItemClass(item_type)
-            item_params = ItemsCatalog.GetItemParam(item_type)
-            item_level = item_params['Level']
-            cmp.script.setSlotInfo(item['complexItemID'])
-            iconName = ItemsUtils.getTextureByTint(item)
-            if not iconName:
-                iconName = item_params['IconName']
-            cmp.script.setIcon(iconName)
-            cmp.script.setCount(ItemsUtils.GetDisplayValue(item))
-
-        if data['autofill']:
-            self.component.autofill.script.setActive()
         else:
-            self.component.autofill.script.setInactive()
-        recDDL.addElements(elems)
-        recDDL.setSelectionByText(selectedRec, True, True)
-        txt = self.component.textFld.script
-        txt.setText(data['description'])
-        if data.has_key('icon'):
-            self.component.recipeIcon.textureName = data['icon']
-        else:
-            self.component.recipeIcon.textureName = ''
+            items = data['items']
+            for i in xrange(self.MAXSLOT):
+                cmp = self.component.__getattribute__('partSlot' + str(i))
+                cmp.script.empty()
+
+            min_art_depl = None
+            if data['recipie_id']:
+                min_art_depl = ItemsUtils.getRecipieMinArtifactDepleetionPercent(data['recipie_id'])
+            for i in xrange(len(items)):
+                cmp = self.component.__getattribute__('partSlot' + str(i))
+                item = ItemsUtils.GetComplexItemByID(BigWorld.player(), items[i])
+                if not item:
+                    cmp.script.setIcon('nottexture.dds')
+                    continue
+                item_type = item['complexItemType']
+                item_id = item['complexItemID']
+                item_class = ItemsCatalog.GetItemClass(item_type)
+                item_params = ItemsCatalog.GetItemParam(item_type)
+                item_level = item_params['exp_Level']
+                cmp.script.setSlotInfo(item['complexItemID'])
+                if not ItemsUtils.GetIconName(item):
+                    iconName = 'nottexture.dds'
+                    cmp.script.setIcon(iconName)
+                    if min_art_depl is not None and ItemsCatalog.GetItemClass(item_type) == ItemsCatalog.ARTIFACT:
+                        ItemsUtils.GetArtefactDepleetionPercent(item) < min_art_depl and cmp.script.markAsBroken(True)
+                cmp.script.setCount(ItemsUtils.GetDisplayValue(item))
+
+            if data['autofill']:
+                self.component.autofill.script.setActive()
+            else:
+                self.component.autofill.script.setInactive()
+            recDDL.addElements(elems)
+            recDDL.setSelectionByText(selectedRec, True, True)
+            txt = self.component.textFld.script
+            txt.setText(data['description'])
+            if data.has_key('icon'):
+                self.component.recipeIcon.textureName = data['icon']
+            else:
+                self.component.recipeIcon.textureName = ''
+            return
 
     def handleDragEnterEvent(self, comp, dragged):
         return True
@@ -510,7 +549,7 @@ class CraftGUI(PyGUIBase, DraggableComponent):
     @PyGUIEvent('hintBox', 'onClick')
     def onHintBox(self):
         """\xd0\xa1\xd1\x80\xd0\xb0\xd0\xb1\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xbd\xd0\xb0\xd0\xb6\xd0\xb0\xd1\x82\xd0\xb8\xd0\xb8 \xd0\xba\xd0\xbd\xd0\xbe\xd0\xbf\xd0\xba\xd0\xb8-\xd0\xbf\xd0\xbe\xd0\xb4\xd1\x81\xd0\xba\xd0\xb0\xd0\xb7\xd0\xba\xd0\xb8."""
-        text_and_ok('BarterWindowGUI.hintBox', lc('soCraftGUI.soGUI.MANUAL_TITLE'), colorCodes.tf3_regular_text_color + lc('soCraftGUI.soGUI.MANUAL_TEXT'))
+        BWPersonality.GUICore.openGUIHelp('soCraftGUI')
 
     def handleMouseButtonEvent(self, comp, event):
         self.component.blueprints.script.showList(False)

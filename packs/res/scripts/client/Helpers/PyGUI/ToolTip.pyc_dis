@@ -1,10 +1,9 @@
-# Embedded file name: ./scripts/client/Helpers/PyGUI/ToolTip.py
+# Embedded file name: ./client/Helpers/PyGUI/ToolTip.py
 import BigWorld
 import GUI
 from functools import partial
-from Utils import clipSize
+from Helpers.PyGUI.Utils import clipSize
 from bwdebug import ERROR_MSG
-import PyGUIBase
 from Window import Window
 
 class ToolTipInfo(object):

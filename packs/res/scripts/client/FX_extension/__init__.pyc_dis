@@ -1,11 +1,11 @@
-# Embedded file name: ./scripts/client/FX_extension/__init__.py
+# Embedded file name: ./client/FX_extension/__init__.py
 from functools import partial
 import BigWorld
-from Math import Vector3, MatrixProduct, Matrix
 import FX
 import client_utils
 from math_bw import VECTOR3_ZERO, VECTOR3_UP
 from matrix_providers import ScaleProvider
+import traceback
 
 def get_sfx_model(entity):
     """ Is used to create/retrieve special model to attach sfxes to it.
@@ -18,9 +18,9 @@ def get_sfx_model(entity):
         TODO: allow box size customization on the basis of entity
     """
     if not hasattr(entity, '__sfx_model__'):
-        model = BigWorld.Model(client_utils.LARGE_INVISIBLE_BOX)
-        d = 3
-        model.addMotor(BigWorld.Servo(ScaleProvider(entity.matrix, (d, d, d))))
+        model = BigWorld.Model('')
+        model.pushBoundingBox((-1.5, 0, -1.5), (1.5, 3.0, 1.5))
+        model.addMotor(BigWorld.Servo(entity.matrix))
         entity.addModel(model)
         entity.__sfx_model__ = model
     return entity.__sfx_model__
@@ -43,8 +43,8 @@ class SFXEffect:
 
 class iSFXDisposer:
 
-    def __init__(self, sfx, owner_entity, position = VECTOR3_ZERO, direction = VECTOR3_UP):
-        self.disposed_model = BigWorld.Model(client_utils.PARTICLES_HELPER_MODEL)
+    def __init__(self, sfx, owner_entity, preloaded_model, position, direction):
+        self.disposed_model = preloaded_model
         sfx.set_node_name('Scene Root')
         try:
             sfx.attach(self.disposed_model)
@@ -77,10 +77,10 @@ class iSFXDisposer:
 
 class PersistentSFXBase(SFXEffect):
 
-    def __init__(self, sfx_path):
+    def __init__(self, sfx_path, prereqs):
         self.destroyed = False
         self.path = sfx_path
-        self.sfx = FX.PersistentExt(self.path)
+        self.sfx = FX.PersistentExt(self.path, prereqs)
 
     def playOnce(self, TargetNodes = None):
         self.sfx.stop()
@@ -109,46 +109,21 @@ class PersistentSFXBase(SFXEffect):
 
 class PersistentSFX(PersistentSFXBase):
 
-    def __init__(self, sfx_path, source, source_node_name = None):
-        PersistentSFXBase.__init__(self, sfx_path)
-        if isinstance(source, BigWorld.Entity) and source_node_name is None:
-            self.source = get_sfx_model(source)
-        else:
-            self.source = source
-        if source_node_name is not None:
-            self.sfx.set_node_name(source_node_name)
+    def __init__(self, sfx_path, source, prereqs):
+        PersistentSFXBase.__init__(self, sfx_path, prereqs)
+        self.source = source
         self.sfx.attach(self.source)
-        return
 
 
 class DisposedPersistentSFX(PersistentSFXBase, iSFXDisposer):
 
-    def __init__(self, sfx_path, owner_entity, position = VECTOR3_ZERO, direction = VECTOR3_UP):
-        PersistentSFXBase.__init__(self, sfx_path)
-        iSFXDisposer.__init__(self, self.sfx, owner_entity, position, direction)
+    def __init__(self, sfx_path, prereqs, owner_entity, preloaded_model, position = VECTOR3_ZERO, direction = VECTOR3_UP):
+        PersistentSFXBase.__init__(self, sfx_path, prereqs)
+        iSFXDisposer.__init__(self, self.sfx, owner_entity, preloaded_model, position, direction)
 
     def __del__(self):
         PersistentSFXBase.__del__(self)
         iSFXDisposer.__del__(self)
-
-
-class DisposedOneShotSFX:
-
-    def __init__(self, sfx_path, owner_entity = None):
-        self.path = sfx_path
-        self.sfx = FX.OneShotExt(self.path)
-        self.sfx.set_node_name('Scene Root')
-        self.owner_entity = owner_entity or BigWorld.player()
-
-    def play(self, position = VECTOR3_ZERO, direction = VECTOR3_UP, direct_to = None, TargetNodes = None):
-        disposed_model = BigWorld.Model(client_utils.PARTICLES_HELPER_MODEL)
-        self.owner_entity.addModel(disposed_model)
-        disposed_model.position = position
-        if direct_to:
-            client_utils.direct_model_to(disposed_model, direct_to)
-        else:
-            client_utils.direct_model(disposed_model, direction)
-        self.sfx.go(disposed_model, TargetNodes=TargetNodes or [], callbackFn=partial(self.owner_entity.delModel, disposed_model))
 
 
 class SFXGroup:
@@ -176,4 +151,10 @@ def preload_buffered_oneshot_sfx(sfx_path):
     if not sfx_path:
         return
     prereqs = FX.prerequisites(sfx_path)
-    BigWorld.loadResourceListBG(prereqs, partial(FX.getBufferedOneShotEffect, sfx_path))
+    try:
+        BigWorld.loadResourceListBG(prereqs, partial(FX.getBufferedOneShotEffect, sfx_path))
+    except:
+        print
+        print 'FAILED LOAD SFX', repr(sfx_path)
+        print 'prereqs:', repr(prereqs)
+        traceback.print_exc()

@@ -1,27 +1,30 @@
-# Embedded file name: ./scripts/common/ItemCategories.py
+# Embedded file name: ./common/ItemCategories.py
 from gui_const import INV_CONST
-WEAPON, PISTOL, SUBMACHINEGUN, SHOTGUN, RIFLE, CARBINE, MACHINEGUN, LAUNCHER, CARTRIDGE, MAGAZINE, ARTIFACT_CONTAINER, MUZZLE_DEVICE, ARTIFACT_EXTRACTOR, CROCKERY, PARTS_GUN, BATTERY, CLOTHING, HAT, MASK, JACKET, PANTS, VEST, GLOVES, BOOTS, BACKPACK, DEVICES, RADIOMETER, TOOL, CARTRIDGE_PARTS, SCHEME, FLASHLIGHT, RADIO, SIGHT_AND_OPTICS, GRENADE, ELECTRIC_PARTS, MEDICINE, FOOD, ARTIFACT, NATURE, CREATURE, TECHNICAL, DOCUMENTS, UNDEFINED, HELMET, GLASSES, SUITE, HE_SUITE, SUPPORT, MISC, SUBSTANCE_CHEM, EQUIPMENT_CHEM, AAAAAAAAAAA, PACKAGE, BINOCULARS, COLLIMATOR, OPTICAL, GRENADE_PARTS, CLOTH_PARTS, PLANT, MUSHROOM, TABLEWARE = range(61)
+WEAPON, PISTOL, SUBMACHINEGUN, SMOOTHBORE, HEAVY, TREADED_BAR, MACHINEGUN, LAUNCHER, CARTRIDGE, MAGAZINE, ARTIFACT_CONTAINER, MUZZLE_DEVICE, ARTIFACT_EXTRACTOR, CROCKERY, PARTS_GUN, BATTERY, CLOTHING, HAT, MASK, JACKET, PANTS, VEST, GLOVES, BOOTS, BACKPACK, DEVICES, RADIOMETER, TOOL, CARTRIDGE_PARTS, SCHEME, FLASHLIGHT, RADIO, SIGHT_AND_OPTICS, GRENADE, ELECTRIC_PARTS, MEDICINE, FOOD, ARTIFACT, NATURE, CREATURE, TECHNICAL, DOCUMENTS, UNDEFINED, HELMET, GLASSES, SUITE, HE_SUITE, SUPPORT, MISC, SUBSTANCE_CHEM, EQUIPMENT_CHEM, AAAAAAAAAAA, PACKAGE, BINOCULARS, COLLIMATOR, OPTICAL, GRENADE_PARTS, CLOTH_PARTS, PLANT, MUSHROOM, TABLEWARE, MOUNT, BODYARMOR, MISC_GUN_PARTS, GASMASK, HEADPHONES, JEWELRY, CLOTH_ATTACH, AMULET, GASMASK_FILTER, HIDDEN = xrange(71)
 ALL_ITEMS = [{'id': WEAPON,
   'name': 'WEAPON',
   'children': [{'id': PISTOL,
                 'name': 'PISTOL'},
                {'id': SUBMACHINEGUN,
                 'name': 'SUBMACHINEGUN'},
-               {'id': SHOTGUN,
-                'name': 'SHOTGUN'},
-               {'id': RIFLE,
-                'name': 'RIFLE'},
-               {'id': CARBINE,
-                'name': 'CARBINE'},
+               {'id': SMOOTHBORE,
+                'name': 'SMOOTHBORE'},
+               {'id': TREADED_BAR,
+                'name': 'TREADED_BAR'},
                {'id': MACHINEGUN,
                 'name': 'MACHINEGUN'},
                {'id': LAUNCHER,
                 'name': 'LAUNCHER'},
                {'id': PARTS_GUN,
                 'name': 'PARTS_GUN',
-                'children': [{'id': MUZZLE_DEVICE,
-                              'name': 'MUZZLE_DEVICE'}, {'id': MAGAZINE,
-                              'name': 'MAGAZINE'}]},
+                'children': [{'id': MOUNT,
+                              'name': 'MOUNT'},
+                             {'id': MUZZLE_DEVICE,
+                              'name': 'MUZZLE_DEVICE'},
+                             {'id': MAGAZINE,
+                              'name': 'MAGAZINE'},
+                             {'id': MISC_GUN_PARTS,
+                              'name': 'MISC_GUN_PARTS'}]},
                {'id': CARTRIDGE,
                 'name': 'CARTRIDGE'},
                {'id': CARTRIDGE_PARTS,
@@ -40,8 +43,14 @@ ALL_ITEMS = [{'id': WEAPON,
                 'name': 'GLASSES'},
                {'id': MASK,
                 'name': 'MASK'},
+               {'id': GASMASK,
+                'name': 'GASMASK',
+                'children': [{'id': GASMASK_FILTER,
+                              'name': 'GASMASK_FILTER'}]},
                {'id': JACKET,
                 'name': 'JACKET'},
+               {'id': BODYARMOR,
+                'name': 'BODYARMOR'},
                {'id': VEST,
                 'name': 'VEST'},
                {'id': PANTS,
@@ -57,7 +66,12 @@ ALL_ITEMS = [{'id': WEAPON,
                {'id': HE_SUITE,
                 'name': 'HE_SUITE'},
                {'id': CLOTH_PARTS,
-                'name': 'CLOTH_PARTS'}]},
+                'name': 'CLOTH_PARTS'},
+               {'id': CLOTH_ATTACH,
+                'name': 'CLOTH_ATTACH'}]},
+ {'id': JEWELRY,
+  'name': 'JEWELRY',
+  'children': []},
  {'id': DEVICES,
   'name': 'DEVICES',
   'children': [{'id': BATTERY,
@@ -72,6 +86,10 @@ ALL_ITEMS = [{'id': WEAPON,
                               'name': 'OPTICAL'}]},
                {'id': RADIOMETER,
                 'name': 'RADIOMETER'},
+               {'id': RADIO,
+                'name': 'RADIO'},
+               {'id': HEADPHONES,
+                'name': 'HEADPHONES'},
                {'id': ARTIFACT_CONTAINER,
                 'name': 'ARTIFACT_CONTAINER'},
                {'id': ARTIFACT_EXTRACTOR,
@@ -110,7 +128,12 @@ ALL_ITEMS = [{'id': WEAPON,
  {'id': MISC,
   'name': 'MISC',
   'children': [{'id': UNDEFINED,
-                'name': 'UNDEFINED'}]}]
+                'name': 'UNDEFINED'}]},
+ {'id': HIDDEN,
+  'name': 'HIDDEN',
+  'children': [{'id': AMULET,
+                'name': 'AMULET'}, {'id': HEAVY,
+                'name': 'HEAVY'}]}]
 category_filters = {WEAPON: INV_CONST.FILT_WEAPON,
  CARTRIDGE: INV_CONST.FILT_WEAPON,
  CARTRIDGE_PARTS: INV_CONST.FILT_LOOT,
@@ -156,6 +179,8 @@ def parse_item(items, get_local_name, parent):
 
 
 try:
+    import BigWorld
+    raise BigWorld.component != 'emulator' or AssertionError
     from ordereddict import OrderedDict
     from Localization import lc
     hierarchy = OrderedDict()
@@ -229,8 +254,14 @@ def get_children(cat_id, sub_include = False):
         return result
 
 
-def has_children(cat_id):
-    return bool(hierarchy[cat_id]['children'])
+def has_children(cat_id, valid_only = False):
+    if not valid_only:
+        return bool(hierarchy[cat_id]['children'])
+    for child_id in hierarchy[cat_id]['children']:
+        if child_id not in (HIDDEN, UNDEFINED):
+            return True
+
+    return False
 
 
 def get_all_names_classes_indices():
@@ -238,7 +269,8 @@ def get_all_names_classes_indices():
 
 
 def get_name(cat_id):
-    return hierarchy[cat_id]['name']
+    item = hierarchy.get(cat_id)
+    return item and item['name'] or 'UNDEFINED'
 
 
 def get_top_level():
@@ -255,5 +287,23 @@ def get_level(cat_id):
     return result
 
 
+def get_all_bottom_level_weapons_and_undefined():
+    """ \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xbe\xd0\xba \xd0\xb2\xd1\x81\xd0\xb5\xd1\x85 \xd0\xba\xd0\xb0\xd1\x82\xd0\xb5\xd0\xb3\xd0\xbe\xd1\x80\xd0\xb8\xd0\xb9 \xd0\xbe\xd1\x80\xd1\x83\xd0\xb6\xd0\xb8\xd0\xb9 """
+    ids = filter(lambda weapon_id: not has_children(weapon_id), get_children(WEAPON, sub_include=True))
+    ids = [UNDEFINED] + ids
+    names = map(get_name, ids)
+    return (names, ids)
+
+
 def get_top_level_names():
     return [ get_name(item['id']) for item in ALL_ITEMS ]
+
+
+def is_subcategory(child_cat_id, parent_cat_id):
+    if child_cat_id == parent_cat_id:
+        return True
+    else:
+        parent_id = get_parent(child_cat_id)
+        if parent_id is None:
+            return False
+        return is_subcategory(parent_id, parent_cat_id)

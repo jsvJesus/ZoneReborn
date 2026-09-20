@@ -1,9 +1,11 @@
-# Embedded file name: ./scripts/client/DrawWell.py
+# Embedded file name: ./client/DrawWell.py
 import BigWorld
 import Math
 import DrawWellUtil
 from Helpers.Caps import CAP_DRAWWELL
 from Localization import lc
+from soGUI.soInworldMarkers import soInworldMarker
+from client_utils import readable_space_pos
 
 class DrawWell(BigWorld.Entity):
 
@@ -12,6 +14,54 @@ class DrawWell(BigWorld.Entity):
         BigWorld.Entity.__init__(self)
         self.targetCaps = [CAP_DRAWWELL]
         self.name = self.get_mark_text()
+        self._pot_handle = None
+        return
+
+    def __repr__(self):
+        if self.isDestroyed:
+            return 'DrawWell[%s]Destroyed' % self.id
+        return 'DrawWell[%s] at %s' % (self.id, readable_space_pos(self))
+
+    def prerequisites(self):
+        modelname = DrawWellUtil.getNameModel(self.modelType)
+        return [modelname]
+
+    def onEnterWorld(self, prereqs):
+        modelname = DrawWellUtil.getNameModel(self.modelType)
+        if modelname in prereqs.failedIDs:
+            print self, 'error load model %r id =%s' % (modelname, self.modelType)
+            return
+        self.onLoadModel(prereqs[modelname])
+        self._pot_handle = BigWorld.addPot(self.matrix, self.radius, self._playerPot)
+
+    def onLeaveWorld(self):
+        self.model = None
+        if self._pot_handle:
+            BigWorld.delPot(self._pot_handle)
+            player = BigWorld.player()
+            if player and player.__class__.__name__ == 'PlayerAvatar' and player._current_drawwel == self:
+                player._current_drawwel = None
+        return
+
+    def _playerPot(self, enteredTrap, handle):
+        player = BigWorld.player()
+        if player and player.__class__.__name__ == 'PlayerAvatar':
+            player._current_drawwel = self if enteredTrap else None
+        return
+
+    def set_modelType(self, old):
+        self._redraw_Model()
+
+    def onLoadModel(self, model):
+        if not model:
+            print self, 'error load model', self.modelType
+            return
+        if self.isDestroyed:
+            return
+        self.model = model
+        self.model.isObstacle = True
+        self.height = self.getHeight()
+        self.targetFullBounds = True
 
     def getHeight(self):
         if self.model:
@@ -22,28 +72,15 @@ class DrawWell(BigWorld.Entity):
                 return height
         return 1.0
 
-    def onEnterWorld(self, prereqs):
-        self._redraw_Model()
-        self.targetFullBounds = True
-
-    def onLeaveWorld(self):
-        BigWorld.delShadowEntity(self)
-
-    def set_modelType(self, old):
-        self._redraw_Model()
-
-    def onLoadModel(self, model):
-        if self.isDestroyed:
-            return
-        self.model = model
-        self.height = self.getHeight()
-
     def get_mark_text(self):
         return lc(DrawWellUtil.get_name(self.modelType))
 
-    def get_interaction_dist(self):
-        return self.radius
-
     def _redraw_Model(self):
         modelname = DrawWellUtil.getNameModel(self.modelType)
-        BigWorld.fetchModelObstacle(modelname, self.matrix, 0, self.onLoadModel)
+        BigWorld.fetchModel(modelname, self.onLoadModel)
+
+    def get_target_mark(self, distance):
+        if distance > self.radius:
+            return None
+        else:
+            return soInworldMarker.MARKER_USE

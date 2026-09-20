@@ -1,5 +1,6 @@
-# Embedded file name: ./scripts/client/soGUI/DropDownWindow.py
+# Embedded file name: ./client/soGUI/DropDownWindow.py
 from Helpers.PyGUI import PyGUIBase
+from Helpers.PyGUI.PyGUIBase import Interceptor
 from Localization import lc
 from soGUI.soVisualStateComponent import soVisualStateComponent
 import GUI
@@ -8,6 +9,7 @@ from soGUI.soCheckBox import soCheckBox
 import soGUI
 import Keys
 import client_utils
+import math
 
 class DropDownWindow(PyGUIBase, soVisualStateComponent):
     factoryString = 'soGUI.soDropDownWindow'
@@ -29,7 +31,7 @@ class DropDownWindow(PyGUIBase, soVisualStateComponent):
         self.component.height = self.height
         self.setup_content()
         self.setup_list_window()
-        self.initVSC('soGUI/visual_styles/defaultDDL.xml')
+        self.initVSC('soGUI/elements/drop_down_list.xml')
         self._update_visual_state()
         self.update_text()
 
@@ -57,23 +59,24 @@ class DropDownWindow(PyGUIBase, soVisualStateComponent):
         label.verticalPositionMode = 'PIXEL'
         label.horizontalAnchor = 'LEFT'
         label.verticalAnchor = 'CENTER'
-        label.font = 'ruRU_calibri_large.font'
+        label.font = 'RobotoCondensedRegular_18.font'
         label.position = (4, arrow_button.position[1], 0.3)
         self.component.addChild(label, 'label')
 
     def setup_list_window(self):
         list_window = GUI.Window()
-        list_window.horizontalAnchor = 'RIGHT'
+        list_window.horizontalAnchor = 'LEFT'
         list_window.verticalAnchor = 'TOP'
         list_window.widthMode = 'PIXEL'
         list_window.heightMode = 'PIXEL'
         list_window.horizontalPositionMode = 'CLIP'
         list_window.verticalPositionMode = 'CLIP'
-        list_window.position = (1, 0, 0.1)
+        list_window.position = (-1, 0, 0.1)
         list_window.width = self.component.width
         list_window.height = 50
         self.list_window = list_window
-        list_background = GUI.Frame2('soGUI/maps/con_frame.tga')
+        Interceptor(list_window)
+        list_background = GUI.Frame2('soGUI/frame/con_frame.dds')
         list_background.horizontalAnchor = 'RIGHT'
         list_background.verticalAnchor = 'TOP'
         list_background.widthMode = 'CLIP'
@@ -95,12 +98,12 @@ class DropDownWindow(PyGUIBase, soVisualStateComponent):
         map(self.list_window.delChild, self.list_window.check_list.children)
         column = 0
         row = 0
-        half_amount = len(elements) / 2
+        half_amount = int(math.ceil(len(elements) * 0.5))
         height_dist = 20
-        width_dist = 220
+        width_dist = 260
         space = 16
         clip_label = GUI.Text()
-        clip_label.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        clip_label.font = 'RobotoCondensedRegular_14.font'
         for i, (data, text) in enumerate(elements):
             if not text:
                 continue
@@ -167,7 +170,7 @@ class DropDownWindow(PyGUIBase, soVisualStateComponent):
             return
         self.list_active = not self.list_active
         if self.list_active:
-            local_position = (self.component.width, self.component.height)
+            local_position = (0, self.component.height)
             screen_position = self.component.localToScreen(local_position)
             self.list_window.position = (screen_position[0], screen_position[1], 0)
             BWPersonality.GUICore.showTopmost(self.list_window, self.component)
@@ -184,7 +187,7 @@ class DropDownWindow(PyGUIBase, soVisualStateComponent):
 class DropDownCheckBox(soCheckBox):
 
     def __init__(self, text, data, click_callback = None):
-        checkbox_structure = soGUI.CheckBoxPropsStructure(labelText=text, font='ruRU_default.font', labelColour=(175, 166, 112, 255))
+        checkbox_structure = soGUI.CheckBoxPropsStructure(labelText=text, font='RobotoCondensedRegular_16.font', labelColour=(175, 166, 112, 255))
         soCheckBox.__init__(self, GUI.Window(), checkbox_structure)
         self.component.horizontalAnchor = 'LEFT'
         self.component.verticalAnchor = 'TOP'

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/InteractiveObject.py
+# Embedded file name: ./client/InteractiveObject.py
 """
 Created on 13.07.2010
 
@@ -32,3 +32,6 @@ class InteractiveObject:
             tmp = list(self.targetCaps)
             tmp.remove(caps)
             self.targetCaps = tmp
+
+    def can_talk(self):
+        return True

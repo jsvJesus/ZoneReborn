@@ -1,5 +1,6 @@
-# Embedded file name: ./scripts/client/Helpers/PyGUI/ScrollWindow.py
+# Embedded file name: ./client/Helpers/PyGUI/ScrollWindow.py
 import BigWorld, GUI, Keys
+import sounds_manager
 from PyGUIBase import PyGUIBase
 
 class ScrollWindow(PyGUIBase):
@@ -18,25 +19,25 @@ class ScrollWindow(PyGUIBase):
                 x, y = c.scroll
                 y += 0.1
                 c.scroll = (x, y)
-                BigWorld.playSound('ui/tick')
+                sounds_manager.playSound('ui/tick')
                 return 1
             if key == Keys.KEY_JOYDDOWN or key == Keys.KEY_DOWNARROW:
                 x, y = c.scroll
                 y -= 0.1
                 c.scroll = (x, y)
-                BigWorld.playSound('ui/tick')
+                sounds_manager.playSound('ui/tick')
                 return 1
             if key == Keys.KEY_JOYDRIGHT or key == Keys.KEY_RIGHTARROW:
                 x, y = c.scroll
                 x += 0.1
                 c.scroll = (x, y)
-                BigWorld.playSound('ui/tick')
+                sounds_manager.playSound('ui/tick')
                 return 1
             if key == Keys.KEY_JOYDLEFT or key == Keys.KEY_LEFTARROW:
                 x, y = c.scroll
                 x -= 0.1
                 c.scroll = (x, y)
-                BigWorld.playSound('ui/tick')
+                sounds_manager.playSound('ui/tick')
                 return 1
         return 0
 
@@ -70,7 +71,7 @@ class ZoomScrollWindow(ScrollWindow):
                     c.height = c.height / 2
                     self.updateScrollLimits()
                     self.zoomFactor = self.zoomFactor - 1
-                BigWorld.playSound('ui/boop')
+                sounds_manager.playSound('ui/boop')
                 return 1
             if key in [Keys.KEY_JOYARPUSH, Keys.KEY_MIDDLEMOUSE]:
                 c = self.component.children[0][1]
@@ -78,6 +79,6 @@ class ZoomScrollWindow(ScrollWindow):
                 c.height = c.height * 2
                 self.updateScrollLimits()
                 self.zoomFactor = self.zoomFactor + 1
-                BigWorld.playSound('ui/boop')
+                sounds_manager.playSound('ui/boop')
                 return 1
         return 0

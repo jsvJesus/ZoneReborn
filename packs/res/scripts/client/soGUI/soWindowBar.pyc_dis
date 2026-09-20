@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soWindowBar.py
+# Embedded file name: ./client/soGUI/soWindowBar.py
 import traceback
 import BigWorld
 import BWPersonality
@@ -19,8 +19,11 @@ class soWindowBar(PyGUIBase):
         self._Blabels = {}
         self._buttons = []
         self._wbuttonsIDs = []
+        self._top_wid = None
+        self._key_hook_registered = None
         self.setupRoot()
         self.setupContent()
+        return
 
     def setupRoot(self):
         cmp = self.component
@@ -34,7 +37,7 @@ class soWindowBar(PyGUIBase):
         cmp.height = self.height
 
     def setupContent(self):
-        cmp = GUI.Simple('textures/default/bright_gray.jpg')
+        cmp = GUI.Simple('textures/default/bright_gray.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -61,6 +64,9 @@ class soWindowBar(PyGUIBase):
             cmp = saleWindow.component
             if cmp.parent is None:
                 self.mainClass.component.addChild(cmp, 'window_%s' % wID)
+            if not self._key_hook_registered:
+                self._key_hook_registered = True
+                BWPersonality.GUICore.registerKeyHook(self.keyHook)
             return
 
     def clearWindows(self):
@@ -70,6 +76,11 @@ class soWindowBar(PyGUIBase):
             self.mainClass.component.delChild('window_%s' % wind)
 
         self.windows = {}
+        self._top_wid = None
+        if self._key_hook_registered:
+            self._key_hook_registered = None
+            BWPersonality.GUICore.registerKeyHook(None)
+        return
 
     def delWindow(self, wID):
         self._wbuttonsIDs.remove(wID)
@@ -89,7 +100,7 @@ class soWindowBar(PyGUIBase):
             saleWindow, saleName = self.windows[wID]
             btn = soButton(GUI.Window())
             cmp = btn.component
-            btn.initVSC('soGUI/visual_styles/skillTab.xml')
+            btn.initVSC('soGUI/elements/tab.xml')
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
             cmp.widthMode = cmp.heightMode = 'PIXEL'
             cmp.horizontalAnchor = 'LEFT'
@@ -106,7 +117,7 @@ class soWindowBar(PyGUIBase):
             board = 16
             if bwidth <= board * 2:
                 board = 0
-            cmp = GUI.Simple('textures/default/bright_gray.jpg')
+            cmp = GUI.Simple('textures/default/bright_gray.dds')
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
             cmp.widthMode = cmp.heightMode = 'PIXEL'
             cmp.horizontalAnchor = 'LEFT'
@@ -138,6 +149,7 @@ class soWindowBar(PyGUIBase):
             z = 0.1 if _wID == wID else 0.2
             saleWindow.component.position = (x, y, z)
 
+        self._top_wid = wID
         GUI.reSort()
 
     def getWindowByID(self, wID):
@@ -147,13 +159,41 @@ class soWindowBar(PyGUIBase):
         else:
             return None
 
+    def keyHook(self, event):
+        import Keys
+        if not event.isKeyDown():
+            return False
+        if self.component.visible and event.isKeyDown() and event.key == Keys.KEY_ESCAPE and self._top_wid and self._top_wid in self.windows:
+            saleWindow, saleName = self.windows[self._top_wid]
+            saleWindow.closeWindow()
+            return True
+        return False
+
     def onHide(self, wID):
         cmp = self._Blabels[wID]
         cmp.visible = False
+        self.update_first_wnd()
+
+    def update_first_wnd(self):
+        self._top_wid = None
+        for wid in self.windows:
+            if self._Blabels[wid].visible:
+                self._top_wid = wid
+                break
+
+        if self._key_hook_registered and not self._top_wid:
+            self._key_hook_registered = None
+            BWPersonality.GUICore.registerKeyHook(None)
+        return
 
     def onShow(self, wID):
         cmp = self._Blabels[wID]
         cmp.visible = True
+        self._top_wid = wID
+        if not self._key_hook_registered:
+            self._key_hook_registered = True
+            BWPersonality.GUICore.registerKeyHook(self.keyHook)
 
     def onClose(self, wID):
         self.delWindow(wID)
+        self.update_first_wnd()

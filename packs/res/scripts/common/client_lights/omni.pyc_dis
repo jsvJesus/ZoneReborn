@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/client_lights/omni.py
+# Embedded file name: ./common/client_lights/omni.py
 import BigWorld
 import Pixie
 import math
@@ -27,7 +27,8 @@ class OmniLight(Light):
             outerRadius = innerRadius
         self._light.innerRadius = innerRadius
         self._light.outerRadius = outerRadius
-        self._light.colour = self.getParam('light_colour', (255, 255, 255, 255))
+        self._light.colour = self.getColor()
+        self._light.priority = self.getParam('light_priority', 0)
         self._light.specular = True
         self._light.diffuse = True
         self._light.position = self.getParam('position')

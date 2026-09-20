@@ -1,19 +1,17 @@
 {
-    "difficultyMax": 20, 
-    "difficultyMin": 10, 
     "lifetimeMin": 16000.0, 
     "lifetimeMax": 22000.0, 
     
-    "loot":"Lightning_1",
+    "loot":"Electra_2",
     "damage": {
         "body_zone": "TORSO", 
         "distribution": "DISTRIBUTED", 
-        "frequency": 1.5, 
+        "frequency": 1.25, 
         "penetration": 100.0, 
         "type": "ELECTROSTATIC", 
-        "value": 150.0
+        "value": 165.0
     }, 
-    "effects": [], 
+    "effects": [[ "Anomaly_Electra", 1 ]], 
     "invisible": 0, 
     "nudge_interval": 3, 
     "nudge_type": "NONE",
@@ -22,11 +20,19 @@
     "radius": 5.0, 
     "radiusOut": 10.0,
     "radiation_effect": "Radioactivity",
-    "radiation_effect_stack_min": 1,
-    "radiation_effect_stack_max": 5,
-    "sfx_inside": "sfx/Anomalys/electra.xml", 
-    "sfx_main": "", 
-    "sfx_artifact_wall": "sfx/Anomalys/artefact_wall.xml", 
+    "radiation_effect_stack_min": 2,
+    "radiation_effect_stack_max": 10,
+    "sfx_inside": "sfx/Anomalys/electra.xml",
+    "sfx_target": "sfx/Anomalys/electra_attack2.xml", 
+    "sfx_target_player": "sfx/Anomalys/electra_attack_player.xml", 
+    "sfx_main": "sfx/Anomalys/electra_idle.xml", 
+    
+    "wall_artifact":{
+        "sfx_wall":"sfx/Anomalys/artefact_wall.xml",
+        "wall_effect":2077,
+        "wall_radius":2.5
+    },
+ 
     "sfx_main_interval": [ 3, 6 ],
     "stone_hit_effect": "sfx/Anomalys/electra_stone_hit.xml",
     "destroy_stone": false,

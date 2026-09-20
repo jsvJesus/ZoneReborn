@@ -1,107 +1,28 @@
-# Embedded file name: ./scripts/client/soGUI/soBulletinBoard.py
-import webbrowser
-import soGUI.soShopTabl
-import soGUI.soHunterTable
-import Localization
+# Embedded file name: ./client/soGUI/soBulletinBoard.py
 import GUI
 import BigWorld
 import BWPersonality
-import functools
-import news_ulits_flash
 from soGUI.soButton import soButton
 from Localization import lc
-from Helpers.PyGUI.PyGUIBase import PyGUIBase
-from FlashGUIBase import FlashGUIBase
-from GlobalDataStorage import actual_news
 from soGUI.QuestsBoard import QuestsBoard
+from soGUI.season_score_board import SeasonScoreBoard
+from soGUI.pvp_board import PVPBoard
+from soGUI.sales.sales_tab import SalesTab
+from soGUI.hunt_gui.hunt_tab import HuntTab
+from Helpers.PyGUI.PyGUIBase import Interceptor, WinBehaviour
 
-class TextFlashWidget(FlashGUIBase):
-    """\xd0\x91\xd0\xb0\xd0\xb7\xd0\xbe\xd0\xb2\xd1\x8b\xd0\xb9 \xd0\xba\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81 \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x81\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x8f \xd1\x82\xd0\xb5\xd0\xba\xd1\x81\xd1\x82\xd0\xbe\xd0\xb2\xd1\x8b\xd1\x85 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd0\xbe\xd0\xb2 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xb4\xd0\xbe\xd1\x81\xd0\xba\xd0\xb8 \xd0\xbe\xd0\xb1\xd1\x8a\xd1\x8f\xd0\xb2\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb9.
-    
-    \xd0\x9f\xd1\x80\xd0\xb8 \xd1\x81\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd0\xb8 \xd0\xba\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81\xd0\xb0 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd1\x83 \xd1\x81\xd1\x80\xd0\xb0\xd0\xb7\xd1\x83 \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb0\xd1\x8e\xd1\x82\xd1\x81\xd1\x8f \xd1\x80\xd0\xb0\xd0\xb7\xd0\xbc\xd0\xb5\xd1\x80 \xd0\xb8 
-    \xd0\xbf\xd0\xbe\xd0\xb7\xd0\xb8\xd1\x86\xd0\xb8\xd1\x8f \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xb4\xd0\xbe\xd1\x81\xd0\xba\xd0\xb8 \xd0\xbe\xd0\xb1\xd1\x8f\xd0\xb2\xd0\xbb\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb9.
-    """
-
-    def __init__(self, component):
-        super(TextFlashWidget, self).__init__(component)
-
-    @classmethod
-    def create(cls):
-        """\xd0\x9c\xd0\xb5\xd1\x82\xd0\xbe\xd0\xb4 \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x81\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd0\xb0."""
-        movie_path = 'extendedGUI/TextWidget.swf'
-        backgroundAlpha = 0
-        component = super(TextFlashWidget, cls).create(movie_path, backgroundAlpha)
-        sW, sH = BigWorld.screenSize()
-        component.widthMode = component.heightMode = 'PIXEL'
-        component.horizontalPositionMode = component.verticalPositionMode = 'PIXEL'
-        component.height = sH - 96
-        component.width = sW - 8
-        component.horizontalAnchor = 'LEFT'
-        component.verticalAnchor = 'TOP'
-        component.position = (5, 58, 0)
-        component.visible = False
-        return component
-
-    def prepare_answer(self, req_name, answer = None):
-        """\xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbe\xd1\x82\xd0\xb2\xd0\xb5\xd1\x82 \xd0\xb2 \xd1\x82\xd0\xb0\xd0\xba\xd0\xbe\xd0\xbc \xd0\xb2\xd0\xb8\xd0\xb4\xd0\xb5, \xd0\xb2 \xd0\xba\xd0\xb0\xd0\xba\xd0\xbe\xd0\xbc \xd0\xb5\xd0\xb3\xd0\xbe \xd0\xbe\xd0\xb6\xd0\xb8\xd0\xb4\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x84\xd0\xbb\xd1\x8d\xd1\x88."""
-        return super(TextFlashWidget, self).prepare_answer(req_name, answer)
-
-    def ready(self):
-        """\xd0\xa4\xd0\xbb\xd1\x8d\xd1\x88 \xd0\xb2\xd1\x8b\xd0\xb7\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x8d\xd1\x82\xd1\x83 \xd1\x84\xd1\x83\xd0\xbd\xd0\xba\xd1\x86\xd0\xb8\xd1\x8e, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd0\xb3\xd0\xbe\xd1\x82\xd0\xbe\xd0\xb2\xd0\xb0 \xd0\xbf\xd1\x80\xd0\xb8\xd0\xbd\xd0\xb8\xd0\xbc\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd1\x8b."""
-        X, Y = (0, 1)
-        comp = self.component
-        corner_x = comp.position[X]
-        corner_y = comp.position[Y]
-        screen_size = {'corner': [corner_x, corner_y],
-         'height': comp.height,
-         'width': comp.width}
-        self.send_to_flashscript('screenSize', screen_size)
-
-    def send_to_flashscript(self, event, answer = None):
-        """\xd0\x9f\xd0\xbe\xd0\xb4\xd0\xb3\xd0\xbe\xd1\x82\xd0\xb0\xd0\xb2\xd0\xbb\xd0\xb8\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82, \xd0\xba\xd0\xbe\xd0\xb4\xd0\xb8\xd1\x80\xd1\x83\xd0\xb5\xd1\x82 \xd0\xb8 \xd0\xbe\xd1\x82\xd0\xbf\xd1\x80\xd0\xb0\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xb2\xd0\xbe \xd1\x84\xd0\xbb\xd0\xb5\xd1\x88.
-        
-        event - \xd0\xb8\xd0\xbc\xd1\x8f \xd1\x81\xd0\xbe\xd0\xb1\xd1\x8b\xd1\x82\xd0\xb8\xd1\x8f,
-        answer - \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xbf\xd0\xbe \xd1\x8d\xd1\x82\xd0\xbe\xd0\xbc\xd1\x83 \xd1\x81\xd0\xbe\xd0\xb1\xd1\x8b\xd1\x82\xd0\xb8\xd1\x8e.
-        """
-        result = self.prepare_answer(event, answer)
-        callback = functools.partial(self.viewX.invoke, ('externalInterfaceTransmit', result))
-        BigWorld.callback(0.0, callback)
-
-
-class NewsFlashWidget(TextFlashWidget):
-    """\xd0\x9d\xd0\xbe\xd0\xb2\xd0\xbe\xd1\x81\xd1\x82\xd0\xbd\xd0\xbe\xd0\xb5 \xd0\xbe\xd0\xba\xd0\xbd\xd0\xbe."""
-
-    def ready(self):
-        """\xd0\xa4\xd0\xbb\xd1\x8d\xd1\x88 \xd0\xb2\xd1\x8b\xd0\xb7\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x8d\xd1\x82\xd1\x83 \xd1\x84\xd1\x83\xd0\xbd\xd0\xba\xd1\x86\xd0\xb8\xd1\x8e, \xd0\xba\xd0\xbe\xd0\xb3\xd0\xb4\xd0\xb0 \xd0\xb3\xd0\xbe\xd1\x82\xd0\xbe\xd0\xb2\xd0\xb0 \xd0\xbf\xd1\x80\xd0\xb8\xd0\xbd\xd0\xb8\xd0\xbc\xd0\xb0\xd1\x82\xd1\x8c \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x80\xd0\xbe\xd1\x81\xd1\x8b."""
-        super(NewsFlashWidget, self).ready()
-        news = dict(actual_news.getNews())
-        news['text'] = news_ulits_flash.convert_news(news['text'])
-        self.send_to_flashscript('showText', news)
-
-    def openURL(self, data):
-        """\xd0\x9e\xd1\x82\xd0\xba\xd1\x80\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x83\xd1\x8e \xd1\x81\xd1\x82\xd1\x80\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x86\xd1\x83 \xd0\xb2 \xd0\xb1\xd1\x80\xd0\xb0\xd1\x83\xd0\xb7\xd0\xb5\xd1\x80\xd0\xb5."""
-        url = data['url']
-        webbrowser.open(url)
-
-    def update(self):
-        """\xd0\x9e\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb8\xd1\x82\xd1\x8c \xd0\xbd\xd0\xbe\xd0\xb2\xd0\xbe\xd1\x81\xd1\x82\xd0\xb8 \xd0\xb2 \xd0\xb2\xd0\xb8\xd0\xb4\xd0\xb6\xd0\xb5\xd1\x82\xd0\xb5."""
-        news = dict(actual_news.getNews())
-        news['text'] = news_ulits_flash.convert_news(news['text'])
-        self.send_to_flashscript('showText', news)
-
-
-class soBulletinBoard(PyGUIBase):
+class soBulletinBoard(Interceptor):
     factoryString = 'soGUI.soBulletinBoard'
-    bdata = ('worldso', 'textNews', 'quests', 'sale', 'hunt')
+    bdata = ('quests', 'sale', 'hunt', 'pvpboard', 'seasonscore')
     DISABLED_BUTTON = ()
     bNames = dict([ (x, lc('soBulletinBoard.%s' % x)) for x in bdata ])
 
     def __init__(self, component):
-        PyGUIBase.__init__(self, component)
-        component.script = self
+        Interceptor.__init__(self, component, interscept_keys=True)
+        self.set_behaviours(WinBehaviour.Full)
         self.setupRoot()
         self.setupContent()
-        self.curentTab = self.bdata[0]
+        self.curentTab = self.bdata[1]
 
     def setupRoot(self):
         cmp = self.component
@@ -120,10 +41,10 @@ class soBulletinBoard(PyGUIBase):
         self.component.focus = True
         cmp.crossFocus = True
 
-    def handleDragEnterEvent(self, component, position, dragged):
+    def handleDragEnterEvent(self, *args):
         return True
 
-    def handleDragLeaveEvent(self, component, position, dragged):
+    def handleDragLeaveEvent(self, *args):
         return True
 
     def handleDragStartEvent(self, component):
@@ -132,7 +53,7 @@ class soBulletinBoard(PyGUIBase):
     def handleDragStopEvent(self, component):
         return True
 
-    def handleDropEvent(self, component, position, dropped):
+    def handleDropEvent(self, *args):
         return True
 
     def handleMouseLeaveEvent(self, cmp):
@@ -143,7 +64,6 @@ class soBulletinBoard(PyGUIBase):
 
     def handleMouseEvent(self, cmp, event):
         dz = event.dz
-        position = event.cursorPosition
         if dz > 0:
             self.scrollCurentTab(1)
             return True
@@ -169,7 +89,7 @@ class soBulletinBoard(PyGUIBase):
         w = sW
         h = sH - 70
         posw = 0
-        FRAME_TEXTURE = 'soGUI/maps/Controls/inventory/inventoryFrame2.tga'
+        FRAME_TEXTURE = 'soGUI/frame/basic_frame_1.dds'
         self.frameCmp = GUI.Frame2(FRAME_TEXTURE)
         self.frameCmp.horizontalPositionMode = self.frameCmp.verticalPositionMode = 'PIXEL'
         self.frameCmp.widthMode = self.frameCmp.heightMode = 'PIXEL'
@@ -186,7 +106,7 @@ class soBulletinBoard(PyGUIBase):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'CENTER'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.text = lc('soBulletinBoard.bulletin')
@@ -194,8 +114,6 @@ class soBulletinBoard(PyGUIBase):
         cmp.position = (sW // 2, 5, 0.5)
         cmp.multiline = True
         self.component.addChild(cmp, 'label_name')
-        news_component = NewsFlashWidget.create()
-        self.component.addChild(news_component, 'textNews')
         self.createTabButtons(self.bdata, posw, w)
         closeBox = soButton(GUI.Window())
         cmp = closeBox.component
@@ -209,54 +127,32 @@ class soBulletinBoard(PyGUIBase):
         cmp.height = 18
         cmp.position = (w - 5, 5, 0)
         cmp.script.onClick = lambda : BWPersonality.GUICore.showBulletinBoard(False)
-        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.initVSC('soGUI/elements/closeBox.xml')
         closeBox.onBound()
         closeBox.setVisualState('normal')
         self.component.addChild(cmp, 'closeBox')
-        sale = soGUI.soShopTabl.soShopTabl(GUI.Window(), w - 10, h, posw, 10)
-        cmp = sale.component
-        cmp.position = (posw, 56, 0)
-        self.component.addChild(cmp, 'sale')
-        sale.onBound()
-        self.csale = sale
         self.quest_board = QuestsBoard()
-        comp = self.quest_board.component
-        self.component.addChild(comp, 'quests')
-        hunters = soGUI.soHunterTable.soHunterTable(GUI.Window(), w - 10, h, posw, 10)
-        cmp = hunters.component
-        cmp.position = (posw, 56, 0)
-        self.component.addChild(cmp, 'hunt')
-        hunters.onBound()
-        self.chunters = hunters
-        if Localization.localization_object.globalLanguage == 'russian':
-            cmp = GUI.Simple('soGUI/maps/worldMaps/WorldMapSO.dds')
-        else:
-            cmp = GUI.Simple('soGUI/maps/worldMaps/WorldMapSOeng.dds')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.width = w
-        cmp.height = h - 30
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.position = (0, 60, 0.0)
-        cmp.visible = 1
-        cmp.filterType = 'POINT'
-        cmp.filterType = 'LINEAR'
-        self.component.addChild(cmp, 'worldso')
+        self.component.addChild(self.quest_board.component, 'quests')
+        self._sales = SalesTab()
+        self.component.addChild(self._sales.component, 'sale')
+        self._hunt = HuntTab()
+        self.component.addChild(self._hunt.component, 'hunt')
+        self.pvpboard = PVPBoard(GUI.Window())
+        self.component.addChild(self.pvpboard.component, 'pvpboard')
+        self.seasonscore = SeasonScoreBoard(GUI.Window())
+        self.component.addChild(self.seasonscore.component, 'seasonscore')
 
     def createTabButtons(self, butParam, posw, w):
         bwidth = w / len(butParam)
         for i, name in enumerate(butParam):
             btn = soButton(GUI.Window())
             cmp = btn.component
-            btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+            btn.initVSC('soGUI/elements/button_1.xml')
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
             cmp.widthMode = cmp.heightMode = 'PIXEL'
             cmp.horizontalAnchor = 'LEFT'
             cmp.verticalAnchor = 'TOP'
-            cmp.label.font = 'ruRU_calibri_default.font'
+            cmp.label.font = 'RobotoCondensedRegular_16.font'
             cmp.label.text = self.bNames.get(name, '???')
             cmp.colour = (255, 255, 255, 255)
             cmp.materialFX = 'BLEND'
@@ -267,7 +163,7 @@ class soBulletinBoard(PyGUIBase):
             cmp.script.setDisabledState(name in self.DISABLED_BUTTON)
             self.component.addChild(cmp, 'button_%s' % name)
             btn.onBound()
-            cmp = GUI.Simple('textures/default/bright_gray.jpg')
+            cmp = GUI.Simple('textures/default/bright_gray.dds')
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
             cmp.widthMode = cmp.heightMode = 'PIXEL'
             cmp.horizontalAnchor = 'LEFT'
@@ -282,11 +178,24 @@ class soBulletinBoard(PyGUIBase):
     def show(self):
         if self.component.parent is None:
             BWPersonality.GUICore.worldLayer.addChild(self.component, 'soBulletinBoard')
-        self.component.visible = True
+        super(soBulletinBoard, self).show()
         self.setViewTab(self.curentTab)
+        BWPersonality.game.disable_world_drawing()
         return
 
+    def ready_to_close(self):
+        if self.curentTab == 'sale':
+            return self._sales.ready_to_close()
+        return True
+
+    def hide_private_room_wins(self):
+        BWPersonality.GUICore.showCreateRoom(0)
+        BWPersonality.GUICore.showFindRoom(0)
+        BWPersonality.GUICore.showPVPRooms(0)
+
     def hide(self):
+        if self.component.visible:
+            BigWorld.worldDrawEnabled(True)
         self.component.visible = False
         for name in self.bdata:
             cmp_text = getattr(self.component, name, None)
@@ -297,15 +206,13 @@ class soBulletinBoard(PyGUIBase):
             except:
                 pass
 
-        self.csale.clearBuyWindows()
-        self.component.sale.script.on_board_hide()
+        self.hide_private_room_wins()
         return
 
     def setViewTab(self, tabname):
         if tabname not in self.bdata:
             raise ValueError, tabname
-        if tabname == 'textNews':
-            self.component.textNews.script.update()
+        self.hide_private_room_wins()
         self.curentTab = tabname
         for name in self.bdata:
             cmp_bframe = getattr(self.component, 'frame_button_%s' % name, None)
@@ -323,22 +230,41 @@ class soBulletinBoard(PyGUIBase):
         return
 
     def doReposition(self):
-        quest_ids = self.quest_board.get_quest_ids()
+        quests_save_data = self.quest_board.save_blob
         sW, sH = BigWorld.screenSize()
         self.component.width = sW
         self.component.height = sH
         for name in self.bdata:
-            self.component.delChild(name)
-            self.component.delChild('button_%s' % name)
+            cmp_text = getattr(self.component, name, None)
+            if cmp_text:
+                if hasattr(cmp_text.script, 'hide'):
+                    cmp_text.script.hide()
+                if hasattr(cmp_text.script, 'release'):
+                    cmp_text.script.release()
 
-        self.component.delChild('frame1')
-        self.component.delChild('label_name')
-        self.component.delChild('closeBox')
+        self.clearAllChildren(self.component)
         self.setupContent()
-        self.quest_board.update_quests(quest_ids)
+        self.quest_board.save_blob = quests_save_data
+        self.setViewTab(self.curentTab)
+        self.updatePVP()
+        self.updatePVPSeasonalEventsBoard()
+        return
 
-    def updateShop(self):
-        self.csale.setData(BWPersonality.GUICore.bulletinBoardShopDataSection)
+    def hunt_notify(self, code, str_args, int_args):
+        self._hunt.hunt_notify(code, str_args, int_args)
 
-    def updateHunter(self):
-        self.chunters.setData(BWPersonality.GUICore.bulletinBoardHunterDataSection)
+    def got_catalog_filtered1(self, *args):
+        self._sales.got_catalog_filtered2(*args)
+
+    def updatePVP(self):
+        self.pvpboard.setData(BWPersonality.GUICore.bulletinBoardPVPDataSection)
+
+    def updatePVPRooms(self):
+        if BWPersonality.GUICore.rooms_win:
+            BWPersonality.GUICore.rooms_win.setData(BWPersonality.GUICore.bulletinBoardPVPRoomsDataSection)
+
+    def updatePVPSeasonalEventsBoard(self):
+        pass
+
+    def updateRatingPage(self):
+        self.seasonscore.update()

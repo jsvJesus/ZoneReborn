@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/Helpers/PyGUI/EditUtils.py
+# Embedded file name: ./client/Helpers/PyGUI/EditUtils.py
 import BigWorld, GUI, Math, ResMgr
 
 def setup():

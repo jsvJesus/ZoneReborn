@@ -1,10 +1,10 @@
-# Embedded file name: ./scripts/client/Helpers/ProgressBar.py
+# Embedded file name: ./client/Helpers/ProgressBar.py
 from PyGUI import PyGUIBase
 import BigWorld
 import GUI
 import ResMgr
 import BWPersonality
-import Bloom
+import BloomC
 
 class IProgressBar(PyGUIBase):
     factoryString = 'PyGUI.IProgressBar'
@@ -136,12 +136,12 @@ class TeleportProgressBar(ChunkLoadingProgressBar):
         pass
 
     def preTeleport(self, callbackFn):
-        Bloom.selectPreset('Gobo')
+        BloomC.selectPreset('Gobo')
         self.component.fader.value = 1.0
         BigWorld.callback(self.component.fader.speed, lambda : self.onBlurred(callbackFn))
 
     def onBlurred(self, callbackFn):
         self.component.freeze()
-        Bloom.selectPreset('Standard')
+        BloomC.selectPreset('Standard')
         if callbackFn:
             callbackFn()

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soGUIpoison.py
+# Embedded file name: ./client/soGUI/soGUIpoison.py
 import BigWorld
 import BWPersonality
 import GUI
@@ -6,7 +6,7 @@ import random
 import soGUI
 import Stats
 from Helpers.PyGUI import PyGUIBase
-from Math import Matrix
+import sounds_manager
 from Settings import Settings
 
 class soGUIpoison(PyGUIBase):
@@ -49,7 +49,7 @@ class soGUIpoison(PyGUIBase):
         cmp.visible = False
 
     def setupContent(self):
-        path = 'soGUI/maps/poison/%s.tga'
+        path = 'soGUI/maps/poison/%s.dds'
         for name in self.SCREEN_NAMES:
             self.createCmp(name, path % name)
 
@@ -76,7 +76,7 @@ class soGUIpoison(PyGUIBase):
             self.isVisible = True
             self.loadSound()
             if self.component.parent is None:
-                BWPersonality.GUICore.worldLayer.addChild(self.component, 'soGUIpoison')
+                BWPersonality.GUICore.effectsLayer.addChild(self.component, 'soGUIpoison')
             self.component.visible = True
             self.component.frame_poison.visible = True
             self.visible_components = []
@@ -86,14 +86,13 @@ class soGUIpoison(PyGUIBase):
 
     def loadSound(self):
         if not self.sound_poison:
-            self.sound_poison = BigWorld.getSound('players/heartbeat/slow')
-            self.sound_poison.autoDetach = False
+            self.sound_poison = sounds_manager.getSound('players/heartbeat/slow')
 
     def updateBlood(self):
         BigWorld.callback(self.BLINK_TIME, self.updateBlood)
         if not self.isVisible:
             return
-        self.sound_poison.volume = Settings().getSfxVolume()
+        self.sound_poison.volume = Settings().getEnvironmentVolume()
         if self.back:
             self.component.frame_poison.colour.alpha -= self.ALPHA_FRAME_SPEED
             if self.component.frame_poison.colour.alpha <= 100:

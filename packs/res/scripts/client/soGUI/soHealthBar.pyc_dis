@@ -1,34 +1,62 @@
-# Embedded file name: ./scripts/client/soGUI/soHealthBar.py
+# Embedded file name: ./client/soGUI/soHealthBar.py
 import BigWorld
 import GUI
-import Helpers.PyGUI as PyGUI
-import soGUI
 import BWPersonality
 import colorCodes
 from CharacterUtils import CharacterConst
 from Helpers.PyGUI.PyGUIBase import PyGUIBase
-from Keys import *
-from soGUI.soButton import soButtonWTT, soButton
+from Keys import KEY_RIGHTMOUSE
+from Localization import lc
 from soGUI.soToolTipComponent import soToolTipComponent
+from Helpers.PyGUI.DraggableComponent import DraggableComponent
+from soGUI.GUIPositions import GUIPositions
+from functools import partial
+from PremiumAccountConfigs import PREMIUM_OFF, ClientSimpleConfigs
+import BoosterConfigParser
 
-class soHealthBar(PyGUIBase):
+class Bonus(PyGUIBase):
+
+    def __init__(self, component, tooltip_text_provider):
+        PyGUIBase.__init__(self, component)
+        self._tooltip_text_provider = tooltip_text_provider
+        component.focus = True
+        component.moveFocus = True
+        component.crossFocus = True
+        component.script = self
+
+    def handleMouseEnterEvent(self, component):
+        BWPersonality.GUICore.showToolTip(self._tooltip_text_provider(), delay=0)
+        return True
+
+    def handleMouseLeaveEvent(self, component):
+        if BWPersonality.GUICore.toolTip:
+            BWPersonality.GUICore.toolTip.hide()
+        return True
+
+
+class soHealthBar(PyGUIBase, DraggableComponent, GUIPositions):
     factoryString = 'soGUI.soHealthBar'
     FACTION_MARK_FOREIGNERS = 0
     FACTION_MARK_LOCALS = 1
     FACTION_MARK_LONERS = 2
     ANOMALY_RADIATION, ANOMALY_ELECTRICITY, ANOMALY_FIRE, ANOMALY_CHEMICAL, ANOMALY_GRAVITY, ANOMALY_PSIONICS = xrange(6)
-    fIconTextures = {FACTION_MARK_FOREIGNERS: BigWorld.PyTextureProvider('soGUI/maps/Factions/foreigners.tga'),
-     FACTION_MARK_LOCALS: BigWorld.PyTextureProvider('soGUI/maps/Factions/locals.tga'),
-     FACTION_MARK_LONERS: BigWorld.PyTextureProvider('soGUI/maps/Factions/loners.tga')}
+    fIconTextures = {}
     EVENT_CONTEXT = 0
-    EVENT_PARTYSETTINGS = 1
     TTID_PL_MARK = 'gui_player_frame_PLMARK'
 
     def __init__(self, component):
         PyGUIBase.__init__(self, component)
+        DraggableComponent.__init__(self, True, True, True, xoffset=0, yoffset=0)
+        GUIPositions.__init__(self)
         component.script = self
         self.pressed = False
+        self.stamina_timer_id = None
+        self.old_HP_timer_id = None
         self.interfaceID = BWPersonality.GUICore.GUI_ID_PLAYERFRAME
+        self._premium_id = PREMIUM_OFF
+        self._boost_id = 0
+        self._prem_end_time = -1
+        self._boost_end_time = -1
         self.setupRoot()
         self.setupFrame()
         self.setupBars()
@@ -39,86 +67,93 @@ class soHealthBar(PyGUIBase):
         self.thirst_value = 1.0
         self.HP_BLINK_TIME = 0.3
         self.HUNGRY_BLINK_TIME = 0.7
-        BigWorld.callback(self.HUNGRY_BLINK_TIME, self.updateHungryBlink)
         BigWorld.callback(self.HP_BLINK_TIME, self.updateHPBlink)
+        return
 
     def reset(self):
-        if self.component.plMark:
-            self.component.plMark.visible = False
+        if self.container.plMark:
+            self.container.plMark.visible = False
 
-    def updateHungryBlink(self):
-        if self.hungry_value:
-            self.component.hungryIcon.visible = True
-        else:
-            self.component.hungryIcon.visible = not self.component.hungryIcon.visible
-        if self.thirst_value:
-            self.component.thirst_icon.visible = True
-        elif not self.hungry_value:
-            self.component.thirst_icon.visible = self.component.hungryIcon.visible
-        else:
-            self.component.thirst_icon.visible = not self.component.thirst_icon.visible
-        BigWorld.callback(self.HUNGRY_BLINK_TIME, self.updateHungryBlink)
+    def set_leader_mark(self, value):
+        self.container.plMark.visible = value
 
     def updateHPBlink(self):
         BigWorld.callback(self.HP_BLINK_TIME, self.updateHPBlink)
         if self.hp_abs_value > 40.0:
-            BWPersonality.game.GUICore.healthBarGUI.component.healthBar.colour.x = 255
-            BWPersonality.game.GUICore.healthBarGUI.component.healthBar.height = 10.0
+            self.container.healthBar.colour.x = 255
         else:
-            red = BWPersonality.game.GUICore.healthBarGUI.component.healthBar.colour.x
-            BWPersonality.game.GUICore.healthBarGUI.component.healthBar.colour.x = 255 if red != 255 else 150
-            height = BWPersonality.game.GUICore.healthBarGUI.component.healthBar.height
-            BWPersonality.game.GUICore.healthBarGUI.component.healthBar.height = 10.0 if height != 10.0 else 12.0
+            red = self.container.healthBar.colour.x
+            self.container.healthBar.colour.x = 255 if red != 255 else 150
 
     def setupRoot(self):
         cmp = self.component
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.textureName = ''
-        cmp.width = 223
-        cmp.height = 91
-        cmp.position = (3, 3, 0.9)
+        cmp.width = 400
+        cmp.height = 50
+        x, y = (3, 3)
+        sW, sH = BigWorld.screenSize()
+        x, y = float(x - sW / 2) / (sW / 2), float(y - sH / 2) / (sH / 2) * -1
+        cmp.position = (x, y, 0.9)
+
+    def reset_position(self):
+        x, y = (3, 3)
+        sW, sH = BigWorld.screenSize()
+        x, y = float(x - sW / 2) / (sW / 2), float(y - sH / 2) / (sH / 2) * -1
+        self.component.position = (x, y, 0.9)
 
     def setupFrame(self):
-        cmp = GUI.Window()
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.textureName = 'soGUI/maps/HealthBar/frame.tga'
-        cmp.width = 223
-        cmp.height = 72
-        cmp.position = (0, 0, 1.0)
-        cmp.mouseButtonFocus = True
-        cmp.script = self
-        self.component.addChild(cmp, 'frameCmp')
+        comp = GUI.Window()
+        comp.widthMode, comp.heightMode = ('PIXEL', 'CLIP')
+        comp.horizontalPositionMode, comp.verticalPositionMode = ('PIXEL', 'CLIP')
+        comp.horizontalAnchor, comp.verticalAnchor = ('LEFT', 'CENTER')
+        comp.width, comp.height = (48, 2)
+        comp.position = (0, 0, 0.9)
+        comp.visible = False
+        self.component.addChild(comp, 'bonuses')
+        Bonus(comp, self._get_bonus_tooltip)
+        comp = GUI.Simple('soGUI/frame/healthbar/booster.dds')
+        comp.widthMode, comp.heightMode = ('PIXEL', 'PIXEL')
+        comp.horizontalPositionMode, comp.verticalPositionMode = ('CLIP', 'CLIP')
+        comp.horizontalAnchor, comp.verticalAnchor = ('CENTER', 'CENTER')
+        comp.width, comp.height = (48, 48)
+        comp.materialFX = 'BLEND'
+        comp.filterType = 'LINEAR'
+        comp.position = (0, 0, 0.4)
+        self.component.bonuses.addChild(comp, 'booster')
+        comp = GUI.Simple('soGUI/frame/healthbar/premium.dds')
+        comp.widthMode, comp.heightMode = ('PIXEL', 'PIXEL')
+        comp.horizontalPositionMode, comp.verticalPositionMode = ('CLIP', 'CLIP')
+        comp.horizontalAnchor, comp.verticalAnchor = ('CENTER', 'CENTER')
+        comp.width, comp.height = (48, 48)
+        comp.materialFX = 'BLEND'
+        comp.filterType = 'LINEAR'
+        comp.position = (0, 0, 0.5)
+        self.component.bonuses.addChild(comp, 'premium')
+        container = GUI.Window()
+        container.widthMode, container.heightMode = ('CLIP', 'CLIP')
+        container.horizontalPositionMode, container.verticalPositionMode = ('PIXEL', 'CLIP')
+        container.horizontalAnchor, container.verticalAnchor = ('LEFT', 'CENTER')
+        container.width, container.height = (2, 2)
+        container.position = (0, 0, 0.9)
+        self.component.addChild(container, 'container')
+        self.container = self.component.container
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'CENTER'
-        cmp.colour = (175, 166, 112, 255)
+        cmp.colour = (255, 255, 255, 120)
         cmp.materialFX = 'BLEND'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
+        cmp.font = 'ArialNarrowClearShadow_16.font'
         cmp.text = u'_empty_name_'
-        cmp.position = (11, 10, 0.2)
-        self.component.addChild(cmp, 'pName')
-        cmp = GUI.Simple('')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = cmp.height = 16
-        cmp.position = (40, 18, 0.3)
-        self.component.addChild(cmp, 'pIcon')
-        cmp = GUI.Simple('soGUI/maps/PartyFrames/20/PLMark.tga')
+        cmp.position = (23, 8, 0.2)
+        self.container.addChild(cmp, 'pName')
+        cmp = GUI.Simple('soGUI/frame/party/leader_mark.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -127,67 +162,19 @@ class soHealthBar(PyGUIBase):
         cmp.materialFX = 'BLEND'
         cmp.width = 18
         cmp.height = 21
-        cmp.position = (201, 15, 0.3)
+        cmp.position = (347, 8, 0.3)
         cmp.visible = False
-        self.component.addChild(cmp, 'plMark')
-        cmp = GUI.Text('PvP')
+        self.container.addChild(cmp, 'plMark')
+        cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'CENTER'
-        cmp.colour = (200, 166, 112, 210)
+        cmp.colour = (200, 166, 112, 0)
         cmp.materialFX = 'BLEND'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
+        cmp.font = 'BloggerMedium_12.font'
         cmp.position = (200, 10, 0.2)
-        self.component.addChild(cmp, 'pvpFree')
-        cmp = GUI.Simple('soGUI/maps/HealthBar/health_icon.tga')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 10
-        cmp.height = 10
-        cmp.position = (7, 19, 0.3)
-        cmp.visible = True
-        self.component.addChild(cmp, 'healthIcon')
-        cmp = GUI.Simple('soGUI/maps/HealthBar/thirst_icon.tga')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 10
-        cmp.height = 10
-        cmp.position = (6, 32, 0.3)
-        cmp.visible = True
-        self.component.addChild(cmp, 'thirst_icon')
-        cmp = GUI.Simple('soGUI/maps/HealthBar/hungry_icon.tga')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 10
-        cmp.height = 10
-        cmp.position = (7, 44, 0.3)
-        cmp.visible = True
-        self.component.addChild(cmp, 'hungryIcon')
-        cmp = GUI.Simple('soGUI/maps/HealthBar/stamina_icon.tga')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 10
-        cmp.height = 10
-        cmp.position = (7, 57, 0.3)
-        cmp.visible = True
-        self.component.addChild(cmp, 'staminaIcon')
-        cmp = GUI.Simple('soGUI/maps/Icons/ability/icon_perk_boost_perception.jpg')
+        self.container.addChild(cmp, 'pvpFree')
+        cmp = GUI.Simple('soGUI/maps/Icons/ability/icon_perk_boost_perception.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -198,103 +185,209 @@ class soHealthBar(PyGUIBase):
         cmp.height = 20
         cmp.position = (150, 4, 0.5)
         cmp.visible = 0
-        self.component.addChild(cmp, 'NinjaIcon')
+        self.container.addChild(cmp, 'NinjaIcon')
 
     def setupBars(self):
-        cmp = GUI.Simple('soGUI/maps/HealthBar/health.tga')
+        cmp = GUI.Simple('soGUI/frame/healthbar/hp_bar_back.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 230)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 310
+        cmp.height = 30
+        cmp.position = (22, 12, 0.7)
+        self.container.addChild(cmp, 'healthBarBack')
+        cmp = GUI.Simple('soGUI/frame/healthbar/hp_bar.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
-        cmp.width = 180
-        cmp.height = 10
-        cmp.position = (20, 19, 0.7)
-        self.component.addChild(cmp, 'healthBar')
-        cmp = GUI.Simple('soGUI/maps/HealthBar/thirst.tga')
+        cmp.width = 310
+        cmp.height = 30
+        cmp.position = (22, 12, 0.3)
+        self.container.addChild(cmp, 'healthBar')
+        cmp = GUI.Simple('soGUI/frame/healthbar/hp_bar_damage.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
-        cmp.width = 180
-        cmp.height = 8
-        cmp.position = (20, 33, 0.7)
-        self.component.addChild(cmp, 'thirstBar')
-        cmp = GUI.Simple('soGUI/maps/HealthBar/hungry.tga')
+        cmp.width = 310
+        cmp.height = 30
+        cmp.position = (22, 12, 0.4)
+        self.container.addChild(cmp, 'healthBar_old_val')
+        cmp = GUI.Simple('soGUI/frame/healthbar/stamina_back.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.colour = (255, 255, 255, 230)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 310
+        cmp.height = 6
+        cmp.position = (22, 38, 0.7)
+        self.container.addChild(cmp, 'staminaBarBack')
+        cmp = GUI.Simple('soGUI/frame/healthbar/stamina.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
-        cmp.width = 180
-        cmp.height = 10
-        cmp.position = (20, 44, 0.7)
-        self.component.addChild(cmp, 'hungryBar')
-        cmp = GUI.Simple('soGUI/maps/HealthBar/stamina.tga')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 180
-        cmp.height = 10
-        cmp.position = (20, 57, 0.7)
-        self.component.addChild(cmp, 'staminaBar')
+        cmp.width = 310
+        cmp.height = 6
+        cmp.position = (22, 38, 0.3)
+        self.container.addChild(cmp, 'staminaBar')
 
     def setupShaders(self):
         hShader = GUI.ClipShader()
+        hShader_old_val = GUI.ClipShader()
         sShader = GUI.ClipShader()
-        thirstShader = GUI.ClipShader()
-        hungryShader = GUI.ClipShader()
         hShader.speed = 0
+        hShader_old_val.speed = 0
         sShader.speed = 0
-        thirstShader.speed = 0
-        hungryShader.speed = 0
-        hShader.mode = sShader.mode = hungryShader.mode = 'RIGHT'
-        hShader.value = sShader.value = hungryShader.value = 1.0
-        thirstShader.mode = 'RIGHT'
-        thirstShader.value = 1.0
-        self.component.healthBar.addShader(hShader, 'clipper')
-        self.component.staminaBar.addShader(sShader, 'clipper')
-        self.component.thirstBar.addShader(thirstShader, 'clipper')
-        self.component.hungryBar.addShader(hungryShader, 'clipper')
+        hShader.mode = hShader_old_val.mode = sShader.mode = 'RIGHT'
+        hShader.value = hShader_old_val.value = sShader.value = 1.0
+        self.container.healthBar.addShader(hShader, 'clipper')
+        self.container.healthBar_old_val.addShader(hShader_old_val, 'clipper')
+        self.container.staminaBar.addShader(sShader, 'clipper')
 
     def partySettingHandler(self):
         pass
 
+    def _get_bonus_tooltip(self):
+        text = []
+        from time import time
+        if self._premium_id != PREMIUM_OFF:
+            config = ClientSimpleConfigs().get_premium_config(self._premium_id)
+            text.append(lc(config['description']))
+            rem_time = int(self._prem_end_time - (time() - BWPersonality.gpd.time_diff))
+            text.append(self.get_prem_time_string(rem_time))
+        if self._boost_id:
+            config = BoosterConfigParser.get_config(self._boost_id)
+            text.append(lc(config['description']))
+            rem_time = int(self._boost_end_time - (time() - BWPersonality.gpd.time_diff))
+            text.append(self.get_prem_time_string(rem_time))
+        return '\n'.join(text)
+
+    def get_prem_time_string(self, remain_time):
+        import math
+        real_days = int(remain_time) / 86400
+        days = int(math.ceil(remain_time / 86400))
+        hours = int(remain_time) / 3600
+        minutes = int(remain_time) / 60
+        if real_days >= 1:
+            result = colorCodes.tf3_text_color_gray + lc('extendedGUI.PremiumPanel.days') + ' ' + lc('extendedGUI.PremiumPanel.toEnd') + ': ' + colorCodes.tf3_chat_default + str(days)
+        elif hours >= 1:
+            result = colorCodes.tf3_text_color_gray + lc('extendedGUI.PremiumPanel.hours') + ' ' + lc('extendedGUI.PremiumPanel.toEnd') + ': ' + colorCodes.tf3_chat_default + str(hours)
+        else:
+            result = colorCodes.tf3_text_color_gray + lc('extendedGUI.PremiumPanel.minutes') + ' ' + lc('extendedGUI.PremiumPanel.toEnd') + ': ' + colorCodes.tf3_chat_default + str(minutes)
+        return result
+
+    def set_ninja(self, ninja):
+        self.container.NinjaIcon.visible = ninja
+
+    def set_premium(self, premium_id):
+        self._premium_id = premium_id
+        self._update_premium_block()
+        self._update_booster_block()
+
+    def set_booster(self, boost_id):
+        self._boost_id = boost_id
+        self._update_premium_block()
+        self._update_booster_block()
+
+    def set_premium_time(self, end_time):
+        self._prem_end_time = end_time if end_time > 0 else -1
+
+    def set_booster_time(self, end_time):
+        self._boost_end_time = end_time if end_time > 0 else -1
+
+    def _update_booster_block(self):
+        bonuses = self.component.bonuses
+        if self._premium_id == PREMIUM_OFF and not self._boost_id:
+            self.container.position[0] = 0
+            bonuses.visible = False
+            return
+        self.container.position[0] = 30
+        bonuses.visible = True
+        if not bool(self._boost_id):
+            bonuses.booster.visible = False
+            return
+        booster_path = BoosterConfigParser.get_icon_path(self._boost_id, self._premium_id != PREMIUM_OFF, True)
+        bonuses.booster.textureName = booster_path
+        bonuses.booster.visible = True
+
+    def _update_premium_block(self):
+        bonuses = self.component.bonuses
+        if self._premium_id == PREMIUM_OFF and not self._boost_id:
+            self.container.position[0] = 0
+            bonuses.visible = False
+            return
+        self.container.position[0] = 30
+        bonuses.visible = True
+        if self._premium_id == PREMIUM_OFF:
+            bonuses.premium.visible = False
+            return
+        config = ClientSimpleConfigs().get_premium_config(self._premium_id)
+        default_path = config.get('icon_path', '')
+        bonuses.premium.textureName = config.get('icon_path_small', default_path)
+        bonuses.premium.visible = True
+
+    def set_old_HP_value(self, value, step = None):
+        old = self.container.healthBar_old_val.clipper.value
+        if not step:
+            step = float(old - value) / 10.0
+        new_val = old - step
+        self.container.healthBar_old_val.clipper.value = new_val
+        if new_val == old:
+            return
+        if self.old_HP_timer_id:
+            BigWorld.cancelCallback(self.old_HP_timer_id)
+        self.old_HP_timer_id = BigWorld.callback(0.1, partial(self.set_old_HP_value, value, step))
+
+    def set_stamina_value(self, value, step = None):
+        old = self.container.staminaBar.clipper.value
+        if not step:
+            step = float(old - value) / 10.0
+        new_val = old - step
+        self.container.staminaBar.clipper.value = new_val
+        if new_val == old:
+            return
+        if self.stamina_timer_id:
+            BigWorld.cancelCallback(self.stamina_timer_id)
+        self.stamina_timer_id = BigWorld.callback(0.1, partial(self.set_stamina_value, value, step))
+
     def update(self):
-        if BWPersonality.GUICore.healthDataSection.has_key('name'):
-            self.component.pName.text = BWPersonality.GUICore.healthDataSection['name']
-        if BWPersonality.GUICore.healthDataSection.has_key('cp'):
-            pass
-        if BWPersonality.GUICore.healthDataSection.has_key('health'):
-            self.hp_value = self.component.healthBar.clipper.value = BWPersonality.GUICore.healthDataSection['health']
-            self.hp_abs_value = BWPersonality.GUICore.healthDataSection['abshealth']
-        if BWPersonality.GUICore.healthDataSection.has_key('stamina'):
-            self.component.staminaBar.clipper.value = BWPersonality.GUICore.healthDataSection['stamina']
-        if BWPersonality.GUICore.healthDataSection.has_key('isPL'):
-            self.component.plMark.visible = BWPersonality.GUICore.healthDataSection['isPL']
-        if BWPersonality.GUICore.healthDataSection.has_key('hungry'):
-            val = BWPersonality.GUICore.healthDataSection['hungry']
-            self.component.hungryBar.clipper.value = val
-            self.hungry_value = val
-        if BWPersonality.GUICore.healthDataSection.has_key('thirst'):
-            self.component.thirstBar.clipper.value = BWPersonality.GUICore.healthDataSection['thirst']
-            self.thirst_value = BWPersonality.GUICore.healthDataSection['thirst']
+        data = BWPersonality.GUICore.healthDataSection
+        if data.has_key('name'):
+            self.container.pName.text = data['name']
+        if data.has_key('abshealth') and data.has_key('maxhealth'):
+            old_hp = self.hp_value
+            self.hp_value = data['abshealth'] / data['maxhealth'] if data['maxhealth'] else 0.0
+            self.hp_abs_value = data['abshealth']
+            self.container.healthBar.clipper.value = self.hp_value
+            if old_hp == self.hp_value:
+                self.set_old_HP_value(self.hp_value)
+        if data.has_key('absstamina') and data.has_key('maxstamina'):
+            stamina = data['absstamina'] / data['maxstamina'] if data['maxstamina'] else 0.0
+            self.set_stamina_value(stamina)
+        if data.has_key('isPL'):
+            self.container.plMark.visible = data['isPL']
         player = BigWorld.player()
         if player:
-            self.component.pvpFree.colour[3] = 30 if getattr(player, 'pvpFree') else 220
+            self.container.pvpFree.colour[3] = 30 if getattr(player, 'pvpFree') else 220
             namecolor = (175, 166, 112, 255)
             if player.AgrFlag:
                 namecolor = colorCodes.rgba_mark_AGR
             if player.karma >= CharacterConst.PK_KARMA_PER_AGGR:
                 namecolor = colorCodes.rgba_mark_name_PK
-            self.component.pName.colour = tuple(namecolor)
+            self.container.pName.colour = tuple(namecolor)
 
     def handleMouseButtonEvent(self, comp, event):
         if not event.isMouseButton():
@@ -309,25 +402,27 @@ class soHealthBar(PyGUIBase):
                 BWPersonality.GUICore.playerFrameEvent(self.EVENT_CONTEXT, None)
             return True
         else:
-            return False
+            return DraggableComponent.handleMouseButtonEvent(self, comp, event)
 
     def handleMouseEnterEvent(self, component):
-        if component is self.component.plMark:
+        if component is self.container.plMark:
             BWPersonality.GUICore.toolTipEvent(self.TTID_PL_MARK, self.interfaceID, soToolTipComponent.EVENT_SHOW)
             return True
         return False
 
     def handleMouseLeaveEvent(self, component):
-        if component is self.component.plMark:
+        if component is self.container.plMark:
             BWPersonality.GUICore.toolTipEvent(self.TTID_PL_MARK, self.interfaceID, soToolTipComponent.EVENT_HIDE)
             return True
         return False
 
     def show(self):
-        if self.component.parent is None:
-            BWPersonality.GUICore.worldLayer.addChild(self.component, 'healthBar')
+        GUIPositions.show(self)
         self.component.visible = True
-        return
 
     def hide(self):
         self.component.visible = False
+
+    def stopDragging(self):
+        GUIPositions.stopDragging(self)
+        DraggableComponent.stopDragging(self)

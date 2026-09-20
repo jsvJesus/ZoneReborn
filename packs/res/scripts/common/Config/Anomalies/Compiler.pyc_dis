@@ -1,8 +1,7 @@
-# Embedded file name: ./scripts/common/Config/Anomalies/Compiler.py
+# Embedded file name: ./common/Config/Anomalies/Compiler.py
 from Config.Compiler import ConfigCompiler, DictCompiler, EffectCompiler, ICompiler, COMPILER
 from Config.Anomalies.Constants import *
 from Config.Anomalies import CommonConfig
-from utils_bw import get_enum_from_alias_widget
 
 class DamageDistributionCompiler(ICompiler):
 
@@ -17,10 +16,10 @@ class NudgeTypeCompiler(ICompiler):
 
 
 class TerrainCompiler(ICompiler):
-    TERRAIN_TYPES = get_enum_from_alias_widget('TERRAIN_TYPE')
 
     def compile(self, name, value):
-        return TerrainCompiler.TERRAIN_TYPES[value]
+        index, val = value.split()
+        return int(index)
 
 
 class AnomalyNameCompiler(ICompiler):
@@ -84,6 +83,14 @@ anomaly_config_definition = {c: COMPILER.CONFIG,
                           'default': 'NONE'},
            'nudge_interval': {c: COMPILER.FLOAT,
                               'default': 0},
+           'nudge_velocity': {c: COMPILER.FLOAT,
+                              'default': 15},
+           'nudge_height': {c: COMPILER.FLOAT,
+                            'default': 30},
+           'nudge_vertical_range': {c: COMPILER.FLOAT,
+                                    'default': 1.0},
+           'nudge_grab_duration': {c: COMPILER.FLOAT,
+                                   'default': 1.0},
            'teleport_enabled': {c: COMPILER.BOOL,
                                 'default': False},
            'teleport_shotEnabled': {c: COMPILER.BOOL,
@@ -92,6 +99,10 @@ anomaly_config_definition = {c: COMPILER.CONFIG,
                                  'default': 1},
            'movement_enabled': {c: COMPILER.BOOL,
                                 'default': False},
+           'wall_artifact': {c: COMPILER.DICT,
+                             'default': {}},
+           'wall_no_artifact': {c: COMPILER.DICT,
+                                'default': {}},
            'sfx_main': {c: COMPILER.STRING,
                         'default': None},
            'sfx_inside': {c: COMPILER.STRING,
@@ -100,7 +111,7 @@ anomaly_config_definition = {c: COMPILER.CONFIG,
                                  'default': [0, 1]},
            'sfx_target': {c: COMPILER.STRING,
                           'default': None},
-           'sfx_artifact_wall': {c: COMPILER.STRING,
+           'sfx_target_player': {c: COMPILER.STRING,
                                  'default': None},
            'visible_artifact': {c: COMPILER.DICT,
                                 'default': {'sfx_main': 1,
@@ -112,7 +123,15 @@ anomaly_config_definition = {c: COMPILER.CONFIG,
            'stone_hit_effect': {c: COMPILER.STRING,
                                 'default': None},
            'stone_fly_effect': {c: COMPILER.STRING,
-                                'default': None}}}
+                                'default': None},
+           'sound_inside_to_main_oneshot': {c: COMPILER.STRING,
+                                            'default': None},
+           'pp_config_name': {c: COMPILER.STRING,
+                              'default': ''},
+           'pp_radius_max': {c: COMPILER.FLOAT,
+                             'default': 0},
+           'pp_radius': {c: COMPILER.FLOAT,
+                         'default': 0}}}
 terrains_config_definition = {c: COMPILER.DICT,
  'default': {},
  'key_compiler': {c: TerrainCompiler},

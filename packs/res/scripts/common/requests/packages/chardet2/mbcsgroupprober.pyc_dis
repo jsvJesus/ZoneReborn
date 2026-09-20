@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/chardet2/mbcsgroupprober.py
+# Embedded file name: ./common/requests/packages/chardet2/mbcsgroupprober.py
 from .charsetgroupprober import CharSetGroupProber
 from .utf8prober import UTF8Prober
 from .sjisprober import SJISProber

@@ -1,59 +1,158 @@
-# Embedded file name: ./scripts/client/soGUI/soItemView.py
+# Embedded file name: ./client/soGUI/soItemView.py
 import BigWorld
 import GUI
 import BWPersonality
-import Helpers.PyGUI as PyGUI
 from Helpers.PyGUI.PyGUIBase import PyGUIBase
 from Helpers.PyGUI import PyGUIEvent
-from functools import partial
 from soGUI.soScrollBar import soScrollBar2
 from soDraggableComponent import soDraggableComponent
 import utils
-from Keys import *
-from math import ceil, floor
-from Helpers.BWCoroutine import *
-SLOTEVENT_MOUSELEAVE = 0
-SLOTEVENT_MOUSEENTER = 1
-SLOTEVENT_MOUSEMOVE = 2
-SLOTEVENT_DRAGSTART = 3
-SLOTEVENT_DRAGSTOP = 4
-SLOTEVENT_DROP = 5
-SLOTEVENT_DRAGENTER = 6
-SLOTEVENT_DRAGLEAVE = 7
-SLOTEVENT_RCLICK = 8
-SLOTEVENT_LCLICK = 9
-SLOTEVENT_DBLCLICK = 10
-SLOTEVENT_PICK_UP = 11
-EVENT_MOUSELEAVE = 0
-EVENT_MOUSEENTER = 1
-EVENT_MOUSEMOVE = 2
-EVENT_DRAGSTART = 3
-EVENT_DRAGSTOP = 4
-EVENT_DROP = 5
-EVENT_DRAGENTER = 6
-EVENT_DRAGLEAVE = 7
-EVENT_RCLICK = 8
-EVENT_LCLICK = 9
-EVENT_DBLCLICK = 10
+from gui_const import ITSLOT
+import copy
+from Keys import KEY_LEFTMOUSE, KEY_RIGHTMOUSE
+from math import ceil
+import ItemsUtils
+import Localization
+import sounds_manager
+from Constants import WaterState
+LOCKED_COLOR2 = (125,
+ 125,
+ 125,
+ 255)
+LOCKED_COLOR = (255.0,
+ 120.0,
+ 120.0,
+ 50.0)
+MARKED_COLOR = (100,
+ 200,
+ 0,
+ 28)
+HIGHTLIGHT_COLOR = (100,
+ 100,
+ 100,
+ 100)
+HOVER_COLOR = (100,
+ 100,
+ 100,
+ 60)
+WHITE_COLOR = (255,
+ 255,
+ 255,
+ 255)
 
 class soItemSlot(PyGUIBase, soDraggableComponent):
     factoryString = 'soGUI.soItemSlot'
     SLOTWIDTH = 0
     SLOTHEIGHT = 0
+    MULTI_SLOT_SIZE = 74
 
     def __init__(self, component, slotIndex, itemData = None, centerDProxy = False):
         soDraggableComponent.__init__(self, component, centerDProxy=centerDProxy)
         PyGUIBase.__init__(self, component)
         component.script = self
+        self._upd_timer_id = None
+        self._multisel_take_types_sounds = None
         self.pressed = False
         self.locked = False
         self.busy = False
         self.cache_mode = -2
         self.lastPressed = 0
+        self._dbl_click_start_time = 0
         self.itemData = itemData
         self.slotIndex = slotIndex
+        self._dragged_out_screen = False
+        self.index = None
+        self.parent_view = None
+        self._has_multiselector = False
+        self._has_droplet = False
+        self._mouse_inside = False
         self.setupRoot()
         self.setupContent()
+        return
+
+    def create_droplet(self, y_pos = 3):
+        self._has_droplet = True
+        drop = GUI.Simple('soGUI/maps/Icons/pure_water.dds')
+        drop.verticalPositionMode = drop.horizontalPositionMode = 'PIXEL'
+        drop.horizontalAnchor = 'LEFT'
+        drop.verticalAnchor = 'TOP'
+        drop.widthMode = drop.heightMode = 'PIXEL'
+        drop.width = drop.texture.width
+        drop.height = drop.texture.height
+        drop.materialFX = 'BLEND'
+        drop.position = (3, y_pos, 0.1)
+        drop.visible = False
+        self.component.addChild(drop, 'drop')
+
+    def _create_multiselector(self):
+        self._has_multiselector = True
+        cmp = GUI.Simple('textures/default/white.dds')
+        cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.SLOTWIDTH
+        cmp.height = self.SLOTHEIGHT
+        cmp.colour = HIGHTLIGHT_COLOR
+        cmp.materialFX = 'BLEND'
+        cmp.position = (self.SLOTWIDTH, 0, 0.5)
+        cmp.visible = False
+        self.component.addChild(cmp, 'multiselection')
+
+    def _create_multidrag_proxy(self):
+        cmp = GUI.Window('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.MULTI_SLOT_SIZE
+        cmp.height = self.MULTI_SLOT_SIZE
+        cmp.materialFX = 'BLEND'
+        cmp.position = (0, 0, 0.5)
+        cmp.visible = False
+        self.component.addChild(cmp, 'dragProxy')
+        cmp = GUI.Simple('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.SLOTWIDTH
+        cmp.height = self.SLOTHEIGHT
+        cmp.materialFX = 'BLEND'
+        cmp.position = (0, 0, 0.3)
+        cmp.visible = True
+        self.component.dragProxy.addChild(cmp, 'image')
+        cmp = GUI.Simple('soGUI/items/multicells.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.width = self.MULTI_SLOT_SIZE
+        cmp.height = self.MULTI_SLOT_SIZE
+        cmp.materialFX = 'BLEND'
+        cmp.position = (0, 0, 0.5)
+        cmp.colour = (255, 255, 255, 204)
+        cmp.visible = False
+        self.component.dragProxy.addChild(cmp, 'background')
+        cmp = GUI.Text()
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'ArialNarrow_10.font'
+        cmp.colour = (175, 166, 112, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (self.MULTI_SLOT_SIZE - 3, 12, 0.3)
+        self.component.dragProxy.background.addChild(cmp, 'itemCount')
+        self._has_proxy = True
+
+    def set_drag_proxy_visual(self, item_image, show_background):
+        self.dragProxy.image.texture = item_image
+        self.dragProxy.background.visible = show_background
+        if show_background:
+            self.dragProxy.background.itemCount.text = '({0})'.format(self.get_multiselection_count())
+
+    def set_index(self, index):
+        self.index = index
 
     def getCache_mode(self):
         return self.cache_mode
@@ -87,8 +186,47 @@ class soItemSlot(PyGUIBase, soDraggableComponent):
     def update(self, data):
         return None
 
+    def update_item_color(self, *w, **kw):
+        pass
+
+    def cancelForceRedrawAfter(self):
+        if getattr(self, '_upd_timer_id', 0):
+            BigWorld.cancelCallback(self._upd_timer_id)
+        self._upd_timer_id = 0
+
+    def forceRedrawAfter(self, delay):
+        self._upd_timer_id = BigWorld.callback(delay, self._applyItemData)
+
     def _applyItemData(self):
-        return None
+        self._update_droplet()
+        self._update_selector()
+
+    def _get_item_data(self):
+        return self.itemData
+
+    def _update_droplet(self):
+        if self._has_droplet:
+            self.component.drop.visible = False
+            item_data = self._get_item_data()
+            if item_data:
+                water_state = ItemsUtils.get_water_state(item_data)
+                if water_state == WaterState.Dirty:
+                    self.component.drop.textureName = 'soGUI/maps/Icons/dirty_water.dds'
+                    self.component.drop.visible = True
+                elif water_state == WaterState.Clear:
+                    self.component.drop.textureName = 'soGUI/maps/Icons/pure_water.dds'
+                    self.component.drop.visible = True
+
+    def _update_selector(self):
+        if self._has_multiselector:
+            self.component.multiselection.visible = False
+            if self.haveItem() and self.multiselected:
+                self.component.multiselection.visible = True
+                self.component.multiselection.colour = HIGHTLIGHT_COLOR
+            elif self._mouse_inside:
+                if not hasattr(self.component, 'frameCmp') or self.component.frameCmp.visible:
+                    self.component.multiselection.visible = True
+                    self.component.multiselection.colour = HOVER_COLOR
 
     def haveItem(self):
         if self.itemData is None:
@@ -104,20 +242,24 @@ class soItemSlot(PyGUIBase, soDraggableComponent):
         self.busy = busy
 
     def onLClick(self):
-        self.slotEvent(SLOTEVENT_LCLICK, self)
+        self.slotEvent(ITSLOT.SLOTEVENT_LCLICK, self)
 
     def onRClick(self):
-        self.slotEvent(SLOTEVENT_RCLICK, self)
+        self.slotEvent(ITSLOT.SLOTEVENT_RCLICK, self)
 
     def onDblClick(self):
-        self.slotEvent(SLOTEVENT_DBLCLICK, self)
+        self.slotEvent(ITSLOT.SLOTEVENT_DBLCLICK, self)
 
     def handleMouseLeaveEvent(self, cmp):
-        self.slotEvent(SLOTEVENT_MOUSELEAVE, self)
+        self.slotEvent(ITSLOT.SLOTEVENT_MOUSELEAVE, self)
+        self._mouse_inside = False
+        self._update_selector()
         return True
 
     def handleMouseEnterEvent(self, cmp):
-        self.slotEvent(SLOTEVENT_MOUSEENTER, self)
+        self.slotEvent(ITSLOT.SLOTEVENT_MOUSEENTER, self)
+        self._mouse_inside = True
+        self._update_selector()
         return True
 
     def handleMouseEvent(self, cmp, event):
@@ -125,51 +267,79 @@ class soItemSlot(PyGUIBase, soDraggableComponent):
             return False
         soDraggableComponent.handleMouseEvent(self, cmp, event)
         data = [self, event.cursorPosition, (event.dx, event.dy, event.dz)]
-        self.slotEvent(SLOTEVENT_MOUSEMOVE, data)
+        self.slotEvent(ITSLOT.SLOTEVENT_MOUSEMOVE, data)
         return True
 
+    def on_out_screen_drop(self):
+        """ \xd1\x81\xd0\xbb\xd0\xbe\xd1\x82 \xd0\xb4\xd1\x80\xd0\xbe\xd0\xbf\xd0\xbd\xd1\x83\xd0\xbb\xd0\xb8 \xd0\xbd\xd0\xb5 \xd0\xbd\xd0\xb0 GUI, \xd0\xb0 \xd0\xb2 \xd1\x8d\xd0\xba\xd1\x80\xd0\xb0\xd0\xbd \xd0\xba\xd1\x83\xd0\xb4\xd0\xb0-\xd1\x82\xd0\xbe """
+        pass
+
+    def on_out_screen_drop_sound(self):
+        """ \xd1\x81\xd0\xbb\xd0\xbe\xd1\x82 \xd0\xb4\xd1\x80\xd0\xbe\xd0\xbf\xd0\xbd\xd1\x83\xd0\xbb\xd0\xb8 \xd0\xbd\xd0\xb5 \xd0\xbd\xd0\xb0 GUI, \xd0\xb0 \xd0\xb2 \xd1\x8d\xd0\xba\xd1\x80\xd0\xb0\xd0\xbd \xd0\xba\xd1\x83\xd0\xb4\xd0\xb0-\xd1\x82\xd0\xbe
+        
+        """
+        self._multisel_take_types_sounds = []
+
+    def on_out_screen_enter(self):
+        """ \xd1\x81\xd0\xbb\xd0\xbe\xd1\x82 \xd1\x82\xd1\x8f\xd0\xbd\xd1\x83\xd1\x82 \xd0\xbd\xd0\xb0\xd0\xb4 \xd1\x8d\xd0\xba\xd1\x80\xd0\xb0\xd0\xbd\xd0\xbe\xd0\xbc \xd0\xb1\xd0\xb5\xd0\xb7 \xd0\xb3\xd1\x83\xd0\xb8"""
+        self._dragged_out_screen = True
+
+    def on_out_screen_leave(self):
+        """ \xd1\x81\xd0\xbb\xd0\xbe\xd1\x82 \xd0\xbd\xd0\xb0\xd0\xb4 \xd0\xba\xd0\xb0\xd0\xba\xd0\xb8\xd0\xbc\xd1\x82\xd0\xbe \xd0\xb3\xd1\x83\xd0\xb8"""
+        self._dragged_out_screen = False
+
     def handleDragStartEvent(self, cmp):
+        self._dragged_out_screen = False
         if self.locked:
             return False
         self.pressed = False
-        soDraggableComponent.handleDragStartEvent(self, cmp)
-        self.slotEvent(SLOTEVENT_DRAGSTART, self)
+        if self.dragProxy:
+            soDraggableComponent.handleDragStartEvent(self, cmp)
+            self.slotEvent(ITSLOT.SLOTEVENT_DRAGSTART, self)
+            self._play_take_sound()
         return True
 
     def handleDragStopEvent(self, cmp):
+        self._play_drag_stop_sound()
         soDraggableComponent.handleDragStopEvent(self, cmp)
-        self.slotEvent(SLOTEVENT_DRAGSTOP, self)
+        self.slotEvent(ITSLOT.SLOTEVENT_DRAGSTOP, self)
+        self._dragged_out_screen = False
         return True
 
     def handleDragEnterEvent(self, cmp, dragged):
         if dragged.script is None:
             return False
         else:
-            handled = self.slotEvent(SLOTEVENT_DRAGENTER, [self, dragged.script])
+            handled = self.slotEvent(ITSLOT.SLOTEVENT_DRAGENTER, [self, dragged.script])
             return bool(handled)
 
     def handleDragLeaveEvent(self, cmp, dragged):
         if dragged.script is None:
             return False
         else:
-            handled = self.slotEvent(SLOTEVENT_DRAGLEAVE, [self, dragged.script])
+            handled = self.slotEvent(ITSLOT.SLOTEVENT_DRAGLEAVE, [self, dragged.script])
             return bool(handled)
 
     def handleDropEvent(self, cmp, dropped):
         if dropped.script is None:
             return False
         else:
-            self.slotEvent(SLOTEVENT_DROP, [self, dropped.script])
+            self.slotEvent(ITSLOT.SLOTEVENT_DROP, [self, dropped.script])
             return True
 
     def handleMouseButtonEvent(self, cmp, event):
+        self.slotEvent(ITSLOT.SLOTEVENT_MOUSEBUTTON, [self, event])
         if not event.isMouseButton():
             return False
         if event.isKeyDown():
             if event.key == KEY_LEFTMOUSE or event.key == KEY_RIGHTMOUSE:
                 self.pressed = True
-                if BigWorld.time() - self.lastPressed <= BWPersonality.GUICore.mouseDoubleClickSpeed:
-                    self.onDblClick()
+                if event.key == KEY_LEFTMOUSE and not event.isCtrlDown() and not event.isShiftDown():
+                    if BigWorld.time() - self._dbl_click_start_time <= BWPersonality.GUICore.mouseDoubleClickSpeed:
+                        self._dbl_click_start_time = 0
+                        self.onDblClick()
+                    else:
+                        self._dbl_click_start_time = BigWorld.time()
                 self.lastPressed = BigWorld.time()
         if event.isKeyUp() and self.pressed:
             if self.pressed and BigWorld.time() - self.lastPressed <= 0.3:
@@ -180,14 +350,76 @@ class soItemSlot(PyGUIBase, soDraggableComponent):
             self.pressed = False
         return True
 
+    def _get_selected_items(self):
+        items = []
+        if self.parent_view and hasattr(self.parent_view, '_get_view_selected_items'):
+            items = self.parent_view._get_view_selected_items()
+        if items:
+            return items
+        if self.itemData:
+            return [self.itemData]
+        return []
+
+    def _get_selected_item_types(self):
+        res = []
+        for item in self._get_selected_items():
+            if not item:
+                continue
+            item_type = item.get('complexItemType') or item.get('item_type')
+            if not item_type:
+                continue
+            res.append(item_type)
+
+        return res
+
+    def _play_take_sound(self):
+        self._multisel_take_types_sounds = self._get_selected_item_types()
+        sound_path = ItemsUtils.GetItemInventorySound(self._multisel_take_types_sounds, 'take')
+        if sound_path:
+            sounds_manager.playSound(sound_path)
+
+    def _play_drag_stop_sound(self):
+        sound_path = ItemsUtils.GetItemInventorySound(self._multisel_take_types_sounds, 'put')
+        if sound_path:
+            sounds_manager.playSound(sound_path)
+
+    def get_multiselection_identifier(self):
+        return self.itemData and self.itemData.get('complexItemID', None)
+
+    def get_multiselection(self):
+        if self.multiselected:
+            result = copy.copy(self.parent_view._multiselection)
+            result.remove(self.get_multiselection_identifier())
+            result.insert(0, self.get_multiselection_identifier())
+            return result
+        elif getattr(self.parent_view, '_multiselection', None):
+            return self.parent_view._multiselection
+        else:
+            if getattr(self, 'isDragging', False) and self.draggedData:
+                complex_item_id = self.draggedData.get('complexItemID')
+                if complex_item_id:
+                    return [complex_item_id]
+            return [self.get_multiselection_identifier()]
+
+    def get_multiselection_count(self):
+        return len(self.parent_view._multiselection)
+
+    @property
+    def multiselected(self):
+        if not self.parent_view:
+            return False
+        return self.parent_view.is_multiselected(self)
+
 
 class soItemView(PyGUIBase):
     factoryString = 'soGUI.soItemView'
     SCROLL_WIDTH = 16
 
-    def __init__(self, component, slotClass, hScroll = True, vScroll = True, slot_eventsHandler = lambda event, data: False, eventsHandler = lambda event, data: False, canDrag = False, eatDrop = True, rows = 5, cols = 2, rowWidth = 3, borderWidth = 1, hInterval = 0, vInterval = 0, parent_script = None, locked_data = None):
+    def __init__(self, component, slotClass, hScroll = True, vScroll = True, slot_eventsHandler = lambda event, data: False, eventsHandler = lambda event, data: False, canDrag = False, eatDrop = True, rows = 5, cols = 2, rowWidth = 3, borderWidth = 1, hInterval = 0, vInterval = 0, parent_script = None, locked_data = None, scroll_auto_hide = False, addx = 0, addy = 0):
         PyGUIBase.__init__(self, component)
         component.script = self
+        self.addx = addx
+        self.addy = addy
         self.cursor = [0, 0]
         self.maxScroll = [rowWidth - cols, 0]
         self.locked_data = locked_data
@@ -196,6 +428,10 @@ class soItemView(PyGUIBase):
         self.dragging = False
         self.dragProxy = None
         self._parent_script = parent_script
+        self._multiselectable = False
+        self._multiselection = []
+        self._clear_multiselection_callback = 0
+        self.scroll_auto_hide = scroll_auto_hide
         self.items = []
         self.hScroll = hScroll
         self.vScroll = vScroll
@@ -243,20 +479,142 @@ class soItemView(PyGUIBase):
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
             cmp.horizontalAnchor = 'LEFT'
             cmp.verticalAnchor = 'TOP'
-            cmp.position.x = self.borderWidth + (self.slotClass.SLOTWIDTH + self.hInterval) * (i % (self.cols * 1.0))
-            cmp.position.y = self.borderWidth + (self.slotClass.SLOTHEIGHT + self.vInterval) * (i // (self.cols * 1.0))
+            cmp.position.x = self.addx + self.borderWidth + (self.slotClass.SLOTWIDTH + self.hInterval) * (i % (self.cols * 1.0))
+            cmp.position.y = self.addy + self.borderWidth + (self.slotClass.SLOTHEIGHT + self.vInterval) * (i // (self.cols * 1.0))
             cmp.position.z = 0.5
-            slot.slotEvent = self.slot_eventsHandler
+            slot.slotEvent = self._slot_handler
             self.component.addChild(cmp, 'slot' + str(i))
 
         return
+
+    def set_multiselectable(self):
+        self._multiselectable = True
+
+    def _slot_handler(self, event, data):
+        if event == ITSLOT.SLOTEVENT_MOUSEBUTTON:
+            slot, keyevent = data
+            BigWorld.cancelCallback(self._clear_multiselection_callback)
+            if self._multiselectable:
+                clear = not keyevent.isKeyDown()
+                if keyevent.key == KEY_LEFTMOUSE and not keyevent.isKeyDown():
+                    if slot.haveItem():
+                        if keyevent.isCtrlDown():
+                            self._invert_multiselection(slot)
+                            clear = False
+                        elif keyevent.isShiftDown():
+                            if self._multiselection:
+                                seek_items = (slot.get_multiselection_identifier(), self._multiselection[-1])
+                                if all(seek_items):
+                                    if seek_items[0] == seek_items[1]:
+                                        clear = False
+                                    else:
+                                        started = False
+                                        for item in self.items:
+                                            if self._get_multiselection_identifier(item) in seek_items:
+                                                if started:
+                                                    self._multiselect_item(item)
+                                                    break
+                                                started = True
+                                            if started:
+                                                self._multiselect_item(item)
+
+                                        clear = False
+                            else:
+                                self._invert_multiselection(slot)
+                                clear = False
+                if clear:
+                    self._clear_multiselection_next_tick()
+        elif event == ITSLOT.SLOTEVENT_DRAGSTART:
+            if self._multiselectable and not data.multiselected:
+                self._clear_multiselection_next_tick()
+        return self.slot_eventsHandler(event, data)
+
+    def _get_view_selected_items(self):
+        if not self._multiselection:
+            return []
+        visItemCount = self.cols * self.rows
+        res = []
+        for i in xrange(visItemCount):
+            slot = getattr(self.component, 'slot' + str(i)).script
+            if slot.get_multiselection_identifier() in self._multiselection:
+                if slot.itemData:
+                    res.append(slot.itemData)
+
+        return res
+
+    def _multiselect_item(self, item):
+        identifier = self._get_multiselection_identifier(item)
+        if identifier not in self._multiselection:
+            self._multiselection.append(identifier)
+            slot = self.find_slot_by_multiselection_identifier(identifier)
+            if slot:
+                slot._applyItemData()
+
+    def find_slot_by_multiselection_identifier(self, identifier):
+        visItemCount = self.cols * self.rows
+        for i in xrange(visItemCount):
+            slot = getattr(self.component, 'slot' + str(i)).script
+            if slot.get_multiselection_identifier() == identifier:
+                return slot
+
+    def _get_multiselection_identifier(self, item):
+        return item and item['complexItemID']
+
+    def _invert_multiselection(self, slot):
+        identifier = slot.get_multiselection_identifier()
+        if identifier in self._multiselection:
+            self._multiselection.remove(identifier)
+        else:
+            self._multiselection.append(identifier)
+        slot._applyItemData()
+
+    def get_items(self, item_ids):
+        all_items = {}
+        for item in self.items:
+            all_items[item['complexItemID']] = item
+
+        return [ all_items.get(item_id) for item_id in item_ids ]
+
+    def is_multiselected(self, slot):
+        if not self._multiselectable:
+            return False
+        return slot.get_multiselection_identifier() in self._multiselection
+
+    def on_show(self):
+        self.clear_multiselection()
+        BWPersonality.register_key_event_interceptor(self._on_global_key_event, high_priority=True)
+
+    def on_hide(self):
+        self.clear_multiselection()
+        BWPersonality.unregister_key_event_interceptor(self._on_global_key_event)
+
+    def _on_global_key_event(self, event):
+        if not event.isKeyDown() and event.key == KEY_LEFTMOUSE:
+            self._clear_multiselection_next_tick()
+        return False
+
+    def _clear_multiselection_next_tick(self):
+        BigWorld.cancelCallback(self._clear_multiselection_callback)
+        self._clear_multiselection_callback = BigWorld.callback(0, self.clear_multiselection)
+
+    def clear_multiselection(self):
+        if self._multiselectable and self._multiselection:
+            visItemCount = self.cols * self.rows
+            for i in xrange(visItemCount):
+                slot = getattr(self.component, 'slot' + str(i)).script
+                identifier = slot.get_multiselection_identifier()
+                if identifier in self._multiselection:
+                    self._multiselection.remove(identifier)
+                    slot._applyItemData()
+
+            self._multiselection[:] = []
 
     def setupScrolls(self):
         vScrollHeight = self.component.height - self.SCROLL_WIDTH if self.hScroll else self.component.height
         vScrollHeight -= self.borderWidth * 2
         if hasattr(self.component, 'vScroll'):
             self.component.delChild('vScroll')
-        scroll = soScrollBar2(GUI.Window(), width=16, height=vScrollHeight, steps=0)
+        scroll = soScrollBar2(GUI.Window(), width=16, height=vScrollHeight, steps=0, auto_hide=self.scroll_auto_hide)
         scroll.scrollUp = self.scrolledUP
         scroll.scrollDown = self.scrolledDOWN
         scroll.scrollMoved = self.vScrollMoved
@@ -275,7 +633,7 @@ class soItemView(PyGUIBase):
         hScrollHeight -= self.borderWidth * 2
         if hasattr(self.component, 'hScroll'):
             self.component.delChild('hScroll')
-        scroll = soScrollBar2(GUI.Window(), width=16, height=hScrollHeight, steps=0, horizontal=True)
+        scroll = soScrollBar2(GUI.Window(), width=16, height=hScrollHeight, steps=0, horizontal=True, auto_hide=self.scroll_auto_hide)
         scroll.scrollLeft = self.scrolledLEFT
         scroll.scrollRight = self.scrolledRIGHT
         scroll.scrollMoved = self.hScrollMoved
@@ -297,21 +655,22 @@ class soItemView(PyGUIBase):
         firstItemIndex = (self.maxScroll[0] + self.cols) * self.cursor[1] + self.cursor[0]
         itemIndex = firstItemIndex
         while renderedItems < visItemCount and itemIndex < len(self.items):
-            row = itemIndex // (self.maxScroll[0] + self.cols)
             col = itemIndex % (self.maxScroll[0] + self.cols)
             if col >= self.cursor[0] and col < self.cursor[0] + self.cols:
-                item = self.items[itemIndex]
                 itemSlot = getattr(self.component, 'slot{0}'.format(renderedItems))
                 itemSlot.script.setCache_mode(cache_mode)
                 renderedItems += 1
             itemIndex += 1
+
+    def set_slot_content(self, slot, content):
+        slot.setContent(content)
 
     def _applyItem(self, item):
         visItemCount = self.cols * self.rows
         for i in xrange(visItemCount):
             slot = getattr(self.component, 'slot' + str(i))
             if slot.script.itemData and slot.script.itemData['complexItemID'] == item['complexItemID']:
-                slot.script.setContent(item)
+                self.set_slot_content(slot.script, item)
 
     def unlockItem(self, item):
         visItemCount = self.cols * self.rows
@@ -322,20 +681,20 @@ class soItemView(PyGUIBase):
 
     def _applyItems(self):
         visItemCount = self.cols * self.rows
-        for i in xrange(visItemCount):
-            slot = getattr(self.component, 'slot' + str(i))
-            slot.script.setContent(None)
-
         renderedItems = 0
         firstItemIndex = (self.maxScroll[0] + self.cols) * self.cursor[1] + self.cursor[0]
         itemIndex = firstItemIndex
+        for i in xrange(visItemCount):
+            slot = getattr(self.component, 'slot' + str(i))
+            slot.script.set_index(firstItemIndex + i)
+            self.set_slot_content(slot.script, None)
+
         while renderedItems < visItemCount and itemIndex < len(self.items):
-            row = itemIndex // (self.maxScroll[0] + self.cols)
             col = itemIndex % (self.maxScroll[0] + self.cols)
             if col >= self.cursor[0] and col < self.cursor[0] + self.cols:
                 item = self.items[itemIndex]
                 itemSlot = getattr(self.component, 'slot{0}'.format(renderedItems))
-                itemSlot.script.setContent(item)
+                self.set_slot_content(itemSlot.script, item)
                 if self.locked_data and item and item['complexItemID'] in self.locked_data:
                     itemSlot.script.lockSlot(item['complexItemID'] in self.locked_data or itemSlot.script.locked)
                 renderedItems += 1
@@ -351,7 +710,7 @@ class soItemView(PyGUIBase):
 
         self._applyItem(data)
 
-    def setItems(self, data, StoredItemsInShop = None):
+    def setItems(self, data):
         if data is None:
             data = []
         list_diff = utils.get_list_diff(data, self.items)
@@ -361,6 +720,8 @@ class soItemView(PyGUIBase):
 
         if list_diff['removed']:
             for item in list_diff['removed']:
+                if item and item.has_key('complexItemID') and item.get('complexItemID') in self._multiselection:
+                    self._multiselection.remove(item['complexItemID'])
                 self.onRemoveItem(item)
 
         self.items = data
@@ -368,24 +729,24 @@ class soItemView(PyGUIBase):
         self._applyItems()
         return
 
-    def updateSlotsItems(self, data):
+    def updateSlotsItems(self, dict_data, **kw):
         visItemCount = self.cols * self.rows
-        renderedItems = 0
-        firstItemIndex = (self.maxScroll[0] + self.cols) * self.cursor[1] + self.cursor[0]
-        itemIndex = firstItemIndex
-        while renderedItems < visItemCount and itemIndex < len(self.items):
-            row = itemIndex // (self.maxScroll[0] + self.cols)
-            col = itemIndex % (self.maxScroll[0] + self.cols)
-            if col >= self.cursor[0] and col < self.cursor[0] + self.cols:
-                item = self.items[itemIndex]
-                itemSlot = getattr(self.component, 'slot{0}'.format(renderedItems))
-                itemSlot.script.updateSlot(data)
-                renderedItems += 1
-            itemIndex += 1
+        for i in xrange(visItemCount):
+            slot = getattr(self.component, 'slot' + str(i))
+            slot.script.updateSlot(dict_data, **kw)
+
+    def updateSlotsColour(self, *w, **kw):
+        visItemCount = self.cols * self.rows
+        for i in xrange(visItemCount):
+            slot = getattr(self.component, 'slot' + str(i))
+            slot.script.update_item_color()
+
+    def scroll_items_count(self):
+        return len(self.items)
 
     def _updateMaxScroll(self):
         self.maxScroll[0] = self.rowWidth - self.cols
-        self.maxScroll[1] = int(ceil(len(self.items) / float(self.rowWidth))) - self.rows
+        self.maxScroll[1] = int(ceil(self.scroll_items_count() / float(self.rowWidth))) - self.rows
         if self.maxScroll[1] < 0:
             self.maxScroll[1] = 0
         self.component.vScroll.script.setSteps(self.maxScroll[1])
@@ -438,20 +799,20 @@ class soItemView(PyGUIBase):
         self.setScroll(0, 0)
 
     def onLClick(self):
-        self.eventsHandler(EVENT_LCLICK, self)
+        self.eventsHandler(ITSLOT.SLOTEVENT_LCLICK, self)
 
     def onRClick(self):
-        self.eventsHandler(EVENT_RCLICK, self)
+        self.eventsHandler(ITSLOT.SLOTEVENT_RCLICK, self)
 
     def onDblClick(self):
-        self.eventsHandler(EVENT_DBLCLICK, self)
+        self.eventsHandler(ITSLOT.SLOTEVENT_DBLCLICK, self)
 
     def handleMouseLeaveEvent(self, cmp):
-        self.eventsHandler(EVENT_MOUSELEAVE, self)
+        self.eventsHandler(ITSLOT.SLOTEVENT_MOUSELEAVE, self)
         return True
 
     def handleMouseEnterEvent(self, cmp):
-        self.eventsHandler(EVENT_MOUSEENTER, self)
+        self.eventsHandler(ITSLOT.SLOTEVENT_MOUSEENTER, self)
         return True
 
     def handleMouseEvent(self, cmp, event):
@@ -467,39 +828,39 @@ class soItemView(PyGUIBase):
                 else:
                     self.scrollHandler('RIGHT', None)
         data = [self, event.cursorPosition, (event.dx, event.dy, event.dz)]
-        self.eventsHandler(EVENT_MOUSEMOVE, data)
+        self.eventsHandler(ITSLOT.SLOTEVENT_MOUSEMOVE, data)
         return True
 
     def handleDragStartEvent(self, cmp):
         self.dragging = True
         self.pressed = False
-        self.eventsHandler(EVENT_DRAGSTART, self)
+        self.eventsHandler(ITSLOT.SLOTEVENT_DRAGSTART, self)
         return True
 
     def handleDragStopEvent(self, cmp):
         self.dragging = False
-        self.eventsHandler(EVENT_DRAGSTOP, self)
+        self.eventsHandler(ITSLOT.SLOTEVENT_DRAGSTOP, self)
         return True
 
     def handleDragEnterEvent(self, cmp, dragged):
         if dragged.script is None:
             return False
         else:
-            handled = self.eventsHandler(EVENT_DRAGENTER, [self, dragged.script])
+            handled = self.eventsHandler(ITSLOT.SLOTEVENT_DRAGENTER, [self, dragged.script])
             return bool(handled)
 
     def handleDragLeaveEvent(self, cmp, dragged):
         if dragged.script is None:
             return False
         else:
-            handled = self.eventsHandler(EVENT_DRAGLEAVE, [self, dragged.script])
+            handled = self.eventsHandler(ITSLOT.SLOTEVENT_DRAGLEAVE, [self, dragged.script])
             return bool(handled)
 
     def handleDropEvent(self, cmp, dropped):
         if dropped.script is None:
             return False
         else:
-            self.eventsHandler(EVENT_DROP, [self, dropped.script])
+            self.eventsHandler(ITSLOT.SLOTEVENT_DROP, [self, dropped.script])
             return True
 
     def handleMouseButtonEvent(self, cmp, event):

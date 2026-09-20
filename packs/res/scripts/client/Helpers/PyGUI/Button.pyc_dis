@@ -1,13 +1,12 @@
-# Embedded file name: ./scripts/client/Helpers/PyGUI/Button.py
-"""
-"""
+# Embedded file name: ./client/Helpers/PyGUI/Button.py
 import BigWorld
 import GUI
 import Keys
 import TextStyles
 from PyGUIBase import PyGUIBase
 from VisualStateComponent import VisualState, VisualStateComponent
-import Utils
+from Helpers.PyGUI import Utils
+from TextureGUICashe import getGUITexture
 
 def _getRadioButtons(comp, groupName):
     if comp is None:
@@ -61,11 +60,11 @@ class ButtonVisualState(VisualState):
         if getattr(componentScript, 'buttonLabel', None) is not None and self.textStyle:
             TextStyles.setStyle(componentScript.buttonLabel, self.textStyle)
         if hasattr(componentScript, 'buttonIcon'):
-            componentScript.buttonIcon.textureName = self.iconTextureName
+            componentScript.buttonIcon.texture = getGUITexture(self.iconTextureName)
             if self.iconTextureMapping:
                 Utils.applyMapping(componentScript.buttonIcon, self.iconTextureMappingType, self.iconTextureMapping)
             componentScript.buttonIcon.colour = self.iconColour
-            if self.iconMaterialFX != '':
+            if getattr(self, 'iconMaterialFX', '') != '':
                 componentScript.buttonIcon.materialFX = self.iconMaterialFX
             else:
                 componentScript.buttonIcon.materialFX = 'BLEND'

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/Config/AnomalyFields/CommonConfig.py
+# Embedded file name: ./common/Config/AnomalyFields/CommonConfig.py
 from Config import DATA_PATH
 AF_PATH = DATA_PATH + 'AnomalyField/'
 AF_ANOMALY_PATH = AF_PATH + 'Anomalies/'

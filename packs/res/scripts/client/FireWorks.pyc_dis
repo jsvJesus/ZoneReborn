@@ -1,16 +1,16 @@
-# Embedded file name: ./scripts/client/FireWorks.py
+# Embedded file name: ./client/FireWorks.py
 import BigWorld
-import Math
-import Pixie
+import ResourceLoader
 import random
 import ItemsUtils
-import time
-import Pixie
 import FX
-from sounds import playSound
-from Items import FireWorksType
+from sounds_manager import playSound
+from Constants import FireWorksType
 import traceback
 from functools import partial
+PARTICLE_FIREWORKS_PATH = 'particles/fireworks_fuse_white.xml'
+PARTICLE_FIREWORKS_NG_PATH = 'particles/ng_fireworks.xml'
+PARTICLE_FIREWORKS_SPARKS_PATH = 'particles/fireworks_sparks.xml'
 
 class FireWorks(BigWorld.Entity):
     """" client/FireWorks """
@@ -26,18 +26,16 @@ class FireWorks(BigWorld.Entity):
         self.sparkler_sound = None
         return
 
-    def onLoadModel(self, model):
-        if self.isDestroyed:
-            return
-        self.model = model
-        self.modelFuse = BigWorld.Model('')
-        self.model.node('HP_flare').attach(self.modelFuse)
-        self.PFuse = Pixie.create('particles/fireworks_fuse_white.xml')
-        if self.fuseIsBurning:
-            self.set_fuseIsBurning(333)
+    def prerequisites(self):
+        return [self.MODEL_NAME, PARTICLE_FIREWORKS_PATH]
 
     def onEnterWorld(self, prereqs):
-        BigWorld.fetchModel(self.MODEL_NAME, self.onLoadModel)
+        self.model = prereqs[self.MODEL_NAME]
+        self.modelFuse = BigWorld.Model('')
+        self.model.node('HP_flare').attach(self.modelFuse)
+        self.PFuse = prereqs[PARTICLE_FIREWORKS_PATH]
+        if self.fuseIsBurning:
+            self.set_fuseIsBurning(333)
 
     def set_fuseIsBurning(self, old):
         if self.fuseIsBurning:
@@ -45,13 +43,13 @@ class FireWorks(BigWorld.Entity):
                 self.model.visible = True
             self.modelFuse.root.attach(self.PFuse)
             self.modelFuseS = BigWorld.Model('')
-            BigWorld.addModel(self.modelFuseS, self.spaceID)
+            self.addModel(self.modelFuseS)
             self.modelFuseS.position = self.position
             playSound(self.SOUND_FIRELINE, self.modelFuseS)
         else:
             self.modelFuse.root.detach(self.PFuse)
             if self.modelFuseS:
-                BigWorld.delModel(self.modelFuseS)
+                self.delModel(self.modelFuseS)
                 self.modelFuseS = None
             if self.fireWorksType == FireWorksType.SALUTE:
                 if self.model:
@@ -60,10 +58,32 @@ class FireWorks(BigWorld.Entity):
 
     def onLeaveWorld(self):
         self._delHelpsModels()
+        self.model = None
+        self.modelFuseS = None
+        self.modelFuse = None
+        self.PFuse = None
+        self.flyModel = None
+        self.explodeModel = None
+        self.FWtrain = None
+        self.PSparkle = None
+        if self.sparkler_sound:
+            try:
+                self.sparkler_sound.stop()
+            except Exception as e:
+                print e
+
+        self.sparkler_sound = None
+        return
 
     def startSparkle(self):
-        self.PSparkle = Pixie.create('particles/ng_fireworks.xml')
-        BigWorld.callback(0.5, self._startSparkle)
+
+        def on_load(prereqs):
+            if self.isDestroyed:
+                return
+            self.PSparkle = prereqs.produce(0)
+            BigWorld.callback(0.5, self._startSparkle)
+
+        ResourceLoader.asyncLoad([(ResourceLoader.PARTICLE, PARTICLE_FIREWORKS_NG_PATH)], on_load)
 
     def _startSparkle(self):
         if self.isDestroyed:
@@ -75,22 +95,28 @@ class FireWorks(BigWorld.Entity):
         self.sparkler_sound = playSound(self.SOUND_SPARKLE, self.model)
 
     def explodeFireWorks(self):
-        explode_sfx = 'sfx/weapons/grenades/grenade_explode.xml'
-        FX.OneShot(explode_sfx).go(self.model)
+        explode_sfx = 'sfx/weapons/grenades/explosion_fake.xml'
+        FX.bufferedOneShotEffect(explode_sfx, self.model)
 
     def startFire(self, endPos, isColision):
-        self.endPos = endPos
-        self.isColision = isColision
-        self.flyModel = BigWorld.Model('')
-        self.explodeModel = BigWorld.Model('')
-        self.FWtrain = Pixie.create('particles/fireworks_sparks.xml')
-        BigWorld.addModel(self.flyModel, self.spaceID)
-        BigWorld.addModel(self.explodeModel, self.spaceID)
-        self.explodeModel.position = self.endPos
-        self.flyModel.position = self.position
-        self.flyModel.root.attach(self.FWtrain)
-        self.onFly()
-        playSound(self.SOUND_ROCKETSTART, self.model)
+
+        def on_load(prereqs):
+            if self.isDestroyed:
+                return
+            self.FWtrain = prereqs.produce(0)
+            self.endPos = endPos
+            self.isColision = isColision
+            self.flyModel = BigWorld.Model('')
+            self.explodeModel = BigWorld.Model('')
+            self.addModel(self.flyModel)
+            self.addModel(self.explodeModel)
+            self.explodeModel.position = self.endPos
+            self.flyModel.position = self.position
+            self.flyModel.root.attach(self.FWtrain)
+            self.onFly()
+            playSound(self.SOUND_ROCKETSTART, self.model)
+
+        ResourceLoader.asyncLoad([(ResourceLoader.PARTICLE, PARTICLE_FIREWORKS_SPARKS_PATH)], on_load)
 
     def onFly(self):
         if self.isDestroyed:
@@ -111,7 +137,9 @@ class FireWorks(BigWorld.Entity):
         def delModel():
             if self.isDestroyed:
                 return
-            BigWorld.delModel(self.flyModel)
+            if not self.flyModel:
+                return
+            self.delModel(self.flyModel)
 
         BigWorld.callback(2.0, delModel)
         if self.isColision:
@@ -121,12 +149,14 @@ class FireWorks(BigWorld.Entity):
         BigWorld.callback(0.6, self.explode)
 
     def explode(self):
+        if self.isDestroyed:
+            return
         if self.isColision:
-            explode_sfx = 'sfx/weapons/grenades/grenade_explode.xml'
-            FX.OneShot(explode_sfx).go(self.explodeModel)
+            explode_sfx = 'sfx/weapons/grenades/explosion_fake.xml'
+            FX.bufferedOneShotEffect(explode_sfx, self.explodeModel)
             return
         lasttime = 0.0
-        for i in range(self.number):
+        for i in xrange(self.number):
             lasttime += random.randrange(0.1, 0.6, int=float)
             BigWorld.callback(lasttime, self.randomExpl)
 
@@ -134,7 +164,7 @@ class FireWorks(BigWorld.Entity):
         if self.isDestroyed:
             return
         mexpl = BigWorld.Model('')
-        BigWorld.addModel(mexpl, self.spaceID)
+        self.addModel(mexpl)
         r = self.radius
         if r > 0:
             r3 = (random.randrange(-r, r, int=float), random.randrange(-r / 2, r / 2, int=float), random.randrange(-r, r, int=float))
@@ -142,9 +172,15 @@ class FireWorks(BigWorld.Entity):
             r3 = (0, 0, 0)
         mexpl.position = self.explodeModel.position + r3
         names = '\n\t\t\t\tfx_expanding_sprite02\n\t\t\t\tfw_green_white_burst\n\t\t\t\tfw_purple_burst\n\t\t\t\tfw_red_green_burst\n\t\t\t\tfw_red_yellow_burst\n\t\t\t\tfw_white_jitter_burst\n\t\t\t\tfw_white_sparse_burst'.split()
-        part = Pixie.create('particles/%s.xml' % random.choice(names))
-        mexpl.root.attach(part)
-        BigWorld.callback(0.3, partial(self._soundPlay, mexpl))
+
+        def on_load(prereqs):
+            if self.isDestroyed:
+                return
+            part = prereqs.produce(0)
+            mexpl.root.attach(part)
+            BigWorld.callback(0.3, partial(self._soundPlay, mexpl))
+
+        ResourceLoader.asyncLoad([(ResourceLoader.PARTICLE, 'particles/%s.xml' % random.choice(names))], on_load)
 
     def _soundPlay(self, model):
         if self.isDestroyed:
@@ -171,21 +207,21 @@ class FireWorks(BigWorld.Entity):
         model.scale = (0.1, 10, 0.1)
 
     def delExpl(self, model):
-        BigWorld.delModel(model)
+        self.delModel(model)
 
     def _delHelpsModels(self):
         try:
-            BigWorld.delModel(self.flyModel)
-        except Exception as e:
+            self.delModel(self.flyModel)
+        except Exception:
             pass
 
         try:
-            BigWorld.delModel(self.explodeModel)
-        except Exception as e:
+            self.delModel(self.explodeModel)
+        except Exception:
             pass
 
         if self.modelFuseS:
             try:
-                BigWorld.delModel(self.modelFuseS)
-            except Exception as e:
+                self.delModel(self.modelFuseS)
+            except Exception:
                 pass

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/ClientTestTrigger.py
+# Embedded file name: ./client/ClientTestTrigger.py
 import BigWorld
 import Math
 import Pixie
@@ -29,25 +29,6 @@ class ClientTestTrigger(BigWorld.Entity):
         if self.TriggeredOnPlayer:
             self._pl_hundle = BigWorld.addPot(self.matrix, self.radius, self.onPlayerHitPot)
 
-    def _drawRadius(self, radius):
-        if not self.model:
-            return
-        else:
-            self.model.addLineDraw(self.position, self.position + (0, 2, 0), (1, 1, 0, 1), 0)
-            v = Math.Vector3()
-            w = 0
-            last = None
-            segments = 20
-            for x in range(segments + 1):
-                w += 6.28 / segments
-                v.setPitchYaw(0, w)
-                pos1 = self.position + v * radius
-                if last:
-                    self.model.addLineDraw(last + (0, 0.05, 0), pos1 + (0, 0.05, 0), (1, 0, 0, 1), 0)
-                last = pos1
-
-            return
-
     def onPlayerHitPot(self, enteredTrap, handle):
         if enteredTrap:
             if time.time() - self._last_enter_time < self.ReUseOnEnterTime:
@@ -65,7 +46,9 @@ class ClientTestTrigger(BigWorld.Entity):
         lmanager.setState(self.targetNodes, new_state, self.id)
 
     def onLeaveWorld(self):
-        BigWorld.delPot(self._pl_hundle)
+        if self._pl_hundle:
+            BigWorld.delPot(self._pl_hundle)
+            self._pl_hundle = None
         lmanager.destroyLights([ udo.guid for udo in self.targetNodes ])
         self.model = None
         return

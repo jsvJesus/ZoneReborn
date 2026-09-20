@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/Helpers/BWKeyBindings.py
+# Embedded file name: ./client/Helpers/BWKeyBindings.py
 """
 Utility methods for managing keybindings
 """
@@ -9,6 +9,8 @@ import ResMgr
 from functools import partial
 from Localization import lc
 from bwdebug import ERROR_MSG, INFO_MSG, TRACE_MSG
+import re
+import colorCodes as cc
 KEY_ALIAS_CONTROL = (Keys.KEY_LCONTROL, Keys.KEY_RCONTROL)
 KEY_ALIAS_ALT = (Keys.KEY_LALT, Keys.KEY_RALT)
 KEY_ALIAS_SHIFT = (Keys.KEY_LSHIFT, Keys.KEY_RSHIFT)
@@ -16,7 +18,41 @@ KEY_ALIAS_WINDOWS = (Keys.KEY_LWIN, Keys.KEY_RWIN)
 keyAliases = {'CONTROL': KEY_ALIAS_CONTROL,
  'ALT': KEY_ALIAS_ALT,
  'SHIFT': KEY_ALIAS_SHIFT,
- 'WINDOWS': KEY_ALIAS_WINDOWS}
+ 'WINDOWS': KEY_ALIAS_WINDOWS,
+ 'CTRL': KEY_ALIAS_CONTROL,
+ '-': (Keys.KEY_MINUS,),
+ '=': (Keys.KEY_EQUALS,),
+ '~': (Keys.KEY_GRAVE,),
+ '>': (Keys.KEY_PERIOD,),
+ '<': (Keys.KEY_COMMA,),
+ '/': (Keys.KEY_SLASH,),
+ '[': (Keys.KEY_LBRACKET,),
+ ']': (Keys.KEY_RBRACKET,),
+ ';': (Keys.KEY_SEMICOLON,),
+ "'": (Keys.KEY_APOSTROPHE,),
+ '\\': (Keys.KEY_BACKSLASH,)}
+key_names = {'MOUSE0': 'LEFTMOUSE',
+ 'MOUSE2': 'MIDDLEMOUSE',
+ 'LCONTROL': 'CTRL',
+ 'RCONTROL': 'CTRL',
+ 'CONTROL': 'CTRL',
+ 'LALT': 'ALT',
+ 'RALT': 'ALT',
+ 'LSHIFT': 'SHIFT',
+ 'RSHIFT': 'SHIFT',
+ 'LWIN': 'WINDOWS',
+ 'RWIN': 'WINDOWS',
+ 'GRAVE': '~',
+ 'MINUS': '-',
+ 'EQUALS': '=',
+ 'PERIOD': '>',
+ 'COMMA': '<',
+ 'SLASH': '/',
+ 'LBRACKET': '[',
+ 'RBRACKET': ']',
+ 'SEMICOLON': ';',
+ 'APOSTROPHE': "'",
+ 'BACKSLASH': '\\'}
 
 def _stringToKey(key):
     if key in keyAliases:
@@ -27,7 +63,8 @@ def _stringToKey(key):
 
 def _keyToString(key):
     try:
-        return _reverseKeysLookup[key]
+        key_name = _reverseKeysLookup[key]
+        return key_names.get(key_name, key_name)
     except KeyError:
         return ''
 
@@ -177,7 +214,10 @@ class BWKeyBindings():
                         notDownLists.append(notDownList)
 
             for actionName in actionNames:
-                self.bindList.append((downKeys, notDownLists, actionName))
+                if len(downKeys) > 1:
+                    self.bindList.insert(0, (downKeys, notDownLists, actionName))
+                else:
+                    self.bindList.append((downKeys, notDownLists, actionName))
 
         for entity in self.handlers:
             if getattr(entity, 'onBindCallback', None):
@@ -218,15 +258,21 @@ class BWKeyBindings():
                         print '}',
                 print
 
-    def getInteractObjectkey(self):
-        key_str = 'None'
+    def getKeyBindForAction(self, action):
+        key_str = ''
         use_key = 'no use_key'
         try:
-            use_key = self.getBindingsForAction('InteractObject')
+            use_key = self.getBindingsForAction(action)
             if use_key:
-                key_str = self.checkKeyCode(use_key[0][0])
+                list_key = list(use_key[0])
+                list_key.sort()
+                for index, key in enumerate(list_key):
+                    if index:
+                        key_str = ' + ' + key_str
+                    key_str = self.checkKeyCode(key) + key_str
+
         except:
-            print 'use_key', repr(use_key)
+            print 'getKeyBindForAction', repr(use_key)
             traceback.print_exc()
 
         return key_str
@@ -237,21 +283,33 @@ class BWKeyBindings():
         elif isinstance(keys, int):
             use_key = keys
         key_code_string = BigWorld.keyToString(use_key)
-        if key_code_string in ('LCONTROL', 'RCONTROL'):
-            key_code_string = 'Ctrl'
-        elif key_code_string in ('LALT', 'RALT'):
-            key_code_string = 'Alt'
-        elif key_code_string in ('LSHIFT', 'RSHIFT'):
-            key_code_string = 'Shift'
-        elif key_code_string in ('LWIN', 'RWIN'):
-            key_code_string = 'Win'
-        return key_code_string
+        return key_names.get(key_code_string, key_code_string)
 
     def getBindingsForAction(self, actionName):
         if self.actionsByName.has_key(actionName):
             return self.actionsByName[actionName].getBindings()
         else:
             return []
+
+    def parse_actions_and_replace(self, text, colorise = False):
+        """ \xd0\xbf\xd0\xb0\xd1\x80\xd1\x81\xd0\xb8\xd1\x82 \xd1\x8d\xd0\xba\xd1\x88\xd0\xb5\xd0\xbd\xd1\x8b \xd0\xb2 \xd1\x84\xd0\xbe\xd1\x80\xd0\xbc\xd0\xb0\xd1\x82\xd0\xb5 {actionname} \xd0\xb8 \xd0\xb7\xd0\xb0\xd0\xbc\xd0\xb5\xd0\xbd\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xb8\xd1\x85 \xd0\xb1\xd0\xb0\xd0\xb9\xd0\xbd\xd0\xb4\xd0\xb0\xd0\xbd\xd1\x83\xd1\x82\xd1\x8b\xd0\xbc\xd0\xb8 \xd0\xba\xd0\xbb\xd0\xb0\xd0\xb2\xd0\xb8\xd1\x88\xd0\xb0\xd0\xbc\xd0\xb8 """
+        try:
+            found_subs = re.findall('\\{\\S*?\\}', text)
+            for sub in found_subs:
+                sub_content = sub[1:-1]
+                action = self.actionsByName.get(sub_content)
+                if not action:
+                    continue
+                insertion = self.getKeyBindForAction(sub_content)
+                if colorise:
+                    insertion = cc.active_xml + insertion + '<basecolor>'
+                text = text.replace(sub, insertion)
+
+        except:
+            traceback.print_stack()
+            traceback.print_exc()
+
+        return text
 
     def getBrKeyNameBindingsByActionName(self, actionName):
         FIRST_KEY = 0
@@ -319,6 +377,8 @@ class BWKeyBindings():
                 for entity in reversed(self.handlers):
                     if entity.actionFunctions.has_key(actionName):
                         ret = entity.actionFunctions[actionName](okayToGo, event)
+                        if ret and len(downKeys) > 1 and okayToGo:
+                            return
                         if ret != False:
                             break
 
@@ -329,6 +389,19 @@ class BWKeyBindings():
 
     def registerHook(self, handler):
         self.__hook_handler = handler
+
+    def updateHook(self, handler):
+        if self.__hook_handler:
+            if self.__hook_handler.id == handler.id:
+                self.registerHook(handler)
+                return True
+        return False
+
+    def unregisterHook(self, handler):
+        if self.__hook_handler == handler:
+            self.clearHook()
+            return True
+        return False
 
     def clearHook(self):
         self.__hook_handler = None
@@ -379,7 +452,7 @@ class _ActionBinding():
         keys = keyString.split()
         keys = [ _stringToKey(key) for key in keys ]
         if 0 in keys:
-            ERROR_MSG("Action '%s' is bound to one or more invalid keys" % (self.actionName,))
+            ERROR_MSG("Action '%s' is bound to one or more invalid keys %r %r" % (self.actionName, keyString, keys))
         if len(keys) > 0:
             self.bindings += (tuple(sorted(keys)),)
         self.defaultBindings = self.bindings

@@ -19,7 +19,8 @@
 					8.0,
 					9.0,
 					10.0,
-					11.0
+					11.0,
+                    12.0
 					],
                 "user": "",
                 "defaultTab": "ENGLISH"	,
@@ -82,11 +83,27 @@
                     4.0,
                     6.0,
                     8.0,
-                    10.0
+                    10.0,
+                    12.0
                 ],
                 "user": "",
 				"onlyEng":false,
                 "defaultTab": "CLAN"
+                
+            },
+            "Tab5":{
+                "whisp": false,
+                "channals": [
+                    0.0,
+                    1.0,
+                    2.0,
+                    4.0,
+                    10.0,
+                    13.0
+                ],
+                "user": "",
+                "onlyEng":false,
+                "defaultTab": "PVP"
                 
             }
 

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/bwdecorators.py
+# Embedded file name: ./common/bwdecorators.py
 
 
 def callableOnGhost(f):

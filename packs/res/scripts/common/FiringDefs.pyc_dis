@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/FiringDefs.py
+# Embedded file name: ./common/FiringDefs.py
 """
 Created on 21.07.2010
 
@@ -11,10 +11,11 @@ class FiringDefs(object):
     globalDamageMultiplier = 1.0
     MAX_RECOIL_VALUE = 0.3
     STRONGEST_KICKBACK = MAX_RECOIL_VALUE / 3.0
-    PITCH_BORDER_VALUE = 1.0
+    PITCH_BORDER_VALUE = 1.49
     UPDATE_LOOK_TEMER_PERIOD = 0.1
     KICKBACK_UPDATE_RATE = UPDATE_LOOK_TEMER_PERIOD
     KIKCBACK_RECOVERY_RATE = 4.0
+    DEF_PIVOT_MAX = 3.5
     DEF_CLOSE_MAX = 0.9
     DEF_FAR_MAX = 2.0
     DEF_HORIZONTAL = 0.35

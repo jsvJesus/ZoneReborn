@@ -1,11 +1,13 @@
-# Embedded file name: ./scripts/client/CueModel.py
+# Embedded file name: ./client/CueModel.py
 import FX
 import BigWorld
 import traceback
+import sounds_manager as sounds
 from functools import partial
 from CueModelUtills import CueModelUtills
 
 class CueModel(object):
+    avatarInWater = False
 
     def __init__(self):
         pass
@@ -24,13 +26,40 @@ class CueModel(object):
 
             return
 
-    def cueTrigger(self, cue_name, event_time):
+    def cueTrigger(self, cue_name):
+        if self.isDestroyed or not self.model:
+            return
+        else:
+            model_name = self.model.sources[0]
+            cue_data = CueModelUtills().get_cue_data(model_name, cue_name)
+            if cue_data.get('ignore_in_water', False) and self.avatarInWater:
+                return
+            self._loadCueSFXByMaterialKind(cue_data.get('self_sfx_materkind', {}))
+            self._loadCueSFX(cue_data.get('sfx', {}))
+            self._loadSound(cue_data.get('sound', None))
+            self._loadCueModels(cue_data.get('models', {}), cue_data.has_key('use_item'), cue_data.has_key('hands'))
+            return
+
+    def _loadSound(self, sound_path):
+        if not sound_path:
+            return
         if not self.model:
             return
-        model_name = self.model.sources[0]
-        cue_data = CueModelUtills().get_cue_data(model_name, cue_name)
-        self._loadCueSFX(cue_data.get('sfx', {}))
-        self._loadCueModels(cue_data.get('models', {}), cue_data.has_key('use_item'))
+        sounds.playSound(sound_path, self.model)
+
+    def _loadCueSFXByMaterialKind(self, sfxes):
+        if not sfxes:
+            return
+        else:
+            res = BigWorld.collide(self.spaceID, self.position + (0, 1, 0), self.position - (0, 1, 0))
+            if not res:
+                return
+            mat_id = str(res[-1])
+            sfx_path = sfxes.get('DEF', None)
+            sfx_path = sfxes.get(mat_id, sfx_path)
+            if sfx_path:
+                FX.bufferedOneShotEffect(str(sfx_path), self.model)
+            return
 
     def _loadCueSFX(self, sfxes):
         for target_name, sfx_path in sfxes.items():
@@ -44,12 +73,14 @@ class CueModel(object):
 
         return
 
-    def _loadCueModels(self, cue_models, use_item = False):
-        if use_item and (self._in_hand_model_effectorleft or self._in_hand_model_effectorright):
-            self.model.effectorleft = self._in_hand_model_effectorleft
-            self.model.effectorright = self._in_hand_model_effectorright
+    def _loadCueModels(self, cue_models, use_item = False, hands = False):
+        if use_item and (self._in_hand_model_left or self._in_hand_model_right):
+            self.model.ThrowLeft = self._in_hand_model_left
+            self.model.ThrowRight = self._in_hand_model_right
             return
         else:
+            if hands and (self._in_hand_model_left or self._in_hand_model_right):
+                self.model.Lhand = self._in_hand_model_left
             for target_name, model_param in cue_models.items():
                 model_list_names = model_param.get('model', [])
                 if not model_list_names:
@@ -73,6 +104,8 @@ class CueModel(object):
                         continue
 
                 def onLoadCueModel(node_name, tint_list, model):
+                    if self.isDestroyed:
+                        return
                     try:
                         setattr(self.model, str(node_name), model)
                     except Exception as e:

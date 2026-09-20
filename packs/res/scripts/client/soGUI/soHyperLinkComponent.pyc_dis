@@ -1,16 +1,12 @@
-# Embedded file name: ./scripts/client/soGUI/soHyperLinkComponent.py
+# Embedded file name: ./client/soGUI/soHyperLinkComponent.py
 import BWPersonality
 import BigWorld
-import GUI
 import Helpers.PyGUI as PyGUI
-import soGUI
 import Keys
-import Helpers.PyGUI.TextStyles as TextStyles
-from Helpers.PyGUI.VisualStateComponent import VisualState, VisualStateComponent
+from Helpers.PyGUI.VisualStateComponent import VisualState
 from soGUI.soVisualStateComponent import soVisualStateComponent
 from soGUI.soToolTipComponent import soToolTipComponent
 from Helpers.PyGUI.PyGUIBase import PyGUIBase
-import Helpers.PyGUI.Utils
 
 class soHLinkVisualState(VisualState):
 

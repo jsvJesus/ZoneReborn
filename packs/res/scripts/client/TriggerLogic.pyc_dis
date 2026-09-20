@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/TriggerLogic.py
+# Embedded file name: ./client/TriggerLogic.py
 import BigWorld
 
 class TriggerLogic(BigWorld.UserDataObject):

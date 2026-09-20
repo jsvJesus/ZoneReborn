@@ -1,12 +1,9 @@
-# Embedded file name: ./scripts/client/soGUI/soFlashEmotionsGUI.py
+# Embedded file name: ./client/soGUI/soFlashEmotionsGUI.py
 import BWPersonality
 import BigWorld
 import GUI
 import Keys
-import ResMgr
-import json
-import Keys
-import pickle
+import pyson
 import GesturesUtils
 from .FlashGUIBase import FlashScriptGUIBase
 from .flash_utils import FlashTeamWorker
@@ -14,6 +11,8 @@ from Localization import lc
 from Helpers import BWKeyBindings
 import utils
 import os
+from soGUI import MouseShaper
+from soGUI.GUIPositions import GUIPositions
 
 class soFlashEmotionsGUI(FlashScriptGUIBase, FlashTeamWorker):
     factoryString = 'soFlashEmotionsGUI'
@@ -26,7 +25,7 @@ class soFlashEmotionsGUI(FlashScriptGUIBase, FlashTeamWorker):
         self.bind_to_parrent_layer(layer)
         self._current_cursor = ''
         self._emotions_data = None
-        self._save_path = os.path.join(utils.stalker_path(), 'usercontent\\emotions.pickle')
+        self._save_path = os.path.join(utils.stalker_path(), 'usercontent/emotions.pyson')
         self._saved_data = {}
         self._key_bind_id = 0
         return
@@ -54,7 +53,7 @@ class soFlashEmotionsGUI(FlashScriptGUIBase, FlashTeamWorker):
         if os.path.exists(self._save_path):
             try:
                 with open(self._save_path, 'rb') as fh:
-                    loaded_data = pickle.load(fh)
+                    loaded_data = pyson.loads(fh.read())
             except:
                 pass
 
@@ -66,7 +65,7 @@ class soFlashEmotionsGUI(FlashScriptGUIBase, FlashTeamWorker):
         if not os.path.exists(settings_dir):
             os.makedirs(settings_dir)
         with open(self._save_path, 'wb') as fh:
-            pickle.dump(self._saved_data, fh)
+            fh.write(pyson.dumps(self._saved_data))
 
     def externalInterfaceHandler(self, *args, **kws):
         FlashTeamWorker.externalInterfaceHandler(self, *args, **kws)
@@ -118,7 +117,12 @@ class soFlashEmotionsGUI(FlashScriptGUIBase, FlashTeamWorker):
     def set_local(self):
         return {'Title': lc('EmotionsGUI.Title'),
          'BIND_KEY': lc('EmotionsGUI.BIND_KEY'),
-         'Help': lc('EmotionsGUI.Help')}
+         'Help': lc('EmotionsGUI.Help'),
+         'Localization': BWPersonality.settings.getLanguage()}
+
+    @FlashTeamWorker.sending_method
+    def change_local(self):
+        return {'Localization': BWPersonality.settings.getLanguage()}
 
     @FlashTeamWorker.exchanging_method
     def get_settings(self):
@@ -184,11 +188,28 @@ class soFlashEmotionsGUI(FlashScriptGUIBase, FlashTeamWorker):
 
     @FlashTeamWorker.sending_method
     def reset_position(self):
+        print 'soFlashEmotionsGUI::reset_position'
         return True
 
     @FlashTeamWorker.sending_method
     def doReposition(self):
         return True
+
+    @FlashTeamWorker.receiving_method
+    def save_position(self, x, y):
+        GUIPositions.save_position(self.factoryString, (x, y))
+
+    @FlashTeamWorker.sending_method
+    def load_position(self, pos):
+        x, y = pos
+        return {'x': x,
+         'y': y}
+
+    def get_flash_position(self):
+        pos = GUIPositions.get_positon(self.factoryString)
+        if not pos:
+            return
+        self.load_position(pos)
 
     @FlashTeamWorker.exchanging_method
     def localized_resource(self, paths):
@@ -202,6 +223,7 @@ class soFlashEmotionsGUI(FlashScriptGUIBase, FlashTeamWorker):
         if arr:
             self.set_animations(arr)
         self.get_current_animations()
+        self.get_flash_position()
 
     def updateEmotionData(self):
         arr = self.get_emotions_data()
@@ -214,12 +236,12 @@ class soFlashEmotionsGUI(FlashScriptGUIBase, FlashTeamWorker):
         """\xd0\xa3\xd1\x81\xd1\x82\xd0\xb0\xd0\xbd\xd0\xb0\xd0\xb2\xd0\xbb\xd0\xb8\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbd\xd1\x83\xd0\xb6\xd0\xbd\xd1\x8b\xd0\xb9 \xd0\xba\xd1\x83\xd1\x80\xd1\x81\xd0\xbe\xd1\x80 \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x80\xd0\xb5\xd1\x81\xd0\xb0\xd0\xb9\xd0\xb7\xd0\xb0 \xd0\xbe\xd0\xba\xd0\xbd\xd0\xb0 \xd1\x87\xd0\xb0\xd1\x82\xd0\xb0"""
         if cursor_data == 'default':
             if self._current_cursor:
-                GUI.mcursor().shape = self._current_cursor
-            self._current_cursor = ''
+                MouseShaper.set_shape(self._current_cursor)
+                self._current_cursor = ''
         else:
             if not self._current_cursor:
-                self._current_cursor = GUI.mcursor().shape
-            GUI.mcursor().shape = cursor_data
+                self._current_cursor = 'arrow'
+            MouseShaper.set_shape(cursor_data)
 
     @FlashTeamWorker.receiving_method
     def play_anim(self, anim_id):
@@ -256,7 +278,6 @@ class soFlashEmotionsGUI(FlashScriptGUIBase, FlashTeamWorker):
 
     def handleKeyEvent(self, event):
         key = event.key
-        mods = event.modifiers
         if key in [Keys.KEY_LEFTMOUSE, Keys.KEY_MIDDLEMOUSE, Keys.KEY_RIGHTMOUSE]:
             return super(soFlashEmotionsGUI, self).handleMouseButtonEvent(self, event)
         if not event.isKeyDown():

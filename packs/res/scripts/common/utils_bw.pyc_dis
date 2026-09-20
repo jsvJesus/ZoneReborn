@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/utils_bw.py
+# Embedded file name: ./common/utils_bw.py
 import os
 import re
 import inspect
@@ -20,11 +20,35 @@ def isCellApp():
     return BigWorld.component == 'cell'
 
 
+def isClientConsumer():
+    return isClient() and BigWorld.isConsumer()
+
+
+PORTALS_DEPTH_COLLIDE = 2
+IGNORE_MATERIAL = [139, 140, 255]
+IGNORE_MATERIAL_FOR_SHOT = [139,
+ 140,
+ 255,
+ 3]
+VALID_USERNAME_REGEX = u'(?:^[\u0430-\u044f]+[\u0430-\u044f0-9\\_]{2,})|(?:^[a-z]+[a-z0-9\\_]{2,})$'
+REGEX_NAME = u'^(([\u0430-\u044f0-9\\_]*)|([a-z0-9\\_]*))$'
+MAIL_REGEX = '^[A-Za-z0-9\\.\\+_-]+@[A-Za-z0-9\\._-]+\\.[a-zA-Z]*$'
+
+class BSP_FLAGS:
+    TRIANGLE_CAMERANOCOLLIDE = 1
+    TRIANGLE_TRANSPARENT = 2
+    TRIANGLE_BLENDED = 4
+    TRIANGLE_TERRAIN = 8
+    TRIANGLE_NOCOLLIDE = 16
+    ANY = TRIANGLE_CAMERANOCOLLIDE | TRIANGLE_TRANSPARENT | TRIANGLE_BLENDED | TRIANGLE_TERRAIN | TRIANGLE_NOCOLLIDE
+
+
 def collide(spaceID, start_pos, end_pos, level = 0):
+    """ \xd0\xbc\xd0\xb5\xd1\x82\xd0\xbe\xd0\xb4 \xd1\x83\xd1\x81\xd1\x82\xd0\xb0\xd1\x80\xd0\xb5\xd0\xbb, \xd1\x80\xd0\xb5\xd0\xba\xd0\xbe\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb4\xd1\x83\xd0\xb5\xd1\x82\xd1\x81\xd1\x8f \xd0\xb8\xd1\x81\xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd1\x8c BigWorld.collideIgnoreFlags """
     result = BigWorld.collide(spaceID, start_pos, end_pos)
     if result is None:
         return
-    elif result[2] == 255 and result[0].distTo(end_pos) > 0.01:
+    elif result[2] in IGNORE_MATERIAL and result[0].distTo(end_pos) > 0.01:
         if level > 10:
             return
         direct = end_pos - result[0]
@@ -33,6 +57,27 @@ def collide(spaceID, start_pos, end_pos, level = 0):
         return collide(spaceID, result[0] + direct * 0.1, end_pos, level + 1)
     else:
         return result
+
+
+def collideIgnoreNoVisible(spaceID, start_pos, end_pos):
+    return BigWorld.collideIgnoreFlags(spaceID, start_pos, end_pos, IGNORE_MATERIAL)
+
+
+def collideForShooting(spaceID, start_pos, end_pos):
+    result = BigWorld.collideIgnoreFlags(spaceID, start_pos, end_pos, IGNORE_MATERIAL_FOR_SHOT)
+    if result and result[0]:
+        return result
+    else:
+        return None
+
+
+def double_sided(material_id, flags):
+    """ \xd0\xbe\xd0\xbf\xd1\x80\xd0\xb5\xd0\xb4\xd0\xb5\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xb4\xd0\xb2\xd1\x83\xd1\x85\xd1\x81\xd1\x82\xd0\xbe\xd1\x80\xd0\xbe\xd0\xbd\xd0\xbd\xd0\xb8\xd0\xb9 \xd0\xbc\xd0\xb0\xd1\x82\xd0\xb5\xd1\x80\xd0\xb8\xd0\xb0\xd0\xbb
+            flags - \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xb8 \xd0\xba\xd0\xbe\xd0\xbb\xd0\xbb\xd0\xb8\xd0\xb7\xd0\xb8\xd0\xb8
+    """
+    if material_id == 120:
+        return False
+    return flags & 32
 
 
 def get_class(class_name, module_name = None):
@@ -151,6 +196,10 @@ def isinstance_ext(entity_or_mailbox, classes_or_classnames, __cache = {}):
     return False
 
 
+def is_ent_npc(ent):
+    return get_classname(ent) == 'NPC'
+
+
 def packDict(d):
     """Packs a dict into appropriate FixedDict of arrays."""
     return dict(keys=d.keys(), values=d.values())
@@ -198,7 +247,7 @@ def requires_instanceof(cls):
 
 def is_username_valid(username):
     from Localization import lc
-    pattern = lc('Account.VALID_USERNAME_REGEX')
+    pattern = VALID_USERNAME_REGEX
     return bool(re.match(pattern, username.lower()))
 
 
@@ -211,7 +260,8 @@ def entities_in_range(entity, radius, class_names, position = None):
 
 
 def check_udo_loaded(udo_list, valid_class_names, attrib_name, drop_invalid = False):
-    for i, udo in enumerate(udo_list):
+    for i in xrange(len(udo_list) - 1, -1, -1):
+        udo = udo_list[i]
         class_name = udo.__class__.__name__
         if class_name == 'UserDataObjectRef':
             return False
@@ -230,7 +280,8 @@ def check_udo_loaded(udo_list, valid_class_names, attrib_name, drop_invalid = Fa
 def remove_invalid_udos(udo_list, valid_class_names):
     """Remove all invalid UDOs. UDOs must be loaded before run this func."""
     removed = []
-    for i, udo in enumerate(udo_list):
+    for i in xrange(len(udo_list) - 1, -1, -1):
+        udo = udo_list[i]
         if udo.__class__.__name__ not in valid_class_names:
             removed.append(udo_list.pop(i))
 
@@ -248,9 +299,10 @@ def get_enum_from_alias_widget(param_name):
 
 if isClient():
     from Helpers.BWCoroutine import BWCoroutine, BWWaitForCondition, BWCoroutineTimeoutException, _BWCoroutineFunction, BWWaitForCoroutine
+    CURRENT_CORUTINES = {}
 
     @BWCoroutine
-    def __wait__(condition_callable, on_success_callable, timeout = None, on_timeout_callable = None):
+    def __wait__(condition_callable, on_success_callable, timeout = None, on_timeout_callable = None, string_id = ''):
         try:
             if isinstance(condition_callable, _BWCoroutineFunction):
                 yield BWWaitForCoroutine(condition_callable, timeout)
@@ -259,13 +311,35 @@ if isClient():
         except BWCoroutineTimeoutException:
             if callable(on_timeout_callable):
                 on_timeout_callable()
+                stop_wait(string_id)
             raise StopIteration()
 
         on_success_callable()
+        stop_wait(string_id, True)
 
 
-    def wait(condition_callable, on_success_callable, timeout = None, on_timeout_callable = None):
-        __wait__(condition_callable, on_success_callable, timeout, on_timeout_callable).run()
+    def wait(condition_callable, on_success_callable, timeout = None, on_timeout_callable = None, string_id = ''):
+        global CURRENT_CORUTINES
+        corutine = __wait__(condition_callable, on_success_callable, timeout, on_timeout_callable, string_id)
+        if string_id:
+            if not CURRENT_CORUTINES.has_key(string_id):
+                CURRENT_CORUTINES[string_id] = corutine
+            else:
+                print 'SAVED CORUTINE ERROR', string_id
+                import traceback
+                traceback.print_stack()
+        corutine.run()
+
+
+    def stop_wait(string_id, only_clear = False):
+        if not CURRENT_CORUTINES.has_key(string_id):
+            return False
+        else:
+            if not only_clear:
+                CURRENT_CORUTINES[string_id].stop()
+            CURRENT_CORUTINES[string_id] = None
+            del CURRENT_CORUTINES[string_id]
+            return True
 
 
     def inRange(entity1, entity2, dist = 2.0):
@@ -349,3 +423,96 @@ class ServerEntityDebugger:
         if not ServerEntityDebugger._instance:
             ServerEntityDebugger._instance = ServerEntityDebugger()
         return ServerEntityDebugger._instance
+
+
+__packed = None
+
+def isPackedClient():
+    global __packed
+    if __packed is not None:
+        return __packed
+    else:
+        import os
+        if os.path.isfile('../res/scripts_config.xml'):
+            __packed = False
+        else:
+            __packed = True
+        return __packed
+
+
+_SERVER_NAMES = {'server_EKB': 'RU1(EKB)',
+ 'spb-test': 'RU2(SPB)',
+ 'server_MSK': 'RU3(MSK)',
+ 'steam-eu1': 'EU',
+ 'steam-us1': 'US'}
+
+def loc_server_name(server_name):
+    return str(_SERVER_NAMES.get(server_name, server_name))
+
+
+def not_safe_animation_callback(foo):
+
+    def wrap(*w, **kw):
+        return foo(*w, **kw)
+
+    wrap.not_safe_call = True
+    return wrap
+
+
+def execute_db_command(command, callback, *args, **kargs):
+    """ \xd0\xbf\xd1\x80\xd0\xbe\xd1\x82\xd0\xb8\xd0\xb2\xd0\xbe sql-\xd0\xb8\xd0\xbd\xd1\x8a\xd0\xb5\xd0\xba\xd1\x86\xd0\xb8\xd0\xbe\xd0\xbd\xd0\xbd\xd0\xbe\xd0\xb5 \xd1\x81\xd1\x80\xd0\xb5\xd0\xb4\xd1\x81\xd1\x82\xd0\xb2\xd0\xbe """
+    args = list(args)
+    for i in xrange(len(args)):
+        args[i] = escape_value(args[i])
+
+    for key in kargs:
+        kargs[key] = escape_value(kargs[key])
+
+    try:
+        command = command.format(*args, **kargs)
+    except:
+        print 'sql utils ERROR', (args, kargs)
+        raise
+
+    BigWorld.executeRawDatabaseCommand(command, callback)
+
+
+def escape_value(value):
+    if isinstance(value, str):
+        return escape_string(value)
+    elif isinstance(value, unicode):
+        return escape_unicode(value)
+    else:
+        return escape_string(str(value))
+
+
+def escape_string(value):
+    value = value.replace('\\', '\\\\')
+    value = value.replace('\x00', '\\0')
+    value = value.replace('\n', '\\n')
+    value = value.replace('\r', '\\r')
+    value = value.replace('\x1a', '\\Z')
+    value = value.replace("'", "\\'")
+    value = value.replace('"', '\\"')
+    value = value.replace('\x08', '\\b')
+    value = value.replace('\t', '\\t')
+    value = value.replace('\x1a', '\\z')
+    value = value.replace('%', '\\%')
+    return value
+
+
+_escape_table = [ unichr(x) for x in xrange(128) ]
+_escape_table[0] = u'\\0'
+_escape_table[ord('\\')] = u'\\\\'
+_escape_table[ord('\n')] = u'\\n'
+_escape_table[ord('\r')] = u'\\r'
+_escape_table[ord('\x1a')] = u'\\Z'
+_escape_table[ord('"')] = u'\\"'
+_escape_table[ord("'")] = u"\\'"
+_escape_table[ord('\x08')] = u'\\b'
+_escape_table[ord('\t')] = u'\\t'
+_escape_table[ord('\x1a')] = u'\\z'
+_escape_table[ord('%')] = u'\\%'
+
+def escape_unicode(value):
+    return value.translate(_escape_table)

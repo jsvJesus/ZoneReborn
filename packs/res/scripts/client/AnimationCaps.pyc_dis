@@ -1,6 +1,7 @@
-# Embedded file name: ./scripts/client/AnimationCaps.py
+# Embedded file name: ./client/AnimationCaps.py
 __author__ = 'muzhig'
 __animation_caps__ = {}
+__animation_caps_name_by_id__ = {}
 import ResMgr
 
 def loadAnimationCaps():
@@ -8,12 +9,17 @@ def loadAnimationCaps():
         for state in ResMgr.openSection('scripts/common/capabilities.xml').values():
             if state.name == 'state':
                 __animation_caps__[state['name'].asString] = state.asInt
+                __animation_caps_name_by_id__[state.asInt] = state['name'].asString
 
 
 loadAnimationCaps()
 
 def getCapByName(cap_name):
     return __animation_caps__.get(cap_name)
+
+
+def getCapNameById(cap_name):
+    return __animation_caps_name_by_id__.get(cap_name)
 
 
 def setCap(model, cap_name, value = True):

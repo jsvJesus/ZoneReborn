@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soCastBarVertical.py
+# Embedded file name: ./client/soGUI/soCastBarVertical.py
 from Localization import lc
 import BigWorld
 import GUI
@@ -53,7 +53,7 @@ class soCastBarVertical(PyGUIBase):
         cmp.colour = (255, 255, 255, 150)
         cmp.width = cmp.height = 2.0
         cmp.position = (0.0, 0.0, 0.2)
-        cmp.textureName = 'soGUI/maps/Controls/castbar/castbar_vert_empty.dds'
+        cmp.textureName = 'soGUI/frame/castbar/castbar_vert_empty.dds'
         self.component.addChild(cmp, 'PGFront')
         shader = GUI.ClipShader()
         shader.mode = 'DOWN'
@@ -68,7 +68,7 @@ class soCastBarVertical(PyGUIBase):
         cmp.colour = (255, 255, 255, 150)
         cmp.width = cmp.height = 2.0
         cmp.position = (0.0, 0.0, 0.4)
-        cmp.textureName = 'soGUI/maps/Controls/castbar/castbar_vert_full_color.dds'
+        cmp.textureName = 'soGUI/frame/castbar/castbar_vert_full_color.dds'
         self.component.addChild(cmp, 'PGBack')
         cmp = GUI.Window()
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
@@ -78,7 +78,7 @@ class soCastBarVertical(PyGUIBase):
         cmp.colour = (255, 255, 255, 150)
         cmp.width = cmp.height = 2.0
         cmp.position = (0.0, 0.0, 0.3)
-        cmp.textureName = 'soGUI/maps/Controls/castbar/castbar_vert_int.dds'
+        cmp.textureName = 'soGUI/frame/castbar/castbar_vert_int.dds'
         self.component.addChild(cmp, 'PGFail')
         shader = GUI.AlphaShader()
         shader.mode = 'ALL'

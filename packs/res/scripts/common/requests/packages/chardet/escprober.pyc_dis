@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/chardet/escprober.py
+# Embedded file name: ./common/requests/packages/chardet/escprober.py
 import constants, sys
 from escsm import HZSMModel, ISO2022CNSMModel, ISO2022JPSMModel, ISO2022KRSMModel
 from charsetprober import CharSetProber

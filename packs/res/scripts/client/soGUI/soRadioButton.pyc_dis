@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soRadioButton.py
+# Embedded file name: ./client/soGUI/soRadioButton.py
 import BigWorld
 import BWPersonality
 import GUI
@@ -10,7 +10,7 @@ from Helpers.PyGUI import PyGUIBase
 
 class RadioButtonPropsStructure(object):
 
-    def __init__(self, labelText = u'push me', radioBtnW = 20, radioBtnH = 20, font = 'ruRU_calibri_default.font', labelLeftOffset = 5, labelColour = (255, 255, 255, 255)):
+    def __init__(self, labelText = u'push me', radioBtnW = 20, radioBtnH = 20, font = 'RobotoCondensedRegular_16.font', labelLeftOffset = 5, labelColour = (255, 255, 255, 255)):
         self.radioButtonWidth = radioBtnW
         self.radioButtonHeight = radioBtnH
         self.radioButtonFont = font
@@ -34,12 +34,8 @@ class soRadioButton(PyGUI.Window):
         self.labelLeftOffset = props.labelLeftOffset
         self.labelText = props.labelText
         self.group = 0
-        if isinstance(parentScreen, soGUI.soScreen):
-            self.parentScreen = parentScreen
-            self.setRadioGroup(group)
-        else:
-            self.parentScreen = None
-            print 'Warning: RadioButton ', component, ' has no valid parent soScreen.'
+        self.parentScreen = None
+        print 'Warning: RadioButton ', component, ' has no valid parent soScreen.'
         self.setupRoot()
         self.setupRadio()
         self.setupLabel()
@@ -72,7 +68,7 @@ class soRadioButton(PyGUI.Window):
         self.radio.component.height = self.radioHeight
         self.radio.component.position = (-1.0, 0.0, 0.0)
         self.radio.buttonStyle = soButton.RADIOBUTTON_STYLE
-        self.radio.initVSC('soGUI/visual_styles/radioButton.xml')
+        self.radio.initVSC('soGUI/elements/radioButton.xml')
         self.radio.onBound()
         self.radio.setVisualState('normal')
         if not hasattr(self.component, 'radioBtn'):
@@ -115,7 +111,7 @@ class soRadioButton(PyGUI.Window):
 class soRadioButton2(PyGUIBase):
     factoryString = 'soGUI.soRadioButton2'
 
-    def __init__(self, component, labelText = u'RadioBtn', btnW = 18, btnH = 18, font = 'ruRU_calibri_default.font', labelLeftOffset = 5, labelColour = (255, 255, 255, 255), radioGroup = 'global_radio', bvisual_styles = 'soGUI/visual_styles/checkBox.xml'):
+    def __init__(self, component, labelText = u'RadioBtn', btnW = 18, btnH = 18, font = 'RobotoCondensedRegular_16.font', labelLeftOffset = 5, labelColour = (255, 255, 255, 255), radioGroup = 'global_radio', bvisual_styles = 'soGUI/elements/checkBox.xml'):
         PyGUIBase.__init__(self, component)
         component.script = self
         self.bvisual_styles = bvisual_styles

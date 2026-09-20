@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/AvatarDialogPoint.py
+# Embedded file name: ./client/AvatarDialogPoint.py
 import BigWorld
 
 class AvatarDialogPoint(BigWorld.UserDataObject):

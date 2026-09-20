@@ -1,7 +1,7 @@
-# Embedded file name: ./scripts/common/GUITextUtils.py
+# Embedded file name: ./common/GUITextUtils.py
 __author__ = 'Madcat'
 
 def encode(input):
     input = input.replace('\n', '<n>')
-    input = input.replace('\r', '<p>')
+    input = input.replace('\r', '')
     return input

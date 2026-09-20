@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/chardet2/sbcsgroupprober.py
+# Embedded file name: ./common/requests/packages/chardet2/sbcsgroupprober.py
 from . import constants
 import sys
 from .charsetgroupprober import CharSetGroupProber

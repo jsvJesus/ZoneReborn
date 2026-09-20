@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/BulletinBoard.py
+# Embedded file name: ./client/BulletinBoard.py
 import BigWorld
 import Math
 import Pixie
@@ -24,12 +24,14 @@ class BulletinBoard(BigWorld.Entity):
         if self.isDestroyed:
             return
         self.model = model
+        if self.model:
+            self.model.isObstacle = True
         self.height = Math.Matrix(self.model.bounds).get(1, 1) if model else 1.0
 
     def onEnterWorld(self, prereqs):
-        BigWorld.fetchModelObstacle(self.DEFAULT_MODEL, self.matrix, 0, self.onLoadModel)
-        BigWorld.addShadowEntity(self)
+        BigWorld.fetchModel(self.DEFAULT_MODEL, self.onLoadModel)
         self.targetFullBounds = True
 
     def onLeaveWorld(self):
-        BigWorld.delShadowEntity(self)
+        self.model = None
+        return

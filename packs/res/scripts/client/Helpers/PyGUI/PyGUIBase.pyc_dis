@@ -1,11 +1,40 @@
-# Embedded file name: ./scripts/client/Helpers/PyGUI/PyGUIBase.py
-import BigWorld, GUI
+# Embedded file name: ./client/Helpers/PyGUI/PyGUIBase.py
+import BigWorld
+import traceback
+import GUI
 import weakref
-from bwdebug import *
-from Utils import roundComponentPos
+from bwdebug import ERROR_MSG
+from Helpers.PyGUI.Utils import roundComponentPos
 from functools import partial
 from Helpers.Listener import Listenable
+from Helpers.PyGUI.DraggableComponent import DraggableComponent
+from Keys import KEY_SYSRQ
 DRAG_CELL_SIZE_DIGITS = 4
+
+class WinBehaviour():
+    StopPlayerOnShow = 1
+    InterceptKeyDown = 2
+    InterceptButtons = 4
+    InterceptMove = 8
+    Simple = 0
+    Full = StopPlayerOnShow | InterceptKeyDown | InterceptButtons | InterceptMove
+
+    @staticmethod
+    def need_stop_on_show(win_type):
+        return bool(win_type & WinBehaviour.StopPlayerOnShow)
+
+    @staticmethod
+    def need_intersept_down(win_type):
+        return bool(win_type & WinBehaviour.InterceptKeyDown)
+
+    @staticmethod
+    def need_intercept_move(win_type):
+        return bool(win_type & WinBehaviour.InterceptMove)
+
+    @staticmethod
+    def need_intercept_buttons(win_type):
+        return bool(win_type & WinBehaviour.InterceptButtons)
+
 
 class PyGUIBase(object, Listenable):
 
@@ -15,8 +44,56 @@ class PyGUIBase(object, Listenable):
         self.component = component
         self.eventHandler = None
         self._parent = None
+        self._behaviours = WinBehaviour.Simple
         self.isActive = False
         return
+
+    def set_behaviours(self, behaviours):
+        self._behaviours = behaviours
+
+    def show(self):
+        if not self.component.visible:
+            self.component.visible = True
+            self.on_show()
+
+    def on_show(self):
+        try:
+            if WinBehaviour.need_stop_on_show(self._behaviours):
+                p = BigWorld.player()
+                if p and not p.isDestroyed:
+                    p.stopPlayerMoving()
+        except:
+            traceback.print_exc()
+            traceback.print_stack()
+
+    def hide(self):
+        if self.component.visible:
+            self.component.visible = False
+            self.on_hide()
+
+    def on_hide(self):
+        pass
+
+    def print_parents(self):
+
+        def recurs(comp, n):
+            if n > 100:
+                return
+            elif not comp:
+                return
+            else:
+                recurs(comp.parent, n + 1)
+                if comp.parent is None:
+                    print ' ' * n, '-- TOP:', comp, comp.script
+                    return
+                for name, child in comp.parent.children:
+                    if child == comp:
+                        print ' ' * n, '-->', repr(name), comp, comp.script
+                        return
+
+                return
+
+        return recurs(self.component, 0)
 
     def active(self, state):
         if state == self.isActive:
@@ -199,3 +276,105 @@ class PyGUIBase(object, Listenable):
             self.component = None
             self.eventHandler = None
         return
+
+
+def get_layer(component):
+    from soGUI.soGUILayer import soGUILayer
+    if isinstance(component.script, soGUILayer):
+        return component.script
+    if component.parent:
+        return get_layer(component.parent)
+
+
+def get_component_size(component, mode = 'PIXEL'):
+    prev_mode = (component.widthMode, component.heightMode)
+    component.widthMode, component.heightMode = mode, mode
+    width, height = component.width, component.height
+    component.widthMode, component.heightMode = prev_mode
+    return (width, height)
+
+
+class DragWin(PyGUIBase, DraggableComponent):
+
+    def __init__(self, component):
+        PyGUIBase.__init__(self, component)
+        DraggableComponent.__init__(self, True, True, True)
+        component.script = self
+
+    def is_visible(self):
+        return self.component.visible
+
+    def handleMouseButtonEvent(self, comp, event):
+        return DraggableComponent.handleMouseButtonEvent(self, comp, event)
+
+
+class Interceptor(PyGUIBase):
+    """ \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd1\x85\xd0\xb2\xd0\xb0\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb2\xd1\x81\xd0\xb5 \xd1\x81\xd0\xbe\xd0\xb1\xd1\x8b\xd1\x82\xd0\xb8\xd1\x8f \xd0\xbc\xd1\x8b\xd1\x88\xd0\xb8 \xd0\xb8 \xd0\xbd\xd0\xb8\xd0\xba\xd0\xbe\xd0\xbc\xd1\x83 \xd0\xbd\xd0\xb5 \xd0\xbe\xd1\x82\xd0\xb4\xd0\xb0\xd1\x91\xd1\x82
+            \xd0\xbb\xd0\xb8\xd0\xb1\xd0\xbe \xd0\xbe\xd1\x82\xd0\xb4\xd0\xb0\xd1\x91\xd1\x82 proxy
+    """
+
+    def __init__(self, component, intercept_buttons = True, intercept_moving = True, interscept_keys = False):
+        PyGUIBase.__init__(self, component)
+        self._proxy = None
+        component.script = self
+        self._intercept_buttons = intercept_buttons
+        self._intercept_moving = intercept_moving
+        self._intercept_keys = interscept_keys
+        self.change_interseption()
+        return
+
+    def set_behaviours(self, behaviours):
+        PyGUIBase.set_behaviours(self, behaviours)
+        if WinBehaviour.need_intercept_buttons(self._behaviours):
+            self.component.mouseButtonFocus = True
+        if WinBehaviour.need_intercept_move(self._behaviours):
+            self.component.dropFocus = True
+            self.component.dragFocus = True
+            self.component.crossFocus = True
+            self.component.moveFocus = True
+        if WinBehaviour.need_intersept_down(self._behaviours):
+            self.component.focus = True
+
+    def change_interseption(self, **kargs):
+        """ \xd1\x82\xd0\xb5 \xd0\xb6\xd0\xb5, \xd1\x87\xd1\x82\xd0\xbe \xd0\xb2 \xd0\xba\xd0\xbe\xd0\xbd\xd1\x81\xd1\x82\xd1\x80\xd1\x83\xd0\xba\xd1\x82\xd0\xbe\xd1\x80\xd0\xb5 """
+        self._intercept_buttons = kargs.get('intercept_buttons', self._intercept_buttons)
+        self._intercept_moving = kargs.get('intercept_moving', self._intercept_moving)
+        self._intercept_keys = kargs.get('interscept_keys', self._intercept_keys)
+        self.component.mouseButtonFocus = self._intercept_buttons
+        self.component.dropFocus = self._intercept_moving
+        self.component.dragFocus = self._intercept_moving
+        self.component.crossFocus = self._intercept_moving
+        self.component.moveFocus = self._intercept_moving
+        self.component.focus = self._intercept_keys
+
+    def set_proxy(self, proxy):
+        self._proxy = proxy
+
+    def handleMouseButtonEvent(self, component, event):
+        if self._intercept_buttons:
+            if self._proxy:
+                return self._proxy.handleMouseButtonEvent(component, event)
+            return True
+        if WinBehaviour.need_intercept_buttons(self._behaviours):
+            return True
+        return False
+
+    def handleMouseEvent(self, component, event):
+        if self._intercept_moving:
+            if self._proxy:
+                return self._proxy.handleMouseEvent(component, event)
+            return True
+        if WinBehaviour.need_intercept_move(self._behaviours):
+            return True
+        return False
+
+    def handleKeyEvent(self, event):
+        if self._intercept_keys:
+            if event.key == KEY_SYSRQ and not event.modifiers:
+                return False
+            if self._proxy:
+                return self._proxy.handleKeyEvent(event)
+            return True
+        if event.isKeyDown() and WinBehaviour.need_intersept_down(self._behaviours):
+            return True
+        return False

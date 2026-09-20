@@ -1,6 +1,4 @@
 {
-    "difficultyMax": 20, 
-    "difficultyMin": 10, 
     "lifetimeMax": 1440.0, 
     "lifetimeMin": 720.0, 
     "loot":"Anomaly_noob",
@@ -21,9 +19,15 @@
     "radiation_effect": "Radioactivity",
     "radiation_effect_stack_min": 1,
     "radiation_effect_stack_max": 2,
-    "sfx_inside": "sfx/Anomalys/flame.xml", 
-    "sfx_main": "sfx/Anomalys/flame.xml", 
-    "sfx_artifact_wall": "sfx/Anomalys/artefact_wall.xml", 
+    "sfx_inside": "sfx/Anomalys/flame_1.xml", 
+    "sfx_main": "sfx/Anomalys/flame_1.xml", 
+    
+    "wall_artifact":{
+        "sfx_wall":"sfx/Anomalys/artefact_wall.xml",
+        "wall_effect":2077,
+        "wall_radius":2.5
+    },
+ 
     "sfx_main_interval": [ 3, 6 ]
 
 }

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/urllib3/packages/ssl_match_hostname/__init__.py
+# Embedded file name: ./common/requests/packages/urllib3/packages/ssl_match_hostname/__init__.py
 """The match_hostname() function from Python 3.2, essential when using SSL."""
 import re
 __version__ = '3.2.2'

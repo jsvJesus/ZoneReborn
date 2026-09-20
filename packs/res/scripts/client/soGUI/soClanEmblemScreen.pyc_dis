@@ -1,18 +1,18 @@
-# Embedded file name: ./scripts/client/soGUI/soClanEmblemScreen.py
+# Embedded file name: ./client/soGUI/soClanEmblemScreen.py
 import BWPersonality
 import BigWorld
 import GUI
 import UCManager
 import StalkerModel
+import ClanSettings
 import Helpers.PyGUI as PyGUI
 import soGUI
 import DyeConstant
-from soGUI.soInworldMarkers import soInworldMarker, soInworldMarkers
-from ModelSelector import ModelSelector
+from soGUI.soInworldMarkers import soInworldMarker
+from client_utils import get_entity_name
 import gui_jokes
 import colorCodes
 import frameChangeImage
-from Helpers.PyGUI import PyGUIEvent
 from Helpers.PyGUI.PyGUIBase import PyGUIBase
 from soGUI.soButton import soButton
 import Helpers.PyGUI.DraggableComponent
@@ -21,7 +21,7 @@ import Math
 from Localization import lc
 DraggableComponent = Helpers.PyGUI.DraggableComponent.DraggableComponent
 
-class soClanEmblemScreen(PyGUIBase, DraggableComponent):
+class ClanEmblemScreen(PyGUIBase, DraggableComponent):
     factoryString = 'soGUI.soClanEmblemScreen'
 
     def __init__(self, component):
@@ -54,7 +54,7 @@ class soClanEmblemScreen(PyGUIBase, DraggableComponent):
         cmp.crossFocus = True
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        cmp = GUI.Frame2('soGUI/frame/basic_frame_1.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -66,7 +66,7 @@ class soClanEmblemScreen(PyGUIBase, DraggableComponent):
         cmp.position = (0, 0, 1.0)
         self.component.addChild(cmp, 'wndFrame')
         btn = soButton(GUI.Window())
-        btn.initVSC('soGUI/visual_styles/closeBox.xml')
+        btn.initVSC('soGUI/elements/closeBox.xml')
         cmp = btn.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
@@ -76,13 +76,13 @@ class soClanEmblemScreen(PyGUIBase, DraggableComponent):
         cmp.materialFX = 'BLEND'
         cmp.width = 18
         cmp.height = 18
-        cmp.position = (793, 6, 0.2)
+        cmp.position = (self.component.width - 5, 6, 0.2)
         btn.onClick = self.onCloseBox
         self.component.addChild(cmp, 'closeBox')
         btn.onBound()
         btn._updateVisualState()
         bConfirm = soButton(GUI.Window())
-        bConfirm.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        bConfirm.initVSC('soGUI/elements/button_1.xml')
         cmp = bConfirm.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
@@ -98,29 +98,42 @@ class soClanEmblemScreen(PyGUIBase, DraggableComponent):
         bConfirm.onClick = self.onSaveIconBtnClick
         bConfirm.onBound()
         bConfirm._updateVisualState()
+        bClear = soButton(GUI.Window())
+        bClear.initVSC('soGUI/elements/button_1.xml')
+        cmp = bClear.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'RIGHT'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = 95
+        cmp.height = 25
+        cmp.label.text = lc('colourItemWindow.CANCEL')
+        x = self.component.btnConfirm.position[0] - self.component.btnConfirm.width - 5
+        cmp.position = (x, self.component.height - 7, 0.9)
+        self.component.addChild(cmp, 'ccancel')
+        bClear.onClick = self._cancel
+        bClear.onBound()
+        bClear._updateVisualState()
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.verticalAnchor = 'TOP'
         cmp.horizontalAnchor = 'LEFT'
-        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colourFormatting = True
         cmp.multiline = False
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
-        cmp.position = (5, 5, 0.2)
+        cmp.position = (17, 16, 0.2)
         cmp.text = lc('GUI.ClanEmblems.CAPTION')
         self.component.wndFrame.addChild(cmp, 'nameLabel')
         self.frame_change_image = frameChangeImage.FrameChangeClanEmblemImage(GUI.Window(), self)
         self.frame_change_image.component.position = (2, 30, 0.0)
         self.component.addChild(self.frame_change_image.component, 'frameChangeImage')
-        mark_text = colorCodes.mark_name
-        mark_text += BigWorld.player().name + u'\n'
-        mark_text += colorCodes.mark_clan_neutral
-        mark_text += BigWorld.player().clanName.decode('utf-8')
-        cmp = TypicalPlayerCaption(GUI.Window(), description=mark_text, alpha=1.0)
-        cmp.component.position = (0.63, 0.53, 0.0)
-        cmp.visible = True
-        self.component.addChild(cmp.component, 'playerCaption')
+        self.add_render()
+
+    def add_render(self):
         self._renderModel = ModelWindow(GUI.Window())
         self.component.addChild(self._renderModel.component, 'renderModel')
         self.resetModels()
@@ -133,14 +146,32 @@ class soClanEmblemScreen(PyGUIBase, DraggableComponent):
              'flag': flag_model})
             self.onLoadModel(model)
 
-        StalkerModel.ComposePlayerModel(player, onLoadModel)
-        flag_model = BigWorld.Model(ModelSelector.MODELS[ModelSelector.FLAG_MODEL])
+        StalkerModel.ComposePlayerModelTraker(player, callback=onLoadModel)
+        flag_model = BigWorld.Model('models/misc/signs/flag/flag.model')
+
+    def get_cost_emblem(self):
+        return DyeConstant.COST_CLAN_EMBLEM
+
+    def updateMarkText(self):
+        entity = BigWorld.player()
+        mark_text = get_entity_name(entity, utf8=True)
+        clan_text = u'\n'
+        if entity.union_tag:
+            clan_text += colorCodes.mark_clan_neutral + u'[{0}] '.format(entity.union_tag.decode('utf-8'))
+        clan_text += colorCodes.mark_clan_neutral
+        if clan_text:
+            clan_text += entity.clanName.decode('utf-8')
+        mark_text += clan_text
+        cmp = TypicalPlayerCaption(dict(text=mark_text, alpha=1.0))
+        cmp.component.position = (0.63, 0.53, 0.0)
+        cmp.visible = True
+        self.component.addChild(cmp.component, 'playerCaption')
 
     def updateEmblemList(self, data):
         self.frame_change_image.updateEmblemList(data)
 
     def _drawIcon(self, imgID, feedName = '', texture = None):
-        if not self.component.playerCaption:
+        if not hasattr(self.component, 'playerCaption'):
             return
         else:
             self.component.playerCaption.script.clanIconID = imgID
@@ -148,11 +179,11 @@ class soClanEmblemScreen(PyGUIBase, DraggableComponent):
             self.newEmblemID = imgID
             if texture:
                 self.frame_change_image._drawIcon(imgID, feedName, texture)
-                StalkerModel.setFeed(self._renderModel._model, None, 'flag_color', feedName)
+                StalkerModel.setFeed(self._renderModel._model, None, 'flag_color', feedName, texture)
             else:
                 self.frame_change_image._drawIcon(None)
                 self.frame_change_image._drawIcon(imgID, feedName, texture)
-                StalkerModel.setFeed(self._renderModel._model, None, 'flag_color', 'feed_disabled')
+                StalkerModel.setFeed(self._renderModel._model, None, 'flag_color', 'feed_disabled', texture)
                 self.newEmblemID = 0
             return
 
@@ -168,10 +199,14 @@ class soClanEmblemScreen(PyGUIBase, DraggableComponent):
             BWPersonality.GUICore.worldLayer.addChild(self.component, 'clanEmblemScreen')
         self.component.visible = True
         self.resetModels()
-        if not BigWorld.player().checkClanRights(Clan.FLAG_CAN_CHANGE_ICON):
+        self.updateMarkText()
+        player = BigWorld.player()
+        if not player.checkClanRights(Clan.FLAG_CAN_CHANGE_ICON) or not ClanSettings.can_change_emblem(player.clan_level):
             self.frame_change_image.LockBtn()
-        BigWorld.player().base.getMyEmblems()
+        player.base.getMyEmblems()
+        player.getConsumables()
         BWPersonality.GUICore.setBestCursor()
+        self.frame_change_image.updatePlayerMoney(player.CreditNumber)
         return
 
     def hide(self):
@@ -192,9 +227,18 @@ class soClanEmblemScreen(PyGUIBase, DraggableComponent):
         if pl:
             self.currentEmblemID = pl.clanEmblemID
             if self.currentEmblemID:
-                feedNameCur = UCManager.ucmanager.loadImg(self.currentEmblemID, self._drawIcon)
+                UCManager.ucmanager.loadImg(self.currentEmblemID, self._drawIcon)
             else:
                 self._drawIcon(self.currentEmblemID)
+
+    def _cancel(self):
+        self.frame_change_image.setStatus(1)
+        emblemID = self.currentEmblemID
+        self.clearEmblem()
+        if emblemID:
+            UCManager.ucmanager.loadImg(emblemID, self._drawIcon)
+        else:
+            self._drawIcon(0)
 
     def onSaveIconBtnClick(self):
 
@@ -213,12 +257,12 @@ class soClanEmblemScreen(PyGUIBase, DraggableComponent):
         if not pl or not pl.__class__.__name__ == 'PlayerAvatar':
             return
         if self.newEmblemID == 0:
-            gui_jokes.askUserYesNo(lc('GUI.ClanEmblems.BUY_CAPTION'), colorCodes.tf3_regular_text_color + lc('GUI.ClanEmblems.RESET_EMBLEM'), _save_check)
+            gui_jokes.askUserYesNo(lc('GUI.ClanEmblems.BUY_CAPTION'), lc('GUI.ClanEmblems.RESET_EMBLEM'), _save_check)
             return
         if pl.CreditNumber < DyeConstant.COST_CLAN_EMBLEM:
             gui_jokes.askUserOk(lc('colourItemWindow.ERROR'), lc('colourItemWindow.NOT_ENOUGH_MONEY'))
             return
-        gui_jokes.askUserYesNo(lc('GUI.ClanEmblems.BUY_CAPTION'), colorCodes.tf3_regular_text_color + lc('GUI.ClanEmblems.SAVE_EMBLEM_TEXT').format(DyeConstant.COST_CLAN_EMBLEM), _save_check)
+        gui_jokes.askUserYesNo(lc('GUI.ClanEmblems.BUY_CAPTION'), lc('GUI.ClanEmblems.SAVE_EMBLEM_TEXT').format(DyeConstant.COST_CLAN_EMBLEM), _save_check)
 
     def handleMouseButtonEvent(self, comp, event):
         return DraggableComponent.handleMouseButtonEvent(self, comp, event)
@@ -230,261 +274,11 @@ class soClanEmblemScreen(PyGUIBase, DraggableComponent):
         return True
 
 
-class TypicalPlayerCaption(PyGUIBase):
-    MARKER_PLAYER = 0
-    MARKER_ITEM = 1
-    MARKER_NPC = 2
-    MARKER_PK = 100
-    MARKER_WARDECLARED = 101
-    MARKER_WARRECIEVED = 102
-    MARKER_USE = 200
-    MARKER_PICKUP = 201
-    MARKER_TALK = 202
-    MARKER_TRADE = 203
-    MARKER_WANTED = 204
-    ICON_SIZE = 16
-    FRAME_TEXTURE = BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/frame.tga')
+class TypicalPlayerCaption(soInworldMarker):
 
-    def __init__(self, component, ids = (MARKER_PLAYER,), description = u'', alpha = 1.0, clanIcon = None):
-        PyGUIBase.__init__(self, component)
-        component.script = self
-        self.iconIDs = ids
-        self.description = description
-        self.clanIconID = clanIcon
-        self.alpha = alpha * 255.0
-        self.colour = (255,
-         255,
-         255,
-         self.alpha)
-        self.textLabels = []
-        self.setupRoot()
-        self.setupContent()
-
-    def setupRoot(self):
-        cmp = self.component
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'CENTER'
-        cmp.verticalAnchor = 'BOTTOM'
-        cmp.colour = (255,
-         255,
-         255,
-         self.alpha)
-        cmp.materialFX = 'BLEND'
-        cmp.width = 0
-        cmp.height = 0
-        cmp.position = (0.0, 0.0, 1.5)
-        cmp.textureName = ''
-
-    def setupContent(self):
-        cmp = GUI.Simple('')
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'RIGHT'
-        cmp.verticalAnchor = 'BOTTOM'
-        cmp.width = self.ICON_SIZE
-        cmp.height = self.ICON_SIZE
-        cmp.colour = (255,
-         255,
-         255,
-         self.alpha)
-        cmp.materialFX = 'BLEND'
-        cmp.position = (1, 0, 0.5)
-        cmp.texture = None
-        cmp.visible = False
-        self.component.addChild(cmp, 'clanIcon')
-        self.setupIcons()
-        return
-
-    def setupIcons(self):
-        iconHolder = None
-        if len(self.iconIDs) > 0:
-            cmp = GUI.Window('')
-            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
-            cmp.widthMode = cmp.heightMode = 'PIXEL'
-            cmp.horizontalAnchor = 'CENTER'
-            cmp.verticalAnchor = 'TOP'
-            cmp.colour = (255,
-             255,
-             255,
-             self.alpha)
-            cmp.materialFX = 'BLEND'
-            cmp.width = 0
-            cmp.height = 16
-            cmp.position = (0.0, 1.0, 1.5)
-            cmp.textureName = ''
-            iconHolder = cmp
-        for i, icon in enumerate(self.iconIDs):
-            iconHolder.width += 16
-            cmp = GUI.Simple('')
-            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-            cmp.widthMode = cmp.heightMode = 'PIXEL'
-            cmp.horizontalAnchor = 'LEFT'
-            cmp.verticalAnchor = 'TOP'
-            cmp.width = 16
-            cmp.height = 16
-            cmp.colour = (255,
-             255,
-             255,
-             self.alpha)
-            cmp.materialFX = 'BLEND'
-            cmp.position = (0 + i * 16, 0, 0.5)
-            cmp.texture = soInworldMarkers.ICON_MAP[icon]
-            iconHolder.addChild(cmp, 'icon' + str(i))
-
-        if iconHolder:
-            self.component.width = iconHolder.width
-            self.component.height = iconHolder.height
-            self.component.addChild(iconHolder, 'iconHolder')
-        self.setupCaption()
-        return
-
-    def setupCaption(self):
-        cmp = GUI.Text('')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'BOTTOM'
-        cmp.font = 'ruRU_calibri_default.font'
-        cmp.colour = (255,
-         255,
-         255,
-         self.alpha)
-        if self.MARKER_WANTED in self.iconIDs:
-            cmp.colour = (255,
-             150,
-             150,
-             self.alpha)
-        cmp.colourFormatting = True
-        cmp.multiline = True
-        cmp.materialFX = 'BLEND'
-        cmp.text = self.description
-        calcStr = self.description
-        colorCodes = []
-        for label in self.textLabels:
-            self.component.delChild(label)
-
-        self.textLabels = []
-        idx = 0
-        w, h = cmp.stringDimensions(calcStr)
-        if self.clanIconID:
-            w += self.ICON_SIZE
-        if w + 4 > self.component.width:
-            self.component.width = w + 8
-        self.normal_width = w + 8
-        self.component.height = self.ICON_SIZE + h + 4
-        vis_str = self.description.split('\n')
-        for index, vis_part in enumerate(vis_str):
-            cmp = GUI.Text('')
-            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-            cmp.horizontalAnchor = 'CENTER'
-            cmp.verticalAnchor = 'BOTTOM'
-            cmp.font = 'ruRU_calibri_default.font'
-            cmp.colour = (255,
-             255,
-             255,
-             self.alpha)
-            if self.MARKER_WANTED in self.iconIDs:
-                cmp.colour = (255,
-                 150,
-                 150,
-                 self.alpha)
-            cmp.colourFormatting = True
-            cmp.multiline = True
-            cmp.materialFX = 'BLEND'
-            cmp.text = vis_part
-            _X = self.component.width // 2
-            _Y = self.component.height - 2 - (len(vis_str) - (index + 1)) * (h / len(vis_str))
-            cmp.position = (_X, int(_Y), 0.5)
-            self.textLabels.append(cmp)
-            self.component.addChild(cmp, 'description{0}'.format(index))
-            if self.component.clanIcon:
-                self.component.clanIcon.position = self.textLabels[-1].position - (self.textLabels[-1].width / 2 - self.ICON_SIZE / 2, 0, 0)
-
-        cmp = GUI.Frame2('')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'CENTER'
-        cmp.verticalAnchor = 'BOTTOM'
-        cmp.colour = (255,
-         255,
-         255,
-         self.alpha)
-        cmp.materialFX = 'BLEND'
-        cmp.width = w + 4
-        cmp.height = h + 4
-        cmp.position = (self.component.width // 2, self.component.height, 1.0)
-        cmp.texture = self.FRAME_TEXTURE
-        self.component.addChild(cmp, 'backFrame')
-        self.fixPosition()
-
-    def fixPosition(self, isNoIcon = False):
-        self.component.backFrame.width = self.component.width
-        self.component.backFrame.position = (self.component.width / 2, self.component.height, 1.0)
-        eps = 0
-        if self.clanIconID != 0:
-            isNoIcon = True
-        labels_count = len(self.textLabels)
-        for index in range(0, labels_count):
-            if index == labels_count - 1 and isNoIcon:
-                eps = self.ICON_SIZE / 2 + 2
-            _X = self.component.width / 2 + eps
-            _Y = self.textLabels[index].position.y
-            self.textLabels[index].position = (_X, _Y, 0.5)
-
-        w, h = self.textLabels[-1].stringDimensions(self.textLabels[-1].text)
-        self.component.clanIcon.position = self.textLabels[index].position - (w / 2 + 2, 0, 0)
-
-    def setClanIconByID(self, iconID):
-        if self.clanIconID == iconID:
-            return
-        self.clanIconID = iconID
-        if iconID == 0:
-            self.setClanIcon(0)
-            return
-        feedName = UCManager.ucmanager.loadImg(iconID, self.setClanIcon)
-
-    def setClanIcon(self, imgID = 0, feedName = '', textureProvider = None):
-        if textureProvider:
-            self.component.clanIcon.texture = textureProvider
-            self.component.clanIcon.visible = True
-            self.component.width = self.normal_width + self.component.clanIcon.width + 4
-        else:
-            self.component.clanIcon.visible = False
-            self.component.clanIcon.texture = None
-            self.component.width = self.normal_width
-        self.fixPosition()
-        return
-
-    def setDescription(self, txt):
-        if self.description == txt:
-            return
-        self.description = txt
-        self.setupCaption()
-
-    def setAlpha(self, alph):
-        if self.alpha == alph:
-            return
-        self.alpha = alph
-        for i, child in self.component.children:
-            child.colour = (255,
-             255,
-             255,
-             self.alpha)
-
-        if not self.component.iconHolder:
-            return
-        for i, child in self.component.iconHolder.children:
-            child.colour = (255,
-             255,
-             255,
-             self.alpha)
-
-    def fini(self):
-        self.clearAllChildren(self.component)
-        self.component.script = None
-        self.component = None
-        self.clipMP = None
-        return
+    def setupMark(self, *w, **kw):
+        super(TypicalPlayerCaption, self).setupMark(*w, **kw)
+        self.component.delShader('mover')
 
 
 class ModelWindow(PyGUIBase):
@@ -538,7 +332,7 @@ class ModelWindow(PyGUIBase):
         cmp.width = H - 10
         cmp.height = H - 10
         mr = BigWorld.PyModelRenderer(H, H)
-        for zz in range(100):
+        for zz in xrange(100):
             mr.delDirectionLight(0)
             mr.delOmniLight(0)
 
@@ -558,7 +352,6 @@ class ModelWindow(PyGUIBase):
 
     def show(self):
         self._model_renderer.dynamic = True
-        self._model_renderer.render()
         self.component.renderDummy.texture = self._model_renderer.texture
 
     def hide(self):
@@ -575,20 +368,21 @@ class ModelWindow(PyGUIBase):
 
     def setModels(self, model):
         self._model = model['flag']
-        self._model.zoomExtents(1, 0.25)
-        self._model.yaw = 1.9
+        self._model.zoomExtents(0, 0.15)
+        self._model.yaw = 1.5
         self._model.flag_color = 'blue'
-        self._model.position = (-0.4, 0.5, -0.5)
+        self._model.position = (-1.2, -0.7, 0.5)
         self._model.rotate(0.5, (2, 0, -0.6), (1, 0, 0))
-        model['player'].zoomExtents(1, 1.0)
+        model['player'].zoomExtents(1, 2.0)
         model['player'].yaw = 2.0
         model['player'].rotate(1.3, (4, 6, 2), (3, 0, 0))
-        model['player'].position = (0.15, -0.2, -0.5)
+        model['player'].position = (0.25, -1.3, -0.5)
         self._model_renderer.models = [self._model, model['player']]
         try:
-            model['player'].IdleUnarmed()
+            model['player'].idle_0_stay_bored()
             self._model.Wave()
         except:
+            import traceback
             traceback.print_exc()
 
     def addModel(self, model):

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soObjectiveTracker.py
+# Embedded file name: ./client/soGUI/soObjectiveTracker.py
 import BigWorld
 import GUI
 import BWPersonality
@@ -53,7 +53,7 @@ class soObjective(PyGUIBase):
                 cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
                 cmp.horizontalAnchor = 'RIGHT'
                 cmp.verticalAnchor = 'TOP'
-                cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+                cmp.font = 'RobotoCondensedRegular_14.font'
                 cmp.colour = (175, 166, 112, 255)
                 cmp.materialFX = 'BLEND'
                 cmp.text = self.objectiveData['caption']
@@ -71,7 +71,7 @@ class soObjective(PyGUIBase):
                         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
                         cmp.horizontalAnchor = 'RIGHT'
                         cmp.verticalAnchor = 'TOP'
-                        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+                        cmp.font = 'RobotoCondensedRegular_14.font'
                         cmp.colour = (175, 166, 112, 255)
                         cmp.materialFX = 'BLEND'
                         cmp.text = objective['data']
@@ -135,7 +135,7 @@ class soObjectiveTrackerGUI(PyGUIBase, soDraggableComponent):
         cmp.materialFX = 'BLEND'
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/trackerGUI/trackerFrame.tga')
+        cmp = GUI.Frame2('soGUI/frame/objectives_tracker/objectives_frame.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
@@ -147,7 +147,7 @@ class soObjectiveTrackerGUI(PyGUIBase, soDraggableComponent):
         cmp.materialFX = 'BLEND'
         cmp.position = (0, 22, 0.9)
         self.component.addChild(cmp, 'dFrame')
-        cmp = GUI.Frame2('soGUI/maps/Misc/resizeBox.tga')
+        cmp = GUI.Frame2('soGUI/elements/resizeBox.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -159,7 +159,7 @@ class soObjectiveTrackerGUI(PyGUIBase, soDraggableComponent):
         cmp.visible = False
         cmp.position = (0, 0, 0.05)
         self.component.addChild(cmp, 'dragProxy')
-        cmp = GUI.Window('soGUI/maps/Controls/trackerGUI/trackerFrame_controls.tga')
+        cmp = GUI.Window('soGUI/frame/objectives_tracker/tracker_frame.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
@@ -171,7 +171,7 @@ class soObjectiveTrackerGUI(PyGUIBase, soDraggableComponent):
         cmp.position = (self.component.width - 3, 0, 0.5)
         self.component.addChild(cmp, 'controlsFrame')
         btn = soButton(GUI.Window())
-        btn.initVSC('soGUI/visual_styles/minusBtn_tracker.xml')
+        btn.initVSC('soGUI/elements/button_minus.xml')
         cmp = btn.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
@@ -214,15 +214,6 @@ class soObjectiveTrackerGUI(PyGUIBase, soDraggableComponent):
         self.updateObjectives()
         self._repositionObjectives()
         return True
-
-    def setObjective(self, id, objective_data):
-        if self.objectives.has_key(id):
-            self.objectives[id] = objective_data
-            self.updateObjectives()
-            self._repositionObjectives()
-            return True
-        else:
-            return False
 
     def delObjective(self, id):
         if id is None:
@@ -311,9 +302,9 @@ class soObjectiveTrackerGUI(PyGUIBase, soDraggableComponent):
     def showObjectives(self, doShow = True):
         self.objectives_visible = doShow
         if doShow:
-            self.component.controlsFrame.minMaxBtn.script.initVSC('soGUI/visual_styles/minusBtn_tracker.xml')
+            self.component.controlsFrame.minMaxBtn.script.initVSC('soGUI/elements/button_minus.xml')
         else:
-            self.component.controlsFrame.minMaxBtn.script.initVSC('soGUI/visual_styles/plusBtn_tracker.xml')
+            self.component.controlsFrame.minMaxBtn.script.initVSC('soGUI/elements/button_plus.xml')
         self._updateObjectivesVisibility()
 
     def _updateObjectivesVisibility(self):

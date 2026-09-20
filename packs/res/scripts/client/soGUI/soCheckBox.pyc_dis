@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soCheckBox.py
+# Embedded file name: ./client/soGUI/soCheckBox.py
 from Localization import lc
 import BigWorld
 import BWPersonality
@@ -10,19 +10,20 @@ from Helpers.PyGUI import PyGUIEvent
 
 class CheckBoxPropsStructure(object):
 
-    def __init__(self, labelText = lc('soCheckBox.soGUI.STRING_12_32'), checkBoxW = 18, checkBoxH = 18, font = 'ruRU_calibri_default.font', labelLeftOffset = 5, labelColour = (255, 255, 255, 255)):
+    def __init__(self, labelText = lc('soCheckBox.soGUI.STRING_12_32'), checkBoxW = 18, checkBoxH = 18, font = 'RobotoCondensedRegular_16.font', labelLeftOffset = 5, labelColour = (255, 255, 255, 255), disableLabelColour = None):
         self.checkBoxWidth = checkBoxW
         self.checkBoxHeight = checkBoxH
         self.checkBoxFont = font
         self.labelLeftOffset = labelLeftOffset
         self.labelText = labelText
         self.labelColour = labelColour
+        self.disableLabelColour = disableLabelColour or labelColour
 
 
 class soCheckBox(PyGUI.Window):
     factoryString = 'soGUI.soCheckBox'
 
-    def __init__(self, component, props = CheckBoxPropsStructure(), default_style = 'soGUI/visual_styles/checkBox.xml'):
+    def __init__(self, component, props = CheckBoxPropsStructure(), default_style = 'soGUI/elements/checkBox.xml'):
         PyGUI.Window.__init__(self, component)
         component.script = self
         self.label = None
@@ -32,6 +33,7 @@ class soCheckBox(PyGUI.Window):
         self.boxHeight = props.checkBoxHeight
         self.labelFont = props.checkBoxFont
         self.labelColour = props.labelColour
+        self.disableLabelColour = props.disableLabelColour
         self.labelLeftOffset = props.labelLeftOffset
         self.labelText = props.labelText
         self.setupRoot()
@@ -39,11 +41,14 @@ class soCheckBox(PyGUI.Window):
         self.setupLabel()
         return
 
+    def calc_string_dimentions(self):
+        if not hasattr(soCheckBox, '_test_string'):
+            soCheckBox._test_string = GUI.Text('')
+        soCheckBox._test_string.font = self.labelFont
+        return soCheckBox._test_string.stringDimensions(self.labelText)
+
     def setupRoot(self):
-        testString = GUI.Text('')
-        testString.font = self.labelFont
-        labelDims = testString.stringDimensions(self.labelText)
-        testString = None
+        labelDims = self.calc_string_dimentions()
         self.component.widthMode = self.component.heightMode = 'PIXEL'
         self.component.horizontalAnchor = 'LEFT'
         self.component.verticalAnchor = 'TOP'
@@ -53,7 +58,6 @@ class soCheckBox(PyGUI.Window):
         else:
             self.component.height = self.boxHeight
         self.component.visible = True
-        return
 
     def setupCheckBox(self):
         if self.box is None:
@@ -69,9 +73,16 @@ class soCheckBox(PyGUI.Window):
         self.box.initVSC(self.style)
         self.box.onBound()
         self.box.setVisualState('normal')
+        self.box.onClick = self._onCheck
         if not hasattr(self.component, 'checkBox'):
             self.component.addChild(self.box.component, 'checkBox')
         return
+
+    def setBoxSize(self, w, h):
+        self.boxWidth = w
+        self.boxHeight = h
+        self.box.component.width = self.boxWidth
+        self.box.component.height = self.boxHeight
 
     def setupLabel(self):
         if self.label is None:
@@ -88,17 +99,13 @@ class soCheckBox(PyGUI.Window):
 
     def setLabel(self, text):
         self.labelText = text
-        testString = GUI.Text('')
-        testString.font = self.labelFont
-        labelDims = testString.stringDimensions(self.labelText)
-        testString = None
+        labelDims = self.calc_string_dimentions()
         self.component.width = labelDims[0] + self.labelLeftOffset + self.boxWidth
         if labelDims[1] > self.boxHeight:
             self.component.height = labelDims[1]
         else:
             self.component.height = self.boxHeight
         self.label.text = self.labelText
-        return
 
     def setVisualState(self, state):
         self.box.setVisualState(state)
@@ -109,13 +116,21 @@ class soCheckBox(PyGUI.Window):
     def disable(self):
         self.box.buttonDisabled = True
         self.box._updateVisualState()
+        self.label.colour = self.disableLabelColour
 
     def enable(self):
         self.box.buttonDisabled = False
         self.box._updateVisualState()
+        self.label.colour = self.labelColour
 
     def isEnabled(self):
         return self.box.buttonDisabled == False
+
+    def set_active(self, value):
+        if value:
+            self.setActive()
+        else:
+            self.setInactive()
 
     def setActive(self):
         self.box.buttonActive = True
@@ -128,11 +143,14 @@ class soCheckBox(PyGUI.Window):
     def onStateChange(self):
         return None
 
+    def onChange(self, checked):
+        return None
+
     def fini(self):
         self.box = None
         self.label = None
         return
 
-    @PyGUIEvent('checkBox', 'onClick')
-    def onCheck(self):
+    def _onCheck(self):
         self.onStateChange()
+        self.onChange(self.isChecked())

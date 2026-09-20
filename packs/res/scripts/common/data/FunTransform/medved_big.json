@@ -7,7 +7,7 @@
 	"collide_boxs": "scripts/common/data/Creatures/Colliders/Bear.xml",
 	"model_scale": 2.2,
 	"hide_weapon": true,
-	"hide_gui":["munitionsGUI", "systemBar", "actionBar"],
+	"hide_gui":["munitionsGUI", "systemBar", "actionBar", "emotionsGUI"],
 
 
 	"walk_speed":  0.0,

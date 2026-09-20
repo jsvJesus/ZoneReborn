@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/oauthlib/common.py
+# Embedded file name: ./common/requests/packages/oauthlib/common.py
 from __future__ import absolute_import
 import random
 import re
@@ -136,7 +136,7 @@ def generate_token(length = 30, chars = UNICODE_ASCII_CHARACTER_SET):
     why SystemRandom is used instead of the default random.choice method.
     """
     rand = random.SystemRandom()
-    return u''.join((rand.choice(chars) for x in range(length)))
+    return u''.join((rand.choice(chars) for x in xrange(length)))
 
 
 def add_params_to_qs(query, params):

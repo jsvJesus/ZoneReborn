@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/testGetSize.py
+# Embedded file name: ./client/testGetSize.py
 import BigWorld
 from BWPersonality import GUICore
 import Localization
@@ -30,19 +30,14 @@ class SizeOfData:
          Data('Config.Anomalies', Config.Anomalies.get_config.cache),
          Data('Config.Creatures', Config.Creatures.get_type_config.cache),
          Data('inventoryDataSection', GUICore.inventoryDataSection),
-         Data('skillsDataSection', GUICore.skillsDataSection),
          Data('clanDataSection', GUICore.clanDataSection),
          Data('actionBarDataSection', GUICore.actionBarDataSection),
-         Data('objectiveDataSection', GUICore.objectiveDataSection),
          Data('itemCacheDataSection', GUICore.itemCacheDataSection),
          Data('healthDataSection', GUICore.healthDataSection),
          Data('characterManagerDataSection', GUICore.characterManagerDataSection),
          Data('craftDataSection', GUICore.craftDataSection),
          Data('loginDataSection', GUICore.loginDataSection),
-         Data('gpsDataSection', GUICore.gpsDataSection),
-         Data('optionsDataSection', GUICore.optionsDataSection),
          Data('inworldMarkersDataSection', GUICore.inworldMarkersDataSection),
-         Data('dialogueDataSection', GUICore.dialogueDataSection),
          Data('emblemsDataSection', GUICore.emblemsDataSection),
          Data('crosshairsDataSection', GUICore.crosshairsDataSection),
          Data('munitionsDataSection', GUICore.munitionsDataSection)]

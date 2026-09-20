@@ -1,9 +1,7 @@
 {
-    "difficultyMax": 20, 
-    "difficultyMin": 1, 
     "lifetimeMin": 60.0, 
     "lifetimeMax": 80.0, 
-    "loot": "Zelenaya_gnil_0",
+    "loot": "Zelenaya_gnil_1",
     "damage": {
         "body_zone": "LEG_LOWER", 
         "distribution": "FLAT", 
@@ -25,11 +23,17 @@
     "radiation_effect_stack_max": 18,
     "sfx_inside": "sfx/Anomalys/zelenaya_gnil.xml", 
     "sfx_main": "", 
-    "sfx_artifact_wall": "sfx/Anomalys/artefact_wall.xml", 
+    
+    "wall_artifact":{
+        "sfx_wall":"sfx/Anomalys/artefact_wall.xml",
+        "wall_effect":2077,
+        "wall_radius":2.5
+    },
+ 
     "sfx_main_interval": [ 3, 6 ],
     "stone_hit_effect": "",
     "destroy_stone": false,
     "stone_proof": false,
     "stone_fly_effect": "",
-    "visible_artifact": {"sfx_main": 1, "sfx_inside":1}
+    "visible_artifact": {"sfx_main": 0, "sfx_inside":1}
 }

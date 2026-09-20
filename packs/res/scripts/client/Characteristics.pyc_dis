@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/Characteristics.py
+# Embedded file name: ./client/Characteristics.py
 __author__ = 'leviathan'
 import Stats
 import BWPersonality
@@ -9,10 +9,11 @@ class Characteristics(Stats.CommonCharacteristics):
 
     def __init__(self):
         self.ch_Defence = {}
+        foo = self.ClientSetFunc
         for stat_index in xrange(Stats.NUM_STATS):
             stat_name = Stats.CharacteristicsNames[stat_index]
             set_func_name = 'set_ch_' + stat_name
-            setattr(self, set_func_name, partial(self.ClientSetFunc, stat_index))
+            setattr(self, set_func_name, partial(foo, stat_index))
 
     def loadStats(self):
         self.cell.getStatsOnClient()
@@ -27,7 +28,6 @@ class Characteristics(Stats.CommonCharacteristics):
             self.UpdateVelocity()
         if stat_index == Stats.ch_MaxWeight:
             self.UpdateInventory(0.01)
-            self.UpdateCharScreen()
 
     def setDefenceStat(self, defence):
         self.ch_Defence = defence

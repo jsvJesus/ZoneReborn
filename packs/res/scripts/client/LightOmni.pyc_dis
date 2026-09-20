@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/LightOmni.py
+# Embedded file name: ./client/LightOmni.py
 import BigWorld
 
 class LightOmni(BigWorld.UserDataObject):

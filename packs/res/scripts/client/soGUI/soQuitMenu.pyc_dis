@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soQuitMenu.py
+# Embedded file name: ./client/soGUI/soQuitMenu.py
 import BigWorld
 import BWPersonality
 import soGUI
@@ -28,9 +28,9 @@ class soQuitMenu(PyGUIBase):
         cmp.verticalAnchor = 'CENTER'
         cmp.colour = (255, 255, 255, 200)
         cmp.materialFX = 'BLEND'
-        cmp.textureName = 'soGUI/maps/Colours/black.bmp'
+        cmp.textureName = 'soGUI/black.dds'
         cmp.width = cmp.height = 2.0
-        cmp.position = (0.0, 0.0, 1.0)
+        cmp.position = (0.0, 0.0, 0.05)
         cmp.visible = False
         cmp.moveFocus = True
         cmp.crossFocus = True
@@ -51,7 +51,6 @@ class soQuitMenu(PyGUIBase):
         cmp.height = 30
         cmp.label.text = lc('GUI.QuitMenu.YES_BTN_LABEL')
         cmp.position = (sh // 2 - 50, sw // 2, 0.2)
-        cmp.textureName = 'soGUI/maps/Controls/ingameMenu/resume_game.tga'
         btn.onClick = self.onClickToYesBtn
         self.component.addChild(cmp, 'YesBtn')
         btn.onBound()
@@ -69,7 +68,6 @@ class soQuitMenu(PyGUIBase):
         cmp.height = 30
         cmp.label.text = lc('GUI.QuitMenu.NO_BTN_LABEL')
         cmp.position = (sh // 2 + 50, sw // 2, 0.2)
-        cmp.textureName = 'soGUI/maps/Controls/ingameMenu/resume_game.tga'
         self.component.addChild(cmp, 'NoBtn')
         btn.onBound()
         btn.setVisualState('normal')
@@ -77,7 +75,7 @@ class soQuitMenu(PyGUIBase):
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
-        cmp.font = 'ruRU_calibri_large.font'
+        cmp.font = 'RobotoCondensedRegular_20.font'
         cmp.colour = (140, 141, 126, 255)
         cmp.text = lc('GUI.QuitMenu.QUESTION_LABEL')
         cmp.materialFX = 'BLEND'
@@ -102,7 +100,7 @@ class soQuitMenu(PyGUIBase):
 
     def Show(self):
         if self.component.parent is None:
-            BWPersonality.GUICore.generalLayer.addChild(self.component, 'QuitMenu')
+            BWPersonality.GUICore.systemLayer.addChild(self.component, 'QuitMenu')
         self.component.visible = True
         BWPersonality.GUICore.setBestCursor()
         return

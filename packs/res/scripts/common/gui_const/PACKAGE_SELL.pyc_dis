@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/gui_const/PACKAGE_SELL.py
+# Embedded file name: ./common/gui_const/PACKAGE_SELL.py
 EVENT_PACKSELECT = 0
 EVENT_ITEMADD = 1
 EVENT_ITEMREMOVE = 2

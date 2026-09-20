@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/DataManagerConst.py
+# Embedded file name: ./common/DataManagerConst.py
 OK = 0
 CHEATER = 1
 EMPTY_ID = 2
@@ -28,3 +28,9 @@ staus_dict = {OFFLINE: 'OFFLINE',
 
 def getStringStatus(status):
     return staus_dict.get(status, 'unknown %s' % status)
+
+
+class CANSENDEMAILCODE_TYPE:
+    AUTO = 0
+    DISABLE_EMAIL = 1
+    ENABLE_EMAIL = 2

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/Notices.py
+# Embedded file name: ./common/Notices.py
 
 
 class Notices:
@@ -12,8 +12,11 @@ class Notices:
     CLAN_WAR = 107
     CLAN_PEACE = 108
     CLAN_RANKS = 109
-    CLAN_RANK_CHANGE = 110
-    INSTANCE_TELEPORT = 300
+    CLAN_KICK_PERSONAL = 110
+    CLAN_ALLIANCE = 111
+    CLAN_ALLIANCE_BREAK = 112
+    CLANLEADER_SYSTEM_OFFER = 113
+    CLAN_RECR = 114
     GROUP_INVITE = 400
     GROUP_LEAVE = 401
     BATTLEGROUND_START_INVITE = 500
@@ -26,6 +29,7 @@ class Notices:
     LEAVE_WATER_HIPS = 803
     ENTER_WATER_HEAD = 804
     LEAVE_WATER_HEAD = 805
+    RESET_WATER = 811
     QUEUE_POSITION = 900
     QUEUE_LOGIN = 901
     QUEUE_KICK = 902

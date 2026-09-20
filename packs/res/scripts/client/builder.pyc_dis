@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/builder.py
+# Embedded file name: ./client/builder.py
 import BigWorld
 import BWPersonality
 import Constants
@@ -9,6 +9,7 @@ import gui_jokes
 from Localization import lc
 CHANNEL_CONSTS = ChatChannelConfig.ChannelConsts()
 from Sandbag import BOXS, getBoxByID
+import sand_bag_optimize
 
 def update_gui_quantity_block():
     if BWPersonality.GUICore._builder_menu:
@@ -18,6 +19,9 @@ def update_gui_quantity_block():
 
 class Builder:
     buildRoomID = 0
+
+    def __init__(self):
+        self.__pull_data_blocks = {}
 
     def buildEvent(self, event, charname, data):
         print 'Builder buildEvent', [event, charname, data]
@@ -32,7 +36,7 @@ class Builder:
                         self.runCommand(u'/connectToBuildSpace %s' % roomID)
 
                 msg = lc('builder.ASK_BUID_INVITE').format(charname)
-                gui_jokes.askUserYesNo(u'TITLE', msg, listener, POS=(0.5, 0.7))
+                gui_jokes.askUserYesNo(u'', msg, listener, POS=(0.5, 0.7))
             else:
                 msg = lc('builder.BUILD_INVITE_ERROR').format(charname)
                 self.putMessage(CHANNEL_CONSTS.SYSTEM, msg)
@@ -54,40 +58,61 @@ class Builder:
             self.last_spawn_position = Math.Vector3(data)
 
     def onDeleteBlock(self, owner_id, server_block_id):
-        print 'onDeleteBlock ', owner_id, server_block_id
         key = (owner_id, server_block_id)
         local_id = BWPersonality.game.block_server_local.pop(key, None)
         if not local_id:
             print 'onDeleteBlock ERROR , %s not found!' % key
             return
         else:
-            try:
-                entity.onStartDeleteBlock()
-            except:
-                traceback.print_exc()
-
-            try:
-                BigWorld.destroyEntity(local_id)
-            except:
-                traceback.print_exc()
-
             BWPersonality.game.block_builder_data.pop(local_id)
+            BWPersonality.game.block_local_server.pop(local_id)
+            sand_bag_optimize.delete_block(local_id)
             update_gui_quantity_block()
             self.deleteRespawnBox(local_id)
             return
 
     def onCreateBlocks(self, blocks, remain):
-        print 'onCreateBlocks', len(blocks), remain
         for box in blocks:
-            self.createBuildBlock(box['id'], box['pos'], box['angle'], box['boxID'])
+            self.__pull_data_blocks[box['id']] = (box['pos'], box['angle'], box['boxID'])
 
+        if remain:
+            BWPersonality.gpd.sendHightMessage('remained:%s' % remain)
+
+        def on_add_block(server_block_id, unical_id, box, matrix, model, position, angles):
+            self.registerBuildBlock(server_block_id, unical_id, position, angles, boxID)
+            update_gui_quantity_block()
+
+        def on_fetch_complete(load_out_data, serv_id_to_local):
+            for serv_id, unical_id in serv_id_to_local.items():
+                position, angles, boxID = load_out_data.pop(unical_id)
+                self.registerBuildBlock(serv_id, unical_id, position, angles, boxID)
+
+            update_gui_quantity_block()
+
+        if not remain and len(self.__pull_data_blocks) < 10:
+            for server_block_id, (pos, angles, boxID) in self.__pull_data_blocks.items():
+                sand_bag_optimize.add_block_manual(server_block_id, boxID, pos, angles, on_add_block)
+
+            self.__pull_data_blocks.clear()
+        elif not remain:
+            sand_bag_optimize.load_all(self.__pull_data_blocks, on_fetch_complete)
+            self.__pull_data_blocks.clear()
         if BWPersonality.GUICore._builder_menu:
             BWPersonality.GUICore._builder_menu.showRemainLoad(remain)
 
+    def registerBuildBlock(self, server_block_id, local_block_id, position, angles, boxID):
+        BWPersonality.game.block_builder_data[local_block_id] = (tuple(position), tuple(angles), int(boxID))
+        if not server_block_id:
+            server_block_id = local_block_id
+        key = (self.id, server_block_id)
+        BWPersonality.game.block_server_local[key] = local_block_id
+        BWPersonality.game.block_local_server[local_block_id] = key
+        box = getBoxByID(boxID)
+        respawn_color = box.get('respawn_color')
+        if respawn_color:
+            self.addRespawnBox(respawn_color, local_block_id, boxID, position, angles)
+
     def createBuildBlock(self, server_block_id, position, angles, boxID):
-        local_block_id = BigWorld.createEntity('Sandbag', self.spaceID, 0, position, angles, {'modelType': boxID,
-         'serverID': server_block_id,
-         'ownerID': self.id})
         BWPersonality.game.block_builder_data[local_block_id] = (tuple(position), tuple(angles), int(boxID))
         if not server_block_id:
             server_block_id = local_block_id

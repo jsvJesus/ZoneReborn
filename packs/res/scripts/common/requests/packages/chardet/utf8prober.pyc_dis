@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/chardet/utf8prober.py
+# Embedded file name: ./common/requests/packages/chardet/utf8prober.py
 import constants, sys
 from constants import eStart, eError, eItsMe
 from charsetprober import CharSetProber
@@ -42,7 +42,7 @@ class UTF8Prober(CharSetProber):
     def get_confidence(self):
         unlike = 0.99
         if self._mNumOfMBChar < 6:
-            for i in range(0, self._mNumOfMBChar):
+            for i in xrange(0, self._mNumOfMBChar):
                 unlike = unlike * ONE_CHAR_PROB
 
             return 1.0 - unlike

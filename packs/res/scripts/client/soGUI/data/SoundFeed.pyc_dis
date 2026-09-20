@@ -1,5 +1,6 @@
-# Embedded file name: ./scripts/client/soGUI/data/SoundFeed.py
+# Embedded file name: ./client/soGUI/data/SoundFeed.py
 import ResMgr
+from sounds_manager import playSound
 
 class SoundFeeder(object):
 
@@ -9,6 +10,11 @@ class SoundFeeder(object):
     def getSound(self, controlName, eventName):
         xmlKey = controlName + '/' + eventName
         return self.soundCfg.readString(xmlKey, '')
+
+    def playSoundControl(self, controlName, eventName):
+        soundName = self.getSound(controlName, eventName)
+        if soundName:
+            playSound(soundName)
 
 
 soundFeed = SoundFeeder()

@@ -1,9 +1,7 @@
-# Embedded file name: ./scripts/common/Config/Creatures/Subtypes.py
+# Embedded file name: ./common/Config/Creatures/Subtypes.py
 import copy
 import re
-from utils import get_first, is_identifier, hierarchy_get, hierarchy_set, add_nonexistent
-from Config import load_json
-from Config.Creatures.CommonConfig import CREATURES_DATA_PATH
+from utils import hierarchy_get, hierarchy_set
 from Config.Creatures.Constants import *
 KW = KEYWORDS
 
@@ -26,24 +24,6 @@ def get_parent_name(settings):
     return None
 
 
-def get_parent(settings):
-    parent_name = get_parent_name(settings)
-    if get_parent.cache is None:
-        get_parent.cache = load_json(CREATURES_DATA_PATH + '__presets__.json')
-    return get_parent.cache.get(parent_name)
-
-
-get_parent.cache = None
-
-def apply_parent_data(object, settings):
-    parent = copy.deepcopy(get_parent(settings))
-    if parent:
-        if isinstance(object, dict):
-            add_nonexistent(object, parent)
-        elif isinstance(object, list):
-            object.extend(parent)
-
-
 class SubtypesCompiler:
 
     def __init__(self, config, mob_compiler_class = None, debug_name = ''):
@@ -55,6 +35,9 @@ class SubtypesCompiler:
         self.index_to_subtype = []
         self.configs_by_lv = {KW.DEFAULT_LEVEL: self.create_default_config(config)}
         self.preprocess_by_levels(config)
+        for mb in config.get('alltypes', []):
+            if mb not in self.configs_by_lv:
+                self.configs_by_lv[mb] = self.configs_by_lv[KW.DEFAULT_LEVEL]
 
     def compile(self):
         if self.mob_compiler_class is None:
@@ -91,12 +74,10 @@ class SubtypesCompiler:
                             print 'DESIGNER_ERROR: no default object in {0} "{1}"'.format(self.debug_name, key_composite)
                             raise
 
-                        apply_parent_data(default_object, settings)
                         apply_default_settings_recursive(default_object)
                         obj[key] = default_object
                         del obj[key_composite]
                     else:
-                        apply_parent_data(value, settings)
                         del obj[key_composite]
                         obj[key] = value
                         apply_default_settings_recursive(value)

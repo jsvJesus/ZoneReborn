@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/QuestsBoard.py
+# Embedded file name: ./client/soGUI/QuestsBoard.py
 from Helpers.PyGUI.PyGUIBase import PyGUIBase
 from soGUI.soList_optimized import soList_optimized
 import GUI
@@ -46,8 +46,8 @@ class QuestsBoard(PyGUIBase):
     def _setup_content(self):
         self._description_ratio = 0.6
         width = self.component.width * (1.0 - self._description_ratio)
-        height = self.component.height - 100
-        self._quests_list = soList_optimized(GUI.Window(), soGUI.ListPropsStructure(width=width, height=height, elemStyle='soGUI/visual_styles/listElementBoard.xml', isMultiSel=False, elemHeight=35, sorted=False, selectCallBack=self._on_quest_selected), default_frame_skin='', buttons_is_options=False)
+        height = self.component.height - 81
+        self._quests_list = soList_optimized(GUI.Window(), soGUI.ListPropsStructure(width=width, height=height, elemStyle='soGUI/elements/listElementBoard.xml', isMultiSel=False, elemHeight=35, sorted=False, selectCallBack=self._on_quest_selected), default_frame_skin='', buttons_is_options=False)
         self._quests_list.component.horizontalPositionMode = self._quests_list.component.verticalPositionMode = 'PIXEL'
         self._quests_list.component.widthMode = self._quests_list.component.heightMode = 'PIXEL'
         self._quests_list.component.verticalAnchor = 'TOP'
@@ -80,7 +80,7 @@ class QuestsBoard(PyGUIBase):
         comp.width = 130
         comp.height = 29
         comp.position = (self.component.width * (1.0 - self._description_ratio) + self.component.width * self._description_ratio * 0.5, 300, 0.2)
-        self._take_btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        self._take_btn.initVSC('soGUI/elements/button_1.xml')
         self._take_btn.onBound()
         self._take_btn.setVisualState('normal')
         self._take_btn.onClick = self._on_take_quest_click
@@ -109,11 +109,13 @@ class QuestsBoard(PyGUIBase):
             if event == MESSAGEBOX.EVENT_BTNPRESS:
                 if data['btn'] == MESSAGEBOX.BTN_YES:
                     self.delegate.request_quest_from_board(self._selected_quest)
+                    self._take_btn.setDisabledState(True)
 
         if self._selected_quest:
             ask_yes_no('QuestBoard', lc('Quests.Board.TAKE_QUEST'), QD.getQuestTitleByID(self._selected_quest), callback=callback)
 
     def _on_quest_selected(self):
+        self._take_btn.setDisabledState(False)
         quest_name = self._quests_list.getSelection()[0]
         quest_id = self._quests_list.getAttachment(quest_name)
         self._set_title_text(QD.getQuestTitleByID(quest_id))
@@ -139,8 +141,13 @@ class QuestsBoard(PyGUIBase):
 
         self._quests_list.applyElements()
 
-    def get_quest_ids(self):
-        return self._quest_ids
+    @property
+    def save_blob(self):
+        return (self._quest_ids, self.delegate)
+
+    @save_blob.setter
+    def save_blob(self, value):
+        self._quest_ids, self.delegate = value
 
     @property
     def delegate(self):

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soDropDownList.py
+# Embedded file name: ./client/soGUI/soDropDownList.py
 import BigWorld
 import BWPersonality
 import GUI
@@ -18,7 +18,7 @@ from functools import partial
 
 class DropDownListPropsStructure(object):
 
-    def __init__(self, btnPlacement = 'RIGHT', btnW = 30, btnH = 30, DDLWidth = 250, DDLHeight = 300, DDLElemHeight = 25, DDLSelViewTexture = ('soGUI/maps/Controls/dropdown.tga', (0.0, 0.0, 200.0, 30.0)), sorted = True):
+    def __init__(self, btnPlacement = 'RIGHT', btnW = 30, btnH = 30, DDLWidth = 250, DDLHeight = 300, DDLElemHeight = 25, DDLSelViewTexture = ('soGUI/maps/Controls/dropdown.dds', (0.0, 0.0, 200.0, 30.0)), sorted = True):
         """
         btnPlacement - \xd1\x80\xd0\xb0\xd1\x81\xd0\xbf\xd0\xbe\xd0\xbb\xd0\xbe\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb5 \xd0\xba\xd0\xbd\xd0\xbe\xd0\xbf\xd0\xba\xd0\xb8 \xd0\xbf\xd0\xbe \xd0\xbe\xd1\x82\xd0\xbd\xd0\xbe\xd1\x88\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8e \xd0\xba \xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8e \xd1\x81 \xd0\xb2\xd1\x8b\xd0\xb1\xd1\x80\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xbc \xd1\x8d\xd0\xbb\xd0\xb5\xd0\xbc\xd0\xb5\xd0\xbd\xd1\x82\xd0\xbe\xd0\xbc; RIGHT \xd0\xb8\xd0\xbb\xd0\xb8 LEFT
         btnW, btnH - \xd1\x88\xd0\xb8\xd1\x80\xd0\xb8\xd0\xbd\xd0\xb0 \xd0\xb8 \xd0\xb2\xd1\x8b\xd1\x81\xd0\xbe\xd1\x82\xd0\xb0 \xd0\xba\xd0\xbd\xd0\xbe\xd0\xbf\xd0\xba\xd0\xb8 \xd1\x81\xd0\xbe\xd0\xbe\xd1\x82\xd0\xb2\xd0\xb5\xd1\x82\xd1\x81\xd1\x82\xd0\xb2\xd0\xb5\xd0\xbd\xd0\xbd\xd0\xbe
@@ -99,7 +99,7 @@ class soDropDownList(PyGUI.Window):
             self.listBtn.component.horizontalAnchor = 'RIGHT'
             self.listBtn.component.position = (1.0 - soGUI.getPixelWidth(self.component) * 6, 1.0 - soGUI.getPixelHeight(self.component) * 15, 0.0)
         self.listBtn.buttonStyle = soButton.TOGGLEBUTTON_STYLE
-        self.listBtn.initVSC('soGUI/visual_styles/arrow_down.xml')
+        self.listBtn.initVSC('soGUI/elements/arrow_down.xml')
         self.listBtn.setVisualState('normal')
         self.listBtn.onBound()
         self.component.addChild(self.listBtn.component, 'ddBtn')
@@ -240,7 +240,7 @@ class soDropDownList2(PyGUIBase, soVisualStateComponent):
     visualStateString = 'soGUI.soDDLVisualState'
     SORT_METHOD_NONE = 0
 
-    def __init__(self, component, width = 200, height = 25, btnAlignment = 'RIGHT', acceptInput = False, listHeight = 170, listWidth = 200, sortMethod = SORT_METHOD_NONE, elemHeight = 20, VS = 'soGUI/visual_styles/defaultDDL.xml', font = 'ruRU_calibri_large.font', colorFont = (175, 166, 112, 255), isOptions = False):
+    def __init__(self, component, width = 200, height = 25, btnAlignment = 'RIGHT', acceptInput = False, listHeight = 170, listWidth = 200, sortMethod = SORT_METHOD_NONE, elemHeight = 20, VS = 'soGUI/elements/drop_down_list.xml', font = 'RobotoCondensedRegular_16.font', colorFont = (169, 167, 118, 255), isOptions = False):
         PyGUIBase.__init__(self, component)
         soVisualStateComponent.__init__(self, component, self.visualStateString)
         component.script = self
@@ -314,21 +314,15 @@ class soDropDownList2(PyGUIBase, soVisualStateComponent):
         cmp.horizontalAnchor = 'LEFT' if self.btnAlignment == 'RIGHT' else 'RIGHT'
         cmp.verticalAnchor = 'CENTER'
         cmp.materialFX = 'BLEND'
-        cmp.font = 'ruRU_calibri_large.font'
-        cmp.colour = (140, 141, 126, 255)
+        cmp.font = 'RobotoCondensedRegular_18.font'
+        cmp.colour = (255, 255, 255, 255)
         labelX = 4 if self.btnAlignment == 'RIGHT' else self.component.width - 4
         cmp.position = (labelX, 0.0, 0.3)
         self.component.addChild(cmp, 'label')
 
     def setupList(self):
-        font = 'ruRU_calibri_default.font'
-        skin = 'soGUI/maps/con_frame.tga'
-        color = (255, 255, 255, 255)
-        if self.VS != 'soGUI/visual_styles/defaultDDL.xml':
-            font = self.font
-            skin = 'soGUI/maps/con_frame_for_options.tga'
-            color = (140, 141, 126, 255)
-        self.actualList = soList(GUI.Window(), soGUI.ListPropsStructure(width=self.width, colorFont=color, height=self.listHeight, isMultiSel=False, listFont=font, selectCallBack=partial(self._onListElem, False), nuSelectionCB=partial(self._onListElem, True), sorted=False), default_frame_skin=skin)
+        skin = 'soGUI/frame/con_frame.dds'
+        self.actualList = soList(GUI.Window(), soGUI.ListPropsStructure(width=self.width, colorFont=self.fontColor, height=self.listHeight, isMultiSel=False, listFont=self.font, selectCallBack=partial(self._onListElem, False), nuSelectionCB=partial(self._onListElem, True), sorted=False), default_frame_skin=skin)
         cmp = self.actualList.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
@@ -403,12 +397,17 @@ class soDropDownList2(PyGUIBase, soVisualStateComponent):
         self.listActive = False
 
     def _onClick(self):
+        self.onClickArrow(self.listActive)
         self.showList(not self.listActive)
 
     def addElements(self, elems):
+        result = True
         for elem in elems:
             last = True if elem is elems[-1] else False
-            self.actualList.addElement(elem[1], elem[0], not last)
+            if not self.actualList.addElement(elem[1], elem[0], not last):
+                result = False
+
+        return result
 
     def handleMouseButtonEvent(self, comp, event):
         PyGUIBase.handleMouseButtonEvent(self, comp, event)
@@ -443,3 +442,6 @@ class soDropDownList2(PyGUIBase, soVisualStateComponent):
 
     def onUserAction(self):
         return None
+
+    def onClickArrow(self, list_active):
+        pass

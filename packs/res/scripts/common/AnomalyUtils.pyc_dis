@@ -1,7 +1,9 @@
-# Embedded file name: ./scripts/common/AnomalyUtils.py
+# Embedded file name: ./common/AnomalyUtils.py
 import math
 import Math
 import Config.Anomalies
+from Config.Anomalies import CommonConfig
+from Constants import ScanArtsMode
 
 def getMaxAnomalyRadius(terrainType, AnomalyRadiusType):
     if AnomalyRadiusType == 1:
@@ -20,6 +22,16 @@ def getMaxAnomalyRadius(terrainType, AnomalyRadiusType):
     return radius
 
 
+PDA_ANOMALIES = set([CommonConfig.name_to_type['Led']])
+
+def is_valid_for_scan(scan_mode, anomaly):
+    if scan_mode == ScanArtsMode.Extractor:
+        return anomaly.anomalyType not in PDA_ANOMALIES
+    if scan_mode == ScanArtsMode.Pda:
+        return anomaly.anomalyType in PDA_ANOMALIES
+    raise RuntimeError
+
+
 def getMaximumAnomaliesCount(spawnRadius, anomalyRadius):
     anomalyDiametr = anomalyRadius * 2
     if anomalyDiametr < 1.0:
@@ -30,7 +42,7 @@ def getMaximumAnomaliesCount(spawnRadius, anomalyRadius):
     if numberCircle == 1:
         return 1
     allnumberCircle = 0
-    for circle in range(1, numberCircle):
+    for circle in xrange(1, numberCircle):
         circleRadius = circle * anomalyDiametr
         c = 6.28 * circleRadius
         counthere = int(c / anomalyDiametr)
@@ -50,14 +62,14 @@ def getAnomaliePositionGenerator(spawPos, spawnRadius, anomalyRadius):
         allnumberCircle = 0
         xc, yc, zc = spawPos
         currentPoint = -1
-        for circle in range(1, numberCircle):
+        for circle in xrange(1, numberCircle):
             circleRadius = circle * anomalyDiametr
             c = 6.28 * circleRadius
             counthere = c / anomalyDiametr
             allnumberCircle += counthere
             curent = -3.14
             step = 6.28 / counthere
-            for sub in range(int(counthere)):
+            for sub in xrange(int(counthere)):
                 currentPoint += 1
                 curent += step
                 x = xc + circleRadius * math.cos(curent)
@@ -76,14 +88,14 @@ def getAnomaliePosition(spawPos, spawnRadius, anomalyRadius, pointID):
         allnumberCircle = 0
         xc, yc, zc = spawPos
         currentPoint = -1
-        for circle in range(1, numberCircle):
+        for circle in xrange(1, numberCircle):
             circleRadius = circle * anomalyDiametr
             c = 6.28 * circleRadius
             counthere = c / anomalyDiametr
             allnumberCircle += counthere
             curent = -3.14
             step = 6.28 / counthere
-            for sub in range(int(counthere)):
+            for sub in xrange(int(counthere)):
                 currentPoint += 1
                 curent += step
                 if pointID == currentPoint:

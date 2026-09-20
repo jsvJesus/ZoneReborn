@@ -1,10 +1,10 @@
-# Embedded file name: ./scripts/common/client_lights/light.py
+# Embedded file name: ./common/client_lights/light.py
 import BigWorld
 import Pixie
-import math
-import Math
 import traceback
-import sfx
+import ResourceLoader
+import FX
+import Math
 STATE_UND = -1
 STATE_OFF = 0
 STATE_ON = 1
@@ -28,7 +28,7 @@ class Light(object):
         self.parseTints()
         self.createModel()
         if hasattr(self.udo, 'targetNodes'):
-            self.child_guids = [ udo.guid for udo in self.udo.targetNodes ]
+            self.child_guids = [ child_udo.guid for child_udo in self.udo.targetNodes ]
         return
 
     def parseTints(self):
@@ -63,27 +63,46 @@ class Light(object):
     def getParam(self, param, default = None):
         return getattr(self.udo, param, default)
 
+    def getColor(self):
+        colour = Math.Vector4(self.getParam('light_colour', (255, 255, 255, 255)))
+        mul = self.getParam('light_multiply', 1.0)
+        return colour * mul
+
     def createModel(self):
         self.model_path = self.getParam('model')
-        self.model = BigWorld.Model(self.model_path)
+        if not self.model_path:
+            self._onCreateModel({self.model_path: BigWorld.Model('')})
+            return
+        ResourceLoader.asyncLoad([(ResourceLoader.MODEL, self.model_path)], self._onCreateModel)
+
+    def _onCreateModel(self, prereqs):
+        if not self.parent_entity:
+            return
+        if self.parent_entity.isDestroyed:
+            return
+        self.model = prereqs[self.model_path]
         self.model_pix = BigWorld.Model('')
         self.parent_entity.addModel(self.model)
         self.parent_entity.addModel(self.model_pix)
         self.visibleAttachments = True
         if self.state == STATE_ON:
             tints = self._tint_on
+            self.lightON()
+            self.attachPixie()
         else:
             tints = self._tint_off
-        for dye, tint in tints.items():
-            try:
-                setattr(self.model, dye, tint)
-            except:
-                print self.udo, self.udo.guid if self.udo else 'no guid'
-                print self, 'model:', self.model
-                print [dye, tint]
-                print 'sources:', self.model.sources if self.model else 'None'
-                print 'position:', self.getParam('position')
-                traceback.print_exc()
+        if self.model_path:
+            for dye, tint in tints.items():
+                try:
+                    setattr(self.model, dye, tint)
+                except:
+                    print self.udo, self.udo.guid if self.udo else 'no guid'
+                    print self, 'model:', self.model
+                    print [dye, tint]
+                    print 'model_path ', self.model_path
+                    print 'sources:', self.model.sources if self.model else 'None'
+                    print 'position:', self.getParam('position')
+                    traceback.print_exc()
 
         self.model.position = self.getParam('position')
         self.model_pix.position = self.getParam('position')
@@ -96,6 +115,10 @@ class Light(object):
         self.model_pix.rotate(roll, (0, 0, 1))
         self.model_pix.rotate(yaw, (0, 1, 0))
         self.model_pix.rotate(pitch, (1, 0, 0))
+        self.onEndCreateModel()
+
+    def onEndCreateModel(self):
+        pass
 
     def setState(self, new_state, parent_id):
         if new_state == STATE_UND:
@@ -105,7 +128,7 @@ class Light(object):
         if new_state == self.state:
             return
         self.state = new_state
-        if self.model:
+        if self.model and self.model_path:
             tints = self._tint_on if self.state == STATE_ON else self._tint_off
             for dye, tint in tints.items():
                 try:
@@ -115,6 +138,7 @@ class Light(object):
                     print self.udo, self.udo.guid if self.udo else 'no guid'
                     print self, 'model:', self.model
                     print [dye, tint]
+                    print 'model_path ', self.model_path
                     print 'sources:', self.model.sources if self.model else 'None'
                     traceback.print_exc()
 
@@ -136,12 +160,12 @@ class Light(object):
     def playSFX_ON(self):
         path = self.getParam('onEnableSFX')
         if path and self.model:
-            sfx.bufferedOneShotSFX(path, self.model)
+            FX.bufferedOneShotEffect(path, self.model)
 
     def playSFX_OFF(self):
         path = self.getParam('onDisableSFX')
         if path and self.model:
-            sfx.bufferedOneShotSFX(path, self.model)
+            FX.bufferedOneShotEffect(path, self.model)
 
     def lightON(self):
         pass
@@ -157,9 +181,17 @@ class Light(object):
         if not particles_path:
             return
         if not self._pixie:
-            self._pixie = Pixie.create(particles_path)
+            try:
+                self._pixie = Pixie.create(particles_path)
+            except Exception as err:
+                print 'Error for:', self, self.getParam('position')
+                print 'particles_path', repr(particles_path)
+                raise err
+
         self.model_pix.root.attach(self._pixie)
         self._pixie.force()
+        bb = self.getParam('particlesVisBoundBox', 2.0)
+        self.model_pix.scale = (bb, bb, bb)
 
     def detachPixie(self):
         if not self._pixie:

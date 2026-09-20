@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/Config/AnomalyFields/__init__.py
+# Embedded file name: ./common/Config/AnomalyFields/__init__.py
 import copy
 from Config import load_json
 from Config.Compiler import ConfigCompilerError

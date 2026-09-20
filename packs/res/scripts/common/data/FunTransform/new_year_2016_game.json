@@ -9,7 +9,8 @@
 	"collide_boxs": "scripts/common/data/Creatures/Colliders/Bear.xml",
 	"model_scale": 1.4,
 	"hide_weapon": true,
-	"hide_gui":["munitionsGUI", "minimap", "systemBar", "actionBar"
+	"other_disable_interact":true,
+	"hide_gui":["munitionsGUI", "minimap", "systemBar", "actionBar", "emotionsGUI"
 				],
 
 	"chat_send_replace_symbol": "РФРГРР",
@@ -44,6 +45,8 @@
 
 	"lock_mouse_scroll_weapon":true,
 
+	"help_text":"FunTransform.help.bear_ny",
+
 
 	"lock_aciton":[
 		"LeftMouseButton","RightMouseButton","MiddleMouseButton",
@@ -52,10 +55,11 @@
 		"PVPScoreBar","SwitchNightVision","swithShootingMode","swithScopeMode","PickUpAll",
 		"ChangeViewShoulder","SpotLight",
 		"Binoculars","InventoryShow","ToggleCharacterGUI","QuestJournal","ShowHelp","ToggleSkillGUI","ToggleClanGUI","showCraft","GlobalMap",
-		"ViewEntities","InteractObject","toggleGUI","FriendList",
+		"ViewEntitiesNPC", "ViewEntitiesPL","InteractObject","toggleGUI","FriendList",
 		"QuickSlot1","QuickSlot2","QuickSlot3","QuickSlot4","QuickSlot5","QuickSlot6","QuickSlot7","QuickSlot8","QuickSlot9","QuickSlot10",
 		"QuickLine1","QuickLine2","QuickLine3","QuickLine4","QuickLine5","QuickLine6","QuickLine7","QuickLine8","QuickLine9","QuickLine10",
-		"ToggleEmotionGUI"
+		"ToggleEmotionGUI", "ToggleCrouch", "ToggleCrawl", "ToggleWalk"
+
 		],
 	"unlock_aciton":[
 		"MoveForward","StrafeLeft","StrafeRight","Jump"
@@ -156,7 +160,7 @@
 			"angles_sector": [-100, 10],
 			"height_attack_limit":[-1.0, 1.8],
 			
-			"damage":[280,300],
+			"damage":[180,200],
 
 			"apply_effect_id": 402,
 			"apply_effect_stack": 1,
@@ -182,7 +186,7 @@
 			"offset_position_attack": [-0.2, 0, 0.3],
 			"angles_sector": [-10, 100],
 			"height_attack_limit":[-1.0, 1.8],
-			"damage":[280,300],
+			"damage":[180,200],
 
 			"apply_effect_id": 402,
 			"apply_effect_stack": 1,
@@ -284,7 +288,7 @@
 
 			"radius":6.0,
 			"height_attack_limit":[-3.0, 5.0],
-			"damage":[380,440],
+			"damage":[280,340],
 
 			"apply_effect_id": 5,
 			"apply_effect_chance": 100.0,

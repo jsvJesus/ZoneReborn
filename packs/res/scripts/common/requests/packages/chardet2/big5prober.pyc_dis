@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/chardet2/big5prober.py
+# Embedded file name: ./common/requests/packages/chardet2/big5prober.py
 from .mbcharsetprober import MultiByteCharSetProber
 from .codingstatemachine import CodingStateMachine
 from .chardistribution import Big5DistributionAnalysis

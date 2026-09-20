@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/urllib3/request.py
+# Embedded file name: ./common/requests/packages/urllib3/request.py
 try:
     from urllib.parse import urlencode
 except ImportError:

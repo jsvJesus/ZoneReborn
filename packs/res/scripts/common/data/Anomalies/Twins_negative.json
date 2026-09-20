@@ -1,6 +1,4 @@
 {
-    "difficultyMax": 20, 
-    "difficultyMin": 10, 
     "lifetimeMax": 1800.0, 
     "lifetimeMin": 900.0, 
     "loot":"empty",
@@ -9,7 +7,7 @@
         "distribution": "FLAT", 
         "frequency": 0.0, 
         "penetration": 100.0, 
-        "type": "INFRARED", 
+        "type": "ELECTROSTATIC", 
         "value": 3.0
     }, 
     "effects": [[ "TwinsNegative", 1 ]], 
@@ -20,12 +18,13 @@
     "height_down": 0.5,
     "radius": 15.0, 
     "radiusOut": 30.0, 
-    "sfx_inside": "sfx/Anomalys/twins_negative.xml", 
+    "sfx_inside": "sfx/Anomalys/twins_negative.xml",
+    "sfx_target": "sfx/Anomalys/electra_attack.xml", 
     "sfx_main": "sfx/Anomalys/twins_negative.xml", 
     "sfx_main_interval": [ 3, 6 ],
-    "stone_hit_effect": "sfx/Anomalys/microwave_stone_hit.xml",
+    "stone_hit_effect": "sfx/Anomalys/electra_stone_hit.xml",
     "destroy_stone": false,
     "stone_proof": false,
-    "stone_fly_effect": "sfx/Anomalys/microwave_stone_fly.xml",
+    "stone_fly_effect": "sfx/Anomalys/electra_stone_hit.xml",
     "visible_artifact": {"sfx_main": 0, "sfx_inside":1}
 }

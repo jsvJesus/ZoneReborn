@@ -1,11 +1,11 @@
-# Embedded file name: ./scripts/common/msgchecker_unittest.py
+# Embedded file name: ./common/msgchecker_unittest.py
 import random
 import unittest
 from msgchecker import MsgChecker, ClientMsgChecker
 
 def str_random_symbols(qty):
     symbols = ''
-    for _ in range(qty):
+    for _ in xrange(qty):
         num = int(random.random() * 26) + 97
         symbols = symbols + chr(num)
 

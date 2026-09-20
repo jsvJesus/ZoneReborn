@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/client_lights/helpText.py
+# Embedded file name: ./common/client_lights/helpText.py
 import BigWorld
 import Pixie
 import GUI
@@ -38,6 +38,7 @@ class HelpText(Light):
         self.model.rotate(pitch, (1, 0, 0))
         self.model.root.attach(atch)
         self.textnode = textnode
+        self.onEndCreateModel()
 
     def get_text_size(self, text):
         scale = self.getParam('text_scale', 1)

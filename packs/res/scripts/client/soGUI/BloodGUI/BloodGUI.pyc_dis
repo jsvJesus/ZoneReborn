@@ -1,9 +1,10 @@
-# Embedded file name: ./scripts/client/soGUI/BloodGUI/BloodGUI.py
+# Embedded file name: ./client/soGUI/BloodGUI/BloodGUI.py
 import BigWorld
 import Stats
 import math_bw
 from Math import Vector3
 import math
+DEFAULT_COLOUR = (91, 0, 12, 255)
 
 class BloodGUI:
 
@@ -17,14 +18,24 @@ class BloodGUI:
         self.bloodgui_arrow.doReposition()
         self.bloodgui_panel.doReposition()
 
-    def draw_damage(self, damager_hashable_id, damager_position, damage):
+    def draw_damage(self, damager_hashable_id, damager_position, damage, is_bullet):
         max_hitpoints = BigWorld.player().GetStatValue(Stats.ch_MaxHitPoints)
-        cur_hitpoints = BigWorld.player().GetStatValue(Stats.ch_HitPoints)
-        damage_factor1 = math_bw.clamp(damage / max_hitpoints, 0, 1)
-        damage_factor2 = math_bw.clamp(1 - cur_hitpoints / max_hitpoints, 0, 1)
         if damager_position:
-            self.bloodgui_arrow.draw_damage(damager_hashable_id, damager_position, damage_factor1)
-            self.bloodgui_panel.draw_damage(damager_position, damage_factor2)
+            if is_bullet:
+                damage_factor1 = math_bw.clamp(damage / max_hitpoints, 0, 1)
+                self.bloodgui_arrow.draw_damage(damager_hashable_id, damager_position, damage_factor1)
+            else:
+                cur_hitpoints = BigWorld.player().GetStatValue(Stats.ch_HitPoints)
+                damage_factor2 = math_bw.clamp(1 - cur_hitpoints / max_hitpoints, 0, 1)
+                self.bloodgui_panel.draw_damage(damager_position, damage_factor2)
+
+    def draw_fall_damage(self, damage):
+        max_hitpoints = BigWorld.player().GetStatValue(Stats.ch_MaxHitPoints)
+        damage_factor = math_bw.clamp(damage / max_hitpoints, 0, 1)
+        self.bloodgui_panel.draw_fall_damage(damage_factor)
+
+    def draw_colored_damage(self, colour):
+        self.bloodgui_panel.draw_colored_damage(colour)
 
     @staticmethod
     def damager_position_to_angle(position):

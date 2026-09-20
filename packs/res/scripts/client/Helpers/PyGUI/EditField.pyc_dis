@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/Helpers/PyGUI/EditField.py
+# Embedded file name: ./client/Helpers/PyGUI/EditField.py
 import BigWorld, GUI, Keys
 from PyGUIBase import PyGUIBase
 CHARS_TO_IGNORE = [u'\r', u'\x08', u'\x1b']

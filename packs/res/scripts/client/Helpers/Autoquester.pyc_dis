@@ -1,6 +1,6 @@
-# Embedded file name: ./scripts/client/Helpers/Autoquester.py
-import Constants
+# Embedded file name: ./client/Helpers/Autoquester.py
 import ChatChannelConfig
+import QuesterConsts
 import BigWorld
 import ResMgr
 import json
@@ -10,7 +10,7 @@ import BWPersonality
 import time
 from Math import Vector3
 CHANNEL_CONSTS = ChatChannelConfig.ChannelConsts()
-from Helpers.BWCoroutine import BWCoroutine, BWWaitForCoroutine, BWWaitForCondition, BWCoroutineTimeoutException, BWWaitForPeriod
+from Helpers.BWCoroutine import BWCoroutine, BWMemberCoroutine, BWWaitForCoroutine, BWWaitForCondition, BWCoroutineTimeoutException, BWWaitForPeriod
 import ItemsUtils
 import Quest
 import Helpers.Caps
@@ -65,7 +65,12 @@ class Autoquester:
         else:
             ResMgr.purge(Autoquester.internal_file_name)
             source = ResMgr.openSection(Autoquester.internal_file_name)
-            json_text = json.loads(source.asBinary)
+            try:
+                json_text = json.loads(source.asBinary)
+            except:
+                Autoquester.show_error(u'\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u043f\u0440\u0435\u043e\u0431\u0440\u0430\u0437\u043e\u0432\u0430\u0442\u044c \u0444\u0430\u0439\u043b \u0432 json')
+                return
+
         if not json_text.has_key(config_name):
             Autoquester.show_error(u'\u041d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u0430 \u043a\u043e\u043d\u0444\u0438\u0433\u0443\u0440\u0430\u0446\u0438\u044f ' + config_name)
             return
@@ -102,7 +107,9 @@ class Autoquester:
         processed = True
         if isinstance(event, dict):
             if 'start_dialog' in event:
-                yield BWWaitForCoroutine(self.start_dialog(self, event['start_dialog']))
+                yield BWWaitForCoroutine(self.start_dialog(event['start_dialog']))
+            elif 'start_dialog_trigger' in event:
+                yield BWWaitForCoroutine(self.start_dialog_trigger(event['start_dialog_trigger']))
             elif 'wait_for_period' in event:
                 yield BWWaitForPeriod(event['wait_for_period'])
             elif 'teleport' in event:
@@ -133,10 +140,13 @@ class Autoquester:
                 yield BWWaitForCoroutine(self.cycle(self, event['cycle'], event['count']))
             elif 'activate_trigger' in event:
                 yield BWWaitForCoroutine(self.activate_trigger(self, event['activate_trigger']))
+            elif 'run_console_command' in event:
+                BWPersonality.GUICore.chatConsole.run_command(event['run_console_command'])
+                yield BWWaitForPeriod(0.1)
             else:
                 processed = False
         elif type(event) in [str, unicode]:
-            yield BWWaitForCoroutine(self.click_replica(self, event))
+            yield BWWaitForCoroutine(self.click_replica(event))
         elif isinstance(event, list):
             if len(event) == 1 and event[0] == 'close_dialog':
                 yield BWWaitForCoroutine(self.close_dialog(self))
@@ -151,7 +161,6 @@ class Autoquester:
 
     @BWCoroutine
     def activate_trigger(self, trigger_name):
-        BigWorld.zim_1 = trigger_name
         trigger_name = unicode(trigger_name)
         from TriggerObject import TriggerObject
         trigger = [None]
@@ -176,7 +185,7 @@ class Autoquester:
 
     @BWCoroutine
     def cycle(self, commands, repeat_count):
-        for _ in range(repeat_count):
+        for _ in xrange(repeat_count):
             for command in commands:
                 yield BWWaitForCoroutine(self.start_event(self, command))
 
@@ -209,8 +218,6 @@ class Autoquester:
             if list(p.client_quests.get_all()):
                 return False
             if BWPersonality.GUICore.inventoryDataSection['money'][0]:
-                return False
-            if p.CombatExperience or p.SurvivalExperience or p.OtherExperience:
                 return False
             return True
 
@@ -379,7 +386,6 @@ class Autoquester:
         start_reputation = BigWorld.player().getFractionRelationship(fraction_id)
         if start_reputation == needed_reputation:
             return
-        start_reputation_id = id(BigWorld.player().relationsWithFractions)
         BWPersonality.GUICore.chatConsole.run_command('reputation {0} {1}'.format(fraction_id, needed_reputation))
 
         def reputation_changed():
@@ -389,13 +395,8 @@ class Autoquester:
         try:
             yield BWWaitForCondition(reputation_changed, 3.0, 0.5)
         except BWCoroutineTimeoutException:
-            reputation_id = id(BigWorld.player().relationsWithFractions)
-            if reputation_id == start_reputation_id:
-                Autoquester.show_error(u"couldn't change reputation to: ")
-                return
-            else:
-                Autoquester.show_warning(u'\u041e\u0431\u0440\u0430\u0442\u043d\u043e\u0439 \u0441\u0432\u044f\u0437\u0438 \u043e\u0442 \u043f\u0440\u0438\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u0440\u0435\u043f\u0443\u0442\u0430\u0446\u0438\u0438 \u043d\u0435 \u0431\u044b\u043b\u043e. \u0412\u043e\u0437\u043c\u043e\u0436\u043d\u043e \u043e\u0448\u0438\u0431\u043a\u0430.')
-                return
+            Autoquester.show_warning(u'\u041e\u0431\u0440\u0430\u0442\u043d\u043e\u0439 \u0441\u0432\u044f\u0437\u0438 \u043e\u0442 \u043f\u0440\u0438\u043c\u0435\u043d\u0435\u043d\u0438\u044f \u0440\u0435\u043f\u0443\u0442\u0430\u0446\u0438\u0438 \u043d\u0435 \u0431\u044b\u043b\u043e. \u0412\u043e\u0437\u043c\u043e\u0436\u043d\u043e \u043e\u0448\u0438\u0431\u043a\u0430.')
+            return
 
     @BWCoroutine
     def teleport(self, position):
@@ -410,15 +411,88 @@ class Autoquester:
         except BWCoroutineTimeoutException:
             Autoquester.show_error(u"couldn't teleport to: " + str(position))
 
-    @BWCoroutine
+    @BWMemberCoroutine
+    def _teleport_to_npc(self, entity_name):
+
+        def condition():
+            for entity in BigWorld.entities.values():
+                if getattr(entity, 'npcName', None) == entity_name:
+                    return (entity.position - BigWorld.player().position).length < QuesterConsts.MAX_DIALOG_DISTANCE
+
+            return False
+
+        if condition():
+            return
+        BWPersonality.GUICore.chatConsole.run_command('tpnpc ' + entity_name)
+        try:
+            yield BWWaitForCondition(condition, 10, 0.5)
+            return
+        except BWCoroutineTimeoutException:
+            pass
+
+        if BigWorld.spaceLoadStatus() != 1.0:
+            try:
+                yield BWWaitForCondition(lambda : BigWorld.spaceLoadStatus() >= 1.0, 60, 0.5)
+            except BWCoroutineTimeoutException:
+                pass
+
+            try:
+                yield BWWaitForCondition(condition, 15, 0.5)
+                return
+            except BWCoroutineTimeoutException:
+                pass
+
+        else:
+            try:
+                yield BWWaitForCondition(condition, 10, 0.5)
+                return
+            except BWCoroutineTimeoutException:
+                pass
+
+        Autoquester.show_error(u"can't teleport to entity: " + entity_name)
+
+    @BWMemberCoroutine
+    def start_dialog_trigger(self, trigger_name):
+        trigger_found = [None]
+
+        def find_trigger():
+            for entity in BigWorld.entities.values():
+                if entity.__class__.__name__ == 'TriggerObject' and entity.name == trigger_name:
+                    trigger_found[0] = entity
+                    return True
+
+            return False
+
+        try:
+            yield BWWaitForCondition(find_trigger, 5.0, 0.5)
+            BigWorld.player().start_talk(trigger_found[0])
+            try:
+                yield BWWaitForCondition(lambda : self._dialog_screen.visible and not self._dialog_screen.pending, 5.0, 0.5)
+            except BWCoroutineTimeoutException:
+                Autoquester.show_error(u"can't open dialog with trigger: " + trigger_name)
+
+            return
+        except BWCoroutineTimeoutException:
+            Autoquester.show_error(u"can't find trigger: " + trigger_name)
+            return
+
+        return
+
+    @BWMemberCoroutine
     def start_dialog(self, entity_name):
         """ \xd0\xb7\xd0\xb0\xd0\xbf\xd1\x83\xd1\x81\xd0\xba \xd0\xb4\xd0\xb8\xd0\xb0\xd0\xbb\xd0\xbe\xd0\xb3\xd0\xb0 """
+        yield BWWaitForCoroutine(self._teleport_to_npc(entity_name))
         for entity in BigWorld.entities.values():
             if getattr(entity, 'npcName', None) == entity_name:
-                BigWorld.player().initializeTalk(entity)
-                BigWorld.player().cell.onStartTalk(entity.id, Constants.DEBUG_DIALOG_ID)
                 try:
-                    yield BWWaitForCondition(BWPersonality.GUICore.dialog_visible, 5.0, 0.5)
+                    yield BWWaitForCondition(lambda : not self._dialog_screen.visible, 5.0, 0.5)
+                except BWCoroutineTimeoutException:
+                    Autoquester.show_error(u"can't close dialog with entity: " + entity_name)
+                    return
+
+                BigWorld.player().start_talk(entity)
+                try:
+                    yield BWWaitForCondition(lambda : self._dialog_screen.visible and not self._dialog_screen.pending, 5.0, 0.5)
                 except BWCoroutineTimeoutException:
                     Autoquester.show_error(u"can't open dialog with entity: " + entity_name)
 
@@ -427,14 +501,14 @@ class Autoquester:
         Autoquester.show_error(u"can't find entity named: " + entity_name)
         return
 
-    @BWCoroutine
+    @BWMemberCoroutine
     def click_replica(self, text):
         """ \xd0\xba\xd0\xbb\xd0\xb8\xd0\xba \xd0\xb2 \xd0\xba\xd0\xbd\xd0\xbe\xd0\xbf\xd0\xba\xd1\x83 """
 
         def find_and_click():
-            for btn in BWPersonality.GUICore.dialogueGUI.btns:
-                if btn.label.text == text:
-                    btn.script.onClick()
+            for _, btn_comp in self._dialog_screen._buttons_block.component.buttonsblock.children:
+                if btn_comp.label.text == text and not btn_comp.script.buttonDisabled:
+                    btn_comp.script.onClick()
                     return True
 
             return False
@@ -462,3 +536,7 @@ class Autoquester:
     @property
     def p(self):
         return BigWorld.player()
+
+    @property
+    def _dialog_screen(self):
+        return BWPersonality.GUICore.dialog_screen

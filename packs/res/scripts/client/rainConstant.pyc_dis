@@ -1,10 +1,9 @@
-# Embedded file name: ./scripts/client/rainConstant.py
+# Embedded file name: ./client/rainConstant.py
 DEBUG_SHOW = 0
 time_sounds_blend = 2.1
 rain_volume_in_shell = 0.4
 ambient_volume_in_shell = 0.4
 foot_volume_in_shell = 0.4
-sound_node_volume_in_shell = 0.3
 sounds_volume_in_shell = 0.4
 rain_volume_camera_and_palyer_roof = 0.7
 rain_volume_player_roof = 0.8

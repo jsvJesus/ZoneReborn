@@ -1,33 +1,126 @@
-# Embedded file name: ./scripts/client/soGUI/giftTariff.py
+# Embedded file name: ./client/soGUI/giftTariff.py
 import BigWorld
 import BWPersonality
 import GUI
-import soGUI
 import GiftBankUtils
 from GiftBankUtils import TRANSFER_TYPE_BASE, TRANSFER_TYPE_EXPRESS, TRANSFER_TYPE_GOLD
-import math
 import gui_jokes
 from Helpers.PyGUI import PyGUIBase
-from soGUI.soItemView import soItemView, soItemSlot
-from Items import ItemsCatalog
 import ItemsUtils
-from soGUI.soToolTipComponent import soToolTipComponent
 from Helpers.PyGUI import PyGUIEvent
-from soGUI.soButton import soButton, soButtonWTT
-from soGUI.data import GUIEvents
-from functools import partial
-from gui_const import ITEM_CACHE
+from soGUI.soButton import soButton
 from Localization import lc
-import textMoney
 import traceback
-from textMoney import TextMoney, TextGold
-from soGUI.soRadioButton import soRadioButton2, soRadioButton, RadioButtonPropsStructure
-import Helpers.PyGUI.DraggableComponent
-DraggableComponent = Helpers.PyGUI.DraggableComponent.DraggableComponent
-grey_color = (200, 200, 180, 200)
+from textMoney import SimpeTextMoney
+from Helpers.PyGUI.DraggableComponent import DraggableComponent
+grey_color = (220, 220, 220, 220)
 base_color = (100, 200, 100, 200)
 excpress_color = (200, 200, 200, 200)
 gold_color = (255, 215, 0, 200)
+TARIFFS = [(TRANSFER_TYPE_BASE, lc('GUI.giftTariff.TRANSFER_BASE'), grey_color), (TRANSFER_TYPE_EXPRESS, lc('GUI.giftTariff.TRANSFER_EXPERSS'), grey_color), (TRANSFER_TYPE_GOLD, lc('GUI.giftTariff.TRANSFER_PREMIUM'), gold_color)]
+
+class _Tariff(PyGUIBase):
+    factoryString = 'GiftTariff'
+
+    def __init__(self, component, parent, index, tariff_id, caption, time_color):
+        PyGUIBase.__init__(self, component)
+        component.script = self
+        self.tariff_id = tariff_id
+        component.horizontalPositionMode = component.verticalPositionMode = 'PIXEL'
+        component.horizontalAnchor = 'LEFT'
+        component.verticalAnchor = 'TOP'
+        component.widthMode = component.heightMode = 'PIXEL'
+        component.height = 230
+        component.width = 102
+        pos_x = parent.component.width - component.width * 3
+        pos_x += index * component.width
+        component.position = (pos_x, 33, 0.85)
+        half_width = self.component.width // 2
+        cmp = GUI.Simple('textures/default/white.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.widthMode = cmp.heightMode = 'CLIP'
+        cmp.colour = (30, 30, 30, 180)
+        cmp.materialFX = 'BLEND'
+        cmp.height = 2
+        cmp.width = 2
+        cmp.position = (0, 0, 0.84)
+        cmp.visible = False
+        self.component.addChild(cmp, 'bg')
+        btn = soButton(GUI.Window())
+        cmp = btn.component
+        btn.initVSC('soGUI/elements/button_1.xml')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'TOP'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
+        cmp.label.text = caption
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = self.component.width - 4
+        cmp.height = 26
+        cmp.position = (half_width, 5, 0.1)
+        self.component.addChild(cmp, 'button_tariff')
+        btn.onBound()
+        btn.onClick = lambda : parent.choiseTariff(tariff_id)
+        cmp = GUI.Text('')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'TOP'
+        cmp.font = 'RobotoCondensedRegular_16.font'
+        cmp.colour = time_color
+        cmp.materialFX = 'BLEND'
+        cmp.position = (half_width, 52, 0.2)
+        cmp.text = '???'
+        self.component.addChild(cmp, 'label_tariff_time')
+        self.basel_cost = SimpeTextMoney(GUI.Text(), font='RobotoCondensedRegular_16.font')
+        cmp = self.basel_cost.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'TOP'
+        cmp.position = (half_width, 75, 0.2)
+        self.component.addChild(cmp, 'base_cost')
+        self.basel_cost.onBound()
+        self.basel_cost.setValue(0)
+        self.tax_cost = SimpeTextMoney(GUI.Text(), font='RobotoCondensedRegular_16.font')
+        cmp = self.tax_cost.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'TOP'
+        cmp.position = (half_width, 96, 0.2)
+        self.component.addChild(cmp, 'tax_cost')
+        self.tax_cost.onBound()
+        self.tax_cost.setValue(0)
+        self.total_cost = SimpeTextMoney(GUI.Text(), font='RobotoCondensedRegular_16.font')
+        cmp = self.total_cost.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'TOP'
+        cmp.position = (half_width, 182, 0.2)
+        self.component.addChild(cmp, 'total_cost')
+        self.total_cost.onBound()
+        self.total_cost.setValue(0)
+
+    def updateCost(self, data):
+        base_cost = GiftBankUtils.getBaseCost(self.tariff_id, data['from_bank'], data['to_bank'])
+        self.basel_cost.setValue(base_cost)
+        tax = GiftBankUtils.getAllTax(self.tariff_id, data['money'], data['items'], data['from_bank'], data['to_bank'])
+        self.tax_cost.setValue(tax)
+        self.total_cost_value = GiftBankUtils.getFullCost(self.tariff_id, data['money'], data['items'], data['from_bank'], data['to_bank'])
+        self.total_cost.setValue(self.total_cost_value)
+        time_transf = GiftBankUtils.getTimeTransfer(self.tariff_id, data['from_bank'], data['to_bank'])
+        self.component.label_tariff_time.text = ItemsUtils.timeToString(time_transf)
+
+    def select(self):
+        self.component.bg.visible = True
+        self.total_cost.component.visible = True
+
+    def deselect(self):
+        self.component.bg.visible = False
+        self.total_cost.component.visible = False
+
 
 class GiftTariff(PyGUIBase, DraggableComponent):
     factoryString = 'GiftTariff'
@@ -39,8 +132,6 @@ class GiftTariff(PyGUIBase, DraggableComponent):
         self.setupRoot()
         self.setupContent()
         self.sendData = None
-        self._last_all_money = 0
-        self._last_all_gold = 0
         self._selected_index_tariff = TRANSFER_TYPE_BASE
         return
 
@@ -53,8 +144,8 @@ class GiftTariff(PyGUIBase, DraggableComponent):
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
-        cmp.height = 250
-        cmp.width = 500
+        cmp.height = 300
+        cmp.width = 528
         cmp.visible = False
         cmp.textureName = ''
         cmp.position = (sW // 2, 250, 0.3)
@@ -65,23 +156,35 @@ class GiftTariff(PyGUIBase, DraggableComponent):
         cmp.mouseButtonFocus = True
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        cmp = GUI.Simple('textures/default/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.colour = (255, 255, 255, 255)
+        cmp.colour = (10, 10, 10, 240)
         cmp.materialFX = 'BLEND'
         cmp.height = self.component.height
         cmp.width = self.component.width
         cmp.position = (0, 0, 0.9)
         cmp.visible = 1
         self.component.addChild(cmp, 'iFrame')
+        cmp = GUI.Simple('textures/default/white.dds')
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.colour = (0, 0, 0, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.height = 33
+        cmp.width = self.component.width
+        cmp.position = (0, 0, 0.85)
+        cmp.visible = 1
+        self.component.addChild(cmp, 'head')
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'CENTER'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (self.component.width // 2, 6, 0.3)
@@ -98,7 +201,7 @@ class GiftTariff(PyGUIBase, DraggableComponent):
         cmp.width = 18
         cmp.height = 18
         cmp.position = (self.component.width - 25, 6, 0.3)
-        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.initVSC('soGUI/elements/closeBox.xml')
         closeBox.onBound()
         closeBox.setVisualState('normal')
         self.component.addChild(cmp, 'closeBox')
@@ -106,7 +209,7 @@ class GiftTariff(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_calibri_default.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = grey_color
         cmp.materialFX = 'BLEND'
         cmp.position = (10, 40, 0.1)
@@ -116,237 +219,106 @@ class GiftTariff(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_calibri_default.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = grey_color
         cmp.materialFX = 'BLEND'
-        cmp.position = (10, 60, 0.1)
+        cmp.position = (10, 86, 0.1)
         cmp.text = lc('GUI.giftTariff.label_tariff_time')
         self.component.addChild(cmp, 'label_tariff_time')
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_calibri_default.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = grey_color
         cmp.materialFX = 'BLEND'
-        cmp.position = (10, 80, 0.1)
+        cmp.position = (10, 109, 0.1)
         cmp.text = lc('GUI.giftTariff.label_tariff_cost')
         self.component.addChild(cmp, 'label_tariff_cost')
-        self._radioGroup = {}
-        self._cmp_times = {}
-        self._elment_cost = {}
-        tariffs = [(TRANSFER_TYPE_BASE,
-          lc('GUI.giftTariff.TRANSFER_BASE'),
-          base_color,
-          TextMoney), (TRANSFER_TYPE_EXPRESS,
-          lc('GUI.giftTariff.TRANSFER_EXPERSS'),
-          excpress_color,
-          TextMoney), (TRANSFER_TYPE_GOLD,
-          lc('GUI.giftTariff.TRANSFER_GOLD'),
-          gold_color,
-          TextGold)]
-        for tariffindex, caption, colour, cls_cost in tariffs:
-            rb = soRadioButton2(GUI.Window(), btnW=18, btnH=18, radioGroup='radiogr_tariff', labelText=caption, labelColour=colour, bvisual_styles='soGUI/visual_styles/radioButton.xml')
-            rb.onBound()
-            cmp = rb.component
-            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-            cmp.horizontalAnchor = 'LEFT'
-            cmp.verticalAnchor = 'TOP'
-            cmp.position = (200 + tariffindex * 100, 40, 0.2)
-            self.component.addChild(cmp, 'radio_%s' % tariffindex)
-            if tariffindex == TRANSFER_TYPE_BASE:
-                rb.setActive()
-                self._selected_index_tariff = TRANSFER_TYPE_BASE
-            cmp.checkBox.script.onClick = lambda index = tariffindex: self.onRadioBtn(index)
-            self._radioGroup[tariffindex] = rb
-            cmp = GUI.Text('')
-            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-            cmp.horizontalAnchor = 'LEFT'
-            cmp.verticalAnchor = 'TOP'
-            cmp.font = 'ruRU_calibri_default.font'
-            cmp.colour = grey_color
-            cmp.materialFX = 'BLEND'
-            cmp.position = (200 + tariffindex * 100, 60, 0.2)
-            cmp.text = ItemsUtils.timeToString(GiftBankUtils.TIME_TRANSFER[tariffindex])
-            self.component.addChild(cmp, 'label_tariff_time%s' % tariffindex)
-            self._cmp_times[tariffindex] = cmp
-            cost = cls_cost(GUI.Window())
-            cmp = cost.component
-            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-            cmp.horizontalAnchor = 'LEFT'
-            cmp.verticalAnchor = 'TOP'
-            cmp.position = (200 + tariffindex * 100, 80, 0.2)
-            self.component.addChild(cmp, 'cost_%s' % tariffindex)
-            cost.onBound()
-            cost.setValue(0)
-            self._elment_cost[tariffindex] = cost
-            cmp = GUI.Simple('textures/default/white.jpg')
-            cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-            cmp.horizontalAnchor = 'CENTER'
-            cmp.verticalAnchor = 'TOP'
-            cmp.widthMode = cmp.heightMode = 'PIXEL'
-            cmp.colour = (255, 255, 255, 40)
-            cmp.materialFX = 'BLEND'
-            cmp.height = 70
-            cmp.width = 1
-            cmp.position = (195 + tariffindex * 100, 30, 0.9)
-            self.component.addChild(cmp, 'vline_%s' % tariffindex)
-
-        self._elment_cost[TRANSFER_TYPE_BASE].setValue(GiftBankUtils.COST_TRANSFER[TRANSFER_TYPE_BASE][0])
-        self._elment_cost[TRANSFER_TYPE_EXPRESS].setValue(GiftBankUtils.COST_TRANSFER[TRANSFER_TYPE_EXPRESS][0])
-        self._elment_cost[TRANSFER_TYPE_GOLD].setValue(GiftBankUtils.COST_TRANSFER[TRANSFER_TYPE_GOLD][1])
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_calibri_default.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = grey_color
         cmp.materialFX = 'BLEND'
-        cmp.position = (10, 120, 0.1)
+        cmp.position = (10, 130, 0.1)
         cmp.multiline = 1
         cmp.text = lc('GUI.giftTariff.label_all_cost_item_tax')
         self.component.addChild(cmp, 'label_all_cost_item_tax')
-        self.all_cost_item_tax = TextMoney(GUI.Window())
-        cmp = self.all_cost_item_tax.component
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.position = (200, 120, 0.5)
-        self.component.addChild(cmp, 'all_cost_item_tax')
-        self.all_cost_item_tax.onBound()
-        self.all_cost_item_tax.setValue(u'0')
-        self.all_cost_gold_item_tax = TextGold(GUI.Window())
-        cmp = self.all_cost_gold_item_tax.component
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.position = (350, 120, 0.5)
-        self.component.addChild(cmp, 'all_cost_gold_item_tax')
-        self.all_cost_gold_item_tax.onBound()
-        self.all_cost_gold_item_tax.setValue(u'0')
-        cmp = GUI.Simple('textures/default/white.jpg')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.colour = (255, 255, 255, 100)
-        cmp.materialFX = 'BLEND'
-        cmp.height = 3
-        cmp.width = self.component.width - 10
-        cmp.position = (5, self.component.height - 90, 0.9)
-        self.component.addChild(cmp, 'vline_itog')
+        self._tariff_elem = {}
+        for index, tarif_info in enumerate(TARIFFS):
+            tariff_id, caption, time_color = tarif_info
+            cmp = GUI.Window()
+            self._tariff_elem[tariff_id] = _Tariff(cmp, self, index, tariff_id, caption, time_color)
+            self.component.addChild(cmp, 'tariff_%s' % index)
+
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_calibri_default.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = grey_color
         cmp.materialFX = 'BLEND'
-        cmp.position = (10, self.component.height - 80, 0.1)
+        cmp.position = (10, 194, 0.1)
         cmp.text = lc('GUI.giftTariff.label_itog')
         self.component.addChild(cmp, 'label_itog')
-        self.money_itog = TextMoney(GUI.Window())
-        cmp = self.money_itog.component
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.position = (200, self.component.height - 85, 0.5)
-        self.component.addChild(cmp, 'money_itog')
-        self.money_itog.onBound()
-        self.money_itog.setValue(u'0')
-        self.gold_itog = TextGold(GUI.Window())
-        cmp = self.gold_itog.component
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.position = (350, self.component.height - 85, 0.5)
-        self.component.addChild(cmp, 'gold_itog')
-        self.gold_itog.onBound()
-        self.gold_itog.setValue(u'0')
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_calibri_default.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = grey_color
         cmp.materialFX = 'BLEND'
-        cmp.position = (10, self.component.height - 60, 0.1)
-        cmp.text = lc('GUI.giftTariff.label_itog_prem')
-        self.component.addChild(cmp, 'label_itog_prem')
-        self.money_itog_prem = TextMoney(GUI.Window())
-        cmp = self.money_itog_prem.component
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.position = (200, self.component.height - 65, 0.5)
-        self.component.addChild(cmp, 'money_itog_prem')
-        self.money_itog_prem.onBound()
-        self.money_itog_prem.setValue(u'0')
-        self.gold_itog_prem = TextGold(GUI.Window())
-        cmp = self.gold_itog_prem.component
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.position = (350, self.component.height - 65, 0.5)
-        self.component.addChild(cmp, 'gold_itog_prem')
-        self.gold_itog_prem.onBound()
-        self.gold_itog_prem.setValue(u'0')
+        cmp.position = (10, 219, 0.1)
+        cmp.text = lc('GUI.giftTariff.label_itog_cost')
+        self.component.addChild(cmp, 'label_itog_cost')
         cmp = GUI.Simple('textures/default/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'RIGHT'
+        cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.colour = (0, 0, 0, 180)
+        cmp.colour = (0, 0, 0, 255)
         cmp.materialFX = 'BLEND'
-        cmp.height = 20
-        cmp.width = self.component.width - 190
-        cmp.position = (self.component.width - 2, self.component.height - 60, 0.01)
-        self.component.addChild(cmp, 'darkPremium')
+        cmp.height = 37
+        cmp.width = self.component.width
+        cmp.position = (0, self.component.height - cmp.height, 0.9)
+        self.component.addChild(cmp, 'footer')
         btn = soButton(GUI.Window())
         cmp = btn.component
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'BOTTOM'
-        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
         cmp.label.text = lc('GUI.giftTariff.button_send')
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.width = 150
-        cmp.height = 28
+        cmp.height = 26
         cmp.position = (self.component.width // 2 - 5, self.component.height - 5, 0.1)
         cmp.script.setDisabledState(False)
+        cmp.script.onClick = self.send
         self.component.addChild(cmp, 'button_send')
         btn.onBound()
         btn = soButton(GUI.Window())
         cmp = btn.component
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'BOTTOM'
-        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
         cmp.label.text = lc('GUI.giftTariff.button_cancel')
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.width = 150
-        cmp.height = 28
+        cmp.height = 26
         cmp.position = (self.component.width // 2 + 5, self.component.height - 5, 0.1)
         cmp.script.setDisabledState(False)
         self.component.addChild(cmp, 'button_cancel')
         btn.onBound()
-
-    def onRadioBtn(self, index):
-        self._selected_index_tariff = index
-        script = self._radioGroup[index]
-        for rBtn in self._radioGroup.values():
-            if rBtn is not script:
-                rBtn.setInactive()
-            else:
-                rBtn.setActive()
-
-        self.recalculate()
 
     def _updateCaprion(self, data):
         if data.get('return_gift'):
@@ -370,70 +342,34 @@ class GiftTariff(PyGUIBase, DraggableComponent):
 
         self.sendData = data
         self._parent = parent
-        self.recalculate()
+        for tariff_id, elem in self._tariff_elem.items():
+            elem.updateCost(self.sendData)
+
+        init_tariff = TRANSFER_TYPE_BASE
+        if BigWorld.player().isPremium():
+            init_tariff = TRANSFER_TYPE_GOLD
+        self.choiseTariff(init_tariff)
         return
 
     def hide(self):
         self.component.visible = False
 
-    def recalculate(self):
-        if not self.sendData:
+    def choiseTariff(self, choice_tariff_id):
+        if choice_tariff_id == TRANSFER_TYPE_GOLD and not BigWorld.player().isPremium():
+
+            def callback(event):
+                if event == gui_jokes.askUserYesNo.YES:
+                    BWPersonality.GUICore.storehouse_screen.show_shop()
+                    BWPersonality.GUICore.storehouse_screen.set_premium_filter()
+
+            gui_jokes.askUserYesNo(lc('GUI.giftwindow.TITLE_NEED_PREMIUM'), lc('GUI.giftwindow.TEXT_NEED_PREMIUM'), callback=callback, large=False)
             return
-        data = self.sendData
-        tariff = self._selected_index_tariff
-        bank_param = GiftBankUtils.get_send_param(data['from_bank'], data['to_bank'])
-        multiplier_money = bank_param.get('money', 1)
-        multiplier_time = bank_param.get('time', 1)
-        base_cost = int(math.ceil(GiftBankUtils.COST_TRANSFER[TRANSFER_TYPE_BASE][0] * multiplier_money))
-        excpress_cost = int(math.ceil(GiftBankUtils.COST_TRANSFER[TRANSFER_TYPE_EXPRESS][0] * multiplier_money))
-        self._elment_cost[TRANSFER_TYPE_BASE].setValue(base_cost)
-        self._elment_cost[TRANSFER_TYPE_EXPRESS].setValue(excpress_cost)
-        self._cmp_times[TRANSFER_TYPE_BASE].text = ItemsUtils.timeToString(GiftBankUtils.TIME_TRANSFER[TRANSFER_TYPE_BASE] * multiplier_time)
-        self._cmp_times[TRANSFER_TYPE_EXPRESS].text = ItemsUtils.timeToString(GiftBankUtils.TIME_TRANSFER[TRANSFER_TYPE_EXPRESS] * multiplier_time)
-        self._cmp_times[TRANSFER_TYPE_GOLD].text = ItemsUtils.timeToString(GiftBankUtils.TIME_TRANSFER[TRANSFER_TYPE_GOLD] * multiplier_time)
-        money_tax_r, money_tax_g = GiftBankUtils.getMoneyTax(tariff, data['money'])
-        gold_tax_r, gold_tax_g = GiftBankUtils.getGoldTax(tariff, data['gold'])
-        items_tax_money = 0
-        items_tax_gold = 0
-        for complexItem in data['items']:
-            itemparam = ItemsCatalog.GetItemParam(complexItem['complexItemType'])
-            item_cost = max(1, itemparam.get('Cost', 1))
-            stack_number = ItemsUtils.GetItemNumber(complexItem)
-            item_class = ItemsCatalog.GetItemClass(complexItem['complexItemType'])
-            m, g = GiftBankUtils.item_tax(tariff, multiplier_money, complexItem)
-            items_tax_money += m
-            items_tax_gold += g
-
-        self.all_cost_item_tax.setValue(items_tax_money + money_tax_r + gold_tax_r)
-        self.all_cost_gold_item_tax.setValue(items_tax_gold + money_tax_g + gold_tax_g)
-        base_money, base_gold = GiftBankUtils.COST_TRANSFER[tariff]
-        base_money = base_money * multiplier_money
-        self._last_all_money = int(base_money + money_tax_r + gold_tax_r + items_tax_money)
-        self._last_all_gold = int(base_gold + money_tax_g + gold_tax_g + items_tax_gold)
-        self.money_itog.setValue(self._last_all_money)
-        self.gold_itog.setValue(self._last_all_gold)
-        money_tax_r, money_tax_g = GiftBankUtils.getMoneyTax(tariff, data['money'], isPremium=True)
-        gold_tax_r, gold_tax_g = GiftBankUtils.getGoldTax(tariff, data['gold'], isPremium=True)
-        items_tax_money = 0
-        items_tax_gold = 0
-        for complexItem in data['items']:
-            itemparam = ItemsCatalog.GetItemParam(complexItem['complexItemType'])
-            item_cost = max(1, itemparam.get('Cost', 1))
-            stack_number = ItemsUtils.GetItemNumber(complexItem)
-            m, g = GiftBankUtils.item_tax(tariff, multiplier_money, complexItem, isPremium=True)
-            items_tax_money += m
-            items_tax_gold += g
-
-        last_all_money_prem = int(base_money + money_tax_r + gold_tax_r + items_tax_money)
-        last_all_gold_prem = int(base_gold + money_tax_g + gold_tax_g + items_tax_gold)
-        self.money_itog_prem.setValue(last_all_money_prem)
-        self.gold_itog_prem.setValue(last_all_gold_prem)
-        if BigWorld.player().isPremium():
-            self._last_all_money = last_all_money_prem
-            self._last_all_gold = last_all_gold_prem
-            self.component.darkPremium.position = (self.component.width - 2, self.component.height - 80, 0.01)
-        else:
-            self.component.darkPremium.position = (self.component.width - 2, self.component.height - 60, 0.01)
+        self._selected_index_tariff = choice_tariff_id
+        for tariff_id, elem in self._tariff_elem.items():
+            if tariff_id == choice_tariff_id:
+                elem.select()
+            else:
+                elem.deselect()
 
     def handleMouseButtonEvent(self, comp, event):
         return DraggableComponent.handleMouseButtonEvent(self, comp, event)
@@ -470,16 +406,19 @@ class GiftTariff(PyGUIBase, DraggableComponent):
     def cancel(self):
         self.hide()
 
-    @PyGUIEvent('button_send', 'onClick')
     def send(self):
         if not self.sendData:
             return
+        total_cost_value = self._tariff_elem[self._selected_index_tariff].total_cost_value
         player = BigWorld.player()
-        if player.CreditNumber < self._last_all_money:
+        needed_money = total_cost_value
+        if not self.sendData.get('return_gift'):
+            needed_money += self.sendData['money']
+        if player.CreditNumber < needed_money:
             gui_jokes.askUserOk(lc('GUI.giftwindow.TITLE_SEND_ERROR'), lc('Codes.GiftResponses.ERROR_SEND_CREDIT'))
             return
-        if player.GoldCreditNumber < self._last_all_gold:
-            gui_jokes.askUserOk(lc('GUI.giftwindow.TITLE_SEND_ERROR'), lc('Codes.GiftResponses.ERROR_SEND_GOLD'))
+        if self._selected_index_tariff == TRANSFER_TYPE_GOLD and not player.isPremium():
+            gui_jokes.askUserOk(lc('GUI.giftwindow.TITLE_SEND_ERROR'), lc('Codes.GiftResponses.ERROR_PREMIUM'))
             return
         if self.sendData.get('return_gift'):
             giftID = self.sendData['return_gift']['giftID']
@@ -492,7 +431,7 @@ class GiftTariff(PyGUIBase, DraggableComponent):
             lstIitemID = [ item['complexItemID'] for item in self.sendData['items'] ]
             money = self.sendData['money']
             comment = comment.encode('utf8')
-            BigWorld.player().base.sendGift(to_avatar, from_bank, to_bank, lstIitemID, money, comment, self._selected_index_tariff)
+            BigWorld.player().cell.sendGift(to_avatar, from_bank, to_bank, lstIitemID, money, total_cost_value, comment, self._selected_index_tariff)
         self.hide()
         self._parent.wait()
         if self.callback_on_send:

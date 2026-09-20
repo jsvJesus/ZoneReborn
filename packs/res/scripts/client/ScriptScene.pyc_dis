@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/ScriptScene.py
+# Embedded file name: ./client/ScriptScene.py
 import BigWorld
 
 class ScriptScene(BigWorld.UserDataObject):

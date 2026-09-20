@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/oauthlib/oauth2/draft25/tokens.py
+# Embedded file name: ./common/requests/packages/oauthlib/oauth2/draft25/tokens.py
 from __future__ import absolute_import
 from binascii import b2a_base64
 import hashlib

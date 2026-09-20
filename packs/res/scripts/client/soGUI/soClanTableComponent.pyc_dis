@@ -1,6 +1,5 @@
-# Embedded file name: ./scripts/client/soGUI/soClanTableComponent.py
+# Embedded file name: ./client/soGUI/soClanTableComponent.py
 import GUI
-import Keys
 import soGUI
 import traceback
 import BigWorld
@@ -12,12 +11,13 @@ from Helpers.PyGUI.PyGUIBase import PyGUIBase
 from soGUI.soVisualStateComponent import soVisualStateComponent
 from soGUI.soList_optimized import soList_optimized, ListPropsStructure
 from Helpers.PyGUI.VisualStateComponent import VisualState, VisualStateComponent
-memberTable_dataDS = {'font': 'ruRU_calibri_default.font',
+from soGUI.soClanTableElements import TableLabel, TableDropDown, TableCheckBox
+memberTable_dataDS = {'font': 'RobotoCondensedRegular_16.font',
  'color': (255, 255, 255, 0),
  'hoverColor': (255, 255, 255, 0),
  'selectColor': (28, 28, 28, 255),
  'toolTipID': None,
- 'contentColor': (175, 166, 112, 255),
+ 'contentColor': (255, 255, 255, 255),
  'contentColorHover': (249, 233, 137, 255),
  'contentColorSelect': (249, 233, 137, 255)}
 
@@ -30,127 +30,55 @@ class soTablePropsStructure(object):
         self.innerBorderWidth = innerBorderWidth
         self.innerBorderColor = innerBorderColor
         self.outerBorderColor = outerBorderColor
+        self.align = ''
 
 
-class soTableElemPropsStructure(object):
+class soTableCheckBoxPropsStructure(object):
 
-    def __init__(self, spanLeft = 0, spanDown = 0, dataStyles = {'font': 'ruRU_calibri_default.font',
- 'color': (255, 255, 255, 255)}, rights = ['READ']):
+    def __init__(self, spanLeft = 0, spanDown = 0, dataStyles = {'font': 'RobotoCondensedRegular_16.font',
+ 'color': (255, 255, 255, 255)}, rights = ['READ'], columns = 3):
         self.dataStyles = dataStyles
         self.rights = rights
         self.spanLeft = spanLeft
         self.spanDown = spanDown
+        self.columns = columns
+        self.align = ['LEFT']
+        self.data_types = ['checkbox']
+        for i in xrange(columns - 1):
+            self.data_types.append('text')
+            self.align.append('CENTER')
 
 
-class TableItemElement(PyGUIBase):
+class soTableElemPropsStructure(object):
 
-    def __init__(self, component, row_parent, width, height, row_index, col_index, props):
-        component.script = self
-        PyGUIBase.__init__(self, component)
-        self.row_parent = row_parent
-        self.props = props
-        self.row_index = row_index
-        self.col_index = col_index
-        self.selected = False
-        self.mouseHover = False
-        self.disabled = False
-        self.background = None
-        self.width = width
-        self.height = height
-        self.setupRoot()
-        self.setupContent()
-        return
+    def __init__(self, spanLeft = 0, spanDown = 0, dataStyles = {'font': 'RobotoCondensedRegular_16.font',
+ 'color': (255, 255, 255, 255)}, rights = ['READ'], columns = 3):
+        self.dataStyles = dataStyles
+        self.rights = rights
+        self.spanLeft = spanLeft
+        self.spanDown = spanDown
+        self.columns = columns
+        self.align = ['LEFT']
+        self.data_types = ['l_text']
+        for i in xrange(columns - 1):
+            self.data_types.append('text')
+            self.align.append('CENTER')
 
-    def setupRoot(self):
-        cmp = self.component
-        cmp.horizontalPositionMode = 'PIXEL'
-        cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'CENTER'
-        cmp.verticalAnchor = 'CENTER'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.materialFX = 'BLEND'
-        cmp.width = self.width
-        cmp.height = self.height
-        cmp.colour = (255, 255, 255, 255)
-        cmp.position = (0, 0, 0)
-        cmp.mouseButtonFocus = True
 
-    def setupContent(self):
-        cmp = GUI.Text('')
-        cmp.font = self.props.dataStyles['font']
-        color = (255, 255, 255, 255)
-        if self.props.dataStyles.has_key('contentColor'):
-            color = self.props.dataStyles['contentColor']
-        cmp.colour = color
-        cmp.multiline = False
-        cmp.horizontalPositionMode = 'CLIP'
-        cmp.verticalPositionMode = 'CLIP'
-        cmp.horizontalAnchor = 'CENTER'
-        cmp.verticalAnchor = 'CENTER'
-        cmp.position = (0, 0, 0.1)
-        cmp.materialFX = 'BLEND'
-        self.component.addChild(cmp, 'label')
-        cmp = GUI.Simple('soGUI/maps/Colours/white.tga')
-        color = (0, 0, 0, 0)
-        if self.props.dataStyles.has_key('color'):
-            color = self.props.dataStyles['color']
-        cmp.colour = color
-        cmp.materialFX = 'BLEND'
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
-        cmp.widthMode = cmp.heightMode = 'CLIP'
-        cmp.width = cmp.height = 2
-        cmp.position = (0, 0, 0.5)
-        self.component.addChild(cmp, 'background')
+class soTableCaptionPropsStructure(object):
 
-    def handleMouseButtonEvent(self, comp, event):
-        down = event.isKeyDown()
-        key = event.key
-        modifiers = event.modifiers
-        if down:
-            if key == Keys.KEY_LEFTMOUSE:
-                self.row_parent.elementEvent(self.row_index, self.col_index, 'LEFTMOUSE', None)
-            elif key == Keys.KEY_RIGHTMOUSE:
-                self.row_parent.elementEvent(self.row_index, self.col_index, 'RIGHTMOUSE', None)
-        return True
-
-    def handleMouseEnterEvent(self, component):
-        return False
-
-    def handleMouseLeaveEvent(self, component):
-        return False
-
-    def updateVisual(self):
-        color = (0, 0, 0, 0)
-        if self.selected or self.mouseHover:
-            if self.props.dataStyles.has_key('selectColor'):
-                color = self.props.dataStyles['selectColor']
-            self.component.background.colour = color
-            return
-        if self.props.dataStyles.has_key('color'):
-            color = self.props.dataStyles['color']
-        self.component.background.colour = color
-
-    def setLabel(self, txt):
-        self.component.label.text = txt
-
-    def setProps(self, props):
-        self.props = props
-        if self.props.dataStyles.has_key('contentColor'):
-            color = self.props.dataStyles['contentColor']
-            self.component.label.colour = color
-        self.updateVisual()
-
-    def select(self):
-        self.selected = True
-        self.updateVisual()
-
-    def deselect(self):
-        self.selected = False
-        self.updateVisual()
-
-    def hover(self, mouseIn = True):
-        self.mouseHover = mouseIn
-        self.updateVisual()
+    def __init__(self, spanLeft = 0, spanDown = 0, dataStyles = {'font': 'RobotoCondensedRegular_16.font',
+ 'color': (255, 255, 255, 255)}, rights = ['READ'], columns = 3):
+        self.dataStyles = dataStyles
+        self.rights = rights
+        self.spanLeft = spanLeft
+        self.spanDown = spanDown
+        self.columns = columns
+        self.data_types = []
+        self.align = []
+        for i in xrange(columns):
+            self.data_types.append('text')
+            self.align.append('CENTER')
 
 
 class TableRowElement(PyGUIBase):
@@ -167,9 +95,9 @@ class TableRowElement(PyGUIBase):
         self.parentTable = parentTable
         self.parentRowIndex = parentRowIndex
         if not self.ratio:
-            self.ratio = [ 1.0 / self.columns_count for i in range(self.columns_count) ]
+            self.ratio = [ 1.0 / self.columns_count for i in xrange(self.columns_count) ]
         if len(self.ratio) < cols:
-            print 'EROR RowItemH'
+            print 'EROR RowItemH', len(self.ratio), cols, self.ratio
             traceback.print_stack()
             return
         self.setupRoot()
@@ -195,36 +123,76 @@ class TableRowElement(PyGUIBase):
 
     def setupContent(self):
         cur_pos_x = 0
-        for i in range(self.columns_count):
+        if len(self.ratio) != self.columns_count:
+            traceback.print_stack()
+            return
+        for i in xrange(self.columns_count):
             w = min(self.ratio[i] * self.width, self.width - cur_pos_x)
-            item = TableItemElement(GUI.Window(), self, w, self.height, self.parentRowIndex, i, self.props)
+            if isinstance(self.props, (list, tuple)):
+                props = self.props[i]
+            else:
+                props = self.props
+            try:
+                if self.props.data_types[i] == 'text':
+                    item = TableLabel(GUI.Window(), self, w, self.height, self.parentRowIndex, i, props)
+                elif self.props.data_types[i] == 'checkbox':
+                    item = TableCheckBox(GUI.Window(), self, w, self.height, self.parentRowIndex, i, props)
+                elif self.props.data_types[i] == 'l_text':
+                    item = TableLabel(GUI.Window(), self, w, self.height, self.parentRowIndex, i, props, align='LEFT')
+                elif self.props.data_types[i] == 'list':
+                    item = TableDropDown(GUI.Window(), self, w, self.height, self.parentRowIndex, i, props)
+                    item.setData(self.props.list_data[i])
+            except Exception as e:
+                print i, self.columns_count, len(self.props.data_types), self.props.data_types, self.props
+                raise e
+
             cmp = item.component
-            cmp.position = (cur_pos_x + w / 2, self.height / 2, 0.1)
+            if self.props.data_types[i] == 'checkbox':
+                cmp.position = (0, self.height / 2, 0.1)
+            else:
+                cmp.position = (cur_pos_x + w / 2, self.height / 2, 0.1)
             cur_pos_x += self.ratio[i] * self.width
             self.component.addChild(cmp, 'column%s' % i)
 
     def elementEvent(self, row_index, col_index, event, data):
-        data = {'name': self.getName()}
+        if data is None:
+            data = {'name': self.getName()}
+        else:
+            data['name'] = self.getName()
         self.parentTable.elementEvent(row_index, col_index, event, data)
+        return
 
     def delElem(self):
         self.parentTable = None
         return
 
-    def setLabels(self, txt):
-        for i in range(len(txt)):
+    def setLabels(self, data):
+        for i in xrange(len(data)):
             col = getattr(self.component, 'column%s' % i, None)
             if col:
-                col.script.setLabel(txt[i])
+                if isinstance(data[i], dict):
+                    col.script.setValue(data[i]['text'])
+                    col.script.setColor(data[i].get('color'))
+                else:
+                    col.script.setValue(data[i])
+                    col.script.setColor(None)
 
         return
 
     def setProps(self, props):
         self.props = props
-        for i in range(self.columns_count):
+        for i in xrange(self.columns_count):
             col = getattr(self.component, 'column%s' % i, None)
             if col:
                 col.script.setProps(props)
+
+        return
+
+    def setSelected(self, value):
+        for i in xrange(self.columns_count):
+            col = getattr(self.component, 'column%s' % i, None)
+            if col:
+                col.script.setSelected(value)
 
         return
 
@@ -236,7 +204,7 @@ class TableRowElement(PyGUIBase):
             return u''
 
     def clear(self):
-        for i in range(self.columns_count):
+        for i in xrange(self.columns_count):
             col = getattr(self.component, 'column%s' % i, None)
             if col:
                 col.label.text = u''
@@ -244,7 +212,7 @@ class TableRowElement(PyGUIBase):
         return
 
     def handleMouseEnterEvent(self, component):
-        for i in range(self.columns_count):
+        for i in xrange(self.columns_count):
             col = getattr(self.component, 'column%s' % i, None)
             if col:
                 col.script.hover(True)
@@ -252,7 +220,7 @@ class TableRowElement(PyGUIBase):
         return False
 
     def handleMouseLeaveEvent(self, component):
-        for i in range(self.columns_count):
+        for i in xrange(self.columns_count):
             col = getattr(self.component, 'column%s' % i, None)
             if col:
                 col.script.hover(False)
@@ -278,8 +246,11 @@ class ClanTableComponent(soList_optimized):
     factoryString = 'soGUI.ClanTableComponent'
     STUBROW_HEIGHT = 25
 
-    def __init__(self, component, props = ListPropsStructure(), default_frame_skin = 'soGUI/maps/con_frame.tga'):
+    def __init__(self, component, props = ListPropsStructure(), default_frame_skin = 'soGUI/frame/basic_frame_1.dds', element_props = soTableElemPropsStructure(), ratio = None):
+        self.element_props = element_props
+        self.ratio = ratio
         soList_optimized.__init__(self, component, props, default_frame_skin)
+        self.selectedElems = []
         self.wheelFocus = True
         self.component.focus = True
         self.component.moveFocus = True
@@ -295,13 +266,14 @@ class ClanTableComponent(soList_optimized):
         for elemID, elem in self.elementHolder.children:
             elem.visible = False
 
-        self.elementHolder.children[0][1].script.setLabels(elemList[0]['data'])
         self.elementHolder.children[0][1].script.setProps(elemList[0]['props'])
+        self.elementHolder.children[0][1].script.setLabels(elemList[0]['data'])
         self.elementHolder.children[0][1].visible = True
         i = 1
-        for elem in range(start, end):
-            self.elementHolder.children[i][1].script.setLabels(elemList[elem]['data'])
+        for elem in xrange(start, end):
             self.elementHolder.children[i][1].script.setProps(elemList[elem]['props'])
+            self.elementHolder.children[i][1].script.setLabels(elemList[elem]['data'])
+            self.elementHolder.children[i][1].script.setSelected(elem in self.selectedElems)
             self.elementHolder.children[i][1].visible = True
             i += 1
 
@@ -336,17 +308,23 @@ class ClanTableComponent(soList_optimized):
 
     def initElements(self):
         self.clearAllChildren(self.elementHolder)
+        self.elemComps = []
         i = 0
-        COLS = 3
+        COLS = len(self.ratio)
         elemList = self.indexes
-        ratio = [0.388, 0.247, 0.37]
-        for elem in range(0, self.visibleCount):
+        for elem in xrange(0, self.visibleCount):
+            props = self.element_props
+            if elem == 0:
+                props = soTableCaptionPropsStructure(columns=COLS)
             pos = (-1.0, 1.0 - soGUI.getPixelHeight(self.elementHolder) * self.elementHeight * i, 0.0)
-            elemComp = TableRowElement(GUI.Window(), self.elementHolder.width - self.leftOffset, self.elementHeight, pos, self, elem, ratio=ratio, cols=COLS)
+            elemComp = TableRowElement(GUI.Window(), self.elementHolder.width - self.leftOffset, self.elementHeight, pos, self, elem, ratio=self.ratio, cols=COLS, props=props)
             elemComp.component.visible = False
             self.elemComps.append(elemComp)
             self.elementHolder.addChild(elemComp.component, 'element' + str(i))
-            cmp = GUI.Simple('soGUI/maps/Controls/rightsEditor/del_grey.tga')
+            if elem == 0:
+                i += 1
+                continue
+            cmp = GUI.Simple('soGUI/elements/divider_grey.dds')
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
             cmp.widthMode = cmp.heightMode = 'PIXEL'
             cmp.pixelSnap = False
@@ -364,39 +342,51 @@ class ClanTableComponent(soList_optimized):
             i += 1
 
         cur_pos_x = -1
-        for i in range(len(ratio)):
-            cmp = GUI.Simple('soGUI/maps/Controls/rightsEditor/del_grey.tga')
-            cmp.horizontalPositionMode = 'PIXEL'
-            cmp.verticalPositionMode = 'PIXEL'
-            cmp.widthMode = cmp.heightMode = 'PIXEL'
-            cmp.pixelSnap = False
-            cmp.horizontalAnchor = 'LEFT'
-            cmp.verticalAnchor = 'TOP'
-            cmp.tiled = True
-            cmp.tileHeight = 1
-            cmp.tileWidth = 1
-            cmp.width = 1
-            cmp.height = self.elementHolder.height
-            cmp.position = (min(cur_pos_x + ratio[i] * self.elementHolder.width, self.elementHolder.width), 0, 0.4)
-            cur_pos_x += ratio[i] * self.elementHolder.width
-            cmp.materialFX = 'BLEND'
-            cmp.colour = (255, 255, 255, 255)
-            self.component.addChild(cmp, 'v_line%s' % i)
+
+    def get_element(self, elementCaption):
+        caption = elementCaption
+        if isinstance(elementCaption, (tuple, list)):
+            caption = elementCaption[0]
+        for i in self.elements:
+            if isinstance(i, tuple):
+                if caption == i[0]:
+                    return i
+            if i == caption:
+                return i
+
+        return None
+
+    def get_key(self, element):
+        if isinstance(element['data'][0], (unicode, str)):
+            return element['data'][0]
+        if isinstance(element['data'][0], (tuple, list)):
+            return element['data'][0][0]
+        if isinstance(element['data'][0], dict):
+            return element['data'][0]['text']
 
     def addElement(self, element, attachment = None, delayedRender = False):
-        if self.elements.has_key(element['data'][0]):
-            return False
-        self.elements[element['data'][0]] = 0
-        self.attachments[element['data'][0]] = attachment
+        text = self.get_key(element)
+        try:
+            if text in self.elements:
+                return False
+        except Exception as e:
+            print element['data']
+            raise e
+
+        self.selectedElems = []
+        self.elements[text] = 0
+        self.attachments[text] = attachment
         self.indexes.append(element)
         if not delayedRender:
             self.applyElements(False)
         return True
 
     def removeElement(self, elementCaption):
-        if self.elements.has_key(elementCaption):
-            del self.elements[elementCaption]
-            del self.attachments[elementCaption]
+        element_key = self.get_element(elementCaption)
+        if element_key:
+            self.selectedElems = []
+            del self.elements[element_key]
+            del self.attachments[element_key]
             for index, element in enumerate(self.indexes):
                 if elementCaption == element['data'][0]:
                     self.indexes.remove(element)
@@ -406,12 +396,18 @@ class ClanTableComponent(soList_optimized):
         else:
             return False
 
+    def rewriteCaption(self, new_data):
+        for i in xrange(0, len(new_data['data'])):
+            self.indexes[0]['data'][i] = new_data['data'][i]
+
+        self.applyElements(False)
+
     def rewriteRow(self, new_data):
         if not new_data:
             return
         for element in self.indexes:
-            if element['data'][0] == new_data['data'][0]:
-                for i in range(1, len(new_data['data'])):
+            if self.get_key(element) == self.get_key(new_data):
+                for i in xrange(0, len(new_data['data'])):
                     element['data'][i] = new_data['data'][i]
                     element['props'] = new_data['props']
 
@@ -424,21 +420,25 @@ class ClanTableComponent(soList_optimized):
             end = len(self.indexes) - 1
         i = end
         while i >= start:
-            if self.elements.has_key(self.indexes[i]['data'][0]):
-                del self.elements[self.indexes[i]['data'][0]]
-                del self.attachments[self.indexes[i]['data'][0]]
+            element_key = self.get_key(self.indexes[i])
+            if element_key and element_key in self.elements:
+                del self.elements[element_key]
+                del self.attachments[element_key]
             self.indexes.pop(i)
             i -= 1
 
+        self.selectedElems = []
         self.applyElements(False)
 
     def removeRows(self, deleted_names):
         for element in self.indexes:
-            if self.elements.has_key(element['data'][0]):
-                del self.elements[element['data'][0]]
-                del self.attachments[element['data'][0]]
+            element_key = self.get_key(element)
+            if element_key:
+                del self.elements[element_key]
+                del self.attachments[element_key]
 
         self.indexes = []
+        self.selectedElems = []
         self.applyElements(False)
 
     def onElementEvent(self, col, row, event, data):
@@ -446,11 +446,63 @@ class ClanTableComponent(soList_optimized):
 
     def elementEvent(self, row_index, col_index, event, data):
         self.onElementEvent(col_index, row_index, event, data)
-        rowObj = self.indexes[row_index + self.offset]
         if event == 'LEFTMOUSE':
             pass
         elif event == 'RIGHTMOUSE':
             pass
+        elif event == 'SELECT_LIST':
+            pass
+        elif event == 'CHECK':
+            self.indexes[row_index + self.offset]['data'][0] = (data['name'], data['value'])
+
+    def clearSelection(self):
+        self.selectedElems = []
+        self.applyElements()
+
+    def selectRow(self, rowIndex, doSelect = True):
+        self.selectedElems = [rowIndex]
+        self.applyElements()
+
+    def get_label_row_position(self, row, col):
+        row_element = self.elemComps[row]
+        x = row_element.component.position.x
+        label = getattr(row_element.component, 'column%s' % col)
+        w, h = label.script.get_dimensions()
+        if label.script.align == 'CENTER':
+            w = w / 2.0
+        return label.position.x + w
+
+    def select_all_checkboxes(self):
+        for i in self.elemComps:
+            checkbox = getattr(i.component, 'column0')
+            if not checkbox:
+                continue
+            if isinstance(checkbox.script, TableCheckBox):
+                checkbox.script.set_active(True)
+
+        for i, data in enumerate(self.indexes):
+            if i == 0:
+                continue
+            name, value = data['data'][0]
+            self.indexes[i]['data'][0] = (name, True)
+            self.onElementEvent(0, i, 'CHECK', {'name': name,
+             'value': True})
+
+    def deselect_all_checkboxes(self):
+        for i in self.elemComps:
+            checkbox = getattr(i.component, 'column0')
+            if not checkbox:
+                continue
+            if isinstance(checkbox.script, TableCheckBox):
+                checkbox.script.set_active(False)
+
+        for i, data in enumerate(self.indexes):
+            if i == 0:
+                continue
+            name, value = data['data'][0]
+            self.indexes[i]['data'][0] = (name, False)
+            self.onElementEvent(0, i, 'CHECK', {'name': name,
+             'value': False})
 
     def addRows(self, rows):
         for row in rows:

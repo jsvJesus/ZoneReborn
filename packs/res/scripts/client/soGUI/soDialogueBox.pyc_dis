@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soDialogueBox.py
+# Embedded file name: ./client/soGUI/soDialogueBox.py
 from Localization import lc
 import BWPersonality
 import BigWorld
@@ -18,8 +18,7 @@ from Helpers.PyGUI.DraggableComponent import DraggableComponent
 from functools import partial
 from Helpers.BWCoroutine import *
 from soGUI.soCheckBox import soCheckBox
-from sounds import playSound
-from soGUI.data import SoundFeed
+from soGUI.data.SoundFeed import soundFeed
 from soGUI.soRadioButton import soRadioButton2
 from Keys import *
 
@@ -67,7 +66,7 @@ class soDlgBoxVisualState(VisualState):
 
 class soDlgBoxPropsStructure(object):
 
-    def __init__(self, caption = '', msg = '', picture = ('', 100, 100), width = 250, height = 150, modal = False, posX = 0, posY = 0, btnSet = [], additions = [], closeBox = True):
+    def __init__(self, caption = '', msg = '', picture = ('', 100, 100), width = 300, height = 150, modal = False, posX = 0, posY = 0, btnSet = None, additions = None, closeBox = True, customBtnLabel = None, bg_color = None, font_color = None):
         self.caption = caption
         self.msg = msg
         self.picture = picture
@@ -76,9 +75,12 @@ class soDlgBoxPropsStructure(object):
         self.posY = posY
         self.width = width
         self.height = height
-        self.btnSet = btnSet
-        self.additions = additions
+        self.btnSet = btnSet or []
+        self.additions = additions or []
         self.closeBox = closeBox
+        self.customBtnLabel = customBtnLabel or {}
+        self.bg_color = bg_color
+        self.font_color = font_color
 
 
 class soDlgCaption(PyGUIBase):
@@ -112,7 +114,7 @@ class soDlgCaption(PyGUIBase):
         cmp.crossFocus = True
 
     def setupFrame(self):
-        cmp = GUI.Frame2('soGUI/maps/con_frame.tga')
+        cmp = GUI.Frame2('soGUI/frame/con_frame.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -126,7 +128,7 @@ class soDlgCaption(PyGUIBase):
 
     def setupContent(self):
         btn = soButton(GUI.Window())
-        btn.initVSC('soGUI/visual_styles/closeBox.xml')
+        btn.initVSC('soGUI/elements/closeBox.xml')
         cmp = btn.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
@@ -148,7 +150,7 @@ class soDlgCaption(PyGUIBase):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_calibri_default.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.multiline = False
@@ -206,12 +208,29 @@ class soDialogueBox(PyGUI.Window, soVisualStateComponent):
     BTN_UNDO = 4
     BTN_APPLY = 5
     BTN_RESET = 6
+    BTN_CONFIRM = 7
+    BTN_PAYEDRESET = 10
+    BTN_BUY = 11
+    BTN_ACCEPT = 12
+    BTN_DECLINE = 13
     EVENT_BTNPRESS = 0
     EVENT_CLOSE = 1
     EVENT_CLOSE_NONUSER = 2
     ADDITIONAL_CONTROL_EDIT = 0
     ADDITIONAL_CONTROL_SLIDER = 1
     ADDITIONAL_CONTROL_CHECKBOX = 2
+    btnCaptionMap = {BTN_OK: u'ok',
+     BTN_CANCEL: lc('soDialogueBox.soGUI.STRING_268_33'),
+     BTN_YES: lc('soDialogueBox.soGUI.STRING_269_30'),
+     BTN_NO: lc('soDialogueBox.soGUI.STRING_270_29'),
+     BTN_UNDO: lc('soDialogueBox.soGUI.STRING_271_31'),
+     BTN_APPLY: lc('soDialogueBox.soGUI.STRING_272_32'),
+     BTN_RESET: lc('soDialogueBox.soGUI.STRING_273_32'),
+     BTN_PAYEDRESET: lc('GUI.MessageBoxes.PAYED_RESET_BUTTON'),
+     BTN_CONFIRM: lc('GUI.MessageBoxes.CONFIRM_BUTTON_LABEL'),
+     BTN_BUY: lc('GUI.MessageBoxes.BUY_BUTTON_LABEL'),
+     BTN_ACCEPT: lc('GUI.MessageBoxes.ACCEPT'),
+     BTN_DECLINE: lc('GUI.MessageBoxes.DECLINE')}
 
     def __init__(self, component, id, dlgProps = soDlgBoxPropsStructure()):
         PyGUI.Window.__init__(self, component)
@@ -221,13 +240,6 @@ class soDialogueBox(PyGUI.Window, soVisualStateComponent):
         self.id = id
         self.isDlgActive = True
         self.soundControlName = 'MSGBox'
-        self.btnCaptionMap = {soDialogueBox.BTN_OK: u'ok',
-         soDialogueBox.BTN_CANCEL: lc('soDialogueBox.soGUI.STRING_268_33'),
-         soDialogueBox.BTN_YES: lc('soDialogueBox.soGUI.STRING_269_30'),
-         soDialogueBox.BTN_NO: lc('soDialogueBox.soGUI.STRING_270_29'),
-         soDialogueBox.BTN_UNDO: lc('soDialogueBox.soGUI.STRING_271_31'),
-         soDialogueBox.BTN_APPLY: lc('soDialogueBox.soGUI.STRING_272_32'),
-         soDialogueBox.BTN_RESET: lc('soDialogueBox.soGUI.STRING_273_32')}
         self.setupRoot()
         self.setupFrame()
         self.setupContent()
@@ -246,7 +258,7 @@ class soDialogueBox(PyGUI.Window, soVisualStateComponent):
         cmp.focus = True
 
     def setupFrame(self):
-        cmp = GUI.Frame2('soGUI/maps/con_frame.tga')
+        cmp = GUI.Frame2('soGUI/frame/con_frame.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -285,9 +297,12 @@ class soDialogueBox(PyGUI.Window, soVisualStateComponent):
              self.BTN_OK,
              self.BTN_RESET,
              self.BTN_UNDO,
-             self.BTN_YES]:
+             self.BTN_YES,
+             self.BTN_PAYEDRESET,
+             SELF.BTN_CONFIRM,
+             self.BTN_BUY]:
                 btnObj = soButton(GUI.Window())
-                btnObj.initVSC('soGUI/visual_styles/defaultBtn.xml')
+                btnObj.initVSC('soGUI/elements/button_1.xml')
                 cmp = btnObj.component
                 cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
                 cmp.widthMode = cmp.heightMode = 'PIXEL'
@@ -298,8 +313,9 @@ class soDialogueBox(PyGUI.Window, soVisualStateComponent):
                 cmp.width = btnWidth
                 cmp.height = 25
                 cmp.position = (10 + i * btnWidth + i * 10, self.props.height - 10, 0.2)
-                cmp.label.font = 'ruRU_calibri_default.font'
-                cmp.label.text = self.btnCaptionMap[btn]
+                cmp.label.font = 'RobotoCondensedRegular_16.font'
+                default_label = btnCaptionMap[btn]
+                cmp.label.text = self.props.customBtnLabel.get(btn, default_label)
                 self.component.addChild(cmp, 'btn' + str(btn))
                 btnObj.onBound()
                 btnObj.setVisualState('normal')
@@ -429,7 +445,12 @@ class soDialogueBox(PyGUI.Window, soVisualStateComponent):
         if btn in [self.BTN_OK,
          self.BTN_CANCEL,
          self.BTN_NO,
-         self.BTN_YES]:
+         self.BTN_YES,
+         self.BTN_PAYEDRESET,
+         self.BTN_CONFIRM,
+         self.BTN_BUY,
+         self.BTN_ACCEPT,
+         self.BTN_DECLINE]:
             BWPersonality.GUICore.closeMessageBox(self.id)
         return
 
@@ -441,8 +462,7 @@ class soDialogueBox(PyGUI.Window, soVisualStateComponent):
             else:
                 BWPersonality.GUICore.generalLayer.addChild(self.component)
         self.component.visible = True
-        soundName = SoundFeed.soundFeed.getSound(self.soundControlName, 'Pop')
-        playSound(soundName)
+        soundFeed.playSoundControl(self.soundControlName, 'Pop')
         for dlgBx in BWPersonality.GUICore.dlgBoxes:
             if BWPersonality.GUICore.dlgBoxes[dlgBx] is not self:
                 if BWPersonality.GUICore.dlgBoxes[dlgBx].isDlgActive:

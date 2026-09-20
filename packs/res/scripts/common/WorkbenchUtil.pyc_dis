@@ -1,45 +1,74 @@
-# Embedded file name: ./scripts/common/WorkbenchUtil.py
+# Embedded file name: ./common/WorkbenchUtil.py
 from Localization import lc
-import json
-import ResMgr
-TYPE_WORKBENCH_NONE = 0
-TYPE_WORKBENCH_NOOB = 1
-TYPE_WORKBENCH_CHEMICAL = 2
-TYPE_WORKBENCH_PRO = 3
-TYPE_WORKBENCH_ELECTRICAL = 4
-MODELS = {TYPE_WORKBENCH_NOOB: 'models/entities/craft_table01.model',
- TYPE_WORKBENCH_CHEMICAL: 'models/entities/containers/medical_bag_01_entity.model',
- TYPE_WORKBENCH_PRO: 'models/props/streetobjects/Billboard_01_lod1.model',
- TYPE_WORKBENCH_ELECTRICAL: 'models/entities/containers/electronics_pile_02_entity.model'}
-LSNAMES = {TYPE_WORKBENCH_NOOB: 'Workbench.names.TYPE_WORKBENCH_NOOB',
- TYPE_WORKBENCH_CHEMICAL: 'Workbench.names.TYPE_WORKBENCH_CHEMICAL',
- TYPE_WORKBENCH_PRO: 'Workbench.names.TYPE_WORKBENCH_PRO',
- TYPE_WORKBENCH_ELECTRICAL: 'Workbench.names.TYPE_WORKBENCH_ELECTRICAL'}
-ERRORMODEL = 'models/entities/containers/bag.model'
-path = 'scripts/common/data/Workbench.json'
-Workbench_config = {}
+SPOIL_RECIPE_GADGET = 200
+SPOIL_FAIL_RECIPE = 50
+SPOIL_SUCCESS_EXTRACT = 100
+AMULET_CRAFT_TIME = 5
+CRAFT_COST_RATIO = 0.3
 
-def getNameModel(wtype):
-    return MODELS.get(wtype, ERRORMODEL)
+class WorkbenchTypes:
+    NONE, MECH, SOLDER, LABOR, AMULET = xrange(5)
 
 
-def getName(wtype, user = None):
-    key = LSNAMES.get(wtype, None)
-    if not key:
-        return '???'
-    else:
-        return lc(key, user=user)
+class InteractionType:
+    Personal, NpcFree, NpcPayed = xrange(3)
 
 
-def _load_workbench_config():
-    global Workbench_config
-    py_data_section = ResMgr.openSection(path)
-    Workbench_config = json.loads(py_data_section.asBinary)
+_models = {WorkbenchTypes.NONE: 'models/misc/furniture/worktable.model',
+ WorkbenchTypes.MECH: 'models/entities/craft_table01.model',
+ WorkbenchTypes.SOLDER: 'models/props/crafting_table/soldering_table/soldering_table.model',
+ WorkbenchTypes.LABOR: 'models/entities/laboratory_workbench.model',
+ WorkbenchTypes.AMULET: 'models/props/shops/weapons_stol_lod1.model'}
+_names = {WorkbenchTypes.NONE: 'Workbench.names.NONE',
+ WorkbenchTypes.MECH: 'Workbench.names.MECH',
+ WorkbenchTypes.SOLDER: 'Workbench.names.SOLDER',
+ WorkbenchTypes.LABOR: 'Workbench.names.LABOR',
+ WorkbenchTypes.AMULET: 'Workbench.names.AMULE'}
+_sounds = {WorkbenchTypes.NONE: 'environment/workbenches/mechanical',
+ WorkbenchTypes.MECH: 'environment/workbenches/mechanical',
+ WorkbenchTypes.SOLDER: 'environment/workbenches/solder',
+ WorkbenchTypes.LABOR: 'environment/workbenches/laboratory',
+ WorkbenchTypes.AMULET: 'environment/workbenches/solder'}
+kickstart_set = [{'item_ids': [310006],
+  'chances': [0],
+  'perk_actions': [None],
+  'icon': 'soGUI/maps/Icons/craft/icon_accumulator.dds',
+  'musthave': True,
+  'always_active': False}, {'item_ids': [310007, 310008],
+  'chances': [0.05, 0.15],
+  'perk_actions': ['SIMPLE_INST_CHANCE', 'COMPLEX_INST_CHANCE'],
+  'icon': 'soGUI/maps/Icons/craft/icon_tool.dds',
+  'musthave': False,
+  'always_active': True}]
+
+def calc_craft_chance(recipe_param, perks, workbench_type, kickstart_types):
+    from perks_system import perks_parser
+    recipe_chance = recipe_param.get('CraftChance', 1.0)
+    workbench_chance = perks_parser.get_perk_action_val('WORKBENCH_CHANCE', perks, workbench=workbench_type)
+    inst_chance = 0
+    total_chance = perks_parser.get_perk_action_val('CRAFT_ALL', perks)
+    for set_data in kickstart_set:
+        for i, item_type in enumerate(set_data['item_ids']):
+            if item_type in kickstart_types:
+                perk_action = set_data['perk_actions'][i]
+                if perk_action:
+                    inst_chance += perks_parser.get_perk_action_val(perk_action, perks)
+                inst_chance += set_data['chances'][i]
+
+    res_chance = sum([recipe_chance,
+     workbench_chance,
+     inst_chance,
+     total_chance])
+    return min(res_chance, 1.0001)
 
 
-def getReciept(type_name):
-    if not type_name:
-        return []
-    if not Workbench_config:
-        _load_workbench_config()
-    return Workbench_config.get(str(type_name), [])
+def get_sound(wtype):
+    return _sounds.get(wtype)
+
+
+def get_model_path(wtype):
+    return _models.get(wtype, _models[WorkbenchTypes.NONE])
+
+
+def get_local_name(wtype, user = None):
+    return lc(_names.get(wtype, _names[WorkbenchTypes.NONE]), user=user)

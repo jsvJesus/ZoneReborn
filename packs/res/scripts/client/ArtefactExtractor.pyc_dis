@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/ArtefactExtractor.py
+# Embedded file name: ./client/ArtefactExtractor.py
 import BigWorld
 import Keys
 import Math
@@ -14,7 +14,8 @@ import traceback
 from soGUI.soArtifactQTE import soArtifactQTE
 from Localization import lc
 import ChatChannelConfig
-import sounds
+import sounds_manager as sounds
+from Constants import ScanArtsMode
 CHANNEL_CONSTS = ChatChannelConfig.ChannelConsts()
 from utils_bw import isinstance_ext
 
@@ -72,7 +73,7 @@ class PressGame:
         self.game_stage = 0
         self.SPOIL_PERIOD = 3.0
         speed = self.extractor_params.get('ExtractTime', 1.0)
-        self.TIME_GATES = map(lambda x: x * float(speed), range(1, 6))
+        self.TIME_GATES = map(lambda x: x * float(speed), xrange(1, 6))
         self.NEEDED_KEYS = []
         for _ in self.TIME_GATES:
             self.NEEDED_KEYS.append(self.ALL_KEYS[random.randint(0, len(self.ALL_KEYS) - 1)])
@@ -87,7 +88,7 @@ class PressGame:
          'selector': 0,
          'prepare': False})
         if updateCoord:
-            BigWorld.player().cell.get_anomalies_for_extractor()
+            BigWorld.player().cell.get_anomalies_for_extractor(ScanArtsMode.Extractor)
         return
 
     def OnGameEnded(self):
@@ -103,7 +104,11 @@ class PressGame:
         self.choosen_anomaly = None
         if self.fGameWin:
             try:
+                if not ItemsUtils.CheckMaxItemNumber(BigWorld.player(), 1):
+                    BigWorld.player().ReportFail(ItemsUtils.FAIL_MAX_ITEMS)
+                    return
                 BWPersonality.game.onEndArtifactExstract(anomaly_id)
+                BigWorld.player().onSuccessArtifactExstract(self.extractor_params, self.item_dict)
                 anomaly = BigWorld.entities[anomaly_id]
                 anomaly.give_item_to_avatar(BigWorld.player().id)
             except KeyError:
@@ -118,8 +123,7 @@ class PressGame:
         else:
             BWPersonality.game.onCancelArtifactExstract(anomaly_id)
             self.SetQTEStatus(soArtifactQTE.STATUS_FAIL)
-            if 'SpoilPerExtractionFail' in self.extractor_params:
-                BigWorld.player().cell.BreakGadget(self.item_dict['complexItemID'], self.extractor_params['SpoilPerExtractionFail'])
+            BigWorld.player().onFailedArtifactExstract(self.extractor_params, self.item_dict['complexItemID'])
         self.detector_visual_data['keyData'] = []
         return
 
@@ -134,6 +138,7 @@ class PressGame:
             self.UpdateKeys()
         else:
             self.fGameWin = False
+            sounds.playSound('items/mgd/fail')
             self.OnGameEnded()
 
     def stopGame(self):
@@ -166,11 +171,13 @@ class PressGame:
             key = Keys.KEY_0
         if self.game_stage < len(self.TIME_GATES):
             if key in self.ALL_KEYS:
+                sounds.playSound('items/mgd/click')
                 if key == self.current_needed_key:
                     self.fStagePassed = True
                     self.current_needed_key = -1
                     self.UpdateKeys()
                 else:
+                    sounds.playSound('items/mgd/fail')
                     self.fGameWin = False
                     self.OnGameEnded()
                 return True
@@ -198,13 +205,19 @@ class PressGame:
         else:
             spoil_amount = int(self.extractor_params['SpoilPerSecond'] * self.SPOIL_PERIOD)
             p = BigWorld.player()
-            p.cell.BreakGadget(self.item_dict['complexItemID'], spoil_amount)
+            item_id = self.item_dict['complexItemID']
+            citem = ItemsUtils.GetComplexItemByID(BigWorld.player(), item_id)
+            if not citem:
+                self.DestroyExtractor()
+                return
+            p.cell.BreakGadget(item_id, spoil_amount)
             if p.artefactExtractor:
                 self.spoil_callback_id = BigWorld.callback(self.SPOIL_PERIOD, self._spoil_gadget)
             else:
                 self.spoil_callback_id = None
             inc_params = ItemsUtils.GetComplexItemInconstanParams(self.item_dict)
-            if inc_params.get(ItemsCatalog.INC_CONDITION_VALUE, self.extractor_params['MaxCondition']) <= 0:
+            cond = ItemsUtils.GetItemConditionRatio(None, self.item_dict, inc_params)
+            if cond <= 0.0:
                 self.DestroyExtractor()
                 p.putMessage(CHANNEL_CONSTS.SYSTEM, lc('Inventory.client.LOW_CONDITION'))
             return
@@ -273,7 +286,7 @@ class PressGame:
         """\xd0\x9e\xd0\xb1\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb8\xd1\x82\xd1\x8c \xd1\x82\xd0\xbe\xd1\x87\xd0\xba\xd0\xb8 \xd1\x80\xd0\xb0\xd0\xb7\xd1\x8a\xd0\xb8\xd1\x81\xd0\xba\xd0\xb8\xd0\xb2\xd0\xb0\xd0\xb5\xd0\xbc\xd1\x8b\xd1\x85 \xd1\x81\xd1\x83\xd1\x89\xd0\xbd\xd0\xbe\xd1\x81\xd1\x82\xd0\xb5\xd0\xb9 \xd0\xbd\xd0\xb0 \xd1\x8d\xd0\xba\xd1\x80\xd0\xb0\xd0\xbd\xd0\xb5."""
         if not BigWorld.player().CanStartArtefactScan(self.extractor_params, self.item_dict):
             return
-        BigWorld.player().cell.get_anomalies_for_extractor()
+        BigWorld.player().cell.get_anomalies_for_extractor(ScanArtsMode.Extractor)
 
     def SetQTDots(self, anomaly_ids_list):
         self.detector_visual_data['QTEdata'] = self.GetCoordDict(anomaly_ids_list)
@@ -357,7 +370,10 @@ class PressGame:
         elif event == soArtifactQTE.EVENT_CLOSED:
             self.DestroyExtractor()
         elif event == soArtifactQTE.EVENT_SCAN_RESULT:
-            self.SetQTDots(data)
+            anomaly_ids, result = data
+            self.SetQTDots(anomaly_ids)
+        elif event == soArtifactQTE.EVENT_RESTART:
+            self.DefaultScaner()
 
     def DestroyExtractor(self):
         self.stopGame()

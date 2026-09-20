@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soGUILayer.py
+# Embedded file name: ./client/soGUI/soGUILayer.py
 import BigWorld
 import BWPersonality
 import GUI
@@ -10,6 +10,7 @@ from soGUI.soInventorySlot2 import soInventorySlot2
 from soGUI.soCraftGUI import CraftGUI
 from soGUI.soCharacterScreen import soCharacterSlot, soGadgetSlot
 from soGUI.soQuickSlotsBar import soActionSlot
+from soGUI.soItemView import soItemSlot
 
 class soGUILayer(PyGUIBase):
     factoryString = 'soGUI.soGUILayer'
@@ -36,15 +37,10 @@ class soGUILayer(PyGUIBase):
         if hasattr(dropped, 'script'):
             if not hasattr(dropped.script, 'factoryString'):
                 return False
+        if isinstance(dropped.script, soItemSlot):
+            dropped.script.on_out_screen_drop()
+            dropped.script.on_out_screen_drop_sound()
         fStr = dropped.script.factoryString
-        if isinstance(dropped.script, soInventorySlot2):
-            dropped.script.wannaDrop()
-        if isinstance(dropped.script, soCharacterSlot):
-            dropped.script.unequip()
-        if isinstance(dropped.script, soGadgetSlot):
-            dropped.script.unequip()
-        if isinstance(dropped.script, soActionSlot):
-            dropped.script.remove()
         if fStr == 'soGUI.soPartSlot':
             BWPersonality.GUICore.craftEvent(CraftGUI.EVENT_DELITEM, dropped.script.slotInfo)
         if fStr == 'soGUI.soTradeSlot':
@@ -52,6 +48,13 @@ class soGUILayer(PyGUIBase):
         return True
 
     def handleDragEnterEvent(self, comp, dragged):
+        if dragged and isinstance(dragged.script, soItemSlot):
+            dragged.script.on_out_screen_enter()
+        return True
+
+    def handleDragLeaveEvent(self, comp, dragged):
+        if dragged and isinstance(dragged.script, soItemSlot):
+            dragged.script.on_out_screen_leave()
         return True
 
     def handleMouseEvent(self, cmp, event):

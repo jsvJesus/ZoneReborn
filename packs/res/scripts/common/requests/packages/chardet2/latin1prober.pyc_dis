@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/chardet2/latin1prober.py
+# Embedded file name: ./common/requests/packages/chardet2/latin1prober.py
 from .charsetprober import CharSetProber
 from . import constants
 FREQ_CAT_NUM = 4

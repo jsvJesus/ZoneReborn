@@ -2,69 +2,59 @@
 
 	"avatar_name_lc":"FunTransform.names.test_boar",
 	"hide_in_world_marker": true,
-	"set_model": "characters/creatures/boar-mutant/boar_mutant_lod1.model",
+	"set_model": "characters/creatures/boar_male/boar_male.model",
 	"set_model_tint": {},
-	"collide_boxs": "scripts/common/data/Creatures/Colliders/Boar.xml",
+	"collide_boxs": "scripts/common/data/Creatures/Colliders/Boar_male.xml",
+	"persistent_effects":[267],
 	"model_scale": 1.0,
 	"hide_weapon": true,
-	"hide_gui":["munitionsGUI", "minimap", "systemBar", "actionBar"
-			],
+	"other_disable_interact":true,
+	"hide_gui":["munitionsGUI", "systemBar", "actionBar", "emotionsGUI", "inventory", "charScreen", "minimap"
+				],
 
 
 	"walk_speed":  0.0,
-	"run_speed":   5.0,
-	"sprint_speed":9.0,
+	"run_speed":   4.0,
+	"run_speed_back":   1.5,
+	"sprint_speed":6.0,
 	"crouch_speed":2.2,
+
+	"phy_acelerate_down": 5.0,
+	"phy_walk_acelerate": 5.0,
+	"phy_sprint_acelerate": 200.0,
+	"body_twist":3.0,
+	"ignore_fall":true,
+	"fix_last_foot_twist":true,
 
 	"post_proccess":"",
 
 	"animation_on_damage":"",
 	"sfx_on_damage":"sfx/Mob/Boar/pain.xml",
-	"Die_animation":"Boar_Die",
-	"Dead_animation":"Boar_Dead",
+	"Die_animation":"boar_death_1",
+	"Dead_animation":"boar_dead",
 	"sfx_on_dead":"sfx/Mob/Boar/death.xml",
 
 	"drop_on_dead_loot_bbox_name":"",
 
-
-	"camera_pivot_position": [0.5, 2.0, -1],
-	"camera_pivot_dist": 2.6,
+	"camera_pivot_position": [0.0, 1.25, 0.0],
+	"camera_pivot_dist": "DEF",
 	"camera_node": "DEF",
 
+	"physics_modelWidth":"DEF",
+	"physics_modelDepth":"DEF",
+	"physics_modelHeight_Standing":"DEF",
+	"physics_modelHeight_Crouched":"DEF",
+	"physics_scrambleHeight":"DEF",
 
-	"physics_modelWidth":0.5,
-	"physics_modelDepth":1.3,
-	"physics_modelHeight_Standing":1.0,
-	"physics_modelHeight_Crouched":1.0,
-	"physics_scrambleHeight":0.6,
+	"lock_mouse_scroll_weapon":true,
 
+	"help_text":"FunTransform.help.all",
 
-	"lock_aciton":[
-		"MoveBackward",
-		"ThrowGrenade",
-		"SitGround","SitBackpack","SitGroundX","SitLegs"
-		],
-	"unlock_aciton":[],
+	"lock_aciton":[ "ALL_ACTION"],
+
+	"unlock_aciton":["MoveForward", "MoveBackward", "Sprint", "LookAround", "ReleaseCursor", "PVPScoreBar"],
 
 	"random_actions":[
-		{ 	
-			"action_name":"_random_actions_",
-			"action_class":"ANIMATION",
-			"interval_sec": 30.0,
-			"chance": 0.3,
-			"animation": "Boar_Idle1",
-
-			"time_start_effect": 0.0,
-			"time_end_animation": 2.0,
-			"time_reuse_delay": 0.0,
-
-			"sfx_start_animation":"sfx/Mob/Boar/idle.xml",
-			"sfx_apply_effect_boner":"",
-			"sfx_apply_effect_hit":"",
-			"sfx_end_animation":"",
-
-			"lock_move":true
-		}
 	],
 		
 
@@ -72,67 +62,68 @@
 	"actions":[
 		{
 			"action_name":"LeftMouseButton",
-			"action_class":"SECTOR_MELEE",
-			"stamina_cost":20,
-			"animation": "Boar_AttackTooth",
+			"action_class":"BOX_MELEE",
+			"stamina_cost":5,
+			"animation": "boar_attack_1",
 
 			"time_start_effect": 0.0,
 			"time_end_animation": 1.0,
-			"time_reuse_delay": 0.0,
+			"time_reuse_delay": 1.0,
 
 			"sfx_start_animation":"sfx/Mob/Boar/attack.xml",
 			"sfx_apply_effect_boner":"",
 			"sfx_apply_effect_hit":"",
 			"sfx_end_animation":"",
 
-			"radius":1.9,
-			"angles_sector": [-60, 60],
-			"height_attack_limit":[-1.0, 1.8],
-			"damage":[160,180],
+			"dist_attack":1.2,	
+			"box_width": [-0.2,0.2],
+			"box_height":[-2, 5],
+			"damage":[65,70],
 
-			"lock_move":true
+			"lock_move":false
 		},
 		{
 			"action_name":"RightMouseButton",
-			"action_class":"SECTOR_MELEE",
-			"stamina_cost":20,
-			"animation": "Boar_AttackOnRun",
+			"action_class":"BOX_MELEE",
+			"stamina_cost":5,
+			"animation": "boar_attack_2",
 
 			"time_start_effect": 0.0,
 			"time_end_animation": 0.5,
-			"time_reuse_delay": 0.0,
+			"time_reuse_delay": 1.0,
 
 			"sfx_start_animation":"sfx/Mob/Boar/attack.xml",
 			"sfx_apply_effect_boner":"",
 			"sfx_apply_effect_hit":"",
 			"sfx_end_animation":"",
 
-			"radius":1.9,
-			"angles_sector": [-60, 60],
-			"height_attack_limit":[-1.0, 1.8],
-			"damage":[160,180],
+			"dist_attack":1.3,	
+			"box_width": [-0.2,0.2],
+			"box_height":[-2, 5],
+			"damage":[65,70],
 
 			"lock_move":true
 		},
 		{
 			"action_name":"ThrowStone",
-			"action_class":"SECTOR_MELEE",
-			"stamina_cost":20,
-			"animation": "Boar_Threat",
+			"action_class":"BOX_MELEE",
+			"stamina_cost":5,
+			"animation": "boar_hide",
 
 			"time_start_effect": 3.0,
 			"time_end_animation": 4.0,
-			"time_reuse_delay": 0.0,
+			"time_reuse_delay": 1.0,
 
 			"sfx_start_animation":"sfx/Mob/Boar/angry.xml",
 			"sfx_apply_effect_boner":"sfx/Mob/Boar/angry.xml",
 			"sfx_apply_effect_hit":"",
 			"sfx_end_animation":"",
 
-			"radius":10.0,
-			"angles_sector": [-15.0, 15.0],
-			"height_attack_limit":[-5.0, 3.0],
+			"dist_attack":10,	
+			"box_width": [-0.3,0.3],
+			"box_height":[-3, 5],
 			"damage":[0,0],
+
 
 			"lock_move":true
 		}

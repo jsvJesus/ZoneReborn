@@ -1,8 +1,9 @@
-# Embedded file name: ./scripts/clearpycs.py
+# Embedded file name: ./clearpycs.py
 import os
 pyc_files = []
-for root, dirs, files in os.walk(os.getcwd()):
-    pyc_files.extend([ os.path.join(root, file) for file in files if os.path.splitext(file)[1] == '.pyc' ])
+for path in [os.getcwd(), os.getcwd() + '../../../sys/res/scripts']:
+    for root, dirs, files in os.walk(os.path.abspath(path)):
+        pyc_files.extend([ os.path.join(root, file) for file in files if os.path.splitext(file)[1] == '.pyc' ])
 
 pyc_amount = len(pyc_files)
 for f in pyc_files:

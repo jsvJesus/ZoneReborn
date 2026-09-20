@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/Keys.py
+# Embedded file name: ./client/Keys.py
 """
 This module contains definitions of all keycodes known to the client.
 They are set to the values as in the C++ files.

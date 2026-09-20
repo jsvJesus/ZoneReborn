@@ -1,10 +1,11 @@
-# Embedded file name: ./scripts/client/soGUI/soIncomingDamageGUI.py
+# Embedded file name: ./client/soGUI/soIncomingDamageGUI.py
 import BigWorld
 import GUI
 import BWPersonality
 import Helpers.PyGUI as PyGUI
 import soGUI
 from Helpers.BWCoroutine import *
+WIDTH_TEXTURE = 0.2
 
 class soIncomingDamageGUI(PyGUI.PyGUIBase):
     factoryString = 'soGUI.soIncomingDamageGUI'
@@ -25,10 +26,10 @@ class soIncomingDamageGUI(PyGUI.PyGUIBase):
      DAMAGE_FIRE: (255, 150, 50, 255),
      DAMAGE_POISON: (50, 255, 50, 255),
      DAMAGE_CHEMICAL: (255, 200, 50, 255)}
-    UP_TEXTURE = 'soGUI/maps/Misc/DamageVector/DamageTop.tga'
-    DOWN_TEXTURE = 'soGUI/maps/Misc/DamageVector/DamageBottom.tga'
-    EAST_TEXTURE = 'soGUI/maps/Misc/DamageVector/DamageRight.tga'
-    WEST_TEXTURE = 'soGUI/maps/Misc/DamageVector/DamageLeft.tga'
+    UP_TEXTURE = 'soGUI/maps/damage_vector/DamageTop.tga'
+    DOWN_TEXTURE = 'soGUI/maps/damage_vector/DamageBottom.tga'
+    EAST_TEXTURE = 'soGUI/maps/damage_vector/DamageRight.tga'
+    WEST_TEXTURE = 'soGUI/maps/damage_vector/DamageLeft.tga'
 
     def __init__(self, component):
         PyGUI.PyGUIBase.__init__(self, component)
@@ -47,10 +48,9 @@ class soIncomingDamageGUI(PyGUI.PyGUIBase):
         cmp.verticalPositionMode = cmp.horizontalPositionMode = 'LEGACY'
         cmp.horizontalAnchor = 'CENTER'
         cmp.verticalAnchor = 'CENTER'
-        cmp.widthMode = 'PIXEL'
-        cmp.heightMode = 'PIXEL'
-        cmp.width = 1920
-        cmp.height = 1080
+        cmp.widthMode = cmp.heightMode = 'LEGACY'
+        cmp.width = 2.0
+        cmp.height = 2.0
         cmp.position = (0.0, 0.0, 0.0)
         cmp.colour = (255, 255, 255, 255)
         cmp.textureName = ''
@@ -78,13 +78,14 @@ class soIncomingDamageGUI(PyGUI.PyGUIBase):
         self.eAlphaShader.reset()
 
     def setupDamageView(self):
+        print 'self.component.width', self.component.width
         north = GUI.Simple(self.UP_TEXTURE)
         north.horizontalPositionMode = north.verticalPositionMode = 'CLIP'
-        north.widthMode = north.heightMode = 'PIXEL'
+        north.widthMode = north.heightMode = 'LEGACY'
         north.horizontalAnchor = 'LEFT'
         north.verticalAnchor = 'TOP'
         north.width = self.component.width
-        north.height = 256
+        north.height = WIDTH_TEXTURE
         north.position = (-1.0, 1.0, 0.5)
         north.colour = (255, 255, 255, 255)
         north.materialFX = 'BLEND'
@@ -93,11 +94,11 @@ class soIncomingDamageGUI(PyGUI.PyGUIBase):
         self.component.addChild(north, 'NDamage')
         south = GUI.Simple(self.DOWN_TEXTURE)
         south.horizontalPositionMode = south.verticalPositionMode = 'CLIP'
-        south.widthMode = south.heightMode = 'PIXEL'
+        south.widthMode = south.heightMode = 'LEGACY'
         south.horizontalAnchor = 'LEFT'
         south.verticalAnchor = 'BOTTOM'
         south.width = self.component.width
-        south.height = 256
+        south.height = WIDTH_TEXTURE
         south.position = (-1.0, -1.0, 0.5)
         south.colour = (255, 255, 255, 255)
         south.materialFX = 'BLEND'
@@ -106,10 +107,10 @@ class soIncomingDamageGUI(PyGUI.PyGUIBase):
         self.component.addChild(south, 'SDamage')
         west = GUI.Simple(self.WEST_TEXTURE)
         west.horizontalPositionMode = west.verticalPositionMode = 'CLIP'
-        west.widthMode = west.heightMode = 'PIXEL'
+        west.widthMode = west.heightMode = 'LEGACY'
         west.horizontalAnchor = 'LEFT'
         west.verticalAnchor = 'TOP'
-        west.width = 256
+        west.width = WIDTH_TEXTURE
         west.height = self.component.height
         west.position = (-1.0, 1.0, 0.5)
         west.colour = (255, 255, 255, 255)
@@ -119,10 +120,10 @@ class soIncomingDamageGUI(PyGUI.PyGUIBase):
         self.component.addChild(west, 'WDamage')
         east = GUI.Simple(self.EAST_TEXTURE)
         east.horizontalPositionMode = east.verticalPositionMode = 'CLIP'
-        east.widthMode = east.heightMode = 'PIXEL'
+        east.widthMode = east.heightMode = 'LEGACY'
         east.horizontalAnchor = 'RIGHT'
         east.verticalAnchor = 'TOP'
-        east.width = 256
+        east.width = WIDTH_TEXTURE
         east.height = self.component.height
         east.position = (1.0, 1.0, 0.5)
         east.colour = (255, 255, 255, 255)

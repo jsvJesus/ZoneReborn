@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/Fractions.py
+# Embedded file name: ./common/Fractions.py
 from Localization import lc
 ALL_FRACTIONS = AVATAR_STALKER, AVATAR_INDIGENOUS, AVATAR_MILITARY, AVATAR_LONERS, BIG_TRADERS, BIG_BARTERS, BIG_BANDITS, BIG_MILITARYS, BIG_MERCENARYS, BIG_CLANS, BIG_HUNTERS, BIG_SCIENTISTS, BIG_OLD_STALKERS, BIG_MUTANTS = xrange(1, 15)
 FractionNames = {AVATAR_STALKER: 'Fractions.common.FRACTION1',

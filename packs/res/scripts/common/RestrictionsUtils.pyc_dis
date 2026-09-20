@@ -1,9 +1,10 @@
-# Embedded file name: ./scripts/common/RestrictionsUtils.py
+# Embedded file name: ./common/RestrictionsUtils.py
 __author__ = 'leviathan'
 CHANNEL_ITEMS = 0
 import BigWorld
 import utils_bw
 import time
+import traceback
 
 class RestrictionCommon:
     MAX_NUM_CHANNELS = 3
@@ -18,7 +19,8 @@ class RestrictionCommon:
         try:
             last_time = self.restrictions[channel]
         except IndexError:
-            print 'Unknown restriction channel', channel
+            print 'ERROR FOR:', self, channel
+            traceback.print_exc()
             return False
 
         curr_time = time.time()
@@ -36,6 +38,7 @@ class RestrictionCommon:
                 last_time = self.restrictions[channel]
             except IndexError:
                 print 'Unknown restriction channel', channel
+                traceback.print_exc()
                 return
 
             curr_time = time.time()
@@ -45,28 +48,44 @@ class RestrictionCommon:
 
     def ReleaseRestriction(self, channel):
         curr_time = time.time()
-        print time.time(), 'ReleaseRestriction', channel
         self.restrictions[channel] = curr_time
 
     def canShoot(self):
         if utils_bw.isClient() and self.is_hoist_flag:
             return False
-        return not self.sprinting and not self.binoculing and self.CheckRestriction(CHANNEL_ITEMS)
+        if not self.CheckRestriction(CHANNEL_ITEMS):
+            if self.is_gunpoint:
+                return True
+            return False
+        return not self.sprinting and not self.binoculing and not self.is_throwing
 
     def canSprint(self):
         if utils_bw.isClient() and self.is_hoist_flag:
             return False
-        return not self.crouching and not self.dead and not self.binoculing and self.CheckRestriction(CHANNEL_ITEMS)
+        if self.dead or self.crouching_or_crawling or self.binoculing:
+            return False
+        if utils_bw.isClient():
+            if self.is_throwing:
+                return True
+            if self._is_using_mode():
+                return True
+            return self.CheckRestriction(CHANNEL_ITEMS, check_server=False)
+        return self.CheckRestriction(CHANNEL_ITEMS)
 
     def canCrouch(self):
         if utils_bw.isClient() and self.is_hoist_flag:
             return False
         return not self.sprinting and not self.dead
 
+    def canCrawl(self):
+        if utils_bw.isClient() and self.is_hoist_flag:
+            return False
+        return not self.dead
+
     def canJump(self):
         if utils_bw.isClient() and self.is_hoist_flag:
             return False
-        return not self.crouching and self.CheckRestriction(CHANNEL_ITEMS)
+        return not self.crouching_or_crawling and self.CheckRestriction(CHANNEL_ITEMS)
 
     def canPickUp(self):
         if utils_bw.isClient() and self.is_hoist_flag:
@@ -96,22 +115,12 @@ class RestrictionCommon:
     def canDrop(self):
         if utils_bw.isClient() and self.is_hoist_flag:
             return False
-        return not self.sprinting and not self.dead
-
-    def canUnjam(self):
-        if utils_bw.isClient() and self.is_hoist_flag:
-            return False
-        return not self.sprinting and not self.dead
+        return not self.dead
 
     def canInformJamm(self):
         if utils_bw.isClient() and self.is_hoist_flag:
             return False
         return not self.sprinting and not self.dead
-
-    def canThrowGrenade(self):
-        if not self.canShoot() or not self.canDamage or self.isSitting():
-            return False
-        return self.GetGrenadeThrowPossibility()
 
     def canThrowStone(self):
         if not self.canShoot() or not self.canDamage or self.isSitting():
@@ -121,4 +130,4 @@ class RestrictionCommon:
     def canBinoculing(self):
         if utils_bw.isClient() and self.is_hoist_flag:
             return False
-        return not self.sniping and not self.sprinting and not self.dead
+        return not self.IsAvatarSniping() and not self.sprinting and not self.dead

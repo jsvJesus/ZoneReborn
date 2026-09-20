@@ -1,20 +1,22 @@
-# Embedded file name: ./scripts/client/soGUI/ItemIcon.py
+# Embedded file name: ./client/soGUI/ItemIcon.py
 import BigWorld
 import BWPersonality
 from soInventorySlot2 import soInventorySlot2
-import soInventoryScreen
 import GUI
-import random
 from Items import ItemsCatalog
 import ItemsUtils
 import Keys
-import DyeConstant
 import UCManager
 import soGUI
-from Localization import lc, localization_object
+from Localization import lc
 from Helpers.PyGUI.PyGUIBase import PyGUIBase
 from gui_const import INV_CONST
-import soGUI.soItemView as module_soItemView
+from gui_const import ITSLOT
+import traceback
+
+class ItemIconSlot(soInventorySlot2):
+    factoryString = 'soGUI.ItemIconSlot'
+
 
 class ItemIcon(PyGUIBase):
     SLOTWIDTH = 59
@@ -47,18 +49,6 @@ class ItemIcon(PyGUIBase):
         cmp.materialFX = 'BLEND'
         cmp.width = self.width
         cmp.height = self.height
-        cmp = GUI.Simple('textures/default/bright_gray.jpg')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.colour = (255, 255, 255, 100)
-        cmp.materialFX = 'BLEND'
-        cmp.width = self.component.width
-        cmp.height = 1
-        cmp.position = (0, self.height, 0.9)
-        cmp.visible = 1
-        self.component.addChild(cmp, 'frame1')
 
     def setupContent(self):
         cmp = GUI.Simple('textures/default/white.dds')
@@ -71,9 +61,9 @@ class ItemIcon(PyGUIBase):
         cmp.position = (0, -2, 0.2)
         cmp.visible = 0
         self.component.addChild(cmp, 'marker')
-        cmp.width = soInventorySlot2.SLOTWIDTH + 4
-        cmp.height = soInventorySlot2.SLOTHEIGHT + 4
-        slot = soInventorySlot2(GUI.Window(), 0, None)
+        cmp.width = ItemIconSlot.SLOTWIDTH + 4
+        cmp.height = ItemIconSlot.SLOTHEIGHT + 4
+        slot = ItemIconSlot(GUI.Window(), 0, None)
         cmp = slot.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -86,7 +76,7 @@ class ItemIcon(PyGUIBase):
         slot.toActionBar = lambda *e: False
         slot.slotEvent = self.onSlotEvent
         self.subItems = []
-        for subicon in range(self.MAXSUBICONS):
+        for subicon in xrange(self.MAXSUBICONS):
             subpos = (7 + self.SLOTWIDTH + (self.SUBSLOTWIDTH + 2) * subicon + self._dw, self._dh - 2 + self.SLOTWIDTH, 0.9)
             sub = SubIcon(GUI.Window(), self.onClickSubItem, self.OnRMB)
             cmp = sub.component
@@ -112,15 +102,15 @@ class ItemIcon(PyGUIBase):
         return True
 
     def onSlotEvent(self, event, data):
-        if event == module_soItemView.EVENT_DRAGENTER:
+        if event == ITSLOT.SLOTEVENT_DRAGENTER:
             if hasattr(data[0], 'itemData') and hasattr(data[1], 'itemData'):
                 self.markSlot(data[0].itemData, data[1].itemData)
-        if event in (module_soItemView.EVENT_MOUSELEAVE, module_soItemView.EVENT_MOUSEENTER, module_soItemView.EVENT_DRAGLEAVE):
+        if event in (ITSLOT.SLOTEVENT_MOUSELEAVE, ITSLOT.SLOTEVENT_MOUSEENTER, ITSLOT.SLOTEVENT_DRAGLEAVE):
             self.clearMarkSlot()
-        if event == module_soItemView.EVENT_DROP:
+        if event == ITSLOT.SLOTEVENT_DROP:
             self.clearMarkSlot()
             if self.canAttach(data[0].itemData, data[1].itemData):
-                BWPersonality.GUICore.inventoryEvent(INV_CONST.EVENT_MOVE, [data[0].itemData, data[1].itemData])
+                BWPersonality.GUICore.inventoryEvent(INV_CONST.A_MOVE, [data[0].itemData, [data[1].itemData]])
         return True
 
     def clearMarkSlot(self):
@@ -145,9 +135,6 @@ class ItemIcon(PyGUIBase):
             return False
         if not ItemsUtils.GetComplexItemByID(pl, ItemID2):
             return False
-        result, error_code = ItemsUtils.canUseDyeTint(item1, item2)
-        if result:
-            return True
         result, part_type, error_code = ItemsUtils.CanAttachItem(pl, item1, item2)
         if result:
             return True
@@ -197,8 +184,8 @@ class ItemIcon(PyGUIBase):
     def onClickSubItem(self, subItem):
         if not subItem:
             return
-        item = ItemsUtils.ConvertSubItemToItem(subItem, self._is_art_container)
-        BWPersonality.GUICore.showItemInfo(item, isAttach=True)
+        item = ItemsUtils.ConvertSubItemToItem(subItem, self._is_art_container, entity=BigWorld.player())
+        BWPersonality.GUICore.showItemInfo(item, isAttach=self.itemData['complexItemID'])
 
     def startContextMenu(self, subItem):
         try:
@@ -208,9 +195,7 @@ class ItemIcon(PyGUIBase):
 
         self._lastsubItem = subItem
         actions = {ItemsCatalog.CAN_INFO: lc('Inventory.client.INFO')}
-        if self.main_item_class in [ItemsCatalog.WEAPON, ItemsCatalog.CLOTH] and self._is_inventory_item:
-            actions[subItem['itemID']] = lc('Inventory.client.REMOVE') + ItemsUtils.GetItemName(subItem['itemType'], tintItem=self.itemData)
-        elif self.main_item_class == ItemsCatalog.BUFF:
+        if self.main_item_class == ItemsCatalog.BUFF:
             actions[subItem['itemID']] = lc('Inventory.client.EXTRACT') + ' : ' + ItemsUtils.GetItemName(subItem['itemType'])
         BWPersonality.GUICore.addListener('contextMenuEvent', self.ContextMenuEvent)
         BWPersonality.GUICore.showContextMenu(self.WID, actions)
@@ -221,8 +206,8 @@ class ItemIcon(PyGUIBase):
         if event == soGUI.soContextMenuComponent.EVENT_SELECT:
             BWPersonality.GUICore.removeListener('contextMenuEvent', self.ContextMenuEvent)
             if id == ItemsCatalog.CAN_INFO:
-                item = ItemsUtils.ConvertSubItemToItem(self._lastsubItem, self._is_art_container)
-                BWPersonality.GUICore.showItemInfo(item, isAttach=True)
+                item = ItemsUtils.ConvertSubItemToItem(self._lastsubItem, self._is_art_container, entity=BigWorld.player())
+                BWPersonality.GUICore.showItemInfo(item, isAttach=self.itemData['complexItemID'])
             else:
                 BigWorld.player().DatachItem(self.itemData['complexItemID'], id)
         elif event == soGUI.soContextMenuComponent.EVENT_SHOW:
@@ -249,7 +234,7 @@ class SubIcon(PyGUIBase):
         self._index = -2
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        cmp = GUI.Frame2('soGUI/items/cell.dds')
         cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -297,7 +282,7 @@ class SubIcon(PyGUIBase):
             self.component.subframeCmp.visible = True
             self.component.subitemIcon.visible = True
             self.component.subframeCmp.colour = (255, 255, 255, 255)
-            iconName = sub_itemParam['IconName']
+            iconName = sub_itemParam.get('IconName', 'nottexture.dds')
             if BWPersonality.GUICore.iconTextures is not None:
                 if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
                     if BWPersonality.GUICore.iconTextures.has_key(iconName):

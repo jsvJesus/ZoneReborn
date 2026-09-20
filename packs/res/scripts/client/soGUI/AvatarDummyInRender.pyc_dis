@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/AvatarDummyInRender.py
+# Embedded file name: ./client/soGUI/AvatarDummyInRender.py
 """\xd0\x9c\xd0\xbe\xd0\xb4\xd1\x83\xd0\xbb\xd1\x8c \xd1\x80\xd0\xb5\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb7\xd1\x83\xd0\xb5\xd1\x82 \xd0\xba\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81 \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x81\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd0\xb8 \xd0\xbc\xd0\xb0\xd0\xbd\xd0\xb5\xd0\xba\xd0\xb5\xd0\xbd\xd0\xb0 \xd0\xb0\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0\xd1\x80\xd0\xb0.
 
 \xd0\x9c\xd0\xb0\xd0\xbd\xd0\xb5\xd0\xba\xd0\xb5\xd0\xbd \xd0\xb8\xd1\x81\xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd1\x83\xd0\xb5\xd1\x82\xd1\x81\xd1\x8f \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xbf\xd0\xbe\xd0\xba\xd0\xb0\xd0\xb7\xd0\xb0 \xd0\xb2 \xd0\xbb\xd0\xbe\xd0\xb3\xd0\xb8\xd0\xbd\xd0\xb5 \xd0\xb3\xd0\xbb\xd0\xb0\xd0\xb2\xd0\xbd\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xbc\xd0\xb5\xd0\xbd\xd1\x8e.
@@ -13,7 +13,7 @@ from Helpers.Listener import Listenable
 from Items import ItemsCatalog
 from functools import partial
 import StalkerModel
-dummies = []
+_dummies = []
 
 class AvatarDummy(BigWorld.Entity, Listenable):
     """\xd0\x9a\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81 \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x81\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd0\xb8 \xd0\xbc\xd0\xb0\xd0\xbd\xd0\xb5\xd0\xba\xd0\xb5\xd0\xbd\xd0\xb0 \xd0\xb0\xd0\xb2\xd0\xb0\xd1\x82\xd0\xb0\xd1\x80\xd0\xb0."""
@@ -28,14 +28,13 @@ class AvatarDummy(BigWorld.Entity, Listenable):
          '05_feet': ItemsCatalog.BOOTS}
         self.name = ''
         self.character = None
-        self.default_models = {}
         self.primary_gun_model = None
         self.secondary_gun_model = None
         self.register()
         return
 
     def register(self):
-        dummies.append(self)
+        _dummies.append(self)
 
     def reset(self):
         """????"""
@@ -59,20 +58,8 @@ class AvatarDummy(BigWorld.Entity, Listenable):
 
     def update_from_GUI(self, choice_group, data, set_model_finally = True):
         """\xd0\x98\xd1\x81\xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd1\x83\xd0\xb5\xd1\x82\xd1\x81\xd1\x8f \xd0\xbf\xd1\x80\xd0\xb8 \xd0\xb8\xd0\xb7\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb8 \xd0\xbe\xd1\x82\xd0\xb4\xd0\xb5\xd0\xbb\xd1\x8c\xd0\xbd\xd1\x8b\xd1\x85 \xd1\x87\xd0\xb0\xd1\x81\xd1\x82\xd0\xb5\xd0\xb9 \xd1\x82\xd0\xb5\xd0\xbb\xd0\xb0 \xd0\xbf\xd1\x80\xd0\xb8 \xd1\x81\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd0\xb8 \xd0\xbf\xd0\xb5\xd1\x80\xd1\x81\xd0\xb0."""
-        model_part = self._model_part_table[choice_group]
-        if choice_group == heads.gui_key:
-            self.default_models[model_part] = heads.preset_by_headid[data['head_id']]
-        else:
-            self.default_models[model_part] = data['item_type_ID']
         if set_model_finally:
             self.setModel()
-
-    def set_default_models_from_gui(self, data):
-        """\xd0\x98\xd1\x81\xd0\xbf\xd0\xbe\xd0\xbb\xd1\x8c\xd0\xb7\xd1\x83\xd0\xb5\xd1\x82\xd1\x81\xd1\x8f \xd0\xbf\xd1\x80\xd0\xb8 \xd1\x81\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd0\xb8 \xd0\xb4\xd0\xb5\xd1\x84\xd0\xbe\xd0\xbb\xd1\x82\xd0\xbd\xd0\xbe\xd0\xb9 \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd0\xb8."""
-        for cg, value in data.iteritems():
-            self.update_from_GUI(cg, value, False)
-
-        self.setModel()
 
     def onLoadModel(self, model):
         self.model = model
@@ -85,7 +72,6 @@ class AvatarDummy(BigWorld.Entity, Listenable):
     def setModel(self, clear = False):
         if clear:
             self.model = None
-            self.default_models.clear()
         else:
             if self.model:
                 savedActionQueue = ResMgr.DataSection('savedActionQueue')
@@ -100,26 +86,15 @@ class AvatarDummy(BigWorld.Entity, Listenable):
         
         \xd0\x95\xd1\x81\xd0\xbb\xd0\xb8 \xd0\xb5\xd1\x81\xd1\x82\xd1\x8c prymary \xd0\xbe\xd1\x80\xd1\x83\xd0\xb6\xd0\xb8\xd0\xb5, \xd1\x82\xd0\xbe \xd1\x81 \xd0\xbe\xd1\x80\xd0\xb8\xd0\xb6\xd0\xb8\xd0\xb5\xd0\xbc \xd0\xb2 \xd1\x80\xd1\x83\xd0\xba\xd0\xb5.
         """
-
-        def GetDefaultValues():
-            var_dict = {}
-            for key in ItemsCatalog.cloth_dict:
-                var_dict[ItemsCatalog.cloth_dict[key][0]] = 0
-                var_dict[ItemsCatalog.cloth_dict[key][1]] = 0
-
-            return var_dict
-
-        self.ActiveArmorSet = self.character.playerKit if self.character else GetDefaultValues()
         if self.character:
             active_weapon_data = self.character['active_weapon_data']
         else:
             active_weapon_data = ItemsUtils.default_active_weapon_data()
         self.ActiveWeaponSet = dict(active_weapon_data['qiuck_weapon_set'])
-        self.SecondaryWeaponUpgrades = active_weapon_data['secondary_weapon_upgrades']
-        self.PrimaryWeaponUpgrades = active_weapon_data['primary_weapon_upgrades']
         self.ActiveItemID = 0
         self.coloriseEmblems = self.character.coloriseEmblems if self.character else []
-        StalkerModel.ComposePlayerModel(self, self.onLoadModel)
+        self.colorDelegates = self.character.colorDelegates if self.character else []
+        StalkerModel.ComposePlayerModelTraker(self, callback=self.onLoadModel)
 
     def _fetch_gun_model(self, callback):
         """\xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd1\x8c \xd0\xb0\xd0\xba\xd1\x82\xd0\xb8\xd0\xb2\xd0\xbd\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xbe\xd1\x80\xd1\x83\xd0\xb6\xd0\xb8\xd1\x8f."""
@@ -140,77 +115,8 @@ class AvatarDummy(BigWorld.Entity, Listenable):
             callback(None)
         return
 
-    def getDefaultModels(self):
-        if self.character:
-            return Avatar.parse_character_default_models(self.character['defaultModels'])
-        else:
-            return self.default_models
-
-    def human_readable_default_models(self):
-        """\xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd0\xb5 \xd0\xbe \xd1\x82\xd0\xbe\xd0\xbc, \xd0\xba\xd0\xb0\xd0\xba\xd0\xb8\xd0\xb5 id \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd0\xb5\xd0\xb9 \xd0\xbe\xd0\xb4\xd0\xb5\xd0\xb6\xd0\xb4\xd1\x8b \xd1\x81\xd0\xb5\xd0\xb9\xd1\x87\xd0\xb0\xd1\x81 \xd0\xbe\xd0\xb4\xd0\xb5\xd1\x82\xd1\x8b."""
-        const_to_modal_part_name = dict(((v, k) for k, v in self._model_part_table.items()))
-        result = {}
-        for const_value, value in self.default_models.items():
-            part_name = const_to_modal_part_name[const_value]
-            if part_name == heads.gui_key:
-                result[part_name] = value['head_id']
-                continue
-            result[part_name] = value
-
-        return result
-
     def GetEquippedItemModels(self, secondary_primary_active):
-        if secondary_primary_active == ItemsCatalog.SECONDARY:
-            complexItemType = self.ActiveWeaponSet['SecondarySlotType']
-            complexItemID = self.ActiveWeaponSet['SecondarySlotID']
-            tintID = self.ActiveWeaponSet['SecondarySlotTintID']
-        elif secondary_primary_active == ItemsCatalog.PRIMARY:
-            complexItemType = self.ActiveWeaponSet['PrimarySlotType']
-            complexItemID = self.ActiveWeaponSet['PrimarySlotID']
-            tintID = self.ActiveWeaponSet['PrimarySlotTintID']
-        elif secondary_primary_active == ItemsCatalog.ACTIVE:
-            if not ItemsUtils.CheckEquippedItemValidityClient(self):
-                return
-            complexItemType = self.ActiveItemType
-            complexItemID = self.ActiveItemID
-            tintID = self.ActiveTintID
-        complexItemParams = ItemsCatalog.GetItemParam(complexItemType)
-        if not complexItemParams:
-            return
-        else:
-            gun_type = complexItemParams['GunType']
-            model_dict = {}
-            item_core_model_dict = complexItemParams['ModelNames']
-            for key in item_core_model_dict:
-                tint_dict = {}
-                if complexItemParams.has_key('TintsNames'):
-                    tintName = ItemsUtils.getTintNameByID(tintID)
-                    if tintName is not None:
-                        tint_dict = {'tint_weapon': tintName}
-                elif complexItemParams.has_key('Tint'):
-                    tint_dict = complexItemParams['Tint']
-                model_dict[key] = [item_core_model_dict[key], ItemsCatalog.HardPointsNames[key], tint_dict]
-
-            for upgrade in ItemsCatalog.weapon_upgrades_dict.keys():
-                gun_priority = ItemsUtils.GetWeaponPriority(gun_type)
-                if gun_priority == ItemsCatalog.SECONDARY:
-                    upgrade_item_type = self.SecondaryWeaponUpgrades[ItemsCatalog.weapon_upgrades_dict[upgrade]]
-                else:
-                    upgrade_item_type = self.PrimaryWeaponUpgrades[ItemsCatalog.weapon_upgrades_dict[upgrade]]
-                if upgrade_item_type > 0:
-                    upgrade_item_param = ItemsCatalog.GetItemParam(upgrade_item_type)
-                    if upgrade_item_param != None:
-                        tint_dict = {}
-                        if upgrade_item_param.has_key('TintsNames'):
-                            tintName = ItemsUtils.getTintNameByID(tintID)
-                            if tintName is not None:
-                                tint_dict = {'tint_weapon': tintName}
-                        elif complexItemParams.has_key('Tint'):
-                            tint_dict = complexItemParams['Tint']
-                        part_type = upgrade_item_param['PartType']
-                        model_dict[part_type] = [upgrade_item_param['ModelNames'].values()[0], ItemsCatalog.HardPointsNames[part_type], tint_dict]
-
-            return model_dict
+        return {}
 
     def getModelByNamesDict(self, names_dict):
         core_model = None
@@ -344,9 +250,3 @@ class AvatarDummy(BigWorld.Entity, Listenable):
                 return
 
         return
-
-    def hasArmor(self):
-        if self.ActiveArmorSet['ArmorID'] > 0:
-            return True
-        else:
-            return False

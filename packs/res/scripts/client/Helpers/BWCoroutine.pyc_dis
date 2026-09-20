@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/Helpers/BWCoroutine.py
+# Embedded file name: ./client/Helpers/BWCoroutine.py
 """This module provides a number of utilities to simplify the writing of code
 that needs to execute in order over a number of  frames using python generators
 and BigWorld.callback().
@@ -88,17 +88,24 @@ class _BWCoroutineThread:
             raise isinstance(self._waitObject, _BWWaitObject) or AssertionError
             self._waitObject.doWait(self)
         except StopIteration:
+            self._waitObject = None
             if self._completionCallback is not None:
                 self._completionCallback()
+                self._completionCallback = None
 
         return
 
     def stop(self):
-        if not isinstance(self._generator, types.GeneratorType):
-            raise AssertionError
+        if self._generator:
+            if not isinstance(self._generator, types.GeneratorType):
+                raise AssertionError
+                if not self._generator.gi_running:
+                    self._generator.close()
             raise self._waitObject and (isinstance(self._waitObject, _BWWaitObject) or AssertionError)
             self._waitObject.onStop()
-        self._generator.close()
+        self._completionCallback = None
+        self._waitObject = None
+        return
 
     def onContinue(self):
         self._tick()
@@ -264,6 +271,8 @@ class BWWaitForCoroutine(_BWWaitObject):
 
     def handleTimeout(self):
         self._onTimeout()
+        self._waitThread = None
+        return
 
     def _onTimeout(self):
         self._waitThread.stop()

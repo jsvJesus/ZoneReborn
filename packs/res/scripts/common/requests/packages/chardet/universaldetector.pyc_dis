@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/chardet/universaldetector.py
+# Embedded file name: ./common/requests/packages/chardet/universaldetector.py
 import constants, sys
 from latin1prober import Latin1Prober
 from mbcsgroupprober import MBCSGroupProber

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/Config/AnomalyFields/Compiler.py
+# Embedded file name: ./common/Config/AnomalyFields/Compiler.py
 from Config import load_json
 from Config.Compiler import ConfigCompiler, DictCompiler, COMPILER, ICompiler
 from Config.AnomalyFields import CommonConfig
@@ -19,7 +19,7 @@ class EffectsCompiler(ICompiler):
         for effect in value:
             efData = EffectUtils.getEffect(effect['id'])
             if EffectUtils.SOURCE.EXTERNAL in efData['sources']:
-                res.append(self.getEffectSourceDict(effect['id'], effect['stacks'], effect['modifier']))
+                res.append(self.getEffectSourceDict(effect['id'], effect['stacks']))
 
         return res
 

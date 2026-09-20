@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/FlagCameraPoint.py
+# Embedded file name: ./client/FlagCameraPoint.py
 import BigWorld
 
 class FlagCameraPoint(BigWorld.UserDataObject):

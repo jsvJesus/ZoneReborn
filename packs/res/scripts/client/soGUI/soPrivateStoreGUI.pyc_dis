@@ -1,17 +1,15 @@
-# Embedded file name: ./scripts/client/soGUI/soPrivateStoreGUI.py
+# Embedded file name: ./client/soGUI/soPrivateStoreGUI.py
 import BigWorld
 import BWPersonality
 import GUI
-import soGUI
 from Helpers.PyGUI import PyGUIBase
 from soGUI.soItemView import soItemView, soItemSlot
-import soGUI.soItemView as module_soItemView
-from Items import ItemsCatalog
 import ItemsUtils
 from soGUI.soToolTipComponent import soToolTipComponent
 from Helpers.PyGUI import PyGUIEvent
-from soGUI.soButton import soButton, soButtonWTT
+from soGUI.soButton import soButton
 from Localization import lc
+from gui_const import ITSLOT
 EVENT_SELLITEM = 0
 EVENT_CANCELITEM = 1
 EVENT_CONFIRM = 2
@@ -43,7 +41,7 @@ class soPrivateStoreSlot(soItemSlot):
         cmp.mouseButtonFocus = True
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        cmp = GUI.Frame2('soGUI/items/cell.dds')
         cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -81,7 +79,7 @@ class soPrivateStoreSlot(soItemSlot):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'BOTTOM'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
+        cmp.font = 'ArialNarrow_12.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (4, self.SLOTHEIGHT - 5, 0.3)
@@ -90,7 +88,7 @@ class soPrivateStoreSlot(soItemSlot):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'BOTTOM'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
+        cmp.font = 'ArialNarrow_12.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (self.SLOTWIDTH - 5, self.SLOTHEIGHT - 5, 0.3)
@@ -99,12 +97,12 @@ class soPrivateStoreSlot(soItemSlot):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
+        cmp.font = 'ArialNarrow_12.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (self.SLOTWIDTH - 5, 5, 0.3)
         self.component.addChild(cmp, 'itemCount')
-        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_painted.tga')
+        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_painted.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'TOP'
@@ -116,7 +114,7 @@ class soPrivateStoreSlot(soItemSlot):
         cmp.position = (self.component.width, cmp.height // 2, 0.7)
         cmp.visible = 0
         self.component.addChild(cmp, 'itemColored')
-        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_label.tga')
+        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_label.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'TOP'
@@ -133,22 +131,17 @@ class soPrivateStoreSlot(soItemSlot):
         if self.haveItem():
             item_type = self.itemData['complexItemType']
             item_id = self.itemData['complexItemID']
-            item_class = ItemsCatalog.GetItemClass(item_type)
-            item_params = ItemsCatalog.GetItemParam(item_type)
-            item_level = item_params['Level']
-            iconName = ItemsUtils.getTextureByTint(self.itemData)
-            if not iconName:
-                iconName = item_params['IconName']
-            if BWPersonality.GUICore.iconTextures is not None:
-                if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
-                    if BWPersonality.GUICore.iconTextures.has_key(iconName):
-                        self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures[iconName]
+            if not ItemsUtils.GetIconName(self.itemData):
+                iconName = 'nottexture.dds'
+                if BWPersonality.GUICore.iconTextures is not None:
+                    if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
+                        self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures.has_key(iconName) and BWPersonality.GUICore.iconTextures[iconName]
                     else:
                         self.component.itemIcon.textureName = iconName
             else:
                 self.component.itemIcon.textureName = iconName
             countStr = ItemsUtils.GetDisplayValue(self.itemData)
-            friendlyName = ItemsUtils.GetItemName(item_type, fGetShortName=True, tintItem=self.itemData)
+            friendlyName = ItemsUtils.GetItemName(item_type, fGetShortName=True)
             itemCondition = ItemsUtils.GetItemConditionPercentString(BigWorld.player(), ItemsUtils.GetComplexItemByID(BigWorld.player(), item_id, getNotAppruved=True))
             item_lock = BigWorld.player().ItemLocked(self.itemData)
             self.component.itemName.text = friendlyName
@@ -223,7 +216,7 @@ class soPrivateStoreScreen(PyGUIBase):
         itemView.onBound()
         itemView.setRestrictingComponent(None)
         itemView.setItems(None)
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        cmp = GUI.Frame2('soGUI/frame/basic_frame_1.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -238,7 +231,7 @@ class soPrivateStoreScreen(PyGUIBase):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (18, 6, 0.3)
@@ -255,7 +248,7 @@ class soPrivateStoreScreen(PyGUIBase):
         cmp.width = 18
         cmp.height = 18
         cmp.position = (257, 6, 0.3)
-        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.initVSC('soGUI/elements/closeBox.xml')
         closeBox.onBound()
         closeBox.setVisualState('normal')
         self.component.addChild(cmp, 'closeBox')
@@ -270,7 +263,7 @@ class soPrivateStoreScreen(PyGUIBase):
         cmp.width = 64
         cmp.height = 29
         cmp.position = (39, 357, 0.3)
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         btn.onBound()
         btn.setVisualState('normal')
         cmp.label.text = lc('soPrivateStoreGUI.soGUI.STRING_278_19')
@@ -286,7 +279,7 @@ class soPrivateStoreScreen(PyGUIBase):
         cmp.width = 64
         cmp.height = 29
         cmp.position = (178, 357, 0.3)
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         btn.onBound()
         btn.setVisualState('normal')
         cmp.label.text = lc('soPrivateStoreGUI.soGUI.STRING_298_19')
@@ -295,18 +288,18 @@ class soPrivateStoreScreen(PyGUIBase):
 
     def slotHandler(self, event, data):
         from soGUI.soInventorySlot2 import soInventorySlot2
-        if event == module_soItemView.EVENT_DRAGENTER:
+        if event == ITSLOT.SLOTEVENT_DRAGENTER:
             if isinstance(data[1], soInventorySlot2):
                 return True
             else:
                 return False
-        if event == module_soItemView.EVENT_DROP:
+        if event == ITSLOT.SLOTEVENT_DROP:
             if isinstance(data[1], soInventorySlot2):
                 BWPersonality.GUICore.privateStoreEvent(EVENT_SELLITEM, data[1].itemData)
                 return True
             else:
                 return False
-        if event == module_soItemView.SLOTEVENT_MOUSEENTER:
+        if event == ITSLOT.SLOTEVENT_MOUSEENTER:
             if isinstance(data, soPrivateStoreSlot):
                 BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_SHOW)
                 return True
@@ -314,10 +307,10 @@ class soPrivateStoreScreen(PyGUIBase):
 
     def itemViewHandler(self, event, data):
         from soGUI.soInventorySlot2 import soInventorySlot2
-        if event == module_soItemView.EVENT_DRAGENTER:
+        if event == ITSLOT.SLOTEVENT_DRAGENTER:
             if isinstance(data[1], soInventorySlot2):
                 return True
-        if event == module_soItemView.EVENT_DROP:
+        if event == ITSLOT.SLOTEVENT_DROP:
             if isinstance(data[1], soInventorySlot2):
                 return True
         return False

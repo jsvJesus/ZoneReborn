@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/downloadGUI.py
+# Embedded file name: ./client/soGUI/downloadGUI.py
 import BigWorld
 import os
 import Math
@@ -52,7 +52,7 @@ class DownloadGUI(PyGUIBase):
         cmp.dragFocus = False
         cmp.moveFocus = 1
         cmp.dropFocus = False
-        cmp = GUI.Simple('textures\\default\\black.dds')
+        cmp = GUI.Simple('textures/default/black.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
         cmp.widthMode = cmp.heightMode = 'CLIP'
         cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
@@ -62,7 +62,7 @@ class DownloadGUI(PyGUIBase):
         cmp.position = (0.0, 0.0, 0.9)
         self.component.addChild(cmp, 'fon')
         cmp = GUI.Text('text.')
-        cmp.font = 'ruRU_calibri_large.font'
+        cmp.font = 'RobotoCondensedRegular_18.font'
         cmp.colour = (255, 215, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'

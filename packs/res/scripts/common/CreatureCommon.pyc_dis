@@ -1,23 +1,35 @@
-# Embedded file name: ./scripts/common/CreatureCommon.py
+# Embedded file name: ./common/CreatureCommon.py
 import BigWorld
 import bwdecorators
 import traceback
 from Config import Creatures as Cfg
 from Config.Creatures import get_state_name
 from Items import ItemsCatalog
+from Localization import lc
 if BigWorld.component == 'client':
-    from sfx.SfxCatalog import SFX_HIT_CATALOG, Mat
+    from SfxCatalog import SFX_HIT_CATALOG, Mat
 
 class CreatureCommon:
     """Creature methods which are the same on cell and client."""
 
     @bwdecorators.callableOnGhost
     def get_config(self, param = None):
+        config = Cfg.get_config(self.creatureType, self.level)
         if param is None:
-            return Cfg.get_config(self.creatureType, self.level)
+            return config
         else:
-            return Cfg.get_config(self.creatureType, self.level)[param]
+            try:
+                return config[param]
+            except:
+                print 'CreatureCommon (ERROR)', self.creatureType, self.level, repr(param)
+                traceback.print_exc()
+                traceback.print_stack()
+
             return
+
+    @bwdecorators.callableOnGhost
+    def get_repr_name(self):
+        return 'CREATURE:%s/%s' % (self.creatureType, self.creatureSubType)
 
     @bwdecorators.callableOnGhost
     def get_creature_state_name(self, state = None):
@@ -30,6 +42,10 @@ class CreatureCommon:
     @bwdecorators.callableOnGhost
     def is_impenetrable(self):
         return self.creatureType == 15
+
+    def get_model_path(self):
+        model_path = str(Cfg.MODELS_ROOT + self.get_config(Cfg.MODEL))
+        return model_path
 
     @bwdecorators.callableOnGhost
     def get_flat_size(self):
@@ -62,22 +78,18 @@ class CreatureCommon:
         body_zone_name = Cfg.ZONE_TO_BODYNAME.get(body_zone, 'default')
         if not bleed_sfx_config.get(body_zone_name):
             bleed_sfx_material = bleed_sfx_config.get('default')
+            return bleed_sfx_material is None and None
+        else:
             bleed_sfx_material = Mat.get_material_id_by_name(bleed_sfx_material)
-            bullet_category = ammo_type and (ItemsCatalog.GetItemParam(ammo_type).get('HitSfxCategory') or 'Default')
+            bullet_category = 'Default'
+            if ammo_type:
+                bullet_category = ItemsCatalog.GetItemParam(ammo_type).get('HitSfxCategory') or 'Default'
             return SFX_HIT_CATALOG[bullet_category].get(bleed_sfx_material) or SFX_HIT_CATALOG[bullet_category][Mat.Default]
-        try:
-            print "\nCreature Common: can't figure ammo type out to show needed sfx (using default values)"
-            print 'body_zone:', repr(body_zone)
-            print 'ammo_type:', repr(ammo_type)
-            print 'bleed_sfx_material:', repr(bleed_sfx_material)
-            from utils import force_utf8
-            print self, force_utf8(self.name)
-            traceback.print_stack()
-        finally:
-            return SFX_HIT_CATALOG['Bullet'][Mat.Flesh]
 
     @bwdecorators.callableOnGhost
     def get_escape_possibility(self):
+        if self.is_event and not self.is_boss:
+            return False
         return get_state_name(self.creatureType, self.level, self.state) == 'escape'
 
     @bwdecorators.callableOnGhost
@@ -86,11 +98,7 @@ class CreatureCommon:
 
     @bwdecorators.callableOnGhost
     def get_name(self):
-        uniq_name = Cfg.get_uniq_mob_name(self.uniq_id)
-        if uniq_name is not None:
-            return uniq_name
-        else:
-            return self.get_config(Cfg.NAME)
+        return self.get_config(Cfg.NAME)
 
     @bwdecorators.callableOnGhost
     def get_height(self):
@@ -99,6 +107,12 @@ class CreatureCommon:
     @bwdecorators.callableOnGhost
     def get_height_idle_scaled(self):
         return self.get_config(Cfg.HEIGHT_IDLE) * self.get_config(Cfg.MODEL_SCALE)
+
+    def get_pitch(self):
+        return self.get_config(Cfg.SOUND_PITCH)
+
+    def get_sfx_volume(self):
+        return self.get_config(Cfg.SOUND_VOLUME)
 
     @bwdecorators.callableOnGhost
     def get_width(self):
@@ -133,7 +147,8 @@ class CreatureCommon:
         self_assist_config = self.get_config(Cfg.ASSIST)
         if not self_assist_config:
             return False
-        return self_assist_config['clan'] in other_assist_config['friends']
+        clan = self.get_config(Cfg.CLAN)
+        return clan in other_assist_config['friends']
 
     @bwdecorators.callableOnGhost
     def get_assist_radius(self):
@@ -146,9 +161,31 @@ class CreatureCommon:
     @bwdecorators.callableOnGhost
     def can_panic(self):
         """ \xd0\xbc\xd0\xbe\xd0\xb6\xd0\xb5\xd1\x82 \xd0\xbb\xd0\xb8 \xd0\xbc\xd0\xbe\xd0\xb1 \xd0\xbf\xd0\xb0\xd0\xbd\xd0\xb8\xd0\xba\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x82\xd1\x8c """
+        if self.is_event and not self.is_boss:
+            return False
         return bool([ state for state in self.get_config(Cfg.STATES).values() if state.get('__name__') == 'escape' ])
 
     @bwdecorators.callableOnGhost
     def get_escape_speed(self):
         """ \xd1\x81\xd0\xba\xd0\xbe\xd1\x80\xd0\xbe\xd1\x81\xd1\x82\xd1\x8c \xd0\xb1\xd0\xb5\xd0\xb3\xd0\xb0 \xd0\xb2\xd0\xbe \xd0\xb2\xd1\x80\xd0\xb5\xd0\xbc\xd1\x8f \xd0\xbf\xd0\xb0\xd0\xbd\xd0\xb8\xd0\xba\xd0\xb8 \xd0\xb8 \xd1\x81\xd1\x82\xd1\x80\xd0\xb0\xd1\x85\xd0\xb0 """
         return max([ state['speed']['escape'] for state in self.get_config(Cfg.STATES).values() if state.get('__name__') == 'escape' ])
+
+    @bwdecorators.callableOnGhost
+    def get_decompose_fadeouttime(self):
+        """ \xd0\xb2\xd1\x80\xd0\xb5\xd0\xbc\xd1\x8f \xd0\xbf\xd0\xbb\xd0\xb0\xd0\xb2\xd0\xbd\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xb8\xd1\x81\xd1\x87\xd0\xb5\xd0\xb7\xd0\xbd\xd0\xbe\xd0\xb2\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xbb\xd0\xb8 """
+        return self.get_config(Cfg.DECOMPOSE_FADE_TIME)
+
+    def is_ignore_avatar(self):
+        return self.get_config(Cfg.AVATAR_IGNORE)
+
+    def is_attack_objects(self):
+        return self.get_config(Cfg.ATTACK_OBJECTS)
+
+    def is_attack_event_breakable(self):
+        return self.get_config(Cfg.ATTACK_EVENT_BREAKABLE)
+
+    def is_attack_door(self):
+        return self.get_config(Cfg.ATTACK_DOOR)
+
+    def is_attack_transport(self):
+        return self.get_config(Cfg.ATTACK_TRANSPORT)

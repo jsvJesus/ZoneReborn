@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/InstanceEntrance.py
+# Embedded file name: ./client/InstanceEntrance.py
 import BigWorld
 
 class InstanceEntrance(BigWorld.Entity):

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/urllib3/exceptions.py
+# Embedded file name: ./common/requests/packages/urllib3/exceptions.py
 
 
 class HTTPError(Exception):

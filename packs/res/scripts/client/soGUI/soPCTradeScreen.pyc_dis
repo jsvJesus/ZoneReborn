@@ -1,29 +1,20 @@
-# Embedded file name: ./scripts/client/soGUI/soPCTradeScreen.py
+# Embedded file name: ./client/soGUI/soPCTradeScreen.py
 import GUI
 import soGUI
-import Helpers.PyGUI as PyGUI
 import BWPersonality
 import BigWorld
 import gui_jokes
-import colorCodes
-from soGUI.soButton import soButton, soButtonWTT
-from soGUI.soEditField import soEditField2
-from Helpers.PyGUI import PyGUIEvent
-from Helpers.BWCoroutine import *
+from soGUI.soButton import soButton
 from Items import ItemsCatalog
 import ItemsUtils
-import soGUI.soItemView
 from soGUI.soItemView import soItemView, soItemSlot
-import soGUI.soItemView as module_soItemView
+from gui_const import ITSLOT
 from soGUI.soToolTipComponent import soToolTipComponent
 from Helpers.PyGUI import PyGUIBase
-from soGUI.soEditField import soEditBox
 from gui_const import PC_TRADE, GUI_ID
 from Localization import lc
-import textMoney
-import editMoney
-from textMoney import TextMoney, TextGold
-from editMoney import soEditBoxMoney, soEditBoxGold
+from textMoney import TextMoney
+from editMoney import soEditBoxMoney
 from Helpers.PyGUI.DraggableComponent import DraggableComponent
 from ChatChannelConfig import CHANNEL_CONSTS
 
@@ -41,6 +32,9 @@ class AnimItemView(soItemView):
         pass
 
     def onRemoveItem(self, item):
+        pass
+
+    def onUpdatedItems(self):
         pass
 
     def setItems(self, items):
@@ -69,16 +63,17 @@ class AnimItemView(soItemView):
 
     def addItem(self, item):
         if self._is_exsist_item(item):
-            return
+            return False
         self._items.append(item)
         self.onAddItem(item)
         self._new_added.append(item['complexItemID'])
         soItemView.setItems(self, self._items)
+        return True
 
     def removeItem(self, item):
         if not self._is_exsist_item(item):
             self._redawItems()
-            return
+            return False
         self._to_deleted.append(item['complexItemID'])
         soItemView.setItems(self, self._items)
 
@@ -88,17 +83,22 @@ class AnimItemView(soItemView):
             self._redawItems()
 
         BigWorld.callback(0.5, setitems)
+        return True
 
     def _redawItems(self):
         soItemView.setItems(self, self._items)
 
     def updateItems(self, opp_items):
+        updated = False
         for item in opp_items:
-            self.addItem(item)
+            updated |= self.addItem(item)
 
         for item in self._items:
             if item not in opp_items:
-                self.removeItem(item)
+                updated |= self.removeItem(item)
+
+        if updated:
+            self.onUpdatedItems()
 
     def has_blink(self, item_id):
         return item_id in self._new_added or item_id in self._to_deleted
@@ -125,6 +125,7 @@ class soPCTradeSlot_me(soItemSlot):
         self.proxyName = 'dragProxy'
         self._onDragStart = self.onDragStart
         self._onDragStop = self.onDragStop
+        self.create_droplet()
 
     def setupRoot(self):
         cmp = self.component
@@ -138,7 +139,7 @@ class soPCTradeSlot_me(soItemSlot):
         cmp.mouseButtonFocus = True
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        cmp = GUI.Frame2('soGUI/items/cell.dds')
         cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -156,41 +157,20 @@ class soPCTradeSlot_me(soItemSlot):
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.width = self.SLOTWIDTH
         cmp.height = self.SLOTHEIGHT
-        cmp.colour = (255, 255, 255, 128)
-        cmp.materialFX = 'BLEND'
-        cmp.position = (0, 0, 0.5)
-        cmp.visible = False
-        self.component.addChild(cmp, 'dragProxy')
-        cmp = GUI.Simple('')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.width = self.SLOTWIDTH
-        cmp.height = self.SLOTHEIGHT
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (0, 0, 0.4)
         self.component.addChild(cmp, 'itemIcon')
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'BOTTOM'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
-        cmp.colour = (175, 166, 112, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.position = (4, self.SLOTHEIGHT - 5, 0.3)
-        self.component.addChild(cmp, 'itemName')
-        cmp = GUI.Text('')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
+        cmp.font = 'ArialNarrow_12.family'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (self.SLOTWIDTH - 5, 5, 0.3)
         self.component.addChild(cmp, 'itemCount')
-        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_painted.tga')
+        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_painted.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'TOP'
@@ -202,7 +182,7 @@ class soPCTradeSlot_me(soItemSlot):
         cmp.position = (self.component.width, cmp.height / 2 + 14, 0.7)
         cmp.visible = 0
         self.component.addChild(cmp, 'itemColored')
-        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_label.tga')
+        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_label.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'TOP'
@@ -214,7 +194,7 @@ class soPCTradeSlot_me(soItemSlot):
         cmp.position = (self.component.width - 12, cmp.height / 2 + 14, 0.0)
         cmp.visible = 0
         self.component.addChild(cmp, 'itemEmblem')
-        cmp = GUI.Simple('soGUI/maps/Colours/white.tga')
+        cmp = GUI.Simple('soGUI/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -227,42 +207,37 @@ class soPCTradeSlot_me(soItemSlot):
         self.component.addChild(cmp, 'bg_blink')
         shad = GUI.AlphaShader()
         cmp.addShader(shad, 'blink')
+        self._create_multiselector()
+        self._create_multidrag_proxy()
 
     def _applyItemData(self):
+        soItemSlot._applyItemData(self)
         if self.haveItem():
-            item_type = self.itemData['complexItemType']
-            item_id = self.itemData['complexItemID']
-            item_class = ItemsCatalog.GetItemClass(item_type)
-            item_params = ItemsCatalog.GetItemParam(item_type)
-            item_level = item_params['Level']
-            iconName = item_params['IconName']
-            if BWPersonality.GUICore.iconTextures is not None:
-                if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
-                    if BWPersonality.GUICore.iconTextures.has_key(iconName):
-                        self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures[iconName]
-                    else:
-                        self.component.itemIcon.textureName = iconName
-            else:
-                self.component.itemIcon.textureName = iconName
-            countStr = ItemsUtils.GetDisplayValue(self.itemData)
-            friendlyName = ItemsUtils.GetItemName(item_type, fGetShortName=True, tintItem=self.itemData)
-            itemCondition = ItemsUtils.GetItemConditionPercentString(None, self.itemData)
-            self.component.itemName.text = friendlyName
-            if itemCondition:
-                self.component.itemCount.text = itemCondition
-            if countStr:
-                self.component.itemCount.text = countStr
+            if not ItemsUtils.GetIconName(self.itemData):
+                iconName = 'nottexture.dds'
+                if BWPersonality.GUICore.iconTextures is not None:
+                    if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
+                        if BWPersonality.GUICore.iconTextures.has_key(iconName):
+                            self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures[iconName]
+                        else:
+                            self.component.itemIcon.textureName = iconName
+                else:
+                    self.component.itemIcon.textureName = iconName
+                countStr = ItemsUtils.GetDisplayValue(self.itemData)
+                itemCondition = ItemsUtils.GetItemConditionPercentString(None, self.itemData)
+                if itemCondition:
+                    self.component.itemCount.text = itemCondition
+                self.component.itemCount.text = countStr and countStr
             emblem = ItemsUtils.getItemEmblem(self.itemData)
             colorise = ItemsUtils.getItemColorise(self.itemData)
             self.component.itemColored.visible = bool(colorise) or bool(ItemsUtils.getTintID(self.itemData))
             self.component.itemEmblem.visible = bool(emblem)
         else:
             self.component.itemIcon.textureName = ''
-            self.component.itemName.text = ''
             self.component.itemCount.text = ''
             self.component.itemColored.visible = False
             self.component.itemEmblem.visible = False
-        self.dragProxy.texture = self.component.itemIcon.texture
+        self.set_drag_proxy_visual(self.component.itemIcon.texture, self.multiselected)
         return
 
     def _blinkCommonent(self, component, add_value = True):
@@ -279,10 +254,6 @@ class soPCTradeSlot_me(soItemSlot):
         shad.alpha = 1
         shad.speed = 0.6
         shad.value = 0.0
-
-    def cancelItem(self):
-        BWPersonality.GUICore.pcTradeEvent(PC_TRADE.EVENT_DELITEM, self.itemData)
-        self.slotEvent(module_soItemView.SLOTEVENT_PICK_UP, self)
 
     def onDragStart(self):
         if self.haveItem():
@@ -303,6 +274,7 @@ class soPCTradeSlot_he(soItemSlot):
     def __init__(self, component, slotIndex, itemData = None):
         soItemSlot.__init__(self, component, slotIndex, itemData, centerDProxy=True)
         component.script = self
+        self.create_droplet()
 
     def setupRoot(self):
         cmp = self.component
@@ -316,7 +288,7 @@ class soPCTradeSlot_he(soItemSlot):
         cmp.mouseButtonFocus = True
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        cmp = GUI.Frame2('soGUI/items/cell.dds')
         cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -340,23 +312,14 @@ class soPCTradeSlot_he(soItemSlot):
         self.component.addChild(cmp, 'itemIcon')
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'BOTTOM'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
-        cmp.colour = (175, 166, 112, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.position = (4, self.SLOTHEIGHT - 5, 0.3)
-        self.component.addChild(cmp, 'itemName')
-        cmp = GUI.Text('')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
+        cmp.font = 'ArialNarrow_12.family'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (self.SLOTWIDTH - 5, 5, 0.3)
         self.component.addChild(cmp, 'itemCount')
-        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_painted.tga')
+        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_painted.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'TOP'
@@ -368,7 +331,7 @@ class soPCTradeSlot_he(soItemSlot):
         cmp.position = (self.component.width, cmp.height / 2 + 14, 0.7)
         cmp.visible = 0
         self.component.addChild(cmp, 'itemColored')
-        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_label.tga')
+        cmp = GUI.Simple('soGUI/maps/Icons/icon_item_label.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'RIGHT'
         cmp.verticalAnchor = 'TOP'
@@ -380,7 +343,7 @@ class soPCTradeSlot_he(soItemSlot):
         cmp.position = (self.component.width - 12, cmp.height / 2 + 14, 0.0)
         cmp.visible = 0
         self.component.addChild(cmp, 'itemEmblem')
-        cmp = GUI.Simple('soGUI/maps/Colours/white.tga')
+        cmp = GUI.Simple('soGUI/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -395,40 +358,32 @@ class soPCTradeSlot_he(soItemSlot):
         cmp.addShader(shad, 'blink')
 
     def _applyItemData(self):
+        self._update_droplet()
         if self.haveItem():
-            item_type = self.itemData['complexItemType']
             item_id = self.itemData['complexItemID']
-            item_class = ItemsCatalog.GetItemClass(item_type)
-            item_params = ItemsCatalog.GetItemParam(item_type)
-            item_level = item_params['Level']
-            iconName = ItemsUtils.getTextureByTint(self.itemData)
-            if not iconName:
-                iconName = item_params['IconName']
-            if BWPersonality.GUICore.iconTextures is not None:
-                if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
-                    if BWPersonality.GUICore.iconTextures.has_key(iconName):
-                        self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures[iconName]
-                    else:
-                        self.component.itemIcon.textureName = iconName
-            else:
-                self.component.itemIcon.textureName = iconName
-            countStr = ItemsUtils.GetDisplayValue(self.itemData)
-            friendlyName = ItemsUtils.GetItemName(item_type, fGetShortName=True, tintItem=self.itemData)
-            itemCondition = ItemsUtils.GetItemConditionPercentString(None, self.itemData)
-            self.component.itemName.text = friendlyName
-            if itemCondition:
-                self.component.itemCount.text = itemCondition
-            if countStr:
-                self.component.itemCount.text = countStr
-            emblem = ItemsUtils.getItemEmblem(self.itemData)
-            colorise = ItemsUtils.getItemColorise(self.itemData)
-            if not bool(colorise):
-                self.component.itemColored.visible = bool(ItemsUtils.getTintID(self.itemData))
+            if not ItemsUtils.GetIconName(self.itemData):
+                iconName = 'nottexture.dds'
+                if BWPersonality.GUICore.iconTextures is not None:
+                    if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
+                        if BWPersonality.GUICore.iconTextures.has_key(iconName):
+                            self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures[iconName]
+                        else:
+                            self.component.itemIcon.textureName = iconName
+                else:
+                    self.component.itemIcon.textureName = iconName
+                countStr = ItemsUtils.GetDisplayValue(self.itemData)
+                itemCondition = ItemsUtils.GetItemConditionPercentString(None, self.itemData)
+                if itemCondition:
+                    self.component.itemCount.text = itemCondition
+                if countStr:
+                    self.component.itemCount.text = countStr
+                emblem = ItemsUtils.getItemEmblem(self.itemData)
+                colorise = ItemsUtils.getItemColorise(self.itemData)
+                self.component.itemColored.visible = bool(colorise) or bool(ItemsUtils.getTintID(self.itemData))
                 self.component.itemEmblem.visible = bool(emblem)
                 self.parent_view.has_blink(item_id) and self._blinkCommonent(self.component.bg_blink, self.parent_view.blink_status(item_id))
         else:
             self.component.itemIcon.textureName = ''
-            self.component.itemName.text = ''
             self.component.itemCount.text = ''
             self.component.itemColored.visible = False
             self.component.itemEmblem.visible = False
@@ -506,7 +461,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.position = (0, 280, 0.5)
         self.component.addChild(cmp, 'playerWnd')
         wnd = cmp
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        cmp = GUI.Frame2('soGUI/frame/basic_frame_1.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
         cmp.horizontalAnchor = 'CENTER'
         cmp.verticalAnchor = 'CENTER'
@@ -521,7 +476,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'CENTER'
-        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (18, 15, 0.3)
@@ -531,13 +486,13 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'CENTER'
-        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        cmp.font = 'RobotoCondensedRegular_14.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (10, 40, 0.3)
         cmp.text = lc('GUI.InterPlayerTrade.MONEY_OUT_LABEL')
         wnd.addChild(cmp, 'mLabel')
-        cmp = GUI.Frame2('soGUI/maps/Controls/pcTrade/confirm_frame.tga')
+        cmp = GUI.Frame2('soGUI/frame/confirm_frame.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -553,7 +508,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.mouseButtonFocus = True
         cmp.script = self
         wnd.addChild(cmp, 'confirm')
-        moneyIcon = GUI.Simple('soGUI/maps/Controls/inventory/money.tga')
+        moneyIcon = GUI.Simple('soGUI/frame/inventory/money.dds')
         moneyIcon.verticalAnchor = 'CENTER'
         moneyIcon.horizontalAnchor = 'LEFT'
         moneyIcon.horizontalPositionMode = moneyIcon.verticalPositionMode = 'PIXEL'
@@ -563,7 +518,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         moneyIcon.width = 16
         moneyIcon.visible = True
         wnd.addChild(moneyIcon, 'moneyIcon')
-        edit = soEditBoxMoney(GUI.Window(), width=85, height=19, font='ruRU_Cyrvetica_Extra_14i.font', hOffset=4, vOffset=2)
+        edit = soEditBoxMoney(GUI.Window(), width=85, height=19, font='RobotoCondensedRegular_14.font', hOffset=4, vOffset=2)
         cmp = edit.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -577,13 +532,13 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'CENTER'
-        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        cmp.font = 'RobotoCondensedRegular_14.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (240, 40, 0.0)
         cmp.text = lc('GUI.InterPlayerTrade.ruble_in_label')
         wnd.addChild(cmp, 'moneyLabel')
-        cmp = GUI.Simple('soGUI/maps/Colours/white.tga')
+        cmp = GUI.Simple('soGUI/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -594,7 +549,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.height = 1
         cmp.position = (5, 51, 0.9)
         wnd.addChild(cmp, 'line1')
-        cmp = GUI.Simple('soGUI/maps/Colours/white.tga')
+        cmp = GUI.Simple('soGUI/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -609,7 +564,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'CENTER'
         cmp.verticalAnchor = 'CENTER'
-        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        cmp.font = 'RobotoCondensedRegular_14.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (166, 259, 0.3)
@@ -624,7 +579,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.width = 101
         cmp.height = 29
         cmp.position = (7, 271, 0.4)
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         btn.onBound()
         btn.onClick = self.onOfferBtn
         cmp.label.text = lc('GUI.InterPlayerTrade.MAKE_OFFER_BUTTON_LABEL')
@@ -641,7 +596,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.width = 101
         cmp.height = 29
         cmp.position = (229, 271, 0.4)
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         btn.onBound()
         btn.onClick = self.onConfirmBtn
         cmp.label.text = lc('GUI.InterPlayerTrade.CONFIRM_BUTTON_LABEL')
@@ -656,7 +611,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.width = 101
         cmp.height = 29
         cmp.position = (self.component.width - 10, 271, 0.4)
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         btn.onBound()
         btn.buttonDisabled = True
         btn.onClick = self.onCancelBtn
@@ -675,6 +630,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         itemView.onBound()
         itemView.setRestrictingComponent(None)
         itemView.setItems(None)
+        itemView.set_multiselectable()
         self._me_itemView = itemView
         return
 
@@ -691,7 +647,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.position = (0, 0, 0.5)
         self.component.addChild(cmp, 'hisWnd')
         wnd = cmp
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        cmp = GUI.Frame2('soGUI/frame/basic_frame_1.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
         cmp.horizontalAnchor = 'CENTER'
         cmp.verticalAnchor = 'CENTER'
@@ -706,7 +662,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'CENTER'
-        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (18, 15, 0.3)
@@ -716,7 +672,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'CENTER'
-        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        cmp.font = 'RobotoCondensedRegular_14.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (10, 39, 0.3)
@@ -726,7 +682,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'CENTER'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
+        cmp.font = 'ArialNarrow_12.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (10, 220, 0.3)
@@ -736,13 +692,13 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'CENTER'
-        cmp.font = 'ruRU_Cyrvetica_Extra_12i.font'
+        cmp.font = 'ArialNarrow_12.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (10, 235, 0.3)
         cmp.text = ''
         wnd.addChild(cmp, 'moneyChangeLabel')
-        self._opponent_money = TextMoney(GUI.Window(), font='ruRU_Cyrvetica_Extra_14i.font')
+        self._opponent_money = TextMoney(GUI.Window(), font='RobotoCondensedRegular_14.font')
         cmp = self._opponent_money.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -751,7 +707,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         wnd.addChild(cmp, '_opponent_money')
         self._opponent_money.setValue(0)
         self._opponent_money.moneyIcon.position.y -= 3
-        cmp = GUI.Simple('soGUI/maps/Colours/white.tga')
+        cmp = GUI.Simple('soGUI/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -764,7 +720,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         wnd.addChild(cmp, 'bg_money')
         shad = GUI.AlphaShader()
         cmp.addShader(shad, 'blink')
-        cmp = GUI.Frame2('soGUI/maps/Controls/pcTrade/confirm_frame.tga')
+        cmp = GUI.Frame2('soGUI/frame/confirm_frame.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -776,7 +732,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.position = (4, 28, 0.1)
         cmp.visible = 0
         wnd.addChild(cmp, 'confirm')
-        cmp = GUI.Simple('soGUI/maps/Colours/white.tga')
+        cmp = GUI.Simple('soGUI/white.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -791,7 +747,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'CENTER'
         cmp.verticalAnchor = 'CENTER'
-        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        cmp.font = 'RobotoCondensedRegular_14.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (166, 259, 0.3)
@@ -811,6 +767,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         itemView.setItems(None)
         itemView.onRemoveItem = self.notiferOnRemoveItem
         itemView.onAddItem = self.notiferOnAddItem
+        itemView.onUpdatedItems = self.cancelOfferTrade
         closeBox = soButton(GUI.Window())
         cmp = closeBox.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
@@ -822,7 +779,7 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         cmp.width = 18
         cmp.height = 18
         cmp.position = (self.component.width - 24, 6, 0.2)
-        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.initVSC('soGUI/elements/closeBox.xml')
         closeBox.onBound()
         closeBox._updateVisualState()
         closeBox.onClick = self.onCloseBox
@@ -836,7 +793,6 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         player = BigWorld.player()
         if not player:
             return
-        self.cancelOfferTrade()
         opponent_name = u'???'
         if BWPersonality.GUICore.tradeDataSection and BWPersonality.GUICore.tradeDataSection.has_key('contractor_name'):
             opponent_name = BWPersonality.GUICore.tradeDataSection['contractor_name']
@@ -850,7 +806,6 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         player = BigWorld.player()
         if not player:
             return
-        self.cancelOfferTrade()
         opponent_name = u'???'
         if BWPersonality.GUICore.tradeDataSection and BWPersonality.GUICore.tradeDataSection.has_key('contractor_name'):
             opponent_name = BWPersonality.GUICore.tradeDataSection['contractor_name']
@@ -873,43 +828,43 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
             return
 
     def mySlotHandler(self, event, data):
-        if event == module_soItemView.SLOTEVENT_MOUSELEAVE:
+        if event == ITSLOT.SLOTEVENT_MOUSELEAVE:
             BWPersonality.GUICore.toolTipEvent([PC_TRADE.SOURCE_PLAYER, data.itemData], self.interfaceID, soToolTipComponent.EVENT_HIDE)
             return True
-        if event == module_soItemView.SLOTEVENT_MOUSEENTER:
+        if event == ITSLOT.SLOTEVENT_MOUSEENTER:
             BWPersonality.GUICore.toolTipEvent([PC_TRADE.SOURCE_PLAYER, data.itemData], self.interfaceID, soToolTipComponent.EVENT_SHOW)
             return True
-        if event == module_soItemView.SLOTEVENT_DBLCLICK:
+        if event == ITSLOT.SLOTEVENT_DBLCLICK:
             BWPersonality.GUICore.pcTradeEvent(PC_TRADE.EVENT_ACTION, [PC_TRADE.SOURCE_PLAYER, data.itemData])
             return True
-        if event == module_soItemView.SLOTEVENT_RCLICK:
+        if event == ITSLOT.SLOTEVENT_RCLICK:
             BWPersonality.GUICore.pcTradeEvent(PC_TRADE.EVENT_CONTEXT, [PC_TRADE.SOURCE_PLAYER, data.itemData])
-            return True
-        if event == module_soItemView.SLOTEVENT_PICK_UP:
-            self.blockOfferBtn()
             return True
         return False
 
     def myIVHandler(self, event, data):
         from soGUI.soInventorySlot2 import soInventorySlot2
-        if event == module_soItemView.EVENT_DRAGENTER:
+        if event == ITSLOT.SLOTEVENT_DRAGENTER:
             if isinstance(data[1], soInventorySlot2):
                 return True
-        if event == module_soItemView.EVENT_DROP:
+        if event == ITSLOT.SLOTEVENT_DROP:
             if isinstance(data[1], soInventorySlot2):
+                slot = data[1]
+                item_ids = slot.get_multiselection()
+                items = ItemsUtils.get_multiple_items_by_ids(BigWorld.player(), item_ids)
                 self.blockOfferBtn()
-                BWPersonality.GUICore.pcTradeEvent(PC_TRADE.EVENT_ADDITEM, data[1].itemData)
+                BWPersonality.GUICore.pcTradeEvent(PC_TRADE.EVENT_ADDITEM, items)
                 return True
         return False
 
     def hisSlotHandler(self, event, data):
-        if event == module_soItemView.SLOTEVENT_RCLICK:
+        if event == ITSLOT.SLOTEVENT_RCLICK:
             BWPersonality.GUICore.pcTradeEvent(PC_TRADE.EVENT_CONTEXT, [PC_TRADE.SOURCE_CONTRACTOR, data.itemData])
             return True
-        if event == module_soItemView.SLOTEVENT_MOUSELEAVE:
+        if event == ITSLOT.SLOTEVENT_MOUSELEAVE:
             BWPersonality.GUICore.toolTipEvent([PC_TRADE.SOURCE_CONTRACTOR, data.itemData], self.interfaceID, soToolTipComponent.EVENT_HIDE)
             return True
-        if event == module_soItemView.SLOTEVENT_MOUSEENTER:
+        if event == ITSLOT.SLOTEVENT_MOUSEENTER:
             BWPersonality.GUICore.toolTipEvent([PC_TRADE.SOURCE_CONTRACTOR, data.itemData], self.interfaceID, soToolTipComponent.EVENT_SHOW)
             return True
         return False
@@ -1058,9 +1013,24 @@ class soPCTradeScreen2(PyGUIBase, DraggableComponent):
         self.component.playerWnd.confirmBtn.script._updateVisualState()
 
     def onOfferBtn(self):
-        self.component.playerWnd.edit.script.activate(False)
-        BWPersonality.GUICore.pcTradeEvent(PC_TRADE.EVENT_OFFER, None)
-        return
+
+        def comply():
+            self.component.playerWnd.edit.script.activate(False)
+            BWPersonality.GUICore.pcTradeEvent(PC_TRADE.EVENT_OFFER, None)
+            return
+
+        def listener(code):
+            if code == gui_jokes.askUserYesNo.YES:
+                comply()
+
+        contractor_items = BWPersonality.GUICore.tradeDataSection['contractor_items']
+        contractor_money = int(BWPersonality.GUICore.tradeDataSection['contractor_money'])
+        if not contractor_money and not contractor_items:
+            title = lc('Inventory.client.PCT_TRADE_CHECKDECEIVER_TITLE')
+            msg = lc('Inventory.client.PCT_TRACE_FREE')
+            gui_jokes.askUserYesNo(title, msg, listener)
+        else:
+            comply()
 
     def onConfirmBtn(self):
 

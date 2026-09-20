@@ -1,15 +1,13 @@
-# Embedded file name: ./scripts/client/FMOD.py
+# Embedded file name: ./client/FMOD.py
 try:
     from _FMOD import *
 except ImportError:
     print 'WARNING: FMOD support is not enabled.'
     from _FMODStubs import *
 
-from sounds import playSound as my_playSound, getSound as my_getSound
-from sounds import get3DFreeSound as my_get3DFreeSound
+from sounds_manager import playSound as my_playSound, getSound as my_getSound
 import BigWorld
 BigWorld.getSound = my_getSound
-BigWorld.get3DFreeSound = my_get3DFreeSound
 BigWorld.getSoundBanks = getSoundBanks
 BigWorld.playSound = my_playSound
 BigWorld.setDefaultSoundProject = setDefaultSoundProject

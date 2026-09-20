@@ -1,9 +1,9 @@
-# Embedded file name: ./scripts/client/Helpers/collide.py
+# Embedded file name: ./client/Helpers/collide.py
 import BigWorld
 import Math
 import math
 import utils_bw
-COLLIDE_ENTITY, COLLIDE_TERRAIN, COLLIDE_NONE, COLLIDE_OTHER = range(4)
+COLLIDE_ENTITY, COLLIDE_TERRAIN, COLLIDE_NONE, COLLIDE_OTHER = xrange(4)
 
 def collide(x, y):
     player = BigWorld.player()

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/TranslateWindow.py
+# Embedded file name: ./client/soGUI/TranslateWindow.py
 import BingAPItransl
 import BigWorld
 import BWPersonality
@@ -43,7 +43,7 @@ class TranslateWindow(PyGUIBase):
         self.dragProxy = self.component
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/msgBox/windowFrame.tga')
+        cmp = GUI.Frame2('soGUI/frame/basic_frame_no_footer.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
         cmp.widthMode = cmp.heightMode = 'CLIP'
         cmp.horizontalAnchor = cmp.verticalAnchor = 'CENTER'
@@ -56,7 +56,7 @@ class TranslateWindow(PyGUIBase):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'CENTER'
         cmp.verticalAnchor = 'CENTER'
-        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.multiline = False
@@ -75,7 +75,7 @@ class TranslateWindow(PyGUIBase):
         cmp.width = 18
         cmp.height = 18
         cmp.position = (self.width - cmp.width - 10, 6, 0.3)
-        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.initVSC('soGUI/elements/closeBox.xml')
         closeBox.onBound()
         closeBox.setVisualState('normal')
         closeBox.onClick = self.hide
@@ -108,7 +108,7 @@ class TranslateWindow(PyGUIBase):
         txt.onBound()
         txt.setText('')
         self.component.addChild(cmp, 'trtext')
-        txt = soEditBox2(GUI.Window(), width=self.width - 10, height=60, font='ruRU_Cyrvetica_Extra_14i.font', hOffset=5, multiline=0, vOffset=5)
+        txt = soEditBox2(GUI.Window(), width=self.width - 10, height=60, font='RobotoCondensedRegular_14.font', hOffset=5, multiline=0, vOffset=5)
         cmp = txt.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -120,7 +120,7 @@ class TranslateWindow(PyGUIBase):
         txt.setEnableCopyPaste(0)
         self.component.edit.script.activate(True)
         btnRUtoEng = soButton(GUI.Window())
-        btnRUtoEng.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btnRUtoEng.initVSC('soGUI/elements/button_1.xml')
         cmp = btnRUtoEng.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
@@ -137,7 +137,7 @@ class TranslateWindow(PyGUIBase):
         btnRUtoEng.onBound()
         btnRUtoEng._updateVisualState()
         btnEn2Ru = soButton(GUI.Window())
-        btnEn2Ru.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btnEn2Ru.initVSC('soGUI/elements/button_1.xml')
         cmp = btnEn2Ru.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
@@ -154,7 +154,7 @@ class TranslateWindow(PyGUIBase):
         btnEn2Ru.onBound()
         btnEn2Ru._updateVisualState()
         btnToChat = soButton(GUI.Window())
-        btnToChat.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btnToChat.initVSC('soGUI/elements/button_1.xml')
         cmp = btnToChat.component
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'

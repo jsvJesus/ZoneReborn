@@ -1,9 +1,10 @@
-# Embedded file name: ./scripts/client/soGUI/flash_utils.py
+# Embedded file name: ./client/soGUI/flash_utils.py
 """\xd0\x98\xd0\xbd\xd1\x81\xd1\x82\xd1\x80\xd1\x83\xd0\xbc\xd0\xb5\xd0\xbd\xd1\x82\xd1\x8b \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x83\xd0\xbf\xd1\x80\xd0\xbe\xd1\x89\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xb2\xd0\xb7\xd0\xb0\xd0\xb8\xd0\xbc\xd0\xbe\xd0\xb4\xd0\xb5\xd0\xb9\xd1\x81\xd1\x82\xd0\xb2\xd0\xb8\xd1\x8f \xd1\x81 \xd1\x84\xd0\xbb\xd1\x8d\xd1\x88 \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82\xd0\xbe\xd0\xbc."""
 import copy
 import json
 import functools
 import inspect
+import traceback
 import BigWorld
 from .FlashGUIBase import FlashGUIBase, IFlashGUI
 from utils import pyFixedToNativePythonType
@@ -129,7 +130,13 @@ class FlashTeamWorker(IFlashGUI):
 
             @debug_print_output
             def end_action(result, event_name):
-                self.viewX.invoke((event_name, result))
+                try:
+                    self.viewX.invoke((event_name, result))
+                except:
+                    print 'self:', self
+                    print 'event_name:', event_name
+                    print 'result:', result
+                    raise
 
             def begin_action():
                 result = method(self, *args, **kw)
@@ -186,7 +193,13 @@ class FlashTeamWorker(IFlashGUI):
 
                 @debug_print_output
                 def end_action(result, event_name):
-                    self.viewX.invoke((event_name, result))
+                    try:
+                        self.viewX.invoke((event_name, result))
+                    except Exception as err:
+                        print 'ERROR FOR: event_name=', repr(event_name)
+                        print 'method_or_name=', repr(method_or_name)
+                        print 'self=', repr(self)
+                        raise err
 
                 result = method(self, *args, **kw)
                 if result is not None:
@@ -248,9 +261,11 @@ class FlashTeamWorker(IFlashGUI):
         key_words = key_words_in_tpl[0] if key_words_in_tpl else {}
         try:
             self._receiving_methods[meth_name](self, **key_words)
-        except KeyError:
+        except:
             cls_name = self.__class__.__name__
-            raise FlashTeamWorkerError("Method {cls_name}::{meth_name} doesn't register in FlashTeamWorker".format(cls_name=cls_name, meth_name=meth_name))
+            print 'ERROR Method {cls_name}::{meth_name}'.format(cls_name=cls_name, meth_name=meth_name)
+            print 'args:', (meth_name, key_words_in_tpl)
+            traceback.print_exc()
 
 
 def send_to_flashscript(event_name_or_method = None):

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/LightSpot.py
+# Embedded file name: ./client/LightSpot.py
 import BigWorld
 
 class LightSpot(BigWorld.UserDataObject):

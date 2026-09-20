@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/chardet/chardistribution.py
+# Embedded file name: ./common/requests/packages/chardet/chardistribution.py
 import constants
 from euctwfreq import EUCTWCharToFreqOrder, EUCTW_TABLE_SIZE, EUCTW_TYPICAL_DISTRIBUTION_RATIO
 from euckrfreq import EUCKRCharToFreqOrder, EUCKR_TABLE_SIZE, EUCKR_TYPICAL_DISTRIBUTION_RATIO

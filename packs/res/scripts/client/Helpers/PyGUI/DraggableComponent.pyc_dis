@@ -1,7 +1,7 @@
-# Embedded file name: ./scripts/client/Helpers/PyGUI/DraggableComponent.py
+# Embedded file name: ./client/Helpers/PyGUI/DraggableComponent.py
 import BigWorld, GUI, Math, Keys
-import Utils
-from client_utils import get_coner_in_pixels, clips_to_pixels
+from Helpers.PyGUI import Utils
+from client_utils import get_coner_in_pixels
 
 class DraggableComponent:
 
@@ -54,6 +54,10 @@ class DraggableComponent:
     def stopDragging(self):
         dragManager.stopDragging()
         self.onBound()
+
+    def restrictPosition(self):
+        dragManager.restrictHorizontally(self._xoffset, self.component)
+        dragManager.restrictVertically(self._yoffset, self.component)
 
 
 def _horzAnchorOffset(component):
@@ -129,19 +133,17 @@ class ComponentDragManager:
 
     def handleKeyEvent(self, down, key, mods):
         if key in (Keys.KEY_LEFTMOUSE, Keys.KEY_MIDDLEMOUSE) and not down and self.isDragging():
-            self.stopDragging()
+            if self.component.script:
+                self.component.script.stopDragging()
             return True
         return False
 
     def handleMouseEvent(self, event):
-        dx = event.dx
-        dy = event.dy
-        dz = event.dz
-        position = event.cursorPosition
         if self.component is None:
             return False
-        elif not BigWorld.isKeyDown(Keys.KEY_LEFTMOUSE) and not BigWorld.isKeyDown(Keys.KEY_MIDDLEMOUSE):
-            self.stopDragging()
+        elif not BigWorld.isKeyDown(Keys.KEY_LEFTMOUSE) and not BigWorld.isKeyDown(Keys.KEY_MIDDLEMOUSE) and self.isDragging():
+            if self.component.script:
+                self.component.script.stopDragging()
             return True
         else:
             if self.component.parent is None:
@@ -160,7 +162,6 @@ class ComponentDragManager:
                 horzMode = self.component.horizontalPositionMode
                 self.component.horizontalPositionMode = 'LEGACY'
                 self.component.position.x = cpos.x
-                x = cpos.x
                 self.component.horizontalPositionMode = horzMode
                 if self.restrictToParent:
                     self.restrictHorizontally(self.xoffset)
@@ -179,51 +180,59 @@ class ComponentDragManager:
                 Utils.roundComponentPos(self)
             return True
 
-    def restrictHorizontally(self, offset = 0):
+    def restrictHorizontally(self, offset = 0, component = None):
         """\xd0\x9d\xd0\xb5 \xd0\xb4\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd1\x82\xd0\xb0\xd1\x81\xd0\xba\xd0\xb8\xd0\xb2\xd0\xb0\xd1\x82\xd1\x8c \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82 \xd0\xb4\xd0\xb0\xd0\xbb\xd1\x8c\xd1\x88\xd0\xb5 \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd1\x85 \xd1\x83\xd1\x81\xd0\xbb\xd0\xbe\xd0\xb2\xd0\xb8\xd0\xb9 \xd0\xbf\xd0\xbe \xd0\xb3\xd0\xbe\xd1\x80\xd0\xb8\xd0\xb7\xd0\xbe\xd0\xbd\xd1\x82\xd0\xb0\xd0\xbb\xd0\xb8."""
-        if self.component is None:
-            return
+        if not component:
+            comp = self.component
+            return comp is None and None
         else:
-            horzMode = self.component.horizontalPositionMode
-            widthMode = self.component.widthMode
+            horzMode = comp.horizontalPositionMode
+            widthMode = comp.widthMode
             restricted = False
-            self.component.horizontalPositionMode = 'PIXEL'
-            self.component.widthMode = 'PIXEL'
-            old_position = self.component.position
-            x, y, z = self.component.position
+            comp.horizontalPositionMode = 'PIXEL'
+            comp.widthMode = 'PIXEL'
+            old_position = comp.position
+            x, y, z = comp.position
             sW, _sH = BigWorld.screenSize()
-            right_x_restrict = sW + offset * self.component.width
-            left_x_restrict = 0 - offset * self.component.width
-            x = get_coner_in_pixels(self.component)['corner'][0]
-            x = min(right_x_restrict - self.component.width, max(left_x_restrict, x))
-            self.component.position = (x + _horzAnchorOffset(self.component), y, z)
-            if self.component.position != old_position:
+            right_x_restrict = sW + offset * comp.width
+            left_x_restrict = 0 - offset * comp.width
+            x = get_coner_in_pixels(comp)['corner'][0]
+            x = min(right_x_restrict - comp.width, max(left_x_restrict, x))
+            comp.position = (x + _horzAnchorOffset(comp), y, z)
+            if comp.position != old_position:
                 restricted = True
-            self.component.horizontalPositionMode = horzMode
-            self.component.widthMode = widthMode
+            comp.horizontalPositionMode = horzMode
+            comp.widthMode = widthMode
             return restricted
 
-    def restrictVertically(self, offset = 0):
+    def restrictVertically(self, offset = 0, component = None):
         """\xd0\x9d\xd0\xb5 \xd0\xb4\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd1\x82\xd0\xb0\xd1\x81\xd0\xba\xd0\xb8\xd0\xb2\xd0\xb0\xd1\x82\xd1\x8c \xd0\xba\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82 \xd0\xb4\xd0\xb0\xd0\xbb\xd1\x8c\xd1\x88\xd0\xb5 \xd0\xb7\xd0\xb0\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xbd\xd1\x8b\xd1\x85 \xd1\x83\xd1\x81\xd0\xbb\xd0\xbe\xd0\xb2\xd0\xb8\xd0\xb9 \xd0\xbf\xd0\xbe \xd0\xb2\xd0\xb5\xd1\x80\xd1\x82\xd0\xb8\xd0\xba\xd0\xb0\xd0\xbb\xd0\xb8."""
-        if self.component is None:
-            return
+        if not component:
+            comp = self.component
+            return comp is None and None
         else:
-            vertMode = self.component.verticalPositionMode
-            heightMode = self.component.heightMode
+            vertMode = comp.verticalPositionMode
+            heightMode = comp.heightMode
             restricted = False
-            self.component.verticalPositionMode = 'PIXEL'
-            self.component.heightMode = 'PIXEL'
-            x, y, z = old_position = self.component.position
-            _sW, sH = BigWorld.screenSize()
-            bottom_y_restrict = sH + offset * self.component.height
-            top_y_restrict = 0 - offset * self.component.height
-            y = get_coner_in_pixels(self.component)['corner'][1]
-            y = min(bottom_y_restrict - self.component.height, max(top_y_restrict, y))
-            self.component.position = (x, y + _vertAnchorOffset(self.component), z)
-            if self.component.position != old_position:
+            comp.verticalPositionMode = 'PIXEL'
+            comp.heightMode = 'PIXEL'
+            x, y, z = old_position = comp.position
+            if comp.parent:
+                parent_mode = comp.parent.heightMode
+                comp.parent.heightMode = 'PIXEL'
+                parent_height = comp.parent.height
+                comp.parent.heightMode = parent_mode
+            else:
+                parent_height = BigWorld.screenHeight()
+            bottom_y_restrict = parent_height + offset * comp.height
+            top_y_restrict = 0 - offset * comp.height
+            y = get_coner_in_pixels(comp)['corner'][1]
+            y = min(bottom_y_restrict - comp.height, max(top_y_restrict, y))
+            comp.position = (x, y + _vertAnchorOffset(comp), z)
+            if comp.position != old_position:
                 restricted = True
-            self.component.verticalPositionMode = vertMode
-            self.component.heightMode = heightMode
+            comp.verticalPositionMode = vertMode
+            comp.heightMode = heightMode
             return restricted
 
 

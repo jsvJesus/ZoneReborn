@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soFlagMarkers.py
+# Embedded file name: ./client/soGUI/soFlagMarkers.py
 """\xd0\x9c\xd0\xbe\xd0\xb4\xd1\x83\xd0\xbb\xd1\x8c \xd1\x80\xd0\xb5\xd0\xb0\xd0\xbb\xd0\xb8\xd0\xb7\xd1\x83\xd0\xb5\xd1\x82 \xd1\x84\xd1\x83\xd0\xbd\xd0\xba\xd1\x86\xd0\xb8\xd0\xbe\xd0\xbd\xd0\xb0\xd0\xbb \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xbf\xd0\xb8\xd1\x81\xd0\xb8 \xd0\xba \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd0\xb0\xd0\xbc."""
 import itertools
 import BigWorld
@@ -11,17 +11,19 @@ import soGUI
 from Helpers.PyGUI.PyGUIBase import PyGUIBase
 from matrix_providers import ShiftProvider
 from Localization import lc
+COLOR_MY = (255, 255, 255, 255)
+COLOR_ENEMY = (50, 52, 54, 255)
 
 class InWorldFlagMarker(PyGUIBase):
     """\xd0\x9a\xd0\xbe\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82 \xd1\x81 \xd1\x82\xd0\xb5\xd0\xba\xd1\x81\xd1\x82\xd0\xbe\xd0\xb2\xd0\xbe\xd0\xb9 \xd0\xbf\xd0\xbe\xd0\xb4\xd0\xbf\xd0\xb8\xd1\x81\xd1\x8c\xd1\x8e \xd0\xba \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd1\x83."""
     factoryString = 'soGUI.InWorldFlagMarker'
-    FRAME_TEXTURE = BigWorld.PyTextureProvider('soGUI/maps/inworldMarkers/frame.tga')
+    FRAME_TEXTURE = BigWorld.PyTextureProvider('soGUI/frame/inworld_markers/frame.dds')
 
-    def __init__(self, component, text = u'EMPTY', alpha = 1.0):
+    def __init__(self, component, letter = 'A', alpha = 1.0):
         PyGUIBase.__init__(self, component)
         component.script = self
         self.alpha = alpha * 255.0
-        self.text = text
+        self.letter = letter
         self.setupRoot()
         self.setupContent()
 
@@ -46,7 +48,7 @@ class InWorldFlagMarker(PyGUIBase):
         comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
         comp.horizontalAnchor = 'LEFT'
         comp.verticalAnchor = 'BOTTOM'
-        comp.font = 'ruRU_calibri_default.font'
+        comp.font = 'RobotoCondensedRegular_16.font'
         comp.colour = (255,
          255,
          255,
@@ -80,7 +82,7 @@ class InWorldFlagMarker(PyGUIBase):
             comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
             comp.horizontalAnchor = 'CENTER'
             comp.verticalAnchor = 'BOTTOM'
-            comp.font = 'ruRU_calibri_default.font'
+            comp.font = 'RobotoCondensedRegular_16.font'
             comp.colour = (255,
              255,
              255,
@@ -109,50 +111,90 @@ class InWorldFlagMarker(PyGUIBase):
         self.component.addChild(comp, 'backFrame')
 
 
-class PictureCaption(PyGUIBase):
-    """\xd0\x9a\xd0\xb0\xd0\xbc\xd0\xbf\xd0\xbe\xd0\xbd\xd0\xb5\xd0\xbd\xd1\x82 \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xbe\xd1\x82\xd0\xbe\xd0\xb1\xd1\x80\xd0\xb0\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xba\xd0\xb0\xd1\x80\xd1\x82\xd0\xb8\xd0\xbd\xd0\xba\xd0\xb8-\xd0\xbf\xd0\xbe\xd0\xb4\xd0\xbf\xd0\xb8\xd1\x81\xd0\xb8 \xd0\xba \xd1\x84\xd0\xbb\xd0\xb0\xd0\xb3\xd1\x83."""
-    factoryString = 'soGUI.PictureCaption'
+class soFlagIcon(PyGUIBase):
+    factoryString = 'soGUI.soFlagIcon'
+    ICON_SIZE = 48
+    ENEMY_TEXTURE = BigWorld.PyTextureProvider('soGUI/frame/flags/enemy_flag.dds')
+    CAPTURE_TEXTURE = BigWorld.PyTextureProvider('soGUI/frame/flags/captured_flag.dds')
 
-    def __init__(self, component, picture_path, alpha = 1.0):
+    def __init__(self, component, letter = 'A', statuses = (False, False, False), size = 1):
         PyGUIBase.__init__(self, component)
         component.script = self
-        self.alpha = alpha * 255.0
-        self.picture_path = picture_path
+        self.size = size
+        self.letter = letter
+        self._is_owner, self._is_invader, self._is_ally = statuses
         self.setupRoot()
-        self.setupContent()
+        self.load_letter()
+
+    def update_colors(self):
+        if self._is_invader:
+            self.component.icon.texture = self.CAPTURE_TEXTURE
+        else:
+            self.component.icon.texture = self.ENEMY_TEXTURE
+        self.component.ally.visible = self._is_ally
+
+    def load_letter(self):
+        texture_name = 'soGUI/frame/flags/{0}.dds'.format(self.letter.lower())
+
+        def on_texture_loaded(resource):
+            if not hasattr(self.component, 'letter'):
+                return
+            self.component.letter.texture = resource[texture_name]
+            self.update_colors()
+
+        BigWorld.loadResourceListBG([texture_name], on_texture_loaded)
 
     def setupRoot(self):
-        comp = self.component
-        comp.horizontalPositionMode = comp.verticalPositionMode = 'CLIP'
-        comp.widthMode = comp.heightMode = 'PIXEL'
-        comp.horizontalAnchor = 'CENTER'
-        comp.verticalAnchor = 'CENTER'
-        comp.colour = (255,
-         255,
-         255,
-         self.alpha)
-        comp.materialFX = 'BLEND'
-        comp.width = 40
-        comp.height = 40
-        comp.position = (0.0, 0.0, 0)
-        comp.textureName = ''
-
-    def setupContent(self):
-        comp = GUI.Simple('')
-        comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
-        comp.widthMode = comp.heightMode = 'PIXEL'
-        comp.horizontalAnchor = 'LEFT'
-        comp.verticalAnchor = 'TOP'
-        comp.colour = (255,
-         255,
-         255,
-         self.alpha)
-        comp.materialFX = 'BLEND'
-        comp.width = self.component.width
-        comp.height = self.component.height
-        comp.position = (0, 0, 0)
-        comp.texture = BigWorld.PyTextureProvider(self.picture_path)
-        self.component.addChild(comp, 'picture')
+        cmp = self.component
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'BOTTOM'
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.width = self.ICON_SIZE
+        cmp.height = self.ICON_SIZE
+        cmp.position = (0.0, 0.0, 1.5)
+        cmp.textureName = ''
+        cmp = GUI.Simple('')
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'LEFT'
+        cmp.verticalAnchor = 'TOP'
+        cmp.width = self.ICON_SIZE
+        cmp.height = self.ICON_SIZE
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (0, 0, 0.5)
+        cmp.texture = None
+        cmp.visible = True
+        self.component.addChild(cmp, 'icon')
+        cmp = GUI.Simple('')
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.width = 12
+        cmp.height = 15
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (0, 0, 0.4)
+        cmp.texture = None
+        cmp.visible = True
+        self.component.addChild(cmp, 'letter')
+        cmp = GUI.Simple('textures/default/white.dds')
+        cmp.widthMode = cmp.heightMode = 'PIXEL'
+        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
+        cmp.horizontalAnchor = 'CENTER'
+        cmp.verticalAnchor = 'CENTER'
+        cmp.width = 16
+        cmp.height = 1
+        cmp.colour = (255, 255, 255, 255)
+        cmp.materialFX = 'BLEND'
+        cmp.position = (self.component.width / 2.0, self.component.height / 2.0 + self.component.letter.height / 2 + 2, 0.4)
+        cmp.visible = False
+        self.component.addChild(cmp, 'ally')
+        return
 
 
 class soFlagMarkers(PyGUIBase):
@@ -179,7 +221,7 @@ class soFlagMarkers(PyGUIBase):
         comp.materialFX = 'BLEND'
         comp.width = 2.0
         comp.height = 2.0
-        comp.position = (0.0, 0.0, 1.1)
+        comp.position = (0.0, 0.0, 0.9)
         comp.visible = True
         BWPersonality.GUICore.flashWorldLayer.addChild(comp, 'flagMarkers')
 

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soQuestRewardWin.py
+# Embedded file name: ./client/soGUI/soQuestRewardWin.py
 from Helpers.PyGUI import PyGUIBase
 from Helpers.PyGUI.DraggableComponent import DraggableComponent
 from soGUI.soButton import soButton
@@ -27,9 +27,7 @@ class soQuestRewardWin(PyGUIBase, DraggableComponent):
         self.setupContent()
         self.child_id = child_id
         params = ['credits',
-         'exp0',
-         'exp1',
-         'exp2',
+         'exp',
          'reputation',
          'items']
         self.data = dict.fromkeys(params, None)
@@ -52,7 +50,7 @@ class soQuestRewardWin(PyGUIBase, DraggableComponent):
         self.component.mouseButtonFocus = 1
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        cmp = GUI.Frame2('soGUI/frame/basic_frame_1.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -65,7 +63,7 @@ class soQuestRewardWin(PyGUIBase, DraggableComponent):
         self.component.addChild(cmp, 'wndFrame')
         parent = self.component.wndFrame
         btn = soButton(GUI.Window())
-        btn.initVSC('soGUI/visual_styles/closeBox.xml')
+        btn.initVSC('soGUI/elements/closeBox.xml')
         self.close_btn = btn.component
         self.close_btn.horizontalPositionMode = self.close_btn.verticalPositionMode = 'PIXEL'
         self.close_btn.widthMode = self.close_btn.heightMode = 'PIXEL'
@@ -81,7 +79,7 @@ class soQuestRewardWin(PyGUIBase, DraggableComponent):
         btn.onBound()
         btn._updateVisualState()
         parent = self.component.wndFrame
-        self.text_frame = GUI.Frame2('soGUI/maps/Controls/TabletPC/questLog/doubleFrame.tga')
+        self.text_frame = GUI.Frame2('soGUI/frame/con_frame_2.dds')
         self.text_frame.horizontalPositionMode = self.text_frame.verticalPositionMode = 'PIXEL'
         self.text_frame.widthMode = self.text_frame.heightMode = 'PIXEL'
         self.text_frame.horizontalAnchor = 'LEFT'
@@ -120,12 +118,12 @@ class soQuestRewardWin(PyGUIBase, DraggableComponent):
         parent = self.component.wndFrame
         self.btn_ok = soButton(GUI.Window())
         comp = self.btn_ok.component
-        self.btn_ok.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        self.btn_ok.initVSC('soGUI/elements/button_1.xml')
         comp.horizontalPositionMode = comp.verticalPositionMode = 'PIXEL'
         comp.widthMode = comp.heightMode = 'PIXEL'
         comp.horizontalAnchor = 'LEFT'
         comp.verticalAnchor = 'TOP'
-        comp.label.font = 'ruRU_calibri_default.font'
+        comp.label.font = 'RobotoCondensedRegular_16.font'
         comp.label.text = lc('GUI.QuestItems.OK_BUTTON')
         comp.colour = (255, 255, 255, 255)
         comp.materialFX = 'BLEND'
@@ -142,12 +140,8 @@ class soQuestRewardWin(PyGUIBase, DraggableComponent):
         text = u''
         if self.data['credits']:
             text += u'{0} {1}\n'.format(self.data['credits'], lc('GUI.QuestItems.RUBLES'))
-        if self.data['exp0']:
-            text += u'{0} {1}\n'.format(self.data['exp0'], lc('GUI.QuestItems.COMBAT_EXP'))
-        if self.data['exp1']:
-            text += u'{0} {1}\n'.format(self.data['exp1'], lc('GUI.QuestItems.SURVIVAL_EXP'))
-        if self.data['exp2']:
-            text += u'{0} {1}\n'.format(self.data['exp2'], lc('GUI.QuestItems.OTHER_EXP'))
+        if self.data['exp']:
+            text += u'{0} {1}\n'.format(self.data['exp0'], lc('GUI.QuestItems.OTHER_EXP'))
         rep = self.data['reputation']
         if rep:
             text += u'\n'

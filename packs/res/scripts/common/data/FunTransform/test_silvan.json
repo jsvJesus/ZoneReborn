@@ -9,9 +9,11 @@
         "eye_tint_silvan": "green"
     	},
 	"collide_boxs": "scripts/common/data/Creatures/Colliders/Silvan.xml",
+	"persistent_effects":[267],
 	"model_scale": 1.0,
 	"hide_weapon": true,
-	"hide_gui":["munitionsGUI", "systemBar", "actionBar"
+	"other_disable_interact":true,
+	"hide_gui":["munitionsGUI", "systemBar", "actionBar", "emotionsGUI", "inventory", "charScreen", "minimap"
 				],
 
 	"chat_send_replace_symbol": "",
@@ -19,8 +21,16 @@
 
 	"walk_speed":  0.0,
 	"run_speed":   4.2,
+	"run_speed_back":   1.5,
 	"sprint_speed":7.4,
 	"crouch_speed":1.0,
+
+
+	"phy_walk_acelerate": 10.0,
+	"phy_sprint_acelerate": 200.0,
+	"body_twist":20.0,
+	"ignore_fall":true,
+	"fix_last_foot_twist":true,
 
 	"post_proccess":"",
 
@@ -32,23 +42,23 @@
 
 	"drop_on_dead_loot_bbox_name":"",
 
-	"camera_pivot_position": [0.5, 2.0, -1],
-	"camera_pivot_dist": 2.6,
+	"camera_pivot_position": [0.25, 1.5, 0.0],
+	"camera_pivot_dist": "DEF",
 	"camera_node": "DEF",
 
+	"physics_modelWidth":"DEF",
+	"physics_modelDepth":"DEF",
+	"physics_modelHeight_Standing":"DEF",
+	"physics_modelHeight_Crouched":"DEF",
+	"physics_scrambleHeight":"DEF",
 
-	"physics_modelWidth":0.5,
-	"physics_modelDepth":0.5,
-	"physics_modelHeight_Standing":1.0,
-	"physics_modelHeight_Crouched":1.0,
-	"physics_scrambleHeight":0.6,
+	"lock_mouse_scroll_weapon":true,
 
-	
-	"lock_aciton":[
-		"ThrowGrenade",
-		"SitGround","SitBackpack","SitGroundX","SitLegs"
-		],
-	"unlock_aciton":[],
+	"help_text":"FunTransform.help.all",
+
+	"lock_aciton":[ "ALL_ACTION"],
+
+	"unlock_aciton":["MoveForward", "MoveBackward", "Sprint", "LookAround", "ReleaseCursor", "StrafeLeft", "StrafeRight", "PVPScoreBar"],
 
 	"random_actions":[],
 	
@@ -57,48 +67,48 @@
 	"actions":[
 			{
 			"action_name":"LeftMouseButton",
-			"action_class":"SECTOR_MELEE",
+			"action_class":"BOX_MELEE",
 			"stamina_cost":5,
 			"animation": "Silvan_AttackPaws",
 
 			"time_start_effect": 0.5,
 			"time_end_animation": 1.0,
-			"time_reuse_delay": 0.0,
+			"time_reuse_delay": 1.0,
 
 			"sfx_start_animation":"sfx/Mob/Silvan/attack.xml",
 			"sfx_apply_effect_boner":"",
 			"sfx_apply_effect_hit":"",
 			"sfx_end_animation":"",
 
-			"radius":2.0,
-			"angles_sector": [-60, 60],
-			"height_attack_limit":[-1.0, 1.8],
-			"damage":[70,90],
+			"dist_attack":1,
+			"box_width": [-0.3, 0.3],
+			"box_height":[-3.0, 2],
+			"damage":[55,60],
 
-			"apply_effect_id": 402,
-			"apply_effect_stack": 1,
-			"apply_effect_chance": 0.35,
+			"apply_effect_id": 0,
+			"apply_effect_stack": 0,
+			"apply_effect_chance": 0.0,
 			"lock_move":true
 		},
 		{
 			"action_name":"RightMouseButton",
-			"action_class":"SECTOR_MELEE",
+			"action_class":"BOX_MELEE",
 			"stamina_cost":5,
 			"animation": "Silvan_AttackTooth",
 
 			"time_start_effect": 0.5,
 			"time_end_animation": 1.0,
-			"time_reuse_delay": 0.0,
+			"time_reuse_delay": 1.0,
 
 			"sfx_start_animation":"sfx/Mob/Silvan/attack.xml",
 			"sfx_apply_effect_boner":"",
 			"sfx_apply_effect_hit":"",
 			"sfx_end_animation":"",
 
-			"radius":2.0,
-			"angles_sector": [-60, 60],
-			"height_attack_limit":[-1.0, 1.8],
-			"damage":[60,80],
+			"dist_attack":1,
+			"box_width": [-0.3, 0.3],
+			"box_height":[-3.0, 2],
+			"damage":[55,60],
 
 			"apply_effect_id": 5,
 			"apply_effect_stack": 1,
@@ -113,16 +123,16 @@
 
 			"time_start_effect": 1.7,
 			"time_end_animation": 3.5,
-			"time_reuse_delay": 0.0,
+			"time_reuse_delay": 1.0,
 
 			"sfx_start_animation":"sfx/Mob/Silvan/attack.xml",
 			"sfx_apply_effect_boner":"sfx/Mob/Silvan/attack.xml",
 			"sfx_apply_effect_hit":"sfx/Mob/Silvan/attack.xml",
 			"sfx_end_animation":"",
 
-			"apply_effect_id": 516,
-			"apply_effect_stack": 5,
-			"apply_effect_chance": 1.0,
+			"apply_effect_id": 0,
+			"apply_effect_stack": 0,
+			"apply_effect_chance": 0.0,
 			"lock_move":true
 		},
 		{
@@ -133,7 +143,7 @@
 
 			"time_start_effect": 0.5,
 			"time_end_animation": 1.4,
-			"time_reuse_delay": 0.0,
+			"time_reuse_delay": 1.0,
 
 			"sfx_start_animation":"sfx/Mob/Silvan/attack.xml",
 			"sfx_apply_effect_boner":"sfx/Mob/Silvan/attack.xml",
@@ -148,15 +158,15 @@
 			"apply_effect_chance": 20.0,
 			"lock_move":true
 		},
-		{
-			"action_name":"Jump",
+	{
+			"action_name":"",
 			"action_class":"AOE",
 			"stamina_cost":50,
 			"animation": "Silvan_AttackSpecial",
 
 			"time_start_effect": 0.8,
 			"time_end_animation": 1.3,
-			"time_reuse_delay": 0.0,
+			"time_reuse_delay": 1.0,
 
 			"sfx_start_animation":"sfx/Mob/Silvan/attack.xml",
 			"sfx_apply_effect_boner":"",

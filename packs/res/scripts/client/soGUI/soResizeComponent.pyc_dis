@@ -1,8 +1,7 @@
-# Embedded file name: ./scripts/client/soGUI/soResizeComponent.py
-import BigWorld
+# Embedded file name: ./client/soGUI/soResizeComponent.py
 import GUI
 import BWPersonality
-from Keys import *
+from soGUI import MouseShaper
 
 class soResizeComponent(object):
     factoryString = 'soGUI.soResizeComponent'
@@ -34,7 +33,7 @@ class soResizeComponent(object):
         cmp.crossFocus = True
         cmp.script = self
         self.component.addChild(cmp, 'resizer')
-        cmp = GUI.Frame2('soGUI/maps/Misc/resizeBox.tga')
+        cmp = GUI.Frame2('soGUI/elements/resizeBox.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'CLIP'
         cmp.widthMode = cmp.heightMode = 'CLIP'
         cmp.horizontalAnchor = 'LEFT'
@@ -61,14 +60,14 @@ class soResizeComponent(object):
             cursorT = 'resizeV'
         if self.horizontalResize and not self.verticalResize:
             cursorT = 'resizeH'
-        GUI.mcursor().shape = cursorT
+        MouseShaper.set_shape(cursorT)
         return True
 
     def handleMouseLeaveEvent(self, cmp):
         if cmp != self.component.resizer:
             return False
         if not self.resizing:
-            GUI.mcursor().shape = 'arrow'
+            MouseShaper.set_shape('arrow')
         return True
 
     def handleDragStartEvent(self, cmp):
@@ -90,7 +89,7 @@ class soResizeComponent(object):
 
     def resizeFinish(self):
         self.resizing = False
-        GUI.mcursor().shape = 'arrow'
+        MouseShaper.set_shape('arrow')
         if self.sizingBox.parent is BWPersonality.GUICore.generalLayer:
             BWPersonality.GUICore.generalLayer.delChild(self.sizingBox)
         BWPersonality.GUICore.registerDnDHook(None)

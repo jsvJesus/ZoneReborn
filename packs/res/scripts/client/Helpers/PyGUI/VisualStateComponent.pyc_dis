@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/Helpers/PyGUI/VisualStateComponent.py
+# Embedded file name: ./client/Helpers/PyGUI/VisualStateComponent.py
 """
 """
 import sys
@@ -82,3 +82,6 @@ class VisualStateComponent(object):
         else:
             ERROR_MSG("No Visual State '%s' on %s" % (stateName, self))
         return
+
+    def get_state(self, stateName):
+        return self._visualStates.get(stateName)

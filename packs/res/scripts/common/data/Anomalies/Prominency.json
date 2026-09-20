@@ -1,10 +1,7 @@
 {
-    "difficultyMax": 20, 
-    "difficultyMin": 10, 
     "lifetimeMax": 1440.0, 
     "lifetimeMin": 720.0,
-
-    "loot":"Anomaly_noob",
+    "loot":"Prominency",
     "damage": {
         "body_zone": "LEG_LOWER", 
         "distribution": "RADIAL", 
@@ -23,7 +20,13 @@
     "radiusOut": 10.0, 
     "sfx_inside": "sfx/Anomalys/prominence.xml", 
     "sfx_main": "sfx/Anomalys/shimmer.xml", 
-    "sfx_artifact_wall": "sfx/Anomalys/artefact_wall.xml", 
+    
+    "wall_artifact":{
+        "sfx_wall":"sfx/Anomalys/artefact_wall.xml",
+        "wall_effect":2077,
+        "wall_radius":2.5
+    },
+ 
     "sfx_main_interval": [ 3, 6 ]
 
 }

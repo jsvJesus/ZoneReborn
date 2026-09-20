@@ -1,4 +1,5 @@
-# Embedded file name: ./scripts/common/Namepairs.py
+# Embedded file name: ./common/Namepairs.py
+import ResMgr
 from Localization import lc, get_user_localization
 import random
 names = {0: 'Namepairs.common.STRING_6_3',
@@ -202,8 +203,20 @@ surnames = {0: 'Namepairs.common.STRING_108_3',
  98: 'Namepairs.common.STRING_206_4',
  99: 'Namepairs.common.STRING_207_4'}
 
-def getRandomFullName(user):
-    first_name = random.choice(names.values())
-    second_name = random.choice(surnames.values())
-    language = get_user_localization(user)
-    return u'{0} {1}'.format(lc(first_name, language=language), lc(second_name, language=language))
+def get_scientists():
+    section = ResMgr.openSection('local/Russian/Namepairs.xml')
+    names = [ 'Namepairs.scientists.names.%s' % k for k in section['scientists']['names'].keys() ]
+    surnames = [ 'Namepairs.scientists.surnames.%s' % k for k in section['scientists']['surnames'].keys() ]
+    return dict(names=names, surnames=surnames)
+
+
+scientists = get_scientists()
+
+def getRandomFullName(npc_role = None):
+    if npc_role is None:
+        first_name = random.choice(names.values())
+        second_name = random.choice(surnames.values())
+    else:
+        first_name = random.choice(scientists['names'])
+        second_name = random.choice(scientists['surnames'])
+    return '{0} {1}'.format(first_name, second_name)

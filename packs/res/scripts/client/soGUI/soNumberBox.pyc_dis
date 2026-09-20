@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soNumberBox.py
+# Embedded file name: ./client/soGUI/soNumberBox.py
 import BigWorld
 import GUI
 import Helpers.PyGUI as PyGUI
@@ -17,11 +17,11 @@ import re
 
 class soNumberBox(PyGUIBase):
     factoryString = 'soGUI.soNumberBox'
-    FRAME_ACTIVE = BigWorld.PyTextureProvider('soGUI/maps/Controls/editBox/frame_active.tga')
-    FRAME_PASSIVE = BigWorld.PyTextureProvider('soGUI/maps/Controls/editBox/frame_passive.tga')
-    FRAME_ERROR = BigWorld.PyTextureProvider('soGUI/maps/Controls/editBox/frame_error.tga')
-    CURSOR_TEXTURE = BigWorld.PyTextureProvider('soGUI/maps/Colours/white.tga')
-    SELECTION_TEXTURE = BigWorld.PyTextureProvider('soGUI/maps/Colours/white.tga')
+    FRAME_ACTIVE = BigWorld.PyTextureProvider('soGUI/elements/edit_field_3_active.dds')
+    FRAME_PASSIVE = BigWorld.PyTextureProvider('soGUI/elements/edit_field_3_passive.dds')
+    FRAME_ERROR = BigWorld.PyTextureProvider('soGUI/elements/edit_field_3_error.dds')
+    CURSOR_TEXTURE = BigWorld.PyTextureProvider('soGUI/white.dds')
+    SELECTION_TEXTURE = BigWorld.PyTextureProvider('soGUI/white.dds')
     ALLOWED_CHARACTERS = '0123456789'
     PUNCTUATION = [u'.',
      u',',
@@ -34,7 +34,7 @@ class soNumberBox(PyGUIBase):
      u'>',
      u'-']
 
-    def __init__(self, component, width, height, hOffset = 3, vOffset = 3, readOnly = False, font = 'ruRU_Cyrvetica_Extra_14i.font', multiline = False, color = (255, 255, 255, 255), maskChar = None, regEx = None, inputValidator = lambda newStr, wholeText, offset: True, autosize = True):
+    def __init__(self, component, width, height, hOffset = 3, vOffset = 3, readOnly = False, font = 'RobotoCondensedRegular_14.font', multiline = False, color = (255, 255, 255, 255), maskChar = None, regEx = None, inputValidator = lambda newStr, wholeText, offset: True, autosize = True):
         PyGUIBase.__init__(self, component)
         component.script = self
         self.width = width

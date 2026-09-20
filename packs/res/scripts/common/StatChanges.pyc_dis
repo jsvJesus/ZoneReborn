@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/StatChanges.py
+# Embedded file name: ./common/StatChanges.py
 CHANGE_NONE, ADD_BEFORE_MULT, MULT, ADD_AFTER_MULT, PERCENTS, SPECIFIED = xrange(6)
 
 class StatChanges:

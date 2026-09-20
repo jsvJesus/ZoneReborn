@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soBaseFlagIndicator.py
+# Embedded file name: ./client/soGUI/soBaseFlagIndicator.py
 from Localization import lc
 import BigWorld
 import GUI
@@ -7,7 +7,6 @@ import Helpers.PyGUI as PyGUI
 import BWPersonality
 from Helpers.PyGUI.PyGUIBase import PyGUIBase
 from soGUI.soButton import soButton, soButtonWFT
-from soGUI.soTabletScreen import soTabletScreen
 from soGUI.soList import soList
 from soGUI.soList_optimized import soList_optimized
 from soGUI.soTextField import soTextField2
@@ -54,7 +53,7 @@ class soFlagIndicatorBuying(PyGUIBase):
         self.component.addChild(cmp, 'background')
         cmp.width = 2
         cmp.height = 2
-        cmp = GUI.Simple('soGUI/maps/inworldMarkers/flagIndicator.tga')
+        cmp = GUI.Simple('soGUI/frame/inworld_markers/flagIndicator.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
@@ -82,7 +81,7 @@ class soFlagIndicatorBuying(PyGUIBase):
 
         if not self._active:
             btn = soButton(GUI.Window())
-            btn.initVSC('soGUI/visual_styles/newBtn.xml')
+            btn.initVSC('soGUI/elements/button_1.xml')
             btn.onClick = onbye
             cmp = btn.component
             cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
@@ -116,7 +115,7 @@ class soFlagIndicatorBuying(PyGUIBase):
             else:
                 cmp.label.text = lc('BaseToCapture.SHOW')
                 cameraBtn.onClick = lambda *e: BWPersonality.GUICore.baseToCaptureGUI.go_to_flag(self.name)
-            cameraBtn.initVSC('soGUI/visual_styles/newBtn.xml')
+            cameraBtn.initVSC('soGUI/elements/button_1.xml')
             cameraBtn.onBound()
             cameraBtn.setVisualState('normal')
             self.component.addChild(cmp, 'cameraBtn')

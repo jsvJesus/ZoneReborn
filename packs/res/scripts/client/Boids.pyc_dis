@@ -1,7 +1,7 @@
-# Embedded file name: ./scripts/client/Boids.py
+# Embedded file name: ./client/Boids.py
 import BigWorld
 import random
-MODELS = ['characters\\creatures\\crow\\crow.model']
+MODELS = ['characters/creatures/crow/crow.model']
 
 class Boids(BigWorld.Entity):
 

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/SoundNodeUDO.py
+# Embedded file name: ./client/SoundNodeUDO.py
 import BigWorld
 
 class SoundNodeUDO(BigWorld.UserDataObject):

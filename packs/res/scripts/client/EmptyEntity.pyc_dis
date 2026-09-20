@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/EmptyEntity.py
+# Embedded file name: ./client/EmptyEntity.py
 import BigWorld
 import Math
 import Pixie
@@ -10,7 +10,7 @@ class EmptyEntity(BigWorld.Entity):
         BigWorld.Entity.__init__(self)
 
     def onEnterWorld(self, prereqs):
-        self._model = BigWorld.Model('')
+        self.model = BigWorld.Model(self.modelString)
 
     def onLeaveWorld(self):
         pass

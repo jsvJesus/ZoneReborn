@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/Config/Compiler.py
+# Embedded file name: ./common/Config/Compiler.py
 import sys
 import traceback
 import copy
@@ -133,7 +133,7 @@ class IntCompiler(NumberCompiler):
 class FloatCompiler(NumberCompiler):
 
     def compile(self, name, value):
-        return self.convert(float(value))
+        return self.convert(float(value or 0.0))
 
 
 class BoolCompiler(ICompiler):
@@ -202,6 +202,7 @@ class DictCompiler(ICompiler):
         except Exception as e:
             print 'name', name
             print 'dict', dct
+            traceback.print_exc()
             raise e
 
         return
@@ -235,11 +236,13 @@ class ConfigCompiler(ICompiler):
         for key, compiler in compilers.items():
             if self.value.has_key(key):
                 try:
-                    value = compiler.compile(key, self.value[key])
+                    val = self.value[key]
+                    value = compiler.compile(key, val)
                 except (KeyError,
                  IndexError,
                  ValueError,
                  TypeError) as e:
+                    traceback.print_exc()
                     stack = traceback.format_list(traceback.extract_tb(sys.exc_info()[2]))
                     raise ConfigCompilerError((name, key, compiler), e, stack)
 

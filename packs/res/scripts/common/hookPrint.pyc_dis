@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/hookPrint.py
+# Embedded file name: ./common/hookPrint.py
 """
 Module for printing information about 'print' statement calling.
 Replaces the sys.stdout

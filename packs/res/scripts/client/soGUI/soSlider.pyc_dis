@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soSlider.py
+# Embedded file name: ./client/soGUI/soSlider.py
 import BigWorld
 import GUI
 import Helpers.PyGUI as PyGUI
@@ -170,7 +170,7 @@ class soSlider(PyGUIBase, soVisualStateComponent):
     factoryString = 'soGUI.soSlider'
     visualStateString = 'soGUI.soSliderVisualState'
 
-    def __init__(self, component, steps = 101, visualSteps = 20, minMax = (0.0, 1.0), width = 150, default_settings_width = 5, height = 16, style = 'soGUI/visual_styles/defaultSlider.xml', showMinMax = True, font = 'ruRU_calibri_default.font', limOffset = 5):
+    def __init__(self, component, steps = 101, visualSteps = 20, minMax = (0.0, 1.0), width = 150, default_settings_width = 5, height = 16, style = 'soGUI/elements/slider.xml', showMinMax = True, font = 'RobotoCondensedRegular_16.font', limOffset = 5):
         PyGUIBase.__init__(self, component)
         soVisualStateComponent.__init__(self, component, self.visualStateString)
         component.script = self

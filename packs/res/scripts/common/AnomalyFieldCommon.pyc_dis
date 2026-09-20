@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/AnomalyFieldCommon.py
+# Embedded file name: ./common/AnomalyFieldCommon.py
 import BigWorld
 import bwdecorators
 from Config import AnomalyFields as Cfg

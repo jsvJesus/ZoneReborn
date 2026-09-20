@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/ClientTestTriggerTime.py
+# Embedded file name: ./client/ClientTestTriggerTime.py
 import BigWorld
 import Math
 from ClientLightManager import lmanager

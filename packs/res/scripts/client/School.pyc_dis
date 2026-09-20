@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/School.py
+# Embedded file name: ./client/School.py
 import BigWorld
 import math
 from Math import Vector3, Matrix
@@ -50,14 +50,13 @@ class School(BigWorld.Entity, object):
         self.inited = False
         self.delta_time_calculator = DeltaTimeCalculator()
         self.react_player_id = None
+        self.pot_id = None
         if School.DEBUG:
-            self.model = BigWorld.Model('models\\misc\\signs\\flag_anim_up.model')
-        BigWorld.zim_school = self
+            self.model = BigWorld.Model('models/misc/signs/flag_anim_up.model')
         return
 
     def onEnterWorld(self, prereqs):
         self.initialize()
-        self.pot_id = BigWorld.addPot(Matrix(self.matrix), self.radius, self.hit_pot)
 
     def hit_pot(self, entered, pot_id):
         if self.pot_id != pot_id:
@@ -84,37 +83,43 @@ class School(BigWorld.Entity, object):
         self.react_player_id = BigWorld.callback(0, self.react_to_player)
 
     def onLeaveWorld(self):
-        BigWorld.delPot(self.pot_id)
+        if self.pot_id:
+            BigWorld.delPot(self.pot_id)
 
     def initialize(self, attempts = 10):
         if self.isDestroyed:
             return
-        if not BigWorld.waterCollide(self.spaceID, self.position + (0, 10, 0), self.position + (0, -10, 0)):
+        if not BigWorld.waterCollide(self.position + (0, 10, 0), self.position + (0, -10, 0)):
             if attempts <= 0:
-                print "Shcool (ERROR): can't find water to swim", self.position, repr(BWPersonality.GUICore.gpsGUI.currentMap)
+                print "Shcool (ERROR): can't find water to swim", self.position
                 BigWorld.destroyEntity(self.id)
                 return
             BigWorld.callback(10.0, partial(self.initialize, attempts - 1))
             return
         self.filter = BigWorld.BoidsFilter()
         self.filter.underwater = True
+        self.filter.splashDisabled = True
         self.filter.speed = self.velocity
         self.filter.influenceRadius = self._influence_radius
         self.filter.minDepth = self.min_depth
         self.filter.maxDepth = self.max_depth
 
         def on_load_completed(model):
+            if self.isDestroyed:
+                return
             model.position = self.position
             scale = uniform(self.min_scale, self.max_scale)
-            model.scale = Vector3(scale, scale, scale)
+            model.newScaleTest = Vector3(scale, scale, scale)
             self.addModel(model)
             model.swim()
+            model.splashDisabled = True
 
-        for _ in range(self.amount):
+        for _ in xrange(self.amount):
             BigWorld.fetchModel(School.MODEL_PATH, on_load_completed)
 
         self.coroutines = []
         self.inited = True
+        self.pot_id = BigWorld.addPot(Matrix(self.matrix), self.radius, self.hit_pot)
 
     def on_enter_water(self, position):
         if not self.inited:

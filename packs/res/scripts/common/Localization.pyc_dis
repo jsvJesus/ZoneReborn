@@ -1,93 +1,171 @@
-# Embedded file name: ./scripts/common/Localization.py
+# Embedded file name: ./common/Localization.py
 """????"""
 __author__ = 'Leviathan'
 import json
 import os
 import traceback
+isEditor = lambda : False
 try:
     import BigWorld
-    from utils_bw import isinstance_ext, isClient
+    from utils_bw import isinstance_ext, isClient, isClientConsumer
 except ImportError:
-    pass
+    isClient = lambda *e: False
+    isClientConsumer = lambda *e: False
+    isEditor = lambda : True
 except AttributeError:
     print 'AttributeError'
     traceback.print_exc()
 
 import ResMgr
 LOCALIZATION_NAME_TO_CODE = {'russian': 0,
- 'english': 1}
+ 'english': 1,
+ 'chinese': 2}
 LOCALIZATION_CODE_TO_NAME = dict(((v, k) for k, v in LOCALIZATION_NAME_TO_CODE.items()))
+LOCALIZATION_CONFIG = 'local/localizations.json'
 language = 'russian'
 default_language = 'russian'
+if isClient():
+    try:
+        import locale
+        if locale.getdefaultlocale()[0] != 'ru_RU':
+            language = 'english'
+    except:
+        traceback.print_exc()
+
+localization_congfig_data = {}
 try:
-    settings_filepath = '../settings.json'
-    if os.path.isfile(settings_filepath):
-        json_data = open(settings_filepath)
-        data = json.load(json_data)
-        language = data.get('language')
-        if language is None:
-            language = 'russian'
-    else:
-        language = 'russian'
+    py_data_section = ResMgr.openSection(LOCALIZATION_CONFIG)
+    localization_congfig_data = json.loads(py_data_section.asBinary)
 except:
-    traceback.print_exc()
-    language = 'russian'
+    if not isEditor():
+        traceback.print_exc()
+
+all_lang = tuple(localization_congfig_data.keys())
+if isClient():
+    try:
+        settings_filepath = '../settings.json'
+        if os.path.isfile(settings_filepath):
+            json_data = open(settings_filepath)
+            data = json.load(json_data)
+            new_language = data.get('language', language)
+            if new_language in all_lang:
+                language = new_language
+            else:
+                print 'ERROR apply language %r' % new_language, 'use default', language
+    except:
+        traceback.print_exc()
+
+def get_support_url():
+    return localization_congfig_data.get(language, {}).get('supportUrl', '')
+
+
+def get_lang_short():
+    return localization_congfig_data.get(language, {}).get('shortcut', 'EN')
+
+
+def get_embedded_gold_url():
+    return str(localization_congfig_data.get(language, {}).get('embeddedGoldUrl', ''))
+
+
+def get_reg_url():
+    return str(localization_congfig_data.get(language, {}).get('registrationUrl', ''))
+
+
+def get_restore_password_url():
+    return str(localization_congfig_data.get(language, {}).get('restorePasswordUrl', ''))
+
 
 class Localization:
     globalLanguage = language
-    print 'globalLanguage ', globalLanguage
     loaded_loc_files = {}
-    loaded_loc_files_english = {}
+    loaded_dialog_files = {}
     commands = {}
 
-    def __init__(self, file_names = None):
-        self.reload(file_names)
+    def __init__(self):
+        self.reload_lc()
 
-    def reload(self, file_names = None, force = False):
-        if file_names is None:
-            if force:
-                numb = 0
-                for filename in ResMgr.openSection('local')['Russian'].keys():
-                    fullpath = 'local/Russian/' + filename
-                    ResMgr.purge(fullpath)
-                    numb += 1
+    def reload_lc(self, force = False, all_lang = False):
+        """
+        all_lang=True \xd0\xb7\xd0\xb0\xd0\xb3\xd1\x80\xd1\x83\xd0\xb6\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb2\xd1\x81\xd0\xb5 \xd1\x8f\xd0\xb7\xd1\x8b\xd0\xba\xd0\xb8 (\xd0\xb4\xd0\xbb\xd1\x8f \xd1\x82\xd0\xb5\xd1\x81\xd1\x82\xd0\xbe\xd0\xb2)
+        """
+        if isEditor():
+            return
+        if force:
+            ResMgr.purge('local', True)
+        if not ResMgr.openSection('local'):
+            print 'ERROR RELOAD LOCALIZATION'
+            return
+        self.loaded_dialog_files = {}
+        self.loaded_dialog_files_all = {}
 
-                for filename in ResMgr.openSection('local')['English'].keys():
-                    fullpath = 'local/English/' + filename
-                    ResMgr.purge(fullpath)
-                    numb += 1
+        def add_dialog_files(lang, data):
+            self.loaded_dialog_files.update(data)
+            if all_lang:
+                if lang not in self.loaded_dialog_files_all:
+                    self.loaded_dialog_files_all[lang] = {}
+                for file_name, v in data.items():
+                    if file_name in self.loaded_dialog_files_all[lang]:
+                        print '[ERROR] dup dialog file', [lang, file_name]
+                    self.loaded_dialog_files_all[lang][file_name] = v
 
-                print 'purge %s files' % numb
-            if not ResMgr.openSection('local'):
-                print 'ERROR RELOAD LOCALIZATION'
-                return
-            self.loaded_loc_files = dict(((filename[:-4], section) for filename, section in ResMgr.openSection('local')['Russian'].items() if filename.endswith('.xml')))
-            self.loaded_loc_files_english = dict(((filename[:-4], section) for filename, section in ResMgr.openSection('local')['English'].items() if filename.endswith('.xml')))
-        else:
-            for file_name in file_names:
-                try:
-                    core_name = file_name[file_name.rindex('/') + 1:file_name.rindex('.')]
-                except ValueError:
-                    print 'Error loading localization file'
-                    continue
+        for lang_name, lang_conf in localization_congfig_data.items():
+            if not all_lang and isClient() and lang_name != language:
+                continue
+            if isClient() and self._canLoadCustomLang(lang_conf['path']):
+                self.loaded_loc_files[lang_name] = self._loadLangCustom(lang_conf['path'])
+                add_dialog_files(lang_name, self._loadLangCustom(lang_conf['path'] + '/DialogTexts'))
+                add_dialog_files(lang_name, self._loadLangCustom(lang_conf['path'] + '/DialogTexts/FractionDialogs'))
+                add_dialog_files(lang_name, self._loadLangCustom(lang_conf['path'] + '/DialogTexts/AutogenDialogs'))
+                continue
+            self.loaded_loc_files[lang_name] = self._loadLang(lang_conf['path'])
+            if isClient():
+                add_dialog_files(lang_name, self._loadLang(lang_conf['path'] + '/DialogTexts'))
+                add_dialog_files(lang_name, self._loadLang(lang_conf['path'] + '/DialogTexts/FractionDialogs'))
+                add_dialog_files(lang_name, self._loadLang(lang_conf['path'] + '/DialogTexts/AutogenDialogs'))
 
-                if force:
-                    ResMgr.purge(file_name, True)
-                self.loaded_loc_files[core_name] = ResMgr.openSection(file_name)
-                print 'Loaded localization:', file_name
+    def _loadLang(self, path):
+        lang = {}
+        lang_directory = ResMgr.openSection(path)
+        for filename, section in lang_directory.items():
+            if filename.endswith('.xml'):
+                lang[filename[:-4]] = section
 
-        return
+        return lang
+
+    def _canLoadCustomLang(self, path):
+        real_path = os.path.abspath('../usercontent/' + path)
+        return os.path.isdir(real_path)
+
+    def _loadLangCustom(self, path):
+        lang = {}
+        real_path = os.path.abspath('../usercontent/' + path)
+        print 'LOCALIZATION LOAD CUSTOM:', repr(real_path)
+        for filename in os.listdir(real_path):
+            if not filename.endswith('.xml'):
+                continue
+            full_path = os.path.join(real_path, filename)
+            data = open(full_path).read()
+            lang[filename[:-4]] = ResMgr.DataSection().createSectionFromString(data)
+
+        return lang
 
     def getXMLData(self, filename, language = None):
         if not language:
             language = self.globalLanguage
-        if language == 'russian':
-            return self.loaded_loc_files[filename]
-        else:
-            return self.loaded_loc_files_english[filename]
+        if language not in self.loaded_loc_files:
+            self.loaded_loc_files[language] = {}
+        if filename not in self.loaded_loc_files[language]:
+            filepath = 'local/' + language + '/' + filename
+            if not filepath.endswith('.xml'):
+                filepath += '.xml'
+            self.loaded_loc_files[language][filename] = ResMgr.openSection(filepath)
+        return self.loaded_loc_files[language][filename]
+
+    def getDialogData(self):
+        return self.loaded_dialog_files
 
     def GetLocalizationString(self, string, utf8, DEFAULT_STRING = None, language = None):
-        if DEFAULT_STRING == None:
+        if DEFAULT_STRING is None:
             if utf8:
                 DEFAULT_STRING = string
             else:
@@ -103,10 +181,7 @@ class Localization:
         else:
             lang = self.globalLanguage
         try:
-            if lang == 'russian':
-                new_section = self.loaded_loc_files[localization_file_name]
-            else:
-                new_section = self.loaded_loc_files_english[localization_file_name]
+            new_section = self.loaded_loc_files[lang][localization_file_name]
         except KeyError:
             return DEFAULT_STRING
 
@@ -150,25 +225,27 @@ class Localization:
         return self.commands.get(command, notfound)
 
     def getCommandList(self):
-        if not isClient() or not BigWorld.player():
-            return {}
         player = BigWorld.player()
-        acces_level = getattr(player, 'clientAccessLevel', 0) or getattr(player, 'UserFromMasterPassword', 0)
-        self.commands = {}
-        data = self.getXMLData('ConsoleCommands')
-        for key, value in data['player_help'].items():
-            self.commands[key] = value.asString.decode('utf8')
+        if not isClient() or not player:
+            print 'getCommandList access_level:   not BigWorld.player()', isClient(), player
+            return {}
+        else:
+            acces_level = getattr(player, 'accessLevel', 0) or getattr(player, 'clientAccessLevel', 0) or getattr(player, 'UserFromMasterPassword', 0)
+            print 'getCommandList access_level:', player, acces_level, getattr(player, 'clientAccessLevel', None), getattr(player, 'UserFromMasterPassword', None)
+            self.commands = {}
+            data = self.getXMLData('ConsoleCommands')
+            for key, value in data['player_help'].items():
+                self.commands[key] = value.asString.decode('utf8')
 
-        if acces_level > 1:
-            for key, value in data['dev_help'].items():
-                self.commands[key] = 'dev: ' + value.asString.decode('utf8')
+            if acces_level > 1:
+                for key, value in data['dev_help'].items():
+                    self.commands[key] = 'dev: ' + value.asString.decode('utf8')
 
-        keys = self.commands.keys()
-        keys.sort()
-        return keys
+            keys = self.commands.keys()
+            keys.sort()
+            return keys
 
 
-print 'Start loading localization'
 localization_object = Localization()
 
 def get_user_localization(entity):
@@ -199,3 +276,7 @@ def lc(string, utf8 = False, default = None, language = None, user = None):
 
 def openLocalizeSection(filename, language = None):
     return localization_object.getXMLData(filename, language)
+
+
+def get_global_language():
+    return localization_object.globalLanguage

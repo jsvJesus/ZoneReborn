@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/additionalModelsUDO.py
+# Embedded file name: ./client/additionalModelsUDO.py
 import BigWorld
 
 class additionalModelsUDO(BigWorld.UserDataObject):

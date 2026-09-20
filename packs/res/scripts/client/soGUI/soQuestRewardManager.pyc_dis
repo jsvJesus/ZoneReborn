@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/client/soGUI/soQuestRewardManager.py
+# Embedded file name: ./client/soGUI/soQuestRewardManager.py
 import GUI
 import QuestDispatcher as qd
 from soGUI.soQuestRewardWin import soQuestRewardWin
@@ -22,17 +22,14 @@ class soQuestRewardManager:
     def show_quest_reward(self, quest_id):
         quest_reward = qd.getQuestOnID(quest_id)['Reward']
         items = {}
-        for i in range(len(quest_reward['TypeOfItems'])):
-            item_attrs = quest_reward.get('AttrOfItems')
-            if item_attrs and item_attrs[i] != Quest.REWARD_AUTO:
-                item_type = quest_reward['TypeOfItems'][i]
-                item_count = quest_reward['NumOfItems'][i]
+        for item in quest_reward['Items']:
+            if item.get('attribute') != Quest.REWARD_AUTO:
+                item_type = item['itemType']
+                item_count = item['count']
                 items[item_type] = item_count
 
         reward = {'credits': quest_reward['Credits'],
-         'exp0': quest_reward['Expirience'][0] if quest_reward['Expirience'] else 0,
-         'exp1': quest_reward['Expirience'][1] if quest_reward['Expirience'] else 0,
-         'exp2': quest_reward['Expirience'][2] if quest_reward['Expirience'] else 0,
+         'exp': quest_reward['Expirience'] if quest_reward['Expirience'] else 0,
          'reputation': dict(quest_reward['Reputation']),
          'items': items}
         if not any(reward.values()):
@@ -51,9 +48,7 @@ class soQuestRewardManager:
         for item in items:
             items_dict[item['itemID']] += item['itemCount']
 
-        reward = {'exp0': int(exp[0]),
-         'exp1': int(exp[1]),
-         'exp2': int(exp[2]),
+        reward = {'exp': int(exp),
          'items': items_dict}
         if not any(reward.values()):
             return

@@ -482,8 +482,8 @@ namespace client
                     break;
                 }
 
-            case frontend::FrontendEventType::UiSound:
-                    {
+                case frontend::FrontendEventType::UiSound:
+                {
                         std::string audioError;
 
                         if (!audio_.PlayUiSound(
@@ -497,7 +497,7 @@ namespace client
                         }
 
                         break;
-                    }
+                }
 
                 case frontend::FrontendEventType::DummyShow:
                 {

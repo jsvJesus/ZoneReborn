@@ -14,19 +14,19 @@
 	"sfx_splashing_water":"sfx/waterFoot/splashingWater.xml",
 	"sfx_foot_in_water_lev1":"sfx/waterFoot/water_foot.xml",
 	"sfx_foot_in_water_lev2":{
-			"FootPrintLeft":"sfx/waterFoot/water_hips_left.xml",
-			"FootPrintRight":"sfx/waterFoot/water_hips_right.xml"
+			"footprint_imp_lf":"sfx/waterFoot/water_hips_left.xml",
+			"footprint_imp_rf":"sfx/waterFoot/water_hips_right.xml"
 				},
 
 	"sfx_foot_in_water_lev3":{
-			"FootPrintLeft":"sfx/waterFoot/water_head_left.xml",
-			"FootPrintRight":"sfx/waterFoot/water_head_right.xml"
+			"footprint_imp_lf":"sfx/waterFoot/water_head_left.xml",
+			"footprint_imp_rf":"sfx/waterFoot/water_head_right.xml"
 				},
 
 
 
 
-	"by_marterial_kind": {
+	"by_material_kind": {
 		"0": {
 			"footprint_imp_rf": {
 				"sound": "mob/blyak/footsteps/default",
@@ -44,6 +44,16 @@
 				},
 			"footprint_imp_lf": {
 				"sound": "mob/blyak/footsteps/default",
+				"sfx": "sfx/Mob/Imp/stomp_rf.xml"
+				}
+			},
+		"120": {
+			"footprint_imp_rf": {
+				"sound": "mob/blyak/footsteps/wood",
+				"sfx": "sfx/Mob/Imp/stomp_lf.xml"
+				},
+			"footprint_imp_lf": {
+				"sound": "mob/blyak/footsteps/wood",
 				"sfx": "sfx/Mob/Imp/stomp_rf.xml"
 				}
 			},

@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/requests/packages/chardet2/charsetprober.py
+# Embedded file name: ./common/requests/packages/chardet2/charsetprober.py
 from . import constants
 import re
 

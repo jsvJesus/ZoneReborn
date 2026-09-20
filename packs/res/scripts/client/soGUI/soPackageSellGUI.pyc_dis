@@ -1,17 +1,15 @@
-# Embedded file name: ./scripts/client/soGUI/soPackageSellGUI.py
+# Embedded file name: ./client/soGUI/soPackageSellGUI.py
 import BigWorld
 import soGUI
 from Helpers.PyGUI import PyGUIBase
 import BWPersonality
 import GUI
 from soGUI.soItemView import soItemView, soItemSlot
-import soGUI.soItemView as module_soItemView
+from gui_const import ITSLOT
 from soGUI.soList import soList
-from soGUI.soList import ListPropsStructure
 from soGUI.soButton import soButton
 from Helpers.PyGUI import PyGUIEvent
 from soGUI.soCheckBox import soCheckBox
-from Items import ItemsCatalog
 import ItemsUtils
 from soGUI.soToolTipComponent import soToolTipComponent
 from Localization import lc
@@ -48,7 +46,7 @@ class soPackageRewardSlot(soItemSlot):
         cmp.mouseButtonFocus = True
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        cmp = GUI.Frame2('soGUI/items/cell.dds')
         cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -104,23 +102,17 @@ class soPackageRewardSlot(soItemSlot):
     def _applyItemData(self):
         if self.haveItem():
             item_type = self.itemData['complexItemType']
-            item_id = self.itemData['complexItemID']
-            item_class = ItemsCatalog.GetItemClass(item_type)
-            item_params = ItemsCatalog.GetItemParam(item_type)
-            item_level = item_params['Level']
-            iconName = ItemsUtils.getTextureByTint(self.itemData)
-            if not iconName:
-                iconName = item_params['IconName']
-            if BWPersonality.GUICore.iconTextures is not None:
-                if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
-                    if BWPersonality.GUICore.iconTextures.has_key(iconName):
-                        self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures[iconName]
+            if not ItemsUtils.GetIconName(self.itemData):
+                iconName = 'nottexture.dds'
+                if BWPersonality.GUICore.iconTextures is not None:
+                    if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
+                        self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures.has_key(iconName) and BWPersonality.GUICore.iconTextures[iconName]
                     else:
                         self.component.itemIcon.textureName = iconName
             else:
                 self.component.itemIcon.textureName = iconName
             countStr = ItemsUtils.GetDisplayValue(self.itemData)
-            friendlyName = ItemsUtils.GetItemName(item_type, fGetShortName=True, tintItem=self.itemData)
+            friendlyName = ItemsUtils.GetItemName(item_type, fGetShortName=True)
             self.component.itemName.text = friendlyName
             self.component.itemCount.text = countStr
         else:
@@ -158,7 +150,7 @@ class soPackagePaySlot(soItemSlot):
         cmp.mouseButtonFocus = True
 
     def setupContent(self):
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/cellFrame2.tga')
+        cmp = GUI.Frame2('soGUI/items/cell.dds')
         cmp.verticalPositionMode = cmp.horizontalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -214,21 +206,17 @@ class soPackagePaySlot(soItemSlot):
     def _applyItemData(self):
         if self.haveItem():
             item_type = self.itemData['complexItemType']
-            item_id = self.itemData['complexItemID']
-            item_class = ItemsCatalog.GetItemClass(item_type)
-            item_params = ItemsCatalog.GetItemParam(item_type)
-            item_level = item_params['Level']
-            iconName = item_params['IconName']
-            if BWPersonality.GUICore.iconTextures is not None:
-                if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
-                    if BWPersonality.GUICore.iconTextures.has_key(iconName):
-                        self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures[iconName]
+            if not ItemsUtils.GetIconName(self.itemData):
+                iconName = 'nottexture.dds'
+                if BWPersonality.GUICore.iconTextures is not None:
+                    if iconName not in BWPersonality.GUICore.iconTextures.failedIDs:
+                        self.component.itemIcon.texture = BWPersonality.GUICore.iconTextures.has_key(iconName) and BWPersonality.GUICore.iconTextures[iconName]
                     else:
                         self.component.itemIcon.textureName = iconName
             else:
                 self.component.itemIcon.textureName = iconName
             countStr = ItemsUtils.GetDisplayValue(self.itemData)
-            friendlyName = ItemsUtils.GetItemName(item_type, fGetShortName=True, tintItem=self.itemData)
+            friendlyName = ItemsUtils.GetItemName(item_type, fGetShortName=True)
             item_fake = BigWorld.player().IsItemFake(self.itemData)
             self.component.itemName.text = friendlyName
             self.component.itemCount.text = countStr
@@ -333,7 +321,7 @@ class soPackageSellScreen(PyGUIBase):
         cmp.width = 18
         cmp.height = 18
         cmp.position = (582, 6, 0.3)
-        closeBox.initVSC('soGUI/visual_styles/closeBox.xml')
+        closeBox.initVSC('soGUI/elements/closeBox.xml')
         closeBox.onBound()
         closeBox.setVisualState('normal')
         self.component.addChild(cmp, 'closeBox')
@@ -359,12 +347,12 @@ class soPackageSellScreen(PyGUIBase):
         cb.onBound()
         btn = soButton(GUI.Window())
         cmp = btn.component
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
         cmp.label.text = lc('GUI.PackageSellGUI.CLEAR_BUTTON_LABEL')
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
@@ -376,12 +364,12 @@ class soPackageSellScreen(PyGUIBase):
         btn.setVisualState('normal')
         btn = soButton(GUI.Window())
         cmp = btn.component
-        btn.initVSC('soGUI/visual_styles/defaultBtn.xml')
+        btn.initVSC('soGUI/elements/button_1.xml')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.widthMode = cmp.heightMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.label.font = 'ruRU_calibri_default.font'
+        cmp.label.font = 'RobotoCondensedRegular_16.font'
         cmp.label.text = lc('GUI.PackageSellGUI.CONFIRM_BUTTON_LABEL')
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
@@ -391,7 +379,7 @@ class soPackageSellScreen(PyGUIBase):
         self.component.addChild(cmp, 'buyBtn')
         btn.onBound()
         btn.setVisualState('normal')
-        cmp = GUI.Frame2('soGUI/maps/Controls/inventory/inventoryFrame2.tga')
+        cmp = GUI.Frame2('soGUI/frame/basic_frame_1.dds')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
@@ -406,88 +394,44 @@ class soPackageSellScreen(PyGUIBase):
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'CENTER'
-        cmp.font = 'ruRU_Cyrvetica_Extra_16title.font'
+        cmp.font = 'RobotoCondensedRegular_16.font'
         cmp.colour = (255, 255, 255, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (18, 15, 0.3)
         cmp.text = lc('GUI.PackageSellGUI.WINDOW_CAPTION')
         self.component.addChild(cmp, 'psLabel')
-        cmp = GUI.Simple('soGUI/maps/Controls/packSell/header.tga')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.height = 21
-        cmp.width = 101
-        cmp.position = (199, 30, 0.8)
-        self.component.addChild(cmp, 'header')
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        cmp.font = 'RobotoCondensedRegular_14.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (207, 32, 0.3)
         cmp.text = lc('GUI.PackageSellGUI.FOR_EXCHANGE_LABEL')
         self.component.addChild(cmp, 'payLabel')
-        cmp = GUI.Frame2('soGUI/maps/Controls/packSell/decFrame.tga')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.height = 198
-        cmp.width = 405
-        cmp.position = (197, 49, 0.8)
-        self.component.addChild(cmp, 'botDFrame')
-        cmp = GUI.Simple('soGUI/maps/Controls/packSell/header.tga')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.height = 21
-        cmp.width = 101
-        cmp.position = (199, 248, 0.8)
-        self.component.addChild(cmp, 'result_header')
         cmp = GUI.Text('')
         cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
         cmp.horizontalAnchor = 'LEFT'
         cmp.verticalAnchor = 'TOP'
-        cmp.font = 'ruRU_Cyrvetica_Extra_14i.font'
+        cmp.font = 'RobotoCondensedRegular_14.font'
         cmp.colour = (175, 166, 112, 255)
         cmp.materialFX = 'BLEND'
         cmp.position = (207, 250, 0.3)
         cmp.text = lc('GUI.PackageSellGUI.EXCHANGE_RESULT_LABEL')
         self.component.addChild(cmp, 'result_Label')
-        cmp = GUI.Frame2('soGUI/maps/Controls/packSell/decFrame.tga')
-        cmp.horizontalPositionMode = cmp.verticalPositionMode = 'PIXEL'
-        cmp.horizontalAnchor = 'LEFT'
-        cmp.verticalAnchor = 'TOP'
-        cmp.widthMode = cmp.heightMode = 'PIXEL'
-        cmp.colour = (255, 255, 255, 255)
-        cmp.materialFX = 'BLEND'
-        cmp.height = 198
-        cmp.width = 405
-        cmp.position = (197, 269, 0.8)
-        self.component.addChild(cmp, 'botDRFrame')
         return
 
     def rewardSlotHandler(self, event, data):
-        if event == module_soItemView.SLOTEVENT_MOUSEENTER:
+        if event == ITSLOT.SLOTEVENT_MOUSEENTER:
             if isinstance(data, soPackageRewardSlot):
                 BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_SHOW)
                 return True
-        if event == module_soItemView.SLOTEVENT_MOUSELEAVE:
+        if event == ITSLOT.SLOTEVENT_MOUSELEAVE:
             if isinstance(data, soPackageRewardSlot):
                 BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_HIDE)
                 return True
-        if event == module_soItemView.SLOTEVENT_RCLICK:
+        if event == ITSLOT.SLOTEVENT_RCLICK:
             if isinstance(data, soPackageRewardSlot):
                 BWPersonality.GUICore.packageSellEvent(PACKAGE_SELL.EVENT_ITEMCONTEXT, [data.itemData, PACKAGE_SELL.REWARD_ITEM])
                 return True
@@ -497,25 +441,25 @@ class soPackageSellScreen(PyGUIBase):
 
     def paySlotHandler(self, event, data):
         from soInventorySlot2 import soInventorySlot2
-        if event == module_soItemView.EVENT_DRAGENTER:
+        if event == ITSLOT.SLOTEVENT_DRAGENTER:
             if isinstance(data[1], soInventorySlot2):
                 return True
-        if event == module_soItemView.EVENT_DROP:
+        if event == ITSLOT.SLOTEVENT_DROP:
             if isinstance(data[1], soInventorySlot2):
                 BWPersonality.GUICore.packageSellEvent(EVENT_ITEMADD, data[1].itemData)
-        if event == module_soItemView.SLOTEVENT_MOUSEENTER:
+        if event == ITSLOT.SLOTEVENT_MOUSEENTER:
             if isinstance(data, soPackagePaySlot):
                 BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_SHOW)
                 return True
-        if event == module_soItemView.SLOTEVENT_MOUSELEAVE:
+        if event == ITSLOT.SLOTEVENT_MOUSELEAVE:
             if isinstance(data, soPackagePaySlot):
                 BWPersonality.GUICore.toolTipEvent(data.itemData, self.interfaceID, soToolTipComponent.EVENT_HIDE)
                 return True
-        if event == module_soItemView.SLOTEVENT_DBLCLICK:
+        if event == ITSLOT.SLOTEVENT_DBLCLICK:
             if isinstance(data, soPackagePaySlot):
                 BWPersonality.GUICore.packageSellEvent(EVENT_ITEMREMOVE, data.itemData)
                 return True
-        if event == module_soItemView.SLOTEVENT_RCLICK:
+        if event == ITSLOT.SLOTEVENT_RCLICK:
             if isinstance(data, soPackagePaySlot):
                 BWPersonality.GUICore.packageSellEvent(PACKAGE_SELL.EVENT_ITEMCONTEXT, [data.itemData, PACKAGE_SELL.PAY_ITEM])
                 return True

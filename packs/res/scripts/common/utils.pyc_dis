@@ -1,4 +1,4 @@
-# Embedded file name: ./scripts/common/utils.py
+# Embedded file name: ./common/utils.py
 import abc
 import functools
 import inspect
@@ -7,14 +7,117 @@ import logging
 import os
 import re
 import gc
+import string
 import types
 from itertools import ifilter
-from time import time
 import traceback
 import sys
 from collections import defaultdict
+import datetime
+import random
+from bisect import bisect
 import Localization
 import ResMgr
+import decimal
+import math
+import time
+import calendar
+import hashlib
+
+def genEndTime10Y():
+    return int(time.time()) + 315360000
+
+
+def plog(msg, *args):
+    if args:
+        try:
+            line = msg % args
+        except:
+            line = '%s: %s' % (msg, ' | '.join(map(str, args)))
+
+    else:
+        line = msg
+    print '[%s] %s' % (str(datetime.datetime.now())[:-3], line)
+
+
+def log(msg, *args):
+    if args:
+        try:
+            line = msg % args
+        except:
+            line = '%s: %s' % (msg, ' | '.join(map(str, args)))
+
+    else:
+        line = msg
+    print line
+
+
+def profiler(f):
+
+    def wrapper(*args, **kwargs):
+        t0 = time.time()
+        response = f(*args, **kwargs)
+        t = time.time() - t0
+        print '[profiler] ---------------------- {0} | {1:.4f} sec'.format(f.func_name, t)
+        return response
+
+    return wrapper
+
+
+def get_gmt_timestamp_from_str(datestr, _format = '%d/%m/%Y %H:%M'):
+    return int(calendar.timegm(time.strptime(datestr, _format)))
+
+
+def get_gmt_str_from_timestamp(timestamp, _format = '%d/%m/%Y %H:%M'):
+    return time.strftime(_format, time.gmtime(timestamp))
+
+
+ALLLETTERS = string.letters + '0123456789'
+
+def generateRandStr(size = 10):
+    outstr = ''
+    for _ in xrange(size):
+        outstr += random.choice(ALLLETTERS)
+
+    return outstr
+
+
+def generateKey(pairsize = 4):
+    num = '1234579'
+    leters = 'ACDEFGHKLMNPRSTVWXYZ'
+    outstr = ''
+    for _ in xrange(pairsize):
+        outstr += random.choice(leters)
+        outstr += random.choice(num)
+
+    return outstr
+
+
+def hash_data(data, return_hex = True):
+    r = hashlib.sha1(data)
+    if return_hex:
+        return r.hexdigest()
+    return r
+
+
+def weighted_random_choice(choices_list):
+    """        \xd0\x92\xd1\x8b\xd0\xb1\xd1\x80\xd0\xb0\xd1\x82\xd1\x8c \xd0\xbe\xd0\xb4\xd0\xb8\xd0\xbd \xd1\x81\xd0\xbb\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x80\xd0\xb8\xd0\xba \xd0\xb8\xd0\xb7 \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xba\xd0\xb0 \xd1\x83\xd1\x87\xd0\xb8\xd1\x82\xd1\x8b\xd0\xb2\xd0\xb0\xd1\x8f \xd0\xb2\xd0\xb5\xd1\x81
+            choices_list - \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xbe\xd0\xba \xd1\x81\xd0\xbb\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x80\xd0\xb5\xd0\xb9, \xd1\x81 \xd0\xbe\xd0\xb1\xd1\x8f\xd0\xb0\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c\xd0\xbd\xd1\x8b\xd0\xbc \xd0\xba\xd0\xbb\xd1\x8e\xd1\x87\xd0\xbe\xd0\xbc 'chance'
+            \xd0\xbf\xd1\x80\xd0\xb8\xd0\xbc\xd0\xb5\xd1\x80:
+            [{'Effect': EffectNames.Vodka, 'chance': 0.5}, {'Effect': EffectNames.Poison, 'chance': 0.7}]
+    """
+    weights = [ entry['chance'] for entry in choices_list ]
+    total = 0
+    cum_weights = []
+    for w in weights:
+        total += w
+        cum_weights.append(total)
+
+    x = random.random() * total
+    i = bisect(cum_weights, x)
+    return choices_list[i]
+
+
 try:
     import BigWorld
 except ImportError:
@@ -28,13 +131,19 @@ def ignoreError(foo):
     \u0414\u0435\u043a\u043e\u0440\u0430\u0442\u043e\u0440 \u0434\u043b\u044f \u0438\u0433\u043d\u043e\u0440\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f \u043e\u0448\u0438\u0431\u043e\u043a \u0432 \u043c\u0435\u0442\u043e\u0434\u0435
     """
 
-    def bar(*w, **kw):
+    def wrapper(*w, **kw):
         try:
             return foo(*w, **kw)
         except:
+            print '\n\n' + '----------'
+            print 'foo:', foo
+            print 'arg:', (w, kw)
+            traceback.print_stack()
+            print '-----'
             traceback.print_exc()
+            print '----------\n\n'
 
-    return bar
+    return wrapper
 
 
 def time_test(f):
@@ -42,20 +151,62 @@ def time_test(f):
     """
 
     def wrapper(self, *args, **kwargs):
-        start_ = time()
+        start_ = time.time()
         try:
             out = f(self, *args, **kwargs)
         except:
-            print 'ERROR FOR', self.id, self, repr(f)
+            print 'ERROR FOR', getattr(self, 'id', 'NO-ID'), self, repr(f)
             print [args, kwargs]
             raise
 
-        prof_time = time() - start_
-        if prof_time > 0.031:
+        prof_time = time.time() - start_
+        if prof_time > 0.025:
             print 'WARNING  prof_time', '[{0:3.0f} ms]'.format(prof_time * 1000), self, repr(f), [args, kwargs]
         return out
 
     return wrapper
+
+
+def safe_message(func):
+
+    def wrapper(self, code_id, string_args, int_args):
+        try:
+            string_args = map(force_utf8, string_args)
+            func(self, code_id, string_args, int_args)
+        except:
+            print 'Message (ERROR)', self, code_id, repr(string_args), repr(int_args)
+            traceback.print_stack()
+            traceback.print_exc()
+
+    return wrapper
+
+
+def __check_type(value):
+    if value.__class__.__name__ in ('PyArrayDataInstance', 'list', 'tuple'):
+        value = __convert_py_array(value)
+    elif value.__class__.__name__ in ('PyFixedDictDataInstance', 'dict'):
+        value = __convert_py_fixed_dict(value)
+    elif value.__class__.__name__ in ('Vector3', 'Vector2', 'Vector4'):
+        value = tuple(value)
+    return value
+
+
+def __convert_py_array(py_array):
+    lst = []
+    for elem in py_array:
+        elem = __check_type(elem)
+        lst.append(elem)
+
+    return lst
+
+
+def __convert_py_fixed_dict(fix_dict):
+    dct = {}
+    for key, value in fix_dict.items():
+        value = __check_type(value)
+        dct[key] = value
+
+    return dct
 
 
 def pyFixedToNativePythonType(py_fixed):
@@ -63,35 +214,30 @@ def pyFixedToNativePythonType(py_fixed):
     \xd0\xa0\xd0\xb5\xd0\xba\xd1\x83\xd1\x80\xd1\x81\xd0\xb8\xd0\xb2\xd0\xbd\xd0\xbe \xd0\xba\xd0\xbe\xd0\xbd\xd0\xb2\xd0\xb5\xd1\x80\xd1\x82\xd0\xb8\xd1\x80\xd1\x83\xd0\xb5\xd1\x82 BW \xd1\x81\xd0\xbb\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x80\xd1\x8c- \xd0\xb8\xd0\xbb\xd0\xb8 \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xba\xd0\xbe\xd0\xbf\xd0\xbe\xd0\xb4\xd0\xbe\xd0\xb1\xd0\xbd\xd1\x8b\xd0\xb9
     \xd1\x82\xd0\xb8\xd0\xbf \xd0\xb2 \xd0\xbd\xd0\xb0\xd1\x82\xd0\xb8\xd0\xb2\xd0\xbd\xd1\x8b\xd0\xb9 Python \xd1\x82\xd0\xb8\xd0\xbf.
     """
-
-    def check_type(value):
-        if value.__class__.__name__ in ('PyArrayDataInstance', 'list', 'tuple'):
-            value = convert_py_array(value)
-        elif value.__class__.__name__ in ('PyFixedDictDataInstance', 'dict'):
-            value = convert_py_fixed_dict(value)
-        return value
-
-    def convert_py_array(py_array):
-        lst = []
-        for elem in py_array:
-            elem = check_type(elem)
-            lst.append(elem)
-
-        return lst
-
-    def convert_py_fixed_dict(fix_dict):
-        dct = {}
-        for key, value in fix_dict.items():
-            value = check_type(value)
-            dct[key] = value
-
-        return dct
-
-    py_value = check_type(py_fixed)
+    py_value = __check_type(py_fixed)
     return py_value
 
 
 PY = pyFixedToNativePythonType
+__import__('__main__').PY = PY
+
+def getEntity(e_id):
+    return BigWorld.entities[e_id]
+
+
+def is_stress_test_user(e_id):
+    return BigWorld.globalData.has_key(('stress_test', e_id))
+
+
+def is_stress_test_user_in_party(e_id):
+    if BigWorld.globalData.has_key(('stress_test_in_party', e_id)):
+        return BigWorld.globalData['stress_test_in_party', e_id]
+    return False
+
+
+__import__('__main__').PY = PY
+__import__('__main__').BE = getEntity
+__import__('__main__').B = BigWorld
 
 class lazyproperty(object):
     """\xd0\x9a\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81 \xd0\xb4\xd0\xbb\xd1\x8f \xd1\x81\xd0\xbe\xd0\xb7\xd0\xb4\xd0\xb0\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xbb\xd0\xb5\xd0\xbd\xd0\xb8\xd0\xb2\xd1\x8b\xd1\x85 \xd1\x81\xd0\xb2\xd0\xbe\xd0\xb9\xd1\x81\xd1\x82\xd0\xb2.
@@ -119,6 +265,7 @@ class lazyproperty(object):
             value = self.func(instance)
             if value is not None:
                 setattr(instance, self.func.__name__, value)
+                setattr(instance, 'lazy_' + self.func.__name__, value)
             return value
 
 
@@ -134,27 +281,27 @@ class ChoiceException(Exception):
         return repr(self.value)
 
 
+def __py_data_section2dict(py_data_section):
+    """\xd0\x9a\xd0\xbe\xd0\xbd\xd0\xb2\xd0\xb5\xd1\x80\xd1\x82\xd0\xb8\xd1\x80\xd1\x83\xd0\xb5\xd1\x82 PyDataSection \xd0\xb2 \xd1\x81\xd0\xbb\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x80\xd1\x8c.
+    
+    \xd0\x9d\xd0\x95 \xd0\x98\xd0\xa1\xd0\x9f\xd0\x9e\xd0\x9b\xd0\xac\xd0\x97\xd0\x9e\xd0\x92\xd0\x90\xd0\xa2\xd0\xac: \xd0\xb5\xd1\x81\xd0\xbb\xd0\xb8 \xd0\xb2 PyDataSection (\xd0\xbf\xd0\xb5\xd1\x80\xd0\xb2\xd0\xbe\xd0\xbd\xd0\xb0\xd1\x87\xd0\xb0\xd0\xbb\xd1\x8c\xd0\xbd\xd0\xbe xml)
+    \xd0\xb5\xd1\x81\xd1\x82\xd1\x8c \xd0\xbe\xd0\xb4\xd0\xb8\xd0\xbd\xd0\xb0\xd0\xba\xd0\xbe\xd0\xb2\xd1\x8b\xd0\xb5 \xd1\x82\xd0\xb5\xd0\xb3\xd0\xb8 \xd0\xbd\xd0\xb0 \xd0\xbe\xd0\xb4\xd0\xbd\xd0\xbe\xd0\xbc \xd1\x83\xd1\x80\xd0\xbe\xd0\xb2\xd0\xbd\xd0\xb5 \xd0\xb2\xd0\xbb\xd0\xbe\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xbd\xd0\xbe\xd1\x81\xd1\x82\xd0\xb8.
+    """
+    dct = dict(py_data_section)
+    if not dct:
+        string = py_data_section.asString
+        return string
+    new_dct = {}
+    for inserted_key, inserted_value in dct.items():
+        if isinstance(inserted_value, ResMgr.DataSection):
+            inserted_value = __py_data_section2dict(inserted_value)
+        new_dct[inserted_key] = inserted_value
+
+    return new_dct
+
+
 def dict_from_localization(filename, language = None):
     """\xd0\x9a\xd0\xbe\xd0\xbd\xd0\xb2\xd0\xb5\xd1\x80\xd1\x82\xd0\xb8\xd1\x80\xd1\x83\xd0\xb5\xd1\x82 \xd1\x84\xd0\xb0\xd0\xb9\xd0\xbb \xd1\x84\xd0\xbe\xd1\x80\xd0\xbc\xd0\xb0\xd1\x82\xd0\xb0 xml \xd0\xb2 \xd0\xbe\xd0\xb1\xd1\x8a\xd0\xb5\xd0\xba\xd1\x82 \xd1\x84\xd0\xbe\xd1\x80\xd0\xbc\xd0\xb0\xd1\x82\xd0\xb0 json."""
-
-    def py_data_section2dict(py_data_section):
-        """\xd0\x9a\xd0\xbe\xd0\xbd\xd0\xb2\xd0\xb5\xd1\x80\xd1\x82\xd0\xb8\xd1\x80\xd1\x83\xd0\xb5\xd1\x82 PyDataSection \xd0\xb2 \xd1\x81\xd0\xbb\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x80\xd1\x8c.
-        
-        \xd0\x9d\xd0\x95 \xd0\x98\xd0\xa1\xd0\x9f\xd0\x9e\xd0\x9b\xd0\xac\xd0\x97\xd0\x9e\xd0\x92\xd0\x90\xd0\xa2\xd0\xac: \xd0\xb5\xd1\x81\xd0\xbb\xd0\xb8 \xd0\xb2 PyDataSection (\xd0\xbf\xd0\xb5\xd1\x80\xd0\xb2\xd0\xbe\xd0\xbd\xd0\xb0\xd1\x87\xd0\xb0\xd0\xbb\xd1\x8c\xd0\xbd\xd0\xbe xml)
-        \xd0\xb5\xd1\x81\xd1\x82\xd1\x8c \xd0\xbe\xd0\xb4\xd0\xb8\xd0\xbd\xd0\xb0\xd0\xba\xd0\xbe\xd0\xb2\xd1\x8b\xd0\xb5 \xd1\x82\xd0\xb5\xd0\xb3\xd0\xb8 \xd0\xbd\xd0\xb0 \xd0\xbe\xd0\xb4\xd0\xbd\xd0\xbe\xd0\xbc \xd1\x83\xd1\x80\xd0\xbe\xd0\xb2\xd0\xbd\xd0\xb5 \xd0\xb2\xd0\xbb\xd0\xbe\xd0\xb6\xd0\xb5\xd0\xbd\xd0\xbd\xd0\xbe\xd1\x81\xd1\x82\xd0\xb8.
-        """
-        dct = dict(py_data_section)
-        if not dct:
-            string = py_data_section.asString
-            return string
-        new_dct = {}
-        for inserted_key, inserted_value in dct.items():
-            if isinstance(inserted_value, ResMgr.DataSection):
-                inserted_value = py_data_section2dict(inserted_value)
-            new_dct[inserted_key] = inserted_value
-
-        return new_dct
-
     try:
         py_data_section = Localization.openLocalizeSection(filename, language)
     except KeyError:
@@ -164,7 +311,7 @@ def dict_from_localization(filename, language = None):
     try:
         dct = json.loads(py_data_section.asBinary)
     except (UnicodeDecodeError, json.JSONEncoder, ValueError):
-        dct = py_data_section2dict(py_data_section)
+        dct = __py_data_section2dict(py_data_section)
 
     return dct
 
@@ -175,6 +322,41 @@ def stalker_path():
     dir_up = '..'
     path = os.path.join(game_path, dir_up)
     return path
+
+
+def filewalk(root_path, subpath = ''):
+    """  \xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xbe\xd0\xba \xd1\x84\xd0\xb0\xd0\xb9\xd0\xbb\xd0\xbe\xd0\xb2 \xd1\x81 \xd0\xbf\xd1\x83\xd1\x82\xd1\x8f\xd0\xbc\xd0\xb8 \xd0\xbe\xd1\x82\xd0\xbd\xd0\xbe\xd1\x81\xd0\xb8\xd1\x82\xd0\xb5\xd0\xbb\xd1\x8c\xd0\xbd\xd0\xbe root_path
+    """
+    for name in os.listdir(os.path.join(root_path, subpath)):
+        full = os.path.join(root_path, subpath, name)
+        if os.path.isdir(full):
+            for w in filewalk(root_path, os.path.join(subpath, name)):
+                yield w
+
+        else:
+            yield (subpath, name)
+
+
+def create_mob_properties(str_mob_type, subtype_name = None, str_mob_uniq_id = None):
+    from Config.Creatures import KEYWORDS, get_subtype_index
+    try:
+        mob_type = int(str_mob_type)
+    except ValueError:
+        return
+
+    properties = {'creatureType': mob_type,
+     'annihilateOnDecompose': 1}
+    if subtype_name is None:
+        subtype_name = KEYWORDS.DEFAULT_LEVEL
+    properties['creatureSubType'] = str(subtype_name)
+    subtype_index = get_subtype_index(mob_type, subtype_name)
+    if subtype_index is None:
+        return False
+    else:
+        properties['level'] = subtype_index
+        if str_mob_uniq_id is not None:
+            properties['uniq_id'] = str_mob_uniq_id.encode('utf-8')
+        return properties
 
 
 class LogMethods(object):
@@ -367,6 +549,12 @@ def log_methods(method_names_or_class = None, logger = None):
         return wrapper
 
 
+def dup_log(message):
+    path = '../var/log/bigworld/dupes.log'
+    time_ = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S ')
+    open(path, 'a+').write(time_ + message)
+
+
 class Singlton(object):
     """\xd0\x9f\xd1\x80\xd0\xb5\xd0\xb4\xd0\xbe\xd0\xba \xd0\xb4\xd0\xbb\xd1\x8f \xd0\xba\xd0\xbb\xd0\xb0\xd1\x81\xd1\x81\xd0\xbe\xd0\xb2-\xd1\x81\xd0\xb8\xd0\xbd\xd0\xb3\xd0\xbb\xd1\x82\xd0\xbe\xd0\xbd\xd0\xbe\xd0\xb2.
     
@@ -419,10 +607,10 @@ class ReadOnlyDict(dict):
     def __init__(self):
         self.__readonly = False
 
-    def readonly(self):
+    def readonly(self, value = True):
         if BigWorld.component == 'client':
             return
-        self.__readonly = True
+        self.__readonly = value
 
     def __setitem__(self, key, value):
         if self.__readonly:
@@ -705,9 +893,10 @@ def safe_dicts_add(first, second):
 
 
 def add_dicts(first_dict, second_dict, custom_add_function = None, before_add_tree_function = None):
+    """ \xd1\x81\xd0\xbc\xd0\xb5\xd1\x80\xd0\xb4\xd0\xb6\xd0\xb8\xd0\xb2\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xb4\xd0\xb2\xd0\xb0 \xd1\x81\xd0\xbb\xd0\xbe\xd0\xb2\xd0\xb0\xd1\x80\xd1\x8f \xd1\x80\xd0\xb5\xd0\xba\xd1\x83\xd1\x80\xd1\x81\xd0\xb8\xd0\xb2\xd0\xbd\xd0\xbe, \xd1\x81\xd0\xba\xd0\xbb\xd0\xb0\xd0\xb4\xd1\x8b\xd0\xb2\xd0\xb0\xd1\x8f \xd0\xb7\xd0\xbd\xd0\xb0\xd1\x87\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f """
     if isDictOrFixedDict(first_dict) and isDictOrFixedDict(second_dict):
         for second_key in second_dict.keys():
-            first_dict_value = first_dict.get(second_key)
+            first_dict_value = first_dict[second_key] if first_dict.has_key(second_key) else None
             second_dict_value = second_dict[second_key]
             if first_dict_value is not None:
                 first_dict[second_key] = add_dicts(first_dict_value, second_dict_value, custom_add_function, before_add_tree_function)
@@ -722,6 +911,12 @@ def add_dicts(first_dict, second_dict, custom_add_function = None, before_add_tr
     else:
         return first_dict + second_dict
         return
+
+
+def format_price(cost):
+    if type(cost) in (float, decimal.Decimal):
+        return '%.2f' % cost
+    return str(cost)
 
 
 def format_exc():
@@ -825,19 +1020,21 @@ def force_unicode(s):
     if isinstance(s, unicode):
         return s
     if isinstance(s, str):
-        return s.decode('utf-8')
+        return s.decode('utf-8', 'ignore')
     raise ValueError()
 
 
 def force_utf8(s):
     if isinstance(s, str):
         return s
-    if isinstance(s, unicode):
-        return s.encode('utf-8')
-    str(s)
+    elif isinstance(s, unicode):
+        return s.encode('utf-8', 'ignore')
+    else:
+        return str(s)
 
 
 def groupNumber(number, sep = ' '):
+    """ \xd0\xb2\xd1\x81\xd1\x82\xd0\xb0\xd0\xb2\xd0\xbb\xd1\x8f\xd0\xb5\xd1\x82 \xd0\xbf\xd1\x80\xd0\xbe\xd0\xb1\xd0\xb5\xd0\xbb\xd1\x8b \xd0\xb2 \xd1\x87\xd0\xb8\xd1\x81\xd0\xbb\xd0\xb0 """
     number = str(number)
     prefix = ''
     if number.startswith('-'):
@@ -861,7 +1058,12 @@ def groupNumber(number, sep = ' '):
     return prefix + number
 
 
-DUMP_BASE, DUMP_CELL = range(2)
+def format_money(money):
+    from Localization import lc
+    return '%s %s' % (groupNumber(money, sep='`'), lc('GiftGui.return.rub'))
+
+
+DUMP_BASE, DUMP_CELL = xrange(2)
 
 def dump_entity(entity_id, dump_type):
     entity = BigWorld.entities.get(entity_id)
@@ -890,7 +1092,6 @@ def dump_entity(entity_id, dump_type):
     do_not_align_list = ['complexItemParametresValues',
      'complexItemParametresKeys',
      'AccStandModsKeys',
-     'favoriteList',
      'Freez',
      'Failed',
      'Opened',
@@ -949,6 +1150,41 @@ def dump_entity(entity_id, dump_type):
     return 'Entity dumped: ' + str(entity)
 
 
+class CaseInsensitiveStringListSet(list):
+    """ - \xd0\xbd\xd0\xb5 \xd0\xb7\xd0\xb0\xd0\xb2\xd0\xb8\xd1\x81\xd0\xb8\xd1\x82 \xd0\xbe\xd1\x82 \xd1\x80\xd0\xb5\xd0\xb3\xd0\xb8\xd1\x81\xd1\x82\xd1\x80\xd0\xb0
+            - \xd0\xbd\xd0\xb5 \xd0\xbc\xd0\xbe\xd0\xb6\xd0\xb5\xd1\x82 \xd1\x81\xd0\xbe\xd0\xb4\xd0\xb5\xd1\x80\xd0\xb6\xd0\xb0\xd1\x82\xd1\x8c \xd0\xbe\xd0\xb4\xd0\xb8\xd0\xbd\xd0\xb0\xd0\xba\xd0\xbe\xd0\xb2\xd1\x8b\xd1\x85 \xd1\x8d\xd0\xbb\xd0\xb5\xd0\xbc\xd0\xb5\xd0\xbd\xd1\x82\xd0\xbe\xd0\xb2
+    """
+
+    def add(self, item):
+        self.append(item)
+
+    def append(self, item):
+        if item in self:
+            return
+        super(CaseInsensitiveStringListSet, self).append(item)
+
+    def remove(self, item):
+        lower_item = lower(item)
+        for i in xrange(len(self) - 1, -1, -1):
+            if lower(self[i]) == lower_item:
+                del self[i]
+
+    def __contains__(self, item):
+        lower_item = lower(item)
+        for i in self:
+            if lower(i) == lower_item:
+                return True
+
+        return False
+
+
+def lower(text):
+    if isinstance(text, unicode):
+        return text.lower().encode('utf-8')
+    else:
+        return text.decode('utf-8').lower().encode('utf-8')
+
+
 def time_struct_to_seconds(time_struct):
     return time_struct.tm_hour * 3600 + time_struct.tm_min * 60 + time_struct.tm_sec
 
@@ -960,27 +1196,311 @@ def time_ms_to_string(time_ms):
     return '{0:02d}:{1:02d}'.format(hours, minutes)
 
 
-__MATERIAL_NAME_BY_ID = {}
+def _infinity_generator_id(from_id = 0):
+    id_ = from_id
+    while True:
+        id_ += 1
+        yield id_
 
-def get_material_name_by_id(material_id):
-    if not __MATERIAL_NAME_BY_ID:
+
+def infinity_range_generator(from_id = 0, max_id = 100):
+    while True:
+        for i in xrange(from_id, max_id):
+            yield i
+
+
+def infinity_array_generator(array):
+    while True:
+        for i in array:
+            yield i
+
+
+__MATERIAL_SOUND_BY_ID = {}
+
+def get_material_sound_by_id(material_id, default = None):
+    if not __MATERIAL_SOUND_BY_ID:
         for material_desc in BigWorld.getMaterialKinds():
-            mat_id = material_desc[1]['id'].asInt
-            mat_name = material_desc[1]['sound'].asString
-            __MATERIAL_NAME_BY_ID[mat_id] = mat_name
+            try:
+                mat_id = material_desc[1]['id'].asInt
+                sound_section = material_desc[1]['sound']
+                mat_sound = sound_section is not None and sound_section.asString
+                __MATERIAL_SOUND_BY_ID[mat_id] = mat_sound
+            except:
+                print "Materials (ERROR): can't parse material kinds"
+                traceback.print_stack()
+                traceback.print_exc()
 
-        __MATERIAL_NAME_BY_ID['default'] = 'Default'
-    return __MATERIAL_NAME_BY_ID.get(material_id)
+        __MATERIAL_SOUND_BY_ID['default'] = 'Default'
+    return __MATERIAL_SOUND_BY_ID.get(material_id, default)
 
 
-__MATERIAL_ID_BY_NAME = {}
+__TRANSPORT_MATERIAL_BY_ID = {}
 
-def get_material_id_by_name(material_name):
-    if not __MATERIAL_ID_BY_NAME:
-        for material_desc in BigWorld.getMaterialKinds():
-            mat_id = material_desc[1]['id'].asInt
-            mat_name = material_desc[1]['sound'].asString
-            __MATERIAL_ID_BY_NAME[mat_name] = mat_id
+def get_transport_material_by_id(material_id, default = 'gravel'):
+    if not __TRANSPORT_MATERIAL_BY_ID:
+        for mat_id, material_desc in BigWorld.getMaterialKinds():
+            try:
+                section = material_desc['transport_material']
+                mat = section is not None and section.asString
+                __TRANSPORT_MATERIAL_BY_ID[mat_id] = mat
+            except:
+                print "Materials (ERROR): can't parse material kinds"
+                traceback.print_stack()
+                traceback.print_exc()
 
-        __MATERIAL_ID_BY_NAME['Default'] = 'default'
-    return __MATERIAL_ID_BY_NAME.get(material_name)
+        __TRANSPORT_MATERIAL_BY_ID['default'] = 'gravel'
+    return __TRANSPORT_MATERIAL_BY_ID.get(material_id, default)
+
+
+def secToTimerText(secs):
+    secs = max(0.0, secs)
+    hours = math.floor(secs / 3600.0)
+    minutes = math.floor((secs - hours * 3600.0) / 60.0)
+    seconds = secs - (hours * 3600.0 + minutes * 60.0)
+    minutes = int(minutes)
+    seconds = int(seconds)
+    return '{0:02}:{1:02}'.format(minutes, seconds)
+
+
+def secToTimerTextWithHours(secs):
+    secs = max(0.0, secs)
+    hours = math.floor(secs / 3600.0)
+    days = int(hours / 24)
+    minutes = math.floor((secs - hours * 3600.0) / 60.0)
+    seconds = secs - (hours * 3600.0 + minutes * 60.0)
+    minutes = int(minutes)
+    seconds = int(seconds)
+    prefix = ''
+    if hours:
+        prefix = '{0:02}:'.format(int(hours))
+    return prefix + '{0:02}:{1:02}'.format(minutes, seconds)
+
+
+def get_int16_hash(value):
+    return abs(hash(value)) % 32766
+
+
+def get_creature_class(creature_type, is_boss = 0, silence = 1):
+    if not silence:
+        print 'get_creature_class', creature_type, creature_type in (22,)
+    if creature_type in (22,):
+        return 'CreatureWithBubbles'
+    if is_boss:
+        return 'CreatureBoss'
+    return 'Creature'
+
+
+def readable_location(spacename, pos):
+    try:
+        location = spacename.replace('spaces/', '')
+        location += '[%.1f %.1f %.1f]' % (pos[0], pos[1], pos[2])
+    except:
+        print 'ERROR FOR:', repr(spacename), repr(pos)
+        traceback.print_exc()
+
+    return force_utf8(location)
+
+
+def get_int_ts():
+    return int(time.time())
+
+
+class Destructable(object):
+
+    def __init__(self):
+        self._destroyed = False
+
+    def release(self):
+        if self._destroyed:
+            return
+        self._destroyed = True
+        self.on_release()
+
+    def on_release(self):
+        pass
+
+    @property
+    def destroyed(self):
+        return self._destroyed
+
+
+class ListenableEventType:
+    OnDestroy, = (('listenable.ListenableET', r) for r in xrange(1))
+
+
+class Listenable(Destructable):
+
+    def __init__(self):
+        Destructable.__init__(self)
+        self._listeners = []
+
+    def add_listener(self, callback):
+        if callback not in self._listeners:
+            self._listeners.append(callback)
+
+    def remove_listener(self, callback):
+        if callback in self._listeners:
+            self._listeners.remove(callback)
+
+    def ask_listeners(self, event_type, data = None):
+        for listener in list(self._listeners):
+            if listener in self._listeners:
+                try:
+                    result = listener(event_type, data)
+                    if result:
+                        return result
+                except:
+                    traceback.print_exc()
+                    traceback.print_stack()
+
+    def notify_listeners(self, event_type, data = None):
+        """ \xd0\xb2\xd0\xbe \xd0\xb2\xd1\x80\xd0\xb5\xd0\xbc\xd1\x8f \xd0\xb8\xd1\x82\xd0\xb5\xd1\x80\xd0\xb0\xd1\x86\xd0\xb8\xd0\xb8 \xd1\x81\xd0\xbf\xd0\xb8\xd1\x81\xd0\xbe\xd0\xba \xd0\xbc\xd0\xbe\xd0\xb6\xd0\xb5\xd1\x82 \xd0\xbe\xd1\x87\xd0\xb5\xd0\xbd\xd1\x8c \xd1\x81\xd0\xb8\xd0\xbb\xd1\x8c\xd0\xbd\xd0\xbe \xd0\xb8\xd0\xb7\xd0\xbc\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x82\xd1\x8c\xd1\x81\xd1\x8f """
+        for listener in list(self._listeners):
+            if listener in self._listeners:
+                try:
+                    listener(event_type, data)
+                except:
+                    traceback.print_exc()
+                    traceback.print_stack()
+
+    def on_release(self):
+        Destructable.on_release(self)
+        data = {'listenable': self}
+        self.notify_listeners(ListenableEventType.OnDestroy, data)
+        self._listeners = []
+
+
+class Tickable(object):
+
+    def __init__(self, tick_delay = 0):
+        self.__tick_handler = None
+        self._tick_delay = tick_delay
+        return
+
+    def __stop_tick(self):
+        if self.__tick_handler:
+            BigWorld.cancelCallback(self.__tick_handler)
+            self.__tick_handler = None
+        return
+
+    def __start_tick(self):
+        self.__stop_tick()
+        self.__tick_handler = BigWorld.callback(self._tick_delay, self.__tick)
+
+    def __tick(self):
+        self.__stop_tick()
+        if self.can_tick():
+            self.on_tick()
+            if self.on_check_tick():
+                self.__start_tick()
+
+    def start_tick(self):
+        self.__start_tick()
+
+    def stop_tick(self):
+        self.__stop_tick()
+
+    def can_tick(self):
+        return True
+
+    def on_tick(self):
+        pass
+
+    def on_check_tick(self):
+        return True
+
+
+class ImmutableDict:
+
+    def __init__(self, data):
+        self._data = dict(data)
+        self._mutating_methods = ['update',
+         'pop',
+         'popitem',
+         'clear',
+         'setdefault',
+         '__setitem__',
+         '__delitem__']
+
+    def __getitem__(self, key):
+        return self._data[key]
+
+    def __iter__(self):
+        return iter(self._data)
+
+    def __len__(self):
+        return len(self._data)
+
+    def __str__(self):
+        return str(self._data)
+
+    def __repr__(self):
+        return 'ReadOnlyDict(%s)' % self._data
+
+    def __getattr__(self, name):
+        if name in self._mutating_methods:
+            raise AttributeError("'%s' object has no attribute '%s'" % (self.__class__.__name__, name))
+        attr = getattr(self._data, name)
+        if callable(attr):
+            return attr
+        raise AttributeError("'%s' object has no attribute '%s'" % (self.__class__.__name__, name))
+
+
+def make_immutable(obj):
+    if isinstance(obj, dict):
+        new_dict = {}
+        for k, v in obj.iteritems():
+            new_dict[k] = make_immutable(v)
+
+        return ImmutableDict(new_dict)
+    if isinstance(obj, list):
+        return tuple((make_immutable(item) for item in obj))
+    if isinstance(obj, set):
+        return frozenset((make_immutable(item) for item in obj))
+    return obj
+
+
+def get_overlapping_area_of_squares(square1, square2):
+    """
+    \xd0\x9f\xd1\x80\xd0\xbe\xd0\xb2\xd0\xb5\xd1\x80\xd1\x8f\xd0\xb5\xd1\x82, \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd1\x81\xd0\xb5\xd0\xba\xd0\xb0\xd1\x8e\xd1\x82\xd1\x81\xd1\x8f \xd0\xbb\xd0\xb8 \xd0\xb4\xd0\xb2\xd0\xb0 \xd0\xbd\xd0\xb5\xd0\xbf\xd0\xbe\xd0\xb2\xd1\x91\xd1\x80\xd0\xbd\xd1\x83\xd1\x82\xd1\x8b\xd1\x85 \xd0\xba\xd0\xb2\xd0\xb0\xd0\xb4\xd1\x80\xd0\xb0\xd1\x82\xd0\xb0 \xd0\xbd\xd0\xb0 \xd0\xbf\xd0\xbb\xd0\xbe\xd1\x81\xd0\xba\xd0\xbe\xd1\x81\xd1\x82\xd0\xb8,
+    \xd0\xb8 \xd0\xb2\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82 \xd0\xbf\xd0\xbb\xd0\xbe\xd1\x89\xd0\xb0\xd0\xb4\xd1\x8c \xd0\xb8\xd1\x85 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd1\x81\xd0\xb5\xd1\x87\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f (\xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd0\xba\xd1\x80\xd1\x8b\xd1\x82\xd0\xb8\xd1\x8f).
+    \xd0\x90\xd1\x80\xd0\xb3\xd1\x83\xd0\xbc\xd0\xb5\xd0\xbd\xd1\x82\xd1\x8b:
+            square1: \xd0\xba\xd0\xbe\xd1\x80\xd1\x82\xd0\xb5\xd0\xb6 \xd0\xb8\xd0\xb7 \xd0\xb4\xd0\xb2\xd1\x83\xd1\x85 \xd1\x82\xd0\xbe\xd1\x87\xd0\xb5\xd0\xba ((x_min, z_min), (x_max, z_max)) \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb2\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xba\xd0\xb2\xd0\xb0\xd0\xb4\xd1\x80\xd0\xb0\xd1\x82\xd0\xb0
+            square2: \xd0\xba\xd0\xbe\xd1\x80\xd1\x82\xd0\xb5\xd0\xb6 \xd0\xb8\xd0\xb7 \xd0\xb4\xd0\xb2\xd1\x83\xd1\x85 \xd1\x82\xd0\xbe\xd1\x87\xd0\xb5\xd0\xba ((x_min, z_min), (x_max, z_max)) \xd0\xb2\xd1\x82\xd0\xbe\xd1\x80\xd0\xbe\xd0\xb3\xd0\xbe \xd0\xba\xd0\xb2\xd0\xb0\xd0\xb4\xd1\x80\xd0\xb0\xd1\x82\xd0\xb0
+    \xd0\x92\xd0\xbe\xd0\xb7\xd0\xb2\xd1\x80\xd0\xb0\xd1\x89\xd0\xb0\xd0\xb5\xd1\x82:
+            \xd0\x9f\xd0\xbb\xd0\xbe\xd1\x89\xd0\xb0\xd0\xb4\xd1\x8c \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd1\x81\xd0\xb5\xd1\x87\xd0\xb5\xd0\xbd\xd0\xb8\xd1\x8f \xd0\xba\xd0\xb2\xd0\xb0\xd0\xb4\xd1\x80\xd0\xb0\xd1\x82\xd0\xbe\xd0\xb2 (0 \xd0\xb5\xd1\x81\xd0\xbb\xd0\xb8 \xd0\xbd\xd0\xb5 \xd0\xbf\xd0\xb5\xd1\x80\xd0\xb5\xd1\x81\xd0\xb5\xd0\xba\xd0\xb0\xd1\x8e\xd1\x82\xd1\x81\xd1\x8f)
+    """
+
+    def get_overlap_length(min1, max1, min2, max2):
+        left = max(min1, min2)
+        right = min(max1, max2)
+        return max(right - left, 0)
+
+    square1_x_min, square1_z_min = square1[0]
+    square1_x_max, square1_z_max = square1[1]
+    square2_x_min, square2_z_min = square2[0]
+    square2_x_max, square2_z_max = square2[1]
+    x_overlap = get_overlap_length(square1_x_min, square1_x_max, square2_x_min, square2_x_max)
+    z_overlap = get_overlap_length(square1_z_min, square1_z_max, square2_z_min, square2_z_max)
+    if x_overlap > 0 and z_overlap > 0:
+        return x_overlap * z_overlap
+    return 0
+
+
+def letters_gen(first_letter = None):
+    import string
+    if first_letter is None:
+        letters = string.ascii_uppercase
+    else:
+        index = string.ascii_uppercase.index(first_letter)
+        letters = string.ascii_uppercase[index:]
+    prefix_gen = letters_gen()
+    prefix = ''
+    while True:
+        for letter in letters:
+            yield prefix + letter
+
+        prefix = next(prefix_gen)
+        letters = string.ascii_uppercase
+
+    return
