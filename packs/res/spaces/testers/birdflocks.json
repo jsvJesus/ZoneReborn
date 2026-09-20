@@ -1,0 +1,59 @@
+[
+    {
+        "ffff0000o": [
+            {
+                "flock": {
+                    "count": 20, 
+                    "enter_radius": 15.0, 
+                    "leave_radius": 30.0, 
+                    "points": [
+                        [
+                            -18.512107849121094, 
+                            9.5323696136474609, 
+                            47.830051422119141
+                        ], 
+                        [
+                            -72.400215148925781, 
+                            9.0137443542480469, 
+                            72.840301513671875
+                        ]
+                    ]
+                }, 
+                "group": {
+                    "area_radius": 0.0, 
+                    "attack_speed": 0.0, 
+                    "container_lifetime": 10.0, 
+                    "container_names": [
+                        "Crow"
+                    ], 
+                    "count": 10, 
+                    "damage": 10, 
+                    "damage_period": 2.0, 
+                    "effects": [
+                        {
+                            "chance": 0.20000000298023224, 
+                            "id": 402, 
+                            "stack": 1
+                        }
+                    ], 
+                    "expirience": 1, 
+                    "height": [
+                        2.0, 
+                        2.0
+                    ], 
+                    "high_plane_y": 0.0, 
+                    "influenceRadius": [
+                        0.05000000074505806, 
+                        0.10000000149011612
+                    ], 
+                    "low_plane_y": 0.0, 
+                    "speed": [
+                        0.05000000074505806, 
+                        0.10000000149011612
+                    ]
+                }, 
+                "guid": "BD71AD70.477B4675.15025FAC.1CF96C6A"
+            }
+        ]
+    }
+]
