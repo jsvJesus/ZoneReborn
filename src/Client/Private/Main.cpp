@@ -43,7 +43,7 @@ int main(
 #if defined(STUDIO_BUILD)
 
         std::string spaceName =
-            "so_origins";
+            "start_tutorial_warehouse";
 
         if (argc >= 2 &&
             argv[1] != nullptr &&

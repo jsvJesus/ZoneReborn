@@ -1,0 +1,20 @@
+<root>
+    <variant>
+        <passTag> forward </passTag>
+        <name> forward </name>
+        <objectCB> basic </objectCB>
+        <materialCB> basic </materialCB>
+        <rtv> forward </rtv>
+        <root_signature> uber_variant </root_signature>
+        <ps>
+            <file> shaders_plus/basic.hlsl </file>
+            <entry> ps_main </entry>
+            <sm> ps_6_0 </sm>
+        </ps>
+        <vs>
+            <file> shaders_plus/basic.hlsl </file>
+            <entry> vs_main </entry>
+            <sm> vs_6_0 </sm>
+         </vs>
+    </variant>
+</root>

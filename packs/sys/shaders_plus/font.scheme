@@ -1,0 +1,32 @@
+<root>
+    <variant>
+        <name> main </name>
+        <objectCB> font </objectCB>
+        <rtv> forward </rtv>
+        <root_signature> uber_variant </root_signature>
+        <ps>
+            <file> shaders_plus/font.hlsl </file>
+            <entry> ps_main </entry>
+            <sm> ps_6_0 </sm>
+        </ps>
+        <vs>
+            <file> shaders_plus/font.hlsl </file>
+            <entry> vs_main </entry>
+            <sm> vs_6_0 </sm>
+         </vs>
+        <states>
+            <rasterizer>
+            <cullMode> NONE </cullMode>
+            </rasterizer>
+            <blend>
+             <enable> TRUE </enable>
+             <srcBlend>  SRC_ALPHA  </srcBlend>
+             <destBlend>  INV_SRC_ALPHA </destBlend>
+            </blend>
+            <depthStencil>
+                <depthEnable>FALSE</depthEnable>
+                <depthWrite> FALSE </depthWrite>
+            </depthStencil>
+         </states>
+    </variant>
+</root>

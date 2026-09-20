@@ -1,0 +1,45 @@
+<root>
+    <variant>
+        <name> copy </name>
+        <root_signature> hi-z </root_signature>
+        <cs>
+            <file> shaders_plus/hi-z_copy.hlsl </file>
+            <entry> main </entry>
+            <sm> cs_6_0 </sm>
+        </cs>
+    </variant>
+    <variant>
+        <name> reduce </name>
+        <root_signature> hi-z </root_signature>
+        <cs>
+            <file> shaders_plus/hi-z_reduce.hlsl </file>
+            <entry> main </entry>
+            <sm> cs_6_0 </sm>
+        </cs>
+    </variant>
+    <variant>
+        <passTag> forward </passTag>
+        <name> debug </name>
+        <rtv> forward </rtv>
+        <root_signature> texture_cb </root_signature>
+        <ps>
+            <file> shaders_plus/hi-z_debug.hlsl </file>
+            <entry> ps_main </entry>
+            <sm> ps_6_0 </sm>
+        </ps>
+        <vs>
+            <file> shaders_plus/hi-z_debug.hlsl </file>
+            <entry> vs_main </entry>
+            <sm> vs_6_0 </sm>
+         </vs>
+        <states>
+            <rasterizer>
+            <cullMode> NONE </cullMode>
+            </rasterizer>
+            <depthStencil>
+                <depthEnable>FALSE </depthEnable>
+                <depthWrite> FALSE </depthWrite>
+            </depthStencil>
+         </states>
+    </variant>
+</root>
