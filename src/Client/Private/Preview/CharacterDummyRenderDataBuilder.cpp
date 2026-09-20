@@ -24,8 +24,7 @@ namespace
 
     using Vector3 =
         core::math::Vector3;
-
-
+    
     Vector3 Add(
         const Vector3 a,
         const Vector3 b) noexcept
@@ -37,8 +36,7 @@ namespace
             a.z + b.z
         };
     }
-
-
+    
     Vector3 Multiply(
         const Vector3 value,
         const float scalar) noexcept
@@ -50,7 +48,6 @@ namespace
             value.z * scalar
         };
     }
-
 
     Vector3 Normalize(
         const Vector3 value) noexcept
@@ -83,8 +80,7 @@ namespace
             value.z * inverse
         };
     }
-
-
+    
     Vector3 TransformPoint(
         const Vector3 value,
         const Transform& transform) noexcept
@@ -116,8 +112,7 @@ namespace
             transform.values[11]
         };
     }
-
-
+    
     Vector3 TransformVector(
         const Vector3 value,
         const Transform& transform) noexcept
@@ -146,7 +141,6 @@ namespace
                 transform.values[8]
         };
     }
-
 
     Vector3 UnpackNormal(
         const std::uint32_t packed) noexcept
@@ -195,7 +189,6 @@ namespace
                 511.0f
         });
     }
-
 
     std::uint32_t PackNormal(
         const Vector3 value) noexcept
@@ -249,147 +242,328 @@ namespace
             );
     }
 
-
-    std::string_view ResolveHead(
-        const std::int32_t id)
-    {
-        if (id < 1)
-        {
-            return {};
-        }
-
-        return
-            "characters2/clothing/ManNude/ManHead.model";
-    }
-
-
-    std::string_view ResolveBody(
-        const std::int32_t id)
+    std::string_view ResolveHead(const std::int32_t id)
     {
         switch (id)
         {
-            case 108:
-                return
-                    "characters2/clothing/body/body_shtormovka/body_shtormovka_woh.model";
+            case 1:
+                return "characters/avatars/heads/head_m5_01.model";
 
-            case 109:
-                return
-                    "characters2/clothing/body/body_shtormovka/body_shtormovka.model";
+            case 2:
+                return "characters/avatars/heads/head_m5_02.model";
 
-            case 120:
-                return
-                    "characters2/clothing/body/body_afganka/body_afganka.model";
+            case 3:
+                return "characters/avatars/heads/head_m5_03.model";
 
-            case 121:
-                return
-                    "characters2/clothing/body/body_afganka/body_afganka_nh.model";
+            case 4:
+                return "characters/avatars/heads/head_m5_04.model";
 
-            case 122:
-                return
-                    "characters2/clothing/body/body_jaket/body_jaket.model";
+            case 5:
+                return "characters/avatars/heads/head_m5_05.model";
 
-            default:
-                break;
-        }
+            case 6:
+                return "characters/avatars/heads/head_m5_06_bandit.model";
 
-        if (id >= 200005 &&
-            id <= 200009)
-        {
-            return
-                "characters2/clothing/body/body_smock/body_smock.model";
-        }
+            case 7:
+                return "characters/avatars/heads/head_m5_07.model";
 
-        if (id >= 200010 &&
-            id <= 200014)
-        {
-            return
-                "characters2/clothing/body/body_sweater/body_sweater.model";
-        }
+            case 8:
+                return "characters/avatars/heads/head_m5_08.model";
 
-        return {};
-    }
+            case 9:
+                return "characters/avatars/heads/head_m5_09.model";
 
+            case 10:
+                return "characters/avatars/heads/head_m5_10.model";
 
-    std::string_view ResolvePalms(
-        const std::int32_t id)
-    {
-        if (id >= 110247 &&
-            id <= 110250)
-        {
-            return
-                "characters2/clothing/gloves/gloves_hb/gloves_hb.model";
-        }
+            case 11:
+                return "characters/avatars/heads/head_m5_11.model";
 
-        return {};
-    }
+            case 12:
+                return "characters/avatars/heads/head_m5_12.model";
 
+            case 13:
+                return "characters/avatars/heads/head_m5_13.model";
 
-    std::string_view ResolveLegs(
-        const std::int32_t id)
-    {
-        switch (id)
-        {
-            case 104:
-                return
-                    "characters2/clothing/legs/legs_pants/legs_pants.model";
+            case 14:
+                return "characters/avatars/heads/head_m5_14.model";
 
-            case 110256:
-                return
-                    "characters2/clothing/legs/legs_pants/legs_pants.model";
+            case 15:
+                return "characters/avatars/heads/head_m5_15.model";
 
-            case 110257:
-                return
-                    "characters2/clothing/legs/legs_jeans/legs_jeans.model";
+            case 16:
+                return "characters/avatars/heads/head_m5_16.model";
 
-            case 110258:
-                return
-                    "characters2/clothing/legs/legs_classic/legs_classic.model";
+            case 17:
+                return "characters/avatars/heads/head_m5_17.model";
 
-            case 110259:
-                return
-                    "characters2/clothing/legs/legs_work/legs_work.model";
+            case 18:
+                return "characters/avatars/heads/head_m5_18.model";
 
-            case 200200:
-            case 200201:
-                return
-                    "characters2/clothing/legs/legs_mabuta/legs_mabuta.model";
+            case 19:
+                return "characters/avatars/heads/head_m5_19.model";
 
-            case 200205:
-            case 200206:
-                return
-                    "characters2/clothing/legs/legs_jeans/legs_jeans.model";
+            case 20:
+                return "characters/avatars/heads/head_m5_20.model";
 
-            case 200210:
-            case 200211:
-                return
-                    "characters2/clothing/legs/legs_pants/legs_pants.model";
+            case 21:
+                return "characters/avatars/heads/head_m5_21.model";
+
+            case 22:
+                return "characters/avatars/heads/head_m5_22_bandit.model";
+
+            case 23:
+                return "characters/avatars/heads/head_m5_26.model";
+
+            case 24:
+                return "characters/avatars/heads/head_m5_27.model";
+
+            case 25:
+                return "characters/avatars/heads/head_m5_28.model";
+
+            case 26:
+                return "characters/avatars/heads/head_m5_29.model";
+
+            case 27:
+                return "characters/avatars/heads/head_m5_30.model";
 
             default:
                 return {};
         }
     }
 
-
-    std::string_view ResolveFeet(
-        const std::int32_t id)
+    std::string_view ResolveHeadAttachment(const std::int32_t id)
     {
-        if (id >= 110251 &&
-            id <= 110254)
+        switch (id)
         {
-            return
-                "characters2/clothing/boots/boots_bertsy/boots_bertsy.model";
-        }
+            case 4:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_04_beard.model";
 
-        if (id == 110255)
-        {
-            return
-                "characters2/clothing/boots/boots_shoes/boots_shoes.model";
-        }
+            case 6:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_06_bandit_beard.model";
 
-        return {};
+            case 8:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_08_beard.model";
+
+            case 9:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_09_hair.model";
+
+            case 12:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_12_hair.model";
+
+            case 13:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_13_hair.model";
+
+            case 14:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_14_hair.model";
+
+            case 15:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_15_hair.model";
+
+            case 17:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_17_hair.model";
+
+            case 19:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_19_hair.model";
+
+            case 20:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_20_hair.model";
+
+            case 21:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_21_hair.model";
+
+            case 22:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_22_hair.model";
+
+            case 23:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_26_hair.model";
+
+            case 24:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_27_dreadlocks.model";
+
+            case 25:
+                return
+                    "characters/avatars/heads/custom/"
+                    "head_m5_28_hair.model";
+
+            default:
+                return {};
+        }
     }
 
+    std::string_view ResolveBody(const std::int32_t id)
+    {
+        switch (id)
+        {
+            case 108:
+                return
+                    "characters/avatars/body/"
+                    "body_shtormovka_woh.model";
 
+            case 109:
+                return
+                    "characters/avatars/body/"
+                    "body_shtormovka.model";
+
+            case 120:
+                return
+                    "characters/avatars/body/"
+                    "body_haki_woh.model";
+
+            case 121:
+                return
+                    "characters/avatars/body/"
+                    "body_haki.model";
+
+            case 122:
+                return
+                    "characters/avatars/body/"
+                    "body_kurtka.model";
+
+            case 200005:
+            case 200006:
+            case 200007:
+            case 200008:
+            case 200009:
+                return
+                    "characters/avatars/body/"
+                    "body_smock.model";
+
+            case 200010:
+            case 200011:
+            case 200012:
+            case 200013:
+            case 200014:
+                return
+                    "characters/avatars/body/"
+                    "body_sweater.model";
+
+            default:
+                return {};
+        }
+    }
+    
+    std::string_view ResolvePalms(const std::int32_t id)
+    {
+        switch (id)
+        {
+            case 110247:
+            case 110248:
+            case 110249:
+            case 110250:
+                return
+                    "characters/avatars/hands/"
+                    "hand_koja.model";
+
+            default:
+                return {};
+        }
+    }
+    
+    std::string_view ResolveLegs(const std::int32_t id)
+    {
+        switch (id)
+        {
+            case 104:
+                return
+                    "characters/avatars/legs/"
+                    "legs_longi.model";
+
+            case 110256:
+                return
+                    "characters/avatars/legs/"
+                    "legs_pants_1.model";
+
+            case 110257:
+                return
+                    "characters/avatars/legs/"
+                    "legs_pants_2.model";
+
+            case 110258:
+                return
+                    "characters/avatars/legs/"
+                    "legs_pants_3.model";
+
+            case 110259:
+                return
+                    "characters/avatars/legs/"
+                    "legs_pants_4.model";
+
+            case 200200:
+            case 200201:
+                return
+                    "characters/avatars/legs/"
+                    "legs_bigpants.model";
+
+            case 200205:
+            case 200206:
+                return
+                    "characters/avatars/legs/"
+                    "legs_jeans.model";
+
+            case 200210:
+            case 200211:
+                return
+                    "characters/avatars/legs/"
+                    "legs_pants.model";
+
+            default:
+                return {};
+        }
+    }
+    
+    std::string_view ResolveFeet(const std::int32_t id)
+    {
+        switch (id)
+        {
+            case 110251:
+            case 110252:
+            case 110253:
+            case 110254:
+                return
+                    "characters/avatars/boots/"
+                    "boots_bertsi.model";
+
+            case 110255:
+                return
+                    "characters/avatars/boots/"
+                    "boots_botinok.model";
+
+            default:
+                return {};
+        }
+    }
+    
     bool BuildNodeTransforms(
         const core::assets::VisualAsset& visual,
         std::vector<Transform>& output,
@@ -443,8 +617,7 @@ namespace
 
         return true;
     }
-
-
+    
     bool BuildBonePalette(
         const core::assets::VisualAsset& visual,
         const core::assets::VisualRenderSet& renderSet,
@@ -505,8 +678,7 @@ namespace
 
         return true;
     }
-
-
+    
     bool BakeSkinning(
         core::assets::MeshData& mesh,
         const std::vector<Transform>& palette,
@@ -609,8 +781,7 @@ namespace
 
         return true;
     }
-
-
+    
     bool AppendModel(
         const core::resources::ResourceFileSystem& resources,
         const std::string_view modelReference,
@@ -911,7 +1082,6 @@ namespace
     }
 }
 
-
 namespace client::preview
 {
     bool CharacterDummyAppearance::SetPart(
@@ -965,8 +1135,7 @@ namespace client::preview
 
         return false;
     }
-
-
+    
     bool CharacterDummyRenderDataBuilder::BuildDefault(
         const core::resources::ResourceFileSystem& resources,
         const core::math::Transform3x4& transform,
@@ -984,7 +1153,6 @@ namespace client::preview
             error);
     }
 
-
     bool CharacterDummyRenderDataBuilder::Build(
         const core::resources::ResourceFileSystem& resources,
         const CharacterDummyAppearance& appearance,
@@ -994,26 +1162,41 @@ namespace client::preview
     {
         error.clear();
 
-        const std::array<
-            std::string_view,
-            5>
-            models
-        {{
+        std::vector<std::string_view>
+    models;
+
+        models.reserve(
+            6);
+
+        models.push_back(
             ResolveHead(
-                appearance.head),
+                appearance.head));
 
+        const std::string_view headAttachment =
+            ResolveHeadAttachment(
+                appearance.head);
+
+        if (!headAttachment.empty())
+        {
+            models.push_back(
+                headAttachment);
+        }
+
+        models.push_back(
             ResolveBody(
-                appearance.body),
+                appearance.body));
 
+        models.push_back(
             ResolvePalms(
-                appearance.palms),
+                appearance.palms));
 
+        models.push_back(
             ResolveLegs(
-                appearance.legs),
+                appearance.legs));
 
+        models.push_back(
             ResolveFeet(
-                appearance.feet)
-        }};
+                appearance.feet));
 
         for (const std::string_view model :
              models)

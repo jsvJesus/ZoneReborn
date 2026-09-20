@@ -91,7 +91,7 @@ void EvaluateOmniLights(
             attenuation;
 
         const float diffuse =
-            abs(
+            saturate(
                 dot(
                     normal,
                     lightDirection));
@@ -116,10 +116,9 @@ void EvaluateOmniLights(
             const float specular =
                 pow(
                     saturate(
-                        abs(
-                            dot(
-                                normal,
-                                halfDirection))),
+                        dot(
+                            normal,
+                            halfDirection)),
                     32.0f);
 
             specularLighting +=
@@ -253,7 +252,7 @@ void EvaluateSpotLights(
             coneAttenuation;
 
         const float diffuse =
-            abs(
+            saturate(
                 dot(
                     normal,
                     surfaceToLight));
@@ -278,10 +277,9 @@ void EvaluateSpotLights(
             const float specular =
                 pow(
                     saturate(
-                        abs(
-                            dot(
-                                normal,
-                                halfDirection))),
+                        dot(
+                            normal,
+                            halfDirection)),
                     32.0f);
 
             specularLighting +=
