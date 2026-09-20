@@ -620,6 +620,8 @@ window.show_dummy =
 
         postToHost(
             "dummy_show");
+
+        sendCurrentCharacterAppearance();
     };
 
 
@@ -917,6 +919,66 @@ function getCurrentCharacterIndex(
 }
 
 
+function sendCurrentCharacterAppearance()
+{
+    const characters =
+        loadTestCharacters();
+
+    const currentId =
+        getCurrentCharacterIndex(
+            characters);
+
+    if (currentId < 0 ||
+        currentId >= characters.length)
+    {
+        return;
+    }
+
+    const appearance =
+        characters[currentId] &&
+        characters[currentId].appearance;
+
+    const random =
+        appearance &&
+        Array.isArray(appearance.random)
+            ? appearance.random
+            : [];
+
+    const fields = [];
+
+    for (const entry of random)
+    {
+        if (!entry ||
+            !entry.choiceGroup)
+        {
+            continue;
+        }
+
+        const partId =
+            getDummyPartId(
+                entry.choiceGroup,
+                entry.var);
+
+        if (!Number.isFinite(partId) ||
+            partId <= 0)
+        {
+            continue;
+        }
+
+        fields.push(
+            entry.choiceGroup,
+            partId);
+    }
+
+    if (fields.length !== 0)
+    {
+        postToHost(
+            "dummy_full",
+            ...fields);
+    }
+}
+
+
 function validateCharacterName(
     nickname)
 {
@@ -1035,6 +1097,8 @@ window.selectChar =
             localStorage.setItem(
                 TEST_CURRENT_CHARACTER_KEY,
                 String(id));
+
+            sendCurrentCharacterAppearance();
         }
     };
 

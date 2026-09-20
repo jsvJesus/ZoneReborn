@@ -253,53 +253,13 @@ namespace
     std::string_view ResolveHead(
         const std::int32_t id)
     {
-        static constexpr
-            std::array<
-                std::string_view,
-                27>
-                Heads
-        {{
-            "characters/avatars/heads/head_m5_01.model",
-            "characters/avatars/heads/head_m5_02.model",
-            "characters/avatars/heads/head_m5_03.model",
-            "characters/avatars/heads/head_m5_04.model",
-            "characters/avatars/heads/head_m5_05.model",
-            "characters/avatars/heads/head_m5_06_bandit.model",
-            "characters/avatars/heads/head_m5_07.model",
-            "characters/avatars/heads/head_m5_08.model",
-            "characters/avatars/heads/head_m5_09.model",
-            "characters/avatars/heads/head_m5_10.model",
-            "characters/avatars/heads/head_m5_11.model",
-            "characters/avatars/heads/head_m5_12.model",
-            "characters/avatars/heads/head_m5_13.model",
-            "characters/avatars/heads/head_m5_14.model",
-            "characters/avatars/heads/head_m5_15.model",
-            "characters/avatars/heads/head_m5_16.model",
-            "characters/avatars/heads/head_m5_17.model",
-            "characters/avatars/heads/head_m5_18.model",
-            "characters/avatars/heads/head_m5_19.model",
-            "characters/avatars/heads/head_m5_20.model",
-            "characters/avatars/heads/head_m5_21.model",
-            "characters/avatars/heads/head_m5_22_bandit.model",
-            "characters/avatars/heads/head_m5_26.model",
-            "characters/avatars/heads/head_m5_27.model",
-            "characters/avatars/heads/head_m5_28.model",
-            "characters/avatars/heads/head_m5_29.model",
-            "characters/avatars/heads/head_m5_30.model"
-        }};
-
-        if (id < 1 ||
-            id >
-                static_cast<std::int32_t>(
-                    Heads.size()))
+        if (id < 1)
         {
             return {};
         }
 
         return
-            Heads[
-                static_cast<std::size_t>(
-                    id - 1)];
+            "characters2/clothing/ManNude/ManHead.model";
     }
 
 
@@ -310,23 +270,23 @@ namespace
         {
             case 108:
                 return
-                    "characters/avatars/body/body_shtormovka_woh.model";
+                    "characters2/clothing/body/body_shtormovka/body_shtormovka_woh.model";
 
             case 109:
                 return
-                    "characters/avatars/body/body_shtormovka.model";
+                    "characters2/clothing/body/body_shtormovka/body_shtormovka.model";
 
             case 120:
                 return
-                    "characters/avatars/body/body_haki_woh.model";
+                    "characters2/clothing/body/body_afganka/body_afganka.model";
 
             case 121:
                 return
-                    "characters/avatars/body/body_haki.model";
+                    "characters2/clothing/body/body_afganka/body_afganka_nh.model";
 
             case 122:
                 return
-                    "characters/avatars/body/body_kurtka.model";
+                    "characters2/clothing/body/body_jaket/body_jaket.model";
 
             default:
                 break;
@@ -336,14 +296,14 @@ namespace
             id <= 200009)
         {
             return
-                "characters/avatars/body/body_smock.model";
+                "characters2/clothing/body/body_smock/body_smock.model";
         }
 
         if (id >= 200010 &&
             id <= 200014)
         {
             return
-                "characters/avatars/body/body_sweater.model";
+                "characters2/clothing/body/body_sweater/body_sweater.model";
         }
 
         return {};
@@ -357,7 +317,7 @@ namespace
             id <= 110250)
         {
             return
-                "characters/avatars/hands/hand_koja.model";
+                "characters2/clothing/gloves/gloves_hb/gloves_hb.model";
         }
 
         return {};
@@ -371,38 +331,38 @@ namespace
         {
             case 104:
                 return
-                    "characters/avatars/legs/legs_longi.model";
+                    "characters2/clothing/legs/legs_pants/legs_pants.model";
 
             case 110256:
                 return
-                    "characters/avatars/legs/legs_pants_1.model";
+                    "characters2/clothing/legs/legs_pants/legs_pants.model";
 
             case 110257:
                 return
-                    "characters/avatars/legs/legs_pants_2.model";
+                    "characters2/clothing/legs/legs_jeans/legs_jeans.model";
 
             case 110258:
                 return
-                    "characters/avatars/legs/legs_pants_3.model";
+                    "characters2/clothing/legs/legs_classic/legs_classic.model";
 
             case 110259:
                 return
-                    "characters/avatars/legs/legs_pants_4.model";
+                    "characters2/clothing/legs/legs_work/legs_work.model";
 
             case 200200:
             case 200201:
                 return
-                    "characters/avatars/legs/legs_bigpants.model";
+                    "characters2/clothing/legs/legs_mabuta/legs_mabuta.model";
 
             case 200205:
             case 200206:
                 return
-                    "characters/avatars/legs/legs_jeans.model";
+                    "characters2/clothing/legs/legs_jeans/legs_jeans.model";
 
             case 200210:
             case 200211:
                 return
-                    "characters/avatars/legs/legs_pants.model";
+                    "characters2/clothing/legs/legs_pants/legs_pants.model";
 
             default:
                 return {};
@@ -417,13 +377,13 @@ namespace
             id <= 110254)
         {
             return
-                "characters/avatars/boots/boots_bertsi.model";
+                "characters2/clothing/boots/boots_bertsy/boots_bertsy.model";
         }
 
         if (id == 110255)
         {
             return
-                "characters/avatars/boots/boots_botinok.model";
+                "characters2/clothing/boots/boots_shoes/boots_shoes.model";
         }
 
         return {};

@@ -2176,8 +2176,15 @@ namespace client::graphics
             return false;
         }
 
-        if (scene.meshes.empty() ||
-            scene.instances.empty())
+        const bool hasGeometry =
+            !scene.meshes.empty() &&
+            (
+                !scene.instances.empty() ||
+                !scene.lodInstances.empty()
+            );
+
+        if (!hasGeometry &&
+            !scene.sky.enabled)
         {
             error =
                 "Scene contains no geometry.";
@@ -3098,12 +3105,26 @@ namespace client::graphics
             }
         }
 
-        if (!hasBounds)
+        if (!hasBounds &&
+            !state_->sky.enabled)
         {
             error =
                 "Unable to calculate world bounds.";
 
             return false;
+        }
+
+        if (!hasBounds)
+        {
+            sceneMinimum =
+            {
+                0.0f,
+                0.0f,
+                0.0f
+            };
+
+            sceneMaximum =
+                sceneMinimum;
         }
 
         state_->sceneCenter =
@@ -3275,7 +3296,10 @@ namespace client::graphics
         if (!state_ ||
             !state_->context ||
             !state_->swapChain ||
-            state_->meshes.empty())
+            (
+                state_->meshes.empty() &&
+                !state_->sky.enabled
+            ))
         {
             error =
                 "Renderer has no world scene.";

@@ -20,6 +20,15 @@ namespace
     constexpr std::size_t PrimitiveGroupSize =
         16;
 
+    // Newer character meshes may keep one morph target directly after the
+    // ordinary skinned vertex buffer. The current renderer does not animate
+    // morph targets yet, but the base vertices remain fully usable.
+    constexpr std::size_t MorphTargetHeaderSize =
+        80;
+
+    constexpr std::size_t MorphTargetVertexStride =
+        16;
+
     template<typename T>
     bool ReadValue(
         const std::span<const std::byte> data,
@@ -423,8 +432,37 @@ namespace
                 vertexCount) *
                 vertexStride;
 
-        if (data.size() !=
-            expectedSize)
+        bool validSectionSize =
+            data.size() ==
+                expectedSize;
+
+        if (!validSectionSize &&
+            geometry.vertexSection.ends_with(
+                ".mvertices") &&
+            expectedSize <=
+                std::numeric_limits<std::size_t>::max() -
+                    MorphTargetHeaderSize &&
+            vertexCount <=
+                (
+                    std::numeric_limits<std::size_t>::max() -
+                    expectedSize -
+                    MorphTargetHeaderSize
+                ) /
+                MorphTargetVertexStride)
+        {
+            const std::size_t expectedMorphSize =
+                expectedSize +
+                MorphTargetHeaderSize +
+                static_cast<std::size_t>(
+                    vertexCount) *
+                    MorphTargetVertexStride;
+
+            validSectionSize =
+                data.size() ==
+                    expectedMorphSize;
+        }
+
+        if (!validSectionSize)
         {
             error =
                 "Vertex section size does not match vertex count.";

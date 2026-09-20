@@ -1562,6 +1562,21 @@ namespace client::preview
                 continue;
             }
 
+            // The original engine composites this black shell separately.
+            // Treating it as an ordinary diffuse model hides the TimeOfDay sky.
+            if (world.spaceName == "personages_select" &&
+                normalizedModel.ends_with(
+                    "models/props/room_character/shells/skybox_shell.model"))
+            {
+                ++nonRenderableHelperInstances;
+                ++skippedInstances;
+
+                core::Log::Info(
+                    "Character-select black compositor shell skipped; TimeOfDay sky remains visible.");
+
+                continue;
+            }
+
             auto cached =
                 modelCache.find(
                     normalizedModel);
@@ -2605,11 +2620,18 @@ namespace client::preview
                     loadedWaterSurfaces));
         }
 
-        if (scene.meshes.empty() ||
+        const bool hasRenderableGeometry =
+            !scene.meshes.empty() &&
             (
-                scene.instances.empty() &&
-                scene.lodInstances.empty()
-            ))
+                !scene.instances.empty() ||
+                !scene.lodInstances.empty()
+            );
+
+        // personages_select deliberately has no ordinary world mesh after the
+        // black compositor shell is filtered out. Its TimeOfDay sky is drawn
+        // procedurally and CharacterDummy geometry is appended by Application.
+        if (!hasRenderableGeometry &&
+            world.spaceName != "personages_select")
         {
             error =
                 "World contains no renderable geometry.";
