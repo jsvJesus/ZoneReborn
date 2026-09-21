@@ -1610,6 +1610,26 @@ namespace client::frontend
             "}");
     }
 
+    void OriginalFrontend::SendServerError(const std::string& message)
+    {
+        ExecuteScriptUtf8(
+            "if(window.ZoneFrontend){"
+            "window.ZoneFrontend.serverError(" +
+            JsonString(
+                message) +
+            ");"
+            "}");
+    }
+
+
+    void OriginalFrontend::SendServerAccepted()
+    {
+        ExecuteScriptUtf8(
+            "if(window.ZoneFrontend){"
+            "window.ZoneFrontend.serverAccepted();"
+            "}");
+    }
+
     void OriginalFrontend::Hide()
     {
         if (controller_)
@@ -1760,11 +1780,10 @@ namespace client::frontend
             return;
         }
 
-        if (command ==
-            "login")
+        if (command =="login")
         {
             if (fields.size() <
-                5)
+                4)
             {
                 core::Log::Warning(
                     "Invalid frontend login message.");
@@ -1787,8 +1806,48 @@ namespace client::frontend
                 fields[3] ==
                 "1";
 
+            events_.push_back(
+                std::move(
+                    event));
+
+            return;
+        }
+
+        if (command =="server_select")
+        {
+            if (fields.size() <
+                    2 ||
+                fields[1].empty())
+            {
+                core::Log::Warning(
+                    "Invalid frontend server_select message.");
+
+                return;
+            }
+
+            FrontendEvent event;
+
+            event.type =
+                FrontendEventType::
+                    ServerSelect;
+
             event.serverId =
-                fields[4];
+                fields[1];
+
+            events_.push_back(
+                std::move(
+                    event));
+
+            return;
+        }
+
+        if (command =="logout")
+        {
+            FrontendEvent event;
+
+            event.type =
+                FrontendEventType::
+                    Logout;
 
             events_.push_back(
                 std::move(

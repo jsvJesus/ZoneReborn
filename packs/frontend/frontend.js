@@ -417,15 +417,22 @@ async function buildServerList()
                     }
                 }
 
-                if (!online ||
-                    !host)
-                {
-                    continue;
-                }
+                if (!host)
+				{
+					continue;
+				}
 
                 const id =
                     String(
                         result.list.length);
+						
+				const uid =
+					String(
+						serverInfo.uid ||
+						(
+							serverInfo.server &&
+							serverInfo.server.uid
+						) || id);
 
                 const label =
                     String(
@@ -435,27 +442,33 @@ async function buildServerList()
                         ("Server " + id));
 
                 result.list.push(
-                    {
-                        id:
-                            id,
+				{
+					id:
+						id,
 
-                        label:
-                            label,
+					uid:
+						uid,
 
-                        address:
-                            host,
+					label:
+						label,
 
-                        ping:
-                            0,
+					address:
+						host,
 
-                        using:
-                            0,
+					online:
+						online,
 
-                        is_dev_serv:
-                            developer
-                                ? 1
-                                : 0
-                    });
+					ping:
+						0,
+
+					using:
+						0,
+
+					is_dev_serv:
+						developer
+							? 1
+							: 0
+				});
             }
         }
 
@@ -557,6 +570,78 @@ async function buildServerList()
     return result;
 }
 
+window.FrontendBridge =
+{
+    getLocale:
+        function()
+        {
+            return currentLocale;
+        },
+
+
+    readRememberedLogin:
+        readRememberedLogin,
+
+
+    readVersion:
+        readVersion,
+
+
+    buildServerList:
+        buildServerList,
+
+
+    postLogin:
+        function(
+            login,
+            password,
+            remember)
+        {
+            postToHost(
+                "login",
+                login || "",
+                password || "",
+                remember
+                    ? "1"
+                    : "0");
+        },
+
+
+    selectServer:
+        function(
+            serverUid)
+        {
+            postToHost(
+                "server_select",
+                serverUid || "");
+        },
+
+
+    logout:
+        function()
+        {
+            postToHost(
+                "logout");
+        },
+
+
+    quit:
+        function()
+        {
+            postToHost(
+                "quit");
+        },
+
+
+    openUrl:
+        function(
+            url)
+        {
+            postToHost(
+                "open_url",
+                url || "");
+        }
+};
 
 async function getLocales()
 {
@@ -872,20 +957,23 @@ window.ActionsWithLogin =
         },
 
     authenticateUser:
-        function(rawArguments)
-        {
-            const args = unwrapArguments(rawArguments);
+		function(rawArguments)
+		{
+			const args =
+				unwrapArguments(
+					rawArguments);
 
-            const remember =
-                !!args.rememberMe;
+			const remember =
+				!!args.rememberMe;
 
-            postToHost(
-                "login",
-                args.login || "",
-                args.password || "",
-                remember ? "1" : "0",
-                args.serverID ?? "0");
-        }
+			postToHost(
+				"login",
+				args.login || "",
+				args.password || "",
+				remember
+					? "1"
+					: "0");
+		}
 };
 
 
@@ -1700,35 +1788,72 @@ window.ZoneFrontend =
         },
 
 
-    loginError:
-        function(message)
+    loginError:function(message)
+    {
+        if (window.NativeLogin)
         {
-            transmit(
-                "ActionsWithLogin.authenticateUser",
-                {
-                    message:
-                        message
-                });
-        },
+            window.NativeLogin.
+                loginError(
+                    message);
 
-
-    loginAccepted:
-        function()
-        {
-            transmit(
-                "activateAccountWindow",
-                {});
-        },
-
-
-    localizationResult:
-        function(data)
-        {
-            transmit(
-                "getLocalizedResource",
-                data ||
-                {});
+            return;
         }
+
+        transmit(
+            "ActionsWithLogin.authenticateUser",
+            {
+                message:
+                    message
+            });
+    },
+
+
+	loginAccepted:function()
+    {
+        if (window.NativeLogin)
+        {
+            window.NativeLogin.
+                authenticated();
+
+            return;
+        }
+    },
+
+
+	serverError:function(message)
+    {
+        if (window.NativeLogin)
+        {
+            window.NativeLogin.
+                serverError(
+                    message);
+        }
+    },
+
+
+	serverAccepted:function()
+    {
+        transmit(
+            "activateAccountWindow",
+            {});
+
+        setTimeout(
+            () =>
+            {
+                if (window.NativeLogin)
+                {
+                    window.NativeLogin.
+                        serverAccepted();
+                }
+            },
+            0);
+    },
+
+
+	localizationResult:function(data)
+    {
+        transmit("getLocalizedResource", data || {});
+    }
 };
 
 
@@ -1969,6 +2094,12 @@ window.ready =
 
         startup.style.display =
             "none";
+			
+		if (window.NativeLogin)
+		{
+			window.NativeLogin.
+				show();
+		}
 
         postToHost(
             "ready");

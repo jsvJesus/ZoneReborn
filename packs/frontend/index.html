@@ -66,6 +66,8 @@
 			background: transparent;
         }
     </style>
+	
+	<link rel="stylesheet" href="./login.css">
 
     <script>
 		window.RufflePlayer =
@@ -153,6 +155,7 @@
 
     <script src="./ruffle/ruffle.js"></script>
     <script defer src="./frontend.js"></script>
+	<script defer src="./login.js"></script>
 </head>
 
 <body>
@@ -160,7 +163,164 @@
         <div id="startup">
             <canvas id="startupCanvas"></canvas>
         </div>
+		
+		<div id="nativeLogin" class="native-login-root" hidden>
 
+			<div class="native-login-top">
+				<button
+					id="nativeLoginSettings"
+					class="native-login-settings"
+					type="button">
+					⚙
+				</button>
+
+				<button
+					type="button"
+					data-login-locale="english">
+					EN
+				</button>
+
+				<span class="separator">|</span>
+
+				<button
+					type="button"
+					data-login-locale="chinese">
+					ZH
+				</button>
+
+				<span class="separator">|</span>
+
+				<button
+					type="button"
+					data-login-locale="russian">
+					RU
+				</button>
+
+				<button
+					id="nativeLoginClose"
+					class="native-login-close"
+					type="button">
+					X
+				</button>
+			</div>
+
+
+			<div
+				id="nativeAuthorizeCard"
+				class="native-login-card">
+
+				<div
+					id="nativeLoginCaption"
+					class="native-login-caption">
+				</div>
+
+				<div class="native-login-content">
+
+					<input
+						id="nativeLoginName"
+						class="native-login-input"
+						type="text"
+						maxlength="40"
+						autocomplete="username">
+
+					<input
+						id="nativeLoginPassword"
+						class="native-login-input"
+						type="password"
+						maxlength="40"
+						autocomplete="current-password">
+
+					<div class="native-login-divider"></div>
+
+					<label class="native-login-remember">
+						<input
+							id="nativeRemember"
+							type="checkbox">
+
+						<span class="native-login-toggle"></span>
+
+						<span
+							id="nativeRememberText"
+							class="native-login-remember-text">
+						</span>
+					</label>
+
+					<button
+						id="nativeLoginButton"
+						class="native-login-main-button"
+						type="button"
+						disabled>
+					</button>
+
+					<button
+						id="nativeRegisterButton"
+						class="native-login-link"
+						type="button">
+					</button>
+
+					<button
+						id="nativeForgotButton"
+						class="native-login-link"
+						type="button">
+					</button>
+
+					<div
+						id="nativeLoginError"
+						class="native-login-error">
+					</div>
+
+				</div>
+			</div>
+
+
+			<div
+				id="nativeServerCard"
+				class="native-login-card"
+				hidden>
+
+				<div
+					id="nativeServerCaption"
+					class="native-login-caption">
+				</div>
+
+				<div class="native-login-content">
+
+					<div
+						id="nativeServerList"
+						class="native-server-list">
+					</div>
+
+					<button
+						id="nativeServerButton"
+						class="native-login-main-button"
+						type="button"
+						disabled>
+					</button>
+
+					<button
+						id="nativeServerBack"
+						class="
+							native-login-main-button
+							native-server-back"
+						type="button">
+					</button>
+
+					<div
+						id="nativeServerError"
+						class="native-login-error">
+					</div>
+
+				</div>
+			</div>
+
+
+			<div
+				id="nativeLoginVersion"
+				class="native-login-version">
+			</div>
+
+		</div>
+		
         <div id="flash"></div>
     </div>
 </body>

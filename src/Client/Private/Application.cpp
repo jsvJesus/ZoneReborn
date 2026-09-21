@@ -461,32 +461,76 @@ Application::CharacterTransform() const noexcept
                             "Authentication successful: ") +
                         result.login);
 
-                        core::Log::Info(std::string("Selected server id: ") +
-                            event.serverId);
+                    //
+                    // Авторизация завершена.
+                    //
+                    // Как в последней версии клиента:
+                    // AuthorizeWin скрывается,
+                    // после него открывается ServersWin.
+                    //
+                    frontend_.
+                        SendLoginAccepted();
 
-                        std::string
-                            characterSceneError;
+                    break;
+                }
 
-                        if (!InitializeCharacterSelectScene(
-                                characterSceneError))
-                        {
-                            core::Log::Error(
-                                characterSceneError);
-
-                            accountSession_.
-                                Clear();
-
-                            frontend_.
-                                SendLoginError(
-                                    "Unable to initialize character selection scene.");
-
-                            break;
-                        }
-
+                case frontend::FrontendEventType::ServerSelect:
+                {
+                    if (!accountSession_.
+                            IsAuthenticated())
+                    {
                         frontend_.
-                            SendLoginAccepted();
+                            SendServerError(
+                                "Authentication required.");
 
                         break;
+                    }
+
+                    if (event.serverId.empty())
+                    {
+                        frontend_.
+                            SendServerError(
+                                "Server id is empty.");
+
+                        break;
+                    }
+
+                    core::Log::Info(
+                        std::string(
+                            "Selected server id: ") +
+                        event.serverId);
+
+                    std::string
+                        characterSceneError;
+
+                    if (!InitializeCharacterSelectScene(
+                            characterSceneError))
+                    {
+                        core::Log::Error(
+                            characterSceneError);
+
+                        frontend_.
+                            SendServerError(
+                                "Unable to initialize character selection scene.");
+
+                        break;
+                    }
+
+                    frontend_.
+                        SendServerAccepted();
+
+                    break;
+                }
+
+                case frontend::FrontendEventType::Logout:
+                {
+                    accountSession_.
+                        Clear();
+
+                    core::Log::Info(
+                        "Frontend account session cleared.");
+
+                    break;
                 }
 
                 case frontend::FrontendEventType::OpenUrl:

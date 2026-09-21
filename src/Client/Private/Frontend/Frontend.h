@@ -19,6 +19,9 @@ namespace client::frontend
     enum class FrontendEventType
     {
         Login,
+        ServerSelect,
+        Logout,
+
         Exit,
         OpenUrl,
         Play,
@@ -118,6 +121,8 @@ namespace client::frontend
             const std::string& message);
 
         void SendLoginAccepted();
+        void SendServerError(const std::string& message);
+        void SendServerAccepted();
 
         void Hide();
 
