@@ -1855,7 +1855,7 @@ namespace client::frontend
 
             event.type =
                 FrontendEventType::
-                    DummyShow;
+                    CharacterShow;
 
             events_.push_back(
                 std::move(
@@ -1864,15 +1864,13 @@ namespace client::frontend
             return;
         }
 
-
-        if (command ==
-            "dummy_hide")
+        if (command == "dummy_hide")
         {
             FrontendEvent event;
 
             event.type =
                 FrontendEventType::
-                    DummyHide;
+                    CharacterHide;
 
             events_.push_back(
                 std::move(
@@ -1880,29 +1878,26 @@ namespace client::frontend
 
             return;
         }
-
-
-        if (command ==
-            "dummy_part")
+        
+        if (command == "dummy_part")
         {
-            if (fields.size() <
-                3)
+            if (fields.size() < 3)
             {
                 core::Log::Warning(
-                    "Invalid dummy_part message.");
+                    "Invalid character_part message.");
 
                 return;
             }
 
-            std::int32_t partId =
+            std::int32_t itemType =
                 0;
 
             if (!ParseInt32(
                     fields[2],
-                    partId))
+                    itemType))
             {
                 core::Log::Warning(
-                    "Invalid dummy_part ID.");
+                    "Invalid character item type.");
 
                 return;
             }
@@ -1911,13 +1906,13 @@ namespace client::frontend
 
             event.type =
                 FrontendEventType::
-                    DummyPart;
+                    CharacterPart;
 
-            event.dummyGroup =
+            event.characterGroup =
                 fields[1];
 
-            event.dummyPartId =
-                partId;
+            event.characterItemType =
+                itemType;
 
             events_.push_back(
                 std::move(
@@ -1925,13 +1920,10 @@ namespace client::frontend
 
             return;
         }
-
-
-        if (command ==
-            "dummy_full")
+        
+        if (command == "dummy_full")
         {
-            if (fields.size() <
-                    3 ||
+            if (fields.size() < 3 ||
                 (
                     (
                         fields.size() -
@@ -1939,10 +1931,10 @@ namespace client::frontend
                     ) %
                     2
                 ) !=
-                    0)
+                0)
             {
                 core::Log::Warning(
-                    "Invalid dummy_full message.");
+                    "Invalid character_full message.");
 
                 return;
             }
@@ -1951,30 +1943,31 @@ namespace client::frontend
 
             event.type =
                 FrontendEventType::
-                    DummyFull;
+                    CharacterFull;
 
             for (std::size_t index = 1;
-                 index + 1 <
-                    fields.size();
+                 index + 1 < fields.size();
                  index += 2)
             {
-                std::int32_t partId =
+                std::int32_t itemType =
                     0;
 
                 if (!ParseInt32(
                         fields[
-                            index + 1],
-                        partId))
+                            index +
+                            1],
+                        itemType))
                 {
                     core::Log::Warning(
-                        "Invalid dummy_full part ID.");
+                        "Invalid character_full item type.");
 
                     return;
                 }
 
-                event.dummyParts.emplace_back(
-                    fields[index],
-                    partId);
+                event.characterParts.
+                    emplace_back(
+                        fields[index],
+                        itemType);
             }
 
             events_.push_back(
@@ -1984,12 +1977,9 @@ namespace client::frontend
             return;
         }
 
-
-        if (command ==
-            "dummy_rotate")
+        if (command == "dummy_rotate")
         {
-            if (fields.size() <
-                3)
+            if (fields.size() < 3)
             {
                 return;
             }
@@ -1998,15 +1988,15 @@ namespace client::frontend
 
             event.type =
                 FrontendEventType::
-                    DummyRotate;
+                    CharacterRotate;
 
             ParseFloat(
                 fields[1],
-                event.dummyDeltaX);
+                event.characterDeltaX);
 
             ParseFloat(
                 fields[2],
-                event.dummyDeltaY);
+                event.characterDeltaY);
 
             events_.push_back(
                 std::move(

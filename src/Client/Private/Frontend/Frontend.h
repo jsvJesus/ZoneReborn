@@ -25,11 +25,11 @@ namespace client::frontend
 
         UiSound,
 
-        DummyShow,
-        DummyHide,
-        DummyPart,
-        DummyFull,
-        DummyRotate
+        CharacterShow,
+        CharacterHide,
+        CharacterPart,
+        CharacterFull,
+        CharacterRotate
     };
 
     struct FrontendEvent final
@@ -47,6 +47,23 @@ namespace client::frontend
 
         std::int32_t dummyPartId =
             0;
+
+        std::string characterGroup;
+
+        std::int32_t characterItemType =
+            0;
+
+        float characterDeltaX =
+            0.0f;
+
+        float characterDeltaY =
+            0.0f;
+
+        std::vector<
+            std::pair<
+                std::string,
+                std::int32_t>>
+            characterParts;
 
         float dummyDeltaX =
             0.0f;

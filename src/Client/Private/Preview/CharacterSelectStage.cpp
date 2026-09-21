@@ -380,24 +380,24 @@ namespace client::preview
                         continue;
                     }
 
-                    output.dummyTransform =
+                    output.characterTransform =
                         core::math::
                             Transform3x4::
                             Multiply(
                                 localTransform,
                                 chunkTransform);
 
-                    output.hasDummy =
+                    output.hasCharacterAnchor =
                         true;
 
                     const auto position =
                         output.
-                            dummyTransform.
+                            characterTransform.
                             Translation();
 
                     core::Log::Info(
                         std::string(
-                            "CharacterSelect AvatarDummy found at: ") +
+                            "Character anchor found at: ") +
                         std::to_string(
                             position.x) +
                         ", " +
@@ -420,10 +420,10 @@ namespace client::preview
             return false;
         }
 
-        if (!output.hasDummy)
+        if (!output.hasCharacterAnchor)
         {
             error =
-                "CharacterSelect: AvatarDummy entity was not found in space " +
+                "Character anchor was not found in space " +
                 std::string(
                     spaceName);
 

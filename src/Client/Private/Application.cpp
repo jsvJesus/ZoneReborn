@@ -1,7 +1,6 @@
 #include "Application.h"
 
 #include "Preview/WorldPreviewLoader.h"
-#include "Preview/CharacterDummyRenderDataBuilder.h"
 
 #include "Core/Log.h"
 
@@ -217,23 +216,46 @@ namespace client
             return false;
         }
 
-        characterDummyAppearance_ =
-            {};
-
-        characterDummyVisible_ =
-            true;
-
-        characterDummyYaw_ =
-            0.0f;
-
-        if (!RebuildCharacterDummy(
-                error))
+        if (!characterCatalog_.Load(
+        runtime_.Resources(),
+        error))
         {
             renderer_.Shutdown();
 
             error =
-                "Unable to build CharacterDummy scene: " +
+                "Character catalog initialization failed: " +
                 error;
+
+            return false;
+        }
+
+        if (!characterState_.ResetCreator(
+                characterCatalog_,
+                error))
+        {
+            characterCatalog_.Clear();
+
+            renderer_.Shutdown();
+
+            error =
+                "Character state initialization failed: " +
+                error;
+
+            return false;
+        }
+
+        characterVisible_ =
+            true;
+
+        characterYaw_ =
+            0.0f;
+
+        if (!RebuildCharacter(
+                error))
+        {
+            characterCatalog_.Clear();
+
+            renderer_.Shutdown();
 
             return false;
         }
@@ -258,26 +280,27 @@ namespace client
 
         rendererInitialized_ =
             false;
-
+        
         characterSelectStage_ =
             {};
 
         characterSelectBaseScene_ =
             {};
 
-        characterDummyAppearance_ =
-            {};
+        characterState_.Reset();
 
-        characterDummyVisible_ =
+        characterCatalog_.Clear();
+
+        characterVisible_ =
             true;
 
-        characterDummyYaw_ =
+        characterYaw_ =
             0.0f;
 
-        characterDummyFirstInstance_ =
+        characterFirstInstance_ =
             0;
 
-        characterDummyInstanceCount_ =
+        characterInstanceCount_ =
             0;
 
         core::Log::Info(
@@ -285,46 +308,44 @@ namespace client
     }
 
     core::math::Transform3x4
-        Application::CharacterDummyTransform() const noexcept
+Application::CharacterTransform() const noexcept
     {
         return ApplyYaw(
             characterSelectStage_.
-                dummyTransform,
-            characterDummyYaw_);
+                characterTransform,
+            characterYaw_);
     }
 
-    bool Application::RebuildCharacterDummy(
+    bool Application::RebuildCharacter(
         std::string& error)
     {
         error.clear();
 
-        graphics::SceneRenderData scene = characterSelectBaseScene_;
+        graphics::SceneRenderData scene =
+            characterSelectBaseScene_;
 
-        characterDummyFirstInstance_ =
+        characterFirstInstance_ =
             scene.instances.size();
 
-        characterDummyInstanceCount_ =
+        characterInstanceCount_ =
             0;
 
-        if (characterDummyVisible_)
+        if (characterVisible_)
         {
-            preview::
-                CharacterDummyRenderDataBuilder
-                    builder;
+            character::RenderDataBuilder
+                builder;
 
             if (!builder.Build(
                     runtime_.Resources(),
-                    characterDummyAppearance_,
-                    CharacterDummyTransform(),
+                    characterCatalog_,
+                    characterState_,
+                    CharacterTransform(),
                     scene,
+                    characterInstanceCount_,
                     error))
             {
                 return false;
             }
-
-            characterDummyInstanceCount_ =
-                scene.instances.size() -
-                characterDummyFirstInstance_;
         }
 
         if (!renderer_.SetScene(
@@ -499,110 +520,98 @@ namespace client
                         break;
                 }
 
-                case frontend::FrontendEventType::DummyShow:
+                case frontend::FrontendEventType::CharacterShow:
                 {
-                    if (!rendererInitialized_)
+                    if (!rendererInitialized_ ||
+                        characterVisible_)
                     {
                         break;
                     }
 
-                    if (characterDummyVisible_)
-                    {
-                        break;
-                    }
-
-                    characterDummyVisible_ =
+                    characterVisible_ =
                         true;
 
                     std::string rebuildError;
 
-                    if (!RebuildCharacterDummy(
+                    if (!RebuildCharacter(
                             rebuildError))
                     {
                         core::Log::Error(
                             std::string(
-                                "CharacterDummy show failed: ") +
+                                "Character show failed: ") +
                             rebuildError);
 
                         return false;
                     }
 
-                    core::Log::Info(
-                        "CharacterDummy shown.");
-
                     break;
                 }
-            
-                case frontend::FrontendEventType::DummyHide:
+
+                case frontend::FrontendEventType::CharacterHide:
                 {
-                    if (!rendererInitialized_)
+                    if (!rendererInitialized_ ||
+                        !characterVisible_)
                     {
                         break;
                     }
 
-                    if (!characterDummyVisible_)
-                    {
-                        break;
-                    }
-
-                    characterDummyVisible_ =
+                    characterVisible_ =
                         false;
 
                     std::string rebuildError;
 
-                    if (!RebuildCharacterDummy(
+                    if (!RebuildCharacter(
                             rebuildError))
                     {
                         core::Log::Error(
                             std::string(
-                                "CharacterDummy hide failed: ") +
+                                "Character hide failed: ") +
                             rebuildError);
 
                         return false;
                     }
 
-                    core::Log::Info(
-                        "CharacterDummy hidden.");
-
                     break;
                 }
-            
-                case frontend::FrontendEventType::DummyPart:
+
+                case frontend::FrontendEventType::CharacterPart:
                 {
                     if (!rendererInitialized_)
                     {
                         break;
                     }
 
-                    if (!characterDummyAppearance_.
-                            SetPart(
-                                event.dummyGroup,
-                                event.dummyPartId))
+                    std::string stateError;
+
+                    if (!characterState_.
+                            ApplyCreatorSelection(
+                                characterCatalog_,
+                                event.characterGroup,
+                                event.characterItemType,
+                                stateError))
                     {
                         core::Log::Warning(
-                            std::string(
-                                "Unknown CharacterDummy group: ") +
-                            event.dummyGroup);
+                            stateError);
 
                         break;
                     }
 
                     core::Log::Info(
                         std::string(
-                            "CharacterDummy part update: ") +
-                        event.dummyGroup +
+                            "Character item changed: ") +
+                        event.characterGroup +
                         " -> " +
                         std::to_string(
-                            event.dummyPartId));
+                            event.characterItemType));
 
                     std::string rebuildError;
 
-                    if (!RebuildCharacterDummy(
+                    if (!RebuildCharacter(
                             rebuildError))
                     {
                         core::Log::Error(
                             std::string(
-                                "CharacterDummy rebuild failed: ") +
+                                "Character rebuild failed: ") +
                             rebuildError);
 
                         return false;
@@ -611,106 +620,86 @@ namespace client
                     break;
                 }
 
-                case frontend::FrontendEventType::DummyFull:
+                case frontend::FrontendEventType::CharacterFull:
+                {
+                    if (!rendererInitialized_)
                     {
-                        if (!rendererInitialized_)
-                        {
-                            break;
-                        }
-
-                        preview::CharacterDummyAppearance
-                            newAppearance;
-
-                        for (const auto& part :
-                             event.dummyParts)
-                        {
-                            if (!newAppearance.SetPart(
-                                    part.first,
-                                    part.second))
-                            {
-                                core::Log::Warning(
-                                    std::string(
-                                        "Unknown CharacterDummy group in full rebuild: ") +
-                                    part.first);
-
-                                continue;
-                            }
-
-                            core::Log::Info(
-                                std::string(
-                                    "CharacterDummy full part: ") +
-                                part.first +
-                                " -> " +
-                                std::to_string(
-                                    part.second));
-                        }
-
-                        characterDummyAppearance_ =
-                            newAppearance;
-
-                        core::Log::Info(
-                            std::string(
-                                "CharacterDummy full rebuild, parts=") +
-                            std::to_string(
-                                event.dummyParts.size()));
-
-                        std::string
-                            rebuildError;
-
-                        if (!RebuildCharacterDummy(
-                                rebuildError))
-                        {
-                            core::Log::Error(
-                                std::string(
-                                    "CharacterDummy full rebuild failed: ") +
-                                rebuildError);
-
-                            return false;
-                        }
-
                         break;
                     }
-            
-                case frontend::FrontendEventType::DummyRotate:
+
+                    std::string stateError;
+
+                    if (!characterState_.
+                            ApplyCreatorSet(
+                                characterCatalog_,
+                                event.characterParts,
+                                stateError))
+                    {
+                        core::Log::Error(
+                            std::string(
+                                "Unable to apply character data: ") +
+                            stateError);
+
+                        return false;
+                    }
+
+                    std::string rebuildError;
+
+                    if (!RebuildCharacter(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            std::string(
+                                "Character full rebuild failed: ") +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    break;
+                }
+
+                case frontend::FrontendEventType::CharacterRotate:
                 {
                     if (!rendererInitialized_ ||
-                        !characterDummyVisible_)
+                        !characterVisible_)
                     {
                         break;
                     }
 
-                    //
-                    // Flash передаёт mouse delta.
-                    //
-                    characterDummyYaw_ +=
-                        event.dummyDeltaX *
+                    characterYaw_ +=
+                        event.characterDeltaX *
                         0.01f;
 
                     constexpr float Pi =
                         3.14159265358979323846f;
 
-                    if (characterDummyYaw_ >
-                        Pi * 2.0f)
+                    constexpr float FullTurn =
+                        Pi *
+                        2.0f;
+
+                    while (characterYaw_ >
+                           FullTurn)
                     {
-                        characterDummyYaw_ -=
-                            Pi * 2.0f;
+                        characterYaw_ -=
+                            FullTurn;
                     }
-                    else if (
-                        characterDummyYaw_ <
-                        -Pi * 2.0f)
+
+                    while (characterYaw_ <
+                           -FullTurn)
                     {
-                        characterDummyYaw_ +=
-                            Pi * 2.0f;
+                        characterYaw_ +=
+                            FullTurn;
                     }
 
                     if (!renderer_.
                             SetInstanceTransformRange(
-                                characterDummyFirstInstance_,
-                                characterDummyInstanceCount_,
-                                CharacterDummyTransform()))
+                                characterFirstInstance_,
+                                characterInstanceCount_,
+                                CharacterTransform()))
                     {
                         core::Log::Warning(
-                            "Unable to rotate CharacterDummy instances.");
+                            "Unable to rotate character instances.");
                     }
 
                     break;

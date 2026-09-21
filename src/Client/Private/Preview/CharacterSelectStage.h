@@ -15,12 +15,12 @@ namespace client::preview
         graphics::CameraView camera;
 
         core::math::Transform3x4
-            dummyTransform;
+            characterTransform;
 
         bool hasCamera =
             false;
 
-        bool hasDummy =
+        bool hasCharacterAnchor =
             false;
     };
 

@@ -12,7 +12,10 @@
 
 #include "Graphics/Renderer.h"
 #include "Preview/CharacterSelectStage.h"
-#include "Preview/CharacterDummyRenderDataBuilder.h"
+
+#include "Character/CharacterCatalog.h"
+#include "Character/CharacterRenderDataBuilder.h"
+#include "Character/CharacterState.h"
 
 #include <cstddef>
 
@@ -67,21 +70,24 @@ namespace client
         graphics::SceneRenderData
             characterSelectBaseScene_;
 
-        preview::CharacterDummyAppearance
-            characterDummyAppearance_;
+        character::Catalog
+            characterCatalog_;
 
-        bool characterDummyVisible_ =
+        character::State
+            characterState_;
+
+        bool characterVisible_ =
             true;
 
-        float characterDummyYaw_ =
+        float characterYaw_ =
             0.0f;
 
         std::size_t
-            characterDummyFirstInstance_ =
+            characterFirstInstance_ =
                 0;
 
         std::size_t
-            characterDummyInstanceCount_ =
+            characterInstanceCount_ =
                 0;
 
         bool rendererInitialized_ =
@@ -94,11 +100,11 @@ namespace client
         void ShutdownCharacterSelectScene();
 
         [[nodiscard]]
-        bool RebuildCharacterDummy(
+        bool RebuildCharacter(
             std::string& error);
 
         [[nodiscard]]
         core::math::Transform3x4
-            CharacterDummyTransform() const noexcept;
+            CharacterTransform() const noexcept;
     };
 }
