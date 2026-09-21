@@ -316,15 +316,24 @@ async function readVersion()
 
 async function buildServerList()
 {
+    const result =
+    {
+        list: [],
+        defaultServerId: ""
+    };
+
     try
     {
-        console.log("[Frontend] Loading server config:", SERVER_CONFIG);
+        console.log(
+            "[Frontend] Loading server config:",
+            SERVER_CONFIG);
 
-        const response = await fetch(
-            SERVER_CONFIG,
-            {
-                cache: "no-store"
-            });
+        const response =
+            await fetch(
+                SERVER_CONFIG,
+                {
+                    cache: "no-store"
+                });
 
         if (!response.ok)
         {
@@ -335,101 +344,202 @@ async function buildServerList()
                 SERVER_CONFIG);
         }
 
-        const config = await response.json();
+        const config =
+            await response.json();
 
         console.log(
             "[Frontend] servers_config.json loaded:",
             config);
 
-        const list = [];
 
-        function addServers(source, isDev)
+        function addServers(
+            servers,
+            developer)
         {
-            if (!Array.isArray(source))
+            if (!Array.isArray(servers))
+            {
                 return;
+            }
 
-            for (const serverInfo of source)
+            for (const serverInfo of servers)
             {
                 if (!serverInfo)
+                {
                     continue;
+                }
 
-                const server = serverInfo.server;
+                let host = "";
+                let online = true;
 
-                if (!server)
-                    continue;
+                //
+                // Новый servers_config.json:
+                //
+                // {
+                //     name: "RU1",
+                //     host: "r1.stalker.so:15230",
+                //     uid: "server_EKB"
+                // }
+                //
+                if (serverInfo.host)
+                {
+                    host =
+                        String(
+                            serverInfo.host);
+                }
 
-                // В оригинальном конфиге online может быть 0/1,
-                // "0"/"1", true/false.
-                const online =
-                    server.online === true ||
-                    server.online === 1 ||
-                    server.online === "1";
+                //
+                // Старый формат:
+                //
+                // {
+                //     name: "Cluster SPB",
+                //     server:
+                //     {
+                //         host: "...",
+                //         online: 1
+                //     }
+                // }
+                //
+                else if (serverInfo.server)
+                {
+                    host =
+                        String(
+                            serverInfo.server.host ||
+                            "");
 
-                if (!online)
-                    continue;
-
-                if (!server.host)
-                    continue;
-
-                const id = String(list.length);
-
-                let label =
-                    serverInfo.name != null
-                        ? String(serverInfo.name)
-                        : ("Server " + id);
-
-                // Наши названия кластеров.
-                // Старые имена оставляем совместимыми с оригинальным config.
-                if (label === "REGION UA")
-                    label = "UA";
-                else if (label === "REGION EU")
-                    label = "EU";
-
-                list.push(
+                    if ("online" in serverInfo.server)
                     {
-                        id: id,
-                        label: label,
-                        address: String(server.host),
-                        ping: 0,
-                        using: 0,
-                        is_dev_serv: isDev ? 1 : 0
+                        online =
+                            serverInfo.server.online === true ||
+                            serverInfo.server.online === 1 ||
+                            serverInfo.server.online === "1";
+                    }
+                }
+
+                if (!online ||
+                    !host)
+                {
+                    continue;
+                }
+
+                const id =
+                    String(
+                        result.list.length);
+
+                const label =
+                    String(
+                        serverInfo.name ||
+                        serverInfo.SERVTAG ||
+                        serverInfo.uid ||
+                        ("Server " + id));
+
+                result.list.push(
+                    {
+                        id:
+                            id,
+
+                        label:
+                            label,
+
+                        address:
+                            host,
+
+                        ping:
+                            0,
+
+                        using:
+                            0,
+
+                        is_dev_serv:
+                            developer
+                                ? 1
+                                : 0
                     });
             }
         }
 
-        // Обычные игровые кластеры
-        addServers(config.customers_servers, false);
 
-        // Пока dev-кластеры в Login Window НЕ показываем.
-        // Потом при необходимости можно вернуть:
         //
-        // addServers(config.developers_servers, true);
-
-        let defaultServerId = "";
-
-        if (list.length > 0)
+        // Текущий формат ресурсов SOnline.
+        //
+        if (Array.isArray(
+                config.release_servers))
         {
-            // По умолчанию пробуем выбрать EU.
-            const euServer =
-                list.find(server => server.label === "EU");
-
-            if (euServer)
-                defaultServerId = euServer.id;
-            else
-                defaultServerId = list[0].id;
+            addServers(
+                config.release_servers,
+                false);
+        }
+        //
+        // Совместимость со старым config.
+        //
+        else
+        {
+            addServers(
+                config.customers_servers,
+                false);
         }
 
-        const result =
+
+        //
+        // Developer servers.
+        //
+        addServers(
+            config.developers_servers,
+            true);
+
+
+        //
+        // Выбираем обычный release-сервер
+        // по умолчанию.
+        //
+        let defaultServer = null;
+
+        defaultServer =
+            result.list.find(
+                server =>
+                    server.label === "EU1");
+
+        if (!defaultServer)
         {
-            list: list,
-            defaultServerId: defaultServerId
-        };
+            defaultServer =
+                result.list.find(
+                    server =>
+                        server.label === "RU1");
+        }
+
+        if (!defaultServer)
+        {
+            defaultServer =
+                result.list.find(
+                    server =>
+                        server.label ===
+                        "Cluster SPB");
+        }
+
+        if (!defaultServer)
+        {
+            defaultServer =
+                result.list.find(
+                    server =>
+                        server.is_dev_serv === 0);
+        }
+
+        if (!defaultServer &&
+            result.list.length > 0)
+        {
+            defaultServer =
+                result.list[0];
+        }
+
+        if (defaultServer)
+        {
+            result.defaultServerId =
+                defaultServer.id;
+        }
+
 
         console.log(
             "[Frontend] Built server list:",
             JSON.stringify(result));
-
-        return result;
     }
     catch (error)
     {
@@ -437,11 +547,12 @@ async function buildServerList()
             "[Frontend] Failed to build server list:",
             error);
 
-        return {
-            list: [],
-            defaultServerId: ""
-        };
+        trace(
+            "Server config read failed: " +
+            error);
     }
+
+    return result;
 }
 
 
