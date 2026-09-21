@@ -7,7 +7,7 @@ package com
          super();
       }
       
-      public function parse(a:Array, defaultChannals:Array) : Array
+      public function parse(a:Array, defaultChannals:Array, sounds:Array) : Array
       {
          var Obj:Object = null;
          var j:* = undefined;
@@ -19,6 +19,7 @@ package com
             Obj.label = defaultChannals[i].label;
             Obj.selected = defaultChannals[i].selected;
             Obj.com = defaultChannals[i].com;
+            Obj.short_name = defaultChannals[i].short_name;
             for(j = 0; j < a.length; j++)
             {
                if(defaultChannals[i].id == a[j])
@@ -26,25 +27,38 @@ package com
                   Obj.selected = true;
                }
             }
+            for(j = 0; j < sounds.length; j++)
+            {
+               if(defaultChannals[i].id == sounds[j])
+               {
+                  Obj.sound = true;
+               }
+            }
             arr.push(Obj);
          }
          return arr;
       }
       
-      public function unparse(AR:Array) : Array
+      public function unparse(settings:Array) : Object
       {
-         var arr:Array = new Array();
-         for(var i:* = 0; i < AR.length; i++)
+         var result:Object = new Object();
+         result.sounds = new Array();
+         result.channels = new Array();
+         for(var i:* = 0; i < settings.length; i++)
          {
-            if(AR[i].selected == true)
+            if(settings[i].selected == true)
             {
-               if(AR[i].id != -99)
+               if(settings[i].id != -99)
                {
-                  arr.push(AR[i].id);
+                  result.channels.push(settings[i].id);
                }
             }
+            if(settings[i].sound == true)
+            {
+               result.sounds.push(settings[i].id);
+            }
          }
-         return arr;
+         return result;
       }
    }
 }

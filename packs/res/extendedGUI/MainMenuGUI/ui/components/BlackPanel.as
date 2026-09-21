@@ -10,6 +10,8 @@ package ui.components
       
       private var _borderAlpha:Number = 0.05;
       
+      public var _backColor:uint = 0;
+      
       private var _width:Number = 0;
       
       private var _height:Number = 0;
@@ -28,6 +30,17 @@ package ui.components
       override public function set width(value:Number) : void
       {
          this._width = value;
+         this.invalidate();
+      }
+      
+      public function get backColor() : uint
+      {
+         return this._backColor;
+      }
+      
+      public function set backColor(value:uint) : void
+      {
+         this._backColor = value;
          this.invalidate();
       }
       
@@ -62,7 +75,7 @@ package ui.components
       private function draw() : void
       {
          this.graphics.clear();
-         this.graphics.beginFill(0,0.5);
+         this.graphics.beginFill(this.backColor,0.5);
          this.graphics.drawRect(0,0,this.width,this.height);
          this.graphics.endFill();
          this.graphics.lineStyle(this._border,16777215,this._borderAlpha,false,LineScaleMode.NONE,CapsStyle.SQUARE,JointStyle.MITER);

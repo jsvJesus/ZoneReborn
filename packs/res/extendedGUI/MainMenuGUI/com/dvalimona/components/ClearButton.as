@@ -25,9 +25,9 @@ package com.dvalimona.components
          this.upColorAlpha = 0;
          this.downColorAlpha = 0;
          this.overColorAlpha = 0;
-         this.labelUpColor = 5626367;
-         this.labelOverColor = 10347511;
-         this.labelDownColor = 2855599;
+         this.labelUpColor = Style.CLEAR_BUTTON_LABEL_UP;
+         this.labelOverColor = Style.CLEAR_BUTTON_LABEL_OVER;
+         this.labelDownColor = Style.CLEAR_BUTTON_LABEL_DOWN;
          drawFace();
       }
    }

@@ -19,6 +19,22 @@ package com
          return true;
       }
       
+      public static function lastIndexOf(val:String, str:String) : *
+      {
+         var startIndex:int = 0;
+         var lastIndex:int = -1;
+         while(startIndex != -1)
+         {
+            startIndex = int(str.indexOf(val,startIndex));
+            if(startIndex != -1)
+            {
+               lastIndex = startIndex;
+               startIndex += val.length;
+            }
+         }
+         return lastIndex;
+      }
+      
       public function replaceEnter(str:String) : String
       {
          var tmp:String = "";

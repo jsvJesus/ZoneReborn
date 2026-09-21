@@ -308,7 +308,10 @@ package scaleform.clik.controls
             return;
          }
          this._label = value;
-         this.textField.text = value;
+         if(this.textField != null)
+         {
+            this.textField.text = value;
+         }
       }
       
       public function get autoSize() : String

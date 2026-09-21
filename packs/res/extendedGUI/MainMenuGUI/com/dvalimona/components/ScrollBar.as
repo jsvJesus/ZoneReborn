@@ -374,7 +374,7 @@ class ScrollSlider extends Slider
       this.positionHandle();
    }
    
-   override protected function positionHandle() : void
+   override protected function positionHandle(silence:Boolean = false) : void
    {
       var range:Number = NaN;
       if(_orientation == HORIZONTAL)

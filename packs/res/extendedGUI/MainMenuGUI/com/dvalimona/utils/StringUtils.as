@@ -34,7 +34,7 @@ package com.dvalimona.utils
       {
          for(var i:* = 0; i < arg1.length; i++)
          {
-            if(arg1.charCodeAt(i) > 126 || arg1.charCodeAt(i) < 34)
+            if(arg1.charCodeAt(i) > 126 || arg1.charCodeAt(i) < 33)
             {
                return false;
             }

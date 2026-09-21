@@ -12,65 +12,65 @@ package com.greensock.core
       
       public var _last:Animation;
       
-      public function SimpleTimeline(vars:Object = null)
+      public function SimpleTimeline(param1:Object = null)
       {
-         super(0,vars);
+         super(0,param1);
          this.autoRemoveChildren = this.smoothChildTiming = true;
       }
       
-      public function insert(child:*, position:* = 0) : *
+      public function insert(param1:*, param2:* = 0) : *
       {
-         return this.add(child,position || 0);
+         return this.add(param1,param2 || 0);
       }
       
-      public function add(child:*, position:* = "+=0", align:String = "normal", stagger:Number = 0) : *
+      public function add(param1:*, param2:* = "+=0", param3:String = "normal", param4:Number = 0) : *
       {
-         var st:Number = NaN;
-         child._startTime = Number(position || 0) + child._delay;
-         if(child._paused)
+         var _loc6_:Number = NaN;
+         param1._startTime = Number(param2 || 0) + param1._delay;
+         if(param1._paused)
          {
-            if(this != child._timeline)
+            if(this != param1._timeline)
             {
-               child._pauseTime = child._startTime + (this.rawTime() - child._startTime) / child._timeScale;
+               param1._pauseTime = param1._startTime + (this.rawTime() - param1._startTime) / param1._timeScale;
             }
          }
-         if(child.timeline)
+         if(param1.timeline)
          {
-            child.timeline._remove(child,true);
+            param1.timeline._remove(param1,true);
          }
-         child.timeline = child._timeline = this;
-         if(child._gc)
+         param1.timeline = param1._timeline = this;
+         if(param1._gc)
          {
-            child._enabled(true,true);
+            param1._enabled(true,true);
          }
-         var prevTween:Animation = this._last;
+         var _loc5_:Animation = this._last;
          if(this._sortChildren)
          {
-            st = Number(child._startTime);
-            while(Boolean(prevTween) && prevTween._startTime > st)
+            _loc6_ = Number(param1._startTime);
+            while(Boolean(_loc5_) && _loc5_._startTime > _loc6_)
             {
-               prevTween = prevTween._prev;
+               _loc5_ = _loc5_._prev;
             }
          }
-         if(prevTween)
+         if(_loc5_)
          {
-            child._next = prevTween._next;
-            prevTween._next = Animation(child);
+            param1._next = _loc5_._next;
+            _loc5_._next = Animation(param1);
          }
          else
          {
-            child._next = this._first;
-            this._first = Animation(child);
+            param1._next = this._first;
+            this._first = Animation(param1);
          }
-         if(child._next)
+         if(param1._next)
          {
-            child._next._prev = child;
+            param1._next._prev = param1;
          }
          else
          {
-            this._last = Animation(child);
+            this._last = Animation(param1);
          }
-         child._prev = prevTween;
+         param1._prev = _loc5_;
          if(_timeline)
          {
             _uncache(true);
@@ -78,31 +78,31 @@ package com.greensock.core
          return this;
       }
       
-      public function _remove(tween:Animation, skipDisable:Boolean = false) : *
+      public function _remove(param1:Animation, param2:Boolean = false) : *
       {
-         if(tween.timeline == this)
+         if(param1.timeline == this)
          {
-            if(!skipDisable)
+            if(!param2)
             {
-               tween._enabled(false,true);
+               param1._enabled(false,true);
             }
-            if(tween._prev)
+            if(param1._prev)
             {
-               tween._prev._next = tween._next;
+               param1._prev._next = param1._next;
             }
-            else if(this._first === tween)
+            else if(this._first === param1)
             {
-               this._first = tween._next;
+               this._first = param1._next;
             }
-            if(tween._next)
+            if(param1._next)
             {
-               tween._next._prev = tween._prev;
+               param1._next._prev = param1._prev;
             }
-            else if(this._last === tween)
+            else if(this._last === param1)
             {
-               this._last = tween._prev;
+               this._last = param1._prev;
             }
-            tween._next = tween._prev = tween.timeline = null;
+            param1._next = param1._prev = param1.timeline = null;
             if(_timeline)
             {
                _uncache(true);
@@ -111,26 +111,26 @@ package com.greensock.core
          return this;
       }
       
-      override public function render(time:Number, suppressEvents:Boolean = false, force:Boolean = false) : void
+      override public function render(param1:Number, param2:Boolean = false, param3:Boolean = false) : void
       {
-         var next:Animation = null;
-         var tween:Animation = this._first;
-         _totalTime = _time = _rawPrevTime = time;
-         while(tween)
+         var _loc5_:Animation = null;
+         var _loc4_:Animation = this._first;
+         _totalTime = _time = _rawPrevTime = param1;
+         while(_loc4_)
          {
-            next = tween._next;
-            if(tween._active || time >= tween._startTime && !tween._paused)
+            _loc5_ = _loc4_._next;
+            if(_loc4_._active || param1 >= _loc4_._startTime && !_loc4_._paused)
             {
-               if(!tween._reversed)
+               if(!_loc4_._reversed)
                {
-                  tween.render((time - tween._startTime) * tween._timeScale,suppressEvents,force);
+                  _loc4_.render((param1 - _loc4_._startTime) * _loc4_._timeScale,param2,param3);
                }
                else
                {
-                  tween.render((!tween._dirty ? tween._totalDuration : tween.totalDuration()) - (time - tween._startTime) * tween._timeScale,suppressEvents,force);
+                  _loc4_.render((!_loc4_._dirty ? _loc4_._totalDuration : _loc4_.totalDuration()) - (param1 - _loc4_._startTime) * _loc4_._timeScale,param2,param3);
                }
             }
-            tween = next;
+            _loc4_ = _loc5_;
          }
       }
       

@@ -1,11 +1,8 @@
 package com.dvalimona.components
 {
    import flash.display.DisplayObjectContainer;
-   import flash.events.Event;
-   import flash.text.TextField;
-   import flash.text.TextFieldAutoSize;
-   import flash.text.TextFormat;
-   import flash.text.TextFormatAlign;
+   import flash.events.*;
+   import flash.text.*;
    
    public class Label extends Component
    {
@@ -19,6 +16,8 @@ package com.dvalimona.components
       
       protected var _autoSize:Boolean = true;
       
+      protected var _dontResize:Boolean = false;
+      
       protected var _text:String = "";
       
       protected var _tf:TextField;
@@ -29,7 +28,7 @@ package com.dvalimona.components
       
       private var _htmlText:String;
       
-      protected var _font:String = Style.fontName;
+      protected var _font:String = Base.fontName;
       
       protected var _align:String = "left";
       
@@ -94,7 +93,6 @@ package com.dvalimona.components
          {
             this._tf.autoSize = TextFieldAutoSize.NONE;
             this._tf.width = _width;
-            this._tf.height = _height;
          }
          _height = this._tf.textHeight + 5;
          _width = this._text.length > 0 ? _width : 0;
@@ -123,6 +121,7 @@ package com.dvalimona.components
       public function set multiline(value:Boolean) : *
       {
          this._tf.multiline = value;
+         this._tf.wordWrap = value;
       }
       
       public function get size() : Number
@@ -185,6 +184,16 @@ package com.dvalimona.components
       public function get autoSize() : Boolean
       {
          return this._autoSize;
+      }
+      
+      public function set dontResize(b:Boolean) : void
+      {
+         this._dontResize = b;
+      }
+      
+      public function get dontResize() : Boolean
+      {
+         return this._dontResize;
       }
       
       public function get textField() : TextField

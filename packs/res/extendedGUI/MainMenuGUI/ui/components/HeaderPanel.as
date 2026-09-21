@@ -92,9 +92,10 @@ package ui.components
          this._back.graphics.clear();
          if(this._useBackground)
          {
-            this._back.graphics.beginFill(0,0.5);
+            this._back.graphics.beginBitmapFill(Style.backgroundBitmap);
             this._back.graphics.drawRect(0,0,_width,_height);
             this._back.graphics.endFill();
+            this._back.alpha = 0.5;
          }
          this.headerBoxRight.fixedWidth = _width;
       }

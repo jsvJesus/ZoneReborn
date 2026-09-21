@@ -21,9 +21,9 @@ package com.captureTheFlag
          super();
       }
       
-      public function set value(val:Number) : *
+      public function set value(param1:Number) : *
       {
-         this._value = val;
+         this._value = param1;
       }
       
       public function get value() : Number
@@ -31,9 +31,9 @@ package com.captureTheFlag
          return this._value;
       }
       
-      public function set flagName(value:String) : *
+      public function set flagName(param1:String) : *
       {
-         this.flagThumb.label = value;
+         this.flagThumb.label = param1;
       }
       
       public function get flagName() : String
@@ -43,9 +43,9 @@ package com.captureTheFlag
       
       protected function updateFlagThumb() : *
       {
-         var percent:Number = (this._value - this._minimum) / (this._maximum - this._minimum);
-         this.flagThumb.x = (this.background.width - this.flagThumb.width) * percent;
-         this.flagTrack.width = (this.background.width - this.flagThumb.width) * percent;
+         var _loc1_:Number = (this._value - this._minimum) / (this._maximum - this._minimum);
+         this.flagThumb.x = (this.background.width - this.flagThumb.width) * _loc1_;
+         this.flagTrack.width = (this.background.width - this.flagThumb.width) * _loc1_;
       }
       
       public function invalidate() : *

@@ -8,12 +8,12 @@ package scaleform.clik.data
       
       public var selected:Boolean = false;
       
-      public function ListData(index:uint, label:String = "Empty", selected:Boolean = false)
+      public function ListData(param1:uint, param2:String = "Empty", param3:Boolean = false)
       {
          super();
-         this.index = index;
-         this.label = label;
-         this.selected = selected;
+         this.index = param1;
+         this.label = param2;
+         this.selected = param3;
       }
       
       public function toString() : String

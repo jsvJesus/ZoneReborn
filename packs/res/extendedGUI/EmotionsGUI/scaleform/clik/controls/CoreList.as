@@ -80,10 +80,6 @@ package scaleform.clik.controls
          {
             this.itemRenderer = classRef;
          }
-         else
-         {
-            trace("Error: " + this + ", The class " + value + " cannot be found in your library. Please ensure it is there.");
-         }
       }
       
       public function get itemRenderer() : Class
@@ -417,7 +413,6 @@ package scaleform.clik.controls
          var displayObject:DisplayObject = null;
          if(this._itemRenderer == null)
          {
-            trace("Renderer class not defined.");
             return;
          }
          for(i = int(this._renderers.length); i < this._totalRenderers; i++)
@@ -452,7 +447,6 @@ package scaleform.clik.controls
          var renderer:MovieClip = new this._itemRenderer() as MovieClip;
          if(renderer == null)
          {
-            trace("Renderer class could not be created.");
             return null;
          }
          this.setupRenderer(renderer);

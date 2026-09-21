@@ -318,7 +318,12 @@ package com.option
       protected function renderClick(e:ChannelEvent) : *
       {
          dataProvider[e.index].selected = e.selected;
-         dispatchEvent(new ChannelEvent(ChannelEvent.CHANGE,e.index,e.selected,e.id));
+         dispatchEvent(new ChannelEvent(ChannelEvent.CHANGE,e.index,e.selected,e.id,e.sound));
+      }
+      
+      protected function soundClick(e:ChannelEvent) : *
+      {
+         dispatchEvent(new ChannelEvent(ChannelEvent.CHANGE_SOUND,e.index,e.selected,e.id,e.sound));
       }
       
       protected function renderColorChange(e:ColorEvent) : *
@@ -360,6 +365,7 @@ package com.option
             renderer.width = w;
             renderer.height = h;
             renderer.addEventListener(ChannelEvent.CHANGE,this.renderClick);
+            renderer.addEventListener(ChannelEvent.CHANGE_SOUND,this.soundClick);
             renderer.addEventListener(ColorEvent.SHOW,this.renderColorChange);
             if(!dataWillChange)
             {
@@ -573,6 +579,7 @@ package com.option
          var index:uint = 0;
          var sys:Number = NaN;
          var tmpFlag:Boolean = false;
+         var sound:Boolean = false;
          var listData:ListDataChan = null;
          var dl:uint = data.length;
          var l:uint = _renderers.length;
@@ -593,6 +600,7 @@ package com.option
                index = this._scrollPosition + i;
                sys = Number(Object(root).MainChat.findSysID());
                tmpFlag = true;
+               sound = Boolean(data[i].sound);
                listData = new ListDataChan(index,data[i].id,data[i].label,data[i].selected,data[i].com,ChannelColors.getAt(data[i].id),tmpFlag);
                renderer.setListData(listData);
                renderer.validateNow();

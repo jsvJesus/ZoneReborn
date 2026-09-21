@@ -67,673 +67,689 @@ package com.greensock.plugins
          this._round = {};
       }
       
-      public static function bezierThrough(values:Array, curviness:Number = 1, quadratic:Boolean = false, basic:Boolean = false, correlate:String = "x,y,z", prepend:Object = null) : Object
+      public static function bezierThrough(param1:Array, param2:Number = 1, param3:Boolean = false, param4:Boolean = false, param5:String = "x,y,z", param6:Object = null) : Object
       {
-         var props:Array = null;
-         var i:int = 0;
-         var p:String = null;
-         var j:int = 0;
-         var a:Array = null;
-         var l:int = 0;
-         var r:Number = NaN;
-         var seamless:Boolean = false;
-         var last:Object = null;
-         var obj:Object = {};
-         var first:Object = prepend || values[0];
-         correlate = "," + correlate + ",";
-         if(first is Point)
+         var _loc9_:Array = null;
+         var _loc10_:int = 0;
+         var _loc11_:String = null;
+         var _loc12_:int = 0;
+         var _loc13_:Array = null;
+         var _loc14_:int = 0;
+         var _loc15_:Number = NaN;
+         var _loc16_:Boolean = false;
+         var _loc17_:Object = null;
+         var _loc7_:Object = {};
+         var _loc8_:Object = param6 || param1[0];
+         param5 = "," + param5 + ",";
+         if(_loc8_ is Point)
          {
-            props = ["x","y"];
+            _loc9_ = ["x","y"];
          }
          else
          {
-            props = [];
-            for(p in first)
+            _loc9_ = [];
+            for(_loc11_ in _loc8_)
             {
-               props.push(p);
+               _loc9_.push(_loc11_);
             }
          }
-         if(values.length > 1)
+         if(param1.length > 1)
          {
-            last = values[values.length - 1];
-            seamless = true;
-            i = int(props.length);
-            while(--i > -1)
+            _loc17_ = param1[param1.length - 1];
+            _loc16_ = true;
+            _loc10_ = int(_loc9_.length);
+            while(--_loc10_ > -1)
             {
-               p = props[i];
-               if(Math.abs(first[p] - last[p]) > 0.05)
+               _loc11_ = _loc9_[_loc10_];
+               if(Math.abs(_loc8_[_loc11_] - _loc17_[_loc11_]) > 0.05)
                {
-                  seamless = false;
+                  _loc16_ = false;
                   break;
                }
             }
-            if(seamless)
+            if(_loc16_)
             {
-               values = values.concat();
-               if(prepend)
+               param1 = param1.concat();
+               if(param6)
                {
-                  values.unshift(prepend);
+                  param1.unshift(param6);
                }
-               values.push(values[1]);
-               prepend = values[values.length - 3];
+               param1.push(param1[1]);
+               param6 = param1[param1.length - 3];
             }
          }
          _r1.length = _r2.length = _r3.length = 0;
-         i = int(props.length);
-         while(--i > -1)
+         _loc10_ = int(_loc9_.length);
+         while(--_loc10_ > -1)
          {
-            p = props[i];
-            _corProps[p] = correlate.indexOf("," + p + ",") !== -1;
-            obj[p] = _parseAnchors(values,p,_corProps[p],prepend);
+            _loc11_ = _loc9_[_loc10_];
+            _corProps[_loc11_] = param5.indexOf("," + _loc11_ + ",") !== -1;
+            _loc7_[_loc11_] = _parseAnchors(param1,_loc11_,_corProps[_loc11_],param6);
          }
-         i = int(_r1.length);
-         while(--i > -1)
+         _loc10_ = int(_r1.length);
+         while(--_loc10_ > -1)
          {
-            _r1[i] = Math.sqrt(_r1[i]);
-            _r2[i] = Math.sqrt(_r2[i]);
+            _r1[_loc10_] = Math.sqrt(_r1[_loc10_]);
+            _r2[_loc10_] = Math.sqrt(_r2[_loc10_]);
          }
-         if(!basic)
+         if(!param4)
          {
-            i = int(props.length);
-            while(--i > -1)
+            _loc10_ = int(_loc9_.length);
+            while(--_loc10_ > -1)
             {
-               if(_corProps[p])
+               if(_corProps[_loc11_])
                {
-                  a = obj[props[i]];
-                  l = int(a.length - 1);
-                  for(j = 0; j < l; j++)
+                  _loc13_ = _loc7_[_loc9_[_loc10_]];
+                  _loc14_ = int(_loc13_.length - 1);
+                  _loc12_ = 0;
+                  while(_loc12_ < _loc14_)
                   {
-                     r = a[j + 1].da / _r2[j] + a[j].da / _r1[j];
-                     _r3[j] = (_r3[j] || 0) + r * r;
+                     _loc15_ = _loc13_[_loc12_ + 1].da / _r2[_loc12_] + _loc13_[_loc12_].da / _r1[_loc12_];
+                     _r3[_loc12_] = (_r3[_loc12_] || 0) + _loc15_ * _loc15_;
+                     _loc12_++;
                   }
                }
             }
-            i = int(_r3.length);
-            while(--i > -1)
+            _loc10_ = int(_r3.length);
+            while(--_loc10_ > -1)
             {
-               _r3[i] = Math.sqrt(_r3[i]);
+               _r3[_loc10_] = Math.sqrt(_r3[_loc10_]);
             }
          }
-         i = int(props.length);
-         j = quadratic ? 4 : 1;
-         while(--i > -1)
+         _loc10_ = int(_loc9_.length);
+         _loc12_ = param3 ? 4 : 1;
+         while(--_loc10_ > -1)
          {
-            p = props[i];
-            a = obj[p];
-            _calculateControlPoints(a,curviness,quadratic,basic,_corProps[p]);
-            if(seamless)
+            _loc11_ = _loc9_[_loc10_];
+            _loc13_ = _loc7_[_loc11_];
+            _calculateControlPoints(_loc13_,param2,param3,param4,_corProps[_loc11_]);
+            if(_loc16_)
             {
-               a.splice(0,j);
-               a.splice(a.length - j,j);
+               _loc13_.splice(0,_loc12_);
+               _loc13_.splice(_loc13_.length - _loc12_,_loc12_);
             }
          }
-         return obj;
+         return _loc7_;
       }
       
-      public static function _parseBezierData(values:Array, type:String, prepend:Object = null) : Object
+      public static function _parseBezierData(param1:Array, param2:String, param3:Object = null) : Object
       {
-         var a:Number = NaN;
-         var b:Number = NaN;
-         var c:Number = NaN;
-         var d:Number = NaN;
-         var cur:Array = null;
-         var props:Array = null;
-         var i:int = 0;
-         var j:int = 0;
-         var l:int = 0;
-         var p:String = null;
-         var cnt:int = 0;
-         var tmp:Object = null;
-         type ||= "soft";
-         var obj:Object = {};
-         var inc:int = type === "cubic" ? 3 : 2;
-         var soft:* = type === "soft";
-         if(soft && Boolean(prepend))
+         var _loc7_:Number = NaN;
+         var _loc8_:Number = NaN;
+         var _loc9_:Number = NaN;
+         var _loc10_:Number = NaN;
+         var _loc11_:Array = null;
+         var _loc12_:Array = null;
+         var _loc13_:int = 0;
+         var _loc14_:int = 0;
+         var _loc15_:int = 0;
+         var _loc16_:String = null;
+         var _loc17_:int = 0;
+         var _loc18_:Object = null;
+         param2 ||= "soft";
+         var _loc4_:Object = {};
+         var _loc5_:int = param2 === "cubic" ? 3 : 2;
+         var _loc6_:* = param2 === "soft";
+         if((_loc6_) && Boolean(param3))
          {
-            values = [prepend].concat(values);
+            param1 = [param3].concat(param1);
          }
-         if(values == null || values.length < inc + 1)
+         if(param1 == null || param1.length < _loc5_ + 1)
          {
             throw new Error("invalid Bezier data");
          }
-         if(values[1] is Point)
+         if(param1[1] is Point)
          {
-            props = ["x","y"];
+            _loc12_ = ["x","y"];
          }
          else
          {
-            props = [];
-            for(p in values[0])
+            _loc12_ = [];
+            for(_loc16_ in param1[0])
             {
-               props.push(p);
+               _loc12_.push(_loc16_);
             }
          }
-         i = int(props.length);
-         while(--i > -1)
+         _loc13_ = int(_loc12_.length);
+         while(--_loc13_ > -1)
          {
-            p = props[i];
-            obj[p] = cur = [];
-            cnt = 0;
-            l = int(values.length);
-            for(j = 0; j < l; j++)
+            _loc16_ = _loc12_[_loc13_];
+            _loc4_[_loc16_] = _loc11_ = [];
+            _loc17_ = 0;
+            _loc15_ = int(param1.length);
+            _loc14_ = 0;
+            while(_loc14_ < _loc15_)
             {
-               tmp = values[j][p];
-               a = prepend == null ? Number(values[j][p]) : (typeof tmp === "string" && tmp.charAt(1) === "=" ? prepend[p] + Number(tmp.charAt(0) + tmp.substr(2)) : Number(tmp));
-               if(soft)
+               _loc18_ = param1[_loc14_][_loc16_];
+               _loc7_ = param3 == null ? Number(param1[_loc14_][_loc16_]) : (typeof _loc18_ === "string" && _loc18_.charAt(1) === "=" ? param3[_loc16_] + Number(_loc18_.charAt(0) + _loc18_.substr(2)) : Number(_loc18_));
+               if(_loc6_)
                {
-                  if(j > 1)
+                  if(_loc14_ > 1)
                   {
-                     if(j < l - 1)
+                     if(_loc14_ < _loc15_ - 1)
                      {
                         var _loc19_:*;
-                        cur[_loc19_ = cnt++] = (a + cur[cnt - 2]) / 2;
+                        _loc11_[_loc19_ = _loc17_++] = (_loc7_ + _loc11_[_loc17_ - 2]) / 2;
                      }
                   }
                }
-               cur[_loc19_ = cnt++] = a;
+               _loc11_[_loc19_ = _loc17_++] = _loc7_;
+               _loc14_++;
             }
-            l = cnt - inc + 1;
-            cnt = 0;
-            for(j = 0; j < l; j += inc)
+            _loc15_ = _loc17_ - _loc5_ + 1;
+            _loc17_ = 0;
+            _loc14_ = 0;
+            while(_loc14_ < _loc15_)
             {
-               a = Number(cur[j]);
-               b = Number(cur[j + 1]);
-               c = Number(cur[j + 2]);
-               d = inc === 2 ? 0 : Number(cur[j + 3]);
-               cur[_loc19_ = cnt++] = inc === 3 ? new Segment(a,b,c,d) : new Segment(a,(2 * b + a) / 3,(2 * b + c) / 3,c);
+               _loc7_ = Number(_loc11_[_loc14_]);
+               _loc8_ = Number(_loc11_[_loc14_ + 1]);
+               _loc9_ = Number(_loc11_[_loc14_ + 2]);
+               _loc10_ = _loc5_ === 2 ? 0 : Number(_loc11_[_loc14_ + 3]);
+               _loc11_[_loc19_ = _loc17_++] = _loc5_ === 3 ? new Segment(_loc7_,_loc8_,_loc9_,_loc10_) : new Segment(_loc7_,(2 * _loc8_ + _loc7_) / 3,(2 * _loc8_ + _loc9_) / 3,_loc9_);
+               _loc14_ += _loc5_;
             }
-            cur.length = cnt;
+            _loc11_.length = _loc17_;
          }
-         return obj;
+         return _loc4_;
       }
       
-      protected static function _parseAnchors(values:Array, p:String, correlate:Boolean, prepend:Object) : Array
+      protected static function _parseAnchors(param1:Array, param2:String, param3:Boolean, param4:Object) : Array
       {
-         var l:int = 0;
-         var i:int = 0;
-         var p1:Number = NaN;
-         var p2:Number = NaN;
-         var p3:Number = NaN;
-         var tmp:Object = null;
-         var a:Array = [];
-         if(prepend)
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
+         var _loc8_:Number = NaN;
+         var _loc9_:Number = NaN;
+         var _loc10_:Number = NaN;
+         var _loc11_:Object = null;
+         var _loc5_:Array = [];
+         if(param4)
          {
-            values = [prepend].concat(values);
-            i = int(values.length);
-            while(--i > -1)
+            param1 = [param4].concat(param1);
+            _loc7_ = int(param1.length);
+            while(--_loc7_ > -1)
             {
-               tmp = values[i][p];
-               if(typeof tmp === "string")
+               _loc11_ = param1[_loc7_][param2];
+               if(typeof _loc11_ === "string")
                {
-                  if(tmp.charAt(1) === "=")
+                  if(_loc11_.charAt(1) === "=")
                   {
-                     values[i][p] = prepend[p] + Number(tmp.charAt(0) + tmp.substr(2));
+                     param1[_loc7_][param2] = param4[param2] + Number(_loc11_.charAt(0) + _loc11_.substr(2));
                   }
                }
             }
          }
-         l = values.length - 2;
-         if(l < 0)
+         _loc6_ = param1.length - 2;
+         if(_loc6_ < 0)
          {
-            a[0] = new Segment(values[0][p],0,0,values[l < -1 ? 0 : 1][p]);
-            return a;
+            _loc5_[0] = new Segment(param1[0][param2],0,0,param1[_loc6_ < -1 ? 0 : 1][param2]);
+            return _loc5_;
          }
-         for(i = 0; i < l; i++)
+         _loc7_ = 0;
+         while(_loc7_ < _loc6_)
          {
-            p1 = Number(values[i][p]);
-            p2 = Number(values[i + 1][p]);
-            a[i] = new Segment(p1,0,0,p2);
-            if(correlate)
+            _loc8_ = Number(param1[_loc7_][param2]);
+            _loc9_ = Number(param1[_loc7_ + 1][param2]);
+            _loc5_[_loc7_] = new Segment(_loc8_,0,0,_loc9_);
+            if(param3)
             {
-               p3 = Number(values[i + 2][p]);
-               _r1[i] = (_r1[i] || 0) + (p2 - p1) * (p2 - p1);
-               _r2[i] = (_r2[i] || 0) + (p3 - p2) * (p3 - p2);
+               _loc10_ = Number(param1[_loc7_ + 2][param2]);
+               _r1[_loc7_] = (_r1[_loc7_] || 0) + (_loc9_ - _loc8_) * (_loc9_ - _loc8_);
+               _r2[_loc7_] = (_r2[_loc7_] || 0) + (_loc10_ - _loc9_) * (_loc10_ - _loc9_);
             }
+            _loc7_++;
          }
-         a[i] = new Segment(values[i][p],0,0,values[i + 1][p]);
-         return a;
+         _loc5_[_loc7_] = new Segment(param1[_loc7_][param2],0,0,param1[_loc7_ + 1][param2]);
+         return _loc5_;
       }
       
-      protected static function _calculateControlPoints(a:Array, curviness:Number = 1, quad:Boolean = false, basic:Boolean = false, correlate:Boolean = false) : void
+      protected static function _calculateControlPoints(param1:Array, param2:Number = 1, param3:Boolean = false, param4:Boolean = false, param5:Boolean = false) : void
       {
-         var i:int = 0;
-         var p1:Number = NaN;
-         var p2:Number = NaN;
-         var p3:Number = NaN;
-         var seg:Segment = null;
-         var m1:Number = NaN;
-         var m2:Number = NaN;
-         var mm:Number = NaN;
-         var cp2:Number = NaN;
-         var qb:Array = null;
-         var r1:Number = NaN;
-         var r2:Number = NaN;
-         var tl:Number = NaN;
-         var l:int = int(a.length - 1);
-         var ii:int = 0;
-         var cp1:Number = Number(a[0].a);
-         for(i = 0; i < l; i++)
+         var _loc9_:int = 0;
+         var _loc10_:Number = NaN;
+         var _loc11_:Number = NaN;
+         var _loc12_:Number = NaN;
+         var _loc13_:Segment = null;
+         var _loc14_:Number = NaN;
+         var _loc15_:Number = NaN;
+         var _loc16_:Number = NaN;
+         var _loc17_:Number = NaN;
+         var _loc18_:Array = null;
+         var _loc19_:Number = NaN;
+         var _loc20_:Number = NaN;
+         var _loc21_:Number = NaN;
+         var _loc6_:int = int(param1.length - 1);
+         var _loc7_:int = 0;
+         var _loc8_:Number = Number(param1[0].a);
+         _loc9_ = 0;
+         while(_loc9_ < _loc6_)
          {
-            seg = a[ii];
-            p1 = seg.a;
-            p2 = seg.d;
-            p3 = Number(a[ii + 1].d);
-            if(correlate)
+            _loc13_ = param1[_loc7_];
+            _loc10_ = _loc13_.a;
+            _loc11_ = _loc13_.d;
+            _loc12_ = Number(param1[_loc7_ + 1].d);
+            if(param5)
             {
-               r1 = Number(_r1[i]);
-               r2 = Number(_r2[i]);
-               tl = (r2 + r1) * curviness * 0.25 / (basic ? 0.5 : _r3[i] || 0.5);
-               m1 = p2 - (p2 - p1) * (basic ? curviness * 0.5 : (r1 !== 0 ? tl / r1 : 0));
-               m2 = p2 + (p3 - p2) * (basic ? curviness * 0.5 : (r2 !== 0 ? tl / r2 : 0));
-               mm = p2 - (m1 + ((m2 - m1) * (r1 * 3 / (r1 + r2) + 0.5) / 4 || 0));
+               _loc19_ = Number(_r1[_loc9_]);
+               _loc20_ = Number(_r2[_loc9_]);
+               _loc21_ = (_loc20_ + _loc19_) * param2 * 0.25 / (param4 ? 0.5 : _r3[_loc9_] || 0.5);
+               _loc14_ = _loc11_ - (_loc11_ - _loc10_) * (param4 ? param2 * 0.5 : (_loc19_ !== 0 ? _loc21_ / _loc19_ : 0));
+               _loc15_ = _loc11_ + (_loc12_ - _loc11_) * (param4 ? param2 * 0.5 : (_loc20_ !== 0 ? _loc21_ / _loc20_ : 0));
+               _loc16_ = _loc11_ - (_loc14_ + ((_loc15_ - _loc14_) * (_loc19_ * 3 / (_loc19_ + _loc20_) + 0.5) / 4 || 0));
             }
             else
             {
-               m1 = p2 - (p2 - p1) * curviness * 0.5;
-               m2 = p2 + (p3 - p2) * curviness * 0.5;
-               mm = p2 - (m1 + m2) / 2;
+               _loc14_ = _loc11_ - (_loc11_ - _loc10_) * param2 * 0.5;
+               _loc15_ = _loc11_ + (_loc12_ - _loc11_) * param2 * 0.5;
+               _loc16_ = _loc11_ - (_loc14_ + _loc15_) / 2;
             }
-            m1 += mm;
-            m2 += mm;
-            seg.c = cp2 = m1;
-            if(i != 0)
+            _loc14_ += _loc16_;
+            _loc15_ += _loc16_;
+            _loc13_.c = _loc17_ = _loc14_;
+            if(_loc9_ != 0)
             {
-               seg.b = cp1;
+               _loc13_.b = _loc8_;
             }
             else
             {
-               seg.b = cp1 = seg.a + (seg.c - seg.a) * 0.6;
+               _loc13_.b = _loc8_ = _loc13_.a + (_loc13_.c - _loc13_.a) * 0.6;
             }
-            seg.da = p2 - p1;
-            seg.ca = cp2 - p1;
-            seg.ba = cp1 - p1;
-            if(quad)
+            _loc13_.da = _loc11_ - _loc10_;
+            _loc13_.ca = _loc17_ - _loc10_;
+            _loc13_.ba = _loc8_ - _loc10_;
+            if(param3)
             {
-               qb = cubicToQuadratic(p1,cp1,cp2,p2);
-               a.splice(ii,1,qb[0],qb[1],qb[2],qb[3]);
-               ii += 4;
+               _loc18_ = cubicToQuadratic(_loc10_,_loc8_,_loc17_,_loc11_);
+               param1.splice(_loc7_,1,_loc18_[0],_loc18_[1],_loc18_[2],_loc18_[3]);
+               _loc7_ += 4;
             }
             else
             {
-               ii++;
+               _loc7_++;
             }
-            cp1 = m2;
+            _loc8_ = _loc15_;
+            _loc9_++;
          }
-         seg = a[ii];
-         seg.b = cp1;
-         seg.c = cp1 + (seg.d - cp1) * 0.4;
-         seg.da = seg.d - seg.a;
-         seg.ca = seg.c - seg.a;
-         seg.ba = cp1 - seg.a;
-         if(quad)
+         _loc13_ = param1[_loc7_];
+         _loc13_.b = _loc8_;
+         _loc13_.c = _loc8_ + (_loc13_.d - _loc8_) * 0.4;
+         _loc13_.da = _loc13_.d - _loc13_.a;
+         _loc13_.ca = _loc13_.c - _loc13_.a;
+         _loc13_.ba = _loc8_ - _loc13_.a;
+         if(param3)
          {
-            qb = cubicToQuadratic(seg.a,cp1,seg.c,seg.d);
-            a.splice(ii,1,qb[0],qb[1],qb[2],qb[3]);
+            _loc18_ = cubicToQuadratic(_loc13_.a,_loc8_,_loc13_.c,_loc13_.d);
+            param1.splice(_loc7_,1,_loc18_[0],_loc18_[1],_loc18_[2],_loc18_[3]);
          }
       }
       
-      public static function cubicToQuadratic(a:Number, b:Number, c:Number, d:Number) : Array
+      public static function cubicToQuadratic(param1:Number, param2:Number, param3:Number, param4:Number) : Array
       {
-         var q1:Object = {"a":a};
-         var q2:Object = {};
-         var q3:Object = {};
-         var q4:Object = {"c":d};
-         var mab:Number = (a + b) / 2;
-         var mbc:Number = (b + c) / 2;
-         var mcd:Number = (c + d) / 2;
-         var mabc:Number = (mab + mbc) / 2;
-         var mbcd:Number = (mbc + mcd) / 2;
-         var m8:Number = (mbcd - mabc) / 8;
-         q1.b = mab + (a - mab) / 4;
-         q2.b = mabc + m8;
-         q1.c = q2.a = (q1.b + q2.b) / 2;
-         q2.c = q3.a = (mabc + mbcd) / 2;
-         q3.b = mbcd - m8;
-         q4.b = mcd + (d - mcd) / 4;
-         q3.c = q4.a = (q3.b + q4.b) / 2;
-         return [q1,q2,q3,q4];
+         var _loc5_:Object = {"a":param1};
+         var _loc6_:Object = {};
+         var _loc7_:Object = {};
+         var _loc8_:Object = {"c":param4};
+         var _loc9_:Number = (param1 + param2) / 2;
+         var _loc10_:Number = (param2 + param3) / 2;
+         var _loc11_:Number = (param3 + param4) / 2;
+         var _loc12_:Number = (_loc9_ + _loc10_) / 2;
+         var _loc13_:Number = (_loc10_ + _loc11_) / 2;
+         var _loc14_:Number = (_loc13_ - _loc12_) / 8;
+         _loc5_.b = _loc9_ + (param1 - _loc9_) / 4;
+         _loc6_.b = _loc12_ + _loc14_;
+         _loc5_.c = _loc6_.a = (_loc5_.b + _loc6_.b) / 2;
+         _loc6_.c = _loc7_.a = (_loc12_ + _loc13_) / 2;
+         _loc7_.b = _loc13_ - _loc14_;
+         _loc8_.b = _loc11_ + (param4 - _loc11_) / 4;
+         _loc7_.c = _loc8_.a = (_loc7_.b + _loc8_.b) / 2;
+         return [_loc5_,_loc6_,_loc7_,_loc8_];
       }
       
-      public static function quadraticToCubic(a:Number, b:Number, c:Number) : Object
+      public static function quadraticToCubic(param1:Number, param2:Number, param3:Number) : Object
       {
-         return new Segment(a,(2 * b + a) / 3,(2 * b + c) / 3,c);
+         return new Segment(param1,(2 * param2 + param1) / 3,(2 * param2 + param3) / 3,param3);
       }
       
-      protected static function _parseLengthData(obj:Object, precision:uint = 6) : Object
+      protected static function _parseLengthData(param1:Object, param2:uint = 6) : Object
       {
-         var p:String = null;
-         var i:int = 0;
-         var l:int = 0;
-         var index:Number = NaN;
-         var a:Array = [];
-         var lengths:Array = [];
-         var d:Number = 0;
-         var total:Number = 0;
-         var threshold:int = int(precision - 1);
-         var segments:Array = [];
-         var curLS:Array = [];
-         for(p in obj)
+         var _loc10_:String = null;
+         var _loc11_:int = 0;
+         var _loc12_:int = 0;
+         var _loc13_:Number = NaN;
+         var _loc3_:Array = [];
+         var _loc4_:Array = [];
+         var _loc5_:Number = 0;
+         var _loc6_:Number = 0;
+         var _loc7_:int = int(param2 - 1);
+         var _loc8_:Array = [];
+         var _loc9_:Array = [];
+         for(_loc10_ in param1)
          {
-            _addCubicLengths(obj[p],a,precision);
+            _addCubicLengths(param1[_loc10_],_loc3_,param2);
          }
-         l = int(a.length);
-         for(i = 0; i < l; i++)
+         _loc12_ = int(_loc3_.length);
+         _loc11_ = 0;
+         while(_loc11_ < _loc12_)
          {
-            d += Math.sqrt(a[i]);
-            index = i % precision;
-            curLS[index] = d;
-            if(index == threshold)
+            _loc5_ += Math.sqrt(_loc3_[_loc11_]);
+            _loc13_ = _loc11_ % param2;
+            _loc9_[_loc13_] = _loc5_;
+            if(_loc13_ == _loc7_)
             {
-               total += d;
-               index = i / precision >> 0;
-               segments[index] = curLS;
-               lengths[index] = total;
-               d = 0;
-               curLS = [];
+               _loc6_ += _loc5_;
+               _loc13_ = _loc11_ / param2 >> 0;
+               _loc8_[_loc13_] = _loc9_;
+               _loc4_[_loc13_] = _loc6_;
+               _loc5_ = 0;
+               _loc9_ = [];
             }
+            _loc11_++;
          }
          return {
-            "length":total,
-            "lengths":lengths,
-            "segments":segments
+            "length":_loc6_,
+            "lengths":_loc4_,
+            "segments":_loc8_
          };
       }
       
-      private static function _addCubicLengths(a:Array, steps:Array, precision:uint = 6) : void
+      private static function _addCubicLengths(param1:Array, param2:Array, param3:uint = 6) : void
       {
-         var d:Number = NaN;
-         var d1:Number = NaN;
-         var s:Number = NaN;
-         var da:Number = NaN;
-         var ca:Number = NaN;
-         var ba:Number = NaN;
-         var p:Number = NaN;
-         var i:int = 0;
-         var inv:Number = NaN;
-         var bez:Segment = null;
-         var index:int = 0;
-         var inc:Number = 1 / precision;
-         var j:int = int(a.length);
-         while(--j > -1)
+         var _loc6_:Number = NaN;
+         var _loc7_:Number = NaN;
+         var _loc8_:Number = NaN;
+         var _loc9_:Number = NaN;
+         var _loc10_:Number = NaN;
+         var _loc11_:Number = NaN;
+         var _loc12_:Number = NaN;
+         var _loc13_:int = 0;
+         var _loc14_:Number = NaN;
+         var _loc15_:Segment = null;
+         var _loc16_:int = 0;
+         var _loc4_:Number = 1 / param3;
+         var _loc5_:int = int(param1.length);
+         while(--_loc5_ > -1)
          {
-            bez = a[j];
-            s = bez.a;
-            da = bez.d - s;
-            ca = bez.c - s;
-            ba = bez.b - s;
-            d = d1 = 0;
-            for(i = 1; i <= precision; i++)
+            _loc15_ = param1[_loc5_];
+            _loc8_ = _loc15_.a;
+            _loc9_ = _loc15_.d - _loc8_;
+            _loc10_ = _loc15_.c - _loc8_;
+            _loc11_ = _loc15_.b - _loc8_;
+            _loc6_ = _loc7_ = 0;
+            _loc13_ = 1;
+            while(_loc13_ <= param3)
             {
-               p = inc * i;
-               inv = 1 - p;
-               d = d1 - (d1 = (p * p * da + 3 * inv * (p * ca + inv * ba)) * p);
-               index = j * precision + i - 1;
-               steps[index] = (steps[index] || 0) + d * d;
+               _loc12_ = _loc4_ * _loc13_;
+               _loc14_ = 1 - _loc12_;
+               _loc6_ = _loc7_ - (_loc7_ = (_loc12_ * _loc12_ * _loc9_ + 3 * _loc14_ * (_loc12_ * _loc10_ + _loc14_ * _loc11_)) * _loc12_);
+               _loc16_ = _loc5_ * param3 + _loc13_ - 1;
+               param2[_loc16_] = (param2[_loc16_] || 0) + _loc6_ * _loc6_;
+               _loc13_++;
             }
          }
       }
       
-      override public function _onInitTween(target:Object, value:*, tween:TweenLite) : Boolean
+      override public function _onInitTween(param1:Object, param2:*, param3:TweenLite) : Boolean
       {
-         var p:String = null;
-         var isFunc:Boolean = false;
-         var i:int = 0;
-         var j:int = 0;
-         var ar:Array = null;
-         var prepend:Object = null;
-         var ld:Object = null;
-         this._target = target;
-         var vars:Object = value is Array ? {"values":value} : value;
+         var _loc9_:String = null;
+         var _loc10_:Boolean = false;
+         var _loc11_:int = 0;
+         var _loc12_:int = 0;
+         var _loc13_:Array = null;
+         var _loc14_:Object = null;
+         var _loc15_:Object = null;
+         this._target = param1;
+         var _loc4_:Object = param2 is Array ? {"values":param2} : param2;
          this._props = [];
-         this._timeRes = vars.timeResolution == null ? 6 : int(vars.timeResolution);
-         var values:Array = vars.values || [];
-         var first:Object = {};
-         var second:Object = values[0];
-         var autoRotate:Object = vars.autoRotate || tween.vars.orientToBezier;
-         this._autoRotate = !!autoRotate ? (autoRotate is Array ? autoRotate as Array : [["x","y","rotation",autoRotate === true ? 0 : Number(autoRotate)]]) : null;
-         if(second is Point)
+         this._timeRes = _loc4_.timeResolution == null ? 6 : int(_loc4_.timeResolution);
+         var _loc5_:Array = _loc4_.values || [];
+         var _loc6_:Object = {};
+         var _loc7_:Object = _loc5_[0];
+         var _loc8_:Object = _loc4_.autoRotate || param3.vars.orientToBezier;
+         this._autoRotate = !!_loc8_ ? (_loc8_ is Array ? _loc8_ as Array : [["x","y","rotation",_loc8_ === true ? 0 : Number(_loc8_)]]) : null;
+         if(_loc7_ is Point)
          {
             this._props = ["x","y"];
          }
          else
          {
-            for(p in second)
+            for(_loc9_ in _loc7_)
             {
-               this._props.push(p);
+               this._props.push(_loc9_);
             }
          }
-         i = int(this._props.length);
-         while(--i > -1)
+         _loc11_ = int(this._props.length);
+         while(--_loc11_ > -1)
          {
-            p = this._props[i];
-            this._overwriteProps.push(p);
-            isFunc = this._func[p] = target[p] is Function;
-            first[p] = !isFunc ? target[p] : target[Boolean(p.indexOf("set")) || !("get" + p.substr(3) in target) ? p : "get" + p.substr(3)]();
-            if(!prepend)
+            _loc9_ = this._props[_loc11_];
+            this._overwriteProps.push(_loc9_);
+            _loc10_ = this._func[_loc9_] = param1[_loc9_] is Function;
+            _loc6_[_loc9_] = !_loc10_ ? param1[_loc9_] : param1[Boolean(_loc9_.indexOf("set")) || !("get" + _loc9_.substr(3) in param1) ? _loc9_ : "get" + _loc9_.substr(3)]();
+            if(!_loc14_)
             {
-               if(first[p] !== values[0][p])
+               if(_loc6_[_loc9_] !== _loc5_[0][_loc9_])
                {
-                  prepend = first;
+                  _loc14_ = _loc6_;
                }
             }
          }
-         this._beziers = vars.type !== "cubic" && vars.type !== "quadratic" && vars.type !== "soft" ? bezierThrough(values,isNaN(vars.curviness) ? 1 : Number(vars.curviness),false,vars.type === "thruBasic",vars.correlate || "x,y,z",prepend) : _parseBezierData(values,vars.type,first);
-         this._segCount = this._beziers[p].length;
+         this._beziers = _loc4_.type !== "cubic" && _loc4_.type !== "quadratic" && _loc4_.type !== "soft" ? bezierThrough(_loc5_,isNaN(_loc4_.curviness) ? 1 : Number(_loc4_.curviness),false,_loc4_.type === "thruBasic",_loc4_.correlate || "x,y,z",_loc14_) : _parseBezierData(_loc5_,_loc4_.type,_loc6_);
+         this._segCount = this._beziers[_loc9_].length;
          if(this._timeRes)
          {
-            ld = _parseLengthData(this._beziers,this._timeRes);
-            this._length = ld.length;
-            this._lengths = ld.lengths;
-            this._segments = ld.segments;
+            _loc15_ = _parseLengthData(this._beziers,this._timeRes);
+            this._length = _loc15_.length;
+            this._lengths = _loc15_.lengths;
+            this._segments = _loc15_.segments;
             this._l1 = this._li = this._s1 = this._si = 0;
             this._l2 = this._lengths[0];
             this._curSeg = this._segments[0];
             this._s2 = this._curSeg[0];
             this._prec = 1 / this._curSeg.length;
          }
-         ar = this._autoRotate;
-         if(ar)
+         _loc13_ = this._autoRotate;
+         if(_loc13_)
          {
             this._initialRotations = [];
-            if(!(ar[0] is Array))
+            if(!(_loc13_[0] is Array))
             {
-               this._autoRotate = ar = [ar];
+               this._autoRotate = _loc13_ = [_loc13_];
             }
-            i = int(ar.length);
-            while(--i > -1)
+            _loc11_ = int(_loc13_.length);
+            while(--_loc11_ > -1)
             {
-               for(j = 0; j < 3; j++)
+               _loc12_ = 0;
+               while(_loc12_ < 3)
                {
-                  p = ar[i][j];
-                  this._func[p] = target[p] is Function ? target[Boolean(p.indexOf("set")) || !("get" + p.substr(3) in target) ? p : "get" + p.substr(3)] : false;
+                  _loc9_ = _loc13_[_loc11_][_loc12_];
+                  this._func[_loc9_] = param1[_loc9_] is Function ? param1[Boolean(_loc9_.indexOf("set")) || !("get" + _loc9_.substr(3) in param1) ? _loc9_ : "get" + _loc9_.substr(3)] : false;
+                  _loc12_++;
                }
-               p = ar[i][2];
-               this._initialRotations[i] = !!this._func[p] ? this._func[p]() : this._target[p];
+               _loc9_ = _loc13_[_loc11_][2];
+               this._initialRotations[_loc11_] = !!this._func[_loc9_] ? this._func[_loc9_]() : this._target[_loc9_];
             }
          }
-         this._startRatio = !!tween.vars.runBackwards ? 1 : 0;
+         this._startRatio = !!param3.vars.runBackwards ? 1 : 0;
          return true;
       }
       
-      override public function _kill(lookup:Object) : Boolean
+      override public function _kill(param1:Object) : Boolean
       {
-         var p:String = null;
-         var i:int = 0;
-         var a:Array = this._props;
-         for(p in this._beziers)
+         var _loc3_:String = null;
+         var _loc4_:int = 0;
+         var _loc2_:Array = this._props;
+         for(_loc3_ in this._beziers)
          {
-            if(p in lookup)
+            if(_loc3_ in param1)
             {
-               delete this._beziers[p];
-               delete this._func[p];
-               i = int(a.length);
-               while(--i > -1)
+               delete this._beziers[_loc3_];
+               delete this._func[_loc3_];
+               _loc4_ = int(_loc2_.length);
+               while(--_loc4_ > -1)
                {
-                  if(a[i] === p)
+                  if(_loc2_[_loc4_] === _loc3_)
                   {
-                     a.splice(i,1);
+                     _loc2_.splice(_loc4_,1);
                   }
                }
             }
          }
-         return super._kill(lookup);
+         return super._kill(param1);
       }
       
-      override public function _roundProps(lookup:Object, value:Boolean = true) : void
+      override public function _roundProps(param1:Object, param2:Boolean = true) : void
       {
-         var op:Array = this._overwriteProps;
-         var i:int = int(op.length);
-         while(--i > -1)
+         var _loc3_:Array = this._overwriteProps;
+         var _loc4_:int = int(_loc3_.length);
+         while(--_loc4_ > -1)
          {
-            if(op[i] in lookup || "bezier" in lookup || "bezierThrough" in lookup)
+            if(_loc3_[_loc4_] in param1 || "bezier" in param1 || "bezierThrough" in param1)
             {
-               this._round[op[i]] = value;
+               this._round[_loc3_[_loc4_]] = param2;
             }
          }
       }
       
-      override public function setRatio(v:Number) : void
+      override public function setRatio(param1:Number) : void
       {
-         var curIndex:int = 0;
-         var inv:Number = NaN;
-         var i:int = 0;
-         var p:String = null;
-         var b:Segment = null;
-         var t:Number = NaN;
-         var val:Number = NaN;
-         var l:int = 0;
-         var lengths:Array = null;
-         var curSeg:Array = null;
-         var ar:Array = null;
-         var b2:Segment = null;
-         var x1:Number = NaN;
-         var y1:Number = NaN;
-         var x2:Number = NaN;
-         var y2:Number = NaN;
-         var add:Number = NaN;
-         var conv:Number = NaN;
-         var segments:int = this._segCount;
-         var func:Object = this._func;
-         var target:Object = this._target;
-         var notStart:* = v !== this._startRatio;
+         var _loc6_:int = 0;
+         var _loc7_:Number = NaN;
+         var _loc8_:int = 0;
+         var _loc9_:String = null;
+         var _loc10_:Segment = null;
+         var _loc11_:Number = NaN;
+         var _loc12_:Number = NaN;
+         var _loc13_:int = 0;
+         var _loc14_:Array = null;
+         var _loc15_:Array = null;
+         var _loc16_:Array = null;
+         var _loc17_:Segment = null;
+         var _loc18_:Number = NaN;
+         var _loc19_:Number = NaN;
+         var _loc20_:Number = NaN;
+         var _loc21_:Number = NaN;
+         var _loc22_:Number = NaN;
+         var _loc23_:Number = NaN;
+         var _loc2_:int = this._segCount;
+         var _loc3_:Object = this._func;
+         var _loc4_:Object = this._target;
+         var _loc5_:* = param1 !== this._startRatio;
          if(this._timeRes == 0)
          {
-            curIndex = v < 0 ? 0 : (v >= 1 ? segments - 1 : segments * v >> 0);
-            t = (v - curIndex * (1 / segments)) * segments;
+            _loc6_ = param1 < 0 ? 0 : (param1 >= 1 ? _loc2_ - 1 : _loc2_ * param1 >> 0);
+            _loc11_ = (param1 - _loc6_ * (1 / _loc2_)) * _loc2_;
          }
          else
          {
-            lengths = this._lengths;
-            curSeg = this._curSeg;
-            v *= this._length;
-            i = this._li;
-            if(v > this._l2 && i < segments - 1)
+            _loc14_ = this._lengths;
+            _loc15_ = this._curSeg;
+            param1 *= this._length;
+            _loc8_ = this._li;
+            if(param1 > this._l2 && _loc8_ < _loc2_ - 1)
             {
-               l = segments - 1;
-               while(i < l && (this._l2 = lengths[++i]) <= v)
+               _loc13_ = _loc2_ - 1;
+               while(_loc8_ < _loc13_ && (this._l2 = _loc14_[++_loc8_]) <= param1)
                {
                }
-               this._l1 = lengths[i - 1];
-               this._li = i;
-               this._curSeg = curSeg = this._segments[i];
-               this._s2 = curSeg[this._s1 = this._si = 0];
+               this._l1 = _loc14_[_loc8_ - 1];
+               this._li = _loc8_;
+               this._curSeg = _loc15_ = this._segments[_loc8_];
+               this._s2 = _loc15_[this._s1 = this._si = 0];
             }
-            else if(v < this._l1 && i > 0)
+            else if(param1 < this._l1 && _loc8_ > 0)
             {
-               while(i > 0 && (this._l1 = lengths[--i]) >= v)
+               while(_loc8_ > 0 && (this._l1 = _loc14_[--_loc8_]) >= param1)
                {
                }
-               if(i === 0 && v < this._l1)
+               if(_loc8_ === 0 && param1 < this._l1)
                {
                   this._l1 = 0;
                }
                else
                {
-                  i++;
+                  _loc8_++;
                }
-               this._l2 = lengths[i];
-               this._li = i;
-               this._curSeg = curSeg = this._segments[i];
-               this._s1 = Number(curSeg[(this._si = curSeg.length - 1) - 1]) || 0;
-               this._s2 = curSeg[this._si];
+               this._l2 = _loc14_[_loc8_];
+               this._li = _loc8_;
+               this._curSeg = _loc15_ = this._segments[_loc8_];
+               this._s1 = Number(_loc15_[(this._si = _loc15_.length - 1) - 1]) || 0;
+               this._s2 = _loc15_[this._si];
             }
-            curIndex = i;
-            v -= this._l1;
-            i = this._si;
-            if(v > this._s2 && i < curSeg.length - 1)
+            _loc6_ = _loc8_;
+            param1 -= this._l1;
+            _loc8_ = this._si;
+            if(param1 > this._s2 && _loc8_ < _loc15_.length - 1)
             {
-               l = int(curSeg.length - 1);
-               while(i < l && (this._s2 = curSeg[++i]) <= v)
+               _loc13_ = int(_loc15_.length - 1);
+               while(_loc8_ < _loc13_ && (this._s2 = _loc15_[++_loc8_]) <= param1)
                {
                }
-               this._s1 = curSeg[i - 1];
-               this._si = i;
+               this._s1 = _loc15_[_loc8_ - 1];
+               this._si = _loc8_;
             }
-            else if(v < this._s1 && i > 0)
+            else if(param1 < this._s1 && _loc8_ > 0)
             {
-               while(i > 0 && (this._s1 = curSeg[--i]) >= v)
+               while(_loc8_ > 0 && (this._s1 = _loc15_[--_loc8_]) >= param1)
                {
                }
-               if(i === 0 && v < this._s1)
+               if(_loc8_ === 0 && param1 < this._s1)
                {
                   this._s1 = 0;
                }
                else
                {
-                  i++;
+                  _loc8_++;
                }
-               this._s2 = curSeg[i];
-               this._si = i;
+               this._s2 = _loc15_[_loc8_];
+               this._si = _loc8_;
             }
-            t = (i + (v - this._s1) / (this._s2 - this._s1)) * this._prec;
+            _loc11_ = (_loc8_ + (param1 - this._s1) / (this._s2 - this._s1)) * this._prec;
          }
-         inv = 1 - t;
-         i = int(this._props.length);
-         while(--i > -1)
+         _loc7_ = 1 - _loc11_;
+         _loc8_ = int(this._props.length);
+         while(--_loc8_ > -1)
          {
-            p = this._props[i];
-            b = this._beziers[p][curIndex];
-            val = (t * t * b.da + 3 * inv * (t * b.ca + inv * b.ba)) * t + b.a;
-            if(this._round[p])
+            _loc9_ = this._props[_loc8_];
+            _loc10_ = this._beziers[_loc9_][_loc6_];
+            _loc12_ = (_loc11_ * _loc11_ * _loc10_.da + 3 * _loc7_ * (_loc11_ * _loc10_.ca + _loc7_ * _loc10_.ba)) * _loc11_ + _loc10_.a;
+            if(this._round[_loc9_])
             {
-               val = val + (val > 0 ? 0.5 : -0.5) >> 0;
+               _loc12_ = _loc12_ + (_loc12_ > 0 ? 0.5 : -0.5) >> 0;
             }
-            if(func[p])
+            if(_loc3_[_loc9_])
             {
-               target[p](val);
+               _loc4_[_loc9_](_loc12_);
             }
             else
             {
-               target[p] = val;
+               _loc4_[_loc9_] = _loc12_;
             }
          }
          if(this._autoRotate != null)
          {
-            ar = this._autoRotate;
-            i = int(ar.length);
-            while(--i > -1)
+            _loc16_ = this._autoRotate;
+            _loc8_ = int(_loc16_.length);
+            while(--_loc8_ > -1)
             {
-               p = ar[i][2];
-               add = Number(Number(ar[i][3]) || 0);
-               conv = ar[i][4] == true ? 1 : _RAD2DEG;
-               b = this._beziers[ar[i][0]][curIndex];
-               b2 = this._beziers[ar[i][1]][curIndex];
-               x1 = b.a + (b.b - b.a) * t;
-               x2 = b.b + (b.c - b.b) * t;
-               x1 += (x2 - x1) * t;
-               x2 += (b.c + (b.d - b.c) * t - x2) * t;
-               y1 = b2.a + (b2.b - b2.a) * t;
-               y2 = b2.b + (b2.c - b2.b) * t;
-               y1 += (y2 - y1) * t;
-               y2 += (b2.c + (b2.d - b2.c) * t - y2) * t;
-               val = notStart ? Math.atan2(y2 - y1,x2 - x1) * conv + add : Number(this._initialRotations[i]);
-               if(func[p])
+               _loc9_ = _loc16_[_loc8_][2];
+               _loc22_ = Number(Number(_loc16_[_loc8_][3]) || 0);
+               _loc23_ = _loc16_[_loc8_][4] == true ? 1 : _RAD2DEG;
+               _loc10_ = this._beziers[_loc16_[_loc8_][0]][_loc6_];
+               _loc17_ = this._beziers[_loc16_[_loc8_][1]][_loc6_];
+               _loc18_ = _loc10_.a + (_loc10_.b - _loc10_.a) * _loc11_;
+               _loc20_ = _loc10_.b + (_loc10_.c - _loc10_.b) * _loc11_;
+               _loc18_ += (_loc20_ - _loc18_) * _loc11_;
+               _loc20_ += (_loc10_.c + (_loc10_.d - _loc10_.c) * _loc11_ - _loc20_) * _loc11_;
+               _loc19_ = _loc17_.a + (_loc17_.b - _loc17_.a) * _loc11_;
+               _loc21_ = _loc17_.b + (_loc17_.c - _loc17_.b) * _loc11_;
+               _loc19_ += (_loc21_ - _loc19_) * _loc11_;
+               _loc21_ += (_loc17_.c + (_loc17_.d - _loc17_.c) * _loc11_ - _loc21_) * _loc11_;
+               _loc12_ = _loc5_ ? Math.atan2(_loc21_ - _loc19_,_loc20_ - _loc18_) * _loc23_ + _loc22_ : Number(this._initialRotations[_loc8_]);
+               if(_loc3_[_loc9_])
                {
-                  target[p](val);
+                  _loc4_[_loc9_](_loc12_);
                }
                else
                {
-                  target[p] = val;
+                  _loc4_[_loc9_] = _loc12_;
                }
             }
          }
@@ -757,15 +773,15 @@ class Segment
    
    public var ba:Number;
    
-   public function Segment(a:Number, b:Number, c:Number, d:Number)
+   public function Segment(param1:Number, param2:Number, param3:Number, param4:Number)
    {
       super();
-      this.a = a;
-      this.b = b;
-      this.c = c;
-      this.d = d;
-      this.da = d - a;
-      this.ca = c - a;
-      this.ba = b - a;
+      this.a = param1;
+      this.b = param2;
+      this.c = param3;
+      this.d = param4;
+      this.da = param4 - param1;
+      this.ca = param3 - param1;
+      this.ba = param2 - param1;
    }
 }

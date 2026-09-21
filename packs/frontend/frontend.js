@@ -63,15 +63,17 @@ let currentLocale =
 function normalizeLocale(value)
 {
     const locale =
-        String(
-            value ||
-            "")
+        String(value || "")
             .toLowerCase();
 
-    return locale ===
-        "english"
-            ? "english"
-            : "russian";
+    if (locale === "english" ||
+        locale === "russian" ||
+        locale === "chinese")
+    {
+        return locale;
+    }
+
+    return "russian";
 }
 
 
@@ -1936,6 +1938,43 @@ async function drawStartupTga()
 }
 
 
+let frontendReady =
+    false;
+
+
+window.ready =
+    function()
+    {
+        if (frontendReady)
+        {
+            return;
+        }
+
+        frontendReady =
+            true;
+
+        trace(
+            "MainMenuGUI reported ready");
+
+        const container =
+            document.getElementById(
+                "flash");
+
+        const startup =
+            document.getElementById(
+                "startup");
+
+        container.style.display =
+            "block";
+
+        startup.style.display =
+            "none";
+
+        postToHost(
+            "ready");
+    };
+
+
 // --------------------------------------------------
 // Real MainMenuGUI.swf
 // --------------------------------------------------
@@ -1965,6 +2004,9 @@ async function startFlash()
 
     container.appendChild(
         player);
+		
+	container.style.display =
+		"block";
 
     trace(
     "Loading original MainMenuGUI.swf: " +
@@ -2023,18 +2065,8 @@ async function startFlash()
 		"After load: externalInterfaceTransmit typeof=" +
 			typeof player.externalInterfaceTransmit);
 
-    document
-        .getElementById(
-            "startup")
-        .style
-        .display =
-            "none";
-
-    container.style.display =
-        "block";
-
-    postToHost(
-        "ready");
+    trace(
+		"Waiting for MainMenuGUI ready signal");
 }
 
 
@@ -2204,6 +2236,7 @@ function traceObjectFunction(
 
 // Original top-level SO callbacks
 [
+	"ready",
     "getClientVersion",
     "isInGame",
     "getLocalizedResource",

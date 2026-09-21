@@ -9,10 +9,10 @@ package scaleform.clik.events
       
       public var details:InputDetails;
       
-      public function InputEvent(type:String, details:InputDetails)
+      public function InputEvent(param1:String, param2:InputDetails)
       {
-         super(type,true,true);
-         this.details = details;
+         super(param1,true,true);
+         this.details = param2;
       }
       
       public function get handled() : Boolean
@@ -20,9 +20,9 @@ package scaleform.clik.events
          return isDefaultPrevented();
       }
       
-      public function set handled(value:Boolean) : void
+      public function set handled(param1:Boolean) : void
       {
-         if(value)
+         if(param1)
          {
             preventDefault();
          }

@@ -7,75 +7,101 @@ package com
          super();
       }
       
-      public static function findIn(str1:String, str2:String) : Boolean
+      public static function findIn(param1:String, param2:String) : Boolean
       {
-         for(var i:* = 0; i < str1.length; i++)
+         var _loc3_:* = 0;
+         while(_loc3_ < param1.length)
          {
-            if(str1.charAt(i).toUpperCase() != str2.charAt(i).toUpperCase())
+            if(param1.charAt(_loc3_).toUpperCase() != param2.charAt(_loc3_).toUpperCase())
             {
                return false;
             }
+            _loc3_++;
          }
          return true;
       }
       
-      public function replaceEnter(str:String) : String
+      public static function lastIndexOf(param1:String, param2:String) : *
       {
-         var tmp:String = "";
-         for(var i:* = 0; i < str.length; i++)
+         var _loc3_:int = 0;
+         var _loc4_:int = -1;
+         while(_loc3_ != -1)
          {
-            if(str.charAt(i) != "\r")
+            _loc3_ = int(param2.indexOf(param1,_loc3_));
+            if(_loc3_ != -1)
             {
-               tmp += str.charAt(i);
+               _loc4_ = _loc3_;
+               _loc3_ += param1.length;
             }
          }
-         return tmp;
+         return _loc4_;
       }
       
-      public function deleteSpaces(str:String) : String
+      public function replaceEnter(param1:String) : String
       {
-         var firstSymb:Boolean = false;
-         var tmp:String = "";
-         var tmp1:String = "";
-         for(var i:* = 0; i < str.length; i++)
+         var _loc2_:String = "";
+         var _loc3_:* = 0;
+         while(_loc3_ < param1.length)
          {
-            if(str.charAt(i) != " " && !firstSymb)
+            if(param1.charAt(_loc3_) != "\r")
             {
-               firstSymb = true;
-               tmp = str.charAt(i);
+               _loc2_ += param1.charAt(_loc3_);
             }
-            else if(firstSymb)
-            {
-               tmp += str.charAt(i);
-            }
+            _loc3_++;
          }
-         firstSymb = false;
-         for(i = tmp.length - 1; i >= 0; i--)
-         {
-            if(tmp.charAt(i) != " " && !firstSymb)
-            {
-               firstSymb = true;
-               tmp1 = tmp.charAt(i);
-            }
-            else if(firstSymb)
-            {
-               tmp1 = tmp.charAt(i) + tmp1;
-            }
-         }
-         return tmp1;
+         return _loc2_;
       }
       
-      public function validateMessage(str:String) : Boolean
+      public function deleteSpaces(param1:String) : String
       {
-         var tmp:Boolean = false;
-         for(var i:* = 0; i < str.length; i++)
+         var _loc2_:Boolean = false;
+         var _loc3_:String = "";
+         var _loc4_:String = "";
+         var _loc5_:* = 0;
+         while(_loc5_ < param1.length)
          {
-            if(str.charAt(i) != " " && str.charAt(i) != "\r")
+            if(param1.charAt(_loc5_) != " " && !_loc2_)
             {
-               tmp = true;
+               _loc2_ = true;
+               _loc3_ = param1.charAt(_loc5_);
             }
+            else if(_loc2_)
+            {
+               _loc3_ += param1.charAt(_loc5_);
+            }
+            _loc5_++;
          }
-         return tmp;
+         _loc2_ = false;
+         _loc5_ = _loc3_.length - 1;
+         while(_loc5_ >= 0)
+         {
+            if(_loc3_.charAt(_loc5_) != " " && !_loc2_)
+            {
+               _loc2_ = true;
+               _loc4_ = _loc3_.charAt(_loc5_);
+            }
+            else if(_loc2_)
+            {
+               _loc4_ = _loc3_.charAt(_loc5_) + _loc4_;
+            }
+            _loc5_--;
+         }
+         return _loc4_;
+      }
+      
+      public function validateMessage(param1:String) : Boolean
+      {
+         var _loc2_:Boolean = false;
+         var _loc3_:* = 0;
+         while(_loc3_ < param1.length)
+         {
+            if(param1.charAt(_loc3_) != " " && param1.charAt(_loc3_) != "\r")
+            {
+               _loc2_ = true;
+            }
+            _loc3_++;
+         }
+         return _loc2_;
       }
    }
 }

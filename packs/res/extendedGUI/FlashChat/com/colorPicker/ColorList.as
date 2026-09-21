@@ -6,10 +6,6 @@ package com.colorPicker
    {
       private var _colors:Object = new Object();
       
-      private var X:Number = 0;
-      
-      private var Y:Number = 0;
-      
       public function ColorList()
       {
          super();
@@ -28,27 +24,26 @@ package com.colorPicker
          }
       }
       
-      public function Draw(arr:Array) : *
+      public function Draw(arr:Array, limit:Number = 0) : *
       {
          var str:String = null;
-         var t:Number = 1;
+         var X:Number = 0;
+         var Y:Number = 0;
          for(var i:* = 0; i < arr.length; i++)
          {
             str = arr[i].toString(16);
             this._colors[str] = new ColorItem();
-            this._colors[str].color = arr[i];
             this._colors[str].addEventListener(ColorEvent.SELECT,this.onClick);
-            this._colors[str].x = this.X;
-            this._colors[str].y = this.Y;
+            this._colors[str].x = X;
+            this._colors[str].y = Y;
             addChild(this._colors[str]);
-            this.X += 13;
-            if(t >= 16)
+            this._colors[str].color = arr[i];
+            X += 13;
+            if(X >= limit)
             {
-               t = 0;
-               this.Y += 13;
-               this.X = 0;
+               Y += 13;
+               X = 0;
             }
-            t++;
          }
       }
       

@@ -24,8 +24,6 @@ package ui.components
       
       private var price:LabelShadowed;
       
-      private var ratio:LabelShadowed;
-      
       private var time:LabelShadowed;
       
       private var back:Sprite;
@@ -82,14 +80,14 @@ package ui.components
          this.caption = new LabelShadowed(this.box);
          this.caption.color = 12700012;
          this.caption.size = 24;
-         this.caption.font = Base.FONT_REGULAR;
+         this.caption.font = Base.fontName;
          this.caption.debug = false;
          this.caption.mouseEnabled = false;
          this.caption.mouseChildren = false;
          this.description = new TextShadowed(this.box);
          this.description.color = 16777215;
          this.description.size = 20;
-         this.description.font = Base.FONT_LIGHT;
+         this.description.font = Base.lightFontName;
          this.description.leading = -5;
          this.description.debug = false;
          this.description.selectable = false;
@@ -100,25 +98,18 @@ package ui.components
          this.details.size = 18;
          this.details.height = 32;
          this.details.addEventListener(MouseEvent.CLICK,this.onDetailsClick);
-         this.ratio = new LabelShadowed(this.box);
-         this.ratio.color = 12895428;
-         this.ratio.size = 17;
-         this.ratio.font = Base.FONT_LIGHT;
-         this.ratio.debug = false;
-         this.ratio.mouseEnabled = false;
-         this.ratio.mouseChildren = false;
          this.time = new LabelShadowed(this.box);
          this.time.color = 12895428;
          this.time.size = 17;
-         this.time.font = Base.FONT_LIGHT;
-         this.time.paddingTop = -10;
+         this.time.font = Base.lightFontName;
+         this.time.paddingTop = 0;
          this.time.debug = false;
          this.time.mouseEnabled = false;
          this.time.mouseChildren = false;
          this.price = new LabelShadowed(this.box);
          this.price.color = 12895428;
          this.price.size = 17;
-         this.price.font = Base.FONT_LIGHT;
+         this.price.font = Base.lightFontName;
          this.price.paddingTop = -10;
          this.price.debug = false;
          this.price.mouseEnabled = false;
@@ -201,7 +192,6 @@ package ui.components
                {
                }
             }
-            this.ratio.text = Locale.getById("extendedGUI.PremiumPanel.expCoefficient") + " " + _data.ratio;
             this.time.text = this.getTimeLabel(_data.time);
             this.price.text = Locale.getById("extendedGUI.PremiumPanel.price") + " " + _data.price;
             while(this.icon.numChildren)

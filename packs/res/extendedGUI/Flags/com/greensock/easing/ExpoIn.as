@@ -9,9 +9,9 @@ package com.greensock.easing
          super();
       }
       
-      override public function getRatio(p:Number) : Number
+      override public function getRatio(param1:Number) : Number
       {
-         return Math.pow(2,10 * (p - 1)) - 0.001;
+         return Math.pow(2,10 * (param1 - 1)) - 0.001;
       }
    }
 }

@@ -603,6 +603,7 @@ package com
             if(Object(root).MainChat.defaultChannals[j].label == Object(root).MainChat.locale.WHISPER)
             {
                tmp.color = Object(root).MainChat.defaultChannals[j].color;
+               break;
             }
          }
          Obj.setting.unshift(tmp);
@@ -611,7 +612,14 @@ package com
          this.addTab(Obj.setting,Obj.label,Obj.TEXT,Obj.user,Obj.whisp,Obj.defaultTab,Obj.onlyEng);
          this.changeSize();
          str = "";
-         str = "<font color=\"#" + Obj.setting[0].color.toString(16) + "\">";
+         if(Obj.setting[0].color != null)
+         {
+            str = "<font color=\"#" + Obj.setting[0].color.toString(16) + "\">";
+         }
+         else
+         {
+            str = "<font color=\"#9a85a7\">";
+         }
          if(Object(root).MainChat.ShowTime)
          {
             str = str + "[" + MSG.tme + "]";

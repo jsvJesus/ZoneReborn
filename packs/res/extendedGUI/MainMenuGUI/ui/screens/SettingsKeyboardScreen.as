@@ -17,13 +17,13 @@ package ui.screens
       
       protected var linesBox:HBox;
       
-      protected var applyButton:MenuButton;
+      protected var applyButton:MenuButton2;
       
-      protected var cancelButton:MenuButton;
+      protected var cancelButton:MenuButton2;
       
-      protected var defaultButton:MenuButton;
+      protected var defaultButton:MenuButton2;
       
-      protected var backButton:MenuButton;
+      protected var backButton:MenuButton2;
       
       protected var quad1:Quad;
       
@@ -204,16 +204,16 @@ package ui.screens
          this.quad1 = new Quad(this.vBox);
          this.quad1.width = fullWidth;
          this.quad1.height = 10;
-         this.defaultButton = new MenuButton(this.vBox);
+         this.defaultButton = new MenuButton2(this.vBox);
          this.defaultButton.$ = "extendedGUI.SettingsWindow.setDefault";
          this.defaultButton.height = 30;
          this.defaultButton.addEventListener(MouseEvent.CLICK,this.defaultButtonClickHandler);
-         this.applyButton = new MenuButton(this.vBox);
+         this.applyButton = new MenuButton2(this.vBox);
          this.applyButton.$ = "extendedGUI.SettingsWindow.setApplied";
          this.applyButton.height = 30;
          this.applyButton.addEventListener(MouseEvent.CLICK,this.onApplyButtonHandler);
          this.applyButton.enabled = false;
-         this.backButton = new MenuButton(this.vBox);
+         this.backButton = new MenuButton2(this.vBox);
          this.backButton.$ = "extendedGUI.SettingsWindow.backButton";
          this.backButton.height = 30;
          this.backButton.addEventListener(MouseEvent.CLICK,this.onBackButtonHandler);

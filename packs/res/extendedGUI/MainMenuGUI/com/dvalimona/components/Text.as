@@ -24,7 +24,7 @@ package com.dvalimona.components
       
       protected var _size:Number = -1;
       
-      protected var _font:String = Style.fontName;
+      protected var _font:String = Base.fontName;
       
       public function Text(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0, text:String = "")
       {
@@ -61,6 +61,7 @@ package com.dvalimona.components
          this._tf.type = TextFieldType.INPUT;
          this._tf.defaultTextFormat = this._format;
          this._tf.addEventListener(Event.CHANGE,this.onChange);
+         this._tf.addEventListener(TextEvent.LINK,this.onLink);
          addChild(this._tf);
       }
       
@@ -76,11 +77,13 @@ package com.dvalimona.components
             this._tf.autoSize = TextFieldAutoSize.LEFT;
             if(this._html)
             {
+               this._tf.setTextFormat(this._format);
                this._tf.htmlText = this._text;
             }
             else
             {
                this._tf.text = this._text;
+               this._tf.setTextFormat(this._format);
             }
             if(this._editable)
             {
@@ -94,7 +97,6 @@ package com.dvalimona.components
                this._tf.selectable = this._selectable;
                this._tf.type = TextFieldType.DYNAMIC;
             }
-            this._tf.setTextFormat(this._format);
             this._panel.width = _width;
             this._panel.height = this._tf.textHeight;
             this._panel.draw();
@@ -111,11 +113,13 @@ package com.dvalimona.components
             this._tf.height = _height - 4;
             if(this._html)
             {
+               this._tf.setTextFormat(this._format);
                this._tf.htmlText = this._text;
             }
             else
             {
                this._tf.text = this._text;
+               this._tf.setTextFormat(this._format);
             }
             if(this._editable)
             {
@@ -129,7 +133,6 @@ package com.dvalimona.components
                this._tf.selectable = this._selectable;
                this._tf.type = TextFieldType.DYNAMIC;
             }
-            this._tf.setTextFormat(this._format);
          }
          drawDebug();
       }
@@ -138,6 +141,10 @@ package com.dvalimona.components
       {
          this._text = this._tf.text;
          dispatchEvent(event);
+      }
+      
+      protected function onLink(event:TextEvent) : void
+      {
       }
       
       public function set autoHeight(b:Boolean) : void

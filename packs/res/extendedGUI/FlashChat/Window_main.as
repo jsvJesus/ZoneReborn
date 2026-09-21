@@ -1,6 +1,7 @@
 package
 {
    import com.ChannelColors;
+   import com.ChatSettings;
    import com.Commands;
    import com.GameCommunication;
    import com.ParseChannels;
@@ -53,6 +54,10 @@ package
       
       public var ShowTime:Boolean = true;
       
+      public var radio_modes:Object = new Object();
+      
+      public var radio_mode:Boolean = false;
+      
       public var locale:Object = new Object();
       
       public var defaultChannals:Array = new Array();
@@ -71,13 +76,21 @@ package
       
       public var Delay:Number = 3000;
       
+      protected var lastIMEString:String = "";
+      
+      protected var lastIMECandidates:Array;
+      
       internal const N:Number = 3;
       
       public var arrayOfChanals:Array = new Array();
       
+      internal var ignoreNames:Array = ["sb","s1","s2","s3","s4","Btn","Log","hiddenBtn","imeComponent"];
+      
       public var MainChat:MainWind;
       
       public var Bing:BingWindow = new BingWindow();
+      
+      public var imeComponent:IMEComponent;
       
       public var colors:Array = new Array();
       
@@ -99,15 +112,21 @@ package
          ExternalInterface.addCallback("save_settings",this.saveSettings);
          ExternalInterface.addCallback("notif_delay",this.setNotifDelay);
          ExternalInterface.addCallback("get_commands",this.setCommands);
-         ExternalInterface.addCallback("show_notification",this.Log.Show);
+         ExternalInterface.addCallback("show_notification",this.showHightMessage);
          ExternalInterface.addCallback("get_colors",this.setColors);
          ExternalInterface.addCallback("get_user_channel_colors",this.setUserChannelColors);
          ExternalInterface.addCallback("rotX",this.rotX);
          ExternalInterface.addCallback("rotY",this.rotY);
          ExternalInterface.addCallback("rotZ",this.rotZ);
+         ExternalInterface.addCallback("clear",this.clearChat);
+         ExternalInterface.addCallback("sound_settings",this.set_sound_settings);
+         ExternalInterface.addCallback("ime_event",this.on_ime_event);
          super();
          stage.addEventListener(MouseEvent.MOUSE_DOWN,this.sayMouseDown);
          stage.addEventListener(Event.RESIZE,this.onResize);
+         this.name = "imeComponent";
+         this.imeComponent.y = 200;
+         this.imeComponent.x = 200;
       }
       
       protected function setCommands(Obj:*) : *
@@ -150,6 +169,7 @@ package
       public function saveSettings(Obj:*) : *
       {
          this.API.saveSettings(Object(root).MainChat.SaveWindows());
+         this.API.updateSoundSettings(ChatSettings.getSoundschannels());
       }
       
       public function setTranslatedText(S:*) : *
@@ -187,13 +207,14 @@ package
             this.setMode("half_hidden");
             this.API.changeMode("half_hidden");
          }
+         stage.focus = null;
       }
       
       public function ResizeChildren(X:Number, Y:Number) : *
       {
          for(var i:* = 0; i < Object(root).numChildren; i++)
          {
-            if(Object(root).getChildAt(i).name != "Message" && Object(root).getChildAt(i).name != "s1" && Object(root).getChildAt(i).name != "s2" && Object(root).getChildAt(i).name != "s3" && Object(root).getChildAt(i).name != "s4")
+            if(Object(root).getChildAt(i).name != "imeComponent" && Object(root).getChildAt(i).name != "Message" && Object(root).getChildAt(i).name != "s1" && Object(root).getChildAt(i).name != "s2" && Object(root).getChildAt(i).name != "s3" && Object(root).getChildAt(i).name != "s4")
             {
                Object(root).getChildAt(i).x = Object(root).getChildAt(i).x + X;
                Object(root).getChildAt(i).y = Object(root).getChildAt(i).y + Y;
@@ -210,7 +231,7 @@ package
       {
          for(var i:* = 0; i < Object(root).numChildren; i++)
          {
-            if(Object(root).getChildAt(i).name != "Message" && Object(root).getChildAt(i).name != "sb" && Object(root).getChildAt(i).name != "s1" && Object(root).getChildAt(i).name != "s2" && Object(root).getChildAt(i).name != "s3" && Object(root).getChildAt(i).name != "s4" && Object(root).getChildAt(i).name != "Log" && Object(root).getChildAt(i).name != "Btn" && Object(root).getChildAt(i).name != "hiddenBtn")
+            if(Object(root).getChildAt(i).name != "imeComponent" && Object(root).getChildAt(i).name != "Message" && Object(root).getChildAt(i).name != "sb" && Object(root).getChildAt(i).name != "s1" && Object(root).getChildAt(i).name != "s2" && Object(root).getChildAt(i).name != "s3" && Object(root).getChildAt(i).name != "s4" && Object(root).getChildAt(i).name != "Log" && Object(root).getChildAt(i).name != "Btn" && Object(root).getChildAt(i).name != "hiddenBtn")
             {
                Object(root).getChildAt(i).validatePosition();
             }
@@ -221,7 +242,7 @@ package
       {
          for(var i:* = 0; i < Object(root).numChildren; i++)
          {
-            if(Object(root).getChildAt(i).name != "Message" && Object(root).getChildAt(i).name != "sb" && Object(root).getChildAt(i).name != "s1" && Object(root).getChildAt(i).name != "s2" && Object(root).getChildAt(i).name != "s3" && Object(root).getChildAt(i).name != "s4" && Object(root).getChildAt(i).name != "Log" && Object(root).getChildAt(i).name != "Btn" && Object(root).getChildAt(i).name != "hiddenBtn")
+            if(Object(root).getChildAt(i).name != "imeComponent" && Object(root).getChildAt(i).name != "Message" && Object(root).getChildAt(i).name != "sb" && Object(root).getChildAt(i).name != "s1" && Object(root).getChildAt(i).name != "s2" && Object(root).getChildAt(i).name != "s3" && Object(root).getChildAt(i).name != "s4" && Object(root).getChildAt(i).name != "Log" && Object(root).getChildAt(i).name != "Btn" && Object(root).getChildAt(i).name != "hiddenBtn")
             {
                Object(root).getChildAt(i).validateColors();
             }
@@ -326,7 +347,7 @@ package
          this.MainChat.onlyEng = Ob["MainWindow"].onlyEng;
          this.MainChat.height = Ob["MainWindow"].height - 12;
          this.MainChat.width = Ob["MainWindow"].width - 12;
-         this.MainChat.settings = this.Parse.parse(Ob["MainWindow"].channals,this.defaultChannals);
+         this.MainChat.settings = this.Parse.parse(Ob["MainWindow"].channals,this.defaultChannals,Ob["MainWindow"].sounds || new Array());
          this.MainChat.locale = this.locale;
          this.MainChat.mainMsgs = "";
          this.MainChat.HiddenMode = Ob["MainWindow"].HiddenMode;
@@ -370,14 +391,14 @@ package
                   tmpObj.onluEng = Ob["MainWindow"].tabs[j].onlyEng;
                }
                tmpObj.text = "";
-               tmpObj.chanalParam = this.Parse.parse(Ob["MainWindow"].tabs[j].channals,this.defaultChannals);
+               tmpObj.chanalParam = this.Parse.parse(Ob["MainWindow"].tabs[j].channals,this.defaultChannals,Ob["MainWindow"].tabs[j].sounds || new Array());
                tmpObj.user = Ob["MainWindow"].tabs[j].user;
                tmpObj.whisp = Ob["MainWindow"].tabs[j].whisp;
                tmpObj.defaultTab = Ob["MainWindow"].tabs[j].defaultTab;
                dat.push(tmpObj);
             }
          }
-         setTimeout(this.MainChat.TabBar.dataProvider,25,dat);
+         setTimeout(this.MainChat.TabBar.dataProvider,50,dat);
          setTimeout(this.MainChat.initRamka,10);
          for(i in Ob)
          {
@@ -391,7 +412,7 @@ package
                   newWind.y = Ob[i].y * ((Object(root).height + stage.stageHeight) / 2);
                   newWind.height = Ob[i].height - 12;
                   newWind.width = Ob[i].width - 12;
-                  newWind.settings = this.Parse.parse(Ob[i].channals,this.defaultChannals);
+                  newWind.settings = this.Parse.parse(Ob[i].channals,this.defaultChannals,Ob[i].sounds || new Array());
                   newWind.alphaGame = Ob[i].transpGame;
                   newWind.alphaChat = Ob[i].transpChat;
                   newWind.ShowTime = Ob[i].time;
@@ -438,6 +459,16 @@ package
       public function setLanguage(s:String) : *
       {
          this.language = s;
+         this.onLanguageChange();
+      }
+      
+      protected function onLanguageChange() : *
+      {
+      }
+      
+      protected function showHightMessage(data:Object) : *
+      {
+         this.Log.Show(data);
       }
       
       override protected function draw() : void
@@ -499,14 +530,14 @@ package
          }
          for(var i:* = 0; i < Object(root).numChildren; i++)
          {
-            if(Object(root).getChildAt(i).name != "sb" && Object(root).getChildAt(i).name != "s1" && Object(root).getChildAt(i).name != "s2" && Object(root).getChildAt(i).name != "s3" && Object(root).getChildAt(i).name != "s4" && Object(root).getChildAt(i).name != "Log" && Object(root).getChildAt(i).name != "Btn" && Object(root).getChildAt(i).name != "hiddenBtn")
+            if(this.ignoreNames.indexOf(Object(root).getChildAt(i).name) == -1)
             {
                Object(root).getChildAt(i).setMode(mod);
             }
          }
          for(var j:* = 0; j < Object(root).numChildren; j++)
          {
-            if(Object(root).getChildAt(j).name != "sb" && Object(root).getChildAt(j).name != "s1" && Object(root).getChildAt(j).name != "s2" && Object(root).getChildAt(j).name != "s3" && Object(root).getChildAt(j).name != "s4" && Object(root).getChildAt(j).name != "Log" && Object(root).getChildAt(j).name != "Btn" && Object(root).getChildAt(j).name != "hiddenBtn")
+            if(this.ignoreNames.indexOf(Object(root).getChildAt(j).name) == -1)
             {
                Object(root).getChildAt(j).setMode(mod);
             }
@@ -521,10 +552,10 @@ package
          {
             fr = Boolean(Obj.is_friend);
          }
-         this.GetMsg(Obj.channel_id,Obj.time,Obj.text,Obj.sender,fr,false,Obj.only_latin);
+         this.GetMsg(Obj.channel_id,Obj.time,Obj.text,Obj.sender,Obj.additional,fr,false,Obj.only_latin);
       }
       
-      public function GetMsg(id:Number, time:String, msg:String, user:String = "", friend:Boolean = false, returned:Boolean = false, onlyEng:Boolean = false) : *
+      public function GetMsg(id:Number, time:String, msg:String, user:String = "", clan:String = "", friend:Boolean = false, returned:Boolean = false, onlyEng:Boolean = false) : *
       {
          var str:* = null;
          var TMP:Object = null;
@@ -538,18 +569,21 @@ package
          if(Object(root).MainChat.newsID == id)
          {
             str = "<font color=\"#" + ChannelColors.getAt(this.MainChat.newsID).toString(16) + "\">" + msg + "</font>";
-            if(this.Log != getChildAt(numChildren - 1))
+            if(this.Log != getChildAt(numChildren - 2))
             {
-               swapChildren(this.Log,getChildAt(numChildren - 1));
+               swapChildren(this.Log,getChildAt(numChildren - 2));
             }
-            this.Log.Show(str);
+            this.Log.Show({
+               "text":str,
+               "show_time":0
+            });
          }
          var Flag:Boolean = false;
          for(var i:* = 0; i < Object(root).numChildren; i++)
          {
-            if(Object(root).getChildAt(i).name != "sb" && Object(root).getChildAt(i).name != "s1" && Object(root).getChildAt(i).name != "s2" && Object(root).getChildAt(i).name != "s3" && Object(root).getChildAt(i).name != "s4" && Object(root).getChildAt(i).name != "Btn" && Object(root).getChildAt(i).name != "Log" && Object(root).getChildAt(i).name != "hiddenBtn")
+            if(this.ignoreNames.indexOf(Object(root).getChildAt(i).name) == -1)
             {
-               if(Object(root).getChildAt(i).drawMsg(id,time,msg,user,returned,onlyEng))
+               if(Object(root).getChildAt(i).drawMsg(id,time,msg,user,clan,returned,onlyEng))
                {
                   Flag = true;
                }
@@ -576,19 +610,30 @@ package
          }
       }
       
+      public function clearChat() : *
+      {
+         for(var i:* = 0; i < Object(root).numChildren; i++)
+         {
+            if(this.ignoreNames.indexOf(Object(root).getChildAt(i).name) == -1)
+            {
+               Object(root).getChildAt(i).clearChat();
+            }
+         }
+      }
+      
       public function DropAll() : *
       {
          ChannelColors.resetColors();
          for(var i:* = 0; i < Object(root).numChildren; i++)
          {
-            if(Object(root).getChildAt(i).name != "sb" && Object(root).getChildAt(i).name != "s1" && Object(root).getChildAt(i).name != "s2" && Object(root).getChildAt(i).name != "s3" && Object(root).getChildAt(i).name != "s4" && Object(root).getChildAt(i).name != "Btn" && Object(root).getChildAt(i).name != "Log" && Object(root).getChildAt(i).name != "hiddenBtn")
+            if(this.ignoreNames.indexOf(Object(root).getChildAt(i).name) == -1)
             {
                Object(root).getChildAt(i).DropSetting();
             }
          }
          for(var j:* = 0; j < Object(root).numChildren; j++)
          {
-            if(Object(root).getChildAt(j).name != "sb" && Object(root).getChildAt(j).name != "s1" && Object(root).getChildAt(j).name != "s2" && Object(root).getChildAt(j).name != "s3" && Object(root).getChildAt(j).name != "s4" && Object(root).getChildAt(j).name != "Log" && Object(root).getChildAt(j).name != "Btn" && Object(root).getChildAt(j).name != "hiddenBtn")
+            if(this.ignoreNames.indexOf(Object(root).getChildAt(j).name) == -1)
             {
                Object(root).getChildAt(j).DropSetting();
             }
@@ -608,11 +653,46 @@ package
          this.DrawWindows(Obj);
       }
       
+      public function set_sound_settings(Obj:*) : *
+      {
+         ChatSettings.setSoundschannels(Obj);
+      }
+      
+      public function on_ime_event(obj:*) : *
+      {
+         var j:* = undefined;
+         var composition:String = null;
+         var candidates:Array = new Array();
+         var selectedIndex:int = int(obj["selectedIndex"]);
+         for each(j in obj["candidates"])
+         {
+            candidates.push(j);
+         }
+         composition = obj["composition"];
+         if(this.lastIMECandidates && this.lastIMECandidates.length > 0 && candidates.length == 0)
+         {
+            Object(root).ChatFocus.replaceText(Object(root).ChatFocus.caretIndex - this.lastIMEString.length,Object(root).ChatFocus.caretIndex,this.lastIMECandidates[selectedIndex]);
+            Object(root).ChatFocus.setSelection(Object(root).ChatFocus.length,Object(root).ChatFocus.length);
+            this.imeComponent.visible = false;
+            this.lastIMECandidates = new Array();
+            this.lastIMEString = "";
+            return;
+         }
+         Object(root).ChatFocus.replaceText(Object(root).ChatFocus.caretIndex - this.lastIMEString.length,Object(root).ChatFocus.caretIndex,composition);
+         Object(root).ChatFocus.setSelection(Object(root).ChatFocus.length,Object(root).ChatFocus.length);
+         var rect:* = Object(root).ChatFocus.getCharBoundaries(Object(root).ChatFocus.caretIndex);
+         this.imeComponent.showCandidates(candidates);
+         this.imeComponent.y = Object(root).ChatFocus.y + Object(root).ChatFocus.parent.y - 10;
+         this.imeComponent.x = !!(Object(root).ChatFocus.x + Object(root).ChatFocus.parent.x + rect) ? Number(rect.x) : 0;
+         this.imeComponent.parent.setChildIndex(this.imeComponent,this.imeComponent.parent.numChildren - 1);
+         this.lastIMECandidates = candidates;
+         this.lastIMEString = composition;
+      }
+      
       public function setChannels(Obj:*) : *
       {
          var i:* = undefined;
          var tmp:Object = null;
-         var str:String = null;
          this.defaultChannals = new Array();
          var newColors:Array = new Array();
          for(i in Obj)
@@ -620,9 +700,7 @@ package
             tmp = new Object();
             tmp.id = Obj[i].id;
             tmp.selected = false;
-            str = Obj[i].name;
-            str = str.substr(5);
-            tmp.label = this.locale[str.toUpperCase()];
+            tmp.label = this.locale[Obj[i].name.substr(5)];
             if(tmp.label == this.locale.WHISPER)
             {
                ChannelColors.whispID = Obj[i].id;
@@ -639,6 +717,10 @@ package
             {
                tmp.com = Obj[i].shortcut;
             }
+            if(Obj[i].short_name != null)
+            {
+               tmp.short_name = this.locale[Obj[i].short_name.substr(5)];
+            }
             this.defaultChannals.push(tmp);
             this.mainSetting.push(tmp.id);
          }
@@ -646,6 +728,7 @@ package
          if(!this.Init)
          {
             this.API.loadSettings();
+            this.API.sound_settings();
          }
          if(this.newLocale)
          {
@@ -686,7 +769,7 @@ package
       
       public function returnMsg(Obj:*) : *
       {
-         this.GetMsg(Obj.channel_id,Obj.time,Obj.text,Obj.receiver,false,true);
+         this.GetMsg(Obj.channel_id,Obj.time,Obj.text,Obj.receiver,"",false,true);
       }
       
       public function setAccountStatus(Obj:*) : *
@@ -697,17 +780,20 @@ package
       public function changeLocale() : *
       {
          var i:* = undefined;
+         var settings:Object = null;
          var j:* = undefined;
+         var settings1:Object = null;
          if(this.newLocale && this.newChannels)
          {
             for(i = 0; i < Object(root).numChildren; i++)
             {
-               if(Object(root).getChildAt(i).name != "sb" && Object(root).getChildAt(i).name != "s1" && Object(root).getChildAt(i).name != "s2" && Object(root).getChildAt(i).name != "s3" && Object(root).getChildAt(i).name != "s4" && Object(root).getChildAt(i).name != "btn" && Object(root).getChildAt(i).name != "Log" && Object(root).getChildAt(i).name != "hiddenBtn")
+               if(this.ignoreNames.indexOf(Object(root).getChildAt(i).name) == -1)
                {
                   if(Object(root).getChildAt(i).name == "MainChat")
                   {
                      this.MainChat.title = this.locale.TITLE_MAIN_WINDOW;
-                     this.MainChat.settings = this.Parse.parse(this.Parse.unparse(this.MainChat.settings),this.defaultChannals);
+                     settings = this.Parse.unparse(this.MainChat.settings);
+                     this.MainChat.settings = this.Parse.parse(settings.channels,this.defaultChannals,settings.sounds);
                      this.MainChat.locale = this.locale;
                      this.MainChat.closeOptions();
                      for(j = 0; j < this.MainChat.TabBar.Tabs.length; j++)
@@ -717,7 +803,8 @@ package
                            this.MainChat.TabBar.Tabs[j].label = this.locale[this.MainChat.TabBar.Tabs[j].defaultTab];
                            this.MainChat.TabBar.changeDataArray(j,this.locale[this.MainChat.TabBar.Tabs[j].defaultTab]);
                         }
-                        this.MainChat.TabBar.Tabs[j].setting = this.Parse.parse(this.Parse.unparse(this.MainChat.TabBar.Tabs[j].setting),this.defaultChannals);
+                        settings1 = this.Parse.unparse(this.MainChat.TabBar.Tabs[j].setting);
+                        this.MainChat.TabBar.Tabs[j].setting = this.Parse.parse(settings1.channels,this.defaultChannals,settings1.sounds);
                      }
                   }
                   else
@@ -728,10 +815,27 @@ package
                      {
                         Object(root).getChildAt(i).title = this.locale[Object(root).getChildAt(i).defaultTab];
                      }
-                     Object(root).getChildAt(i).settings = this.Parse.parse(this.Parse.unparse(Object(root).getChildAt(i).settings),this.defaultChannals);
+                     settings = this.Parse.unparse(this.MainChat.TabBar.Tabs[j].setting);
+                     Object(root).getChildAt(i).settings = this.Parse.parse(settings.channels,this.defaultChannals,settings.sounds);
                   }
                }
             }
+         }
+      }
+      
+      public function set_radio_mode(value:Boolean, wnd_name:String) : *
+      {
+         var i:* = undefined;
+         this.radio_modes[wnd_name] = value;
+         var result:Boolean = false;
+         for(i in this.radio_modes)
+         {
+            result ||= Boolean(this.radio_modes[i]);
+         }
+         if(this.radio_mode != result)
+         {
+            this.radio_mode = result;
+            this.API.set_radio_mode(result);
          }
       }
       

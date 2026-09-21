@@ -11,27 +11,13 @@ package ui.components
    import logging.*;
    import ui.*;
    
-   public class NewPremiumPanel extends Component
+   public class NewPremiumPanel extends NewPanelWithIcon
    {
-      private var back:ui.components.BlackPanel;
-      
-      private var caption:LabelShadowed;
-      
-      private var addPremiumHint:TextShadowed;
-      
-      private var choicePremium:ClearButton;
-      
       private var rejectPremium:ClearButton;
-      
-      private var showPremium:ClearButton;
-      
-      private var currentPremiumIcon:Sprite;
       
       private var currentPremiumCaption:LabelShadowed;
       
       private var currentPremiumDescription:TextShadowed;
-      
-      private var currentPremiumRatio:LabelShadowed;
       
       private var currentPremiumElapsed:LabelShadowed;
       
@@ -39,69 +25,36 @@ package ui.components
       
       private var currentPremiumBox:VBox;
       
-      private var serviceBox:HBox;
-      
       private var havePremiumView:Sprite;
       
-      private var noPremiumView:Sprite;
+      private var currentPremiumIcon:Sprite;
+      
+      private var boosterIcon:Sprite;
       
       private var details:ClearButton;
       
-      private var test0:BoldButton;
-      
-      private var test1:BoldButton;
-      
       public function NewPremiumPanel(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0)
       {
-         this.width = this.preferredWidth;
          Premium.core.addEventListener(Premium.UPDATED,this.onPremiumUpdated);
          super(parent,xpos,ypos);
-      }
-      
-      private function get preferredWidth() : uint
-      {
-         return Navigator.LeftWidth;
+         PremiumIcons.addEventListener(Event.COMPLETE,this.onUpdateIcon);
       }
       
       protected function onPremiumUpdated(event:Event) : void
       {
          Logger.LogToChannel(Logger.DEBUG,"NewPremiumPanel.onPremiumUpdated");
          this.updateView();
+         this.mouseChildren = true;
+      }
+      
+      protected function onUpdateIcon(event:Event) : void
+      {
+         this.updateView();
       }
       
       override protected function addChildren() : void
       {
-         this.back = new BlackPanel();
-         this.addChild(this.back);
-         this.test0 = new BoldButton();
-         this.test0.addEventListener(MouseEvent.CLICK,this.onTest0Click);
-         this.test0.label = "no";
-         this.test1 = new BoldButton();
-         this.test1.label = "0";
-         this.test1.addEventListener(MouseEvent.CLICK,this.onTest1Click);
-         this.caption = new LabelShadowed(this,0,0,"");
-         this.caption.$ = "extendedGUI.RootWindow.premiumButton";
-         this.caption.shadowColor = 0;
-         this.caption.shadowAlpha = 0.9;
-         this.caption.shadowSize = 1;
-         this.caption.size = 22;
-         this.caption.font = Base.FONT_REGULAR;
-         this.caption.color = Style.MENU_LABEL_COLOR;
-         this.caption.clipContent = true;
-         this.noPremiumView = new Sprite();
-         this.addPremiumHint = new TextShadowed(this.noPremiumView);
-         this.addPremiumHint.editable = false;
-         this.addPremiumHint.selectable = false;
-         this.addPremiumHint.autoHeight = true;
-         this.addPremiumHint.font = Base.FONT_LIGHT;
-         this.addPremiumHint.size = 18;
-         this.addPremiumHint.color = 11776934;
-         this.addPremiumHint.paddingLeft = 20;
-         this.addPremiumHint.paddingRight = 10;
-         this.addPremiumHint.paddingBottom = 10;
-         this.addPremiumHint.$ = "extendedGUI.RootWindow.premiumHint";
-         this.addPremiumHint.debug = false;
-         this.addPremiumHint.draw();
+         super.addChildren();
          this.havePremiumView = new Sprite();
          this.havePremiumView.addChild(this.currentPremiumIcon = new Sprite());
          this.currentPremiumBox = new VBox(this.havePremiumView);
@@ -109,60 +62,41 @@ package ui.components
          this.currentPremiumBox.alignment = VBox.LEFT;
          this.currentPremiumBox.debug = false;
          this.currentPremiumCaption = new LabelShadowed(this.currentPremiumBox);
-         this.currentPremiumCaption.color = 12700012;
+         this.currentPremiumCaption.color = Style.GOLD_OVER;
          this.currentPremiumCaption.size = 22;
-         this.currentPremiumCaption.font = Base.FONT_REGULAR;
+         this.currentPremiumCaption.font = Base.fontName;
+         this.currentPremiumCaption.autoSize = true;
          this.currentPremiumDescription = new TextShadowed(this.currentPremiumBox);
          this.currentPremiumDescription.color = 16777215;
          this.currentPremiumDescription.size = 20;
          this.currentPremiumDescription.selectable = false;
          this.currentPremiumDescription.editable = false;
-         this.currentPremiumDescription.font = Base.FONT_LIGHT;
          this.currentPremiumDescription.leading = -5;
          this.currentPremiumDescription.debug = false;
-         this.currentPremiumRatio = new LabelShadowed(this.currentPremiumBox);
-         this.currentPremiumRatio.color = 12895428;
-         this.currentPremiumRatio.size = 17;
-         this.currentPremiumRatio.font = Base.FONT_LIGHT;
+         this.currentPremiumDescription.paddingLeft = 113;
+         this.currentPremiumDescription.paddingTop = 15;
          this.currentPremiumElapsed = new LabelShadowed(this.currentPremiumBox);
          this.currentPremiumElapsed.color = 12895428;
          this.currentPremiumElapsed.size = 17;
-         this.currentPremiumElapsed.font = Base.FONT_LIGHT;
-         this.currentPremiumElapsed.paddingTop = -10;
+         this.currentPremiumElapsed.font = Base.lightFontName;
+         this.currentPremiumElapsed.paddingTop = 0;
+         this.currentPremiumElapsed.paddingLeft = 113;
          this.currentPremiumPS = new TextShadowed(this.currentPremiumBox);
          this.currentPremiumPS.color = 12895428;
          this.currentPremiumPS.size = 17;
          this.currentPremiumPS.selectable = false;
          this.currentPremiumPS.editable = false;
-         this.currentPremiumPS.font = Base.FONT_LIGHT;
+         this.currentPremiumPS.font = Base.lightFontName;
          this.currentPremiumPS.debug = false;
          this.currentPremiumPS.paddingBottom = -20;
+         this.currentPremiumPS.paddingLeft = 113;
          this.currentPremiumPS.leading = -5;
-         this.showPremium = new ClearButton(this.havePremiumView);
-         this.showPremium.paddingRight = 10;
-         this.showPremium.autoWidth = true;
-         this.showPremium.align = Label.RIGHT;
-         this.showPremium.labelOverColor = 12700012;
-         this.showPremium.labelUpColor = 5553663;
-         this.showPremium.size = 18;
-         this.showPremium.label = Locale.getById("extendedGUI.PremiumPanel.showPremium");
-         this.showPremium.addEventListener(MouseEvent.CLICK,this.onShowPremiumClick);
-         this.choicePremium = new ClearButton(this.noPremiumView);
-         this.choicePremium.paddingRight = 10;
-         this.choicePremium.autoWidth = true;
-         this.choicePremium.align = Label.RIGHT;
-         this.choicePremium.size = 18;
-         this.choicePremium.labelOverColor = 12700012;
-         this.choicePremium.labelUpColor = 5553663;
-         this.choicePremium.label = Locale.getById("extendedGUI.PremiumPanel.choicePremium");
-         this.choicePremium.addEventListener(MouseEvent.CLICK,this.onChoicePremiumClick);
          this.rejectPremium = new ClearButton(this.havePremiumView);
-         this.rejectPremium.visible = false;
+         this.rejectPremium.visible = true;
          this.rejectPremium.paddingRight = 10;
          this.rejectPremium.autoWidth = true;
          this.rejectPremium.align = Label.RIGHT;
          this.rejectPremium.size = 18;
-         this.rejectPremium.labelOverColor = 12700012;
          this.rejectPremium.labelUpColor = 5553663;
          this.rejectPremium.label = Locale.getById("extendedGUI.PremiumPanel.rejectPremium");
          this.rejectPremium.addEventListener(MouseEvent.CLICK,this.onRejectPremiumClick);
@@ -171,10 +105,18 @@ package ui.components
          this.details.size = 18;
          this.details.height = 32;
          this.details.addEventListener(MouseEvent.CLICK,this.onDetailsClick);
+         this.boosterIcon = new Sprite();
+         this.boosterIcon.y = 65;
+         this.boosterIcon.x = 25;
+         this.boosterIcon.visible = false;
+         var ic:Bitmap = new Bitmap(new BoosterIcon(),"auto",true);
+         this.boosterIcon.addChild(ic);
+         this.addChild(this.boosterIcon);
          this.updateView();
          setTimeout(this.updateView,500);
          setTimeout(this.updateView,1000);
          setTimeout(this.updateView,2000);
+         this.mouseChildren = false;
       }
       
       protected function onDetailsClick(event:MouseEvent) : void
@@ -182,14 +124,9 @@ package ui.components
          Base.navigator.showDialog(Premium.Current.caption,Premium.Current.description,false,[new DialogButtonItem("extendedGUI.Dialogs.Ok",null,1)],500,350);
       }
       
-      protected function onTest0Click(event:MouseEvent) : void
+      override protected function onCaptionClick(event:MouseEvent) : void
       {
-         Premium.TestNoCurrentPremium();
-      }
-      
-      protected function onTest1Click(event:MouseEvent) : void
-      {
-         Premium.TestHaveCurrentPremium();
+         Api.call(Api.SHOW_PREMIUM_SHOP);
       }
       
       protected function onShowPremiumClick(event:MouseEvent) : void
@@ -209,7 +146,6 @@ package ui.components
       
       protected function onRejectOkButton() : *
       {
-         this.rejectPremium.visible = false;
          Api.call(Api.REJECT_PREM);
       }
       
@@ -218,7 +154,12 @@ package ui.components
          return Premium.Current != null;
       }
       
-      private function getTimeToEnd(time:Number) : String
+      protected function get haveBooster() : Boolean
+      {
+         return Premium.boosterCurrent != 0;
+      }
+      
+      private function getTimeToEnd(time:Number, postfix:String = "") : String
       {
          var days:uint = 0;
          var real_days:uint = 0;
@@ -232,36 +173,77 @@ package ui.components
          minutes = timeToRemain / 60;
          if(real_days >= 1)
          {
-            result = Locale.getById("extendedGUI.PremiumPanel.days") + " " + Locale.getById("extendedGUI.PremiumPanel.toEnd") + ": " + days;
+            result = Locale.getById("extendedGUI.PremiumPanel.days") + " " + Locale.getById("extendedGUI.PremiumPanel.toEnd") + " " + postfix + ": " + days;
          }
          else if(hours >= 1)
          {
-            result = Locale.getById("extendedGUI.PremiumPanel.hours") + " " + Locale.getById("extendedGUI.PremiumPanel.toEnd") + ": " + hours;
+            result = Locale.getById("extendedGUI.PremiumPanel.hours") + " " + Locale.getById("extendedGUI.PremiumPanel.toEnd") + " " + postfix + ": " + hours;
          }
          else
          {
-            result = Locale.getById("extendedGUI.PremiumPanel.minutes") + " " + Locale.getById("extendedGUI.PremiumPanel.toEnd") + ": " + minutes;
+            result = Locale.getById("extendedGUI.PremiumPanel.minutes") + " " + Locale.getById("extendedGUI.PremiumPanel.toEnd") + " " + postfix + ": " + minutes;
          }
          return result;
       }
       
-      public function updateView() : void
+      override public function set icon(value:Bitmap) : *
+      {
+      }
+      
+      public function updateBoosterIcon() : *
+      {
+         for(var i:* = this.boosterIcon.numChildren - 1; i >= 0; i--)
+         {
+            this.boosterIcon.removeChildAt(i);
+         }
+         if(!this.haveBooster)
+         {
+            return;
+         }
+         var ico:Bitmap = BoosterIcons.byId(Premium.boosterCurrent,this.havePremiums);
+         if(ico == null)
+         {
+            return;
+         }
+         this.boosterIcon.addChild(ico);
+         ico.x = (138 - ico.width) / 2;
+      }
+      
+      override public function updateView() : void
       {
          var i:* = undefined;
+         var ico:Bitmap = null;
          Logger.LogToChannel(Logger.DEBUG,"NewPremiumPanel.updateView",this.havePremiums);
+         this.boosterIcon.visible = this.haveBooster;
+         caption.visible = true;
+         description.visible = true;
+         this.currentPremiumDescription.visible = true;
+         this.currentPremiumCaption.visible = true;
+         this.currentPremiumElapsed.visible = true;
+         this.currentPremiumPS.visible = true;
+         this.rejectPremium.visible = true;
+         this.boosterIcon.y = 50;
+         this.boosterIcon.x = 0;
          if(this.havePremiums)
          {
-            if(this.contains(this.noPremiumView))
+            if(this.contains(this.standartView))
             {
-               this.removeChild(this.noPremiumView);
+               this.removeChild(standartView);
             }
             if(!this.contains(this.havePremiumView))
             {
                this.addChild(this.havePremiumView);
             }
-            this.currentPremiumBox.x = 160;
-            this.currentPremiumBox.y = 40;
-            this.currentPremiumCaption.text = Premium.Current.caption;
+            this.currentPremiumBox.x = 20;
+            this.currentPremiumBox.y = 14;
+            if(Premium.boosterCurrent > 0)
+            {
+               this.currentPremiumCaption.text = Locale.getById("extendedGUI.PremiumPanel.premiumCaption") + Premium.boosterName;
+            }
+            else
+            {
+               this.currentPremiumCaption.text = Premium.Current.caption;
+            }
             if(Premium.Current.description.length < Premium.MAX_DESCRIPTION_LENGTH)
             {
                this.currentPremiumDescription.text = Premium.Current.description;
@@ -278,11 +260,14 @@ package ui.components
                   this.addChild(this.details);
                }
             }
-            this.currentPremiumRatio.text = Locale.getById("extendedGUI.PremiumPanel.expCoefficient") + " " + Premium.Current.ratio;
-            this.currentPremiumElapsed.text = this.getTimeToEnd(Premium.Elapsed);
+            this.currentPremiumElapsed.text = this.getTimeToEnd(Premium.Elapsed,Locale.getById("extendedGUI.PremiumPanel.premiumtoEnd"));
+            if(Premium.boosterCurrent > 0)
+            {
+               this.currentPremiumElapsed.text += "\n" + this.getTimeToEnd(Premium.boosterElapsed,Locale.getById("extendedGUI.PremiumPanel.boostertoEnd"));
+            }
+            this.rejectPremium.visible = true;
             if(Premium.Current.holiday)
             {
-               this.rejectPremium.visible = true;
                this.currentPremiumPS.text = Locale.getById("extendedGUI.PremiumPanel.freezeText");
                if(Premium.frizeID != -1)
                {
@@ -291,53 +276,106 @@ package ui.components
             }
             else
             {
-               this.rejectPremium.visible = false;
                this.currentPremiumPS.text = "";
             }
-            this.currentPremiumDescription.width = this.preferredWidth - this.currentPremiumBox.x - 10 - 0;
-            this.currentPremiumPS.width = this.preferredWidth - this.currentPremiumBox.x - 10 - 0;
+            this.currentPremiumCaption.autoSize = false;
+            this.currentPremiumDescription.width = preferredWidth - standartBox.x - 60 - 60;
+            this.currentPremiumCaption.width = preferredWidth - standartBox.x - 10 - 0;
+            this.currentPremiumPS.width = preferredWidth - this.currentPremiumBox.x - 10 - 0;
             for(i = this.currentPremiumIcon.numChildren - 1; i >= 0; i--)
             {
                this.currentPremiumIcon.removeChildAt(i);
             }
-            this.currentPremiumIcon.addChild(Premium.Current.icon);
+            ico = Premium.Current.icon;
+            this.currentPremiumIcon.addChild(ico);
+            ico.x = (138 - ico.width) / 2;
+            caption.visible = false;
+            this.currentPremiumDescription.visible = true;
+            this.setChildIndex(this.havePremiumView,0);
+            this.setChildIndex(back,0);
             setTimeout(this.tuneHeight,100,false);
             setTimeout(this.tuneHeight,400,false);
          }
          else
          {
-            if(!this.contains(this.noPremiumView))
+            if(!this.contains(standartView))
             {
-               this.addChild(this.noPremiumView);
+               this.addChild(standartView);
             }
             if(this.contains(this.havePremiumView))
             {
                this.removeChild(this.havePremiumView);
             }
-            this.addPremiumHint.width = this.preferredWidth - 30 - this.choicePremium.width;
+            for(i = standartIcon.numChildren - 1; i >= 0; i--)
+            {
+               standartIcon.removeChildAt(i);
+            }
+            standartBox.x = 160 - 62;
+            standartBox.y = 40;
+            ico = PremiumIcons.NO_PREMIUM_ICON;
+            standartIcon.addChild(ico);
+            ico.x = (138 - ico.width) / 2;
+            description.width = preferredWidth - standartBox.x - 30 - 0;
+            description.text = Locale.getById("extendedGUI.RootWindow.premiumHint1");
+            if(this.haveBooster)
+            {
+               description.text += "\n" + this.getTimeToEnd(Premium.boosterElapsed,Locale.getById("extendedGUI.PremiumPanel.boostertoEnd"));
+            }
+            standartIcon.visible = !this.haveBooster;
+            caption.visible = true;
             setTimeout(this.tuneHeight,100,true);
             setTimeout(this.tuneHeight,400,true);
          }
+         if(minMode)
+         {
+            this.currentPremiumBox.y = 9;
+            standartBox.y = 35;
+            caption.visible = false;
+            description.visible = false;
+            this.currentPremiumDescription.text = "";
+            this.currentPremiumCaption.visible = false;
+            this.currentPremiumElapsed.visible = false;
+            this.currentPremiumPS.visible = false;
+            this.rejectPremium.visible = false;
+            ico.x = (128 - ico.width) / 2;
+            this.boosterIcon.y = 19;
+            this.boosterIcon.x = -4;
+         }
+         this.updateBoosterIcon();
          invalidate();
       }
       
-      protected function tuneHeight(noPremiumView:Boolean) : void
+      override protected function tuneHeight(flag:Boolean) : void
       {
          var th:Number = NaN;
-         if(noPremiumView)
+         var tw:Number = preferredWidth;
+         description.paddingTop = 18;
+         description.size = 20;
+         if(flag)
          {
-            TweenMax.to(this,0.3,{
-               "height":this.addPremiumHint.y + this.addPremiumHint.height + 10,
-               "width":this.preferredWidth,
+            th = Math.max(standartIcon.y + 105 + 10,description.y + description.height + 10);
+            if(minMode)
+            {
+               th = 128;
+               tw = 128;
+            }
+            TweenMax.to(this,0.8,{
+               "height":th,
+               "width":tw,
                "ease":Expo.easeOut
             });
          }
          else
          {
-            th = Math.max(this.currentPremiumBox.y + this.currentPremiumElapsed.y + this.currentPremiumElapsed.height + 20,this.currentPremiumIcon.y + 150 + 10);
-            TweenMax.to(this,0.3,{
+            th = Math.max(this.currentPremiumBox.y + this.currentPremiumElapsed.y + this.currentPremiumElapsed.height + 20,this.currentPremiumIcon.y + 105 + 10);
+            if(minMode)
+            {
+               th = 128;
+               tw = 128;
+            }
+            TweenMax.to(this,0.8,{
                "height":th,
-               "width":this.preferredWidth,
+               "width":tw,
                "ease":Expo.easeOut
             });
          }
@@ -346,24 +384,47 @@ package ui.components
       override public function draw() : void
       {
          super.draw();
-         this.test0.x = -this.test0.width - 10;
-         this.test1.x = -this.test1.width - 10;
-         this.test1.y = this.test0.y + this.test0.height + 1;
-         this.back.width = width;
-         this.back.height = height;
-         this.caption.x = 10;
-         this.caption.y = 10;
-         this.addPremiumHint.x = 20;
-         this.addPremiumHint.y = 40;
-         this.currentPremiumIcon.y = this.caption.y + this.caption.height + 1;
-         this.addPremiumHint.width = this.width - 20;
-         this.choicePremium.x = this.width - this.choicePremium.width - 10;
-         this.showPremium.x = this.width - this.showPremium.width - 10;
-         this.rejectPremium.x = this.showPremium.x - this.rejectPremium.width - 50;
-         this.choicePremium.y = this.showPremium.y = 16;
-         this.rejectPremium.y = this.showPremium.y;
+         this.currentPremiumIcon.y = this.standartIcon.y;
+         this.rejectPremium.x = this.width - this.rejectPremium.width - 20;
+         this.rejectPremium.y = 18;
+         back.width = width;
+         back.height = height;
          this.details.x = this.width - this.details.width;
          this.details.y = this.height - this.details.height - 3;
+      }
+      
+      override protected function onMouseOver(e:MouseEvent) : *
+      {
+         if(is_over)
+         {
+            return;
+         }
+         is_over = true;
+         if(minMode)
+         {
+            minMode = false;
+         }
+         if(this.havePremiums)
+         {
+            return;
+         }
+         PlaySounds.onOver();
+         back.backColor = 3947580;
+         caption.over = true;
+      }
+      
+      override protected function onMouseOut(e:MouseEvent) : *
+      {
+         super.onMouseOut(e);
+      }
+      
+      override protected function onMouseClick(e:MouseEvent) : *
+      {
+         if(this.havePremiums)
+         {
+            return;
+         }
+         super.onMouseClick(e);
       }
    }
 }

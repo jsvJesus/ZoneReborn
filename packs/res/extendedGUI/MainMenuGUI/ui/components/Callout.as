@@ -174,7 +174,10 @@ package ui.components
          this.timer.removeEventListener(TimerEvent.TIMER_COMPLETE,this.onTimerComplete);
          this.timer.stop();
          this.timer = null;
-         this.parent.removeChild(this);
+         if(this.parent != null)
+         {
+            this.parent.removeChild(this);
+         }
       }
       
       override protected function init() : void

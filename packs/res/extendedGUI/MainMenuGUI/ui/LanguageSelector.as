@@ -13,9 +13,11 @@ package ui
       
       private var buttons:Array;
       
-      private var itemWidth:uint = 50;
+      private var itemWidth:uint = 40;
       
       private var preHeight:uint = 90;
+      
+      public var dinamic_width:uint = 90;
       
       private var itemSpacing:uint = 1;
       
@@ -36,33 +38,28 @@ package ui
          var localeButton:PushButton = null;
          var divider:Label = null;
          var locale:Locale = null;
+         var localeId:String = null;
          var ordered:Array = [];
+         var order:Array = ["russian","chinese","english"];
          var count:uint = 0;
          Locale.core.addEventListener(Locale.CHANGED,this.onLocaleChanged);
+         for each(localeId in order)
+         {
+            for each(locale in Locale.locales)
+            {
+               if(locale.id == localeId)
+               {
+                  ordered.push(locale);
+                  break;
+               }
+            }
+         }
          this.helper = new Dictionary();
          this.buttons = new Array();
          this.spacing = this.itemSpacing;
-         for each(locale in Locale.locales)
-         {
-            if(locale.id == "russian")
-            {
-               ordered.push(locale);
-            }
-         }
-         for each(locale in Locale.locales)
-         {
-            if(locale.id == "english")
-            {
-               ordered.push(locale);
-            }
-         }
-         for each(locale in Locale.locales)
-         {
-            if(locale.id != "russian" && locale.id != "english")
-            {
-               ordered.push(locale);
-            }
-         }
+         this.dinamic_width = ordered.length * 30 + Math.max(0,ordered.length - 1) * 10 + Math.max(0,ordered.length * 2 - 2) * this.itemSpacing;
+         this.fixedWidth = this.dinamic_width;
+         this.setSize(this.dinamic_width,90);
          for each(locale in ordered)
          {
             localeButton = new ClearButton(this,0,0,locale.shortcut,this.doLocaleSwitch);
@@ -76,7 +73,7 @@ package ui
                divider = new Label(this);
                divider.size = 21;
                divider.color = 11184810;
-               divider.setSize(20,26);
+               divider.setSize(10,26);
                divider.text = "|";
             }
          }
@@ -108,11 +105,14 @@ package ui
             }
             button.tabEnabled = false;
          }
+         this.fixedWidth = this.dinamic_width;
+         this.setSize(this.dinamic_width,90);
+         this.draw();
       }
       
       private function doLocaleSwitch(event:Event) : void
       {
-         var lid:String = this.helper[event.target];
+         var lid:String = this.helper[event.currentTarget];
          Logger.LogToChannel(Logger.LOCALIZATION,"LanguageSelector switch:",lid);
          if(lid == null || lid == "")
          {

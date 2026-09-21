@@ -21,6 +21,8 @@ package com.captureTheFlag
       
       protected var _status:int;
       
+      protected var _status_gui:int;
+      
       protected var _timer:Timer;
       
       protected var _time_stop:Number = 0;
@@ -40,6 +42,12 @@ package com.captureTheFlag
       protected const STATUS_PACIFIC:* = 1;
       
       protected const STATUS_CAPTURE:* = 2;
+      
+      protected const STATUS_NORMAL:* = 0;
+      
+      protected const STATUS_BUY_FLAGS:* = 1;
+      
+      protected const STATUS_BUY_GUARDS:* = 2;
       
       protected const ICO_SIZE:* = 20;
       
@@ -86,6 +94,7 @@ package com.captureTheFlag
       public function CaptureTheFlag()
       {
          this._status = this.STATUS_FREE;
+         this._status_gui = this.STATUS_NORMAL;
          this._timer = new Timer(this.ONE_SECOND);
          super();
          this._timer.addEventListener(TimerEvent.TIMER,this.timerTick);
@@ -114,27 +123,27 @@ package com.captureTheFlag
          setTimeout(this.getLocalizedResourse,50);
       }
       
-      public function setMoneyIcon(cost:String, base_money:String, is_gold:Boolean) : *
+      public function setMoneyIcon(param1:String, param2:String, param3:Boolean) : *
       {
-         this.moneyText.text = cost + "\n" + base_money;
+         this.moneyText.text = param1 + "\n" + param2;
          if(this.StopBuyBtn.visible)
          {
             this.moneyText.visible = true;
             this.doubleMoneySymb.visible = true;
          }
-         this.doubleMoneySymb.setGold(is_gold);
+         this.doubleMoneySymb.setGold(param3);
       }
       
-      protected function setLocalizedResourse(Obj:*) : *
+      protected function setLocalizedResourse(param1:*) : *
       {
-         this.Loc = Obj["CaptureTheFlag"];
+         this.Loc = param1["CaptureTheFlag"];
          this.API.ready();
          this.draw();
       }
       
-      protected function sayBuyingFlag(Obj:*) : *
+      protected function sayBuyingFlag(param1:*) : *
       {
-         this.ListFlags.buyedFlag(Obj.name,Obj.success);
+         this.ListFlags.buyedFlag(param1.name,param1.success);
       }
       
       protected function getLocalizedResourse() : *
@@ -142,24 +151,26 @@ package com.captureTheFlag
          this.API.getLocal(["CaptureTheFlag"]);
       }
       
-      protected function stop_buy(e:MouseEvent) : *
+      protected function stop_buy(param1:MouseEvent) : *
       {
          this.StopBuyBtn.selected = false;
          this.StopBuyBtn.focused = 0;
          this.stopByingFlags();
          GameCommunication.come_back_to_earth();
+         this._status_gui = this.STATUS_NORMAL;
       }
       
-      protected function ClickBaseName(e:MouseEvent) : *
+      protected function ClickBaseName(param1:MouseEvent) : *
       {
          GameCommunication.go_to_main_plan();
       }
       
-      protected function startByingFlags(Obj:*) : *
+      protected function startByingFlags(param1:*) : *
       {
+         this._status_gui = this.STATUS_BUY_FLAGS;
          Object(root).stopResize();
          this.ListFlags.visible = true;
-         this.ListFlags.ByedFlags(Obj);
+         this.ListFlags.ByedFlags(param1);
          this.StopBuyBtn.visible = true;
          this.moneyText.visible = true;
          this.doubleMoneySymb.visible = true;
@@ -189,24 +200,25 @@ package com.captureTheFlag
          this.doubleMoneySymb.visible = false;
          this.frameR.visible = false;
          this.frameL.visible = false;
+         this._status_gui = this.STATUS_NORMAL;
       }
       
-      protected function outBaseName(e:MouseEvent) : *
+      protected function outBaseName(param1:MouseEvent) : *
       {
          this.frameR.gotoAndStop("up");
          this.frameL.gotoAndStop("up");
       }
       
-      protected function overBaseName(e:MouseEvent) : *
+      protected function overBaseName(param1:MouseEvent) : *
       {
          this.frameR.gotoAndStop("over");
          this.frameL.gotoAndStop("over");
       }
       
-      protected function setOwner(owner:String) : *
+      protected function setOwner(param1:String) : *
       {
-         this._owner = owner;
-         this.BaseOwner.text = owner;
+         this._owner = param1;
+         this.BaseOwner.text = param1;
          this.draw();
       }
       
@@ -216,50 +228,50 @@ package com.captureTheFlag
          this._timer.stop();
       }
       
-      protected function set status(value:int) : *
+      protected function set status(param1:int) : *
       {
-         this._status = value;
+         this._status = param1;
          Object(root).validNotification();
          this.draw();
       }
       
-      public function setFlagValue(Obj:*) : *
+      public function setFlagValue(param1:*) : *
       {
-         this.ListFlags.setFlagValue(Obj.name,Obj.height);
+         this.ListFlags.setFlagValue(param1.name,param1.height);
       }
       
-      public function setFlagOwner(Obj:*) : *
+      public function setFlagOwner(param1:*) : *
       {
-         this.ListFlags.setFlagOwner(Obj.name,Obj.is_my_flag);
+         this.ListFlags.setFlagOwner(param1.name,param1.is_my_flag,param1.am_i_invader);
       }
       
-      protected function setTime(Obj:Number) : *
+      protected function setTime(param1:Number) : *
       {
-         this.start(Obj);
+         this.start(param1);
       }
       
-      protected function setStatus(Obj:*) : *
+      protected function setStatus(param1:*) : *
       {
-         this.status = Obj.state_code;
-         this.setTime(Obj.next_time);
+         this.status = param1.state_code;
+         this.setTime(param1.next_time);
       }
       
-      public function setBase(Obj:*) : *
+      public function setBase(param1:*) : *
       {
          this.visible = true;
-         this.BaseOwner.text = Obj.owner;
-         this.BaseName.text = Obj.name;
-         var date:Date = new Date();
-         this._time_duration = Obj.next_time;
-         this.ListFlags.flagsData(Obj.flags);
-         this.status = Obj.state;
+         this.BaseOwner.text = param1.owner;
+         this.BaseName.text = param1.name;
+         var _loc2_:Date = new Date();
+         this._time_duration = param1.next_time;
+         this.ListFlags.flagsData(param1.flags);
+         this.status = param1.state;
       }
       
-      public function start(time_stop:Number) : *
+      public function start(param1:Number) : *
       {
-         var date:Date = new Date();
-         this._time_stop = date.time / 1000 + time_stop;
-         this._time_duration = time_stop;
+         var _loc2_:Date = new Date();
+         this._time_stop = _loc2_.time / 1000 + param1;
+         this._time_duration = param1;
          if(this._time_stop >= 0)
          {
             this.updateTimerText();
@@ -267,92 +279,92 @@ package com.captureTheFlag
          this._timer.start();
       }
       
-      private function _getRussianDay(num:String) : String
+      private function _getRussianDay(param1:String) : String
       {
-         var res:String = " ";
-         switch(num)
+         var _loc2_:String = " ";
+         switch(param1)
          {
             case "0":
-               res = this.Loc.DAY2;
+               _loc2_ = this.Loc.DAY2;
                break;
             case "1":
-               res = this.Loc.DAY0;
+               _loc2_ = this.Loc.DAY0;
                break;
             case "2":
-               res = this.Loc.DAY1;
+               _loc2_ = this.Loc.DAY1;
                break;
             case "3":
-               res = this.Loc.DAY1;
+               _loc2_ = this.Loc.DAY1;
                break;
             case "4":
-               res = this.Loc.DAY1;
+               _loc2_ = this.Loc.DAY1;
                break;
             case "5":
-               res = this.Loc.DAY2;
+               _loc2_ = this.Loc.DAY2;
                break;
             case "6":
-               res = this.Loc.DAY2;
+               _loc2_ = this.Loc.DAY2;
                break;
             case "7":
-               res = this.Loc.DAY2;
+               _loc2_ = this.Loc.DAY2;
                break;
             case "8":
-               res = this.Loc.DAY2;
+               _loc2_ = this.Loc.DAY2;
                break;
             case "9":
-               res = this.Loc.DAY2;
+               _loc2_ = this.Loc.DAY2;
          }
-         return res;
+         return _loc2_;
       }
       
       private function updateTimerText() : *
       {
-         var sMin:String = null;
-         var sSec:String = null;
-         var sDay:String = null;
-         var current_time:Number = NaN;
-         var date:Date = new Date();
-         current_time = this._time_stop - date.time / 1000;
-         if(current_time <= 0)
+         var _loc1_:String = null;
+         var _loc2_:String = null;
+         var _loc3_:String = null;
+         var _loc5_:Number = NaN;
+         var _loc4_:Date = new Date();
+         _loc5_ = this._time_stop - _loc4_.time / 1000;
+         if(_loc5_ <= 0)
          {
             this._timer.stop();
-            current_time = 0;
+            _loc5_ = 0;
             stage.visible = false;
          }
          else
          {
             stage.visible = true;
          }
-         this._days = current_time / 60 / 60 / 24;
+         this._days = _loc5_ / 60 / 60 / 24;
          if(this._days >= 1)
          {
-            sDay = this._days.toString();
-            this.Clock.text = this._days.toString() + " " + this._getRussianDay(sDay.charAt(sDay.length - 1));
+            _loc3_ = this._days.toString();
+            this.Clock.text = this._days.toString() + " " + this._getRussianDay(_loc3_.charAt(_loc3_.length - 1));
             return;
          }
-         this._hours = current_time / 60 / 60 % 24;
-         this._mins = current_time / 60 % 60;
-         this._secs = current_time % 60;
+         this._hours = _loc5_ / 60 / 60 % 24;
+         this._mins = _loc5_ / 60 % 60;
+         this._secs = _loc5_ % 60;
          if(this._mins.toString().length == 1)
          {
-            sMin = "0" + this._mins;
+            _loc1_ = "0" + this._mins;
          }
          else
          {
-            sMin = this._mins.toString();
+            _loc1_ = this._mins.toString();
          }
          if(this._secs.toString().length == 1)
          {
-            sSec = "0" + this._secs;
+            _loc2_ = "0" + this._secs;
          }
          else
          {
-            sSec = this._secs.toString();
+            _loc2_ = this._secs.toString();
          }
-         this.Clock.text = this._days + this._hours + ":" + sMin + ":" + sSec;
+         this.Clock.text = this._days + this._hours + ":" + _loc1_ + ":" + _loc2_;
       }
       
-      protected function timerTick(e:TimerEvent) : *
+      protected function timerTick(param1:TimerEvent) : *
       {
          this.updateTimerText();
       }
@@ -363,13 +375,13 @@ package com.captureTheFlag
       
       protected function draw() : *
       {
-         var Y:Number = 0;
-         this.BaseName.y = Y;
-         Y += this.BaseName.height;
-         this.BaseOwner.y = Y;
-         Y += this.BaseOwner.height;
-         this.Clock.y = Y;
-         Y += this.Clock.height;
+         var _loc1_:Number = 0;
+         this.BaseName.y = _loc1_;
+         _loc1_ += this.BaseName.height;
+         this.BaseOwner.y = _loc1_;
+         _loc1_ += this.BaseOwner.height;
+         this.Clock.y = _loc1_;
+         _loc1_ += this.Clock.height;
          this.frameOwnR.y = this.BaseOwner.y;
          this.frameOwnR.x = this.BaseOwner.x + this.BaseOwner.width / 2 + this.BaseOwner.textWidth / 2 + 16;
          this.frameOwnL.visible = true;
@@ -400,23 +412,23 @@ package com.captureTheFlag
             case this.STATUS_PACIFIC:
                this.SubClockField.text = this.Loc.START_ATTACK;
                this.SubClockField.visible = true;
-               this.SubClockField.y = Y;
-               Y += this.SubClockField.height;
+               this.SubClockField.y = _loc1_;
+               _loc1_ += this.SubClockField.height;
                this.ListFlags.visible = false;
                this.start(this._time_duration);
                break;
             case this.STATUS_CAPTURE:
                this.SubClockField.text = this.Loc.END_ATTACK;
                this.SubClockField.visible = true;
-               this.SubClockField.y = Y;
-               Y += this.SubClockField.height;
+               this.SubClockField.y = _loc1_;
+               _loc1_ += this.SubClockField.height;
                this.ListFlags.visible = true;
                this.start(this._time_duration);
          }
-         this.ListFlags.y = Y - 2;
+         this.ListFlags.y = _loc1_ - 2;
          this.ListFlags.x = 14;
-         Y += this.ListFlags.height;
-         this.StopBuyBtn.y = Y + 14;
+         _loc1_ += this.ListFlags.height;
+         this.StopBuyBtn.y = _loc1_ + 14;
          this.StopBuyBtn.x = this.width / 2 - this.StopBuyBtn.width / 2;
          this.StopBuyBtn.label = this.Loc.STOP_BUY;
       }

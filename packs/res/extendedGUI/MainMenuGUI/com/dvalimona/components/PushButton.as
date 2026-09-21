@@ -24,6 +24,12 @@ package com.dvalimona.components
       
       protected var _autoWidth:Boolean = false;
       
+      protected var _visible:Boolean = true;
+      
+      protected var _backgroundVisible:Boolean = true;
+      
+      public var is_send_sound:Boolean = true;
+      
       private var _upColor:uint = Style.BUTTON_UP;
       
       private var _downColor:uint = Style.BUTTON_DOWN;
@@ -88,6 +94,18 @@ package com.dvalimona.components
          addEventListener(MouseEvent.ROLL_OVER,this.onMouseOver);
       }
       
+      public function set backgroundVisible(value:Boolean) : *
+      {
+         this._backgroundVisible = value;
+         this._back.visible = value;
+         this._face.visible = value;
+      }
+      
+      public function get backgroundVisible() : Boolean
+      {
+         return this._backgroundVisible;
+      }
+      
       protected function drawFace() : void
       {
          this._face.graphics.clear();
@@ -118,6 +136,11 @@ package com.dvalimona.components
          }
          this._face.graphics.drawRect(0,0,_width,_height);
          this._face.graphics.endFill();
+      }
+      
+      public function get get_label() : Label
+      {
+         return this._label;
       }
       
       override public function draw() : void
@@ -209,6 +232,7 @@ package com.dvalimona.components
       
       protected function onMouseGoDown(event:MouseEvent) : void
       {
+         PlaySounds.onDown();
          this._down = true;
          this.drawFace();
          stage.addEventListener(MouseEvent.MOUSE_UP,this.onMouseGoUp);
@@ -223,7 +247,10 @@ package com.dvalimona.components
          this._down = this._selected;
          this.drawFace();
          stage.removeEventListener(MouseEvent.MOUSE_UP,this.onMouseGoUp);
-         PlaySounds.onClick();
+         if(this.is_send_sound)
+         {
+            PlaySounds.onClick();
+         }
       }
       
       public function get labelComponent() : Label

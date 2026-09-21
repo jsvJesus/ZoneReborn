@@ -1,7 +1,6 @@
 package com.dvalimona.components
 {
-   import flash.display.DisplayObject;
-   import flash.display.DisplayObjectContainer;
+   import flash.display.*;
    import flash.events.*;
    
    public class HBox extends Component
@@ -21,6 +20,8 @@ package com.dvalimona.components
       protected var _spacing:Number = 5;
       
       private var _alignment:String = "none";
+      
+      private var background:Sprite;
       
       private var _backgroundColor:int = -1;
       
@@ -108,17 +109,23 @@ package com.dvalimona.components
          var xpos:Number = NaN;
          var child:DisplayObject = null;
          var i:uint = 0;
+         var j:int = 0;
          if(this.horizontalAlign == LEFT)
          {
             _width = this.fixedWidth;
             _height = this.fixedHeight;
             xpos = 0;
-            for(i = 0; i < numChildren; i++)
+            j = 0;
+            for(i = 0; i < this.numChildren; i++)
             {
                child = getChildAt(i);
-               child.x = (Boolean(this.tabStops.length) && Boolean(this.tabStops[i]) ? this.tabStops[i] : xpos) + (!!child.hasOwnProperty("paddingLeft") ? (child as Object).paddingLeft : 0);
-               xpos += child.width + (!!child.hasOwnProperty("paddingLeft") ? (child as Object).paddingLeft : 0) + (!!child.hasOwnProperty("paddingRight") ? (child as Object).paddingRight : 0) + this._spacing;
-               _height = Math.max(_height,child.height);
+               if(child != this.background)
+               {
+                  child.x = (Boolean(this.tabStops.length) && Boolean(this.tabStops[j]) ? this.tabStops[j] : xpos) + (!!child.hasOwnProperty("paddingLeft") ? (child as Object).paddingLeft : 0);
+                  xpos += child.width + (!!child.hasOwnProperty("paddingLeft") ? (child as Object).paddingLeft : 0) + (!!child.hasOwnProperty("paddingRight") ? (child as Object).paddingRight : 0) + this._spacing;
+                  _height = Math.max(_height,child.height);
+                  j++;
+               }
             }
             this.doAlignment();
             dispatchEvent(new Event(Event.RESIZE));
@@ -128,19 +135,24 @@ package com.dvalimona.components
             _width = this.fixedWidth;
             _height = this.fixedHeight;
             xpos = _width;
+            j = 0;
             for(i = 0; i < numChildren; i++)
             {
                child = getChildAt(i);
-               xpos -= child.width + (!!child.hasOwnProperty("paddingRight") ? (child as Object).paddingRight : 0) + (!!child.hasOwnProperty("paddingLeft") ? (child as Object).paddingLeft : 0);
-               if(Boolean(this.tabStops.length) && Boolean(this.tabStops[i]))
+               if(child != this.background)
                {
-                  child.x = _width - this.tabStops[i] - child.width - (!!child.hasOwnProperty("paddingRight") ? (child as Object).paddingRight : 0);
+                  xpos -= child.width + (!!child.hasOwnProperty("paddingRight") ? (child as Object).paddingRight : 0) + (!!child.hasOwnProperty("paddingLeft") ? (child as Object).paddingLeft : 0);
+                  if(Boolean(this.tabStops.length) && Boolean(this.tabStops[j]))
+                  {
+                     child.x = _width - this.tabStops[j] - child.width - (!!child.hasOwnProperty("paddingRight") ? (child as Object).paddingRight : 0);
+                  }
+                  else
+                  {
+                     child.x = xpos;
+                  }
+                  xpos -= this._spacing;
+                  j++;
                }
-               else
-               {
-                  child.x = xpos;
-               }
-               xpos -= this._spacing;
             }
             this.doAlignment();
             dispatchEvent(new Event(Event.RESIZE));
@@ -149,14 +161,26 @@ package com.dvalimona.components
          this.drawBackground();
       }
       
+      override protected function addChildren() : void
+      {
+         this.background = new Sprite();
+         this.background.y = 0;
+         this.background.x = 0;
+         super.addChild(this.background);
+      }
+      
       private function drawBackground() : void
       {
          if(this.backgroundColor >= 0)
          {
-            this.graphics.clear();
-            this.graphics.beginFill(this.backgroundColor,this.backgroundAlpha);
-            this.graphics.drawRect(0,0,_width,_height);
-            this.graphics.endFill();
+            this.setChildIndex(this.background,0);
+            this.background.graphics.clear();
+            this.background.graphics.beginBitmapFill(Style.backgroundBitmap);
+            this.background.graphics.drawRect(0,0,_width,_height);
+            this.background.graphics.endFill();
+            this.background.alpha = this.backgroundAlpha;
+            this.background.width = _width;
+            this.background.height = _height;
          }
       }
       

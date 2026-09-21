@@ -10,7 +10,13 @@ package communication
    {
       private static var _self:Api;
       
+      public static const DEBUG:Boolean = false;
+      
+      public static const STEAM_MODE:String = "steam_mode";
+      
       public static const OPEN_SETTINGS:String = "open_settings";
+      
+      public static const CLOSE_SETTINGS:String = "close_settings";
       
       public static const SHOW_TEXT:String = "showText";
       
@@ -52,11 +58,19 @@ package communication
       
       public static const GET_LOGIN:String = "ActionsWithLogin.getLogin";
       
+      public static const GET_REMEMBER_PASS:String = "ActionsWithLogin.get_remember_pass";
+      
       public static const SET_SETTINGS:String = "setSettings";
+      
+      public static const SET_CONTRAST_BRIGHTNESS:String = "setContrastBrightness";
+      
+      public static const SET_MAX_FPS:String = "setMaxFrameRate";
       
       public static const GET_DEFAULT_SETTINGS:String = "getDefaultOption";
       
       public static const SET_DEFAULT_KEY_BINDINGS:String = "setDefaultKeyBindings";
+      
+      public static const SET_ONE_SETTINGS:String = "update_one_setting";
       
       public static const DO_LOG_OUT:String = "ActionsWithLogin.doLogOut";
       
@@ -69,6 +83,10 @@ package communication
       public static const SHOW_DEVELOPER_SERVERS:String = "ActionsWithLogin.showDeveloperServer";
       
       public static const AUTHENTICATE_USER:String = "ActionsWithLogin.authenticateUser";
+      
+      public static const DISCONNECT:String = "Disconnect";
+      
+      public static const USER_PARAMS:String = "user_params";
       
       public static const ACTIVATE_ACCOUNT_WINDOW:String = "activateAccountWindow";
       
@@ -88,9 +106,27 @@ package communication
       
       public static const CREATING_CHAR:String = "creatingChar";
       
+      public static const UPDATE_CHAR:String = "updateChar";
+      
+      public static const DONAT_UPDATE_CHAR:String = "donateFaceChange";
+      
+      public static const DONAT_UPDATING_CHAR:String = "donateFaceChanging";
+      
+      public static const DONAT_PAINT_CHAR:String = "donatePaintChange";
+      
+      public static const CALL_SURVEY:String = "callSurvey";
+      
+      public static const HIDE_SURVEY:String = "hideSurvey";
+      
+      public static const UPDATING_CHAR:String = "updatingChar";
+      
       public static const NEW_CHAR_VIEW:String = "newCharView";
       
       public static const NEW_FULL_CHAR_VIEW:String = "newFullCharView";
+      
+      public static const FACE_CHAR_VIEW:String = "faceCharView";
+      
+      public static const FULL_FACE_CHAR_VIEW:String = "fullFaceCharView";
       
       public static const CHECK_AVATAR_NAME:String = "checkAvatarName";
       
@@ -106,7 +142,13 @@ package communication
       
       public static const UPDATE_PREMIUM:String = "updatePremium";
       
+      public static const UPDATE_BOOSTER:String = "updateBooster";
+      
+      public static const UPDATE_EVENT:String = "updateEvent";
+      
       public static const UPDATE_GOLD:String = "updateGold";
+      
+      public static const UPDATE_PLATINUM:String = "updatePlatinum";
       
       public static const SHOW_ME_NEWS_EVERYTIME:String = "showMeNewsEverytime";
       
@@ -119,6 +161,8 @@ package communication
       public static const CONFIRM_WINDOW_HIDE:String = "ConfirmWindow.hide";
       
       public static const CONFIRM_WINDOW_OK:String = "ConfirmWindow.click_ok";
+      
+      public static const CONFIRM_WINDOW_CHANGE_TYPE:String = "ConfirmWindow.change_confirm_type";
       
       public static const CONFIRM_WINDOW_RESEND:String = "ConfirmWindow.click_resend";
       
@@ -146,11 +190,89 @@ package communication
       
       public static const SHOW_NEWS:String = "showNews";
       
+      public static const TRY_SHOW_NEWS:String = "tryShowNews";
+      
+      public static const CLOSE_NEWS:String = "closeNews";
+      
       public static const FILELIST:String = "file_list";
       
       public static const REJECT_PREM:String = "reject_prem";
       
       public static const RESET_GUI_POS:String = "gui_reset_position";
+      
+      public static const GET_MINI_NEWS:String = "get_mini_news";
+      
+      public static const GET_FACE_CONFIG:String = "get_face_config";
+      
+      public static const CHAR_MAKER_CENTER_CAMERA:String = "set_center_camera";
+      
+      public static const CHAR_MAKER_FACE_MODE:String = "set_face_mode";
+      
+      public static const RESET_CHAR_VIEW:String = "reset_char_view";
+      
+      public static const RESET_FACE_VIEW:String = "reset_face_view";
+      
+      public static const NEED_PAY_WINDOW:String = "show_need_pay_window";
+      
+      public static const PAY_RESULT:String = "pbt_pay_result";
+      
+      public static const TRY_PAY:String = "try_pay";
+      
+      public static const ON_SELECT_CLOTH:String = "on_select_clothgroup";
+      
+      public static const ON_CHAR_MENU_MODE:String = "on_char_menu_mode";
+      
+      public static const SET_FACE_FORM:String = "set_face_form";
+      
+      public static const SET_FACE_VALUES:String = "set_face_values";
+      
+      public static const FACE_SAVE_CLICK:String = "face_save_click";
+      
+      public static const FACE_LOAD_CLICK:String = "face_load_click";
+      
+      public static const GET_ACCESS_LEVEL:String = "get_access_level";
+      
+      public static const GET_RANDOM_PERSONALITY:String = "generate_random_personality";
+      
+      public static const RECEIVEE_RANDOM_PERSONALITY:String = "receive_random_personality";
+      
+      public static const OPEN_SHOP:String = "open_shop";
+      
+      public static const OPEN_STORAGE:String = "open_storage";
+      
+      public static const SHOP_NOTIFICATION_COUNT:String = "shop_notification_count";
+      
+      public static const SHOP_OPENED:String = "shop_opened";
+      
+      public static const STORAGE_NOTIFICATION_COUNT:String = "storage_notification_count";
+      
+      public static const LOCK_CHAR_BUTTONS:String = "lock_char_buttons";
+      
+      public static const OPEN_GOLD:String = "add_gold_in_browser";
+      
+      public static const CHANGE_FACE_COST:String = "change_face_cost";
+      
+      public static const CHANGE_FACE_BTN_ENABLED:String = "change_face_btn_enabled";
+      
+      public static const PARTNER_ID_CHANGE:String = "partner_id_change";
+      
+      public static const GOLD_VISIBLE:String = "gold_visible";
+      
+      public static const PASSWORD_TEXT:String = "send_password_text";
+      
+      public static const REMEMBER_PASS_CHECK:String = "remember_pass_check";
+      
+      public static const SHOW_DIALOG:String = "show_dialog";
+      
+      public static const SHOW_DIALOG_SHIELD:String = "show_dialog_shield";
+      
+      public static const HIDE_DIALOG_SHIELD:String = "hide_dialog_shield";
+      
+      public static const SHOW_PREMIUM_SHOP:String = "show_premium_shop";
+      
+      public static const ON_FACE_CHANGED:String = "on_face_changed";
+      
+      public static const STEAM_TRUSTED:String = "set_steam_trusted";
       
       private static var idCount:uint = 0;
       
@@ -185,6 +307,9 @@ package communication
          var loc1:* = undefined;
          var args:Array = null;
          var handler:Function = null;
+         if(DEBUG)
+         {
+         }
          json = null;
          name = arg1;
          args = arg2;
@@ -237,6 +362,7 @@ package communication
          var response:ApiResponse = null;
          var id:String = null;
          var loc1:* = undefined;
+         var i:* = undefined;
          response = null;
          json = arg1;
          id = ResponseId;
@@ -245,6 +371,12 @@ package communication
             response = new ApiResponse(arg1);
             Logger.LogToChannel(Logger.RX,"\tApi.onCallBack json:",response.name);
             Api.self.dispatchEvent(new ApiEvent(response));
+            if(DEBUG)
+            {
+               for(i in response.answer)
+               {
+               }
+            }
          }
          catch(error:Error)
          {

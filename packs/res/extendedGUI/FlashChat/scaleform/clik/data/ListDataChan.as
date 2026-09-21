@@ -24,7 +24,7 @@ package scaleform.clik.data
       
       override public function toString() : String
       {
-         return "[ListDataChan " + index + ", " + label + ", " + selected + ", " + this.color + "]";
+         return "[ListDataChan " + index + ", " + label + ", " + selected + ", " + this.color + ", ]";
       }
    }
 }

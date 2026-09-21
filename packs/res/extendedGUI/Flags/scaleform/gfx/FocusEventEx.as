@@ -6,9 +6,9 @@ package scaleform.gfx
    {
       public var controllerIdx:uint = 0;
       
-      public function FocusEventEx(type:String)
+      public function FocusEventEx(param1:String)
       {
-         super(type);
+         super(param1);
       }
    }
 }

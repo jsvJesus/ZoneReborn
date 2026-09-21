@@ -26,154 +26,157 @@ package com.greensock.plugins
          super("colorMatrixFilter");
       }
       
-      public static function colorize(m:Array, color:Number, amount:Number = 1) : Array
+      public static function colorize(param1:Array, param2:Number, param3:Number = 1) : Array
       {
-         if(isNaN(color))
+         if(isNaN(param2))
          {
-            return m;
+            return param1;
          }
-         if(isNaN(amount))
+         if(isNaN(param3))
          {
-            amount = 1;
+            param3 = 1;
          }
-         var r:Number = (color >> 16 & 0xFF) / 255;
-         var g:Number = (color >> 8 & 0xFF) / 255;
-         var b:Number = (color & 0xFF) / 255;
-         var inv:Number = 1 - amount;
-         var temp:Array = [inv + amount * r * _lumR,amount * r * _lumG,amount * r * _lumB,0,0,amount * g * _lumR,inv + amount * g * _lumG,amount * g * _lumB,0,0,amount * b * _lumR,amount * b * _lumG,inv + amount * b * _lumB,0,0,0,0,0,1,0];
-         return applyMatrix(temp,m);
+         var _loc4_:Number = (param2 >> 16 & 0xFF) / 255;
+         var _loc5_:Number = (param2 >> 8 & 0xFF) / 255;
+         var _loc6_:Number = (param2 & 0xFF) / 255;
+         var _loc7_:Number = 1 - param3;
+         var _loc8_:Array = [_loc7_ + param3 * _loc4_ * _lumR,param3 * _loc4_ * _lumG,param3 * _loc4_ * _lumB,0,0,param3 * _loc5_ * _lumR,_loc7_ + param3 * _loc5_ * _lumG,param3 * _loc5_ * _lumB,0,0,param3 * _loc6_ * _lumR,param3 * _loc6_ * _lumG,_loc7_ + param3 * _loc6_ * _lumB,0,0,0,0,0,1,0];
+         return applyMatrix(_loc8_,param1);
       }
       
-      public static function setThreshold(m:Array, n:Number) : Array
+      public static function setThreshold(param1:Array, param2:Number) : Array
       {
-         if(isNaN(n))
+         if(isNaN(param2))
          {
-            return m;
+            return param1;
          }
-         var temp:Array = [_lumR * 256,_lumG * 256,_lumB * 256,0,-256 * n,_lumR * 256,_lumG * 256,_lumB * 256,0,-256 * n,_lumR * 256,_lumG * 256,_lumB * 256,0,-256 * n,0,0,0,1,0];
-         return applyMatrix(temp,m);
+         var _loc3_:Array = [_lumR * 256,_lumG * 256,_lumB * 256,0,-256 * param2,_lumR * 256,_lumG * 256,_lumB * 256,0,-256 * param2,_lumR * 256,_lumG * 256,_lumB * 256,0,-256 * param2,0,0,0,1,0];
+         return applyMatrix(_loc3_,param1);
       }
       
-      public static function setHue(m:Array, n:Number) : Array
+      public static function setHue(param1:Array, param2:Number) : Array
       {
-         if(isNaN(n))
+         if(isNaN(param2))
          {
-            return m;
+            return param1;
          }
-         n *= Math.PI / 180;
-         var c:Number = Math.cos(n);
-         var s:Number = Math.sin(n);
-         var temp:Array = [_lumR + c * (1 - _lumR) + s * -_lumR,_lumG + c * -_lumG + s * -_lumG,_lumB + c * -_lumB + s * (1 - _lumB),0,0,_lumR + c * -_lumR + s * 0.143,_lumG + c * (1 - _lumG) + s * 0.14,_lumB + c * -_lumB + s * -0.283,0,0,_lumR + c * -_lumR + s * -(1 - _lumR),_lumG + c * -_lumG + s * _lumG,_lumB + c * (1 - _lumB) + s * _lumB,0,0,0,0,0,1,0,0,0,0,0,1];
-         return applyMatrix(temp,m);
+         param2 *= Math.PI / 180;
+         var _loc3_:Number = Math.cos(param2);
+         var _loc4_:Number = Math.sin(param2);
+         var _loc5_:Array = [_lumR + _loc3_ * (1 - _lumR) + _loc4_ * -_lumR,_lumG + _loc3_ * -_lumG + _loc4_ * -_lumG,_lumB + _loc3_ * -_lumB + _loc4_ * (1 - _lumB),0,0,_lumR + _loc3_ * -_lumR + _loc4_ * 0.143,_lumG + _loc3_ * (1 - _lumG) + _loc4_ * 0.14,_lumB + _loc3_ * -_lumB + _loc4_ * -0.283,0,0,_lumR + _loc3_ * -_lumR + _loc4_ * -(1 - _lumR),_lumG + _loc3_ * -_lumG + _loc4_ * _lumG,_lumB + _loc3_ * (1 - _lumB) + _loc4_ * _lumB,0,0,0,0,0,1,0,0,0,0,0,1];
+         return applyMatrix(_loc5_,param1);
       }
       
-      public static function setBrightness(m:Array, n:Number) : Array
+      public static function setBrightness(param1:Array, param2:Number) : Array
       {
-         if(isNaN(n))
+         if(isNaN(param2))
          {
-            return m;
+            return param1;
          }
-         n = n * 100 - 100;
-         return applyMatrix([1,0,0,0,n,0,1,0,0,n,0,0,1,0,n,0,0,0,1,0,0,0,0,0,1],m);
+         param2 = param2 * 100 - 100;
+         return applyMatrix([1,0,0,0,param2,0,1,0,0,param2,0,0,1,0,param2,0,0,0,1,0,0,0,0,0,1],param1);
       }
       
-      public static function setSaturation(m:Array, n:Number) : Array
+      public static function setSaturation(param1:Array, param2:Number) : Array
       {
-         if(isNaN(n))
+         if(isNaN(param2))
          {
-            return m;
+            return param1;
          }
-         var inv:Number = 1 - n;
-         var r:Number = inv * _lumR;
-         var g:Number = inv * _lumG;
-         var b:Number = inv * _lumB;
-         var temp:Array = [r + n,g,b,0,0,r,g + n,b,0,0,r,g,b + n,0,0,0,0,0,1,0];
-         return applyMatrix(temp,m);
+         var _loc3_:Number = 1 - param2;
+         var _loc4_:Number = _loc3_ * _lumR;
+         var _loc5_:Number = _loc3_ * _lumG;
+         var _loc6_:Number = _loc3_ * _lumB;
+         var _loc7_:Array = [_loc4_ + param2,_loc5_,_loc6_,0,0,_loc4_,_loc5_ + param2,_loc6_,0,0,_loc4_,_loc5_,_loc6_ + param2,0,0,0,0,0,1,0];
+         return applyMatrix(_loc7_,param1);
       }
       
-      public static function setContrast(m:Array, n:Number) : Array
+      public static function setContrast(param1:Array, param2:Number) : Array
       {
-         if(isNaN(n))
+         if(isNaN(param2))
          {
-            return m;
+            return param1;
          }
-         n += 0.01;
-         var temp:Array = [n,0,0,0,128 * (1 - n),0,n,0,0,128 * (1 - n),0,0,n,0,128 * (1 - n),0,0,0,1,0];
-         return applyMatrix(temp,m);
+         param2 += 0.01;
+         var _loc3_:Array = [param2,0,0,0,128 * (1 - param2),0,param2,0,0,128 * (1 - param2),0,0,param2,0,128 * (1 - param2),0,0,0,1,0];
+         return applyMatrix(_loc3_,param1);
       }
       
-      public static function applyMatrix(m:Array, m2:Array) : Array
+      public static function applyMatrix(param1:Array, param2:Array) : Array
       {
-         var y:int = 0;
-         var x:int = 0;
-         if(!(m is Array) || !(m2 is Array))
+         var _loc6_:int = 0;
+         var _loc7_:int = 0;
+         if(!(param1 is Array) || !(param2 is Array))
          {
-            return m2;
+            return param2;
          }
-         var temp:Array = [];
-         var i:int = 0;
-         var z:int = 0;
-         for(y = 0; y < 4; y += 1)
+         var _loc3_:Array = [];
+         var _loc4_:int = 0;
+         var _loc5_:int = 0;
+         _loc6_ = 0;
+         while(_loc6_ < 4)
          {
-            for(x = 0; x < 5; x += 1)
+            _loc7_ = 0;
+            while(_loc7_ < 5)
             {
-               z = x == 4 ? int(m[i + 4]) : 0;
-               temp[i + x] = m[i] * m2[x] + m[i + 1] * m2[x + 5] + m[i + 2] * m2[x + 10] + m[i + 3] * m2[x + 15] + z;
+               _loc5_ = _loc7_ == 4 ? int(param1[_loc4_ + 4]) : 0;
+               _loc3_[_loc4_ + _loc7_] = param1[_loc4_] * param2[_loc7_] + param1[_loc4_ + 1] * param2[_loc7_ + 5] + param1[_loc4_ + 2] * param2[_loc7_ + 10] + param1[_loc4_ + 3] * param2[_loc7_ + 15] + _loc5_;
+               _loc7_ += 1;
             }
-            i += 5;
+            _loc4_ += 5;
+            _loc6_ += 1;
          }
-         return temp;
+         return _loc3_;
       }
       
-      override public function _onInitTween(target:Object, value:*, tween:TweenLite) : Boolean
+      override public function _onInitTween(param1:Object, param2:*, param3:TweenLite) : Boolean
       {
-         var cmf:Object = value;
-         _initFilter(target,{
-            "remove":value.remove,
-            "index":value.index,
-            "addFilter":value.addFilter
-         },tween,ColorMatrixFilter,new ColorMatrixFilter(_idMatrix.slice()),_propNames);
+         var _loc4_:Object = param2;
+         _initFilter(param1,{
+            "remove":param2.remove,
+            "index":param2.index,
+            "addFilter":param2.addFilter
+         },param3,ColorMatrixFilter,new ColorMatrixFilter(_idMatrix.slice()),_propNames);
          if(_filter == null)
          {
-            trace("FILTER NULL! ");
             return true;
          }
          this._matrix = ColorMatrixFilter(_filter).matrix;
-         var endMatrix:Array = [];
-         if(cmf.matrix != null && cmf.matrix is Array)
+         var _loc5_:Array = [];
+         if(_loc4_.matrix != null && _loc4_.matrix is Array)
          {
-            endMatrix = cmf.matrix;
+            _loc5_ = _loc4_.matrix;
          }
          else
          {
-            if(cmf.relative == true)
+            if(_loc4_.relative == true)
             {
-               endMatrix = this._matrix.slice();
+               _loc5_ = this._matrix.slice();
             }
             else
             {
-               endMatrix = _idMatrix.slice();
+               _loc5_ = _idMatrix.slice();
             }
-            endMatrix = setBrightness(endMatrix,cmf.brightness);
-            endMatrix = setContrast(endMatrix,cmf.contrast);
-            endMatrix = setHue(endMatrix,cmf.hue);
-            endMatrix = setSaturation(endMatrix,cmf.saturation);
-            endMatrix = setThreshold(endMatrix,cmf.threshold);
-            if(!isNaN(cmf.colorize))
+            _loc5_ = setBrightness(_loc5_,_loc4_.brightness);
+            _loc5_ = setContrast(_loc5_,_loc4_.contrast);
+            _loc5_ = setHue(_loc5_,_loc4_.hue);
+            _loc5_ = setSaturation(_loc5_,_loc4_.saturation);
+            _loc5_ = setThreshold(_loc5_,_loc4_.threshold);
+            if(!isNaN(_loc4_.colorize))
             {
-               endMatrix = colorize(endMatrix,cmf.colorize,cmf.amount);
+               _loc5_ = colorize(_loc5_,_loc4_.colorize,_loc4_.amount);
             }
          }
          this._matrixTween = new EndArrayPlugin();
-         this._matrixTween._init(this._matrix,endMatrix);
+         this._matrixTween._init(this._matrix,_loc5_);
          return true;
       }
       
-      override public function setRatio(v:Number) : void
+      override public function setRatio(param1:Number) : void
       {
-         this._matrixTween.setRatio(v);
+         this._matrixTween.setRatio(param1);
          ColorMatrixFilter(_filter).matrix = this._matrix;
-         super.setRatio(v);
+         super.setRatio(param1);
       }
    }
 }

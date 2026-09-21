@@ -86,7 +86,7 @@ package ui.components
          this.topBox.debug = false;
          this.headerLabel = new LabelShadowed(this.topBox);
          this.headerLabel.mouseEnabled = this.headerLabel.mouseChildren = false;
-         this.headerLabel.font = Base.FONT_BOLD;
+         this.headerLabel.font = Base.boldFontName;
          this.headerLabel.size = 22;
          this.headerLabel.paddingLeft = 15;
          this.headerLabel.text = Premium.Current == null ? Locale.getById("extendedGUI.PremiumPanel.choosePremium") : Locale.getById("extendedGUI.PremiumPanel.premiumList");
@@ -108,7 +108,7 @@ package ui.components
          this.buy.label = this.buyButtonText;
          this.buy.height = ButtonsHeight;
          this.buy.addEventListener(MouseEvent.CLICK,this.onBuyClick);
-         this.buy.font = Base.FONT_BOLD;
+         this.buy.font = Base.boldFontName;
          this.exit = new PushButton(this.bottomBox);
          this.exit.autoWidth = false;
          this.exit.$ = "extendedGUI.PremiumPanel.exitButton";
@@ -176,7 +176,10 @@ package ui.components
       
       private function onShowOffComplete() : void
       {
-         setTimeout(this.parent.removeChild,0,this);
+         if(this.parent)
+         {
+            setTimeout(this.parent.removeChild,0,this);
+         }
          setTimeout(this.nullMePlease,10);
       }
       

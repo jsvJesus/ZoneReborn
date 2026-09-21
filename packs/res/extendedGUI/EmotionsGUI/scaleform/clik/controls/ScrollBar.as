@@ -106,9 +106,6 @@ package scaleform.clik.controls
             return;
          }
          this._position = value;
-         trace("scroll",value);
-         trace(this.enabled);
-         trace(this.x,this.y,this.width,this.height);
          dispatchEvent(new Event(Event.SCROLL));
          invalidateData();
       }
@@ -397,7 +394,6 @@ package scaleform.clik.controls
          var yPos:Number = Math.round(percent * this.availableHeight + top);
          this.thumb.y = Math.max(top,Math.min(this.track.y + this.track.height - this.thumb.height + this.offsetBottom,yPos));
          this.thumb.visible = !(isNaN(percent) || isNaN(this._pageSize) || this._maxPosition <= 0 || this._maxPosition == Infinity);
-         trace("updateThumbPosition",percent,this.thumb.visible,this._pageSize);
          var showThumb:Boolean = this.thumb.visible && this.enabled;
          if(this.upArrow)
          {

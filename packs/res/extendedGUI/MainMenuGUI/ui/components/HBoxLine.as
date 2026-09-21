@@ -13,7 +13,7 @@ package ui.components
       
       protected var back:ui.components.BlackPanel;
       
-      private var _alignment:String = HBox.MIDDLE;
+      private var _alignment:String = "middle";
       
       public function HBoxLine(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0)
       {

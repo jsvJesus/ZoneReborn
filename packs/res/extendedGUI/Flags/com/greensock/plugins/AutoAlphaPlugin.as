@@ -15,22 +15,22 @@ package com.greensock.plugins
          super("autoAlpha,alpha,visible");
       }
       
-      override public function _onInitTween(target:Object, value:*, tween:TweenLite) : Boolean
+      override public function _onInitTween(param1:Object, param2:*, param3:TweenLite) : Boolean
       {
-         this._target = target;
-         _addTween(target,"alpha",target.alpha,value,"alpha");
+         this._target = param1;
+         _addTween(param1,"alpha",param1.alpha,param2,"alpha");
          return true;
       }
       
-      override public function _kill(lookup:Object) : Boolean
+      override public function _kill(param1:Object) : Boolean
       {
-         this._ignoreVisible = "visible" in lookup;
-         return super._kill(lookup);
+         this._ignoreVisible = "visible" in param1;
+         return super._kill(param1);
       }
       
-      override public function setRatio(v:Number) : void
+      override public function setRatio(param1:Number) : void
       {
-         super.setRatio(v);
+         super.setRatio(param1);
          if(!this._ignoreVisible)
          {
             this._target.visible = this._target.alpha != 0;

@@ -135,7 +135,6 @@ package com.greensock.plugins
          },tween,ColorMatrixFilter,new ColorMatrixFilter(_idMatrix.slice()),_propNames);
          if(_filter == null)
          {
-            trace("FILTER NULL! ");
             return true;
          }
          this._matrix = ColorMatrixFilter(_filter).matrix;

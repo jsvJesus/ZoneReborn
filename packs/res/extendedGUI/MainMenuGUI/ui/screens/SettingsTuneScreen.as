@@ -18,15 +18,19 @@ package ui.screens
       
       protected var linesBox:VBox;
       
+      protected var linesBox2:VBox;
+      
       protected var quad1:Quad;
       
-      protected var applyButton:MenuButton;
+      protected var applyButton:MenuButton2;
       
-      protected var cancelButton:MenuButton;
+      protected var cancelButton:MenuButton2;
       
-      protected var defaultButton:MenuButton;
+      protected var defaultButton:MenuButton2;
       
-      protected var backButton:MenuButton;
+      protected var backButton:MenuButton2;
+      
+      protected var colunmsBox:HBox;
       
       protected var sourceByItem:Dictionary;
       
@@ -35,6 +39,8 @@ package ui.screens
       protected var allItems:Array;
       
       protected var lastPath:String;
+      
+      protected var btn_kostil:Boolean = false;
       
       public function SettingsTuneScreen(id:String, depth:uint = 0)
       {
@@ -63,10 +69,13 @@ package ui.screens
          }
       }
       
-      protected function reconstruct() : void
+      public function reconstruct() : void
       {
          this.clearBox();
-         this.parseSettingsTune(Settings.Tune.data);
+         if(Settings.Tune)
+         {
+            this.parseSettingsTune(Settings.Tune.data);
+         }
       }
       
       protected function get isNewSettingsView() : Boolean
@@ -74,18 +83,42 @@ package ui.screens
          return true;
       }
       
+      private function settingsSort(a:String, b:String) : Number
+      {
+         var name1:* = undefined;
+         var name2:String = null;
+         name1 = Locale.getById("extendedGUI.Settings." + Settings.Tune.path.join("_") + "_" + StringUtils.dropSpaces(a,"_"));
+         name2 = Locale.getById("extendedGUI.Settings." + Settings.Tune.path.join("_") + "_" + StringUtils.dropSpaces(b,"_"));
+         if(name1 > name2)
+         {
+            return 1;
+         }
+         if(name1 < name2)
+         {
+            return -1;
+         }
+         return 0;
+      }
+      
       private function parseSettingsTune(source:Object) : void
       {
+         var index:int;
          var i0:String = null;
          var i1:String = null;
          var item0:Object = null;
          var item1:Object = null;
          var menuButton:Component = null;
-         var itemButton:MenuButton = null;
          var itemBox:HBoxLine = null;
          var itemLabel:LabelShadowed = null;
          var range:* = undefined;
+         var half:Number = NaN;
+         var a:String = null;
+         var box:VBox = null;
+         var itemButton:MenuButton2 = null;
+         var local_path:String = null;
+         var key_name:String = null;
          var clickFunc:Function = null;
+         var clickFunct2:Function = null;
          var itemSlider:HUISlider = null;
          var stepperItems:Array = null;
          var itemStepper:ItemStepper = null;
@@ -95,18 +128,34 @@ package ui.screens
          keys = new Array();
          for(key in source)
          {
-            keys.push(key);
+            try
+            {
+               if(Settings.Tune.range[key] != null)
+               {
+                  keys.push(key);
+               }
+            }
+            catch(error:Error)
+            {
+            }
          }
-         keys.sort();
+         keys.sort(this.settingsSort);
+         half = 999;
+         a = "";
+         if(keys.length > 12)
+         {
+            half = keys.length / 2;
+         }
+         index = 0;
          for(key in keys)
          {
+            index++;
             i0 = keys[key];
             try
             {
                Logger.LogToChannel(Logger.WARNING,"parseSettingsTune, i0:",i0);
                item0 = source[i0];
                range = Settings.Tune.range[i0];
-               Logger.LogToChannel(Logger.WARNING,"parseSettingsTune, item:",i0,item0);
                if(this.itemBySource[i0] != null)
                {
                   appears.push(this.itemBySource[i0]);
@@ -132,23 +181,43 @@ package ui.screens
                }
                else if(range != null)
                {
-                  itemBox = new HBoxLine(this.linesBox);
+                  if(index > half)
+                  {
+                     box = this.linesBox2;
+                  }
+                  else
+                  {
+                     box = this.linesBox;
+                  }
+                  itemBox = new HBoxLine();
                   itemBox.drawBack = false;
-                  appears.push(itemBox);
                   itemBox.height = 35;
                   if(item0 == "btn")
                   {
-                     itemButton = new MenuButton();
+                     if(this.btn_kostil)
+                     {
+                        continue;
+                     }
+                     itemButton = new MenuButton2();
+                     local_path = "extendedGUI.Settings." + Settings.Tune.path.join("_") + "_" + StringUtils.dropSpaces(i0,"_");
                      itemButton.size = 22;
                      itemButton.paddingLeft = 0;
                      itemButton.y = 7;
-                     itemButton.$ = "extendedGUI.Settings." + Settings.Tune.path.join("_") + "_" + StringUtils.dropSpaces(i0,"_");
+                     itemButton.$ = local_path;
+                     key_name = Settings.Tune.path.join("_") + "_" + StringUtils.dropSpaces(i0,"_");
                      clickFunc = function():void
                      {
-                        Api.call(Settings.Tune.path.join("_") + "_" + StringUtils.dropSpaces(i0,"_"));
+                        Api.call(key_name);
                      };
-                     itemButton.addEventListener(MouseEvent.CLICK,clickFunc);
+                     clickFunct2 = function():void
+                     {
+                        Base.navigator.showDialog("extendedGUI.Settings." + Settings.Tune.path.join("_"),Locale.getById("extendedGUI.Settings.ask_are_you_sure"),true,[new DialogButtonItem("extendedGUI.Dialogs.Yes",clickFunc,0.4,[Keyboard.ENTER]),new DialogButtonItem("extendedGUI.Dialogs.No",null,0.6,[Keyboard.ESCAPE])],500,200);
+                     };
+                     this.sourceByItem[itemButton] = i0;
+                     this.allItems.push(itemButton);
+                     itemButton.addEventListener(MouseEvent.CLICK,clickFunct2);
                      itemBox.left.addChild(itemButton);
+                     this.btn_kostil = true;
                   }
                   else
                   {
@@ -159,11 +228,12 @@ package ui.screens
                      itemLabel.y = 4;
                      itemBox.left.addChild(itemLabel);
                   }
+                  box.addChild(itemBox);
                   Logger.LogToChannel(Logger.DEBUG,"Settings.Tune",i0,"[" + item0 + "]",typeof item0,range);
                   if(range is Array && range != "btn")
                   {
                      Logger.LogToChannel(Logger.DEBUG,"parseSettingsTune: range is Array");
-                     itemSlider = new HUISlider();
+                     itemSlider = new HUISlider(null,0,0,"",null,true);
                      this.itemBySource[i0] = itemSlider;
                      this.sourceByItem[itemSlider] = i0;
                      this.allItems.push(itemSlider);
@@ -218,12 +288,12 @@ package ui.screens
                      itemStepper.addEventListener(Event.CHANGE,this.onStepperItemsChange);
                      itemBox.right.addChild(itemStepper);
                   }
+                  appears.push(itemBox);
                   itemBox.draw();
                }
             }
             catch(error:Error)
             {
-               Logger.LogToChannel(Logger.ERROR,"parseSettingsTune error",error);
             }
          }
          this.linesBox.draw();
@@ -269,17 +339,15 @@ package ui.screens
       private function checkChanges() : void
       {
          this.applyButton.enabled = this.weHaveChanges;
-         this.defaultButton.enabled = !this.weHaveDefaults;
+         this.defaultButton.enabled = true;
       }
       
       private function get weHaveDefaults() : Boolean
       {
          var itm:Object = null;
-         Logger.LogToChannel(Logger.DEBUG,"weHaveDefaults length",this.allItems.length);
          var haveDefaults:Boolean = true;
          for each(itm in this.allItems)
          {
-            Logger.LogToChannel(Logger.DEBUG,"haveDefaults >",this.sourceByItem[itm],itm,itm.isDefaults);
             if(itm.isDefaults == false)
             {
                haveDefaults = false;
@@ -293,10 +361,8 @@ package ui.screens
       {
          var itm:Object = null;
          var haveChanges:Boolean = false;
-         Logger.LogToChannel(Logger.DEBUG,"weHaveChanges length",this.allItems.length);
          for each(itm in this.allItems)
          {
-            Logger.LogToChannel(Logger.DEBUG,"weHaveChanges >",this.sourceByItem[itm],itm.value,itm.initValue,itm.changed);
             if(itm.changed == true)
             {
                haveChanges = true;
@@ -312,10 +378,19 @@ package ui.screens
          {
             this.linesBox.removeChildAt(0);
          }
-         this.lastPath = Settings.Tune.path.join();
+         while(this.linesBox2.numChildren > 0)
+         {
+            this.linesBox2.removeChildAt(0);
+         }
+         this.btn_kostil = false;
+         if(Settings.Tune)
+         {
+            this.lastPath = Settings.Tune.path.join();
+         }
          this.itemBySource = new Dictionary();
          this.sourceByItem = new Dictionary();
          this.linesBox.draw();
+         this.linesBox2.draw();
          this.vBox.draw();
       }
       
@@ -328,25 +403,36 @@ package ui.screens
          this.vBox.spacing = 1;
          this.vBox.debug = false;
          super.addChild(this.vBox);
+         this.colunmsBox = new HBox();
+         this.colunmsBox.spacing = 20;
+         this.colunmsBox.debug = true;
+         this.colunmsBox.width = Base.stage.stageWidth - 50 * 2;
+         this.vBox.addChild(this.colunmsBox);
          this.linesBox = new VBox();
          this.linesBox.alignment = VBox.JUSTIFY;
          this.linesBox.spacing = 1;
          this.linesBox.debug = false;
          this.linesBox.width = widths[0];
-         this.vBox.addChild(this.linesBox);
+         this.colunmsBox.addChild(this.linesBox);
+         this.linesBox2 = new VBox();
+         this.linesBox2.alignment = VBox.JUSTIFY;
+         this.linesBox2.spacing = 1;
+         this.linesBox2.debug = false;
+         this.linesBox2.width = widths[0];
+         this.colunmsBox.addChild(this.linesBox2);
          this.quad1 = new Quad(this.vBox);
          this.quad1.width = widths[0];
          this.quad1.height = 10;
-         this.defaultButton = new MenuButton(this.vBox);
+         this.defaultButton = new MenuButton2(this.vBox);
          this.defaultButton.$ = "extendedGUI.SettingsWindow.setDefault";
          this.defaultButton.height = 35;
          this.defaultButton.addEventListener(MouseEvent.CLICK,this.defaultButtonClickHandler);
-         this.applyButton = new MenuButton(this.vBox);
+         this.applyButton = new MenuButton2(this.vBox);
          this.applyButton.$ = "extendedGUI.SettingsWindow.setApplied";
          this.applyButton.height = 35;
          this.applyButton.addEventListener(MouseEvent.CLICK,this.onApplyButtonHandler);
          this.applyButton.enabled = false;
-         this.backButton = new MenuButton(this.vBox);
+         this.backButton = new MenuButton2(this.vBox);
          this.backButton.$ = "extendedGUI.SettingsWindow.backButton";
          this.backButton.height = 35;
          this.backButton.addEventListener(MouseEvent.CLICK,this.onBackButtonHandler);
@@ -379,7 +465,7 @@ package ui.screens
          var itm1:Object = null;
          for each(itm1 in this.allItems)
          {
-            if(Boolean(itm1.changed) && (this.sourceByItem[itm1] == "SSAO" || this.sourceByItem[itm1] == "god rays" || this.sourceByItem[itm1] == "TEXTURE_QUALITY"))
+            if(Boolean(itm1.changed) && this.sourceByItem[itm1] == "sound_type")
             {
                return true;
             }
@@ -451,7 +537,10 @@ package ui.screens
          Logger.LogToChannel(Logger.DEBUG,"onSettingsUpdated");
          Settings.self.removeEventListener(Settings.READY,this.onSettingsUpdated);
          this.updateData();
-         this.parseSettingsTune(Settings.Tune.data);
+         if(Settings.Tune)
+         {
+            this.parseSettingsTune(Settings.Tune.data);
+         }
       }
       
       protected function onBackButtonHandler(event:Event) : void

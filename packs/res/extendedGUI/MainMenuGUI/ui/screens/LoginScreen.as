@@ -1,8 +1,9 @@
 package ui.screens
 {
-   import logging.*;
-   import ui.*;
-   import ui.components.*;
+   import logging.Logger;
+   import ui.Navigator;
+   import ui.Screen;
+   import ui.components.LoginWindow;
    
    public class LoginScreen extends Screen
    {
@@ -27,14 +28,16 @@ package ui.screens
          appears = [];
          this.loginWindow = new LoginWindow(this);
          this.loginWindow.draggable = true;
-         this.resize();
          this.loginWindow.setSize(460,350);
-         this.loginWindow.x = (Base.stage.stageWidth - this.loginWindow.width) / 2;
-         this.loginWindow.y = (Base.stage.stageHeight - this.loginWindow.height) / 2;
+         this.resize();
       }
       
       override protected function resize(... args) : void
       {
+         if(this.loginWindow == null)
+         {
+            return;
+         }
          this.loginWindow.x = (Base.stage.stageWidth - this.loginWindow.width) / 2;
          this.loginWindow.y = (Base.stage.stageHeight - this.loginWindow.height) / 2;
       }
@@ -42,7 +45,10 @@ package ui.screens
       override public function set enabled(value:Boolean) : void
       {
          _enabled = value;
-         this.loginWindow.enabled = _enabled;
+         if(this.loginWindow != null)
+         {
+            this.loginWindow.enabled = value;
+         }
       }
       
       override public function showUp() : void
@@ -55,12 +61,18 @@ package ui.screens
       
       override public function hideDown(onCompleteFunction:Function = null) : void
       {
-         onCompleteFunction();
+         if(onCompleteFunction != null)
+         {
+            onCompleteFunction();
+         }
       }
       
       override public function hideUp(onCompleteFunction:Function = null) : void
       {
-         onCompleteFunction();
+         if(onCompleteFunction != null)
+         {
+            onCompleteFunction();
+         }
       }
    }
 }

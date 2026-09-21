@@ -53,6 +53,8 @@ package lang
       
       public var registrationUrl:String;
       
+      public var userUrl:String;
+      
       public var supportUrl:String;
       
       public function Locale(arg1:Object)
@@ -69,6 +71,7 @@ package lang
             this.icon = config.icon;
             this.supportUrl = config.supportUrl;
             this.registrationUrl = config.registrationUrl;
+            this.userUrl = config.addGoldUrl;
          }
          catch(error:Error)
          {

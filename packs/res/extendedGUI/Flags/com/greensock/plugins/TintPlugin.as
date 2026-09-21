@@ -19,49 +19,49 @@ package com.greensock.plugins
          super("tint,colorTransform,removeTint");
       }
       
-      override public function _onInitTween(target:Object, value:*, tween:TweenLite) : Boolean
+      override public function _onInitTween(param1:Object, param2:*, param3:TweenLite) : Boolean
       {
-         if(!(target is DisplayObject))
+         if(!(param1 is DisplayObject))
          {
             return false;
          }
-         var end:ColorTransform = new ColorTransform();
-         if(value != null && tween.vars.removeTint != true)
+         var _loc4_:ColorTransform = new ColorTransform();
+         if(param2 != null && param3.vars.removeTint != true)
          {
-            end.color = uint(value);
+            _loc4_.color = uint(param2);
          }
-         this._transform = DisplayObject(target).transform;
-         var ct:ColorTransform = this._transform.colorTransform;
-         end.alphaMultiplier = ct.alphaMultiplier;
-         end.alphaOffset = ct.alphaOffset;
-         this._init(ct,end);
+         this._transform = DisplayObject(param1).transform;
+         var _loc5_:ColorTransform = this._transform.colorTransform;
+         _loc4_.alphaMultiplier = _loc5_.alphaMultiplier;
+         _loc4_.alphaOffset = _loc5_.alphaOffset;
+         this._init(_loc5_,_loc4_);
          return true;
       }
       
-      public function _init(start:ColorTransform, end:ColorTransform) : void
+      public function _init(param1:ColorTransform, param2:ColorTransform) : void
       {
-         var p:String = null;
-         var i:int = int(_props.length);
-         while(--i > -1)
+         var _loc4_:String = null;
+         var _loc3_:int = int(_props.length);
+         while(--_loc3_ > -1)
          {
-            p = _props[i];
-            if(start[p] != end[p])
+            _loc4_ = _props[_loc3_];
+            if(param1[_loc4_] != param2[_loc4_])
             {
-               _addTween(start,p,start[p],end[p],"tint");
+               _addTween(param1,_loc4_,param1[_loc4_],param2[_loc4_],"tint");
             }
          }
       }
       
-      override public function setRatio(v:Number) : void
+      override public function setRatio(param1:Number) : void
       {
-         var ct:ColorTransform = this._transform.colorTransform;
-         var pt:PropTween = _firstPT;
-         while(pt)
+         var _loc2_:ColorTransform = this._transform.colorTransform;
+         var _loc3_:PropTween = _firstPT;
+         while(_loc3_)
          {
-            ct[pt.p] = pt.c * v + pt.s;
-            pt = pt._next;
+            _loc2_[_loc3_.p] = _loc3_.c * param1 + _loc3_.s;
+            _loc3_ = _loc3_._next;
          }
-         this._transform.colorTransform = ct;
+         this._transform.colorTransform = _loc2_;
       }
    }
 }

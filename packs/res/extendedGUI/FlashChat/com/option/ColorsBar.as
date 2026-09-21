@@ -33,6 +33,7 @@ package com.option
          this.CloseBtn.addEventListener(MouseEvent.CLICK,this.onCloseColors);
          this.X = this.x;
          this.CloseBtn.visible = false;
+         addChild(this.colorList);
       }
       
       public function set showed(value:Boolean) : *
@@ -55,9 +56,8 @@ package com.option
       
       public function Draw(colors:Array) : *
       {
-         this.colorList.Draw(colors);
+         this.colorList.Draw(colors,this.width - 30);
          this.colorList.addEventListener(ColorEvent.SELECT,this.onColorSelect);
-         addChild(this.colorList);
          this.colorList.x = (this.background.width - this.colorList.width) / 2;
          this.colorList.y = (this.background.height - this.colorList.height) / 2;
       }

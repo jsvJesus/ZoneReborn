@@ -2,6 +2,7 @@ package ui.components
 {
    import com.greensock.*;
    import com.greensock.easing.*;
+   import communication.*;
    import flash.display.*;
    import flash.events.*;
    
@@ -13,11 +14,15 @@ package ui.components
       
       private var needDraw:Boolean = false;
       
+      private var hiding:Boolean = false;
+      
       private var prealpha:Number = 0.5;
       
       public function Shield()
       {
          super();
+         this.visible = false;
+         this.hiding = false;
          this.holder = new Shape();
       }
       
@@ -44,7 +49,9 @@ package ui.components
          this.needDraw = true;
          this.addEventListener(Event.ENTER_FRAME,this.onEnterFrame);
          this.addChild(this.holder);
+         this.hiding = false;
          this.visible = true;
+         Api.call("on_show_guadrscreen");
       }
       
       protected function onEnterFrame(event:Event) : void
@@ -57,6 +64,15 @@ package ui.components
       
       public function hide() : void
       {
+         if(this.hiding)
+         {
+            return;
+         }
+         if(!this.visible)
+         {
+            return;
+         }
+         this.hiding = true;
          if(Base.navigator.dialogs.numChildren <= 1)
          {
             TweenMax.to(this.holder,0.5,{
@@ -69,10 +85,16 @@ package ui.components
       
       private function hideComplete() : void
       {
+         if(!this.hiding)
+         {
+            return;
+         }
          this.needDraw = false;
+         this.hiding = false;
          this.removeEventListener(Event.ENTER_FRAME,this.onEnterFrame);
          this.visible = false;
          this.removeChild(this.holder);
+         Api.call("on_hide_guadrscreen");
       }
       
       private function draw() : void

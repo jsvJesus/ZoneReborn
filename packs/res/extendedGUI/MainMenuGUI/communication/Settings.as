@@ -27,6 +27,7 @@ package communication
       public function Settings(arg1:IEventDispatcher = null)
       {
          super();
+         Api.self.addEventListener(Api.SET_ONE_SETTINGS,onGetOneSettings);
       }
       
       public static function get IsReady() : Boolean
@@ -79,6 +80,13 @@ package communication
          Data = arg1.data.answer;
          Logger.LogToChannel(Logger.DEBUG,"Settings.onGetSettingsHandler",arg1.data.answer,arg1.data.error);
          dispatchReadyState();
+      }
+      
+      protected static function onGetOneSettings(arg:ApiEvent) : void
+      {
+         Ranges[arg.data.answer["setting"]][arg.data.answer["type"]] = arg.data.answer["data"];
+         Data[arg.data.answer["setting"]][arg.data.answer["type"]] = arg.data.answer["value"];
+         Base.navigator.update_setting(arg.data.answer["setting"],arg.data.answer["type"]);
       }
       
       protected static function onGetSettingsRangeHandler(arg1:ApiEvent) : void

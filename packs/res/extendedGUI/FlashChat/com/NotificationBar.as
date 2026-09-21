@@ -29,6 +29,8 @@ package com
       
       protected var i:int = 0;
       
+      protected var tmp_time:Number = 0;
+      
       public var timer:Timer = new Timer(this.VISIBLE_TIME);
       
       public function NotificationBar()
@@ -37,6 +39,11 @@ package com
          stage.addEventListener(Event.RESIZE,this.onResizeLog);
          this.visible = false;
          this.addEventListener(MouseEvent.CLICK,this.onMouseClick);
+         this.Show({
+            "text":"",
+            "show_time":1
+         });
+         this.visible = false;
       }
       
       protected function onMouseClick(e:MouseEvent) : *
@@ -44,42 +51,77 @@ package com
          this.Hide();
       }
       
+      protected function get_time() : int
+      {
+         if(this.tmp_time)
+         {
+            return this.tmp_time;
+         }
+         return this.VISIBLE_TIME;
+      }
+      
       protected function onResizeLog(e:Event) : *
       {
          this.x = Object(root).width / 2 - (this.Text1.width + 10) / 2;
       }
       
-      public function Show(text:String) : *
+      public function Show(data:Object) : *
       {
-         this.Text1.height = 10;
+         var line:* = undefined;
+         var text:String = data.text;
+         this.tmp_time = data.show_time;
+         this.Text1.height = 11;
          this.Text1.width = 650;
          this.Text1.htmlText = text;
-         if(this.Text1.textWidth + 10 > stage.stageWidth / 2)
+         var max_width:Number = 0;
+         var avg_height:Number = 0;
+         var lines:Number = 0;
+         var line_list:* = text.split("\n");
+         for each(line in line_list)
          {
-            this.Text1.width = stage.stageWidth / 2;
+            this.Text1.htmlText = line;
+            if(this.Text1.textWidth + 10 > stage.stageWidth / 2)
+            {
+               this.Text1.width = stage.stageWidth / 2;
+            }
+            else
+            {
+               this.Text1.width = this.Text1.textWidth + 11;
+            }
+            if(this.Text1.width >= max_width)
+            {
+               max_width = this.Text1.width;
+            }
+            avg_height += this.Text1.textHeight;
          }
-         else
+         for each(line in line_list)
          {
-            this.Text1.width = this.Text1.textWidth + 10;
+            this.Text1.htmlText = line;
+            lines += Math.max(1,Math.round(this.Text1.textWidth / max_width));
          }
-         this.Text1.height = Math.round(this.Text1.textWidth / this.Text1.width) * (this.Text1.textHeight + 6);
-         if(this.Text1.height == 0)
+         this.Text1.htmlText = text;
+         this.Text1.width = max_width;
+         avg_height /= lines;
+         this.Text1.height = lines * avg_height + 6;
+         if(lines == 0)
          {
             this.Text1.height = this.Text1.textHeight + 6;
          }
-         this.background.height = this.Text1.height + 5;
+         this.background.height = this.Text1.height + 12;
          this.background.width = this.Text1.width + 100;
+         this.Text1.y = 5;
          this.alpha = 1;
          this.visible = true;
          this.nothi.visible = true;
          this.forMask.x = 0;
          this.forMask.width = 15;
-         this.forMask.height = this.Text1.height;
+         this.forMask.height = this.Text1.height + 12;
          this.nothi.width = 15;
          this.nothi.x = 0;
          this.N = (this.background.width - this.forMask.width) / this.speed;
          this.step = this.nothi.width / this.N;
          this.i = 0;
+         this.timer.reset();
          this.timer.stop();
          this.x = Object(root).width / 2 - (this.background.width + 10) / 2;
          this.removeEventListener(Event.ENTER_FRAME,this.onFrameHide);
@@ -158,8 +200,10 @@ package com
          {
             this.nothi.visible = false;
             removeEventListener(Event.ENTER_FRAME,this.onFrame);
+            this.timer.delay = this.get_time();
             this.timer.start();
-            setTimeout(this.Hide,this.VISIBLE_TIME);
+            setTimeout(this.Hide,this.get_time());
+            this.tmp_time = 0;
          }
       }
    }

@@ -16,21 +16,21 @@ package com.greensock.plugins
          super("frame,frameLabel,frameForward,frameBackward");
       }
       
-      override public function _onInitTween(target:Object, value:*, tween:TweenLite) : Boolean
+      override public function _onInitTween(param1:Object, param2:*, param3:TweenLite) : Boolean
       {
-         if(!(target is MovieClip) || isNaN(value))
+         if(!(param1 is MovieClip) || isNaN(param2))
          {
             return false;
          }
-         this._target = target as MovieClip;
+         this._target = param1 as MovieClip;
          this.frame = this._target.currentFrame;
-         _addTween(this,"frame",this.frame,value,"frame",true);
+         _addTween(this,"frame",this.frame,param2,"frame",true);
          return true;
       }
       
-      override public function setRatio(v:Number) : void
+      override public function setRatio(param1:Number) : void
       {
-         super.setRatio(v);
+         super.setRatio(param1);
          if(this.frame != this._target.currentFrame)
          {
             this._target.gotoAndStop(this.frame);

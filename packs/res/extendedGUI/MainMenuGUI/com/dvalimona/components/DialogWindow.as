@@ -17,11 +17,23 @@ package com.dvalimona.components
       
       protected var message:Component;
       
+      protected var message_timer:Component;
+      
+      protected var message_timer_text:String;
+      
+      protected var messageBox:VBox;
+      
       protected var buttonsBox:HBox;
       
       protected var buttonsBoxHeight:uint = 60;
       
       protected var okButton:PushButton;
+      
+      protected var _timer:Timer;
+      
+      protected var _time_stop:Number = 0;
+      
+      protected var _time_duration:Number = 0;
       
       protected var helper:Dictionary;
       
@@ -91,14 +103,14 @@ package com.dvalimona.components
                }
                break;
             }
-            if(event.keyCode == Keyboard.ESCAPE)
-            {
-               this.doClose();
-            }
-            if((event.keyCode == Keyboard.ENTER || event.keyCode == Keyboard.NUMPAD_ENTER) && this.buttons.length == 1)
-            {
-               this.doClose();
-            }
+         }
+         if(event.keyCode == Keyboard.ESCAPE)
+         {
+            this.doClose();
+         }
+         if((event.keyCode == Keyboard.ENTER || event.keyCode == Keyboard.NUMPAD_ENTER) && this.buttons.length == 1)
+         {
+            this.doClose();
          }
       }
       
@@ -116,22 +128,33 @@ package com.dvalimona.components
          var button:PushButton = null;
          this.messageHolder = new Sprite();
          this.addChild(this.messageHolder);
+         this.messageBox = new VBox(this.messageHolder);
+         this.messageBox.padding = 10;
+         this.messageBox.alignment = VBox.LEFT;
+         this.messageBox.spacing = 1;
+         this.messageBox.debug = false;
+         this.messageBox.width = 500;
+         this.messageHolder.addChild(this.messageBox);
+         this.message = new TextArea();
+         this.message.html = this.isHtml;
+         (this.message as TextArea).autoHeight = false;
+         (this.message as TextArea).autoHideScrollBar = true;
+         (this.message as TextArea).editable = false;
+         (this.message as TextArea).font = Base.lightFontName;
+         (this.message as TextArea).size = 20;
          if(this.isHtml)
          {
-            this.message = new HtmlTextArea();
-            (this.message as HtmlTextArea).autoHeight = false;
-            (this.message as HtmlTextArea).autoHideScrollBar = true;
+            this.message.addEventListener(TextEvent.LINK,this.onLink);
          }
-         else
-         {
-            this.message = new TextArea();
-            (this.message as TextArea).autoHeight = false;
-            (this.message as TextArea).autoHideScrollBar = true;
-            (this.message as TextArea).editable = false;
-            (this.message as TextArea).font = Base.FONT_LIGHT;
-            (this.message as TextArea).size = 20;
-         }
-         this.messageHolder.addChild(this.message);
+         this.message_timer = new TextArea();
+         (this.message_timer as TextArea).autoHeight = false;
+         (this.message_timer as TextArea).autoHideScrollBar = true;
+         (this.message_timer as TextArea).editable = false;
+         (this.message_timer as TextArea).font = Base.lightFontName;
+         (this.message_timer as TextArea).size = 20;
+         this.message_timer.visible = false;
+         this.messageBox.addChild(this.message);
+         this.messageBox.addChild(this.message_timer);
          this.buttonsBox = new HBox();
          this.buttonsBox.alignment = HBox.MIDDLE;
          this.buttonsBox.fixedHeight = this.buttonsBoxHeight;
@@ -151,7 +174,7 @@ package com.dvalimona.components
             btnData.button = button;
             this.helper[button] = btnData.callback;
             button.addEventListener(MouseEvent.CLICK,this.onButtonClickHandler);
-            button.font = Base.FONT_BOLD;
+            button.font = Base.boldFontName;
             button.size = 22;
             button.$ = btnData.label;
             button.overColorAlpha = 1;
@@ -174,6 +197,10 @@ package com.dvalimona.components
             this.helper[event.target]();
          }
          this.close();
+      }
+      
+      protected function onLink(event:TextEvent) : void
+      {
       }
       
       override protected function showOn() : void
@@ -205,6 +232,10 @@ package com.dvalimona.components
       override protected function close() : void
       {
          this.destroyKeyboardShortcuts();
+         if(this._timer != null)
+         {
+            this._timer.stop();
+         }
          var tl:TimelineMax = new TimelineMax();
          tl.staggerFromTo([this,_titleBar,_titleLabel,_panel,this.messageHolder].concat(this.allButtons).reverse(),0.3,{
             "alpha":1,
@@ -222,7 +253,10 @@ package com.dvalimona.components
          Base.stage.focus = Base.navigator.currentScreen.defaultFocus;
          Logger.LogToChannel(Logger.DEBUG,"onShowOffComplete");
          this.unlockScreen();
-         setTimeout(this.parent.removeChild,0,this);
+         if(this.parent)
+         {
+            setTimeout(this.parent.removeChild,0,this);
+         }
          setTimeout(this.killMePlease,10);
       }
       
@@ -235,48 +269,93 @@ package com.dvalimona.components
       {
          leftItems.shift = 3;
          _titleLabel.autoSize = true;
-         _titleLabel.font = Base.FONT_BOLD;
+         _titleLabel.font = Base.boldFontName;
          _titleLabel.text = "Внимание";
          _titleLabel.size = 20;
          _titleLabel.mouseEnabled = false;
          _titleLabel.mouseChildren = false;
       }
       
-      public function set alertHeaderId(value:String) : void
+      public function alertHeader(value:String, localised:Boolean = false) : void
       {
-         _titleLabel.$ = value;
-         invalidate();
-      }
-      
-      public function set alertHeader(value:String) : void
-      {
-         _titleLabel.text = value;
-      }
-      
-      public function set alertMessageId(value:String) : void
-      {
-         if(this.isHtml)
+         if(localised)
          {
-            (this.message as HtmlTextArea).text = Locale.getById(value);
+            _titleLabel.$ = value;
          }
          else
          {
-            (this.message as TextArea).text = Locale.getById(value);
+            _titleLabel.text = value;
          }
          invalidate();
       }
       
-      public function set alertMessage(value:String) : void
+      public function alertMessage(value:String, localised:Boolean = false) : void
       {
-         if(this.isHtml)
+         var txt:String = null;
+         if(localised)
          {
-            (this.message as HtmlTextArea).text = value;
+            txt = Locale.getById(value);
          }
          else
          {
-            (this.message as TextArea).text = value;
+            txt = value;
          }
+         (this.message as TextArea).text = txt;
          invalidate();
+      }
+      
+      public function alertTimerMessage(value:String, timer_value:uint, localised:Boolean = false) : void
+      {
+         if(timer_value < 1)
+         {
+            return;
+         }
+         if(this._timer == null)
+         {
+            this._timer = new Timer(1000);
+            this._timer.addEventListener(TimerEvent.TIMER,this.updateTimerText);
+         }
+         this.message_timer.visible = true;
+         if(localised)
+         {
+            this.message_timer_text = Locale.getById(value);
+         }
+         else
+         {
+            this.message_timer_text = value;
+         }
+         this.start_timer(timer_value);
+      }
+      
+      private function updateTimerText() : *
+      {
+         var current_time:Number = NaN;
+         var event:KeyboardEvent = null;
+         var date:Date = new Date();
+         current_time = this._time_stop - date.time / 1000;
+         if(current_time <= 0)
+         {
+            this._timer.stop();
+            current_time = 0;
+            event = new KeyboardEvent(KeyboardEvent.KEY_DOWN,true,false,Keyboard.ESCAPE,Keyboard.ESCAPE);
+            event.keyCode = Keyboard.ESCAPE;
+            this.onKeyDown(event);
+            return;
+         }
+         this.message_timer.text = this.message_timer_text + int(current_time).toString();
+         this.messageBox.invalidate();
+      }
+      
+      public function start_timer(time_stop:Number) : *
+      {
+         var date:Date = new Date();
+         this._time_stop = date.time / 1000 + time_stop;
+         this._time_duration = time_stop;
+         if(this._time_stop >= 0)
+         {
+            this.updateTimerText();
+            this._timer.start();
+         }
       }
       
       public function get okFunction() : Function
@@ -303,15 +382,23 @@ package com.dvalimona.components
       override public function draw() : void
       {
          var btnData:DialogButtonItem = null;
+         var _height:int = 0;
          super.draw();
          for each(btnData in this.buttons)
          {
             btnData.button.setSize((width - 0) * btnData.widthPercent,this.buttonsBoxHeight);
          }
-         this.message.x = sideMargin;
-         this.message.y = topMargin;
-         this.message.setSize(width - sideMargin,height - this.buttonsBoxHeight - topMargin - bottomMargin);
-         this.message.draw();
+         _titleLabel.x = sideMargin;
+         this.messageBox.x = sideMargin;
+         this.messageBox.y = topMargin;
+         this.messageBox.setSize(width - sideMargin,height - this.buttonsBoxHeight - topMargin - bottomMargin);
+         _height = height - this.buttonsBoxHeight - topMargin - bottomMargin;
+         if(this.message_timer.visible)
+         {
+            _height -= 30;
+         }
+         this.message.setSize(width - sideMargin,_height);
+         this.message_timer.setSize(width - sideMargin,40);
          this.buttonsBox.setSize(width,this.buttonsBoxHeight);
          this.buttonsBox.x = 0;
          this.buttonsBox.y = height - this.buttonsBoxHeight;

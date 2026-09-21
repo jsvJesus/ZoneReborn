@@ -9,6 +9,8 @@ package communication
    {
       private static var onCreatingCharCallback:Function;
       
+      private static var onConfigFaceCallback:Function;
+      
       private static var _list:Array;
       
       private static var _core:EventDispatcher;
@@ -29,25 +31,19 @@ package communication
       
       public var id:int;
       
-      public var maxSpeed:Number;
+      public var is_old:Boolean;
       
       public var name:String;
       
-      public var hpRegeneration:Number;
+      public var last_space:String;
       
-      public var staminaRegeneration:Number;
-      
-      public var maxWeight:Number;
+      public var last_money:Number;
       
       public var isTutorialPassed:Boolean;
       
       public var deletionRemainingTime:int;
       
       public var goldCredit:int;
-      
-      public var maxHp:int;
-      
-      public var maxStamina:int;
       
       public function Character(arg1:Object)
       {
@@ -58,16 +54,13 @@ package communication
          try
          {
             this.id = Boolean(data) && data.id != null ? int(data.id) : this.id;
-            this.maxSpeed = Boolean(data) && data.maxspeed != null ? Number(data.maxspeed) : this.maxSpeed;
             this.name = Boolean(data) && Boolean(data.name) ? String(data.name) : this.name;
-            this.maxHp = Boolean(data) && data.maxhp != null ? int(data.maxhp) : this.maxHp;
-            this.hpRegeneration = Boolean(data) && data.hp_regen != null ? Number(data.hp_regen) : this.hpRegeneration;
-            this.maxStamina = Boolean(data) && data.maxstamina != null ? int(data.maxstamina) : this.maxStamina;
-            this.staminaRegeneration = Boolean(data) && data.stamina_regen != null ? Number(data.stamina_regen) : this.staminaRegeneration;
-            this.maxWeight = Boolean(data) && data.maxweight != null ? Number(data.maxweight) : this.maxWeight;
             this.isTutorialPassed = Boolean(data) && data.isTutorialPassed != null ? data.isTutorialPassed == 1 : this.isTutorialPassed;
             this.deletionRemainingTime = Boolean(data) && data.deletion_remaining_time != null ? int(data.deletion_remaining_time) : this.deletionRemainingTime;
             this.goldCredit = Boolean(data) && data.goldCredit != null ? int(data.goldCredit) : this.goldCredit;
+            this.is_old = data.is_old == null ? false : Boolean(data.is_old);
+            this.last_space = Boolean(data) && Boolean(data.last_space) ? String(data.last_space) : this.last_space;
+            this.last_money = Boolean(data) && data.last_money != null ? int(data.last_money) : this.last_money;
          }
          catch(error:Error)
          {
@@ -136,15 +129,59 @@ package communication
          setTimeout(Update,300);
       }
       
-      public static function StartCharCreating(arg1:Function) : void
+      public static function StartCharCreating(arg1:Function, arg2:Function) : void
       {
          onCreatingCharCallback = arg1;
+         onConfigFaceCallback = arg2;
+         Api.self.addEventListener(Api.GET_FACE_CONFIG,onConfigFaceHandler);
          Api.self.addEventListener(Api.CREATING_CHAR,onCreatingCharHandler);
+         Api.call(Api.GET_FACE_CONFIG,[]);
          Api.call(Api.CREATING_CHAR,[]);
+      }
+      
+      public static function StartCharUpdating(arg1:Function, arg2:Function) : void
+      {
+         onCreatingCharCallback = arg1;
+         onConfigFaceCallback = arg2;
+         Api.self.addEventListener(Api.GET_FACE_CONFIG,onConfigFaceHandler);
+         Api.self.addEventListener(Api.UPDATING_CHAR,onCreatingCharHandler);
+         Api.call(Api.GET_FACE_CONFIG,[]);
+         Api.call(Api.UPDATING_CHAR,[]);
+      }
+      
+      public static function StartCharDonateFaceEdit(arg1:Function, arg2:Function) : *
+      {
+         onConfigFaceCallback = arg1;
+         onCreatingCharCallback = arg2;
+         Api.self.addEventListener(Api.GET_FACE_CONFIG,onConfigDonateFaceHandler);
+         Api.self.addEventListener(Api.DONAT_UPDATING_CHAR,onCreatingCharHandler);
+         Api.call(Api.GET_FACE_CONFIG,[]);
+         Api.call(Api.DONAT_UPDATING_CHAR,[]);
+      }
+      
+      protected static function onConfigDonateFaceHandler(arg1:ApiEvent) : void
+      {
+         Api.self.removeEventListener(Api.GET_FACE_CONFIG,onConfigDonateFaceHandler);
+         if(onConfigFaceCallback != null)
+         {
+            onConfigFaceCallback(arg1.data.answer,false);
+         }
+         onConfigFaceCallback = null;
+      }
+      
+      protected static function onConfigFaceHandler(arg1:ApiEvent) : void
+      {
+         Api.self.removeEventListener(Api.GET_FACE_CONFIG,onConfigFaceHandler);
+         if(onConfigFaceCallback != null)
+         {
+            onConfigFaceCallback(arg1.data.answer,true);
+         }
+         onConfigFaceCallback = null;
       }
       
       protected static function onCreatingCharHandler(arg1:ApiEvent) : void
       {
+         Api.self.removeEventListener(Api.CREATING_CHAR,onCreatingCharHandler);
          Logger.LogToChannel(Logger.DEBUG,"Character.onCreatingCharHandler",arg1.data.answer);
          if(onCreatingCharCallback != null)
          {

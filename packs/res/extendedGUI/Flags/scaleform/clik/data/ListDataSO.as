@@ -4,13 +4,13 @@ package scaleform.clik.data
    {
       public var state:String = "";
       
-      public function ListDataSO(index:uint, label:String = "Empty", selected:Boolean = false, state:String = "")
+      public function ListDataSO(param1:uint, param2:String = "Empty", param3:Boolean = false, param4:String = "")
       {
-         this.index = index;
-         this.label = label;
-         this.selected = selected;
-         super(index,label,selected);
-         this.state = state;
+         this.index = param1;
+         this.label = param2;
+         this.selected = param3;
+         super(param1,param2,param3);
+         this.state = param4;
       }
       
       override public function toString() : String

@@ -181,12 +181,12 @@ package com.forms
             constraints.addElement("current_list",this.current_list,Constraints.ALL);
          }
          addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN,this.onWindowStartDrag,false,0,true);
-         this.ramka.addEventListener(ResizeFrameEvent.RESIZE,this.onResizeWindow);
          this.list.addEventListener(EmotionEvent.CHECK,this.onEmotionCheck);
          this.list.addEventListener(EmotionEvent.KEY_BIND,this.onEmotionKeyChange);
          this.current_list.addEventListener(EmotionEvent.CLICK,this.onEmotionClick);
          this.list.visible = false;
          this.sb.visible = false;
+         this.ramka.addEventListener(ResizeFrameEvent.RESIZE,this.onResizeFrame);
          this.ramka.addEventListener("Move_Up_Start",this.Move_Up_Start);
          this.ramka.addEventListener("Move_Down_Start",this.Move_Down_Start);
          this.ramka.addEventListener("Move_Left_Start",this.Move_Left_Start);
@@ -211,6 +211,7 @@ package com.forms
          ExternalInterface.addCallback("doReposition",this.validatePosition);
          ExternalInterface.addCallback("get_settings",this.openSettings);
          ExternalInterface.addCallback("set_local",this.setLocal);
+         ExternalInterface.addCallback("load_position",this.load_position);
          setTimeout(GameCommunication.ready,0);
       }
       
@@ -404,8 +405,12 @@ package com.forms
          Object(root).toolTip.y = Object(root).mainWindow.y - 100;
       }
       
-      internal function onResizeWindow(e:ResizeFrameEvent) : *
+      internal function onResizeFrame(e:*) : *
       {
+         if(e as ResizeFrameEvent == null)
+         {
+            return;
+         }
          this.frame_thumb_down.visible = false;
          this.frame_thumb_down.y = 0;
          this.frame_thumb_down.x = 50;
@@ -420,8 +425,8 @@ package com.forms
          this.frame_thumb_right.x = 0;
          this.height = e.height - 12;
          this.width = e.width - 12;
-         this.x += e.x;
-         this.y += e.y;
+         this.x += (e as ResizeFrameEvent).x;
+         this.y += (e as ResizeFrameEvent).y;
          this.X = this.x;
          this.Y = this.y;
          this.X = x;
@@ -450,6 +455,14 @@ package com.forms
          stage.removeEventListener(MouseEvent.MIDDLE_MOUSE_UP,this.onWindowStopDrag);
          stage.removeEventListener(MouseEvent.MOUSE_MOVE,this.onWindowDrag);
          stopDrag();
+         this.validatePosition(null);
+         GameCommunication.save_position(this.x,this.y);
+      }
+      
+      protected function load_position(args:*) : *
+      {
+         this.x = args.x;
+         this.y = args.y;
          this.validatePosition(null);
       }
       

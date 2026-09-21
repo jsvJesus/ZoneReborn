@@ -18,12 +18,12 @@ package communication
          super(arg1);
       }
       
-      public static function get Path() : Vector.<BreadCrumb>
+      public static function get path() : Vector.<BreadCrumb>
       {
          return _path;
       }
       
-      public static function set Path(arg1:Vector.<BreadCrumb>) : void
+      public static function set path(arg1:Vector.<BreadCrumb>) : void
       {
          _path = arg1;
          self.dispatchEvent(new Event(Event.CHANGE));
@@ -36,6 +36,25 @@ package communication
             _path.push(arg1);
             BreadCrumbs.getItemLabels();
             self.dispatchEvent(new BreadCrumbEvent(BreadCrumbEvent.ADDED,arg1));
+         }
+      }
+      
+      public static function Change() : void
+      {
+         self.dispatchEvent(new BreadCrumbEvent(BreadCrumbEvent.CHANGED));
+      }
+      
+      public static function Clear() : void
+      {
+         var i:int = 0;
+         var list:Array = new Array();
+         for(i = _path.length - 1; i > 0; i--)
+         {
+            list.push(_path[i]);
+         }
+         for(i = 0; i < list.length; i++)
+         {
+            BreadCrumbs.Remove(list[i]);
          }
       }
       

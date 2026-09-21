@@ -68,6 +68,14 @@ package com.communication
          ExternalInterface.call("python_trace",Obj);
       }
       
+      public static function save_position(x:int, y:int) : *
+      {
+         var Obj:Object = new Object();
+         Obj.x = x;
+         Obj.y = y;
+         ExternalInterface.call("save_position",Obj);
+      }
+      
       public function getLang() : *
       {
          ExternalInterface.call("get_locale",{});

@@ -2,6 +2,8 @@ package com
 {
    public class MessageConstans
    {
+      public static var Local:Object;
+      
       public static const BTN_OK:* = "BTN_OK";
       
       public static const BTN_CANCEL:* = "BTN_CANCEL";
@@ -29,8 +31,6 @@ package com
       public static const TYPE_MESSAGE:* = 0;
       
       public static const TYPE_INPUT:* = 1;
-      
-      public static var Local:Object = new Object();
       
       public function MessageConstans()
       {

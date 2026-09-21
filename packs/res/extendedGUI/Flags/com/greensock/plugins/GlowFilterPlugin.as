@@ -14,9 +14,9 @@ package com.greensock.plugins
          super("glowFilter");
       }
       
-      override public function _onInitTween(target:Object, value:*, tween:TweenLite) : Boolean
+      override public function _onInitTween(param1:Object, param2:*, param3:TweenLite) : Boolean
       {
-         return _initFilter(target,value,tween,GlowFilter,new GlowFilter(16777215,0,0,0,Number(value.strength) || 1,int(value.quality) || 2,value.inner,value.knockout),_propNames);
+         return _initFilter(param1,param2,param3,GlowFilter,new GlowFilter(16777215,0,0,0,Number(param2.strength) || 1,int(param2.quality) || 2,param2.inner,param2.knockout),_propNames);
       }
    }
 }

@@ -54,7 +54,7 @@ package com.colorPicker
       public function set color(col:uint) : *
       {
          this._color = col;
-         this.background.graphics.beginFill(col);
+         this.background.graphics.beginFill(col,1);
          this.background.graphics.drawRect(0,0,this.COLOR_WIDTH,this.COLOR_HEIGHT);
          this.background.graphics.endFill();
       }

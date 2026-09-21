@@ -12,6 +12,7 @@ package com
    import flash.text.TextFieldType;
    import flash.text.TextFormat;
    import flash.ui.Keyboard;
+   import flash.utils.getTimer;
    import flash.utils.setTimeout;
    import scaleform.clik.constants.ConstrainMode;
    import scaleform.clik.constants.InvalidationType;
@@ -54,11 +55,11 @@ package com
       
       internal const USER_COLOR:* = "#0082ff";
       
-      internal const MSG_TEXT_LIMIT:* = 12800;
+      internal const MSG_TEXT_LIMIT:* = 22800;
       
-      internal const MSG_HTML_LIMIT:* = 30000;
+      internal const MSG_HTML_LIMIT:* = 43000;
       
-      internal const MSG_HTML_LIMIT_FULL:* = 43000;
+      internal const MSG_HTML_LIMIT_FULL:* = 63000;
       
       public var defaultTab:String = "";
       
@@ -132,7 +133,15 @@ package com
       
       protected var _ctrl:Boolean;
       
+      protected var _shift:Boolean;
+      
+      protected var radio_mode:Boolean = false;
+      
+      protected var _last_paste_time:Number = 0;
+      
       protected var _doubleInpt:String = "";
+      
+      protected var _tmpInpt:String = "";
       
       protected var _animation:Boolean = false;
       
@@ -472,8 +481,12 @@ package com
          this.height = H;
       }
       
-      internal function onResizeWIndows(e:ResizeFrameEvent) : *
+      internal function onResizeWIndows(e:*) : *
       {
+         if(e as ResizeFrameEvent == null)
+         {
+            return;
+         }
          this.frame_thumb_down.visible = false;
          this.frame_thumb_down.y = 0;
          this.frame_thumb_down.x = 50;
@@ -486,10 +499,10 @@ package com
          this.frame_thumb_right.visible = false;
          this.frame_thumb_right.y = 50;
          this.frame_thumb_right.x = 0;
-         this.height = e.height - 12;
-         this.width = e.width - 12;
-         this.x += e.x;
-         this.y += e.y;
+         this.height = (e as ResizeFrameEvent).height - 12;
+         this.width = (e as ResizeFrameEvent).width - 12;
+         this.x += (e as ResizeFrameEvent).x;
+         this.y += (e as ResizeFrameEvent).y;
          this.X = this.x;
          this.Y = this.y;
          this.intpHeight = this.inpt.height;
@@ -576,28 +589,83 @@ package com
          }
       }
       
+      protected function resetInputText() : *
+      {
+         this.inpt.text = this._tmpInpt;
+      }
+      
       protected function CtrlDown(e:KeyboardEvent) : *
       {
-         if(this._ctrl && e.keyCode == 86)
+         var flag:* = false;
+         if(this._ctrl && e.keyCode == Keyboard.V)
          {
-            this.inpt.text = this._doubleInpt;
+            if(getTimer() / 1000 - this._last_paste_time < 30)
+            {
+               this.API.pasteWarning();
+               return;
+            }
+            this._last_paste_time = getTimer() / 1000;
          }
-         if(e.keyCode == 17)
+         if(e.keyCode == Keyboard.CONTROL)
          {
             this._ctrl = true;
-            if(Object(root).MainChat.accountStatus < Object(root).MainChat.ACCOUNT_STATUS_ADM)
+            flag = getTimer() / 1000 - this._last_paste_time < 30;
+            if(Object(root).MainChat.accountStatus < Object(root).MainChat.ACCOUNT_STATUS_ADM && flag)
             {
                this.inpt.type = TextFieldType.DYNAMIC;
             }
          }
-         if(e.keyCode == 38)
+         if(e.keyCode == Keyboard.SHIFT)
+         {
+            this._shift = true;
+         }
+         if(this._shift && e.keyCode == Keyboard.INSERT)
+         {
+            this.inpt.text = "";
+            this.inpt.type = TextFieldType.DYNAMIC;
+         }
+         if(e.keyCode == Keyboard.UP)
          {
             this.DrawCommandUp();
          }
-         if(e.keyCode == 40)
+         if(e.keyCode == Keyboard.DOWN)
          {
             this.DrawCommandDown();
          }
+         if(e.keyCode == Keyboard.LEFT && this._ctrl)
+         {
+            this.onInputLeft();
+         }
+         if(e.keyCode == Keyboard.RIGHT && this._ctrl)
+         {
+            this.onInputRight();
+         }
+      }
+      
+      protected function onInputLeft() : *
+      {
+         if(this.inpt.caretIndex < 1)
+         {
+            return;
+         }
+         var tmp_string:String = this.inpt.text.substring(0,this.inpt.caretIndex);
+         var list:Array = tmp_string.split(" ");
+         var current_word:String = list[list.length - 1];
+         var new_index:int = Math.max(0,this.inpt.caretIndex - current_word.length);
+         this.inpt.setSelection(new_index,new_index);
+      }
+      
+      protected function onInputRight() : *
+      {
+         if(this.inpt.caretIndex >= this.inpt.text.length)
+         {
+            return;
+         }
+         var tmp_string:String = this.inpt.text.substring(this.inpt.caretIndex,this.inpt.text.length);
+         var list:Array = tmp_string.split(" ");
+         var current_word:String = list[0];
+         var new_index:int = Math.min(this.inpt.caretIndex + current_word.length,this.inpt.text.length);
+         this.inpt.setSelection(new_index,new_index);
       }
       
       protected function DrawCommandUp() : *
@@ -792,12 +860,19 @@ package com
       
       protected function CtrlUp(e:KeyboardEvent) : *
       {
-         if(e.keyCode == 17)
+         if(e.keyCode == Keyboard.CONTROL)
          {
             this._ctrl = false;
             this.inpt.type = TextFieldType.INPUT;
             stage.focus = this.inpt;
-            this.inpt.setSelection(this.inpt.length,this.inpt.length);
+         }
+         if(e.keyCode == Keyboard.SHIFT)
+         {
+            this._shift = false;
+            if(!this._ctrl)
+            {
+               this.inpt.type = TextFieldType.INPUT;
+            }
          }
       }
       
@@ -816,7 +891,7 @@ package com
          id = ExternalInterface.call("c++","TextField",this.txt,"urlMouseButton");
          usr = event.text;
          tmp = 0;
-         arr = [this.locale.CONTEXT_SEND_MSG,this.locale.CONTEXT_INVITE,this.locale.CONTEXT_ADD_FRIEND,this.locale.CONTEXT_BAN];
+         arr = [this.locale.CONTEXT_SEND_MSG,this.locale.CONTEXT_INVITE,this.locale.CONTEXT_ADD_FRIEND,this.locale.CONTEXT_BAN,this.locale.CONTEXT_REPORT];
          if(usr.charAt(2) == " ")
          {
             if(id == 2)
@@ -849,7 +924,7 @@ package com
                Context.dataProvider = new DataProvider(arr);
                Context.x = mouseX;
                Context.y = mouseY;
-               Context.height = 22 * arr.length;
+               Context.height = 25.8 * arr.length + 0.1;
                if(Context.y + Context.height + y > (Object(root).height + stage.stageHeight) / 2)
                {
                   Context.y = (Object(root).height + stage.stageHeight) / 2 - y - Context.height;
@@ -894,9 +969,15 @@ package com
                this.API.sendCommand("ignore",usr);
                break;
             case 4:
-               if(flag == 1)
+               this.API.report(usr);
+            case 5:
+               if(flag == 2)
                {
                   this.API.sendCommand("weather",usr);
+               }
+               else if(flag == 1)
+               {
+                  this.API.sendCommand("item",usr);
                }
                else
                {
@@ -925,6 +1006,8 @@ package com
          {
             this.tf1.selectedIndex = 0;
          }
+         this.updateRadioMode("inptFocusIn");
+         this.API.setIMEmode(true);
       }
       
       protected function inptFocusOut(e:Event) : void
@@ -936,6 +1019,12 @@ package com
             this.tf1.selectedIndex = 0;
          }
          this.unDrawCommandList();
+         if(this.radio_mode)
+         {
+            this.radio_mode = false;
+            Object(root).set_radio_mode(this.radio_mode,this.name);
+         }
+         this.API.setIMEmode(false);
       }
       
       protected function setCommandChat(e:Event) : *
@@ -1036,11 +1125,11 @@ package com
             this.CommandsList.dataProvider = new DataProvider(data);
             if(data.length <= 4)
             {
-               this.CommandsList.height = data.length * 22;
+               this.CommandsList.height = data.length * 25.8 + 1;
             }
             else
             {
-               this.CommandsList.height = 4 * 22;
+               this.CommandsList.height = 4 * 25.8 + 1;
             }
             this.CommandsList.x = this.inpt.x;
             this.CommandsList.y = this.inpt.y - this.CommandsList.height;
@@ -1225,7 +1314,7 @@ package com
             {
                arr.push({
                   "id":this.settings[i].id,
-                  "label":this.settings[i].label,
+                  "label":this.settings[i].short_name || this.settings[i].label,
                   "com":this.settings[i].com,
                   "color":ChannelColors.getAt(this.settings[i].id)
                });
@@ -1252,6 +1341,7 @@ package com
          catch(e:Error)
          {
          }
+         this.updateRadioMode("changeSetDropDown");
       }
       
       public function returnTab(e:MouseEvent) : *
@@ -1288,6 +1378,7 @@ package com
             Opt.x = (Object(root).width + stage.stageWidth) / 2 - Opt.width - x;
          }
          Opt.Chan.Channels.addEventListener(ChannelEvent.CHANGE,this.changeChanalSettings);
+         Opt.Chan.Channels.addEventListener(ChannelEvent.CHANGE_SOUND,this.changeSoundSettings);
          Opt.addEventListener("Color_change",this.changeChanalColor);
          Opt.name = "Settings";
          Opt.type = "window_setting";
@@ -1373,8 +1464,15 @@ package com
       protected function changeChanalSettings(e:ChannelEvent) : *
       {
          this.settings[e.index].selected = e.selected;
+         ChatSettings.setCh(e.id,e.sound);
          this.changeSetDropDown();
          this.tf1.selectedIndex = 0;
+      }
+      
+      protected function changeSoundSettings(e:ChannelEvent) : *
+      {
+         ChatSettings.setCh(e.id,e.sound);
+         this.API.updateSoundSettings(ChatSettings.getSoundschannels());
       }
       
       protected function changeChanalColor(e:Event) : *
@@ -1480,6 +1578,7 @@ package com
             this.tf1.y = this.inpt.y;
             this.sb.height = this.txt.height;
          }
+         this.updateRadioMode("inptChange");
       }
       
       public function set changeAlpha(value:Number) : void
@@ -1670,6 +1769,7 @@ package com
          this.hiddenTxt.visible = false;
          this.addEventListener(Event.ENTER_FRAME,this.visibleModeGame);
          this.changeAlpha = this.alphaChat;
+         this.updateRadioMode("setModeGame");
       }
       
       public function setModeHalfHidden() : *
@@ -1689,6 +1789,7 @@ package com
          this.hiddenTxt.visible = false;
          this.addEventListener(Event.ENTER_FRAME,this.visibleModeHalfHidden);
          this.changeAlpha = this.alphaChat;
+         this.updateRadioMode("setModeHalfHidden");
       }
       
       public function setModeChat() : *
@@ -1723,6 +1824,18 @@ package com
          this.hiddenTxt.visible = false;
          this.addEventListener(Event.ENTER_FRAME,this.visibleModeChat);
          this.changeAlpha = this.alphaGame;
+         this.updateRadioMode("setModeChat");
+      }
+      
+      internal function updateRadioMode(txt:String) : *
+      {
+         var is_radio_id:Boolean = false;
+         is_radio_id = Object(root).MainChat.isRadioChannel(this.tf1.curID) && this.inpt.visible && this.visible && stage.focus == this.inpt;
+         if(this.radio_mode != is_radio_id)
+         {
+            this.radio_mode = is_radio_id;
+            Object(root).set_radio_mode(this.radio_mode,this.name);
+         }
       }
       
       internal function defaultSize() : *
@@ -1737,9 +1850,9 @@ package com
       
       internal function focusIN(e:FocusEvent) : *
       {
-         if(this != Object(root).getChildAt(Object(root).numChildren - 1))
+         if(this != Object(root).getChildAt(Object(root).numChildren - 2))
          {
-            Object(root).swapChildren(this,Object(root).getChildAt(Object(root).numChildren - 1));
+            Object(root).swapChildren(this,Object(root).getChildAt(Object(root).numChildren - 2));
          }
       }
       
@@ -1957,7 +2070,7 @@ package com
          this.inpt.scaleX = 1;
       }
       
-      internal function sub_string_len(text:String, len:Number = 30000) : *
+      internal function sub_string_len(text:String, len:Number = 43000) : *
       {
          var index:Number = NaN;
          var new_text:String = null;
@@ -1983,7 +2096,7 @@ package com
          return new_text;
       }
       
-      public function drawMsg(type:Number, time:String, msg:String, usr:String = "", returned:Boolean = false, onlyEn:Boolean = false) : Boolean
+      public function drawMsg(type:Number, time:String, msg:String, usr:String = "", clan:String = "", returned:Boolean = false, onlyEn:Boolean = false) : Boolean
       {
          var Obj:Object = new Object();
          var Flag:Boolean = false;
@@ -1993,13 +2106,17 @@ package com
          {
             this.txt.htmlText = this.sub_string_len(this.txt.htmlText);
          }
-         if(this._whisp && usr == this._user)
+         if(this._whisp && usr == this._user && type == 9)
          {
             str = "";
             str = "<font color=\"#" + ChannelColors.getAt(this.settings[0].id).toString(16) + "\">";
             if(this.ShowTime)
             {
                str = str + "[" + time + "]";
+            }
+            if(clan != "")
+            {
+               str = str + "[" + clan + "]";
             }
             if(returned)
             {
@@ -2037,6 +2154,10 @@ package com
                   {
                      str = str + "[" + this.settings[Obj.i].label + "]";
                   }
+                  if(clan != "")
+                  {
+                     str = str + "[" + clan + "]";
+                  }
                   if(returned)
                   {
                      if(type == Object(root).MainChat.whispID)
@@ -2052,7 +2173,7 @@ package com
                   {
                      if(usr == this.locale.YOU)
                      {
-                        str = str + "<font color=\'" + this.USER_COLOR + "\'>[" + usr + "]</font>: ";
+                        str = str + "<font color=\'" + this.USER_COLOR + "\'>[" + usr + "]</font>";
                      }
                      else
                      {
@@ -2083,7 +2204,11 @@ package com
                {
                   str = str + "[" + this.settings[Obj.i].label + "]";
                }
-               str = str + msg + "</font>\n";
+               if(clan != "")
+               {
+                  str = str + "[" + clan + "]";
+               }
+               str = str + ": " + msg + "</font>\n";
                this.txt.appendText(str);
                if(!this.txt.visible)
                {
@@ -2167,6 +2292,11 @@ package com
       {
          parent.removeChild(this);
          dispatchEvent(new ComponentEvent(ComponentEvent.HIDE));
+      }
+      
+      public function clearChat() : *
+      {
+         this.txt.htmlText = "";
       }
    }
 }

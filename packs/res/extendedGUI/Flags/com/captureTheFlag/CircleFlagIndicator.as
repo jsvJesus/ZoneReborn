@@ -25,6 +25,8 @@ package com.captureTheFlag
       
       protected var _isMy:Boolean = false;
       
+      protected var _am_i_invader:Boolean = false;
+      
       protected var _id:String = "null";
       
       protected var _state:String = "onPlay";
@@ -57,19 +59,19 @@ package com.captureTheFlag
          addChild(this.flagMyBar);
       }
       
-      public function set myFlag(value:Boolean) : *
+      public function set myFlag(param1:Boolean) : *
       {
-         var textF:TextFormat = new TextFormat();
-         if(value)
+         var _loc2_:TextFormat = new TextFormat();
+         if(param1)
          {
-            textF.color = this.MY_COLOR;
+            _loc2_.color = this.MY_COLOR;
          }
          else
          {
-            textF.color = this.NOT_MY_COLOR;
+            _loc2_.color = this.NOT_MY_COLOR;
          }
-         this.Name.setTextFormat(textF);
-         this._isMy = value;
+         this.Name.setTextFormat(_loc2_);
+         this._isMy = param1;
          this.updateFlagThumb();
       }
       
@@ -78,9 +80,9 @@ package com.captureTheFlag
          return this._isMy;
       }
       
-      public function set id(val:String) : *
+      public function set id(param1:String) : *
       {
-         this._id = val;
+         this._id = param1;
       }
       
       public function get id() : String
@@ -88,9 +90,9 @@ package com.captureTheFlag
          return this._id;
       }
       
-      public function set value(val:Number) : *
+      public function set value(param1:Number) : *
       {
-         this._value = val;
+         this._value = param1;
          this.updateFlagThumb();
       }
       
@@ -99,9 +101,9 @@ package com.captureTheFlag
          return this._value;
       }
       
-      public function set flagName(value:String) : *
+      public function set flagName(param1:String) : *
       {
-         this.Name.text = value;
+         this.Name.text = param1;
       }
       
       public function get flagName() : String
@@ -109,14 +111,37 @@ package com.captureTheFlag
          return this.Name.text;
       }
       
-      protected function onClick(e:MouseEvent) : *
+      public function set am_i_invader(param1:Boolean) : *
+      {
+         var _loc2_:Error = null;
+         if(this.flagName == "E")
+         {
+         }
+         if(this._am_i_invader && !param1)
+         {
+            _loc2_ = new Error();
+         }
+         this._am_i_invader = param1;
+         this.updateFlagThumb();
+      }
+      
+      public function get am_i_invader() : Boolean
+      {
+         return this._am_i_invader;
+      }
+      
+      protected function onClick(param1:MouseEvent) : *
       {
       }
       
       protected function updateFlagThumb() : *
       {
-         var percent:Number = (this._value - this._minimum) / (this._maximum - this._minimum) * 100;
-         if(this._isMy)
+         var _loc1_:Number = (this._value - this._minimum) / (this._maximum - this._minimum) * 100;
+         var _loc2_:Error = new Error();
+         if(this.flagName == "E")
+         {
+         }
+         if(this.am_i_invader)
          {
             setChildIndex(this.background,0);
             setChildIndex(this.flagMyBar,0);
@@ -124,7 +149,7 @@ package com.captureTheFlag
             this.background.graphics.clear();
             this.background.graphics.lineStyle(1,268435455);
             this.background.graphics.drawCircle(this.SIZE,this.SIZE,this.SIZE * 3 / 4);
-            this.flagMyBar.value = percent;
+            this.flagMyBar.value = _loc1_;
             this.flagNotMyBar.value = 0;
          }
          else
@@ -136,7 +161,7 @@ package com.captureTheFlag
             setChildIndex(this.flagNotMyBar,0);
             setChildIndex(this.flagMyBar,0);
             this.flagMyBar.value = 0;
-            this.flagNotMyBar.value = percent;
+            this.flagNotMyBar.value = _loc1_;
          }
       }
       
@@ -157,12 +182,12 @@ package com.captureTheFlag
          this.Name.addEventListener(MouseEvent.CLICK,this.onShowClick);
       }
       
-      protected function onShowClick(e:MouseEvent) : *
+      protected function onShowClick(param1:MouseEvent) : *
       {
          GameCommunication.goToFlag(this.flagName);
       }
       
-      protected function onBuyClick(e:MouseEvent) : *
+      protected function onBuyClick(param1:MouseEvent) : *
       {
          this.buyBtn.removeEventListener(MouseEvent.CLICK,this.onBuyClick);
          GameCommunication.buyFlag(this.flagName);

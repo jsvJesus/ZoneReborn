@@ -1,20 +1,36 @@
 package com.dvalimona.components
 {
-   import com.greensock.*;
-   import com.greensock.easing.*;
    import flash.display.DisplayObjectContainer;
    
    public class HUISlider extends UISlider
    {
-      public function HUISlider(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0, label:String = "", defaultHandler:Function = null)
+      public function HUISlider(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0, label:String = "", defaultHandler:Function = null, valueVisible:Boolean = false)
       {
          _sliderClass = HSlider;
          super(parent,xpos,ypos,label,defaultHandler);
+         _valueLabel.visible = valueVisible;
+      }
+      
+      override protected function addChildren() : void
+      {
+         super.addChildren();
+         _valueLabel.align = Label.RIGHT;
+         _valueLabel.width = 35;
+         _valueLabel.autoSize = false;
+         _valueLabel.mouseChildren = true;
+         _valueLabel.mouseEnabled = true;
+         this.mouseChildren = true;
+         this.mouseEnabled = true;
       }
       
       override protected function unfreeze() : void
       {
          super.unfreeze();
+      }
+      
+      public function valueSilence(value:Number) : void
+      {
+         _slider.valueSilence = value;
       }
       
       override protected function init() : void
@@ -25,18 +41,7 @@ package com.dvalimona.components
       
       override protected function positionLabel() : void
       {
-         if(_slider.dragNow)
-         {
-            _valueLabel.x = _slider.handleX;
-         }
-         else
-         {
-            TweenMax.to(_valueLabel,Style.SLIDER_ANIMATION_TIME,{
-               "x":_slider.handleX,
-               "ease":Expo.easeOut,
-               "onComplete":null
-            });
-         }
+         _valueLabel.x = -40;
          _valueLabel.y = height / 2 - _valueLabel.height / 2;
       }
       

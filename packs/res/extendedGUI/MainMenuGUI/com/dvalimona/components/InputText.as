@@ -21,7 +21,7 @@ package com.dvalimona.components
       
       protected var _focusIn:Boolean = false;
       
-      private var _font:String = Style.fontName;
+      private var _font:String = Base.fontName;
       
       private var _focusInColor:uint = Style.INPUT_COLOR_IN;
       
@@ -65,7 +65,7 @@ package com.dvalimona.components
          this._tf.type = TextFieldType.INPUT;
          this._tf.multiline = false;
          this._tf.wordWrap = false;
-         this._tf.defaultTextFormat = new TextFormat(Style.fontName,Style.fontSize,Style.INPUT_TEXT);
+         this._tf.defaultTextFormat = new TextFormat(Base.fontName,Style.fontSize,Style.INPUT_TEXT);
          addChild(this._tf);
          this._tf.addEventListener(Event.CHANGE,this.onChange);
          this._tf.addEventListener(FocusEvent.FOCUS_IN,this.onFocusIn);

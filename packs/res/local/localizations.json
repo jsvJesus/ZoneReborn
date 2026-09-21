@@ -1,19 +1,43 @@
 {
 	"russian": {
 		"caption": "Русский",
+		"path":"local/Russian",
 		"shortcut": "RU",
 		"id": "russian",
 		"icon": "",
-		"supportUrl":"http://stalker.kayako.com/index.php?/Base/Language/Change/7",
-		"registrationUrl":"https://stalker.so/user"
+		"supportUrl":"https://stalkeronline.helpdeskeddy.com",
+		"registrationUrl":"https://stalker.so/signup",
+		"restorePasswordUrl":"https://stalker.so/restore-password?utm_source=in_game&utm_medium=game&utm_campaign=rest_pass",
+		"addGoldUrl":"https://stalker.so/kabinet/getgold",
+		"embeddedGoldUrl":"https://stalker.so/getgoldembedded/ru",
+		"newsUrl": "https://stalker.so/news/last/ru?utm_source=in_game&utm_medium=game&utm_campaign=last_news"
 		},
 		
 	"english": {
 		"caption": "English",
+		"path":"local/English",
 		"shortcut": "EN",
 		"id": "english",
 		"icon": "",
-		"supportUrl":"http://stalker.kayako.com/index.php?/Base/Language/Change/1",
-		"registrationUrl":"https://stalker.so/user"
+		"supportUrl":"https://stalkeronline.helpdeskeddy.com",
+		"registrationUrl":"https://stalker.so/signup",
+		"restorePasswordUrl":"https://stalker.so/restore-password?utm_source=in_game&utm_medium=game&utm_campaign=rest_pass",
+		"addGoldUrl":"https://stalker.so/kabinet/getgold",
+		"embeddedGoldUrl":"https://stalker.so/getgoldembedded/en",
+		"newsUrl": "https://stalker.so/news/last/en?utm_source=in_game&utm_medium=game&utm_campaign=last_news"
+		},
+		
+	"chinese": {
+		"caption": "Chinese",
+		"path":"local/Chinese",
+		"shortcut": "ZH",
+		"id": "chinese",
+		"icon": "",
+		"supportUrl":"https://stalkeronline.helpdeskeddy.com",
+		"registrationUrl":"https://stalker.so/signup",
+		"restorePasswordUrl":"https://stalker.so/restore-password?utm_source=in_game&utm_medium=game&utm_campaign=rest_pass",
+		"addGoldUrl":"https://stalker.so/kabinet/getgold",
+		"embeddedGoldUrl":"https://stalker.so/getgoldembedded/en",
+		"newsUrl": "https://stalker.so/news/last/en?utm_source=in_game&utm_medium=game&utm_campaign=last_news"
 		}
 }

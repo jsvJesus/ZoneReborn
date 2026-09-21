@@ -17,8 +17,6 @@ package com.dvalimona.components
          super.draw();
          _background.graphics.clear();
          _background.graphics.lineStyle(1,0,0.1);
-         _background.graphics.beginFill(Style.BLACK_PANEL_COLOR,0.7);
-         _background.graphics.drawRect(0,0,_width,_height);
          _background.graphics.beginBitmapFill(this.backgroundBitmap);
          _background.graphics.drawRect(0,0,_width,_height);
          _background.graphics.endFill();

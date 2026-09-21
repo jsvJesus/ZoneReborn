@@ -17,58 +17,58 @@ package com.greensock.plugins
          super("endArray");
       }
       
-      override public function _onInitTween(target:Object, value:*, tween:TweenLite) : Boolean
+      override public function _onInitTween(param1:Object, param2:*, param3:TweenLite) : Boolean
       {
-         if(!(target is Array) || !(value is Array))
+         if(!(param1 is Array) || !(param2 is Array))
          {
             return false;
          }
-         this._init(target as Array,value);
+         this._init(param1 as Array,param2);
          return true;
       }
       
-      public function _init(start:Array, end:Array) : void
+      public function _init(param1:Array, param2:Array) : void
       {
-         this._a = start;
-         var i:int = int(end.length);
-         var cnt:int = 0;
-         while(--i > -1)
+         this._a = param1;
+         var _loc3_:int = int(param2.length);
+         var _loc4_:int = 0;
+         while(--_loc3_ > -1)
          {
-            if(start[i] != end[i] && start[i] != null)
+            if(param1[_loc3_] != param2[_loc3_] && param1[_loc3_] != null)
             {
                var _loc5_:*;
-               this._info[_loc5_ = cnt++] = new ArrayTweenInfo(i,this._a[i],end[i] - this._a[i]);
+               this._info[_loc5_ = _loc4_++] = new ArrayTweenInfo(_loc3_,this._a[_loc3_],param2[_loc3_] - this._a[_loc3_]);
             }
          }
       }
       
-      override public function _roundProps(lookup:Object, value:Boolean = true) : void
+      override public function _roundProps(param1:Object, param2:Boolean = true) : void
       {
-         if("endArray" in lookup)
+         if("endArray" in param1)
          {
-            this._round = value;
+            this._round = param2;
          }
       }
       
-      override public function setRatio(v:Number) : void
+      override public function setRatio(param1:Number) : void
       {
-         var ti:ArrayTweenInfo = null;
-         var val:Number = NaN;
-         var i:int = int(this._info.length);
+         var _loc3_:ArrayTweenInfo = null;
+         var _loc4_:Number = NaN;
+         var _loc2_:int = int(this._info.length);
          if(this._round)
          {
-            while(--i > -1)
+            while(--_loc2_ > -1)
             {
-               ti = this._info[i];
-               this._a[ti.i] = (val = ti.c * v + ti.s) > 0 ? val + 0.5 >> 0 : val - 0.5 >> 0;
+               _loc3_ = this._info[_loc2_];
+               this._a[_loc3_.i] = (_loc4_ = _loc3_.c * param1 + _loc3_.s) > 0 ? _loc4_ + 0.5 >> 0 : _loc4_ - 0.5 >> 0;
             }
          }
          else
          {
-            while(--i > -1)
+            while(--_loc2_ > -1)
             {
-               ti = this._info[i];
-               this._a[ti.i] = ti.c * v + ti.s;
+               _loc3_ = this._info[_loc2_];
+               this._a[_loc3_.i] = _loc3_.c * param1 + _loc3_.s;
             }
          }
       }
@@ -83,11 +83,11 @@ class ArrayTweenInfo
    
    public var c:Number;
    
-   public function ArrayTweenInfo(index:uint, start:Number, change:Number)
+   public function ArrayTweenInfo(param1:uint, param2:Number, param3:Number)
    {
       super();
-      this.i = index;
-      this.s = start;
-      this.c = change;
+      this.i = param1;
+      this.s = param2;
+      this.c = param3;
    }
 }

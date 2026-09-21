@@ -10,10 +10,10 @@ package scaleform.clik.events
       
       public var controllerIdx:uint = 0;
       
-      public function FocusHandlerEvent(type:String, bubbles:Boolean = true, cancelable:Boolean = false, controllerIdx:uint = 0)
+      public function FocusHandlerEvent(param1:String, param2:Boolean = true, param3:Boolean = false, param4:uint = 0)
       {
-         super(type,bubbles,cancelable);
-         this.controllerIdx = controllerIdx;
+         super(param1,param2,param3);
+         this.controllerIdx = param4;
       }
       
       override public function clone() : Event

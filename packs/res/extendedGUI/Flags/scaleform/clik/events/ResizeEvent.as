@@ -12,11 +12,11 @@ package scaleform.clik.events
       
       public var scaleY:Number = 1;
       
-      public function ResizeEvent(type:String, scaleX:Number, scaleY:Number)
+      public function ResizeEvent(param1:String, param2:Number, param3:Number)
       {
-         super(type,false,false);
-         this.scaleX = scaleX;
-         this.scaleY = scaleY;
+         super(param1,false,false);
+         this.scaleX = param2;
+         this.scaleY = param3;
       }
       
       override public function toString() : String

@@ -10,9 +10,9 @@ package com
       
       public var height:Number;
       
-      public var x:Number;
+      public var x:Number = 0;
       
-      public var y:Number;
+      public var y:Number = 0;
       
       public function ResizeFrameEvent(type:String, width:Number, height:Number, x:Number = 0, y:Number = 0)
       {

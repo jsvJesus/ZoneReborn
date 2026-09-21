@@ -1,6 +1,7 @@
 package com.option
 {
    import com.ChannelEvent;
+   import com.ChatSettings;
    import com.GameCommunication;
    import com.colorPicker.ColorEvent;
    import flash.display.MovieClip;
@@ -13,6 +14,8 @@ package com.option
    
    public class ColorChannelCheckBox extends UIComponent
    {
+      public var checkBoxSound:CheckBoxShort;
+      
       protected var _color:uint = 0;
       
       protected var _colorR:uint = 0;
@@ -22,6 +25,8 @@ package com.option
       protected var _colorB:uint = 0;
       
       protected var _alph:uint = 0;
+      
+      protected var _silence:Boolean = false;
       
       internal var API:GameCommunication = new GameCommunication();
       
@@ -66,6 +71,16 @@ package com.option
          return this.checkBox.selected;
       }
       
+      public function set sound(value:Boolean) : *
+      {
+         this.checkBoxSound.selected = value;
+      }
+      
+      public function get sound() : Boolean
+      {
+         return this.checkBoxSound.selected;
+      }
+      
       public function set enabled1(value:Boolean) : *
       {
          this.checkBox.enabled = value;
@@ -104,13 +119,17 @@ package com.option
       
       public function setListData(listData:ListDataChan) : void
       {
+         this._silence = true;
          this.index = listData.index;
          this.selected = listData.selected;
          this.label = listData.label || "";
          this.color = listData.color;
          this.enabled1 = listData.enabled;
+         this.checkBoxSound.enabled = !ChatSettings.isLocked(listData.id);
          this.ID = listData.id;
          this.com = listData.com;
+         this.sound = ChatSettings.getCh(listData.id);
+         this._silence = false;
       }
       
       protected function setcolor(color:uint) : *
@@ -145,12 +164,13 @@ package com.option
          }
          this.colors.addEventListener(MouseEvent.CLICK,this.onColorClick);
          this.checkBox.addEventListener(Event.SELECT,this.onSelectCheck);
+         this.checkBoxSound.addEventListener(Event.SELECT,this.onSoundCheck);
          super.configUI();
       }
       
       protected function saySelectedChan() : *
       {
-         dispatchEvent(new ChannelEvent(ChannelEvent.CHANGE,this.index,this.selected,this.ID));
+         dispatchEvent(new ChannelEvent(ChannelEvent.CHANGE,this.index,this.selected,this.ID,this.sound));
       }
       
       protected function onSelectCheck(e:Event) : *
@@ -158,7 +178,7 @@ package com.option
          var MSG:Message = null;
          var f1:Function = null;
          var f2:Function = null;
-         if(this.ID == Object(root).MainChat.findSysID() && !this.selected)
+         if(this.ID == Object(root).MainChat.findSysID() && !this.selected && !this._silence)
          {
             MSG = new Message();
             MSG.name = "Message";
@@ -177,9 +197,9 @@ package com.option
             };
             Object(root).addChild(MSG);
             stage.focus = MSG;
-            if(MSG != Object(root).getChildAt(Object(root).numChildren - 1))
+            if(MSG != Object(root).getChildAt(Object(root).numChildren - 2))
             {
-               Object(root).swapChildren(MSG,Object(root).getChildAt(Object(root).numChildren - 1));
+               Object(root).swapChildren(MSG,Object(root).getChildAt(Object(root).numChildren - 2));
             }
             MSG.Message1(Object(root).locale.WARNING,Object(root).locale.MSG_SYS,f1,f2,Object(root).locale.YES,Object(root).locale.NO);
          }
@@ -187,6 +207,11 @@ package com.option
          {
             this.saySelectedChan();
          }
+      }
+      
+      protected function onSoundCheck(e:Event) : *
+      {
+         dispatchEvent(new ChannelEvent(ChannelEvent.CHANGE_SOUND,this.index,this.selected,this.ID,this.sound));
       }
       
       protected function onColorClick(e:MouseEvent) : *

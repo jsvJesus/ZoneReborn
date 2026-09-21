@@ -12,21 +12,21 @@ package com
          super();
       }
       
-      public static function set_cursor(name:String) : *
+      public static function set_cursor(param1:String) : *
       {
-         var Obj:Object = new Object();
-         Obj.cursor_data = name;
-         ExternalInterface.call("set_cursor",Obj);
+         var _loc2_:Object = new Object();
+         _loc2_.cursor_data = param1;
+         ExternalInterface.call("set_cursor",_loc2_);
       }
       
-      public static function goToFlag(id:String) : *
+      public static function goToFlag(param1:String) : *
       {
-         ExternalInterface.call("go_to_flag",{"name":id});
+         ExternalInterface.call("go_to_flag",{"name":param1});
       }
       
-      public static function buyFlag(id:String) : *
+      public static function buyFlag(param1:String) : *
       {
-         ExternalInterface.call("buy_flag",{"name":id});
+         ExternalInterface.call("buy_flag",{"name":param1});
       }
       
       public static function go_to_main_plan() : *
@@ -39,14 +39,19 @@ package com
          ExternalInterface.call("come_back_to_earth");
       }
       
-      public static function buy_guardian() : *
+      public static function post_guardian(param1:int) : *
       {
-         ExternalInterface.call("buy_guardian");
+         ExternalInterface.call("post_guardian",{"guard_type":param1});
       }
       
       public static function stop_guardians_buying() : *
       {
          ExternalInterface.call("stop_guardians_buying");
+      }
+      
+      public static function remove_guardians() : *
+      {
+         ExternalInterface.call("remove_guardians");
       }
       
       public function getLang() : *
@@ -64,24 +69,36 @@ package com
          ExternalInterface.call("default_settings");
       }
       
+      public function sound_settings() : *
+      {
+         ExternalInterface.call("sound_settings");
+      }
+      
       public function loadSettings() : *
       {
          ExternalInterface.call("read_user_settings");
       }
       
-      public function translate(text:String, lang:String) : *
+      public function translate(param1:String, param2:String) : *
       {
-         var Obj:Object = new Object();
-         Obj.text = text;
-         Obj.to_lang = lang;
-         ExternalInterface.call("translate",Obj);
+         var _loc3_:Object = new Object();
+         _loc3_.text = param1;
+         _loc3_.to_lang = param2;
+         ExternalInterface.call("translate",_loc3_);
       }
       
-      public function saveSettings(Obj:Object) : *
+      public function saveSettings(param1:Object) : *
       {
-         var Z:Object = new Object();
-         Z.user_data = Obj;
-         ExternalInterface.call("save_user_settings",Z);
+         var _loc2_:Object = new Object();
+         _loc2_.user_data = param1;
+         ExternalInterface.call("save_user_settings",_loc2_);
+      }
+      
+      public function updateSoundSettings(param1:Array) : *
+      {
+         var _loc2_:Object = new Object();
+         _loc2_.data = param1;
+         ExternalInterface.call("update_sounds_settings",_loc2_);
       }
       
       public function getColors() : *
@@ -89,35 +106,46 @@ package com
          ExternalInterface.call("get_colors");
       }
       
-      public function sendMessage(id:Number = 0, usr:String = "", msg:String = "") : *
+      public function sendMessage(param1:Number = 0, param2:String = "", param3:String = "") : *
       {
-         var Obj:Object = null;
-         if(msg != "")
+         var _loc4_:Object = null;
+         if(param3 != "")
          {
-            Obj = new Object();
-            Obj.channel_id = id;
-            Obj.receiver = this.STR.replaceEnter(usr);
-            Obj.text = this.STR.replaceEnter(msg);
-            ExternalInterface.call("send_msg",Obj);
+            _loc4_ = new Object();
+            _loc4_.channel_id = param1;
+            _loc4_.receiver = this.STR.replaceEnter(param2);
+            _loc4_.text = this.STR.replaceEnter(param3);
+            ExternalInterface.call("send_msg",_loc4_);
          }
       }
       
-      public function sendCommand(command:String = "", args:String = "") : *
+      public function sendCommand(param1:String = "", param2:String = "") : *
       {
-         var Obj:Object = null;
-         if(command != "")
+         var _loc3_:Object = null;
+         if(param1 != "")
          {
-            Obj = new Object();
-            Obj.text = this.STR.replaceEnter(command) + " " + this.STR.replaceEnter(args);
-            ExternalInterface.call("run_command",Obj);
+            _loc3_ = new Object();
+            _loc3_.text = this.STR.replaceEnter(param1) + " " + this.STR.replaceEnter(param2);
+            ExternalInterface.call("run_command",_loc3_);
          }
       }
       
-      public function getLocal(arr:Array) : *
+      public function report(param1:String = "") : *
       {
-         var Obj:Object = new Object();
-         Obj.paths = arr;
-         ExternalInterface.call("localized_resource",Obj);
+         var _loc2_:Object = null;
+         if(param1 != "")
+         {
+            _loc2_ = new Object();
+            _loc2_.user = param1;
+            ExternalInterface.call("report",_loc2_);
+         }
+      }
+      
+      public function getLocal(param1:Array) : *
+      {
+         var _loc2_:Object = new Object();
+         _loc2_.paths = param1;
+         ExternalInterface.call("localized_resource",_loc2_);
       }
       
       public function getChannels() : *
@@ -125,11 +153,11 @@ package com
          ExternalInterface.call("channel_data");
       }
       
-      public function changeFocus(lock:Boolean) : *
+      public function changeFocus(param1:Boolean) : *
       {
-         var Obj:Object = new Object();
-         Obj.lock = lock;
-         ExternalInterface.call("focus_lock",Obj);
+         var _loc2_:Object = new Object();
+         _loc2_.lock = param1;
+         ExternalInterface.call("focus_lock",_loc2_);
       }
       
       public function ready() : *
@@ -147,19 +175,18 @@ package com
          ExternalInterface.call("cursor_mode");
       }
       
-      public function changeMode(mode:String) : *
+      public function changeMode(param1:String) : *
       {
-         trace("MODE",mode);
-         var Obj:Object = new Object();
-         Obj.mode = mode;
-         ExternalInterface.call("mode_was_changed",Obj);
+         var _loc2_:Object = new Object();
+         _loc2_.mode = param1;
+         ExternalInterface.call("mode_was_changed",_loc2_);
       }
       
-      public function modalMode(mode:Boolean) : *
+      public function modalMode(param1:Boolean) : *
       {
-         var Obj:Object = new Object();
-         Obj.mode = mode;
-         ExternalInterface.call("modal_mode",Obj);
+         var _loc2_:Object = new Object();
+         _loc2_.mode = param1;
+         ExternalInterface.call("modal_mode",_loc2_);
       }
       
       public function initialization() : *
@@ -169,6 +196,25 @@ package com
          setTimeout(this.getColors,0);
          setTimeout(this.getLocal,0,["Chat"]);
          setTimeout(this.getAccountStatus,0);
+      }
+      
+      public function set_radio_mode(param1:Boolean) : *
+      {
+         var _loc2_:Object = new Object();
+         _loc2_.value = param1;
+         ExternalInterface.call("set_radio_mode",_loc2_);
+      }
+      
+      public function setIMEmode(param1:Boolean) : *
+      {
+         var _loc2_:Object = new Object();
+         _loc2_.value = param1;
+         ExternalInterface.call("set_ime_mode",_loc2_);
+      }
+      
+      public function pasteWarning() : *
+      {
+         ExternalInterface.call("on_paste_warning");
       }
    }
 }

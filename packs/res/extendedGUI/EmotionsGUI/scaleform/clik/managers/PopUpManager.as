@@ -43,7 +43,6 @@ package scaleform.clik.managers
       {
          if(!_stage)
          {
-            trace("PopUpManager has not been initialized. Automatic initialization has not occured or has failed; call PopUpManager.init() manually.");
             return;
          }
          if(mc.parent)
@@ -66,7 +65,6 @@ package scaleform.clik.managers
       {
          if(!_stage)
          {
-            trace("PopUpManager has not been initialized. Automatic initialization has not occured or has failed; call PopUpManager.init() manually.");
             return;
          }
          if(_modalMc)

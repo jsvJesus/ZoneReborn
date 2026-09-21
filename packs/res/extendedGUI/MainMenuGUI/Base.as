@@ -1,6 +1,7 @@
 package
 {
    import communication.*;
+   import events.ApiEvent;
    import flash.display.*;
    import flash.events.*;
    import flash.external.*;
@@ -25,11 +26,25 @@ package
       
       public static var FONT_BULLETS:String;
       
+      public static var FONT_LIGHT_CN:String;
+      
+      public static var FONT_REGULAR_CN:String;
+      
+      public static var FONT_BOLD_CN:String;
+      
+      public static var FONT_BULLETS_CN:String;
+      
       public static var Light:Font;
       
       public static var Regular:Font;
       
       public static var Bold:Font;
+      
+      public static var LightCN:Font;
+      
+      public static var RegularCN:Font;
+      
+      public static var BoldCN:Font;
       
       public static var self:Base;
       
@@ -47,8 +62,6 @@ package
       
       public static var Bullets:Font;
       
-      public static var LOGIN_BACKGROUND_VISIBLE:Boolean = true;
-      
       public static const RESET_KEY_CODE:uint = Keyboard.F11;
       
       public static const STAGE_RESIZE:String = "overrided_stage_resize";
@@ -58,6 +71,8 @@ package
       public static var DEBUG:Boolean = false;
       
       public static var IN_GAME:Boolean = false;
+      
+      public static var SHOP_OPENING:Boolean = false;
       
       public static var USE_FILTERS:Boolean = false;
       
@@ -92,9 +107,21 @@ package
       
       private var url:URLRequest = new URLRequest("../soGUI/maps/Login/login_bg.jpg");
       
+      public var is_steam:Boolean = false;
+      
+      public var steam_trusted:Boolean = false;
+      
+      public var gold_visible:Boolean = true;
+      
+      public var has_partner_id:Boolean = false;
+      
       protected var X:Number;
       
       protected var Y:Number;
+      
+      protected var rX:Number;
+      
+      protected var rY:Number;
       
       protected var shield:Sprite;
       
@@ -115,21 +142,48 @@ package
          Base.self = this;
          Logger.LogToChannel(Logger.DEFAULT,"MainMenuGUI; version: ",VERSION,";",Capabilities.os,";",Capabilities.playerType,";",Capabilities.version);
          this.addEventListener(Event.ADDED_TO_STAGE,this.onAddedToStageHadler);
-      }
-      
-      public static function setLoginBackgroundVisible(value:Boolean) : void
-      {
-         LOGIN_BACKGROUND_VISIBLE = value;
-         if(background != null)
-         {
-            background.visible = value;
-            background.alpha = value ? 1 : 0;
-         }
+         Api.self.addEventListener(Api.PARTNER_ID_CHANGE,this.onChangePartnerID);
       }
       
       public static function get isScaleform() : Boolean
       {
          return String(Capabilities.version).toLowerCase().indexOf("win") < 0;
+      }
+      
+      public static function get lightFontName() : String
+      {
+         if(Locale.current.id == "chinese")
+         {
+            return Base.FONT_LIGHT_CN;
+         }
+         return Base.FONT_LIGHT;
+      }
+      
+      public static function get fontName() : String
+      {
+         if(Locale.current.id == "chinese")
+         {
+            return Base.FONT_REGULAR_CN;
+         }
+         return Base.FONT_REGULAR;
+      }
+      
+      public static function get boldFontName() : String
+      {
+         if(Locale.current.id == "chinese")
+         {
+            return Base.FONT_REGULAR_CN;
+         }
+         return Base.FONT_BOLD;
+      }
+      
+      public static function get bulletsFontName() : String
+      {
+         if(Locale.current.id == "chinese")
+         {
+            return Base.FONT_LIGHT_CN;
+         }
+         return Base.FONT_BULLETS;
       }
       
       protected function test() : void
@@ -138,6 +192,11 @@ package
       
       public function doLogin(arg1:Object) : void
       {
+      }
+      
+      protected function onChangePartnerID(arg:ApiEvent) : *
+      {
+         this.has_partner_id = true;
       }
       
       protected function debugControl() : void
@@ -150,10 +209,16 @@ package
       {
          Light = new GUILight();
          FONT_LIGHT = "GUILight";
+         LightCN = new AlibabaLight();
+         FONT_LIGHT_CN = "AlibabaLight";
          Regular = new GUIRegular();
          FONT_REGULAR = "GUIRegular";
+         RegularCN = new AlibabaRegular();
+         FONT_REGULAR_CN = "AlibabaRegular";
          Bold = new GUIBold();
          FONT_BOLD = "GUIBold";
+         BoldCN = new AlibabaBold();
+         FONT_BOLD_CN = "AlibabaBold";
          Bullets = new JustBulletsClass();
          FONT_BULLETS = "JustBulletsClass";
       }
@@ -267,11 +332,19 @@ package
       
       protected function onRightMouseDown(arg1:MouseEvent) : void
       {
+         this.rX = stage.mouseX;
+         this.rY = stage.mouseY;
+         if(arg1.target is Stage || arg1.target is Navigator)
+         {
+            Base.stage.addEventListener(MouseEvent.MOUSE_MOVE,this.onSayMouseRightRotate);
+         }
+         Logger.LogToChannel(Logger.DEBUG,"onRightClickNow");
          Logger.LogToChannel(Logger.DEBUG,"onRightMouseDown");
       }
       
       protected function onRightMouseUp(arg1:MouseEvent) : void
       {
+         Base.stage.removeEventListener(MouseEvent.MOUSE_MOVE,this.onSayMouseRightRotate);
          Logger.LogToChannel(Logger.DEBUG,"onRightMouseUp");
       }
       
@@ -286,20 +359,18 @@ package
       
       protected function onMouseWheel(arg1:MouseEvent) : void
       {
+         var tmp:Array = new Array();
+         tmp.push(arg1.delta);
          Logger.LogToChannel(Logger.DEBUG,"onMouseWheel");
       }
       
       protected function onMiddleClick(arg1:MouseEvent) : void
       {
-         if(arg1.target is TextField)
-         {
-         }
          Logger.LogToChannel(Logger.DEBUG,"onMiddleClick");
       }
       
       protected function onRightClickNow(arg1:MouseEvent) : void
       {
-         Logger.LogToChannel(Logger.DEBUG,"onRightClickNow");
       }
       
       protected function onSingleClick(arg1:MouseEvent) : void
@@ -309,21 +380,34 @@ package
       protected function onSayMouseRotate(e:MouseEvent) : *
       {
          var tmp:Array = new Array();
-         if(Math.round(stage.mouseX - this.X) != 0)
+         tmp.push(stage.mouseX - this.X);
+         tmp.push(stage.mouseY - this.Y);
+         if(Math.round(tmp[0]) != 0 || Math.round(tmp[1]) != 0)
          {
-            tmp.push(stage.mouseX - this.X);
-            tmp.push(stage.mouseY - this.Y);
-            Api.call("rotate_dummy",tmp);
+            Api.call("onMouseLeftDrag",tmp);
          }
          this.X = stage.mouseX;
          this.Y = stage.mouseY;
+      }
+      
+      protected function onSayMouseRightRotate(e:MouseEvent) : *
+      {
+         var tmp:Array = new Array();
+         tmp.push(stage.mouseX - this.rX);
+         tmp.push(stage.mouseY - this.rY);
+         if(Math.round(tmp[0]) != 0 || Math.round(tmp[1]) != 0)
+         {
+            Api.call("onMouseRightDrag",tmp);
+         }
+         this.rX = stage.mouseX;
+         this.rY = stage.mouseY;
       }
       
       protected function onSingleMouseDown(arg1:MouseEvent) : void
       {
          this.X = stage.mouseX;
          this.Y = stage.mouseY;
-         if(arg1.target is Navigator)
+         if(arg1.target is Stage || arg1.target is Navigator)
          {
             Base.stage.addEventListener(MouseEvent.MOUSE_MOVE,this.onSayMouseRotate);
          }
@@ -374,8 +458,8 @@ package
       protected function initKeyboard() : void
       {
          Logger.LogToChannel(Logger.DEBUG,"Base.initKeyboard");
-         Base.stage.removeEventListener(KeyboardEvent.KEY_DOWN,this.onKeyDown);
-         Base.stage.addEventListener(KeyboardEvent.KEY_DOWN,this.onKeyDown);
+         stage.removeEventListener(KeyboardEvent.KEY_DOWN,this.onKeyDown);
+         stage.addEventListener(KeyboardEvent.KEY_DOWN,this.onKeyDown);
       }
       
       protected function initStage() : void
@@ -418,7 +502,7 @@ package
          Logger.CustomChannels = [Logger.DEBUG,Logger.DEFAULT,Logger.ERROR,Logger.FATAL_ERROR,Logger.RX,Logger.TX,Logger.WARNING];
       }
       
-      protected function onKeyDown(arg1:KeyboardEvent) : void
+      protected function onKeyDown(event:KeyboardEvent) : void
       {
       }
       
@@ -430,8 +514,6 @@ package
          background.y = 0;
          background.width = stage.stageWidth;
          background.height = stage.stageHeight;
-         background.visible = LOGIN_BACKGROUND_VISIBLE;
-         background.alpha = LOGIN_BACKGROUND_VISIBLE ? 1 : 0;
          Base.stage.addChildAt(background,0);
       }
    }

@@ -45,12 +45,10 @@ package Flags_fla
          super();
       }
       
-      public function set_money(Obj:*) : *
+      public function set_money(param1:*) : *
       {
-         var flag_dat:Object = Obj.flag;
-         var guard_dat:Object = Obj.guardian;
-         this.base.MainFlags.setMoneyIcon(flag_dat.cost,flag_dat.base_money,flag_dat.is_gold);
-         this.base.BuyGuards.setMoneyIcon(guard_dat.cost,guard_dat.base_money,guard_dat.is_gold);
+         var _loc2_:Object = param1.flag;
+         this.base.MainFlags.setMoneyIcon(_loc2_.cost,_loc2_.base_money,_loc2_.is_gold);
       }
       
       public function validNotification() : *
@@ -76,21 +74,36 @@ package Flags_fla
          this.compactBtn.addEventListener(MouseEvent.CLICK,this.onCompactClick);
       }
       
-      public function onCompactClick(e:MouseEvent) : *
+      public function onCompactClick(param1:MouseEvent) : *
       {
          this.compact_state = !this.compact_state;
          ExternalInterface.call("compact_state",{"value":this.compact_state});
          this.base.alpha = 0;
       }
       
-      public function onResize(arg1:*) : *
+      public function onResize(param1:*) : *
       {
-         var scale:Number = NaN;
-         var w:* = undefined;
-         var h:Number = NaN;
-         if(arg1.compact_state != null)
+         var _loc8_:Number = NaN;
+         var _loc9_:* = undefined;
+         var _loc10_:Number = NaN;
+         var _loc11_:* = undefined;
+         if(param1.compact_state != null)
          {
-            this.compact_state = arg1.compact_state;
+            this.compact_state = param1.compact_state;
+         }
+         var _loc2_:Number = Number(param1.size[0]);
+         var _loc3_:Number = Number(param1.size[1]);
+         var _loc4_:Number = (Object(root).height + stage.stageHeight) / 2;
+         var _loc5_:Number = (Object(root).width + stage.stageWidth) / 2;
+         var _loc6_:Number = (Object(root).height - stage.stageHeight) / 2;
+         var _loc7_:Number = 0;
+         if((Object(root).width + stage.stageWidth) / 2 > 1920)
+         {
+            _loc7_ = (1920 - _loc2_) / 2;
+         }
+         else
+         {
+            _loc7_ = (Object(root).width - stage.stageWidth) / 2;
          }
          if(this.compact_state)
          {
@@ -102,28 +115,31 @@ package Flags_fla
             this.compactBtn.label = "-";
             this.base.visible = true;
             this.validNotification();
-            scale = this.base.width / this.base.height;
-            w = scale * arg1.height;
-            if(w > arg1.width)
+            _loc8_ = this.base.width / this.base.height;
+            _loc9_ = _loc8_ * param1.height;
+            if(_loc9_ > param1.width)
             {
-               this.base.width = arg1.width;
-               this.base.height = 1 / scale * arg1.width;
+               this.base.width = param1.width;
+               this.base.height = 1 / _loc8_ * param1.width;
             }
             else
             {
-               this.base.height = arg1.height;
-               this.base.width = arg1.height * scale;
+               this.base.height = param1.height;
+               this.base.width = param1.height * _loc8_;
             }
-            this.base.y = (Object(root).height - stage.stageHeight) / 2 + stage.stageHeight * arg1.corner[1] + 3;
-            this.base.x = (Object(root).width - stage.stageWidth) / 2 + stage.stageWidth * arg1.corner[0] + arg1.width / 2 - this.base.width / 2;
+            for(_loc11_ in param1)
+            {
+            }
+            this.base.y = _loc6_ + _loc3_ * param1.corner[1] + 3;
+            this.base.x = _loc7_ + _loc2_ * param1.corner[0] + param1.width / 2 - this.base.width / 2;
             TweenMax.to(this.base,0.2,{
                "alpha":1,
                "delay":0,
                "ease":Expo.easeIn
             });
          }
-         this.compactBtn.y = (Object(root).height - stage.stageHeight) / 2 + stage.stageHeight * arg1.corner[1] + 7;
-         this.compactBtn.x = (Object(root).width - stage.stageWidth) / 2 + stage.stageWidth * arg1.corner[0] + arg1.width / 2 - this.compactBtn.width / 2;
+         this.compactBtn.y = _loc6_ + _loc3_ * param1.corner[1] + 7;
+         this.compactBtn.x = _loc7_ + _loc2_ * param1.corner[0] + param1.width / 2 - this.compactBtn.width / 2;
       }
    }
 }

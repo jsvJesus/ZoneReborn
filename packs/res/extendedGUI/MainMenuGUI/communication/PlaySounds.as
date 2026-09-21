@@ -5,10 +5,10 @@ package communication
       internal static const SoundPlay:String = "play_sound";
       
       protected static var _sounds:Object = {
-         "MOUSE_DOWN":"down",
+         "MOUSE_DOWN":"menu_click",
          "MOUSE_ENTER":"hover",
          "MOUSE_LEAVE":"out",
-         "MOUSE_CLICK":"click"
+         "MOUSE_CLICK":"menu_click_up"
       };
       
       public function PlaySounds()
@@ -36,7 +36,7 @@ package communication
          onCall(_sounds.MOUSE_CLICK);
       }
       
-      protected static function onCall(sound:String) : *
+      public static function onCall(sound:String) : *
       {
          var arr:Array = [sound];
          Api.call(SoundPlay,arr);

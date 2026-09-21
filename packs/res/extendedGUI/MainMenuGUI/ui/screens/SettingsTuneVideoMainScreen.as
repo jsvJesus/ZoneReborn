@@ -20,13 +20,13 @@ package ui.screens
       
       protected var quad1:Quad;
       
-      protected var applyButton:MenuButton;
+      protected var applyButton:MenuButton2;
       
-      protected var cancelButton:MenuButton;
+      protected var cancelButton:MenuButton2;
       
-      protected var defaultButton:MenuButton;
+      protected var defaultButton:MenuButton2;
       
-      protected var backButton:MenuButton;
+      protected var backButton:MenuButton2;
       
       protected var quality:ItemStepper;
       
@@ -34,13 +34,25 @@ package ui.screens
       
       protected var screenMode:ItemStepper;
       
+      protected var contrast:HUISlider;
+      
+      protected var brightness:HUISlider;
+      
+      protected var maxFrameRate:HUISlider;
+      
+      protected var async_task:ItemStepper;
+      
+      protected var taskbar:ItemStepper;
+      
       protected var keyByItem:Dictionary;
       
       protected var itemByKey:Dictionary;
       
       protected var allItems:Array;
       
-      protected var targets:Array = ["resolution","quality","screen_mode"];
+      protected var lastSettings:Object;
+      
+      protected var targets:Array = ["resolution","quality","screen_mode","taskbar_visible","ASYNC_TASK_ENABLED","DEFERRED_RENDER"];
       
       protected var lastPath:String;
       
@@ -85,17 +97,40 @@ package ui.screens
          this.injectDataByKey(source,"quality");
          this.injectDataByKey(source,"resolution");
          this.injectDataByKey(source,"screen_mode");
+         this.injectDataByKey(source,"contrast");
+         this.injectDataByKey(source,"brightness");
+         this.injectDataByKey(source,"maxFrameRate");
+         this.injectDataByKey(source,"ASYNC_TASK_ENABLED");
+         this.injectDataByKey(source,"DEFERRED_RENDER");
+         this.injectDataByKey(source,"taskbar_visible");
          this.checkChanges();
       }
       
       private function injectDataByKey(source:Object, key:String) : void
       {
+         var itemStepper:ItemStepper = null;
          key = key;
          var value:Object = source[key];
-         var itemStepper:ItemStepper = this.itemByKey[key];
-         itemStepper.setByFieldValue("value",value);
-         itemStepper.initValue = value;
-         itemStepper.defaultValue = Settings.Tune.defaultData[key];
+         var range:* = Settings.Tune.range[key];
+         if(range is Array)
+         {
+            this.itemByKey[key].removeEventListener(Event.CHANGE,this.onSliderItemsChange);
+            this.itemByKey[key].tick = 1;
+            this.itemByKey[key].labelPrecision = 0;
+            this.itemByKey[key].minimum = range[0];
+            this.itemByKey[key].maximum = range[1];
+            this.itemByKey[key].initValue = value;
+            this.itemByKey[key].defaultValue = Settings.Tune.defaultData[key];
+            this.itemByKey[key].value = value;
+            this.itemByKey[key].addEventListener(Event.CHANGE,this.onSliderItemsChange);
+         }
+         else if(range is Object)
+         {
+            itemStepper = this.itemByKey[key];
+            this.itemByKey[key].setByFieldValue("value",value);
+            this.itemByKey[key].initValue = value;
+            this.itemByKey[key].defaultValue = Settings.Tune.defaultData[key];
+         }
       }
       
       private function createStuff() : void
@@ -111,6 +146,18 @@ package ui.screens
             this.createLine(this.resolution,"resolution");
             this.screenMode = new ItemStepper();
             this.createLine(this.screenMode,"screen_mode");
+            this.taskbar = new ItemStepper();
+            this.createLine(this.taskbar,"taskbar_visible");
+            this.contrast = new HUISlider(null,0,0,"",null,true);
+            this.createLine(this.contrast,"contrast");
+            this.brightness = new HUISlider(null,0,0,"",null,true);
+            this.createLine(this.brightness,"brightness");
+            this.maxFrameRate = new HUISlider(null,0,0,"",null,true);
+            this.createLine(this.maxFrameRate,"maxFrameRate");
+            this.async_task = new ItemStepper();
+            this.createLine(this.async_task,"ASYNC_TASK_ENABLED");
+            this.async_task = new ItemStepper();
+            this.createLine(this.async_task,"DEFERRED_RENDER");
          }
          catch(error:Error)
          {
@@ -118,58 +165,62 @@ package ui.screens
          }
       }
       
-      private function createLine(itemStepper:ItemStepper, itemId:String) : void
+      private function createLine(component:Component, itemId:String) : void
       {
          var key:String = null;
          var value:Object = null;
          var itemBox:HBoxLine = null;
          var itemLabel:LabelShadowed = null;
          var stepperItems:Array = null;
-         var range:Object = null;
+         var range:* = undefined;
          var r:String = null;
          try
          {
-            Logger.LogToChannel(Logger.WARNING,"createLine Settings.Tune.data",Settings.Tune.data);
             key = itemId;
-            Logger.LogToChannel(Logger.WARNING,"createLine key",key);
             value = Settings.Tune.data[key];
-            Logger.LogToChannel(Logger.WARNING,"createLine value",value);
             itemBox = new HBoxLine(this.linesBox);
             itemBox.drawBack = false;
             itemBox.width = widths[0];
             itemBox.height = 35;
-            Logger.LogToChannel(Logger.WARNING,"createLine");
             itemLabel = new LabelShadowed();
             itemLabel.size = 22;
             itemLabel.paddingLeft = 0;
             itemLabel.$ = "extendedGUI.Settings." + Settings.Tune.path.join("_") + "_" + StringUtils.dropSpaces(key,"_");
             itemLabel.y = 4;
             itemBox.left.addChild(itemLabel);
-            Logger.LogToChannel(Logger.WARNING,"createLine");
             stepperItems = new Array();
-            this.itemByKey[key] = itemStepper;
-            this.keyByItem[itemStepper] = key;
-            this.allItems.push(itemStepper);
-            itemStepper.width = widths[0] / 2;
-            itemStepper.height = 35;
-            itemStepper.paddingRight = 0;
+            this.itemByKey[key] = component;
+            this.keyByItem[component] = key;
+            this.allItems.push(component);
             range = Settings.Tune.range[key];
-            Logger.LogToChannel(Logger.WARNING,"createLine");
-            for(r in range)
+            if(range is Array)
             {
-               Logger.LogToChannel(Logger.WARNING,"RANGE",r);
-               stepperItems.push({
-                  "caption":range[r],
-                  "value":String(r),
-                  "ranger":parseInt(r)
-               });
+               (component as HUISlider).tick = 1;
+               (component as HUISlider).labelPrecision = 0;
+               (component as HUISlider).width = widths[0] / 2;
+               (component as HUISlider).height = 35;
+               (component as HUISlider).paddingRight = 0;
+               (component as HUISlider).paddingTop = 20;
+               (component as HUISlider).addEventListener(Event.CHANGE,this.onSliderItemsChange);
             }
-            Logger.LogToChannel(Logger.WARNING,"createLine");
-            itemStepper.items = stepperItems;
-            itemStepper.reverseItems();
-            itemStepper.addEventListener(Event.CHANGE,this.onStepperItemsChange);
-            itemBox.right.addChild(itemStepper);
-            Logger.LogToChannel(Logger.WARNING,"createLine");
+            else if(range is Object)
+            {
+               (component as ItemStepper).width = widths[0] / 2;
+               (component as ItemStepper).height = 35;
+               (component as ItemStepper).paddingRight = 0;
+               for(r in range)
+               {
+                  stepperItems.push({
+                     "caption":range[r],
+                     "value":String(r),
+                     "ranger":parseInt(r)
+                  });
+               }
+               (component as ItemStepper).items = stepperItems;
+               (component as ItemStepper).reverseItems();
+               (component as ItemStepper).addEventListener(Event.CHANGE,this.onStepperItemsChange);
+            }
+            itemBox.right.addChild(component);
             itemBox.draw();
          }
          catch(error:Error)
@@ -196,16 +247,16 @@ package ui.screens
          this.quad1 = new Quad(this.vBox);
          this.quad1.width = widths[0];
          this.quad1.height = 10;
-         this.defaultButton = new MenuButton(this.vBox);
+         this.defaultButton = new MenuButton2(this.vBox);
          this.defaultButton.$ = "extendedGUI.SettingsWindow.setDefault";
          this.defaultButton.height = 35;
          this.defaultButton.addEventListener(MouseEvent.CLICK,this.defaultButtonClickHandler);
-         this.applyButton = new MenuButton(this.vBox);
+         this.applyButton = new MenuButton2(this.vBox);
          this.applyButton.$ = "extendedGUI.SettingsWindow.setApplied";
          this.applyButton.height = 35;
          this.applyButton.addEventListener(MouseEvent.CLICK,this.onApplyButtonHandler);
          this.applyButton.enabled = false;
-         this.backButton = new MenuButton(this.vBox);
+         this.backButton = new MenuButton2(this.vBox);
          this.backButton.$ = "extendedGUI.SettingsWindow.backButton";
          this.backButton.height = 35;
          this.backButton.addEventListener(MouseEvent.CLICK,this.onBackButtonHandler);
@@ -222,15 +273,11 @@ package ui.screens
          Logger.LogToChannel(Logger.DEBUG,"applyDefaultSettings",Settings.Tune.path);
          this.parseSettingsTune(Settings.Tune.defaultData);
          this.makeSettingsRequest(true);
-         setTimeout(this.doRestart,100);
+         setTimeout(this.doRestart,1000);
       }
       
       protected function get needRestart() : Boolean
       {
-         if(this.quality.changed)
-         {
-            return true;
-         }
          return false;
       }
       
@@ -243,7 +290,7 @@ package ui.screens
          }
          else
          {
-            this.makeSettingsRequest();
+            this.saveSettings();
          }
       }
       
@@ -258,10 +305,21 @@ package ui.screens
          Api.call(Api.DO_RESTART_GAME,[]);
       }
       
-      private function saveSettingsAndGoBack() : void
+      private function revertSettings() : void
+      {
+         Api.call(Api.SET_SETTINGS,[this.lastSettings]);
+         setTimeout(this.requestUpdatedSettings,150);
+      }
+      
+      private function ask_save_settings() : void
+      {
+         Base.navigator.showDialog("extendedGUI.Dialogs.Warning","extendedGUI.Dialogs.asKApply",true,[new DialogButtonItem("extendedGUI.SettingsWindow.apply",null,0.4,[Keyboard.ENTER]),new DialogButtonItem("extendedGUI.SettingsWindow.doNotApply",this.revertSettings,0.6,[Keyboard.ESCAPE])],500,260,false,true,false,15,"extendedGUI.Dialogs.apply_video_settings");
+      }
+      
+      private function saveSettings() : void
       {
          this.makeSettingsRequest();
-         this.doGoBack();
+         setTimeout(this.ask_save_settings,100);
       }
       
       private function makeSettingsRequest(ignoreChanges:Boolean = false) : void
@@ -272,17 +330,20 @@ package ui.screens
          var itm:Object = null;
          this.applyButton.enabled = false;
          var objectsToMerge:Array = new Array();
+         var old_objectsToMerge:Array = new Array();
          for each(itm in this.allItems)
          {
             if(itm.changed == true || ignoreChanges)
             {
                objPath = Settings.Tune.path.concat([this.keyByItem[itm]]);
                apiObject = SettingsObject.makeApiObjectFromPathArray(objPath,itm.value);
+               old_objectsToMerge.push(SettingsObject.makeApiObjectFromPathArray(objPath,itm.initValue));
                Logger.LogToChannel(Logger.DEBUG,"makeSettingsRequest, itm.value",itm.value,Number(itm.value + 1e-7));
                objectsToMerge.push(apiObject);
             }
          }
          mergedObject = SettingsObject.merge(objectsToMerge);
+         this.lastSettings = SettingsObject.merge(old_objectsToMerge);
          Api.call(Api.SET_SETTINGS,[mergedObject]);
          setTimeout(this.requestUpdatedSettings,150);
       }
@@ -304,6 +365,18 @@ package ui.screens
       protected function onBackButtonHandler(event:Event) : void
       {
          this.goBack();
+      }
+      
+      protected function onSliderItemsChange(event:Event) : void
+      {
+         var slider:HUISlider = event.currentTarget as HUISlider;
+         if(slider == this.maxFrameRate)
+         {
+            this.checkChanges();
+            return;
+         }
+         Api.call(Api.SET_CONTRAST_BRIGHTNESS,[this.contrast.value,this.brightness.value]);
+         this.checkChanges();
       }
       
       protected function onStepperItemsChange(event:Event) : void
@@ -328,6 +401,7 @@ package ui.screens
          {
             this.resolution.enabled = true;
          }
+         this.taskbar.enabled = this.screenMode.value == "1";
          this.applyButton.enabled = this.weHaveChanges;
          this.defaultButton.enabled = !this.weHaveDefaults;
       }
@@ -371,7 +445,7 @@ package ui.screens
          if(this.weHaveChanges)
          {
             destroyKeyboardShortcuts();
-            Base.navigator.showDialog("extendedGUI.Settings." + Settings.Tune.path.join("_"),"extendedGUI.SettingsWindow.unapplied",true,[new DialogButtonItem("extendedGUI.SettingsWindow.apply",this.saveSettingsAndGoBack,0.4,[Keyboard.ENTER]),new DialogButtonItem("extendedGUI.SettingsWindow.doNotApply",this.doGoBack,0.6,[Keyboard.ESCAPE])],500,200);
+            Base.navigator.showDialog("extendedGUI.Settings." + Settings.Tune.path.join("_"),"extendedGUI.SettingsWindow.unapplied",true,[new DialogButtonItem("extendedGUI.SettingsWindow.apply",this.saveSettings,0.4,[Keyboard.ENTER]),new DialogButtonItem("extendedGUI.SettingsWindow.doNotApply",this.doGoBack,0.6,[Keyboard.ESCAPE])],500,200);
          }
          else
          {
@@ -382,6 +456,10 @@ package ui.screens
       protected function doGoBack() : void
       {
          Settings.Tune = null;
+         if(this.contrast.initValue != this.contrast.value || this.brightness.initValue != this.brightness.value)
+         {
+            Api.call(Api.SET_CONTRAST_BRIGHTNESS,[this.contrast.initValue,this.brightness.initValue]);
+         }
          this.dispatchEvent(new ScreenEvent(ScreenEvent.GO_SCREEN,MainMenuGUI.BASE_SETTINGS));
          BreadCrumbs.Remove(this.breadCrumb);
       }

@@ -77,8 +77,6 @@ package com.dvalimona.components
          this._valueLabel.autoSize = false;
          this._valueLabel.debug = false;
          this._valueLabel.width = Style.SLIDER_HANDLE_WIDTH;
-         this._valueLabel.mouseEnabled = false;
-         this._valueLabel.mouseChildren = false;
       }
       
       protected function formatValueLabel() : void
@@ -86,7 +84,7 @@ package com.dvalimona.components
          var i:uint = 0;
          if(isNaN(this._slider.value))
          {
-            this._valueLabel.text = "NaN";
+            this.getLabel().text = "NaN";
             this.positionLabel();
             return;
          }
@@ -110,8 +108,13 @@ package com.dvalimona.components
                val += "0";
             }
          }
-         this._valueLabel.text = val;
+         this.getLabel().text = val;
          this.positionLabel();
+      }
+      
+      protected function getLabel() : Object
+      {
+         return this._valueLabel;
       }
       
       protected function preciseValue(valueToPrecise:Number) : Number

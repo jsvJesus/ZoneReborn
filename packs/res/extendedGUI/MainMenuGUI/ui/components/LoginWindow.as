@@ -72,6 +72,8 @@ package ui.components
       public function LoginWindow(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0, title:String = "Window")
       {
          super(parent,xpos,ypos,title);
+         Api.self.addEventListener(Api.PASSWORD_TEXT,this.onRecievePasswordText);
+         super.addEventListener(MouseEvent.MOUSE_DOWN,this.onMouseDown2);
       }
       
       override protected function addChildren() : void
@@ -121,6 +123,7 @@ package ui.components
          this.loginLabel.debug = false;
          this.loginLabel.$ = "extendedGUI.LoginWindow.Login";
          this.loginLabel.size = 20;
+         this.loginLabel.visible = !Base.is_steam;
          this.loginBox.addChild(this.loginLabel);
          this.loginInput = new InputText();
          this.loginInput.setSize(300,40);
@@ -128,6 +131,7 @@ package ui.components
          this.loginInput.padding = 0;
          this.loginInput.addEventListener(Event.CHANGE,this.onLoginChanged);
          this.loginInput.textField.addEventListener(KeyboardEvent.KEY_DOWN,this.onLoginKeydown);
+         this.loginInput.visible = !Base.is_steam;
          this.loginBox.addChild(this.loginInput);
          this.passwordBox = new HBox();
          this.passwordBox.alignment = HBox.MIDDLE;
@@ -145,7 +149,8 @@ package ui.components
          this.passwordInput.size = 14;
          this.passwordInput.padding = 0;
          this.passwordInput.password = true;
-         this.passwordInput.font = Base.FONT_BULLETS;
+         this.passwordInput.font = Base.bulletsFontName;
+         this.passwordInput.enabled = !Base.is_steam;
          this.passwordInput.addEventListener(Event.CHANGE,this.onPasswordChanged);
          this.passwordInput.textField.addEventListener(KeyboardEvent.KEY_DOWN,this.onPasswordKeydown);
          this.passwordBox.addChild(this.passwordInput);
@@ -155,23 +160,31 @@ package ui.components
          this.errorLabel.$ = "extendedGUI.LoginWindow.ErrorLogin";
          this.errorLabel.size = 16;
          this.errorLabel.textField.textColor = this.ERROR_COLOR;
-         this.addChild(this.errorLabel);
+         if(!Base.is_steam)
+         {
+            this.addChild(this.errorLabel);
+         }
          this.errorLabel.visible = false;
          this.rememberLoginBox = new HBox();
          this.rememberLoginBox.alignment = HBox.MIDDLE;
          this.rememberLoginBox.fixedHeight = this.rememberLoginBoxHeight;
          this.rememberLoginBox.horizontalAlign = HBox.RIGHT;
          this.rememberLoginBox.debug = false;
-         super.addChild(this.rememberLoginBox);
+         if(!Base.is_steam)
+         {
+            super.addChild(this.rememberLoginBox);
+         }
          this.rememberLoginCheck = new CheckBox();
          this.rememberLoginCheck.debug = false;
          this.rememberLoginCheck.focusMarginX = 6;
          this.rememberLoginCheck.focusMarginY = 6;
          this.rememberLoginCheck.tabEnabled = true;
+         this.rememberLoginCheck.addEventListener(Event.CHANGE,this.onRememberCheck);
          this.rememberLoginBox.addChild(this.rememberLoginCheck);
          this.rememberLoginLabel = new Label();
          this.rememberLoginLabel.autoSize = true;
          this.rememberLoginLabel.debug = false;
+         this.rememberLoginLabel.color = 16711680;
          this.rememberLoginLabel.$ = "extendedGUI.LoginWindow.RememberLogin";
          this.rememberLoginLabel.size = 20;
          this.rememberLoginBox.addChild(this.rememberLoginLabel);
@@ -186,7 +199,7 @@ package ui.components
          this.demoButton = new PushButton();
          this.demoButton.focusMarginX = 0;
          this.demoButton.focusMarginY = 0;
-         this.demoButton.font = Base.FONT_LIGHT;
+         this.demoButton.font = Base.lightFontName;
          this.demoButton.size = 22;
          this.demoButton.$ = "extendedGUI.LoginWindow.DemoGame";
          this.demoButton.labelUpColor = 5626367;
@@ -198,7 +211,7 @@ package ui.components
          this.loginButton.focusMarginX = 0;
          this.loginButton.focusMarginY = 0;
          this.loginButton.addEventListener(MouseEvent.CLICK,this.onLoginClickHandler);
-         this.loginButton.font = Base.FONT_BOLD;
+         this.loginButton.font = Base.boldFontName;
          this.loginButton.size = 22;
          this.loginButton.$ = "extendedGUI.LoginWindow.AuthButton";
          this.loginButton.setSize(309 + 151,this.buttonsBoxHeight);
@@ -206,6 +219,30 @@ package ui.components
          this.buttonsBox.addChild(this.loginButton);
          this.serverDeals();
          this.updateLoginButton();
+      }
+      
+      protected function onMouseDown2(event:MouseEvent) : void
+      {
+         if(this.serverCombo.isOpen)
+         {
+            this.serverCombo.removeList();
+         }
+      }
+      
+      protected function onRememberCheck(event:Event) : *
+      {
+         Api.call(Api.REMEMBER_PASS_CHECK,[this.loginInput.text,this.passwordInput.text,this.rememberLoginCheck.selected]);
+      }
+      
+      protected function onRecievePasswordText(event:ApiEvent) : *
+      {
+         if(this.passwordInput == null)
+         {
+            return;
+         }
+         this.passwordInput.text = event.data.answer.text;
+         this.passwordInput.textField.setSelection(this.passwordInput.textField.length,this.passwordInput.textField.length);
+         this.onPasswordChanged(null);
       }
       
       protected function onShowError(key_code:Number) : *
@@ -235,7 +272,7 @@ package ui.components
          {
             Base.navigator.focus.target = null;
             Logger.LogToChannel(Logger.DEBUG,"onLoginClickHandler");
-            setTimeout(this.doLogin,1);
+            this.doLogin();
          }
          else
          {
@@ -283,7 +320,14 @@ package ui.components
       
       protected function onLoginClickHandler(event:MouseEvent) : void
       {
-         this.validateLogin();
+         if(Base.is_steam)
+         {
+            this.doLogin();
+         }
+         else
+         {
+            this.validateLogin();
+         }
       }
       
       protected function doLogin() : void
@@ -293,7 +337,7 @@ package ui.components
          Auth.self.doLogin({
             "login":this.loginInput.text,
             "password":this.passwordInput.text,
-            "rememberMe":(!!this.rememberLoginCheck.selected ? 1 : 0),
+            "rememberMe":(this.rememberLoginCheck.selected ? 1 : 0),
             "serverID":this.serverCombo.selectedItem.id
          });
       }
@@ -358,6 +402,7 @@ package ui.components
          Api.self.addEventListener(Api.GET_SERVER_LIST,this.onServerListHandler);
          Api.call(Api.GET_SERVER_LIST);
          Api.self.addEventListener(Api.GET_LOGIN,this.onGetLoginHandler);
+         Api.self.addEventListener(Api.GET_REMEMBER_PASS,this.onGetRememberCheck);
          Api.call(Api.GET_LOGIN);
       }
       
@@ -379,13 +424,35 @@ package ui.components
             this.rememberLoginCheck.selected = false;
             setTimeout(this.setLoginFocus,100);
          }
+         this.updateLoginButton();
+      }
+      
+      protected function onGetRememberCheck(event:ApiEvent) : void
+      {
+         Api.self.removeEventListener(Api.GET_REMEMBER_PASS,this.onGetRememberCheck);
+         this.rememberLoginCheck.selected = event.data.answer.value;
       }
       
       protected function onShowDevServersHandler(event:ApiEvent) : void
       {
          Logger.LogToChannel(Logger.DEBUG,event.data.name);
          this.includeDeveloperServers = !this.includeDeveloperServers;
+         this.passwordBox.fixedHeight = this.passwordBoxHeight;
+         this.passwordBox.visible = true;
+         this.passwordBox.setSize(width - sideMargin * 2,this.passwordBoxHeight);
+         this.passwordInput.visible = true;
+         this.passwordInput.enabled = true;
+         this.passwordLabel.visible = true;
+         this.loginInput.visible = true;
+         this.loginLabel.visible = true;
+         if(Base.is_steam)
+         {
+            this.loginLabel.text = "SteamID";
+         }
+         this.height = 350;
          this.fillServerCombo();
+         invalidate();
+         this.passwordBox.invalidate();
       }
       
       protected function onServerListHandler(event:ApiEvent) : void
@@ -437,6 +504,10 @@ package ui.components
             count++;
          }
          this.serverCombo.selectedIndex = selectedIndex;
+         if(selectedIndex == -1)
+         {
+            this.serverCombo.text = Locale.getById("extendedGUI.LoginWindow.noSelect");
+         }
          this.serverCombo.setSize(300,40);
          this.serverCombo.numVisibleItems = Math.min(this.serverCombo.items.length,5);
       }
@@ -447,8 +518,13 @@ package ui.components
          header.tabChildren = true;
          leftItems.shift = 3;
          _titleLabel.autoSize = true;
-         _titleLabel.font = Base.FONT_BOLD;
+         _titleLabel.font = Base.boldFontName;
          _titleLabel.$ = "extendedGUI.LoginWindow.GetAuthorize";
+         if(Base.is_steam)
+         {
+            _titleLabel.$ = "extendedGUI.LoginWindow.GameName";
+            _titleLabel.color = 8881541;
+         }
          _titleLabel.size = 20;
          _titleLabel.mouseEnabled = false;
          _titleLabel.mouseChildren = false;
@@ -456,7 +532,10 @@ package ui.components
          this.orLabel.$ = "extendedGUI.LoginWindow.or";
          this.orLabel.size = 20;
          this.orLabel.color = 8881541;
-         leftItems.addChild(this.orLabel);
+         if(!Base.is_steam)
+         {
+            leftItems.addChild(this.orLabel);
+         }
          this.regButton = new ClearButton();
          this.regButton.$ = "extendedGUI.LoginWindow.GetReg";
          this.regButton.addEventListener(MouseEvent.CLICK,this.onRegHandler);
@@ -465,7 +544,10 @@ package ui.components
          this.regButton.underline = false;
          this.regButton.autoWidth = true;
          this.regButton.tabEnabled = true;
-         leftItems.addChild(this.regButton);
+         if(!Base.is_steam)
+         {
+            leftItems.addChild(this.regButton);
+         }
       }
       
       protected function onRegHandler(event:Event) : void
@@ -475,7 +557,7 @@ package ui.components
       
       private function updateLoginButton() : void
       {
-         this.loginButton.enabled = this.serverCombo.selectedIndex >= 0 && Boolean(this.loginInput.text.length) && Boolean(this.passwordInput.text.length);
+         this.loginButton.enabled = Boolean(Base.is_steam) || this.serverCombo.selectedIndex >= 0 && Boolean(this.loginInput.text.length) && Boolean(this.passwordInput.text.length);
       }
       
       override public function draw() : void
@@ -483,14 +565,17 @@ package ui.components
          super.draw();
          this.serverBox.x = sideMargin;
          this.serverBox.setSize(width - sideMargin * 2,this.serverBox.height);
-         this.serverCombo.listShift = -this.serverCombo.x - sideMargin;
-         this.serverCombo.listWidth = width;
+         this.serverCombo.listShift = 0;
          this.loginBox.x = sideMargin;
          this.loginBox.y = this.serverBox.y + this.serverBox.height;
          this.loginBox.setSize(width - sideMargin * 2,this.loginBox.height);
          this.passwordBox.x = sideMargin;
          this.passwordBox.y = this.loginBox.y + this.loginBox.height;
          this.passwordBox.setSize(width - sideMargin * 2,this.passwordBox.height);
+         this.passwordInput.visible = Boolean(this.includeDeveloperServers) || !Base.is_steam;
+         this.passwordLabel.visible = Boolean(this.includeDeveloperServers) || !Base.is_steam;
+         this.loginInput.visible = Boolean(this.includeDeveloperServers) || !Base.is_steam;
+         this.loginLabel.visible = Boolean(this.includeDeveloperServers) || !Base.is_steam;
          this.rememberLoginBox.x = sideMargin;
          this.rememberLoginBox.y = this.passwordBox.y + this.passwordBox.height;
          this.rememberLoginBox.setSize(width - sideMargin * 2,this.rememberLoginBox.height);

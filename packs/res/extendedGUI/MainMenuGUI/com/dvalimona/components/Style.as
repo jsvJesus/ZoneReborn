@@ -1,12 +1,14 @@
 package com.dvalimona.components
 {
+   import flash.display.*;
+   
    public class Style
    {
       public static var MENU_LABEL_COLOR:uint = 12895428;
       
-      public static var MENU_LABEL_OVER_COLOR:uint = 10347511;
+      public static var MENU_LABEL_OVER_COLOR:uint = 5656391;
       
-      public static var MENU_LABEL_DOWN_COLOR:uint = 2855599;
+      public static var MENU_LABEL_DOWN_COLOR:uint = 4801598;
       
       public static var TEXT_BACKGROUND:uint = 16777215;
       
@@ -26,9 +28,9 @@ package com.dvalimona.components
       
       public static var BUTTON_UP_LABEL_COLOR:Number = 16777215;
       
-      public static var BUTTON_OVER_LABEL_COLOR:Number = 5626367;
+      public static var BUTTON_OVER_LABEL_COLOR:Number = 5656391;
       
-      public static var BUTTON_DOWN_LABEL_COLOR:Number = 2855599;
+      public static var BUTTON_DOWN_LABEL_COLOR:Number = 4801598;
       
       public static var BUTTON_UP_LABEL_ALPHA:Number = 0.8;
       
@@ -84,19 +86,33 @@ package com.dvalimona.components
       
       public static var CHECK_LABEL_COLOR:uint = 16777215;
       
-      public static var SLIDER_HANDLE_WIDTH:uint = 50;
+      public static var GOLD_OVER:uint = 16762368;
       
-      public static var SLIDER_HANDLE_HEIGHT:uint = 25;
+      public static var GOLD_UP:uint = 15243345;
+      
+      public static var PLATINUM_OVER:uint = 13622271;
+      
+      public static var ACCOUNT_TRUSTED_LABEL:* = 12244618;
+      
+      public static var CLEAR_BUTTON_LABEL_UP:uint = 10790052;
+      
+      public static var CLEAR_BUTTON_LABEL_OVER:uint = 8879216;
+      
+      public static var CLEAR_BUTTON_LABEL_DOWN:uint = 4801598;
+      
+      public static var SLIDER_HANDLE_WIDTH:uint = 12;
+      
+      public static var SLIDER_HANDLE_HEIGHT:uint = 10;
       
       public static var SLIDER_THICKNESS:uint = 3;
       
       public static var SLIDER_BACK_CORNER:uint = 5;
       
-      public static var SLIDER_BACK_COLOR:uint = 16777215;
+      public static var SLIDER_BACK_COLOR:uint = 4801598;
       
-      public static var SLIDER_HANDLE_COLOR:uint = 16777215;
+      public static var SLIDER_HANDLE_COLOR:uint = 12829635;
       
-      public static var SLIDER_LABEL_COLOR:uint = 2236962;
+      public static var SLIDER_LABEL_COLOR:uint = 16777215;
       
       public static var SLIDER_LABEL_SIZE:uint = 20;
       
@@ -118,15 +134,13 @@ package com.dvalimona.components
       
       public static var LIST_ROLLOVER:uint = 14540253;
       
+      public static var CHAR_INFO_COLOR:uint = 10722151;
+      
       public static var DEBUG_COLOR:uint = 16711680;
       
       public static var DEBUG_ALPHA:Number = 0.25;
       
       public static var embedFonts:Boolean = true;
-      
-      public static var fontBlackName:String = "StalkerBlack";
-      
-      public static var fontLightName:String = "StalkerLight";
       
       public static var fontSize:Number = 18;
       
@@ -136,24 +150,11 @@ package com.dvalimona.components
       
       public static const LIGHT:String = "light";
       
+      public static var backgroundBitmap:BitmapData = new background_black() as BitmapData;
+      
       public function Style()
       {
          super();
-      }
-      
-      public static function get lightFontName() : String
-      {
-         return Base.FONT_LIGHT;
-      }
-      
-      public static function get fontName() : String
-      {
-         return Base.FONT_REGULAR;
-      }
-      
-      public static function get boldFontName() : String
-      {
-         return Base.FONT_BOLD;
       }
       
       public static function setStyle(style:String) : void

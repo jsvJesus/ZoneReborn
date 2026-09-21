@@ -33,58 +33,58 @@ package scaleform.clik.core
          super();
       }
       
-      public static function initialize(stage:Stage, component:UIComponent) : *
+      public static function initialize(param1:Stage, param2:UIComponent) : *
       {
          if(initialized)
          {
             return;
          }
-         CLIK.stage = stage;
+         CLIK.stage = param1;
          Extensions.enabled = true;
          initialized = true;
-         FocusHandler.init(stage,component);
-         PopUpManager.init(stage);
+         FocusHandler.init(param1,param2);
+         PopUpManager.init(param1);
          initQueue = new Dictionary(true);
          validDictIndices = new Vector.<uint>();
       }
       
-      public static function getTargetPathFor(clip:DisplayObjectContainer) : String
+      public static function getTargetPathFor(param1:DisplayObjectContainer) : String
       {
-         var targetPath:String = null;
-         if(!clip.parent)
+         var _loc2_:String = null;
+         if(!param1.parent)
          {
-            return clip.name;
+            return param1.name;
          }
-         targetPath = clip.name;
-         return getTargetPathImpl(clip.parent as DisplayObjectContainer,targetPath);
+         _loc2_ = param1.name;
+         return getTargetPathImpl(param1.parent as DisplayObjectContainer,_loc2_);
       }
       
-      public static function queueInitCallback(ref:UIComponent) : void
+      public static function queueInitCallback(param1:UIComponent) : void
       {
-         var parents:Array = null;
-         var numParents:uint = 0;
-         var dict:Dictionary = null;
-         var path:String = getTargetPathFor(ref);
+         var _loc3_:Array = null;
+         var _loc4_:uint = 0;
+         var _loc5_:Dictionary = null;
+         var _loc2_:String = getTargetPathFor(param1);
          if(useImmediateCallbacks || firingInitCallbacks)
          {
-            Extensions.CLIK_addedToStageCallback(ref.name,path,ref);
+            Extensions.CLIK_addedToStageCallback(param1.name,_loc2_,param1);
          }
          else
          {
-            parents = path.split(".");
-            numParents = parents.length - 1;
-            dict = initQueue[numParents];
-            if(dict == null)
+            _loc3_ = _loc2_.split(".");
+            _loc4_ = _loc3_.length - 1;
+            _loc5_ = initQueue[_loc4_];
+            if(_loc5_ == null)
             {
-               dict = new Dictionary(true);
-               initQueue[numParents] = dict;
-               validDictIndices.push(numParents);
+               _loc5_ = new Dictionary(true);
+               initQueue[_loc4_] = _loc5_;
+               validDictIndices.push(_loc4_);
                if(validDictIndices.length > 1)
                {
                   validDictIndices.sort(sortFunc);
                }
             }
-            dict[ref] = path;
+            _loc5_[param1] = _loc2_;
             if(!isInitListenerActive)
             {
                isInitListenerActive = true;
@@ -93,26 +93,27 @@ package scaleform.clik.core
          }
       }
       
-      protected static function fireInitCallback(e:Event) : void
+      protected static function fireInitCallback(param1:Event) : void
       {
-         var i:uint = 0;
-         var numParents:uint = 0;
-         var dict:Dictionary = null;
-         var ref:Object = null;
-         var comp:UIComponent = null;
+         var _loc2_:uint = 0;
+         var _loc3_:uint = 0;
+         var _loc4_:Dictionary = null;
+         var _loc5_:Object = null;
+         var _loc6_:UIComponent = null;
          firingInitCallbacks = true;
          stage.removeEventListener(Event.EXIT_FRAME,fireInitCallback,false);
-         for(isInitListenerActive = false; i < validDictIndices.length; )
+         isInitListenerActive = false;
+         while(_loc2_ < validDictIndices.length)
          {
-            numParents = validDictIndices[i];
-            dict = initQueue[numParents] as Dictionary;
-            for(ref in dict)
+            _loc3_ = validDictIndices[_loc2_];
+            _loc4_ = initQueue[_loc3_] as Dictionary;
+            for(_loc5_ in _loc4_)
             {
-               comp = ref as UIComponent;
-               Extensions.CLIK_addedToStageCallback(comp.name,dict[comp],comp);
-               dict[comp] = null;
+               _loc6_ = _loc5_ as UIComponent;
+               Extensions.CLIK_addedToStageCallback(_loc6_.name,_loc4_[_loc6_],_loc6_);
+               _loc4_[_loc6_] = null;
             }
-            i++;
+            _loc2_++;
          }
          validDictIndices.length = 0;
          clearQueue();
@@ -121,36 +122,36 @@ package scaleform.clik.core
       
       protected static function clearQueue() : void
       {
-         var numDict:* = undefined;
-         for(numDict in initQueue)
+         var _loc1_:* = undefined;
+         for(_loc1_ in initQueue)
          {
-            initQueue[numDict] = null;
+            initQueue[_loc1_] = null;
          }
       }
       
-      protected static function sortFunc(a:uint, b:uint) : Number
+      protected static function sortFunc(param1:uint, param2:uint) : Number
       {
-         if(a < b)
+         if(param1 < param2)
          {
             return -1;
          }
-         if(a > b)
+         if(param1 > param2)
          {
             return 1;
          }
          return 0;
       }
       
-      protected static function getTargetPathImpl(clip:DisplayObjectContainer, targetPath:String = "") : String
+      protected static function getTargetPathImpl(param1:DisplayObjectContainer, param2:String = "") : String
       {
-         var _name:String = null;
-         if(!clip)
+         var _loc3_:String = null;
+         if(!param1)
          {
-            return targetPath;
+            return param2;
          }
-         _name = !!clip.name ? clip.name + "." : "";
-         targetPath = _name + targetPath;
-         return getTargetPathImpl(clip.parent as DisplayObjectContainer,targetPath);
+         _loc3_ = !!param1.name ? param1.name + "." : "";
+         param2 = _loc3_ + param2;
+         return getTargetPathImpl(param1.parent as DisplayObjectContainer,param2);
       }
    }
 }

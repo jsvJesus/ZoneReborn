@@ -105,7 +105,10 @@ package com.dvalimona.components
          this._handle.graphics.beginFill(Style.SLIDER_HANDLE_COLOR,1);
          if(this._orientation == HORIZONTAL)
          {
-            this._handle.graphics.drawRoundRect(0,0,Style.SLIDER_HANDLE_WIDTH,Style.SLIDER_HANDLE_HEIGHT,Style.SLIDER_HANDLE_HEIGHT,Style.SLIDER_HANDLE_HEIGHT);
+            this._handle.graphics.beginFill(Style.SLIDER_HANDLE_COLOR,0.01);
+            this._handle.graphics.drawRect(0,0,18,14);
+            this._handle.graphics.beginFill(Style.SLIDER_HANDLE_COLOR,1);
+            this._handle.graphics.drawRect(1,1,16,12);
          }
          else
          {
@@ -129,7 +132,7 @@ package com.dvalimona.components
          }
       }
       
-      protected function positionHandle() : void
+      protected function positionHandle(silence:Boolean = false) : void
       {
          var range:Number = NaN;
          if(this._orientation == HORIZONTAL)
@@ -144,7 +147,10 @@ package com.dvalimona.components
             range = _height - _width;
             this._handle.y = _height - _width - (this._value - this._min) / (this._max - this._min) * range;
          }
-         dispatchEvent(new Event(Event.CHANGE));
+         if(!silence)
+         {
+            dispatchEvent(new Event(Event.CHANGE));
+         }
       }
       
       override public function draw() : void
@@ -237,6 +243,13 @@ package com.dvalimona.components
          return this._backClick;
       }
       
+      public function set valueSilence(v:Number) : void
+      {
+         this._value = v;
+         this.correctValue();
+         this.positionHandle(true);
+      }
+      
       public function set value(v:Number) : void
       {
          this._value = v;
@@ -246,6 +259,10 @@ package com.dvalimona.components
       
       public function get value() : Number
       {
+         if(this._tick < 1)
+         {
+            return this._value / this._tick * this._tick;
+         }
          return Math.round(this._value / this._tick) * this._tick;
       }
       

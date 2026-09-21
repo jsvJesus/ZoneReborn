@@ -22,20 +22,15 @@ package communication
       
       public function get allowEdit() : Boolean
       {
-         var loc1:* = true;
-         if(String(this.shortcuts[0]).indexOf("ALT ") >= 0)
+         if(String(this.action).indexOf("Weapon_long_") >= 0)
          {
-            loc1 = false;
-         }
-         if(String(this.shortcuts[0]).indexOf("SHIFT ") >= 0)
-         {
-            loc1 = false;
+            return false;
          }
          if(String(this.shortcuts[0]).indexOf("ENTER") >= 0)
          {
-            loc1 = false;
+            return false;
          }
-         return loc1;
+         return true;
       }
       
       public function get localeId() : String

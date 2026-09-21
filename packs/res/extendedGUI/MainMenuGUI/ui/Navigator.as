@@ -13,7 +13,7 @@ package ui
    import flash.utils.*;
    import logging.*;
    import ui.components.*;
-   import ui.screens.NewCharScreen;
+   import ui.screens.NewCharScreen2;
    import ui.screens.NewSettingsScreen;
    
    public class Navigator extends Sprite
@@ -36,7 +36,9 @@ package ui
       
       public var is_auth:Boolean = false;
       
-      public var items:Object = new Object();
+      public var is_lock:Boolean = false;
+      
+      public var items:Object;
       
       public var alerts_helper:Dictionary = new Dictionary();
       
@@ -52,6 +54,8 @@ package ui
       
       public var rightSide:Sprite;
       
+      public var toolTip:ToolTip;
+      
       public var header:Header;
       
       public var footer:Footer;
@@ -60,7 +64,11 @@ package ui
       
       public var premiumShield:Shield;
       
+      public var contentShield:Shield;
+      
       public var modalShield:Shield;
+      
+      public var darkShield:Sprite;
       
       public var dialogs:Sprite;
       
@@ -76,9 +84,7 @@ package ui
       
       public var focus:Focus;
       
-      private var backgroundBitmap:BitmapData = new noised_half_black_png() as BitmapData;
-      
-      private var background:Shape = new Shape();
+      private var background:Shape;
       
       private var backgroundPicture:Background;
       
@@ -91,6 +97,8 @@ package ui
       public function Navigator(showHeader:Boolean = true, showFooter:Boolean = true, showBackground:Boolean = true)
       {
          FManager = new FocusManager();
+         this.items = new Object();
+         this.background = new Shape();
          this.background.alpha = 0.1;
          if(showBackground)
          {
@@ -100,9 +108,10 @@ package ui
          this.leftSide = new Sprite();
          this.leftSide.addChild(this.crumbsHolder = new Sprite());
          this.crumbs = new BreadCrumbsLabel(this.crumbsHolder);
-         this.crumbs.x = 50;
+         this.crumbs.x = 30;
          this.crumbs.y = 30;
          this.rightSide = new Sprite();
+         this.content.addChild(this.contentShield = new Shield());
          this.header = new Header();
          if(showHeader)
          {
@@ -121,6 +130,7 @@ package ui
          this.addChild(this.keyboardMessageHolder = new Sprite());
          this.addChild(this.dialogs = new Sprite());
          this.addChild(this.modalShield = new Shield());
+         this.addChild(this.darkShield = new Sprite());
          this.addChild(this.modal = new Sprite());
          this.addChild(this.focusHolder = new Sprite());
          this.focusHolder.addChild(this.focus = new Focus());
@@ -131,6 +141,10 @@ package ui
          this.addEventListener(Event.ADDED_TO_STAGE,this.onAddedToStage);
          Auth.self.addEventListener(Auth.AUTH_SUCCESS,this.onAuthSuccess);
          Auth.self.addEventListener(Auth.AUTH_FAIL,this.onAuthFail);
+         Api.self.addEventListener(Api.USER_PARAMS,this.onUserParams);
+         Api.self.addEventListener(Api.SHOW_DIALOG,this.onPythonShowDialog);
+         Api.self.addEventListener(Api.SHOW_DIALOG_SHIELD,this.onPythonShowShield);
+         Api.self.addEventListener(Api.HIDE_DIALOG_SHIELD,this.onPythonHideShield);
          super();
       }
       
@@ -157,8 +171,7 @@ package ui
       {
          var i:uint = 0;
          ease = ease == null ? Expo.easeOut : ease;
-         var delay:Number = delayInit;
-         while(i < what.length)
+         for(var delay:Number = delayInit; i < what.length; )
          {
             what[i].alpha = 0;
             what[i].z = depth;
@@ -179,8 +192,7 @@ package ui
          ease = ease == null ? Expo.easeIn : ease;
          var delay:Number = delayInit;
          what = what.reverse();
-         var tweens:Array = new Array();
-         while(i < what.length)
+         for(var tweens:Array = new Array(); i < what.length; )
          {
             tweens.push(TweenMax.to(what[i],duration,{
                "alpha":0,
@@ -208,6 +220,12 @@ package ui
          return this._currentScreen;
       }
       
+      protected function onUserParams(arg1:ApiEvent) : void
+      {
+         Base.navigator.currentLogin = arg1.data.answer.login;
+         Base.navigator.header.accountName = arg1.data.answer.login;
+      }
+      
       protected function onAuthFail(event:Event) : void
       {
          this.crumbs.visible = false;
@@ -232,7 +250,6 @@ package ui
       
       protected function onResize(event:Event = null) : void
       {
-         var i:* = undefined;
          this.header.y = this.header.x = 0;
          this.footer.x = 0;
          this.footer.y = Base.stage.stageHeight - FOOTER_HEIGHT;
@@ -240,22 +257,53 @@ package ui
          this.leftSide.x = 0;
          this.rightSide.y = 0;
          this.rightSide.x = Base.stage.stageWidth;
-         for(i in this.items)
-         {
-         }
          setTimeout(this.drawBackground,0);
          setTimeout(this.drawBackground,50);
       }
       
       protected function drawBackground() : void
       {
-         if(this.backgroundBitmap)
+         this.background.graphics.clear();
+         this.background.graphics.drawRect(0,0,Base.stage.stageWidth * 1,Base.stage.stageHeight);
+         this.background.graphics.endFill();
+      }
+      
+      public function onPythonShowDialog(event:ApiEvent) : *
+      {
+         this.showDialog(event.data.answer.title,event.data.answer.text,false,[new DialogButtonItem("extendedGUI.Dialogs.Ok",null,1)],500,250);
+      }
+      
+      public function onPythonShowShield(event:ApiEvent) : *
+      {
+         this.shield.show(0.9);
+      }
+      
+      public function onPythonHideShield(event:ApiEvent) : *
+      {
+         this.shield.hide();
+         if(this.currentScreen)
          {
-            this.background.graphics.clear();
-            this.background.graphics.beginBitmapFill(this.backgroundBitmap,null,true,false);
-            this.background.graphics.drawRect(0,0,Base.stage.stageWidth * 1,Base.stage.stageHeight);
-            this.background.graphics.endFill();
+            if(this.currentScreen.id == MainMenuGUI.ROOT_SCREEN || this.currentScreen.id == MainMenuGUI.NEW_CHAR_SCREEN)
+            {
+               Dummy.visible = true;
+            }
+            Base.stage.focus = this.currentScreen;
+            TweenMax.to(this.currentScreen,0.3,{
+               "alpha":1,
+               "delay":0.1,
+               "ease":Expo.easeInOut,
+               "onComplete":this.fixMe3D
+            });
          }
+      }
+      
+      public function showToolTip(sender:Object, message:String) : *
+      {
+         if(this.toolTip == null)
+         {
+            this.addChild(this.toolTip = new ToolTip());
+         }
+         this.toolTip.showToolTip(sender,message);
       }
       
       public function tryToRemoveMe(obj:DialogWindow = null) : void
@@ -325,55 +373,89 @@ package ui
          this.keyboardMessage = null;
       }
       
-      protected function killOldScreen() : void
+      public function killOldScreen() : void
       {
          Logger.LogToChannel(Logger.WARNING,"Navigator.killOldScreen",this.oldScreen);
-         if(this.oldScreen != null)
+         if(this.oldScreen)
          {
-            TweenMax.killTweensOf(this.oldScreen);
-            if(this.leftSide.contains(this.oldScreen))
-            {
-               this.leftSide.removeChild(this.oldScreen);
-            }
-            this.oldScreen = null;
+            setTimeout(this.leftSide.removeChild,0,this.oldScreen);
          }
       }
       
       internal function hideBackground() : *
       {
-         if(Base.background != null)
+         Base.background.alpha = 1;
+         this.is_lock = false;
+         if(!this.is_auth || this.currentScreen.id == MainMenuGUI.CHARNAME_SCREEN)
          {
-            Base.background.visible = false;
-            Base.background.alpha = 0;
+            return;
          }
+         Base.background.visible = false;
       }
       
-      public function showCreateCharScreen(charName:String) : *
+      public function showCreateCharScreen(old_screen:Screen, charName:String, updateChar:Boolean = false, donateUpdateChar:Boolean = false) : *
       {
          this.crumbs.visible = true;
-         if(Base.background != null)
-         {
-            TweenMax.killTweensOf(Base.background);
-            Base.background.visible = false;
-            Base.background.alpha = 0;
-         }
-         var targetScreen:NewCharScreen = this.getScreen(MainMenuGUI.NEW_CHAR_SCREEN);
+         this.is_lock = true;
+         TweenMax.killTweensOf(Base.background);
+         TweenMax.to(Base.background,2.5,{
+            "alpha":0.2,
+            "ease":Expo.easeOut,
+            "onComplete":this.hideBackground
+         });
+         var targetScreen:NewCharScreen2 = this.getScreen(MainMenuGUI.NEW_CHAR_SCREEN);
          this.focus.target = null;
-         if(this.currentScreen != null && this.currentScreen != targetScreen)
+         if(old_screen)
          {
-            this.oldScreen = this.currentScreen;
-            this.killOldScreen();
+            _deeper = !!old_screen ? targetScreen.depth > old_screen.depth : true;
+            this.oldScreen = old_screen;
+            if(_deeper)
+            {
+               old_screen.hideUp(this.killOldScreen);
+            }
+            else
+            {
+               old_screen.hideDown(this.killOldScreen);
+            }
+            if(this.currentScreen)
+            {
+               this.oldScreen = this.currentScreen;
+               if(_deeper)
+               {
+                  this.oldScreen.hideUp(this.killOldScreen);
+               }
+               else
+               {
+                  this.oldScreen.hideDown(this.killOldScreen);
+               }
+            }
+         }
+         else
+         {
+            _deeper = true;
          }
          if(targetScreen)
          {
-            if(!this.leftSide.contains(targetScreen))
+            this.leftSide.addChild(targetScreen);
+            if(!updateChar)
             {
-               this.leftSide.addChild(targetScreen);
+               targetScreen.setFirstChar(true);
             }
+            if(donateUpdateChar)
+            {
+               targetScreen.setDonatChangeFace(donateUpdateChar);
+            }
+            else
+            {
+               targetScreen.setOldChar(updateChar);
+            }
+            targetScreen.charNameInput.text = charName;
+            targetScreen.createButtonEnabled(true);
             this._currentScreen = targetScreen;
-            targetScreen.visible = true;
-            targetScreen.alpha = 1;
-            targetScreen.x = 0;
+            if(donateUpdateChar)
+            {
+               setTimeout(targetScreen.resetButtonEnabled,600);
+            }
             if(_deeper)
             {
                targetScreen.showUp();
@@ -382,11 +464,7 @@ package ui
             {
                targetScreen.showDown();
             }
-            targetScreen.charNameInput.text = charName;
-            targetScreen.createButtonEnabled(true);
-            targetScreen.setFirstChar(true);
-            Base.navigator.header.gold.visible = true;
-            Base.navigator.header.accountLabel.visible = true;
+            Base.navigator.header.account.visible = true;
          }
       }
       
@@ -423,33 +501,38 @@ package ui
          }
          this.crumbs.visible = true;
          this.header.optionBtn.visible = false;
+         Api.call("on_open_settings");
       }
       
       public function showScreen(id:String, flagInGame:Boolean = false) : void
       {
          if(!this.is_auth || id == MainMenuGUI.CHARNAME_SCREEN)
          {
-            Base.navigator.header.gold.visible = false;
-            Base.navigator.header.accountLabel.visible = false;
+            Base.navigator.header.account.visible = false;
             Base.background.visible = true;
             this.crumbs.visible = id != MainMenuGUI.CHARNAME_SCREEN && id != MainMenuGUI.LOGIN_SCREEN;
             Base.navigator.footer.serverName = " ";
+            if(!this.header.optionBtn.visible && id == MainMenuGUI.LOGIN_SCREEN)
+            {
+               Api.call("on_closed_settings");
+            }
             this.header.optionBtn.visible = id == MainMenuGUI.LOGIN_SCREEN;
          }
          else
          {
             if(!Base.IN_GAME)
             {
-               Base.navigator.header.gold.visible = true;
-               Base.navigator.header.accountLabel.visible = true;
+               Base.navigator.header.account.visible = true;
+            }
+            this.crumbs.visible = id != MainMenuGUI.DONATE_INFO_SCREEN;
+            Base.background.visible = false;
+            if(id == MainMenuGUI.DONATE_INFO_SCREEN)
+            {
+               Base.navigator.header.newsVisible = false;
+               Base.background.visible = true;
+               Base.navigator.contentShield.show(0.9);
             }
             Base.navigator.header.optionBtn.visible = false;
-            if(Base.background != null)
-            {
-               TweenMax.killTweensOf(Base.background);
-               Base.background.visible = false;
-               Base.background.alpha = 0;
-            }
          }
          var targetScreen:Screen = this.getScreen(id);
          Logger.LogToChannel(Logger.DEBUG,"Navigator.showScreen");
@@ -480,18 +563,19 @@ package ui
                this.oldScreen.hideDown(this.killOldScreen);
             }
          }
+         if(!this.oldScreen)
+         {
+         }
          if(targetScreen)
          {
-            if(id == MainMenuGUI.ROOT_SCREEN && Base.IN_GAME)
+            if(id == MainMenuGUI.ROOT_SCREEN && Base.IN_GAME && !flagInGame)
             {
-               Base.stage.removeChild(Base.stage.getChildAt(0));
                Base.IN_GAME = false;
                Base.navigator.header.exitButton.visible = true;
-               Base.navigator.header.gold.visible = true;
-               Base.navigator.header.accountLabel.visible = true;
-               Api.call("closed_settings");
+               Base.navigator.header.account.visible = true;
+               this.oldScreen.hideBackgroundInGame();
             }
-            if(flagInGame)
+            else if(flagInGame)
             {
                Base.IN_GAME = true;
                targetScreen.showBackgroundInGame();
@@ -507,6 +591,9 @@ package ui
                targetScreen.showDown();
             }
          }
+         Base.navigator.header.account.visible = id == MainMenuGUI.ROOT_SCREEN;
+         Base.navigator.header.updateAccountPanelPosition();
+         Base.navigator.header.account.invalidate();
       }
       
       public function showConfirmWindow(event:ApiEvent) : void
@@ -527,13 +614,23 @@ package ui
             });
          }
          Logger.LogToChannel(Logger.DEBUG,"Navigator.showConfirmWindow","\n\tneedConfirmIDCount:",event.data.answer.needConfirmIDCount,"\n\tdelivered:",event.data.answer.delivered,"\n\tmsg:",event.data.answer.msg);
+         this.darkShield.graphics.clear();
+         this.darkShield.graphics.beginFill(2236962,0.4);
+         this.darkShield.graphics.drawRect(0,0,Base.stage.stageWidth,Base.stage.stageHeight);
+         this.darkShield.graphics.endFill();
          this.modalShield.show();
-         var confirmWindow:ConfirmWindow = ConfirmWindow.getInstance(event.data.answer.needConfirmIDCount,event.data.answer.delivered,event.data.answer.msg);
+         var confirmWindow:ConfirmWindow = ConfirmWindow.getInstance(event.data.answer.needConfirmIDCount,event.data.answer.delivered,event.data.answer.msg,event.data.answer.time);
          this.header.visible = false;
          confirmWindow.setSize(700,500);
          confirmWindow.x = (Base.stage.stageWidth - confirmWindow.width) / 2;
          confirmWindow.y = (Navigator.ScreenHeight - confirmWindow.height) / 2 + HEADER_HEIGHT;
          this.modal.addChild(confirmWindow);
+      }
+      
+      public function hideShields() : void
+      {
+         this.darkShield.graphics.clear();
+         this.modalShield.hide();
       }
       
       public function hideConfirmWindow() : void
@@ -543,7 +640,7 @@ package ui
          {
             ConfirmWindow.self.doClose();
          }
-         this.modalShield.hide();
+         this.hideShields();
          if(this.currentScreen)
          {
             this.currentScreen.enabled = true;
@@ -561,36 +658,40 @@ package ui
          Api.call(Api.SHOW_DUMMY);
       }
       
-      public function showDialog(dialogHeader:String, dialogMessage:String, localized:Boolean = false, buttons:Array = null, dialogWidth:uint = 400, dialogHeight:uint = 250, isHtml:Boolean = false) : DialogWindow
+      public function showDialog(dialogHeader:String, dialogMessage:String, localized:Boolean = false, buttons:Array = null, dialogWidth:uint = 400, dialogHeight:uint = 250, isHtml:Boolean = false, shieldOn:* = true, last_child:Boolean = false, timer:uint = 0, timerText:String = "") : DialogWindow
       {
          if(Dummy.visible)
          {
             Dummy.visible = false;
          }
          Base.stage.focus = null;
-         this.shield.show(0.9);
-         if(this.currentScreen)
+         if(shieldOn)
          {
-            this.currentScreen.enabled = false;
+            this.shield.show(0.9);
+            if(this.currentScreen)
+            {
+               this.currentScreen.enabled = false;
+            }
          }
          var dialog:DialogWindow = new DialogWindow(buttons,isHtml);
-         if(localized)
-         {
-            dialog.alertHeaderId = dialogHeader;
-            dialog.alertMessageId = dialogMessage;
-         }
-         else
-         {
-            dialog.alertHeader = dialogHeader;
-            dialog.alertMessage = dialogMessage;
-         }
+         dialog.alertHeader(dialogHeader,localized);
+         dialog.alertMessage(dialogMessage,localized);
+         dialog.alertTimerMessage(timerText,timer,localized);
          dialog.addEventListener(Event.CLOSE,this.onDialogClose);
+         dialog.addEventListener(TextEvent.LINK,this.onDialogLink);
          dialog.setSize(dialogWidth,dialogHeight);
          dialog.x = (Base.stage.stageWidth - dialog.width) / 2;
          dialog.y = (Base.stage.stageHeight - dialog.height) / 2;
-         this.dialogs.addChild(dialog);
+         if(last_child)
+         {
+            this.dialogs.addChildAt(dialog,0);
+         }
+         else
+         {
+            this.dialogs.addChild(dialog);
+         }
          Logger.LogToChannel(Logger.DEBUG,this.currentScreen,this.currentScreen.x,this.currentScreen.y,this.currentScreen.z,this.currentScreen.transform.matrix3D);
-         if(this.currentScreen)
+         if(Boolean(this.currentScreen) && shieldOn)
          {
             TweenMax.to(this.currentScreen,1,{
                "alpha":0.5,
@@ -601,7 +702,16 @@ package ui
          return dialog;
       }
       
-      public function showNewsDialog(dialogHeader:String, dialogMessage:String, localized:Boolean = false, buttons:Array = null, dialogWidth:uint = 400, dialogHeight:uint = 250, isHtml:Boolean = false) : DialogWindow
+      public function showDonateTestDialog() : *
+      {
+         if(!this.is_auth)
+         {
+            return;
+         }
+         this.showScreen(MainMenuGUI.DONATE_INFO_SCREEN);
+      }
+      
+      public function showNewsDialog() : DialogWindow
       {
          if(Dummy.visible)
          {
@@ -613,32 +723,26 @@ package ui
          {
             this.currentScreen.enabled = false;
          }
-         var dialog:NewsWindow = new NewsWindow(buttons,isHtml);
-         if(localized)
+         Api.self.addEventListener(Api.CLOSE_NEWS,this.onNewsClose);
+         Api.call(Api.SHOW_NEWS);
+      }
+      
+      protected function onNewsClose(event:ApiEvent) : *
+      {
+         Api.self.removeEventListener(Api.CLOSE_NEWS,this.onNewsClose);
+         this.onDialogClose(null);
+      }
+      
+      public function update_setting(setting_name:String, setting_type:String) : *
+      {
+         if(!this.currentScreen)
          {
-            dialog.alertHeaderId = dialogHeader;
-            dialog.alertMessageId = dialogMessage;
+            return;
          }
-         else
+         if(this.currentScreen.id == MainMenuGUI.SETTINGS_TUNE)
          {
-            dialog.alertHeader = dialogHeader;
-            dialog.alertMessage = dialogMessage;
+            this.currentScreen.reconstruct();
          }
-         dialog.addEventListener(Event.CLOSE,this.onDialogClose);
-         dialog.setSize(dialogWidth,dialogHeight);
-         dialog.x = (Base.stage.stageWidth - dialog.width) / 2;
-         dialog.y = (Base.stage.stageHeight - dialog.height) / 2;
-         this.dialogs.addChild(dialog);
-         Logger.LogToChannel(Logger.DEBUG,this.currentScreen,this.currentScreen.x,this.currentScreen.y,this.currentScreen.z,this.currentScreen.transform.matrix3D);
-         if(this.currentScreen)
-         {
-            TweenMax.to(this.currentScreen,1,{
-               "alpha":0.5,
-               "delay":0,
-               "ease":Expo.easeOut
-            });
-         }
-         return dialog;
       }
       
       protected function onDialogClose(event:Event) : void
@@ -659,6 +763,11 @@ package ui
                "onComplete":this.fixMe3D
             });
          }
+      }
+      
+      protected function onDialogLink(event:TextEvent) : void
+      {
+         Api.call(Api.OPEN_URL,[{"url":event.text}]);
       }
       
       protected function fixMe3D() : void
@@ -717,12 +826,20 @@ package ui
          {
             case Keyboard.ESCAPE:
             case Keyboard.BACKSPACE:
+               if(this.shield.visible)
+               {
+                  return;
+               }
+               if(this.is_lock)
+               {
+                  return;
+               }
                if(!this.dialogs.numChildren && !this.modal.numChildren)
                {
                   Logger.LogToChannel(Logger.DEBUG,"Naigator say goBack");
                   this.currentScreen.goBack();
-                  break;
                }
+               break;
          }
       }
    }

@@ -90,13 +90,13 @@ package com.greensock
       
       protected var _startAt:TweenLite;
       
-      public function TweenLite(target:Object, duration:Number, vars:Object)
+      public function TweenLite(param1:Object, param2:Number, param3:Object)
       {
-         var i:int = 0;
-         super(duration,vars);
-         if(target == null)
+         var _loc4_:int = 0;
+         super(param2,param3);
+         if(param1 == null)
          {
-            throw new Error("Cannot tween a null object. Duration: " + duration + ", data: " + this.data);
+            throw new Error("Cannot tween a null object. Duration: " + param2 + ", data: " + this.data);
          }
          if(!_overwriteLookup)
          {
@@ -113,7 +113,7 @@ package com.greensock
             ticker.addEventListener("enterFrame",_dumpGarbage,false,-1,true);
          }
          this.ratio = 0;
-         this.target = target;
+         this.target = param1;
          this._ease = defaultEase;
          this._overwrite = !("overwrite" in this.vars) ? int(_overwriteLookup[defaultOverwrite]) : (typeof this.vars.overwrite === "number" ? this.vars.overwrite >> 0 : int(_overwriteLookup[this.vars.overwrite]));
          if(this.target is Array && typeof this.target[0] === "object")
@@ -121,15 +121,15 @@ package com.greensock
             this._targets = this.target.concat();
             this._propLookup = [];
             this._siblings = [];
-            i = int(this._targets.length);
-            while(--i > -1)
+            _loc4_ = int(this._targets.length);
+            while(--_loc4_ > -1)
             {
-               this._siblings[i] = _register(this._targets[i],this,false);
+               this._siblings[_loc4_] = _register(this._targets[_loc4_],this,false);
                if(this._overwrite == 1)
                {
-                  if(this._siblings[i].length > 1)
+                  if(this._siblings[_loc4_].length > 1)
                   {
-                     _applyOverwrite(this._targets[i],this,null,1,this._siblings[i]);
+                     _applyOverwrite(this._targets[_loc4_],this,null,1,this._siblings[_loc4_]);
                   }
                }
             }
@@ -137,306 +137,308 @@ package com.greensock
          else
          {
             this._propLookup = {};
-            this._siblings = _tweenLookup[target];
+            this._siblings = _tweenLookup[param1];
             if(this._siblings == null)
             {
-               this._siblings = _tweenLookup[target] = [this];
+               this._siblings = _tweenLookup[param1] = [this];
             }
             else
             {
                this._siblings[this._siblings.length] = this;
                if(this._overwrite == 1)
                {
-                  _applyOverwrite(target,this,null,1,this._siblings);
+                  _applyOverwrite(param1,this,null,1,this._siblings);
                }
             }
          }
-         if(Boolean(this.vars.immediateRender) || duration == 0 && _delay == 0 && this.vars.immediateRender != false)
+         if(Boolean(this.vars.immediateRender) || param2 == 0 && _delay == 0 && this.vars.immediateRender != false)
          {
             this.render(-_delay,false,true);
          }
       }
       
-      public static function to(target:Object, duration:Number, vars:Object) : TweenLite
+      public static function to(param1:Object, param2:Number, param3:Object) : TweenLite
       {
-         return new TweenLite(target,duration,vars);
+         return new TweenLite(param1,param2,param3);
       }
       
-      public static function from(target:Object, duration:Number, vars:Object) : TweenLite
+      public static function from(param1:Object, param2:Number, param3:Object) : TweenLite
       {
-         vars = _prepVars(vars,true);
-         vars.runBackwards = true;
-         return new TweenLite(target,duration,vars);
+         param3 = _prepVars(param3,true);
+         param3.runBackwards = true;
+         return new TweenLite(param1,param2,param3);
       }
       
-      public static function fromTo(target:Object, duration:Number, fromVars:Object, toVars:Object) : TweenLite
+      public static function fromTo(param1:Object, param2:Number, param3:Object, param4:Object) : TweenLite
       {
-         toVars = _prepVars(toVars,true);
-         fromVars = _prepVars(fromVars);
-         toVars.startAt = fromVars;
-         toVars.immediateRender = toVars.immediateRender != false && fromVars.immediateRender != false;
-         return new TweenLite(target,duration,toVars);
+         param4 = _prepVars(param4,true);
+         param3 = _prepVars(param3);
+         param4.startAt = param3;
+         param4.immediateRender = param4.immediateRender != false && param3.immediateRender != false;
+         return new TweenLite(param1,param2,param4);
       }
       
-      protected static function _prepVars(vars:Object, immediateRender:Boolean = false) : Object
+      protected static function _prepVars(param1:Object, param2:Boolean = false) : Object
       {
-         if(vars._isGSVars)
+         if(param1._isGSVars)
          {
-            vars = vars.vars;
+            param1 = param1.vars;
          }
-         if(immediateRender && !("immediateRender" in vars))
+         if(param2 && !("immediateRender" in param1))
          {
-            vars.immediateRender = true;
+            param1.immediateRender = true;
          }
-         return vars;
+         return param1;
       }
       
-      public static function delayedCall(delay:Number, callback:Function, params:Array = null, useFrames:Boolean = false) : TweenLite
+      public static function delayedCall(param1:Number, param2:Function, param3:Array = null, param4:Boolean = false) : TweenLite
       {
-         return new TweenLite(callback,0,{
-            "delay":delay,
-            "onComplete":callback,
-            "onCompleteParams":params,
-            "onReverseComplete":callback,
-            "onReverseCompleteParams":params,
+         return new TweenLite(param2,0,{
+            "delay":param1,
+            "onComplete":param2,
+            "onCompleteParams":param3,
+            "onReverseComplete":param2,
+            "onReverseCompleteParams":param3,
             "immediateRender":false,
-            "useFrames":useFrames,
+            "useFrames":param4,
             "overwrite":0
          });
       }
       
-      public static function set(target:Object, vars:Object) : TweenLite
+      public static function set(param1:Object, param2:Object) : TweenLite
       {
-         return new TweenLite(target,0,vars);
+         return new TweenLite(param1,0,param2);
       }
       
-      private static function _dumpGarbage(event:Event) : void
+      private static function _dumpGarbage(param1:Event) : void
       {
-         var i:int = 0;
-         var a:Array = null;
-         var tgt:Object = null;
+         var _loc2_:int = 0;
+         var _loc3_:Array = null;
+         var _loc4_:Object = null;
          if(_rootFrame / 60 >> 0 === _rootFrame / 60)
          {
-            for(tgt in _tweenLookup)
+            for(_loc4_ in _tweenLookup)
             {
-               a = _tweenLookup[tgt];
-               i = int(a.length);
-               while(--i > -1)
+               _loc3_ = _tweenLookup[_loc4_];
+               _loc2_ = int(_loc3_.length);
+               while(--_loc2_ > -1)
                {
-                  if(a[i]._gc)
+                  if(_loc3_[_loc2_]._gc)
                   {
-                     a.splice(i,1);
+                     _loc3_.splice(_loc2_,1);
                   }
                }
-               if(a.length === 0)
+               if(_loc3_.length === 0)
                {
-                  delete _tweenLookup[tgt];
+                  delete _tweenLookup[_loc4_];
                }
             }
          }
       }
       
-      public static function killTweensOf(target:*, onlyActive:* = false, vars:Object = null) : void
+      public static function killTweensOf(param1:*, param2:* = false, param3:Object = null) : void
       {
-         if(typeof onlyActive === "object")
+         if(typeof param2 === "object")
          {
-            vars = onlyActive;
-            onlyActive = false;
+            param3 = param2;
+            param2 = false;
          }
-         var a:Array = TweenLite.getTweensOf(target,onlyActive);
-         var i:int = int(a.length);
-         while(--i > -1)
+         var _loc4_:Array = TweenLite.getTweensOf(param1,param2);
+         var _loc5_:int = int(_loc4_.length);
+         while(--_loc5_ > -1)
          {
-            a[i]._kill(vars,target);
+            _loc4_[_loc5_]._kill(param3,param1);
          }
       }
       
-      public static function killDelayedCallsTo(func:Function) : void
+      public static function killDelayedCallsTo(param1:Function) : void
       {
-         killTweensOf(func);
+         killTweensOf(param1);
       }
       
-      public static function getTweensOf(target:*, onlyActive:Boolean = false) : Array
+      public static function getTweensOf(param1:*, param2:Boolean = false) : Array
       {
-         var i:int = 0;
-         var a:Array = null;
-         var j:int = 0;
-         var t:TweenLite = null;
-         if(target is Array && typeof target[0] != "string" && typeof target[0] != "number")
+         var _loc3_:int = 0;
+         var _loc4_:Array = null;
+         var _loc5_:int = 0;
+         var _loc6_:TweenLite = null;
+         if(param1 is Array && typeof param1[0] != "string" && typeof param1[0] != "number")
          {
-            i = int(target.length);
-            a = [];
-            while(--i > -1)
+            _loc3_ = int(param1.length);
+            _loc4_ = [];
+            while(--_loc3_ > -1)
             {
-               a = a.concat(getTweensOf(target[i],onlyActive));
+               _loc4_ = _loc4_.concat(getTweensOf(param1[_loc3_],param2));
             }
-            i = int(a.length);
-            while(--i > -1)
+            _loc3_ = int(_loc4_.length);
+            while(--_loc3_ > -1)
             {
-               t = a[i];
-               j = i;
-               while(--j > -1)
+               _loc6_ = _loc4_[_loc3_];
+               _loc5_ = _loc3_;
+               while(--_loc5_ > -1)
                {
-                  if(t === a[j])
+                  if(_loc6_ === _loc4_[_loc5_])
                   {
-                     a.splice(i,1);
+                     _loc4_.splice(_loc3_,1);
                   }
                }
             }
          }
          else
          {
-            a = _register(target).concat();
-            i = int(a.length);
-            while(--i > -1)
+            _loc4_ = _register(param1).concat();
+            _loc3_ = int(_loc4_.length);
+            while(--_loc3_ > -1)
             {
-               if(Boolean(a[i]._gc) || onlyActive && !a[i].isActive())
+               if(Boolean(_loc4_[_loc3_]._gc) || param2 && !_loc4_[_loc3_].isActive())
                {
-                  a.splice(i,1);
+                  _loc4_.splice(_loc3_,1);
                }
             }
          }
-         return a;
+         return _loc4_;
       }
       
-      protected static function _register(target:Object, tween:TweenLite = null, scrub:Boolean = false) : Array
+      protected static function _register(param1:Object, param2:TweenLite = null, param3:Boolean = false) : Array
       {
-         var i:int = 0;
-         var a:Array = _tweenLookup[target];
-         if(a == null)
+         var _loc5_:int = 0;
+         var _loc4_:Array = _tweenLookup[param1];
+         if(_loc4_ == null)
          {
-            a = _tweenLookup[target] = [];
+            _loc4_ = _tweenLookup[param1] = [];
          }
-         if(tween)
+         if(param2)
          {
-            i = int(a.length);
-            a[i] = tween;
-            if(scrub)
+            _loc5_ = int(_loc4_.length);
+            _loc4_[_loc5_] = param2;
+            if(param3)
             {
-               while(--i > -1)
+               while(--_loc5_ > -1)
                {
-                  if(a[i] === tween)
+                  if(_loc4_[_loc5_] === param2)
                   {
-                     a.splice(i,1);
+                     _loc4_.splice(_loc5_,1);
                   }
                }
             }
          }
-         return a;
+         return _loc4_;
       }
       
-      protected static function _applyOverwrite(target:Object, tween:TweenLite, props:Object, mode:int, siblings:Array) : Boolean
+      protected static function _applyOverwrite(param1:Object, param2:TweenLite, param3:Object, param4:int, param5:Array) : Boolean
       {
-         var i:int = 0;
-         var changed:Boolean = false;
-         var curTween:TweenLite = null;
-         var globalStart:Number = NaN;
-         var l:int = 0;
-         if(mode == 1 || mode >= 4)
+         var _loc6_:int = 0;
+         var _loc7_:Boolean = false;
+         var _loc8_:TweenLite = null;
+         var _loc13_:Number = NaN;
+         var _loc14_:int = 0;
+         if(param4 == 1 || param4 >= 4)
          {
-            l = int(siblings.length);
-            for(i = 0; i < l; i++)
+            _loc14_ = int(param5.length);
+            _loc6_ = 0;
+            while(_loc6_ < _loc14_)
             {
-               curTween = siblings[i];
-               if(curTween != tween)
+               _loc8_ = param5[_loc6_];
+               if(_loc8_ != param2)
                {
-                  if(!curTween._gc)
+                  if(!_loc8_._gc)
                   {
-                     if(curTween._enabled(false,false))
+                     if(_loc8_._enabled(false,false))
                      {
-                        changed = true;
+                        _loc7_ = true;
                      }
                   }
                }
-               else if(mode == 5)
+               else if(param4 == 5)
                {
                   break;
                }
+               _loc6_++;
             }
-            return changed;
+            return _loc7_;
          }
-         var startTime:Number = tween._startTime + 1e-10;
-         var overlaps:Array = [];
-         var oCount:int = 0;
-         var zeroDur:* = tween._duration == 0;
-         i = int(siblings.length);
-         while(--i > -1)
+         var _loc9_:Number = param2._startTime + 1e-10;
+         var _loc10_:Array = [];
+         var _loc11_:int = 0;
+         var _loc12_:* = param2._duration == 0;
+         _loc6_ = int(param5.length);
+         while(--_loc6_ > -1)
          {
-            curTween = siblings[i];
-            if(!(curTween === tween || curTween._gc || curTween._paused))
+            _loc8_ = param5[_loc6_];
+            if(!(_loc8_ === param2 || _loc8_._gc || _loc8_._paused))
             {
-               if(curTween._timeline != tween._timeline)
+               if(_loc8_._timeline != param2._timeline)
                {
-                  globalStart ||= _checkOverlap(tween,0,zeroDur);
-                  if(_checkOverlap(curTween,globalStart,zeroDur) === 0)
+                  _loc13_ ||= _checkOverlap(param2,0,_loc12_);
+                  if(_checkOverlap(_loc8_,_loc13_,_loc12_) === 0)
                   {
                      var _loc15_:*;
-                     overlaps[_loc15_ = oCount++] = curTween;
+                     _loc10_[_loc15_ = _loc11_++] = _loc8_;
                   }
                }
-               else if(curTween._startTime <= startTime)
+               else if(_loc8_._startTime <= _loc9_)
                {
-                  if(curTween._startTime + curTween.totalDuration() / curTween._timeScale > startTime)
+                  if(_loc8_._startTime + _loc8_.totalDuration() / _loc8_._timeScale > _loc9_)
                   {
-                     if(!((zeroDur || !curTween._initted) && startTime - curTween._startTime <= 2e-10))
+                     if(!((_loc12_ || !_loc8_._initted) && _loc9_ - _loc8_._startTime <= 2e-10))
                      {
-                        overlaps[_loc15_ = oCount++] = curTween;
+                        _loc10_[_loc15_ = _loc11_++] = _loc8_;
                      }
                   }
                }
             }
          }
-         i = oCount;
-         while(--i > -1)
+         _loc6_ = _loc11_;
+         while(--_loc6_ > -1)
          {
-            curTween = overlaps[i];
-            if(mode == 2)
+            _loc8_ = _loc10_[_loc6_];
+            if(param4 == 2)
             {
-               if(curTween._kill(props,target))
+               if(_loc8_._kill(param3,param1))
                {
-                  changed = true;
+                  _loc7_ = true;
                }
             }
-            if(mode !== 2 || !curTween._firstPT && curTween._initted)
+            if(param4 !== 2 || !_loc8_._firstPT && _loc8_._initted)
             {
-               if(curTween._enabled(false,false))
+               if(_loc8_._enabled(false,false))
                {
-                  changed = true;
+                  _loc7_ = true;
                }
             }
          }
-         return changed;
+         return _loc7_;
       }
       
-      private static function _checkOverlap(tween:Animation, reference:Number, zeroDur:Boolean) : Number
+      private static function _checkOverlap(param1:Animation, param2:Number, param3:Boolean) : Number
       {
-         var tl:SimpleTimeline = tween._timeline;
-         var ts:Number = tl._timeScale;
-         var t:Number = tween._startTime;
-         var min:Number = 1e-10;
-         while(tl._timeline)
+         var _loc4_:SimpleTimeline = param1._timeline;
+         var _loc5_:Number = _loc4_._timeScale;
+         var _loc6_:Number = param1._startTime;
+         var _loc7_:Number = 1e-10;
+         while(_loc4_._timeline)
          {
-            t += tl._startTime;
-            ts *= tl._timeScale;
-            if(tl._paused)
+            _loc6_ += _loc4_._startTime;
+            _loc5_ *= _loc4_._timeScale;
+            if(_loc4_._paused)
             {
                return -100;
             }
-            tl = tl._timeline;
+            _loc4_ = _loc4_._timeline;
          }
-         t /= ts;
-         t = t + tween.totalDuration() / tween._timeScale / ts;
-         return t > reference ? t - reference : (zeroDur && t == reference || !tween._initted && t - reference < 2 * min ? min : (t > reference + min ? 0 : t - reference - min));
+         _loc6_ = _loc6_ + param1.totalDuration() / param1._timeScale / _loc5_;
+         _loc6_ /= _loc5_;
+         return _loc6_ > param2 ? _loc6_ - param2 : (param3 && _loc6_ == param2 || !param1._initted && _loc6_ - param2 < 2 * _loc7_ ? _loc7_ : (_loc6_ > param2 + _loc7_ ? 0 : _loc6_ - param2 - _loc7_));
       }
       
       protected function _init() : void
       {
-         var i:int = 0;
-         var initPlugins:Boolean = false;
-         var pt:PropTween = null;
-         var p:String = null;
-         var copy:Object = null;
-         var immediate:Boolean = Boolean(vars.immediateRender);
+         var _loc2_:int = 0;
+         var _loc3_:Boolean = false;
+         var _loc4_:PropTween = null;
+         var _loc5_:String = null;
+         var _loc6_:Object = null;
+         var _loc1_:Boolean = Boolean(vars.immediateRender);
          if(vars.startAt)
          {
             if(this._startAt != null)
@@ -446,7 +448,7 @@ package com.greensock
             vars.startAt.overwrite = 0;
             vars.startAt.immediateRender = true;
             this._startAt = new TweenLite(this.target,0,vars.startAt);
-            if(immediate)
+            if(_loc1_)
             {
                if(_time > 0)
                {
@@ -467,18 +469,18 @@ package com.greensock
             }
             else
             {
-               copy = {};
-               for(p in vars)
+               _loc6_ = {};
+               for(_loc5_ in vars)
                {
-                  if(!(p in _reservedProps))
+                  if(!(_loc5_ in _reservedProps))
                   {
-                     copy[p] = vars[p];
+                     _loc6_[_loc5_] = vars[_loc5_];
                   }
                }
-               copy.overwrite = 0;
-               copy.data = "isFromStart";
-               this._startAt = TweenLite.to(this.target,0,copy);
-               if(!immediate)
+               _loc6_.overwrite = 0;
+               _loc6_.data = "isFromStart";
+               this._startAt = TweenLite.to(this.target,0,_loc6_);
+               if(!_loc1_)
                {
                   this._startAt.render(-1,true);
                }
@@ -505,20 +507,20 @@ package com.greensock
          this._firstPT = null;
          if(this._targets)
          {
-            i = int(this._targets.length);
-            while(--i > -1)
+            _loc2_ = int(this._targets.length);
+            while(--_loc2_ > -1)
             {
-               if(this._initProps(this._targets[i],this._propLookup[i] = {},this._siblings[i],!!this._overwrittenProps ? this._overwrittenProps[i] : null))
+               if(this._initProps(this._targets[_loc2_],this._propLookup[_loc2_] = {},this._siblings[_loc2_],!!this._overwrittenProps ? this._overwrittenProps[_loc2_] : null))
                {
-                  initPlugins = true;
+                  _loc3_ = true;
                }
             }
          }
          else
          {
-            initPlugins = this._initProps(this.target,this._propLookup,this._siblings,this._overwrittenProps);
+            _loc3_ = this._initProps(this.target,this._propLookup,this._siblings,this._overwrittenProps);
          }
-         if(initPlugins)
+         if(_loc3_)
          {
             _onPluginEvent("_onInitAllProps",this);
          }
@@ -534,208 +536,208 @@ package com.greensock
          }
          if(vars.runBackwards)
          {
-            pt = this._firstPT;
-            while(pt)
+            _loc4_ = this._firstPT;
+            while(_loc4_)
             {
-               pt.s += pt.c;
-               pt.c = -pt.c;
-               pt = pt._next;
+               _loc4_.s += _loc4_.c;
+               _loc4_.c = -_loc4_.c;
+               _loc4_ = _loc4_._next;
             }
          }
          _onUpdate = vars.onUpdate;
          _initted = true;
       }
       
-      protected function _initProps(target:Object, propLookup:Object, siblings:Array, overwrittenProps:Object) : Boolean
+      protected function _initProps(param1:Object, param2:Object, param3:Array, param4:Object) : Boolean
       {
-         var p:String = null;
-         var i:int = 0;
-         var initPlugins:Boolean = false;
-         var plugin:Object = null;
-         var val:Object = null;
-         var vars:Object = this.vars;
-         if(target == null)
+         var _loc6_:String = null;
+         var _loc7_:int = 0;
+         var _loc8_:Boolean = false;
+         var _loc9_:Object = null;
+         var _loc10_:Object = null;
+         var _loc5_:Object = this.vars;
+         if(param1 == null)
          {
             return false;
          }
-         for(p in vars)
+         for(_loc6_ in _loc5_)
          {
-            val = vars[p];
-            if(p in _reservedProps)
+            _loc10_ = _loc5_[_loc6_];
+            if(_loc6_ in _reservedProps)
             {
-               if(val is Array)
+               if(_loc10_ is Array)
                {
-                  if(val.join("").indexOf("{self}") !== -1)
+                  if(_loc10_.join("").indexOf("{self}") !== -1)
                   {
-                     vars[p] = _swapSelfInParams(val as Array);
+                     _loc5_[_loc6_] = _swapSelfInParams(_loc10_ as Array);
                   }
                }
             }
-            else if(p in _plugins && Boolean((plugin = new _plugins[p]())._onInitTween(target,val,this)))
+            else if(_loc6_ in _plugins && Boolean((_loc9_ = new _plugins[_loc6_]())._onInitTween(param1,_loc10_,this)))
             {
-               this._firstPT = new PropTween(plugin,"setRatio",0,1,p,true,this._firstPT,plugin._priority);
-               i = int(plugin._overwriteProps.length);
-               while(--i > -1)
+               this._firstPT = new PropTween(_loc9_,"setRatio",0,1,_loc6_,true,this._firstPT,_loc9_._priority);
+               _loc7_ = int(_loc9_._overwriteProps.length);
+               while(--_loc7_ > -1)
                {
-                  propLookup[plugin._overwriteProps[i]] = this._firstPT;
+                  param2[_loc9_._overwriteProps[_loc7_]] = this._firstPT;
                }
-               if(Boolean(plugin._priority) || "_onInitAllProps" in plugin)
+               if(Boolean(_loc9_._priority) || "_onInitAllProps" in _loc9_)
                {
-                  initPlugins = true;
+                  _loc8_ = true;
                }
-               if("_onDisable" in plugin || "_onEnable" in plugin)
+               if("_onDisable" in _loc9_ || "_onEnable" in _loc9_)
                {
                   this._notifyPluginsOfEnabled = true;
                }
             }
             else
             {
-               this._firstPT = propLookup[p] = new PropTween(target,p,0,1,p,false,this._firstPT);
-               this._firstPT.s = !this._firstPT.f ? Number(target[p]) : Number(target[Boolean(p.indexOf("set")) || !("get" + p.substr(3) in target) ? p : "get" + p.substr(3)]());
-               this._firstPT.c = typeof val === "number" ? Number(val) - this._firstPT.s : (typeof val === "string" && val.charAt(1) === "=" ? int(val.charAt(0) + "1") * Number(val.substr(2)) : Number(val) || 0);
+               this._firstPT = param2[_loc6_] = new PropTween(param1,_loc6_,0,1,_loc6_,false,this._firstPT);
+               this._firstPT.s = !this._firstPT.f ? Number(param1[_loc6_]) : Number(param1[Boolean(_loc6_.indexOf("set")) || !("get" + _loc6_.substr(3) in param1) ? _loc6_ : "get" + _loc6_.substr(3)]());
+               this._firstPT.c = typeof _loc10_ === "number" ? Number(_loc10_) - this._firstPT.s : (typeof _loc10_ === "string" && _loc10_.charAt(1) === "=" ? int(_loc10_.charAt(0) + "1") * Number(_loc10_.substr(2)) : Number(_loc10_) || 0);
             }
          }
-         if(overwrittenProps)
+         if(param4)
          {
-            if(this._kill(overwrittenProps,target))
+            if(this._kill(param4,param1))
             {
-               return this._initProps(target,propLookup,siblings,overwrittenProps);
+               return this._initProps(param1,param2,param3,param4);
             }
          }
          if(this._overwrite > 1)
          {
             if(this._firstPT != null)
             {
-               if(siblings.length > 1)
+               if(param3.length > 1)
                {
-                  if(_applyOverwrite(target,this,propLookup,this._overwrite,siblings))
+                  if(_applyOverwrite(param1,this,param2,this._overwrite,param3))
                   {
-                     this._kill(propLookup,target);
-                     return this._initProps(target,propLookup,siblings,overwrittenProps);
+                     this._kill(param2,param1);
+                     return this._initProps(param1,param2,param3,param4);
                   }
                }
             }
          }
-         return initPlugins;
+         return _loc8_;
       }
       
-      override public function render(time:Number, suppressEvents:Boolean = false, force:Boolean = false) : void
+      override public function render(param1:Number, param2:Boolean = false, param3:Boolean = false) : void
       {
-         var isComplete:Boolean = false;
-         var callback:String = null;
-         var pt:PropTween = null;
-         var rawPrevTime:Number = NaN;
-         var r:Number = NaN;
-         var prevTime:Number = _time;
-         if(time >= _duration)
+         var _loc4_:Boolean = false;
+         var _loc5_:String = null;
+         var _loc6_:PropTween = null;
+         var _loc7_:Number = NaN;
+         var _loc9_:Number = NaN;
+         var _loc8_:Number = _time;
+         if(param1 >= _duration)
          {
             _totalTime = _time = _duration;
             this.ratio = this._ease._calcEnd ? this._ease.getRatio(1) : 1;
             if(!_reversed)
             {
-               isComplete = true;
-               callback = "onComplete";
+               _loc4_ = true;
+               _loc5_ = "onComplete";
             }
             if(_duration == 0)
             {
-               rawPrevTime = _rawPrevTime;
+               _loc7_ = _rawPrevTime;
                if(_startTime === _timeline._duration)
                {
-                  time = 0;
+                  param1 = 0;
                }
-               if(time === 0 || rawPrevTime < 0 || rawPrevTime === _tinyNum)
+               if(param1 === 0 || _loc7_ < 0 || _loc7_ === _tinyNum)
                {
-                  if(rawPrevTime !== time)
+                  if(_loc7_ !== param1)
                   {
-                     force = true;
-                     if(rawPrevTime > 0 && rawPrevTime !== _tinyNum)
+                     param3 = true;
+                     if(_loc7_ > 0 && _loc7_ !== _tinyNum)
                      {
-                        callback = "onReverseComplete";
+                        _loc5_ = "onReverseComplete";
                      }
                   }
                }
-               _rawPrevTime = rawPrevTime = !suppressEvents || time !== 0 || _rawPrevTime === time ? time : _tinyNum;
+               _rawPrevTime = _loc7_ = !param2 || param1 !== 0 || _rawPrevTime === param1 ? param1 : _tinyNum;
             }
          }
-         else if(time < 1e-7)
+         else if(param1 < 1e-7)
          {
             _totalTime = _time = 0;
             this.ratio = this._ease._calcEnd ? this._ease.getRatio(0) : 0;
-            if(prevTime !== 0 || _duration === 0 && _rawPrevTime > 0 && _rawPrevTime !== _tinyNum)
+            if(_loc8_ !== 0 || _duration === 0 && _rawPrevTime > 0 && _rawPrevTime !== _tinyNum)
             {
-               callback = "onReverseComplete";
-               isComplete = _reversed;
+               _loc5_ = "onReverseComplete";
+               _loc4_ = _reversed;
             }
-            if(time < 0)
+            if(param1 < 0)
             {
                _active = false;
                if(_duration == 0)
                {
                   if(_rawPrevTime >= 0)
                   {
-                     force = true;
+                     param3 = true;
                   }
-                  _rawPrevTime = rawPrevTime = !suppressEvents || time !== 0 || _rawPrevTime === time ? time : _tinyNum;
+                  _rawPrevTime = _loc7_ = !param2 || param1 !== 0 || _rawPrevTime === param1 ? param1 : _tinyNum;
                }
             }
             else if(!_initted)
             {
-               force = true;
+               param3 = true;
             }
          }
          else
          {
-            _totalTime = _time = time;
+            _totalTime = _time = param1;
             if(this._easeType)
             {
-               r = time / _duration;
-               if(this._easeType == 1 || this._easeType == 3 && r >= 0.5)
+               _loc9_ = param1 / _duration;
+               if(this._easeType == 1 || this._easeType == 3 && _loc9_ >= 0.5)
                {
-                  r = 1 - r;
+                  _loc9_ = 1 - _loc9_;
                }
                if(this._easeType == 3)
                {
-                  r *= 2;
+                  _loc9_ *= 2;
                }
                if(this._easePower == 1)
                {
-                  r *= r;
+                  _loc9_ *= _loc9_;
                }
                else if(this._easePower == 2)
                {
-                  r *= r * r;
+                  _loc9_ *= _loc9_ * _loc9_;
                }
                else if(this._easePower == 3)
                {
-                  r *= r * r * r;
+                  _loc9_ *= _loc9_ * _loc9_ * _loc9_;
                }
                else if(this._easePower == 4)
                {
-                  r *= r * r * r * r;
+                  _loc9_ *= _loc9_ * _loc9_ * _loc9_ * _loc9_;
                }
                if(this._easeType == 1)
                {
-                  this.ratio = 1 - r;
+                  this.ratio = 1 - _loc9_;
                }
                else if(this._easeType == 2)
                {
-                  this.ratio = r;
+                  this.ratio = _loc9_;
                }
-               else if(time / _duration < 0.5)
+               else if(param1 / _duration < 0.5)
                {
-                  this.ratio = r / 2;
+                  this.ratio = _loc9_ / 2;
                }
                else
                {
-                  this.ratio = 1 - r / 2;
+                  this.ratio = 1 - _loc9_ / 2;
                }
             }
             else
             {
-               this.ratio = this._ease.getRatio(time / _duration);
+               this.ratio = this._ease.getRatio(param1 / _duration);
             }
          }
-         if(_time == prevTime && !force)
+         if(_time == _loc8_ && !param3)
          {
             return;
          }
@@ -746,82 +748,82 @@ package com.greensock
             {
                return;
             }
-            if(Boolean(_time) && !isComplete)
+            if(Boolean(_time) && !_loc4_)
             {
                this.ratio = this._ease.getRatio(_time / _duration);
             }
-            else if(isComplete && this._ease._calcEnd)
+            else if(_loc4_ && this._ease._calcEnd)
             {
                this.ratio = this._ease.getRatio(_time === 0 ? 0 : 1);
             }
          }
          if(!_active)
          {
-            if(!_paused && _time !== prevTime && time >= 0)
+            if(!_paused && _time !== _loc8_ && param1 >= 0)
             {
                _active = true;
             }
          }
-         if(prevTime == 0)
+         if(_loc8_ == 0)
          {
             if(this._startAt != null)
             {
-               if(time >= 0)
+               if(param1 >= 0)
                {
-                  this._startAt.render(time,suppressEvents,force);
+                  this._startAt.render(param1,param2,param3);
                }
-               else if(!callback)
+               else if(!_loc5_)
                {
-                  callback = "_dummyGS";
+                  _loc5_ = "_dummyGS";
                }
             }
             if(vars.onStart)
             {
                if(_time != 0 || _duration == 0)
                {
-                  if(!suppressEvents)
+                  if(!param2)
                   {
                      vars.onStart.apply(null,vars.onStartParams);
                   }
                }
             }
          }
-         pt = this._firstPT;
-         while(pt)
+         _loc6_ = this._firstPT;
+         while(_loc6_)
          {
-            if(pt.f)
+            if(_loc6_.f)
             {
-               pt.t[pt.p](pt.c * this.ratio + pt.s);
+               _loc6_.t[_loc6_.p](_loc6_.c * this.ratio + _loc6_.s);
             }
             else
             {
-               pt.t[pt.p] = pt.c * this.ratio + pt.s;
+               _loc6_.t[_loc6_.p] = _loc6_.c * this.ratio + _loc6_.s;
             }
-            pt = pt._next;
+            _loc6_ = _loc6_._next;
          }
          if(_onUpdate != null)
          {
-            if(time < 0 && this._startAt != null && _startTime != 0)
+            if(param1 < 0 && this._startAt != null && _startTime != 0)
             {
-               this._startAt.render(time,suppressEvents,force);
+               this._startAt.render(param1,param2,param3);
             }
-            if(!suppressEvents)
+            if(!param2)
             {
-               if(_time !== prevTime || isComplete)
+               if(_time !== _loc8_ || _loc4_)
                {
                   _onUpdate.apply(null,vars.onUpdateParams);
                }
             }
          }
-         if(callback)
+         if(_loc5_)
          {
             if(!_gc)
             {
-               if(time < 0 && this._startAt != null && _onUpdate == null && _startTime != 0)
+               if(param1 < 0 && this._startAt != null && _onUpdate == null && _startTime != 0)
                {
-                  this._startAt.render(time,suppressEvents,force);
+                  this._startAt.render(param1,param2,param3);
                }
-               if(isComplete)
+               if(_loc4_)
                {
                   if(_timeline.autoRemoveChildren)
                   {
@@ -829,14 +831,14 @@ package com.greensock
                   }
                   _active = false;
                }
-               if(!suppressEvents)
+               if(!param2)
                {
-                  if(vars[callback])
+                  if(vars[_loc5_])
                   {
-                     vars[callback].apply(null,vars[callback + "Params"]);
+                     vars[_loc5_].apply(null,vars[_loc5_ + "Params"]);
                   }
                }
-               if(_duration === 0 && _rawPrevTime === _tinyNum && rawPrevTime !== _tinyNum)
+               if(_duration === 0 && _rawPrevTime === _tinyNum && _loc7_ !== _tinyNum)
                {
                   _rawPrevTime = 0;
                }
@@ -844,36 +846,36 @@ package com.greensock
          }
       }
       
-      override public function _kill(vars:Object = null, target:Object = null) : Boolean
+      override public function _kill(param1:Object = null, param2:Object = null) : Boolean
       {
-         var i:int = 0;
-         var overwrittenProps:Object = null;
-         var p:String = null;
-         var pt:PropTween = null;
-         var propLookup:Object = null;
-         var changed:Boolean = false;
-         var killProps:Object = null;
-         var record:Boolean = false;
-         if(vars === "all")
+         var _loc3_:int = 0;
+         var _loc4_:Object = null;
+         var _loc5_:String = null;
+         var _loc6_:PropTween = null;
+         var _loc7_:Object = null;
+         var _loc8_:Boolean = false;
+         var _loc9_:Object = null;
+         var _loc10_:Boolean = false;
+         if(param1 === "all")
          {
-            vars = null;
+            param1 = null;
          }
-         if(vars == null)
+         if(param1 == null)
          {
-            if(target == null || target == this.target)
+            if(param2 == null || param2 == this.target)
             {
                return this._enabled(false,false);
             }
          }
-         target = target || this._targets || this.target;
-         if(target is Array && typeof target[0] === "object")
+         param2 = param2 || this._targets || this.target;
+         if(param2 is Array && typeof param2[0] === "object")
          {
-            i = int(target.length);
-            while(--i > -1)
+            _loc3_ = int(param2.length);
+            while(--_loc3_ > -1)
             {
-               if(this._kill(vars,target[i]))
+               if(this._kill(param1,param2[_loc3_]))
                {
-                  changed = true;
+                  _loc8_ = true;
                }
             }
          }
@@ -881,61 +883,61 @@ package com.greensock
          {
             if(this._targets)
             {
-               i = int(this._targets.length);
-               while(--i > -1)
+               _loc3_ = int(this._targets.length);
+               while(--_loc3_ > -1)
                {
-                  if(target === this._targets[i])
+                  if(param2 === this._targets[_loc3_])
                   {
-                     propLookup = this._propLookup[i] || {};
+                     _loc7_ = this._propLookup[_loc3_] || {};
                      this._overwrittenProps = this._overwrittenProps || [];
-                     overwrittenProps = this._overwrittenProps[i] = !!vars ? this._overwrittenProps[i] || {} : "all";
+                     _loc4_ = this._overwrittenProps[_loc3_] = !!param1 ? this._overwrittenProps[_loc3_] || {} : "all";
                      break;
                   }
                }
             }
             else
             {
-               if(target !== this.target)
+               if(param2 !== this.target)
                {
                   return false;
                }
-               propLookup = this._propLookup;
-               overwrittenProps = this._overwrittenProps = !!vars ? this._overwrittenProps || {} : "all";
+               _loc7_ = this._propLookup;
+               _loc4_ = this._overwrittenProps = !!param1 ? this._overwrittenProps || {} : "all";
             }
-            if(propLookup)
+            if(_loc7_)
             {
-               killProps = vars || propLookup;
-               record = vars != overwrittenProps && overwrittenProps != "all" && vars != propLookup && (typeof vars != "object" || vars._tempKill != true);
-               for(p in killProps)
+               _loc9_ = param1 || _loc7_;
+               _loc10_ = param1 != _loc4_ && _loc4_ != "all" && param1 != _loc7_ && (typeof param1 != "object" || param1._tempKill != true);
+               for(_loc5_ in _loc9_)
                {
-                  pt = propLookup[p];
-                  if(pt != null)
+                  _loc6_ = _loc7_[_loc5_];
+                  if(_loc6_ != null)
                   {
-                     if(pt.pg && Boolean(pt.t._kill(killProps)))
+                     if(_loc6_.pg && Boolean(_loc6_.t._kill(_loc9_)))
                      {
-                        changed = true;
+                        _loc8_ = true;
                      }
-                     if(!pt.pg || pt.t._overwriteProps.length === 0)
+                     if(!_loc6_.pg || _loc6_.t._overwriteProps.length === 0)
                      {
-                        if(pt._prev)
+                        if(_loc6_._prev)
                         {
-                           pt._prev._next = pt._next;
+                           _loc6_._prev._next = _loc6_._next;
                         }
-                        else if(pt == this._firstPT)
+                        else if(_loc6_ == this._firstPT)
                         {
-                           this._firstPT = pt._next;
+                           this._firstPT = _loc6_._next;
                         }
-                        if(pt._next)
+                        if(_loc6_._next)
                         {
-                           pt._next._prev = pt._prev;
+                           _loc6_._next._prev = _loc6_._prev;
                         }
-                        pt._next = pt._prev = null;
+                        _loc6_._next = _loc6_._prev = null;
                      }
-                     delete propLookup[p];
+                     delete _loc7_[_loc5_];
                   }
-                  if(record)
+                  if(_loc10_)
                   {
-                     overwrittenProps[p] = 1;
+                     _loc4_[_loc5_] = 1;
                   }
                }
                if(this._firstPT == null && _initted)
@@ -944,7 +946,7 @@ package com.greensock
                }
             }
          }
-         return changed;
+         return _loc8_;
       }
       
       override public function invalidate() : *
@@ -962,17 +964,17 @@ package com.greensock
          return this;
       }
       
-      override public function _enabled(enabled:Boolean, ignoreTimeline:Boolean = false) : Boolean
+      override public function _enabled(param1:Boolean, param2:Boolean = false) : Boolean
       {
-         var i:int = 0;
-         if(enabled && _gc)
+         var _loc3_:int = 0;
+         if(param1 && _gc)
          {
             if(this._targets)
             {
-               i = int(this._targets.length);
-               while(--i > -1)
+               _loc3_ = int(this._targets.length);
+               while(--_loc3_ > -1)
                {
-                  this._siblings[i] = _register(this._targets[i],this,true);
+                  this._siblings[_loc3_] = _register(this._targets[_loc3_],this,true);
                }
             }
             else
@@ -980,12 +982,12 @@ package com.greensock
                this._siblings = _register(this.target,this,true);
             }
          }
-         super._enabled(enabled,ignoreTimeline);
+         super._enabled(param1,param2);
          if(this._notifyPluginsOfEnabled)
          {
             if(this._firstPT != null)
             {
-               return _onPluginEvent(enabled ? "_onEnable" : "_onDisable",this);
+               return _onPluginEvent(param1 ? "_onEnable" : "_onDisable",this);
             }
          }
          return false;

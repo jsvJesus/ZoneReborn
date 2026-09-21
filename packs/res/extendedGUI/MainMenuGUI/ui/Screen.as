@@ -37,7 +37,7 @@ package ui
       
       protected var appears:Array;
       
-      private var _breadCrumb:BreadCrumb = new BreadCrumb(this);
+      private var _breadCrumb:BreadCrumb;
       
       protected var _enabled:Boolean = true;
       
@@ -45,6 +45,7 @@ package ui
       
       public function Screen(id:String, depth:uint = 0, use3D:Boolean = false)
       {
+         this._breadCrumb = new BreadCrumb(this);
          this.id = id;
          this.depth = depth;
          this.use3D = use3D;
@@ -88,8 +89,7 @@ package ui
          if(Base.IN_GAME)
          {
             Base.navigator.header.exitButton.visible = false;
-            Base.navigator.header.gold.visible = false;
-            Base.navigator.header.accountLabel.visible = false;
+            Base.navigator.header.account.visible = false;
             this._background = new Bitmap(PremiumIcons.Icons["Setting"],"auto",true);
             size = this._background.width / this._background.height;
             this._background.height = Base.stage.stageHeight;
@@ -103,6 +103,15 @@ package ui
             this._background.name = "BACK_GR";
             Base.stage.addChild(this._background);
             Base.stage.setChildIndex(this._background,0);
+            this.unfreeze();
+         }
+      }
+      
+      public function hideBackgroundInGame() : *
+      {
+         if(!Base.IN_GAME)
+         {
+            Base.stage.removeChild(this._background);
          }
       }
       
@@ -116,10 +125,7 @@ package ui
       
       protected function updateRotation() : void
       {
-         if(Base.isScaleform)
-         {
-            this.rotationY = this.rotationY;
-         }
+         this.rotationY = this.rotationY;
       }
       
       public function prepare(... args) : void
@@ -154,16 +160,6 @@ package ui
       {
          var tl:TimelineMax = null;
          this.is_loaded = false;
-         if(!Base.isScaleform)
-         {
-            TweenMax.killTweensOf(this);
-            this.visible = true;
-            this.alpha = 1;
-            this.x = 0;
-            this.y = 0;
-            this.onShowComplete();
-            return;
-         }
          if(Boolean(this.appears) && Boolean(this.appears.length))
          {
             tl = new TimelineMax({"delay":SHOW_DELAY});
@@ -189,16 +185,6 @@ package ui
       {
          var tl:TimelineMax = null;
          this.is_loaded = false;
-         if(!Base.isScaleform)
-         {
-            TweenMax.killTweensOf(this);
-            this.visible = true;
-            this.alpha = 1;
-            this.x = 0;
-            this.y = 0;
-            this.onShowComplete();
-            return;
-         }
          if(Boolean(this.appears) && Boolean(this.appears.length))
          {
             tl = new TimelineMax({"delay":SHOW_DELAY});
@@ -223,17 +209,6 @@ package ui
       public function hideUp(onCompleteFunction:Function = null) : void
       {
          var tl:TimelineMax = null;
-         if(!Base.isScaleform)
-         {
-            TweenMax.killTweensOf(this);
-            this.alpha = 0;
-            this.visible = false;
-            if(onCompleteFunction != null)
-            {
-               onCompleteFunction();
-            }
-            return;
-         }
          if(Boolean(this.appears) && Boolean(this.appears.length))
          {
             tl = new TimelineMax();
@@ -256,17 +231,6 @@ package ui
       public function hideDown(onCompleteFunction:Function = null) : void
       {
          var tl:TimelineMax = null;
-         if(!Base.isScaleform)
-         {
-            TweenMax.killTweensOf(this);
-            this.alpha = 0;
-            this.visible = false;
-            if(onCompleteFunction != null)
-            {
-               onCompleteFunction();
-            }
-            return;
-         }
          if(Boolean(this.appears) && Boolean(this.appears.length))
          {
             tl = new TimelineMax();

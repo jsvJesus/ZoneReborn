@@ -15,19 +15,21 @@ package com.captureTheFlag
       
       protected var _myFlag:Boolean;
       
+      protected var _am_i_invader:Boolean;
+      
       public function FlagItem()
       {
          super();
       }
       
-      public function set flagName(value:String) : *
+      public function set flagName(param1:String) : *
       {
-         if(value == this._flagName)
+         if(param1 == this._flagName)
          {
             return;
          }
-         this._flagName = value;
-         this.Indicator.flagName = value;
+         this._flagName = param1;
+         this.Indicator.flagName = param1;
          this.draw();
       }
       
@@ -36,14 +38,14 @@ package com.captureTheFlag
          return this._flagName;
       }
       
-      public function set value(val:Number) : *
+      public function set value(param1:Number) : *
       {
-         if(val == this._value)
+         if(param1 == this._value)
          {
             return;
          }
-         this._value = val;
-         this.Indicator.value = val;
+         this._value = param1;
+         this.Indicator.value = param1;
          this.draw();
       }
       
@@ -52,17 +54,27 @@ package com.captureTheFlag
          return this._value;
       }
       
-      public function set myFlag(value:Boolean) : *
+      public function set myFlag(param1:Boolean) : *
       {
-         this._myFlag = value;
-         this.ClanName.text = value.toString();
-         trace(value);
+         this._myFlag = param1;
+         this.ClanName.text = param1.toString();
          this.draw();
       }
       
       public function get myFlag() : Boolean
       {
          return this._myFlag;
+      }
+      
+      public function set am_i_invader(param1:Boolean) : *
+      {
+         this._am_i_invader = param1;
+         this.draw();
+      }
+      
+      public function get am_i_invader() : Boolean
+      {
+         return this._am_i_invader;
       }
       
       protected function draw() : *

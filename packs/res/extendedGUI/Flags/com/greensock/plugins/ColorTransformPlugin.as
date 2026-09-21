@@ -14,69 +14,69 @@ package com.greensock.plugins
          _propName = "colorTransform";
       }
       
-      override public function _onInitTween(target:Object, value:*, tween:TweenLite) : Boolean
+      override public function _onInitTween(param1:Object, param2:*, param3:TweenLite) : Boolean
       {
-         var start:ColorTransform = null;
-         var p:String = null;
-         var ratio:Number = NaN;
-         var end:ColorTransform = new ColorTransform();
-         if(target is DisplayObject)
+         var _loc4_:ColorTransform = null;
+         var _loc6_:String = null;
+         var _loc7_:Number = NaN;
+         var _loc5_:ColorTransform = new ColorTransform();
+         if(param1 is DisplayObject)
          {
-            _transform = DisplayObject(target).transform;
-            start = _transform.colorTransform;
+            _transform = DisplayObject(param1).transform;
+            _loc4_ = _transform.colorTransform;
          }
          else
          {
-            if(!(target is ColorTransform))
+            if(!(param1 is ColorTransform))
             {
                return false;
             }
-            start = target as ColorTransform;
+            _loc4_ = param1 as ColorTransform;
          }
-         if(value is ColorTransform)
+         if(param2 is ColorTransform)
          {
-            end.concat(value);
+            _loc5_.concat(param2);
          }
          else
          {
-            end.concat(start);
+            _loc5_.concat(_loc4_);
          }
-         for(p in value)
+         for(_loc6_ in param2)
          {
-            if(p == "tint" || p == "color")
+            if(_loc6_ == "tint" || _loc6_ == "color")
             {
-               if(value[p] != null)
+               if(param2[_loc6_] != null)
                {
-                  end.color = int(value[p]);
+                  _loc5_.color = int(param2[_loc6_]);
                }
             }
-            else if(!(p == "tintAmount" || p == "exposure" || p == "brightness"))
+            else if(!(_loc6_ == "tintAmount" || _loc6_ == "exposure" || _loc6_ == "brightness"))
             {
-               end[p] = value[p];
+               _loc5_[_loc6_] = param2[_loc6_];
             }
          }
-         if(!(value is ColorTransform))
+         if(!(param2 is ColorTransform))
          {
-            if(!isNaN(value.tintAmount))
+            if(!isNaN(param2.tintAmount))
             {
-               ratio = value.tintAmount / (1 - (end.redMultiplier + end.greenMultiplier + end.blueMultiplier) / 3);
-               end.redOffset *= ratio;
-               end.greenOffset *= ratio;
-               end.blueOffset *= ratio;
-               end.redMultiplier = end.greenMultiplier = end.blueMultiplier = 1 - value.tintAmount;
+               _loc7_ = param2.tintAmount / (1 - (_loc5_.redMultiplier + _loc5_.greenMultiplier + _loc5_.blueMultiplier) / 3);
+               _loc5_.redOffset *= _loc7_;
+               _loc5_.greenOffset *= _loc7_;
+               _loc5_.blueOffset *= _loc7_;
+               _loc5_.redMultiplier = _loc5_.greenMultiplier = _loc5_.blueMultiplier = 1 - param2.tintAmount;
             }
-            else if(!isNaN(value.exposure))
+            else if(!isNaN(param2.exposure))
             {
-               end.redOffset = end.greenOffset = end.blueOffset = 255 * (value.exposure - 1);
-               end.redMultiplier = end.greenMultiplier = end.blueMultiplier = 1;
+               _loc5_.redOffset = _loc5_.greenOffset = _loc5_.blueOffset = 255 * (param2.exposure - 1);
+               _loc5_.redMultiplier = _loc5_.greenMultiplier = _loc5_.blueMultiplier = 1;
             }
-            else if(!isNaN(value.brightness))
+            else if(!isNaN(param2.brightness))
             {
-               end.redOffset = end.greenOffset = end.blueOffset = Math.max(0,(value.brightness - 1) * 255);
-               end.redMultiplier = end.greenMultiplier = end.blueMultiplier = 1 - Math.abs(value.brightness - 1);
+               _loc5_.redOffset = _loc5_.greenOffset = _loc5_.blueOffset = Math.max(0,(param2.brightness - 1) * 255);
+               _loc5_.redMultiplier = _loc5_.greenMultiplier = _loc5_.blueMultiplier = 1 - Math.abs(param2.brightness - 1);
             }
          }
-         _init(start,end);
+         _init(_loc4_,_loc5_);
          return true;
       }
    }

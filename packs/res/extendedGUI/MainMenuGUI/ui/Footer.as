@@ -12,15 +12,12 @@ package ui
    {
       private var background:Shape;
       
-      private var backgroundBitmap:BitmapData;
-      
       private var version:LabelShadowed;
       
       private var server:LabelShadowed;
       
       public function Footer()
       {
-         this.backgroundBitmap = new noised_half_black_png() as BitmapData;
          this.background = new Shape();
          this.addChild(this.background);
          Api.self.addEventListener(Api.GET_CLIENT_VERSION,this.onGetClientVersionHandler);
@@ -50,7 +47,7 @@ package ui
          this.server.color = 8947848;
          this.server.text = " ";
          this.onResize();
-         setTimeout(this.onResize,50);
+         setTimeout(this.onResize,1000);
          Api.call(Api.GET_CLIENT_VERSION);
       }
       

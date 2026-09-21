@@ -13,6 +13,8 @@ package
    {
       public static const TEST_SCREEN:String = "test_screen";
       
+      public static const DONATE_INFO_SCREEN:String = "donate_info_screen";
+      
       public static const LOGIN_SCREEN:String = "login_screen";
       
       public static const CHARNAME_SCREEN:String = "char_name_screen";
@@ -43,33 +45,73 @@ package
       override protected function initGUI() : void
       {
          Logger.LogToChannel(Logger.DEBUG,"Base.initGUI");
-         navigator.addScreen(new LoginScreen(LOGIN_SCREEN,100));
+         navigator.addScreen(new DonateTestScreen(DONATE_INFO_SCREEN,101));
          navigator.addScreen(new FirstCharNameScreen(CHARNAME_SCREEN,402));
          navigator.addScreen(new MainScreen(ROOT_SCREEN,200));
-         navigator.addScreen(new CharScreen(CHAR_SCREEN,300));
-         navigator.addScreen(new NewCharScreen(NEW_CHAR_SCREEN,400));
+         navigator.addScreen(new NewCharScreen2(NEW_CHAR_SCREEN,400));
          navigator.addScreen(new NewSettingsScreen(BASE_SETTINGS,301));
          navigator.addScreen(new SettingsTuneScreen(SETTINGS_TUNE,401));
          navigator.addScreen(new SettingsTuneVideoMainScreen(SETTINGS_TUNE_VIDEO_MAIN,410));
          navigator.addScreen(new SettingsKeyboardScreen(KEYBINDS_TUNE,450));
+         navigator.addScreen(new LoginScreen(LOGIN_SCREEN,100));
          navigator.showScreen(LOGIN_SCREEN);
+         navigator.addEventListener(ScreenEvent.GO_SCREEN,this.goScreenHandler,true);
          Auth.self.addEventListener(Auth.AUTH_SUCCESS,this.onAuthSuccess);
          Auth.self.addEventListener(Auth.AUTH_FAIL,this.onAuthFail);
          Auth.self.addEventListener(ScreenEvent.GO_SCREEN,this.goScreenHandler);
-         navigator.addEventListener(ScreenEvent.GO_SCREEN,this.goScreenHandler,true);
+         Api.self.addEventListener(Api.STEAM_MODE,this.onSteamModeRecieved);
+         Api.self.addEventListener(Api.STEAM_TRUSTED,this.onSteamTrustedRecieved);
          Api.self.addEventListener(Api.RESTART_GAME,this.onRestartGameHandler);
          Api.self.addEventListener(Api.ALERT,this.onAlertHandler);
          Api.self.addEventListener(Api.SHOW_NEWS,this.onNewsHandler);
+         Api.self.addEventListener(Api.NEED_PAY_WINDOW,this.onNeedPayHandler);
          Api.self.addEventListener(Api.CONFIRM_WINDOW_SHOW,this.onConfirmWindowShowHandler);
          Api.self.addEventListener(Api.CONFIRM_WINDOW_HIDE,this.onConfirmWindowHideHandler);
          Api.self.addEventListener(Api.OPEN_SETTINGS,this.onOpenSettings);
+         Api.self.addEventListener(Api.CLOSE_SETTINGS,this.onCloseSettings);
+         Api.self.addEventListener(Api.GOLD_VISIBLE,this.onGoldVisible);
          tabEnabled = false;
          tabChildren = false;
+         Api.call(Api.READY);
+      }
+      
+      private function onSteamModeRecieved(arg1:ApiEvent) : void
+      {
+         Base.is_steam = Boolean(arg1.data.answer.is_steam);
+         navigator.addScreen(new LoginScreen(LOGIN_SCREEN,100));
+         navigator.showScreen(LOGIN_SCREEN);
+      }
+      
+      private function onSteamTrustedRecieved(arg:ApiEvent) : void
+      {
+         Base.steam_trusted = arg.data.answer.value;
+         if(Base.navigator.header != null)
+         {
+            Base.navigator.header.account.set_trusted(Base.steam_trusted);
+         }
+      }
+      
+      private function onGoldVisible(arg1:ApiEvent) : void
+      {
+         Base.gold_visible = Boolean(arg1.data.answer.visible);
+         if(Base.navigator.header != null)
+         {
+            Base.navigator.header.account.gold_visible_update();
+         }
       }
       
       private function onOpenSettings(arg1:Object) : void
       {
          navigator.showScreen(MainMenuGUI.BASE_SETTINGS,true);
+      }
+      
+      private function onCloseSettings(arg1:Object) : void
+      {
+         if(!Base.IN_GAME)
+         {
+            return;
+         }
+         navigator.showScreen(MainMenuGUI.ROOT_SCREEN);
       }
       
       protected function goScreenHandler(arg1:ScreenEvent) : void
@@ -93,13 +135,14 @@ package
       protected function onNewsHandler(arg1:ApiEvent) : void
       {
          Logger.LogToChannel(Logger.DEBUG,"MainMenuGUI.onNewsHandler");
-         News.content = "<font color=\'#ffffff\' size=\'22\' face=\'GUILight\'>" + arg1.data.answer.text + "</font>";
-         News.title = arg1.data.answer.title;
-         News.source = arg1.data.answer.source;
-         News.doNotShowNewsWindowAnymore = arg1.data.answer.showMeNewsEverytime == 0;
          Logger.LogToChannel(Logger.DEBUG,"MainMenuGUI.onNewsHandler2");
          var loc1:* = "<font color=\'#ffffff\' size=\'22\' face=\'GUIRegular\'>" + "<p>" + "Hello, this is <font color=\'#54bdff\'><a href=\'event:http://www.ya.ru\'>link</a>.</font>" + "</font>" + "</p>";
-         Navigator.NEWS_DIALOG = Base.navigator.showNewsDialog(News.title,News.content,true,[new DialogButtonItem("extendedGUI.NewsWindow.openNewsArchive",this.openNewsArchive,0.3),new DialogButtonItem("extendedGUI.NewsWindow.closeDialog",this.doCloseNewsDialog,0.7,[Keyboard.ENTER,Keyboard.NUMPAD_ENTER])],Base.stage.stageWidth * 0.7,Base.stage.stageHeight * 0.7,true);
+         Base.navigator.showNewsDialog();
+      }
+      
+      protected function onNeedPayHandler(arg1:ApiEvent) : void
+      {
+         Base.navigator.showDonateTestDialog();
       }
       
       protected function openNewsArchive() : void
@@ -134,19 +177,12 @@ package
       protected function onAuthFail(arg1:Event) : void
       {
          Logger.LogToChannel(Logger.DEBUG,"Auth.onAuthFail.");
-         Base.setLoginBackgroundVisible(true);
          navigator.showScreen(LOGIN_SCREEN);
       }
       
       protected function onAuthSuccess(arg1:Event) : void
       {
          Logger.LogToChannel(Logger.DEBUG,"Auth.onAuthSuccess.");
-         Base.setLoginBackgroundVisible(false);
-         if(Base.background != null)
-         {
-            Base.background.visible = false;
-            Base.background.alpha = 0;
-         }
          navigator.showScreen(ROOT_SCREEN);
       }
    }

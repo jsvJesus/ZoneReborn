@@ -15,9 +15,9 @@ package com.captureTheFlag
          this.label = "A";
       }
       
-      public function set label(value:String) : *
+      public function set label(param1:String) : *
       {
-         this.textField.text = value;
+         this.textField.text = param1;
          this.textField.width = this.textField.textWidth + 8;
          this.background.width = this.textField.width;
          this.background.height = this.textField.height;

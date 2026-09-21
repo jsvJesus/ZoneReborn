@@ -13,9 +13,9 @@ package Flags_fla
          super();
       }
       
-      public function setGold(val:Boolean) : *
+      public function setGold(param1:Boolean) : *
       {
-         if(val)
+         if(param1)
          {
             this.money0.gotoAndStop("gold");
             this.money1.gotoAndStop("gold");

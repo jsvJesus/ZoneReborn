@@ -15,65 +15,65 @@ package com.greensock.plugins
          _overwriteProps.length = 0;
       }
       
-      override public function _onInitTween(target:Object, value:*, tween:TweenLite) : Boolean
+      override public function _onInitTween(param1:Object, param2:*, param3:TweenLite) : Boolean
       {
-         this._tween = tween;
+         this._tween = param3;
          return true;
       }
       
       public function _onInitAllProps() : Boolean
       {
-         var prop:String = null;
-         var pt:PropTween = null;
-         var next:PropTween = null;
-         var rp:Array = this._tween.vars.roundProps is Array ? this._tween.vars.roundProps : this._tween.vars.roundProps.split(",");
-         var i:int = int(rp.length);
-         var lookup:Object = {};
-         var rpt:PropTween = this._tween._propLookup.roundProps;
-         while(--i > -1)
+         var _loc5_:String = null;
+         var _loc6_:PropTween = null;
+         var _loc7_:PropTween = null;
+         var _loc1_:Array = this._tween.vars.roundProps is Array ? this._tween.vars.roundProps : this._tween.vars.roundProps.split(",");
+         var _loc2_:int = int(_loc1_.length);
+         var _loc3_:Object = {};
+         var _loc4_:PropTween = this._tween._propLookup.roundProps;
+         while(--_loc2_ > -1)
          {
-            lookup[rp[i]] = 1;
+            _loc3_[_loc1_[_loc2_]] = 1;
          }
-         i = int(rp.length);
-         while(--i > -1)
+         _loc2_ = int(_loc1_.length);
+         while(--_loc2_ > -1)
          {
-            prop = rp[i];
-            pt = this._tween._firstPT;
-            while(pt)
+            _loc5_ = _loc1_[_loc2_];
+            _loc6_ = this._tween._firstPT;
+            while(_loc6_)
             {
-               next = pt._next;
-               if(pt.pg)
+               _loc7_ = _loc6_._next;
+               if(_loc6_.pg)
                {
-                  pt.t._roundProps(lookup,true);
+                  _loc6_.t._roundProps(_loc3_,true);
                }
-               else if(pt.n == prop)
+               else if(_loc6_.n == _loc5_)
                {
-                  this._add(pt.t,prop,pt.s,pt.c);
-                  if(next)
+                  this._add(_loc6_.t,_loc5_,_loc6_.s,_loc6_.c);
+                  if(_loc7_)
                   {
-                     next._prev = pt._prev;
+                     _loc7_._prev = _loc6_._prev;
                   }
-                  if(pt._prev)
+                  if(_loc6_._prev)
                   {
-                     pt._prev._next = next;
+                     _loc6_._prev._next = _loc7_;
                   }
-                  else if(this._tween._firstPT == pt)
+                  else if(this._tween._firstPT == _loc6_)
                   {
-                     this._tween._firstPT = next;
+                     this._tween._firstPT = _loc7_;
                   }
-                  pt._next = pt._prev = null;
-                  this._tween._propLookup[prop] = rpt;
+                  _loc6_._next = _loc6_._prev = null;
+                  this._tween._propLookup[_loc5_] = _loc4_;
                }
-               pt = next;
+               _loc6_ = _loc7_;
             }
          }
          return false;
       }
       
-      public function _add(target:Object, p:String, s:Number, c:Number) : void
+      public function _add(param1:Object, param2:String, param3:Number, param4:Number) : void
       {
-         _addTween(target,p,s,s + c,p,true);
-         _overwriteProps[_overwriteProps.length] = p;
+         _addTween(param1,param2,param3,param3 + param4,param2,true);
+         _overwriteProps[_overwriteProps.length] = param2;
       }
    }
 }

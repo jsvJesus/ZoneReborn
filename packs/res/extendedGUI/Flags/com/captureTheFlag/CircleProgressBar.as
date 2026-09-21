@@ -33,24 +33,24 @@ package com.captureTheFlag
       
       private var halfHeightWidthoutThickness:int;
       
-      public function CircleProgressBar(width:int = 100, height:int = 100, thickness:int = 30, color:uint = 6750054, step:Number = 0.2, value:Number = 0.7)
+      public function CircleProgressBar(param1:int = 100, param2:int = 100, param3:int = 30, param4:uint = 6750054, param5:Number = 0.2, param6:Number = 0.7)
       {
          super();
-         this._width = width;
-         this._height = height;
-         this._percent = value;
-         this._step = step;
+         this._width = param1;
+         this._height = param2;
+         this._percent = param6;
+         this._step = param5;
          this._shape = new Shape();
          this._canvas = this._shape.graphics;
-         this._color = color;
+         this._color = param4;
          addChild(this._shape);
-         if(thickness >= 0 && thickness <= int(width / 2))
+         if(param3 >= 0 && param3 <= int(param1 / 2))
          {
-            this._thickness = thickness;
+            this._thickness = param3;
          }
          else
          {
-            this._thickness = int(width / 2);
+            this._thickness = int(param1 / 2);
          }
          this.halfWidth = int(this._width / 2);
          this.halfHeight = int(this._width / 2);
@@ -64,30 +64,34 @@ package com.captureTheFlag
       {
          this._canvas.clear();
          this._canvas.beginFill(this._color);
-         var endAngle:Number = this._percent * 6.283185307179586;
-         this._canvas.moveTo(this.halfWidth + Math.cos(endAngle) * this.halfWidth,this.halfHeight + Math.sin(endAngle) * this.halfHeight);
-         for(var angle1:Number = endAngle; angle1 > 0; angle1 -= this._step)
+         var _loc1_:Number = this._percent * 6.283185307179586;
+         this._canvas.moveTo(this.halfWidth + Math.cos(_loc1_) * this.halfWidth,this.halfHeight + Math.sin(_loc1_) * this.halfHeight);
+         var _loc2_:Number = _loc1_;
+         while(_loc2_ > 0)
          {
-            this._canvas.lineTo(this.halfWidth + Math.cos(angle1) * this.halfWidth,this.halfHeight + Math.sin(angle1) * this.halfHeight);
+            this._canvas.lineTo(this.halfWidth + Math.cos(_loc2_) * this.halfWidth,this.halfHeight + Math.sin(_loc2_) * this.halfHeight);
+            _loc2_ -= this._step;
          }
          this._canvas.lineTo(this.halfWidth + Math.cos(0) * this.halfWidth,this.halfHeight + Math.sin(0) * this.halfHeight);
-         for(var angle2:Number = 0; angle2 < endAngle; angle2 += this._step)
+         var _loc3_:Number = 0;
+         while(_loc3_ < _loc1_)
          {
-            this._canvas.lineTo(this.halfWidth + Math.cos(angle2) * this.halfWidthWithoutThickness,this.halfHeight + Math.sin(angle2) * this.halfHeightWidthoutThickness);
+            this._canvas.lineTo(this.halfWidth + Math.cos(_loc3_) * this.halfWidthWithoutThickness,this.halfHeight + Math.sin(_loc3_) * this.halfHeightWidthoutThickness);
+            _loc3_ += this._step;
          }
-         this._canvas.lineTo(this.halfWidth + Math.cos(endAngle) * this.halfWidthWithoutThickness,this.halfHeight + Math.sin(endAngle) * this.halfHeightWidthoutThickness);
+         this._canvas.lineTo(this.halfWidth + Math.cos(_loc1_) * this.halfWidthWithoutThickness,this.halfHeight + Math.sin(_loc1_) * this.halfHeightWidthoutThickness);
          this._canvas.endFill();
          this._shape.scaleY = this.scale;
          dispatchEvent(new Event(Event.CHANGE));
       }
       
-      public function set value(value:Number) : void
+      public function set value(param1:Number) : void
       {
-         if(value < 0 || value > 100)
+         if(param1 < 0 || param1 > 100)
          {
             return;
          }
-         this._percent = value / 100;
+         this._percent = param1 / 100;
          this.update();
       }
       
@@ -96,9 +100,9 @@ package com.captureTheFlag
          return this._percent;
       }
       
-      public function set color(value:Number) : void
+      public function set color(param1:Number) : void
       {
-         this._color = value;
+         this._color = param1;
          this.update();
       }
    }

@@ -1,6 +1,6 @@
 package ui.components
 {
-   import com.dvalimona.components.*;
+   import com.dvalimona.components.Component;
    import com.greensock.*;
    import com.greensock.easing.*;
    import communication.*;
@@ -51,6 +51,7 @@ package ui.components
       
       protected function onBreadCrumbsChanged(event:BreadCrumbEvent) : void
       {
+         this.updateLabelsView();
       }
       
       protected function onBreadCrumbsRemoved(event:BreadCrumbEvent) : void
@@ -66,7 +67,7 @@ package ui.components
       private function createItem() : TextField
       {
          var tf:TextField = new TextField();
-         tf.defaultTextFormat = new TextFormat(Style.boldFontName,30,16777215);
+         tf.defaultTextFormat = new TextFormat(Base.boldFontName,30,16777215);
          tf.autoSize = TextFieldAutoSize.LEFT;
          tf.borderColor = 16777215;
          tf.border = false;
@@ -149,7 +150,12 @@ package ui.components
       {
          var item:TextField = null;
          var i:uint = 0;
+         var data:BreadCrumb = null;
          var inactives:Array = [];
+         for(data in this.textFieldsByCrumbs)
+         {
+            (this.textFieldsByCrumbs[data] as TextField).text = data.screen.label;
+         }
          for(i = 0; i < this.numChildren; i++)
          {
             item = this.getChildAt(i) as TextField;

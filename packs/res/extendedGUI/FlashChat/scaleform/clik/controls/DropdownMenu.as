@@ -374,6 +374,19 @@ package scaleform.clik.controls
          }
       }
       
+      public function set_curID(id:int) : void
+      {
+         this.curID = id;
+         for(var i:* = 0; i < this.dataArray.length; i++)
+         {
+            if(this.curID == this.dataArray[i].id)
+            {
+               this.selectedIndex = i;
+               return;
+            }
+         }
+      }
+      
       public function get dataArray() : Array
       {
          return this._dataArray;
@@ -1029,6 +1042,7 @@ package scaleform.clik.controls
       {
          this._label = "<font size=\"" + this.FontSize + "\" color=\"#" + colo.toString(16) + "\">" + s + "</font>";
          this.color = colo;
+         invalidateState();
       }
       
       protected function updateLabel(item:Object) : void

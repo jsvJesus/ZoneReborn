@@ -18,28 +18,28 @@ package scaleform.clik.controls
       
       protected var _children:Array;
       
-      public function ButtonGroup(name:String, scope:DisplayObjectContainer)
+      public function ButtonGroup(param1:String, param2:DisplayObjectContainer)
       {
          super();
-         this.name = name;
+         this.name = param1;
          this.weakScope = new Dictionary(true);
-         this.weakScope[scope] = null;
+         this.weakScope[param2] = null;
          this._children = [];
       }
       
-      public static function getGroup(name:String, scope:DisplayObjectContainer) : ButtonGroup
+      public static function getGroup(param1:String, param2:DisplayObjectContainer) : ButtonGroup
       {
-         var list:Object = groups[scope];
-         if(list == null)
+         var _loc3_:Object = groups[param2];
+         if(_loc3_ == null)
          {
-            list = groups[scope] = new Object();
+            _loc3_ = groups[param2] = new Object();
          }
-         var group:ButtonGroup = list[name.toLowerCase()];
-         if(group == null)
+         var _loc4_:ButtonGroup = _loc3_[param1.toLowerCase()];
+         if(_loc4_ == null)
          {
-            group = list[name.toLowerCase()] = new ButtonGroup(name,scope);
+            _loc4_ = _loc3_[param1.toLowerCase()] = new ButtonGroup(param1,param2);
          }
-         return group;
+         return _loc4_;
       }
       
       public function get length() : uint
@@ -59,89 +59,89 @@ package scaleform.clik.controls
       
       public function get scope() : DisplayObjectContainer
       {
-         var a:* = undefined;
-         var doc:DisplayObjectContainer = null;
+         var _loc2_:* = undefined;
+         var _loc1_:DisplayObjectContainer = null;
          var _loc3_:int = 0;
          var _loc4_:* = this.scope;
-         for(a in _loc4_)
+         for(_loc2_ in _loc4_)
          {
-            doc = a as DisplayObjectContainer;
+            _loc1_ = _loc2_ as DisplayObjectContainer;
          }
-         return doc;
+         return _loc1_;
       }
       
-      public function addButton(button:Button) : void
+      public function addButton(param1:Button) : void
       {
-         this.removeButton(button);
-         this._children.push(button);
-         if(button.selected)
+         this.removeButton(param1);
+         this._children.push(param1);
+         if(param1.selected)
          {
-            this.updateSelectedButton(button,true);
+            this.updateSelectedButton(param1,true);
          }
-         button.addEventListener(Event.SELECT,this.handleSelect,false,0,true);
-         button.addEventListener(ButtonEvent.CLICK,this.handleClick,false,0,true);
-         button.addEventListener(Event.REMOVED,this.handleRemoved,false,0,true);
+         param1.addEventListener(Event.SELECT,this.handleSelect,false,0,true);
+         param1.addEventListener(ButtonEvent.CLICK,this.handleClick,false,0,true);
+         param1.addEventListener(Event.REMOVED,this.handleRemoved,false,0,true);
       }
       
-      public function removeButton(button:Button) : void
+      public function removeButton(param1:Button) : void
       {
-         var index:int = int(this._children.indexOf(button));
-         if(index == -1)
+         var _loc2_:int = int(this._children.indexOf(param1));
+         if(_loc2_ == -1)
          {
             return;
          }
-         this._children.splice(index,1);
-         button.removeEventListener(Event.SELECT,this.handleSelect,false);
-         button.removeEventListener(ButtonEvent.CLICK,this.handleClick,false);
+         this._children.splice(_loc2_,1);
+         param1.removeEventListener(Event.SELECT,this.handleSelect,false);
+         param1.removeEventListener(ButtonEvent.CLICK,this.handleClick,false);
       }
       
-      public function getButtonAt(index:int) : Button
+      public function getButtonAt(param1:int) : Button
       {
-         return this._children[index] as Button;
+         return this._children[param1] as Button;
       }
       
-      public function setSelectedButtonByIndex(index:uint, selected:Boolean = true) : Boolean
+      public function setSelectedButtonByIndex(param1:uint, param2:Boolean = true) : Boolean
       {
-         var success:Boolean = false;
-         var btn:Button = this._children[index] as Button;
-         if(btn != null)
+         var _loc3_:Boolean = false;
+         var _loc4_:Button = this._children[param1] as Button;
+         if(_loc4_ != null)
          {
-            btn.selected = selected;
-            success = true;
+            _loc4_.selected = param2;
+            _loc3_ = true;
          }
-         return success;
+         return _loc3_;
       }
       
-      protected function updateSelectedButton(button:Button, selected:Boolean = true) : void
+      protected function updateSelectedButton(param1:Button, param2:Boolean = true) : void
       {
-         if(selected && button == this.selectedButton)
+         if(param2 && param1 == this.selectedButton)
          {
             return;
          }
-         var turnOffOnly:Boolean = !selected && button == this.selectedButton && button.allowDeselect;
-         var oldButton:Button = this.selectedButton;
-         if(selected)
+         var _loc3_:Boolean = !param2 && param1 == this.selectedButton && param1.allowDeselect;
+         var _loc4_:Button = this.selectedButton;
+         if(param2)
          {
-            this.selectedButton = button;
+            this.selectedButton = param1;
          }
-         if(selected && oldButton != null)
+         if(param2 && _loc4_ != null)
          {
-            oldButton.selected = false;
+            _loc4_.selected = false;
          }
-         if(turnOffOnly)
+         if(_loc3_)
          {
             this.selectedButton = null;
          }
-         else if(!selected)
+         else if(!param2)
          {
             return;
          }
          dispatchEvent(new Event(Event.CHANGE));
       }
       
-      public function hasButton(button:Button) : Boolean
+      public function hasButton(param1:Button) : Boolean
       {
-         return this._children.indexOf(button) > -1;
+         return this._children.indexOf(param1) > -1;
       }
       
       override public function toString() : String
@@ -149,27 +149,27 @@ package scaleform.clik.controls
          return "[CLIK ButtonGroup " + this.name + " (" + this._children.length + ")]";
       }
       
-      protected function handleSelect(event:Event) : void
+      protected function handleSelect(param1:Event) : void
       {
-         var button:Button = event.target as Button;
-         if(button.selected)
+         var _loc2_:Button = param1.target as Button;
+         if(_loc2_.selected)
          {
-            this.updateSelectedButton(button,true);
+            this.updateSelectedButton(_loc2_,true);
          }
          else
          {
-            this.updateSelectedButton(button,false);
+            this.updateSelectedButton(_loc2_,false);
          }
       }
       
-      protected function handleClick(event:ButtonEvent) : void
+      protected function handleClick(param1:ButtonEvent) : void
       {
-         dispatchEvent(event);
+         dispatchEvent(param1);
       }
       
-      protected function handleRemoved(event:Event) : void
+      protected function handleRemoved(param1:Event) : void
       {
-         this.removeButton(event.target as Button);
+         this.removeButton(param1.target as Button);
       }
    }
 }

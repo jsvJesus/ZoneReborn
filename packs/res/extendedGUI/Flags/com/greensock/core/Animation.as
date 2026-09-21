@@ -64,15 +64,15 @@ package com.greensock.core
       
       public var data:*;
       
-      public function Animation(duration:Number = 0, vars:Object = null)
+      public function Animation(param1:Number = 0, param2:Object = null)
       {
          super();
-         this.vars = vars || {};
+         this.vars = param2 || {};
          if(this.vars._isGSVars)
          {
             this.vars = this.vars.vars;
          }
-         this._duration = this._totalDuration = duration || 0;
+         this._duration = this._totalDuration = param1 || 0;
          this._delay = Number(this.vars.delay) || 0;
          this._timeScale = 1;
          this._totalTime = this._time = 0;
@@ -92,8 +92,8 @@ package com.greensock.core
             _rootTimeline._active = _rootFramesTimeline._active = true;
             ticker.addEventListener("enterFrame",_updateRoot,false,0,true);
          }
-         var tl:SimpleTimeline = !!this.vars.useFrames ? _rootFramesTimeline : _rootTimeline;
-         tl.add(this,tl._time);
+         var _loc3_:SimpleTimeline = !!this.vars.useFrames ? _rootFramesTimeline : _rootTimeline;
+         _loc3_.add(this,_loc3_._time);
          this._reversed = this.vars.reversed == true;
          if(this.vars.paused)
          {
@@ -101,7 +101,7 @@ package com.greensock.core
          }
       }
       
-      public static function _updateRoot(event:Event = null) : void
+      public static function _updateRoot(param1:Event = null) : void
       {
          ++_rootFrame;
          _rootTimeline.render((getTimer() / 1000 - _rootTimeline._startTime) * _rootTimeline._timeScale,false,false);
@@ -109,57 +109,57 @@ package com.greensock.core
          ticker.dispatchEvent(_tickEvent);
       }
       
-      public function play(from:* = null, suppressEvents:Boolean = true) : *
+      public function play(param1:* = null, param2:Boolean = true) : *
       {
-         if(from != null)
+         if(param1 != null)
          {
-            this.seek(from,suppressEvents);
+            this.seek(param1,param2);
          }
          this.reversed(false);
          return this.paused(false);
       }
       
-      public function pause(atTime:* = null, suppressEvents:Boolean = true) : *
+      public function pause(param1:* = null, param2:Boolean = true) : *
       {
-         if(atTime != null)
+         if(param1 != null)
          {
-            this.seek(atTime,suppressEvents);
+            this.seek(param1,param2);
          }
          return this.paused(true);
       }
       
-      public function resume(from:* = null, suppressEvents:Boolean = true) : *
+      public function resume(param1:* = null, param2:Boolean = true) : *
       {
-         if(from != null)
+         if(param1 != null)
          {
-            this.seek(from,suppressEvents);
+            this.seek(param1,param2);
          }
          return this.paused(false);
       }
       
-      public function seek(time:*, suppressEvents:Boolean = true) : *
+      public function seek(param1:*, param2:Boolean = true) : *
       {
-         return this.totalTime(Number(time),suppressEvents);
+         return this.totalTime(Number(param1),param2);
       }
       
-      public function restart(includeDelay:Boolean = false, suppressEvents:Boolean = true) : *
+      public function restart(param1:Boolean = false, param2:Boolean = true) : *
       {
          this.reversed(false);
          this.paused(false);
-         return this.totalTime(includeDelay ? -this._delay : 0,suppressEvents,true);
+         return this.totalTime(param1 ? -this._delay : 0,param2,true);
       }
       
-      public function reverse(from:* = null, suppressEvents:Boolean = true) : *
+      public function reverse(param1:* = null, param2:Boolean = true) : *
       {
-         if(from != null)
+         if(param1 != null)
          {
-            this.seek(from || this.totalDuration(),suppressEvents);
+            this.seek(param1 || this.totalDuration(),param2);
          }
          this.reversed(true);
          return this.paused(false);
       }
       
-      public function render(time:Number, suppressEvents:Boolean = false, force:Boolean = false) : void
+      public function render(param1:Number, param2:Boolean = false, param3:Boolean = false) : void
       {
       }
       
@@ -170,22 +170,22 @@ package com.greensock.core
       
       public function isActive() : Boolean
       {
-         var rawTime:Number = NaN;
-         var tl:SimpleTimeline = this._timeline;
-         return tl == null || !this._gc && !this._paused && tl.isActive() && (rawTime = tl.rawTime()) >= this._startTime && rawTime < this._startTime + this.totalDuration() / this._timeScale;
+         var _loc2_:Number = NaN;
+         var _loc1_:SimpleTimeline = this._timeline;
+         return _loc1_ == null || !this._gc && !this._paused && _loc1_.isActive() && (_loc2_ = _loc1_.rawTime()) >= this._startTime && _loc2_ < this._startTime + this.totalDuration() / this._timeScale;
       }
       
-      public function _enabled(enabled:Boolean, ignoreTimeline:Boolean = false) : Boolean
+      public function _enabled(param1:Boolean, param2:Boolean = false) : Boolean
       {
-         this._gc = !enabled;
-         this._active = Boolean(enabled && !this._paused && this._totalTime > 0 && this._totalTime < this._totalDuration);
-         if(!ignoreTimeline)
+         this._gc = !param1;
+         this._active = Boolean(param1 && !this._paused && this._totalTime > 0 && this._totalTime < this._totalDuration);
+         if(!param2)
          {
-            if(enabled && this.timeline == null)
+            if(param1 && this.timeline == null)
             {
                this._timeline.add(this,this._startTime - this._delay);
             }
-            else if(!enabled && this.timeline != null)
+            else if(!param1 && this.timeline != null)
             {
                this._timeline._remove(this,true);
             }
@@ -193,72 +193,72 @@ package com.greensock.core
          return false;
       }
       
-      public function _kill(vars:Object = null, target:Object = null) : Boolean
+      public function _kill(param1:Object = null, param2:Object = null) : Boolean
       {
          return this._enabled(false,false);
       }
       
-      public function kill(vars:Object = null, target:Object = null) : *
+      public function kill(param1:Object = null, param2:Object = null) : *
       {
-         this._kill(vars,target);
+         this._kill(param1,param2);
          return this;
       }
       
-      protected function _uncache(includeSelf:Boolean) : *
+      protected function _uncache(param1:Boolean) : *
       {
-         var tween:Animation = includeSelf ? this : this.timeline;
-         while(tween)
+         var _loc2_:Animation = param1 ? this : this.timeline;
+         while(_loc2_)
          {
-            tween._dirty = true;
-            tween = tween.timeline;
+            _loc2_._dirty = true;
+            _loc2_ = _loc2_.timeline;
          }
          return this;
       }
       
-      protected function _swapSelfInParams(params:Array) : Array
+      protected function _swapSelfInParams(param1:Array) : Array
       {
-         var i:int = int(params.length);
-         var copy:Array = params.concat();
-         while(--i > -1)
+         var _loc2_:int = int(param1.length);
+         var _loc3_:Array = param1.concat();
+         while(--_loc2_ > -1)
          {
-            if(params[i] === "{self}")
+            if(param1[_loc2_] === "{self}")
             {
-               copy[i] = this;
+               _loc3_[_loc2_] = this;
             }
          }
-         return copy;
+         return _loc3_;
       }
       
-      public function eventCallback(type:String, callback:Function = null, params:Array = null) : *
+      public function eventCallback(param1:String, param2:Function = null, param3:Array = null) : *
       {
-         if(type == null)
+         if(param1 == null)
          {
             return null;
          }
-         if(type.substr(0,2) == "on")
+         if(param1.substr(0,2) == "on")
          {
             if(arguments.length == 1)
             {
-               return this.vars[type];
+               return this.vars[param1];
             }
-            if(callback == null)
+            if(param2 == null)
             {
-               delete this.vars[type];
+               delete this.vars[param1];
             }
             else
             {
-               this.vars[type] = callback;
-               this.vars[type + "Params"] = params is Array && params.join("").indexOf("{self}") !== -1 ? this._swapSelfInParams(params) : params;
+               this.vars[param1] = param2;
+               this.vars[param1 + "Params"] = param3 is Array && param3.join("").indexOf("{self}") !== -1 ? this._swapSelfInParams(param3) : param3;
             }
-            if(type == "onUpdate")
+            if(param1 == "onUpdate")
             {
-               this._onUpdate = callback;
+               this._onUpdate = param2;
             }
          }
          return this;
       }
       
-      public function delay(value:Number = NaN) : *
+      public function delay(param1:Number = NaN) : *
       {
          if(!arguments.length)
          {
@@ -266,20 +266,20 @@ package com.greensock.core
          }
          if(this._timeline.smoothChildTiming)
          {
-            this.startTime(this._startTime + value - this._delay);
+            this.startTime(this._startTime + param1 - this._delay);
          }
-         this._delay = value;
+         this._delay = param1;
          return this;
       }
       
-      public function duration(value:Number = NaN) : *
+      public function duration(param1:Number = NaN) : *
       {
          if(!arguments.length)
          {
             this._dirty = false;
             return this._duration;
          }
-         this._duration = this._totalDuration = value;
+         this._duration = this._totalDuration = param1;
          this._uncache(true);
          if(this._timeline.smoothChildTiming)
          {
@@ -287,9 +287,9 @@ package com.greensock.core
             {
                if(this._time < this._duration)
                {
-                  if(value != 0)
+                  if(param1 != 0)
                   {
-                     this.totalTime(this._totalTime * (value / this._duration),true);
+                     this.totalTime(this._totalTime * (param1 / this._duration),true);
                   }
                }
             }
@@ -297,13 +297,13 @@ package com.greensock.core
          return this;
       }
       
-      public function totalDuration(value:Number = NaN) : *
+      public function totalDuration(param1:Number = NaN) : *
       {
          this._dirty = false;
-         return !arguments.length ? this._totalDuration : this.duration(value);
+         return !arguments.length ? this._totalDuration : this.duration(param1);
       }
       
-      public function time(value:Number = NaN, suppressEvents:Boolean = false) : *
+      public function time(param1:Number = NaN, param2:Boolean = false) : *
       {
          if(!arguments.length)
          {
@@ -313,25 +313,25 @@ package com.greensock.core
          {
             this.totalDuration();
          }
-         if(value > this._duration)
+         if(param1 > this._duration)
          {
-            value = this._duration;
+            param1 = this._duration;
          }
-         return this.totalTime(value,suppressEvents);
+         return this.totalTime(param1,param2);
       }
       
-      public function totalTime(time:Number = NaN, suppressEvents:Boolean = false, uncapped:Boolean = false) : *
+      public function totalTime(param1:Number = NaN, param2:Boolean = false, param3:Boolean = false) : *
       {
-         var tl:SimpleTimeline = null;
+         var _loc5_:SimpleTimeline = null;
          if(!arguments.length)
          {
             return this._totalTime;
          }
          if(this._timeline)
          {
-            if(time < 0 && !uncapped)
+            if(param1 < 0 && !param3)
             {
-               time += this.totalDuration();
+               param1 += this.totalDuration();
             }
             if(this._timeline.smoothChildTiming)
             {
@@ -339,25 +339,25 @@ package com.greensock.core
                {
                   this.totalDuration();
                }
-               if(time > this._totalDuration && !uncapped)
+               if(param1 > this._totalDuration && !param3)
                {
-                  time = this._totalDuration;
+                  param1 = this._totalDuration;
                }
-               tl = this._timeline;
-               this._startTime = (this._paused ? this._pauseTime : tl._time) - (!this._reversed ? time : this._totalDuration - time) / this._timeScale;
+               _loc5_ = this._timeline;
+               this._startTime = (this._paused ? this._pauseTime : _loc5_._time) - (!this._reversed ? param1 : this._totalDuration - param1) / this._timeScale;
                if(!this._timeline._dirty)
                {
                   this._uncache(false);
                }
-               if(tl._timeline != null)
+               if(_loc5_._timeline != null)
                {
-                  while(tl._timeline)
+                  while(_loc5_._timeline)
                   {
-                     if(tl._timeline._time !== (tl._startTime + tl._totalTime) / tl._timeScale)
+                     if(_loc5_._timeline._time !== (_loc5_._startTime + _loc5_._totalTime) / _loc5_._timeScale)
                      {
-                        tl.totalTime(tl._totalTime,true);
+                        _loc5_.totalTime(_loc5_._totalTime,true);
                      }
-                     tl = tl._timeline;
+                     _loc5_ = _loc5_._timeline;
                   }
                }
             }
@@ -365,104 +365,104 @@ package com.greensock.core
             {
                this._enabled(true,false);
             }
-            if(this._totalTime != time || this._duration === 0)
+            if(this._totalTime != param1 || this._duration === 0)
             {
-               this.render(time,suppressEvents,false);
+               this.render(param1,param2,false);
             }
          }
          return this;
       }
       
-      public function progress(value:Number = NaN, suppressEvents:Boolean = false) : *
+      public function progress(param1:Number = NaN, param2:Boolean = false) : *
       {
-         return !arguments.length ? this._time / this.duration() : this.totalTime(this.duration() * value,suppressEvents);
+         return !arguments.length ? this._time / this.duration() : this.totalTime(this.duration() * param1,param2);
       }
       
-      public function totalProgress(value:Number = NaN, suppressEvents:Boolean = false) : *
+      public function totalProgress(param1:Number = NaN, param2:Boolean = false) : *
       {
-         return !arguments.length ? this._time / this.duration() : this.totalTime(this.duration() * value,suppressEvents);
+         return !arguments.length ? this._time / this.duration() : this.totalTime(this.duration() * param1,param2);
       }
       
-      public function startTime(value:Number = NaN) : *
+      public function startTime(param1:Number = NaN) : *
       {
          if(!arguments.length)
          {
             return this._startTime;
          }
-         if(value != this._startTime)
+         if(param1 != this._startTime)
          {
-            this._startTime = value;
+            this._startTime = param1;
             if(this.timeline)
             {
                if(this.timeline._sortChildren)
                {
-                  this.timeline.add(this,value - this._delay);
+                  this.timeline.add(this,param1 - this._delay);
                }
             }
          }
          return this;
       }
       
-      public function timeScale(value:Number = NaN) : *
+      public function timeScale(param1:Number = NaN) : *
       {
-         var t:Number = NaN;
+         var _loc3_:Number = NaN;
          if(!arguments.length)
          {
             return this._timeScale;
          }
-         value ||= 0.000001;
+         param1 ||= 0.000001;
          if(Boolean(this._timeline) && this._timeline.smoothChildTiming)
          {
-            t = Boolean(this._pauseTime) || this._pauseTime == 0 ? this._pauseTime : this._timeline._totalTime;
-            this._startTime = t - (t - this._startTime) * this._timeScale / value;
+            _loc3_ = Boolean(this._pauseTime) || this._pauseTime == 0 ? this._pauseTime : this._timeline._totalTime;
+            this._startTime = _loc3_ - (_loc3_ - this._startTime) * this._timeScale / param1;
          }
-         this._timeScale = value;
+         this._timeScale = param1;
          return this._uncache(false);
       }
       
-      public function reversed(value:Boolean = false) : *
+      public function reversed(param1:Boolean = false) : *
       {
          if(!arguments.length)
          {
             return this._reversed;
          }
-         if(value != this._reversed)
+         if(param1 != this._reversed)
          {
-            this._reversed = value;
+            this._reversed = param1;
             this.totalTime(Boolean(this._timeline) && !this._timeline.smoothChildTiming ? this.totalDuration() - this._totalTime : this._totalTime,true);
          }
          return this;
       }
       
-      public function paused(value:Boolean = false) : *
+      public function paused(param1:Boolean = false) : *
       {
-         var raw:Number = NaN;
-         var elapsed:Number = NaN;
+         var _loc3_:Number = NaN;
+         var _loc4_:Number = NaN;
          if(!arguments.length)
          {
             return this._paused;
          }
-         if(value != this._paused)
+         if(param1 != this._paused)
          {
             if(this._timeline)
             {
-               raw = this._timeline.rawTime();
-               elapsed = raw - this._pauseTime;
-               if(!value && this._timeline.smoothChildTiming)
+               _loc3_ = this._timeline.rawTime();
+               _loc4_ = _loc3_ - this._pauseTime;
+               if(!param1 && this._timeline.smoothChildTiming)
                {
-                  this._startTime += elapsed;
+                  this._startTime += _loc4_;
                   this._uncache(false);
                }
-               this._pauseTime = value ? raw : NaN;
-               this._paused = value;
-               this._active = !value && this._totalTime > 0 && this._totalTime < this._totalDuration;
-               if(!value && elapsed != 0 && this._initted && this.duration() !== 0)
+               this._pauseTime = param1 ? _loc3_ : NaN;
+               this._paused = param1;
+               this._active = !param1 && this._totalTime > 0 && this._totalTime < this._totalDuration;
+               if(!param1 && _loc4_ != 0 && this._initted && this.duration() !== 0)
                {
-                  this.render(this._timeline.smoothChildTiming ? this._totalTime : (raw - this._startTime) / this._timeScale,true,true);
+                  this.render(this._timeline.smoothChildTiming ? this._totalTime : (_loc3_ - this._startTime) / this._timeScale,true,true);
                }
             }
          }
-         if(this._gc && !value)
+         if(this._gc && !param1)
          {
             this._enabled(true,false);
          }

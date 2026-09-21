@@ -21,19 +21,19 @@ package com.greensock.plugins
          super("visible");
       }
       
-      override public function _onInitTween(target:Object, value:*, tween:TweenLite) : Boolean
+      override public function _onInitTween(param1:Object, param2:*, param3:TweenLite) : Boolean
       {
-         this._target = target;
-         this._tween = tween;
+         this._target = param1;
+         this._tween = param3;
          this._progress = !!this._tween.vars.runBackwards ? 0 : 1;
          this._initVal = this._target.visible;
-         this._visible = Boolean(value);
+         this._visible = Boolean(param2);
          return true;
       }
       
-      override public function setRatio(v:Number) : void
+      override public function setRatio(param1:Number) : void
       {
-         this._target.visible = v == 1 && (this._tween._time / this._tween._duration == this._progress || this._tween._duration == 0) ? this._visible : this._initVal;
+         this._target.visible = param1 == 1 && (this._tween._time / this._tween._duration == this._progress || this._tween._duration == 0) ? this._visible : this._initVal;
       }
    }
 }

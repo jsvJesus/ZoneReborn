@@ -10,9 +10,9 @@ package scaleform.clik.events
       
       public static const HIDE:String = "hide";
       
-      public function ComponentEvent(type:String, bubbles:Boolean = false, cancelable:Boolean = true)
+      public function ComponentEvent(param1:String, param2:Boolean = false, param3:Boolean = true)
       {
-         super(type,bubbles,cancelable);
+         super(param1,param2,param3);
       }
    }
 }

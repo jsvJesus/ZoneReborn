@@ -1,7 +1,6 @@
 package com.dvalimona.components
 {
-   import flash.display.DisplayObject;
-   import flash.display.DisplayObjectContainer;
+   import flash.display.*;
    import flash.events.*;
    
    public class VBox extends Component
@@ -19,6 +18,16 @@ package com.dvalimona.components
       protected var _spacing:Number = 5;
       
       private var _alignment:String = "none";
+      
+      private var background:Sprite;
+      
+      public var _debug:Boolean = false;
+      
+      public var fixedWidth:Number = 0;
+      
+      public var fixedHeight:Number = -1;
+      
+      public var ignoreInvisibleChildren:Boolean = false;
       
       private var _backgroundColor:int = -1;
       
@@ -98,49 +107,89 @@ package com.dvalimona.components
          }
       }
       
-      override public function draw() : void
+      public function getChildrenHeight() : int
       {
          var child:DisplayObject = null;
-         _height = 0;
-         _height += this.marginTop;
-         var maxWidth:Number = 0;
+         var tmp_height:Number = 0;
+         tmp_height += this.marginTop;
          var ypos:Number = this.marginTop;
          for(var i:int = 0; i < numChildren; i++)
          {
             child = getChildAt(i);
-            child.y = ypos + (!!child.hasOwnProperty("paddingTop") ? (child as Object).paddingTop : 0);
-            ypos += child.height + (!!child.hasOwnProperty("paddingTop") ? (child as Object).paddingTop : 0) + (!!child.hasOwnProperty("paddingBottom") ? (child as Object).paddingBottom : 0) + this._spacing;
-            _height += child.height + (!!child.hasOwnProperty("paddingTop") ? (child as Object).paddingTop : 0) + (!!child.hasOwnProperty("paddingBottom") ? (child as Object).paddingBottom : 0);
-            if(this._alignment != JUSTIFY)
+            if(!(this.ignoreInvisibleChildren && !child.visible))
             {
-               maxWidth = Math.max(maxWidth,this.marginLeft + child.width + (!!child.hasOwnProperty("paddingLeft") ? (child as Object).paddingLeft : 0) + (!!child.hasOwnProperty("paddingRight") ? (child as Object).paddingRight : 0) + this.marginRight);
+               child.y = ypos + (!!child.hasOwnProperty("paddingTop") ? (child as Object).paddingTop : 0);
+               ypos += child.height + (!!child.hasOwnProperty("paddingTop") ? (child as Object).paddingTop : 0) + (!!child.hasOwnProperty("paddingBottom") ? (child as Object).paddingBottom : 0) + this._spacing;
+               tmp_height += child.height + (!!child.hasOwnProperty("paddingTop") ? (child as Object).paddingTop : 0) + (!!child.hasOwnProperty("paddingBottom") ? (child as Object).paddingBottom : 0);
             }
-            else
+         }
+         tmp_height += this._spacing * (numChildren - 1);
+         tmp_height += marginBottom;
+         return Math.round(tmp_height);
+      }
+      
+      override public function draw() : void
+      {
+         var child:DisplayObject = null;
+         var maxWidth:Number = this.fixedWidth;
+         var maxHeight:Number = this.fixedHeight;
+         this.background.graphics.clear();
+         this.background.width = 0;
+         this.background.height = 0;
+         var j:int = 0;
+         for(var i:int = 0; i < numChildren; i++)
+         {
+            child = getChildAt(i);
+            if(child != this.background)
             {
-               _width = _width;
+               if(this._alignment != JUSTIFY)
+               {
+                  maxWidth = Math.max(maxWidth,this.marginLeft + child.width + (!!child.hasOwnProperty("paddingLeft") ? (child as Object).paddingLeft : 0) + (!!child.hasOwnProperty("paddingRight") ? (child as Object).paddingRight : 0) + this.marginRight);
+               }
+               else
+               {
+                  _width = _width;
+               }
             }
          }
          if(this._alignment != JUSTIFY)
          {
             _width = maxWidth;
          }
+         if(this.fixedHeight >= 0)
+         {
+            _height = Math.min(this.getChildrenHeight(),this.fixedHeight);
+         }
+         else
+         {
+            _height = this.getChildrenHeight();
+         }
          this.doAlignment();
-         _height += this._spacing * (numChildren - 1);
-         _height += marginBottom;
-         _height = Math.round(_height);
          drawDebug();
          this.drawBackground();
          this.dispatchEvent(new Event(Event.RESIZE));
+      }
+      
+      override protected function addChildren() : void
+      {
+         this.background = new Sprite();
+         this.background.y = 0;
+         this.background.x = 0;
+         this.addChild(this.background);
       }
       
       private function drawBackground() : void
       {
          if(this.backgroundColor >= 0)
          {
-            this.graphics.clear();
-            this.graphics.beginFill(this.backgroundColor,this.backgroundAlpha);
-            this.graphics.drawRect(0,0,_width,_height);
-            this.graphics.endFill();
+            this.setChildIndex(this.background,0);
+            this.background.graphics.clear();
+            this.background.graphics.beginBitmapFill(Style.backgroundBitmap);
+            this.background.graphics.drawRect(0,0,_width,_height);
+            this.background.graphics.endFill();
+            this.background.alpha = this.backgroundAlpha;
+            this.background.width = _width;
+            this.background.height = _height;
          }
       }
       

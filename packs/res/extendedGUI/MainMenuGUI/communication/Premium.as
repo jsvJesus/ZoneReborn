@@ -12,11 +12,19 @@ package communication
    {
       protected static var Prem:Object;
       
+      public static var NO_ICON:Bitmap;
+      
       public static var currentID:int;
       
       public static var frizeID:int;
       
       public static var Elapsed:Number;
+      
+      public static var boosterCurrent:int;
+      
+      public static var boosterName:String;
+      
+      public static var boosterElapsed:Number;
       
       private static var _list:Array;
       
@@ -25,6 +33,8 @@ package communication
       public static const MAX_DESCRIPTION_LENGTH:uint = 120;
       
       public static const UPDATED:String = "updated";
+      
+      public static const UPDATED_BOOSTER:String = "updated_booster";
       
       public static const SUCCESS:String = "success";
       
@@ -96,6 +106,7 @@ package communication
          {
             _core = new EventDispatcher();
             Api.self.addEventListener(Api.UPDATE_PREMIUM,onUpdatePremiumHandler);
+            Api.self.addEventListener(Api.UPDATE_BOOSTER,onUpdateBoosterHandler);
             Api.self.addEventListener(Api.PREMIUM_ACCOUNT_DATA,onGetPremiumAccountDataHandler);
          }
          return _core;
@@ -127,6 +138,14 @@ package communication
             core.dispatchEvent(new Event(UPDATED));
             core.dispatchEvent(new Event(SUCCESS));
          }
+      }
+      
+      protected static function onUpdateBoosterHandler(arg1:ApiEvent) : void
+      {
+         boosterCurrent = arg1.data.answer.current;
+         boosterElapsed = arg1.data.answer.remaining_time;
+         boosterName = arg1.data.answer.name;
+         core.dispatchEvent(new Event(UPDATED_BOOSTER));
       }
       
       public static function Update() : void
@@ -205,10 +224,7 @@ package communication
          Logger.LogToChannel(Logger.DEBUG,"Character.onAllCharInfoHandler",arg1.data.answer);
          parse(arg1.data.answer);
          core.dispatchEvent(new Event(UPDATED));
-      }
-      
-      protected static function sravn(arg1:Object, arg2:Object) : Boolean
-      {
+         core.dispatchEvent(new Event(UPDATED_BOOSTER));
       }
       
       protected static function parse(arg1:Object) : void
@@ -218,19 +234,35 @@ package communication
          currentID = arg1.current;
          frizeID = arg1.frize;
          Elapsed = arg1.remaining_time;
+         boosterCurrent = arg1.booster_id;
+         boosterElapsed = arg1.booster_time;
+         boosterName = arg1.booster_name;
          _list = new Array();
-         var Paths:Array = new Array();
+         var paths:Array = new Array();
+         var boostPaths:Array = new Array();
          var loc1:* = 0;
          while(loc1 < arg1.premiums.length)
          {
             _list.push(new Premium(arg1.premiums[loc1]));
             Obj = new Object();
             Obj.ID = arg1.premiums[loc1].premium_id;
-            Obj.Path = arg1.premiums[loc1].icon_path;
-            Paths.push(Obj);
+            Obj.path = arg1.premiums[loc1].icon_path;
+            paths.push(Obj);
             loc1++;
          }
-         PremiumIcons.LoadIcons(Paths);
+         loc1 = 0;
+         while(loc1 < arg1.boosters.length)
+         {
+            Obj = new Object();
+            Obj.ID = arg1.boosters[loc1].booster_id;
+            Obj.path = arg1.boosters[loc1].icon_path;
+            Obj.path_with_prem = arg1.boosters[loc1].icon_path_with_prem;
+            boostPaths.push(Obj);
+            loc1++;
+         }
+         PremiumIcons.LoadNoPremiumIcon(arg1.no_premium_icon_path);
+         PremiumIcons.LoadIcons(paths);
+         BoosterIcons.LoadIcons(boostPaths);
          Prem = arg1.premiums;
       }
       
@@ -248,9 +280,9 @@ package communication
          return null;
       }
       
-      public function loadIcon(Path:String) : *
+      public function loadIcon(path:String) : *
       {
-         var url:URLRequest = new URLRequest(Path);
+         var url:URLRequest = new URLRequest(path);
          this.iconLoader.contentLoaderInfo.addEventListener(Event.COMPLETE,this.completeIconLoad);
          this.iconLoader.load(url);
       }

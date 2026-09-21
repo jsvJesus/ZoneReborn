@@ -24,22 +24,22 @@ package com.greensock.core
       
       public var _prev:PropTween;
       
-      public function PropTween(target:Object, property:String, start:Number, change:Number, name:String, isPlugin:Boolean, next:PropTween = null, priority:int = 0)
+      public function PropTween(param1:Object, param2:String, param3:Number, param4:Number, param5:String, param6:Boolean, param7:PropTween = null, param8:int = 0)
       {
          super();
-         this.t = target;
-         this.p = property;
-         this.s = start;
-         this.c = change;
-         this.n = name;
-         this.f = target[property] is Function;
-         this.pg = isPlugin;
-         if(next)
+         this.t = param1;
+         this.p = param2;
+         this.s = param3;
+         this.c = param4;
+         this.n = param5;
+         this.f = param1[param2] is Function;
+         this.pg = param6;
+         if(param7)
          {
-            next._prev = this;
-            this._next = next;
+            param7._prev = this;
+            this._next = param7;
          }
-         this.pr = priority;
+         this.pr = param8;
       }
    }
 }

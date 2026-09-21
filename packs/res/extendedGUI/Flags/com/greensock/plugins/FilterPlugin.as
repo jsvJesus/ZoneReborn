@@ -20,106 +20,106 @@ package com.greensock.plugins
       
       private var _tween:TweenLite;
       
-      public function FilterPlugin(props:String = "", priority:Number = 0)
+      public function FilterPlugin(param1:String = "", param2:Number = 0)
       {
-         super(props,priority);
+         super(param1,param2);
       }
       
-      protected function _initFilter(target:*, props:Object, tween:TweenLite, type:Class, defaultFilter:BitmapFilter, propNames:Array) : Boolean
+      protected function _initFilter(param1:*, param2:Object, param3:TweenLite, param4:Class, param5:BitmapFilter, param6:Array) : Boolean
       {
-         var p:String = null;
-         var i:int = 0;
-         var colorTween:HexColorsPlugin = null;
-         this._target = target;
-         this._tween = tween;
-         this._type = type;
-         var filters:Array = this._target.filters;
-         var extras:Object = props is BitmapFilter ? {} : props;
-         if(extras.index != null)
+         var _loc8_:String = null;
+         var _loc9_:int = 0;
+         var _loc10_:HexColorsPlugin = null;
+         this._target = param1;
+         this._tween = param3;
+         this._type = param4;
+         var _loc7_:Array = this._target.filters;
+         var _loc11_:Object = param2 is BitmapFilter ? {} : param2;
+         if(_loc11_.index != null)
          {
-            this._index = extras.index;
+            this._index = _loc11_.index;
          }
          else
          {
-            this._index = filters.length;
-            if(extras.addFilter != true)
+            this._index = _loc7_.length;
+            if(_loc11_.addFilter != true)
             {
-               while(--this._index > -1 && !(filters[this._index] is this._type))
+               while(--this._index > -1 && !(_loc7_[this._index] is this._type))
                {
                }
             }
          }
-         if(this._index < 0 || !(filters[this._index] is this._type))
+         if(this._index < 0 || !(_loc7_[this._index] is this._type))
          {
             if(this._index < 0)
             {
-               this._index = filters.length;
+               this._index = _loc7_.length;
             }
-            if(this._index > filters.length)
+            if(this._index > _loc7_.length)
             {
-               i = int(filters.length - 1);
-               while(++i < this._index)
+               _loc9_ = int(_loc7_.length - 1);
+               while(++_loc9_ < this._index)
                {
-                  filters[i] = new BlurFilter(0,0,1);
+                  _loc7_[_loc9_] = new BlurFilter(0,0,1);
                }
             }
-            filters[this._index] = defaultFilter;
-            this._target.filters = filters;
+            _loc7_[this._index] = param5;
+            this._target.filters = _loc7_;
          }
-         this._filter = filters[this._index];
-         this._remove = extras.remove == true;
-         i = int(propNames.length);
-         while(--i > -1)
+         this._filter = _loc7_[this._index];
+         this._remove = _loc11_.remove == true;
+         _loc9_ = int(param6.length);
+         while(--_loc9_ > -1)
          {
-            p = propNames[i];
-            if(p in props && this._filter[p] != props[p])
+            _loc8_ = param6[_loc9_];
+            if(_loc8_ in param2 && this._filter[_loc8_] != param2[_loc8_])
             {
-               if(p == "color" || p == "highlightColor" || p == "shadowColor")
+               if(_loc8_ == "color" || _loc8_ == "highlightColor" || _loc8_ == "shadowColor")
                {
-                  colorTween = new HexColorsPlugin();
-                  colorTween._initColor(this._filter,p,props[p]);
-                  _addTween(colorTween,"setRatio",0,1,_propName);
+                  _loc10_ = new HexColorsPlugin();
+                  _loc10_._initColor(this._filter,_loc8_,param2[_loc8_]);
+                  _addTween(_loc10_,"setRatio",0,1,_propName);
                }
-               else if(p == "quality" || p == "inner" || p == "knockout" || p == "hideObject")
+               else if(_loc8_ == "quality" || _loc8_ == "inner" || _loc8_ == "knockout" || _loc8_ == "hideObject")
                {
-                  this._filter[p] = props[p];
+                  this._filter[_loc8_] = param2[_loc8_];
                }
                else
                {
-                  _addTween(this._filter,p,this._filter[p],props[p],_propName);
+                  _addTween(this._filter,_loc8_,this._filter[_loc8_],param2[_loc8_],_propName);
                }
             }
          }
          return true;
       }
       
-      override public function setRatio(v:Number) : void
+      override public function setRatio(param1:Number) : void
       {
-         super.setRatio(v);
-         var filters:Array = this._target.filters;
-         if(!(filters[this._index] is this._type))
+         super.setRatio(param1);
+         var _loc2_:Array = this._target.filters;
+         if(!(_loc2_[this._index] is this._type))
          {
-            this._index = filters.length;
-            while(--this._index > -1 && !(filters[this._index] is this._type))
+            this._index = _loc2_.length;
+            while(--this._index > -1 && !(_loc2_[this._index] is this._type))
             {
             }
             if(this._index == -1)
             {
-               this._index = filters.length;
+               this._index = _loc2_.length;
             }
          }
-         if(v == 1 && this._remove && this._tween._time == this._tween._duration && this._tween.data != "isFromStart")
+         if(param1 == 1 && this._remove && this._tween._time == this._tween._duration && this._tween.data != "isFromStart")
          {
-            if(this._index < filters.length)
+            if(this._index < _loc2_.length)
             {
-               filters.splice(this._index,1);
+               _loc2_.splice(this._index,1);
             }
          }
          else
          {
-            filters[this._index] = this._filter;
+            _loc2_[this._index] = this._filter;
          }
-         this._target.filters = filters;
+         this._target.filters = _loc2_;
       }
    }
 }

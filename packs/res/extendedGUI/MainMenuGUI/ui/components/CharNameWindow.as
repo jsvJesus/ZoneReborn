@@ -60,7 +60,7 @@ package ui.components
          this.nameLabel.debug = false;
          this.nameLabel.autoSize = true;
          this.nameLabel.align = TextFieldAutoSize.CENTER;
-         this.nameLabel.$ = "extendedGUI.LoginWindow.Login";
+         this.nameLabel.$ = "extendedGUI.NewCharWindow.charName";
          this.nameLabel.size = 20;
          this.nameBox.addChild(this.nameLabel);
          this.nameInput = new InputText();
@@ -74,7 +74,7 @@ package ui.components
          this.discrLabel.debug = false;
          this.discrLabel.$ = "extendedGUI.CharNameWindow.Discr";
          this.discrLabel.size = 18;
-         this.discrLabel.font = Base.FONT_LIGHT;
+         this.discrLabel.font = Base.lightFontName;
          this.discrLabel.selectable = false;
          this.discrLabel.editable = false;
          this.discrLabel.width = 300;
@@ -93,7 +93,7 @@ package ui.components
          this.cancelButton.focusMarginX = 0;
          this.cancelButton.focusMarginY = 0;
          this.cancelButton.addEventListener(MouseEvent.CLICK,this.onCancelClickHandler);
-         this.cancelButton.font = Base.FONT_BOLD;
+         this.cancelButton.font = Base.boldFontName;
          this.cancelButton.size = 22;
          this.cancelButton.$ = "extendedGUI.CharNameWindow.Cancel";
          this.cancelButton.setSize((309 + 151) / 2,this.buttonsBoxHeight);
@@ -103,7 +103,7 @@ package ui.components
          this.okButton.focusMarginX = 0;
          this.okButton.focusMarginY = 0;
          this.okButton.addEventListener(MouseEvent.CLICK,this.onCreateClickHandler);
-         this.okButton.font = Base.FONT_BOLD;
+         this.okButton.font = Base.boldFontName;
          this.okButton.size = 22;
          this.okButton.$ = "extendedGUI.CharNameWindow.Create";
          this.okButton.setSize((309 + 151) / 2,this.buttonsBoxHeight);
@@ -115,6 +115,8 @@ package ui.components
       
       protected function onCancelClickHandler(event:MouseEvent) : void
       {
+         this.okButton.enabled = false;
+         this.cancelButton.enabled = false;
          Auth.self.doLogout();
       }
       
@@ -125,7 +127,9 @@ package ui.components
       
       protected function onCreateClickHandler(event:MouseEvent) : void
       {
-         Base.navigator.showCreateCharScreen(this.nameInput.text);
+         this.okButton.enabled = false;
+         this.cancelButton.enabled = false;
+         Base.navigator.showCreateCharScreen(null,this.nameInput.text);
          TweenMax.to(this,1,{
             "alpha":0,
             "delay":0.7,
@@ -210,6 +214,7 @@ package ui.components
             "ease":Expo.easeOut
          });
          this.okButton.enabled = true;
+         this.cancelButton.enabled = true;
          this.updateCreateButton();
       }
       
@@ -221,6 +226,7 @@ package ui.components
             "ease":Expo.easeOut
          });
          this.okButton.enabled = false;
+         this.cancelButton.enabled = false;
       }
       
       private function headerDeals() : void
@@ -230,7 +236,7 @@ package ui.components
          leftItems.shift = 3;
          _titleLabel.autoSize = true;
          _titleLabel.align = TextFormatAlign.CENTER;
-         _titleLabel.font = Base.FONT_BOLD;
+         _titleLabel.font = Base.boldFontName;
          _titleLabel.$ = "extendedGUI.CharNameWindow.Title";
          _titleLabel.size = 20;
          _titleLabel.mouseEnabled = false;

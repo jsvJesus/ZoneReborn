@@ -18,6 +18,10 @@ package
       
       protected var Local:Object = new Object();
       
+      protected var _tmpArray:Array = new Array();
+      
+      protected var tt:Number = 0;
+      
       internal var messageBoard:Sprite = new Sprite();
       
       protected var _focus:Boolean = false;
@@ -34,12 +38,26 @@ package
          addChild(this.messageBoard);
          this.messageBoard.visible = false;
          stage.addEventListener(Event.RESIZE,this.onRes);
-         setTimeout(ExternalInterface.call,100,"localized_resource",{"paths":["FlashMessageBoxes"]});
+         setTimeout(this.getLocaleFunc,100);
+      }
+      
+      public function getLocaleFunc() : *
+      {
+         ExternalInterface.call("localized_resource",{"paths":["FlashMessageBoxes"]});
       }
       
       public function setLocaleFunc(S:*) : *
       {
          MessageConstans.Local = S.FlashMessageBoxes;
+         this.showTmp();
+      }
+      
+      public function showTmp() : *
+      {
+         for(var i:int = 0; i < this._tmpArray.length; i++)
+         {
+            this.showMsg(this._tmpArray.pop());
+         }
       }
       
       public function showMessage(name:String, messageTitle:String, messageText:String, input:Boolean, lock:Boolean, btns:Array, btnNames:Object, def:String, active:Boolean) : *
@@ -88,6 +106,11 @@ package
          if(!arg.name)
          {
             this.errorToPython(MessageConstans.ERROR_NAME);
+            return;
+         }
+         if(MessageConstans.Local == null)
+         {
+            this._tmpArray.push(arg);
             return;
          }
          var _name:String = arg.name;

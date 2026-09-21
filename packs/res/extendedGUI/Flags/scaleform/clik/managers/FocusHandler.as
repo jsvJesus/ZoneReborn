@@ -53,24 +53,24 @@ package scaleform.clik.managers
          return instance;
       }
       
-      public static function init(stage:Stage, component:UIComponent) : void
+      public static function init(param1:Stage, param2:UIComponent) : void
       {
          if(initialized)
          {
             return;
          }
-         var focusHandler:FocusHandler = FocusHandler.getInstance();
-         focusHandler.stage = stage;
+         var _loc3_:FocusHandler = FocusHandler.getInstance();
+         _loc3_.stage = param1;
          FocusManager.alwaysEnableArrowKeys = true;
          FocusManager.disableFocusKeys = true;
          initialized = true;
       }
       
-      public function set stage(value:Stage) : void
+      public function set stage(param1:Stage) : void
       {
          if(this._stage == null)
          {
-            this._stage = value;
+            this._stage = param1;
          }
          this._stage.stageFocusRect = false;
          if(Extensions.enabled)
@@ -82,299 +82,299 @@ package scaleform.clik.managers
          this._stage.addEventListener(FocusEvent.FOCUS_OUT,this.updateActualFocus,false,0,true);
          this._stage.addEventListener(FocusEvent.KEY_FOCUS_CHANGE,this.handleMouseFocusChange,false,0,true);
          this._stage.addEventListener(FocusEvent.MOUSE_FOCUS_CHANGE,this.handleMouseFocusChange,false,0,true);
-         var inputDelegate:InputDelegate = InputDelegate.getInstance();
-         inputDelegate.initialize(this._stage);
-         inputDelegate.addEventListener(InputEvent.INPUT,this.handleInput,false,0,true);
+         var _loc2_:InputDelegate = InputDelegate.getInstance();
+         _loc2_.initialize(this._stage);
+         _loc2_.addEventListener(InputEvent.INPUT,this.handleInput,false,0,true);
       }
       
-      public function getFocus(index:uint) : DisplayObject
+      public function getFocus(param1:uint) : DisplayObject
       {
-         return this.currentFocusLookup[index] as DisplayObject;
+         return this.currentFocusLookup[param1] as DisplayObject;
       }
       
-      public function setFocus(focus:DisplayObject, index:uint = 0, mouseChange:Boolean = false) : void
+      public function setFocus(param1:DisplayObject, param2:uint = 0, param3:Boolean = false) : void
       {
-         var focusComponent:UIComponent = null;
-         var focusParam:DisplayObject = focus;
-         if(focus != null)
+         var _loc5_:UIComponent = null;
+         var _loc4_:DisplayObject = param1;
+         if(param1 != null)
          {
             while(true)
             {
-               focusComponent = focus as UIComponent;
-               if(focusComponent == null)
+               _loc5_ = param1 as UIComponent;
+               if(_loc5_ == null)
                {
                   break;
                }
-               if(focusComponent.focusTarget == null)
+               if(_loc5_.focusTarget == null)
                {
                   break;
                }
-               focus = focusComponent.focusTarget;
+               param1 = _loc5_.focusTarget;
             }
          }
-         if(focusComponent != null)
+         if(_loc5_ != null)
          {
-            if(!focusComponent.focusable)
+            if(!_loc5_.focusable)
             {
-               focus = null;
+               param1 = null;
             }
          }
-         var spr:Sprite = focus as Sprite;
-         if(spr && mouseChange && spr.tabEnabled == false)
+         var _loc6_:Sprite = param1 as Sprite;
+         if((_loc6_) && param3 && _loc6_.tabEnabled == false)
          {
-            focus = null;
+            param1 = null;
          }
-         if(CLIK.disableNullFocusMoves && (focus == null || focus == this._stage))
+         if(CLIK.disableNullFocusMoves && (param1 == null || param1 == this._stage))
          {
             return;
          }
-         var actualFocus:DisplayObject = this.actualFocusLookup[index];
-         var currentFocus:DisplayObject = this.currentFocusLookup[index];
-         if(currentFocus != focus)
+         var _loc7_:DisplayObject = this.actualFocusLookup[param2];
+         var _loc8_:DisplayObject = this.currentFocusLookup[param2];
+         if(_loc8_ != param1)
          {
-            focusComponent = currentFocus as UIComponent;
-            if(focusComponent != null)
+            _loc5_ = _loc8_ as UIComponent;
+            if(_loc5_ != null)
             {
-               focusComponent.focused &= ~(1 << index);
+               _loc5_.focused &= ~(1 << param2);
             }
-            if(currentFocus != null)
+            if(_loc8_ != null)
             {
-               currentFocus.dispatchEvent(new FocusHandlerEvent(FocusHandlerEvent.FOCUS_OUT,true,false,index));
+               _loc8_.dispatchEvent(new FocusHandlerEvent(FocusHandlerEvent.FOCUS_OUT,true,false,param2));
             }
-            currentFocus = focus;
-            this.currentFocusLookup[index] = focus;
-            focusComponent = currentFocus as UIComponent;
-            if(focusComponent != null)
+            _loc8_ = param1;
+            this.currentFocusLookup[param2] = param1;
+            _loc5_ = _loc8_ as UIComponent;
+            if(_loc5_ != null)
             {
-               focusComponent.focused |= 1 << index;
+               _loc5_.focused |= 1 << param2;
             }
-            if(currentFocus != null)
+            if(_loc8_ != null)
             {
-               currentFocus.dispatchEvent(new FocusHandlerEvent(FocusHandlerEvent.FOCUS_IN,true,false,index));
+               _loc8_.dispatchEvent(new FocusHandlerEvent(FocusHandlerEvent.FOCUS_IN,true,false,param2));
             }
          }
-         var isActualFocusTextField:* = actualFocus is TextField;
-         var isCurrentFocusUIComponent:* = currentFocus is UIComponent;
-         if(actualFocus != currentFocus && (!isActualFocusTextField || isActualFocusTextField && !isCurrentFocusUIComponent))
+         var _loc9_:* = _loc7_ is TextField;
+         var _loc10_:* = _loc8_ is UIComponent;
+         if(_loc7_ != _loc8_ && (!_loc9_ || _loc9_ && !_loc10_))
          {
-            if(focusParam is TextField && focusParam != focus && focus == null)
+            if(_loc4_ is TextField && _loc4_ != param1 && param1 == null)
             {
                this.preventStageFocusChanges = true;
-               this._stage.focus = focusParam as InteractiveObject;
+               this._stage.focus = _loc4_ as InteractiveObject;
             }
             else
             {
                this.preventStageFocusChanges = true;
-               this._stage.focus = focus as InteractiveObject;
+               this._stage.focus = param1 as InteractiveObject;
             }
             this._stage.addEventListener(Event.ENTER_FRAME,this.clearFocusPrevention,false,0,true);
          }
       }
       
-      protected function clearFocusPrevention(e:Event) : void
+      protected function clearFocusPrevention(param1:Event) : void
       {
          this.preventStageFocusChanges = false;
          this._stage.removeEventListener(Event.ENTER_FRAME,this.clearFocusPrevention,false);
       }
       
-      public function input(details:InputDetails) : void
+      public function input(param1:InputDetails) : void
       {
-         var event:* = new InputEvent(InputEvent.INPUT,details);
-         this.handleInput(event);
+         var _loc2_:* = new InputEvent(InputEvent.INPUT,param1);
+         this.handleInput(_loc2_);
       }
       
-      public function trackMouseDown(e:MouseEvent) : void
+      public function trackMouseDown(param1:MouseEvent) : void
       {
-         this.mouseDown = e.buttonDown;
+         this.mouseDown = param1.buttonDown;
       }
       
-      protected function handleInput(event:InputEvent) : void
+      protected function handleInput(param1:InputEvent) : void
       {
-         var focusProp:String = null;
-         var index:Number = event.details.controllerIndex;
-         var component:InteractiveObject = this.currentFocusLookup[index];
-         if(component == null)
+         var _loc15_:String = null;
+         var _loc2_:Number = param1.details.controllerIndex;
+         var _loc3_:InteractiveObject = this.currentFocusLookup[_loc2_];
+         if(_loc3_ == null)
          {
-            component = this._stage;
+            _loc3_ = this._stage;
          }
-         var newEvent:InputEvent = event.clone() as InputEvent;
-         var ok:Boolean = component.dispatchEvent(newEvent);
-         if(!ok || newEvent.handled)
-         {
-            return;
-         }
-         if(event.details.value == InputValue.KEY_UP)
+         var _loc4_:InputEvent = param1.clone() as InputEvent;
+         var _loc5_:Boolean = _loc3_.dispatchEvent(_loc4_);
+         if(!_loc5_ || _loc4_.handled)
          {
             return;
          }
-         var nav:String = event.details.navEquivalent;
-         if(nav == null)
+         if(param1.details.value == InputValue.KEY_UP)
          {
             return;
          }
-         var focusedElement:InteractiveObject = this.currentFocusLookup[index];
-         var actualFocus:InteractiveObject = this.actualFocusLookup[index];
-         var stageFocusedElement:InteractiveObject = this._stage.focus;
-         if(actualFocus is TextField && actualFocus == focusedElement && this.handleTextFieldInput(nav,index))
+         var _loc6_:String = param1.details.navEquivalent;
+         if(_loc6_ == null)
          {
             return;
          }
-         if(actualFocus is TextField && this.handleTextFieldInput(nav,index))
+         var _loc7_:InteractiveObject = this.currentFocusLookup[_loc2_];
+         var _loc8_:InteractiveObject = this.actualFocusLookup[_loc2_];
+         var _loc9_:InteractiveObject = this._stage.focus;
+         if(_loc8_ is TextField && _loc8_ == _loc7_ && this.handleTextFieldInput(_loc6_,_loc2_))
          {
             return;
          }
-         var dirX:Boolean = nav == NavigationCode.LEFT || nav == NavigationCode.RIGHT;
-         var dirY:Boolean = nav == NavigationCode.UP || Boolean(NavigationCode.DOWN);
-         if(focusedElement == null)
+         if(_loc8_ is TextField && this.handleTextFieldInput(_loc6_,_loc2_))
+         {
+            return;
+         }
+         var _loc10_:Boolean = _loc6_ == NavigationCode.LEFT || _loc6_ == NavigationCode.RIGHT;
+         var _loc11_:Boolean = _loc6_ == NavigationCode.UP || Boolean(NavigationCode.DOWN);
+         if(_loc7_ == null)
          {
             if(Boolean(this._stage.focus) && this._stage.focus is UIComponent)
             {
-               focusedElement = this._stage.focus as UIComponent;
+               _loc7_ = this._stage.focus as UIComponent;
             }
          }
-         if(focusedElement == null)
+         if(_loc7_ == null)
          {
-            if(Boolean(actualFocus) && actualFocus is UIComponent)
+            if(Boolean(_loc8_) && _loc8_ is UIComponent)
             {
-               focusedElement = actualFocus as UIComponent;
+               _loc7_ = _loc8_ as UIComponent;
             }
          }
-         if(focusedElement == null)
+         if(_loc7_ == null)
          {
             return;
          }
-         var focusContext:DisplayObjectContainer = focusedElement.parent;
-         var focusMode:String = FocusMode.DEFAULT;
-         if(dirX || dirY)
+         var _loc12_:DisplayObjectContainer = _loc7_.parent;
+         var _loc13_:String = FocusMode.DEFAULT;
+         if(_loc10_ || _loc11_)
          {
-            focusProp = dirX ? FocusMode.HORIZONTAL : FocusMode.VERTICAL;
-            while(focusContext != null)
+            _loc15_ = _loc10_ ? FocusMode.HORIZONTAL : FocusMode.VERTICAL;
+            while(_loc12_ != null)
             {
-               if(!(focusProp in focusContext))
+               if(!(_loc15_ in _loc12_))
                {
                   break;
                }
-               focusMode = focusContext[focusProp];
-               if(focusMode != null && focusMode != FocusMode.DEFAULT)
+               _loc13_ = _loc12_[_loc15_];
+               if(_loc13_ != null && _loc13_ != FocusMode.DEFAULT)
                {
                   break;
                }
-               focusContext = focusContext.parent;
+               _loc12_ = _loc12_.parent;
             }
          }
          else
          {
-            focusContext = null;
+            _loc12_ = null;
          }
-         if(actualFocus is TextField && actualFocus.parent == focusedElement)
+         if(_loc8_ is TextField && _loc8_.parent == _loc7_)
          {
-            focusedElement = this._stage.focus;
+            _loc7_ = this._stage.focus;
          }
-         var newFocus:InteractiveObject = FocusManager.findFocus(nav,null,focusMode == FocusMode.LOOP,focusedElement,false,index);
-         if(newFocus != null)
+         var _loc14_:InteractiveObject = FocusManager.findFocus(_loc6_,null,_loc13_ == FocusMode.LOOP,_loc7_,false,_loc2_);
+         if(_loc14_ != null)
          {
-            this.setFocus(newFocus);
+            this.setFocus(_loc14_);
          }
       }
       
-      protected function handleMouseFocusChange(event:FocusEvent) : void
+      protected function handleMouseFocusChange(param1:FocusEvent) : void
       {
-         this.handleFocusChange(event.target as InteractiveObject,event.relatedObject as InteractiveObject,event);
+         this.handleFocusChange(param1.target as InteractiveObject,param1.relatedObject as InteractiveObject,param1);
       }
       
-      protected function handleFocusChange(oldFocus:InteractiveObject, newFocus:InteractiveObject, event:FocusEvent) : void
+      protected function handleFocusChange(param1:InteractiveObject, param2:InteractiveObject, param3:FocusEvent) : void
       {
-         var focusTF:TextField = null;
-         if(this.mouseDown && newFocus is TextField)
+         var _loc7_:TextField = null;
+         if(this.mouseDown && param2 is TextField)
          {
-            event.preventDefault();
+            param3.preventDefault();
             return;
          }
-         if(CLIK.disableDynamicTextFieldFocus && newFocus is TextField)
+         if(CLIK.disableDynamicTextFieldFocus && param2 is TextField)
          {
-            focusTF = newFocus as TextField;
-            if(focusTF.type == "dynamic")
+            _loc7_ = param2 as TextField;
+            if(_loc7_.type == "dynamic")
             {
-               event.stopImmediatePropagation();
-               event.stopPropagation();
-               event.preventDefault();
+               param3.stopImmediatePropagation();
+               param3.stopPropagation();
+               param3.preventDefault();
                return;
             }
          }
-         if(newFocus is UIComponent)
+         if(param2 is UIComponent)
          {
-            event.preventDefault();
+            param3.preventDefault();
          }
-         if(oldFocus is TextField && newFocus == null)
+         if(param1 is TextField && param2 == null)
          {
-            event.preventDefault();
+            param3.preventDefault();
             return;
          }
-         var sfEvent:* = event as FocusEventEx;
-         var controllerIndex:* = sfEvent == null ? 0 : sfEvent.controllerIdx;
-         var index:uint = 0;
-         this.actualFocusLookup[index] = newFocus;
-         this.setFocus(newFocus,index,event.type == FocusEvent.MOUSE_FOCUS_CHANGE);
+         var _loc4_:* = param3 as FocusEventEx;
+         var _loc5_:* = _loc4_ == null ? 0 : _loc4_.controllerIdx;
+         var _loc6_:uint = 0;
+         this.actualFocusLookup[_loc6_] = param2;
+         this.setFocus(param2,_loc6_,param3.type == FocusEvent.MOUSE_FOCUS_CHANGE);
       }
       
-      protected function updateActualFocus(event:FocusEvent) : void
+      protected function updateActualFocus(param1:FocusEvent) : void
       {
-         var oldFocus:InteractiveObject = null;
-         var newFocus:InteractiveObject = null;
-         if(event.type == FocusEvent.FOCUS_IN)
+         var _loc2_:InteractiveObject = null;
+         var _loc3_:InteractiveObject = null;
+         if(param1.type == FocusEvent.FOCUS_IN)
          {
-            oldFocus = event.relatedObject as InteractiveObject;
-            newFocus = event.target as InteractiveObject;
+            _loc2_ = param1.relatedObject as InteractiveObject;
+            _loc3_ = param1.target as InteractiveObject;
          }
          else
          {
-            oldFocus = event.target as InteractiveObject;
-            newFocus = event.relatedObject as InteractiveObject;
+            _loc2_ = param1.target as InteractiveObject;
+            _loc3_ = param1.relatedObject as InteractiveObject;
          }
-         if(event.type == FocusEvent.FOCUS_OUT)
+         if(param1.type == FocusEvent.FOCUS_OUT)
          {
             if(this.preventStageFocusChanges)
             {
-               event.stopImmediatePropagation();
-               event.stopPropagation();
+               param1.stopImmediatePropagation();
+               param1.stopPropagation();
             }
          }
-         var sfEvent:* = event as FocusEventEx;
-         var controllerIndex:* = sfEvent == null ? 0 : sfEvent.controllerIdx;
-         var index:uint = 0;
-         this.actualFocusLookup[index] = newFocus;
-         var currentFocus:InteractiveObject = this.currentFocusLookup[index];
-         if(newFocus != null && newFocus is TextField && newFocus.parent != null && currentFocus == newFocus.parent && currentFocus == oldFocus)
+         var _loc4_:* = param1 as FocusEventEx;
+         var _loc5_:* = _loc4_ == null ? 0 : _loc4_.controllerIdx;
+         var _loc6_:uint = 0;
+         this.actualFocusLookup[_loc6_] = _loc3_;
+         var _loc7_:InteractiveObject = this.currentFocusLookup[_loc6_];
+         if(_loc3_ != null && _loc3_ is TextField && _loc3_.parent != null && _loc7_ == _loc3_.parent && _loc7_ == _loc2_)
          {
             return;
          }
-         var isActualFocusTextField:* = newFocus is TextField;
-         var isCurrentFocusUIComponent:* = currentFocus is UIComponent;
-         if(newFocus != currentFocus)
+         var _loc8_:* = _loc3_ is TextField;
+         var _loc9_:* = _loc7_ is UIComponent;
+         if(_loc3_ != _loc7_)
          {
-            if(!(isActualFocusTextField && isCurrentFocusUIComponent) || newFocus == null)
+            if(!(_loc8_ && _loc9_) || _loc3_ == null)
             {
-               if(!this.preventStageFocusChanges || isActualFocusTextField)
+               if(!this.preventStageFocusChanges || _loc8_)
                {
-                  this.setFocus(newFocus);
+                  this.setFocus(_loc3_);
                }
             }
          }
       }
       
-      protected function handleTextFieldInput(nav:String, controllerIdx:uint) : Boolean
+      protected function handleTextFieldInput(param1:String, param2:uint) : Boolean
       {
-         var actualFocus:TextField = this.actualFocusLookup[controllerIdx] as TextField;
-         if(actualFocus == null)
+         var _loc3_:TextField = this.actualFocusLookup[param2] as TextField;
+         if(_loc3_ == null)
          {
             return false;
          }
-         var position:int = actualFocus.caretIndex;
-         var focusIdx:Number = 0;
-         switch(nav)
+         var _loc4_:int = _loc3_.caretIndex;
+         var _loc5_:Number = 0;
+         switch(param1)
          {
             case NavigationCode.UP:
-               if(!actualFocus.multiline)
+               if(!_loc3_.multiline)
                {
                   return false;
                }
@@ -382,16 +382,16 @@ package scaleform.clik.managers
             case NavigationCode.LEFT:
                break;
             case NavigationCode.DOWN:
-               if(!actualFocus.multiline)
+               if(!_loc3_.multiline)
                {
                   return false;
                }
             case NavigationCode.RIGHT:
-               return position < actualFocus.length;
+               return _loc4_ < _loc3_.length;
             default:
                return false;
          }
-         return position > 0;
+         return _loc4_ > 0;
       }
    }
 }

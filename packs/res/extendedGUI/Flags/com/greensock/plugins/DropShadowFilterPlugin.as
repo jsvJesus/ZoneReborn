@@ -14,9 +14,9 @@ package com.greensock.plugins
          super("dropShadowFilter");
       }
       
-      override public function _onInitTween(target:Object, value:*, tween:TweenLite) : Boolean
+      override public function _onInitTween(param1:Object, param2:*, param3:TweenLite) : Boolean
       {
-         return _initFilter(target,value,tween,DropShadowFilter,new DropShadowFilter(0,45,0,0,0,0,1,int(value.quality) || 2,value.inner,value.knockout,value.hideObject),_propNames);
+         return _initFilter(param1,param2,param3,DropShadowFilter,new DropShadowFilter(0,45,0,0,0,0,1,int(param2.quality) || 2,param2.inner,param2.knockout,param2.hideObject),_propNames);
       }
    }
 }

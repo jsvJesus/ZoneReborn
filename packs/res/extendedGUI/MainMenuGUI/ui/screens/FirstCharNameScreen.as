@@ -1,5 +1,6 @@
 package ui.screens
 {
+   import flash.utils.*;
    import logging.*;
    import ui.*;
    import ui.components.*;
@@ -35,6 +36,10 @@ package ui.screens
       
       override protected function resize(... args) : void
       {
+         if(this.charNameWindow == null)
+         {
+            return;
+         }
          this.charNameWindow.x = (Base.stage.stageWidth - this.charNameWindow.width) / 2;
          this.charNameWindow.y = (Base.stage.stageHeight - this.charNameWindow.height) / 2;
       }

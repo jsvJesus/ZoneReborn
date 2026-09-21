@@ -79,8 +79,10 @@ package communication
       
       public static function show() : void
       {
-         _visible = true;
-         Api.call(Api.SHOW_DUMMY,[]);
+         if(Character.list.length)
+         {
+            _visible = true;
+         }
       }
       
       protected static function onDummySizeAndPosition(arg1:ApiEvent) : void
@@ -92,7 +94,6 @@ package communication
       public static function hide() : void
       {
          _visible = false;
-         Api.call(Api.HIDE_DUMMY,[]);
       }
       
       public static function sizeTestRandom() : void

@@ -32,6 +32,8 @@ package com.dvalimona.components
       
       protected var _alternateRows:Boolean = false;
       
+      protected var _show_background:Boolean = false;
+      
       protected var _spacing:uint = 0;
       
       protected var _labelShift:uint = 0;
@@ -146,6 +148,17 @@ package com.dvalimona.components
          }
       }
       
+      public function set showBackground(value:Boolean) : *
+      {
+         this._show_background = value;
+         this.draw();
+      }
+      
+      public function get showBackground() : Boolean
+      {
+         return this._show_background;
+      }
+      
       protected function scrollToSelection() : void
       {
          var numItems:int = Math.ceil(_height / this._listItemHeight);
@@ -178,6 +191,13 @@ package com.dvalimona.components
          this._panel.setSize(_width,_height);
          this._panel.color = this._defaultColor;
          this._panel.draw();
+         this._itemHolder.graphics.clear();
+         if(this._show_background)
+         {
+            this._itemHolder.graphics.beginFill(0);
+            this._itemHolder.graphics.drawRect(0,0,_width,_height);
+            this._itemHolder.graphics.endFill();
+         }
          this._scrollbar.x = _width - 10;
          var contentHeight:Number = this._items.length * this._listItemHeight;
          this._scrollbar.setThumbPercent(_height / contentHeight);

@@ -16,19 +16,19 @@ package ui.screens
       
       protected var videoLabel:LabelShadowed;
       
-      protected var videoBase:MenuButton;
+      protected var videoBase:MenuButton2;
       
-      protected var videoAdditional:MenuButton;
+      protected var videoAdditional:MenuButton2;
       
-      protected var audio:MenuButton;
+      protected var audio:MenuButton2;
       
-      protected var mouse:MenuButton;
+      protected var mouse:MenuButton2;
       
-      protected var gui:MenuButton;
+      protected var gui:MenuButton2;
       
-      protected var keybinds:MenuButton;
+      protected var keybinds:MenuButton2;
       
-      protected var back:MenuButton;
+      protected var back:MenuButton2;
       
       public function NewSettingsScreen(id:String, depth:uint = 0, use3D:Boolean = false)
       {
@@ -66,34 +66,34 @@ package ui.screens
          this.videoLabel = new LabelShadowed(this.videoBox);
          this.videoLabel.$ = "extendedGUI.Settings.video";
          this.videoLabel.color = 12895428;
-         this.videoLabel.font = Base.FONT_LIGHT;
+         this.videoLabel.font = Base.lightFontName;
          this.videoLabel.size = 18;
-         this.videoBase = new MenuButton(this.videoBox);
+         this.videoBase = new MenuButton2(this.videoBox);
          this.videoBase.$ = "extendedGUI.Settings.video_main_settings";
          this.videoBase.height = 35;
          this.videoBase.addEventListener(MouseEvent.CLICK,this.onVideoBaseHandler);
-         this.videoAdditional = new MenuButton(this.videoBox);
+         this.videoAdditional = new MenuButton2(this.videoBox);
          this.videoAdditional.$ = "extendedGUI.Settings.video_additional_settings";
          this.videoAdditional.height = 35;
          this.videoAdditional.addEventListener(MouseEvent.CLICK,this.onVideoAdditionalHandler);
-         this.audio = new MenuButton(this.box);
+         this.audio = new MenuButton2(this.box);
          this.audio.paddingTop = 10;
          this.audio.$ = "extendedGUI.Settings.audio";
          this.audio.height = 35;
          this.audio.addEventListener(MouseEvent.CLICK,this.onAudioHandler);
-         this.mouse = new MenuButton(this.box);
+         this.mouse = new MenuButton2(this.box);
          this.mouse.$ = "extendedGUI.Settings.mouse";
          this.mouse.height = 35;
          this.mouse.addEventListener(MouseEvent.CLICK,this.onMouseHandler);
-         this.gui = new MenuButton(this.box);
+         this.gui = new MenuButton2(this.box);
          this.gui.$ = "extendedGUI.Settings.gui";
          this.gui.height = 35;
          this.gui.addEventListener(MouseEvent.CLICK,this.onGUIHandler);
-         this.keybinds = new MenuButton(this.box);
+         this.keybinds = new MenuButton2(this.box);
          this.keybinds.$ = "extendedGUI.Settings.keybinds";
          this.keybinds.height = 35;
          this.keybinds.addEventListener(MouseEvent.CLICK,this.onKeybindsHandler);
-         this.back = new MenuButton(this.box);
+         this.back = new MenuButton2(this.box);
          this.back.paddingTop = 10;
          this.back.$ = "extendedGUI.SettingsWindow.backButton";
          this.back.height = 35;
@@ -141,10 +141,26 @@ package ui.screens
          this.goBack();
       }
       
+      override protected function onKeyDown(event:KeyboardEvent) : void
+      {
+         super.onKeyDown(event);
+         if(Base.stage.focus != this)
+         {
+            return;
+         }
+      }
+      
       override public function goBack() : void
       {
-         if(!is_loaded)
+         var tempError:Error = new Error();
+         var stackTrace:String = tempError.getStackTrace();
+         if(!this.is_loaded)
          {
+            return;
+         }
+         if(Base.IN_GAME)
+         {
+            Api.call(Api.CLOSE_SETTINGS);
             return;
          }
          super.goBack();

@@ -51,12 +51,17 @@ package com.dvalimona.components
          this.setLabelButtonLabel();
       }
       
+      public function set text(value:String) : *
+      {
+         this._labelButton.label = value;
+      }
+      
       override protected function addChildren() : void
       {
-         super.addChildren();
          this._list = new List(null,0,0,this._items);
          this._list.autoHideScrollBar = true;
          this._list.addEventListener(Event.SELECT,this.onSelect);
+         this._list.showBackground = true;
          this._labelButton = new PushButton(this,0,0,"",this.onDropDown);
          this._labelButton.align = Label.LEFT;
          this._labelButton.marginLeft = 10;
@@ -108,8 +113,9 @@ package com.dvalimona.components
          }
       }
       
-      protected function removeList() : void
+      public function removeList() : void
       {
+         this._open = false;
          if(this._stage.contains(this._list))
          {
             Base.comboLevel.removeChild(this._list);
@@ -126,7 +132,7 @@ package com.dvalimona.components
          this._dropDownButton.setSize(_height,_height);
          this._dropDownButton.draw();
          this._dropDownButton.x = _width - height;
-         this._list.setSize(this.listWidth > 0 ? this.listWidth : _width,this._numVisibleItems * this._list.listItemHeight);
+         this._list.setSize(_width - _height - 1 + 10,this._numVisibleItems * this._list.listItemHeight);
       }
       
       public function addItem(item:Object) : void
