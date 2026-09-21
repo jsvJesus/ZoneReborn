@@ -316,119 +316,132 @@ async function readVersion()
 
 async function buildServerList()
 {
-    const result = {
-        list: [],
-        defaultServerId: ""
-    };
-
     try
     {
-        const response =
-            await fetch(
-                SERVER_CONFIG,
-                {
-                    cache:
-                        "no-store"
-                });
+        console.log("[Frontend] Loading server config:", SERVER_CONFIG);
 
-        const config =
-            await response.json();
-
-        const groups = [
+        const response = await fetch(
+            SERVER_CONFIG,
             {
-                name:
-                    "customers_servers",
+                cache: "no-store"
+            });
 
-                developer:
-                    false
-            },
-
-            {
-                name:
-                    "developers_servers",
-
-                developer:
-                    true
-            }
-        ];
-
-        for (const group of groups)
+        if (!response.ok)
         {
-            const servers =
-                Array.isArray(
-                    config[group.name])
-                    ? config[group.name]
-                    : [];
+            throw new Error(
+                "HTTP " +
+                response.status +
+                " while loading " +
+                SERVER_CONFIG);
+        }
 
-            for (const serverInfo of
-                 servers)
+        const config = await response.json();
+
+        console.log(
+            "[Frontend] servers_config.json loaded:",
+            config);
+
+        const list = [];
+
+        function addServers(source, isDev)
+        {
+            if (!Array.isArray(source))
+                return;
+
+            for (const serverInfo of source)
             {
-                if (!serverInfo ||
-                    !serverInfo.server ||
-                    !serverInfo.server.online)
-                {
+                if (!serverInfo)
                     continue;
-                }
 
-                const id =
-                    String(
-                        result.list.length);
+                const server = serverInfo.server;
 
-                result.list.push({
-                    id:
-                        id,
+                if (!server)
+                    continue;
 
-                    label:
-                        serverInfo.name ||
-                        "",
+                // В оригинальном конфиге online может быть 0/1,
+                // "0"/"1", true/false.
+                const online =
+                    server.online === true ||
+                    server.online === 1 ||
+                    server.online === "1";
 
-                    address:
-                        serverInfo.server.host ||
-                        "",
+                if (!online)
+                    continue;
 
-                    //
-                    // Реальный SO получал их
-                    // отдельными runtime вызовами.
-                    // Для frontend-теста они
-                    // не блокируют UI.
-                    //
-                    ping:
-                        0,
+                if (!server.host)
+                    continue;
 
-                    using:
-                        0,
+                const id = String(list.length);
 
-                    is_dev_serv:
-                        group.developer
-                            ? 1
-                            : 0
-                });
+                let label =
+                    serverInfo.name != null
+                        ? String(serverInfo.name)
+                        : ("Server " + id);
 
-                if (serverInfo.name ===
-                    "Cluster EU")
-                {
-                    result.defaultServerId =
-                        id;
-                }
+                // Наши названия кластеров.
+                // Старые имена оставляем совместимыми с оригинальным config.
+                if (label === "REGION UA")
+                    label = "UA";
+                else if (label === "REGION EU")
+                    label = "EU";
+
+                list.push(
+                    {
+                        id: id,
+                        label: label,
+                        address: String(server.host),
+                        ping: 0,
+                        using: 0,
+                        is_dev_serv: isDev ? 1 : 0
+                    });
             }
         }
 
-        if (!result.defaultServerId &&
-            result.list.length !==
-                0)
+        // Обычные игровые кластеры
+        addServers(config.customers_servers, false);
+
+        // Пока dev-кластеры в Login Window НЕ показываем.
+        // Потом при необходимости можно вернуть:
+        //
+        // addServers(config.developers_servers, true);
+
+        let defaultServerId = "";
+
+        if (list.length > 0)
         {
-            result.defaultServerId =
-                result.list[0].id;
+            // По умолчанию пробуем выбрать EU.
+            const euServer =
+                list.find(server => server.label === "EU");
+
+            if (euServer)
+                defaultServerId = euServer.id;
+            else
+                defaultServerId = list[0].id;
         }
+
+        const result =
+        {
+            list: list,
+            defaultServerId: defaultServerId
+        };
+
+        console.log(
+            "[Frontend] Built server list:",
+            JSON.stringify(result));
+
+        return result;
     }
     catch (error)
     {
-        trace(
-            "Server config read failed: " +
+        console.error(
+            "[Frontend] Failed to build server list:",
             error);
-    }
 
-    return result;
+        return {
+            list: [],
+            defaultServerId: ""
+        };
+    }
 }
 
 
@@ -737,7 +750,6 @@ window.ActionsWithLogin =
                 });
         },
 
-
     getServerList:
         async function()
         {
@@ -746,31 +758,20 @@ window.ActionsWithLogin =
                 await buildServerList());
         },
 
-
     authenticateUser:
         function(rawArguments)
         {
-            const args =
-                unwrapArguments(
-                    rawArguments);
+            const args = unwrapArguments(rawArguments);
 
             const remember =
-                args.rememberMe === true ||
-                args.rememberMe === 1 ||
-                args.rememberMe === "1" ||
-                args.rememberMe === "true";
+                !!args.rememberMe;
 
             postToHost(
                 "login",
-                args.login ||
-                    "",
-                args.password ||
-                    "",
-                remember
-                    ? "1"
-                    : "0",
-                args.serverID ??
-                    "0");
+                args.login || "",
+                args.password || "",
+                remember ? "1" : "0",
+                args.serverID ?? "0");
         }
 };
 
