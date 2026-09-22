@@ -3,14 +3,16 @@
 #include "Graphics/CameraView.h"
 #include "Graphics/SceneRenderData.h"
 
+#include "Core/Images/RgbaImage.h"
 #include "Core/Math/Vector3.h"
 
 #include <Windows.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
-#include <cstddef>
+
 
 namespace client::graphics
 {
@@ -28,6 +30,11 @@ namespace client::graphics
             HWND window,
             std::uint32_t width,
             std::uint32_t height,
+            std::string& error);
+
+        [[nodiscard]]
+        bool SetBackgroundImage(
+            const core::images::RgbaImage& image,
             std::string& error);
 
         [[nodiscard]]

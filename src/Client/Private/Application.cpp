@@ -1,16 +1,20 @@
 #include "Application.h"
 
-#include "Preview/WorldPreviewLoader.h"
-
+#include "Core/Images/WicImageDecoder.h"
 #include "Core/Log.h"
 
-#include <string>
 #include <cmath>
+#include <span>
+#include <string>
+#include <vector>
 
 namespace
 {
     constexpr char MainServerId[] =
         "zone_main";
+
+    constexpr char MainMenuBackgroundPath[] =
+        "res/soGUI/maps/MainMenu/main_bg.jpg";
     
     core::math::Transform3x4
     ApplyYaw(
@@ -163,7 +167,7 @@ namespace client
     }
 
     bool Application::InitializeCharacterSelectScene(
-    std::string& error)
+        std::string& error)
     {
         error.clear();
 
@@ -173,8 +177,15 @@ namespace client
         }
 
         core::Log::Info(
-            "Initializing original personages_select scene.");
+            "Initializing character menu renderer.");
 
+        //
+        // personages_select теперь используется ТОЛЬКО
+        // как источник:
+        //
+        // cs_camera
+        // AvatarDummy transform
+        //
         if (!preview::LoadCharacterSelectStage(
                 runtime_.Resources(),
                 "personages_select",
@@ -184,27 +195,13 @@ namespace client
             return false;
         }
 
+        //
+        // Базовая 3D сцена теперь пустая.
+        //
+        // В неё ниже будет добавляться только персонаж.
+        //
         characterSelectBaseScene_ =
             {};
-
-        //
-        // Пока сохраняем personages_select как 3D stage.
-        //
-        // Flash UI к этой сцене отношения не имеет:
-        // он просто рисуется поверх DX11.
-        //
-        if (!preview::LoadWorldPreview(
-                runtime_,
-                "personages_select",
-                characterSelectBaseScene_,
-                error))
-        {
-            error =
-                "Unable to load personages_select: " +
-                error;
-
-            return false;
-        }
 
         if (!renderer_.Initialize(
                 window_.NativeHandle(),
@@ -213,15 +210,87 @@ namespace client
                 error))
         {
             error =
-                "Character selection renderer init failed: " +
+                "Character menu renderer init failed: " +
                 error;
 
             return false;
         }
 
+        //
+        // Load static main-menu background.
+        //
+        std::vector<std::byte>
+            backgroundBytes;
+
+        if (!runtime_.Resources().ReadBinary(
+                MainMenuBackgroundPath,
+                backgroundBytes))
+        {
+            renderer_.Shutdown();
+
+            error =
+                std::string(
+                    "Main menu background not found: ") +
+                MainMenuBackgroundPath;
+
+            return false;
+        }
+
+        core::images::RgbaImage
+            backgroundImage;
+
+        core::images::WicImageDecoder
+            backgroundDecoder;
+
+        std::string
+            backgroundError;
+
+        if (!backgroundDecoder.Decode(
+                std::span<const std::byte>(
+                    backgroundBytes.data(),
+                    backgroundBytes.size()),
+                backgroundImage,
+                backgroundError))
+        {
+            renderer_.Shutdown();
+
+            error =
+                std::string(
+                    "Unable to decode main menu background: ") +
+                backgroundError;
+
+            return false;
+        }
+
+        if (!renderer_.SetBackgroundImage(
+                backgroundImage,
+                backgroundError))
+        {
+            renderer_.Shutdown();
+
+            error =
+                std::string(
+                    "Unable to upload main menu background: ") +
+                backgroundError;
+
+            return false;
+        }
+
+        core::Log::Info(
+            std::string(
+                "Main menu background loaded: ") +
+            std::to_string(
+                backgroundImage.width) +
+            "x" +
+            std::to_string(
+                backgroundImage.height));
+
+        //
+        // Character system remains exactly as before.
+        //
         if (!characterCatalog_.Load(
-        runtime_.Resources(),
-        error))
+                runtime_.Resources(),
+                error))
         {
             renderer_.Shutdown();
 
@@ -267,7 +336,7 @@ namespace client
             true;
 
         core::Log::Info(
-            "Original personages_select scene activated.");
+            "Character menu renderer activated.");
 
         return true;
     }
@@ -307,7 +376,7 @@ namespace client
             0;
 
         core::Log::Info(
-            "personages_select scene deactivated.");
+        "Character menu renderer deactivated.");
     }
 
     core::math::Transform3x4

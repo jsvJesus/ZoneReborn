@@ -91,6 +91,7 @@
 
   <ItemGroup>
     <None Include="Shaders\World\WorldShared.hlsli" />
+    <None Include="Shaders\World\WorldBackground.hlsl" />
     <None Include="Shaders\World\WorldLighting.hlsli" />
     <None Include="Shaders\World\WorldTerrain.hlsli" />
     <None Include="Shaders\World\WorldWater.hlsli" />

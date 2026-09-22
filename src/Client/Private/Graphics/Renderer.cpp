@@ -1051,6 +1051,9 @@ namespace client::graphics
 
         ComPtr<ID3D11ShaderResourceView>
             sceneColourShaderResourceView;
+        
+        ComPtr<ID3D11ShaderResourceView>
+            backgroundTextureView; // Static frontend background.
 
         ComPtr<ID3D11Texture2D>
             depthTexture;
@@ -1085,6 +1088,9 @@ namespace client::graphics
         ComPtr<ID3D11SamplerState>
             terrainBlendSampler;
 
+        ComPtr<ID3D11SamplerState>
+            backgroundSampler;
+
         ComPtr<ID3D11RasterizerState>
             rasterizerState;
 
@@ -1093,6 +1099,12 @@ namespace client::graphics
 
         ComPtr<ID3D11PixelShader>
             pixelShader;
+
+        ComPtr<ID3D11VertexShader>
+            backgroundVertexShader;
+
+        ComPtr<ID3D11PixelShader>
+            backgroundPixelShader;
 
         ComPtr<ID3D11VertexShader>
             skyVertexShader;
@@ -1795,6 +1807,46 @@ namespace client::graphics
             return false;
         }
 
+        D3D11_SAMPLER_DESC backgroundSamplerDescription =
+            blendSamplerDescription;
+
+        backgroundSamplerDescription.Filter =
+            D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+
+        backgroundSamplerDescription.AddressU =
+            D3D11_TEXTURE_ADDRESS_CLAMP;
+
+        backgroundSamplerDescription.AddressV =
+            D3D11_TEXTURE_ADDRESS_CLAMP;
+
+        backgroundSamplerDescription.AddressW =
+            D3D11_TEXTURE_ADDRESS_CLAMP;
+
+        backgroundSamplerDescription.MaxAnisotropy =
+            1;
+
+        backgroundSamplerDescription.MipLODBias =
+            0.0f;
+
+        backgroundSamplerDescription.MinLOD =
+            0.0f;
+
+        backgroundSamplerDescription.MaxLOD =
+            D3D11_FLOAT32_MAX;
+
+        result =
+            state_->device->CreateSamplerState(
+                &backgroundSamplerDescription,
+                &state_->backgroundSampler);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create background sampler.";
+
+            return false;
+        }
+
         ComPtr<ID3DBlob>
             vertexShaderCode;
 
@@ -1852,7 +1904,63 @@ namespace client::graphics
         }
 
         ComPtr<ID3DBlob>
-    skyVertexShaderCode;
+            backgroundVertexShaderCode;
+
+        if (!shaders::CompileFromFile(
+                L"World\\WorldBackground.hlsl",
+                "VSBackground",
+                "vs_5_0",
+                &backgroundVertexShaderCode,
+                error))
+        {
+            return false;
+        }
+
+        ComPtr<ID3DBlob>
+            backgroundPixelShaderCode;
+
+        if (!shaders::CompileFromFile(
+                L"World\\WorldBackground.hlsl",
+                "PSBackground",
+                "ps_5_0",
+                &backgroundPixelShaderCode,
+                error))
+        {
+            return false;
+        }
+
+        result =
+            state_->device->CreateVertexShader(
+                backgroundVertexShaderCode->GetBufferPointer(),
+                backgroundVertexShaderCode->GetBufferSize(),
+                nullptr,
+                &state_->backgroundVertexShader);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create background vertex shader.";
+
+            return false;
+        }
+
+        result =
+            state_->device->CreatePixelShader(
+                backgroundPixelShaderCode->GetBufferPointer(),
+                backgroundPixelShaderCode->GetBufferSize(),
+                nullptr,
+                &state_->backgroundPixelShader);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create background pixel shader.";
+
+            return false;
+        }
+
+        ComPtr<ID3DBlob>
+            skyVertexShaderCode;
 
         if (!shaders::CompileFromFile(
                 L"World\\WorldSky.hlsl",
@@ -2161,6 +2269,47 @@ namespace client::graphics
         return true;
     }
 
+    bool Renderer::SetBackgroundImage(
+        const core::images::RgbaImage& image,
+        std::string& error)
+    {
+        error.clear();
+
+        if (!state_ ||
+            !state_->device ||
+            !state_->context)
+        {
+            error =
+                "Renderer is not initialized.";
+
+            return false;
+        }
+
+        ComPtr<ID3D11ShaderResourceView>
+            backgroundView;
+
+        if (!CreateRgbaTexture(
+                state_->device.Get(),
+                state_->context.Get(),
+                image,
+                true,
+                backgroundView,
+                error))
+        {
+            error =
+                "Unable to create background texture: " +
+                error;
+
+            return false;
+        }
+
+        state_->backgroundTextureView =
+            std::move(
+                backgroundView);
+
+        return true;
+    }
+
     bool Renderer::SetScene(
         const SceneRenderData& scene,
         std::string& error)
@@ -2177,17 +2326,22 @@ namespace client::graphics
         }
 
         const bool hasGeometry =
-            !scene.meshes.empty() &&
-            (
-                !scene.instances.empty() ||
-                !scene.lodInstances.empty()
-            );
+        !scene.meshes.empty() &&
+        (
+            !scene.instances.empty() ||
+            !scene.lodInstances.empty()
+        );
+
+        const bool hasBackground =
+            state_->backgroundTextureView.Get() !=
+                nullptr;
 
         if (!hasGeometry &&
-            !scene.sky.enabled)
+            !scene.sky.enabled &&
+            !hasBackground)
         {
             error =
-                "Scene contains no geometry.";
+                "Scene contains no geometry or background.";
 
             return false;
         }
@@ -3106,7 +3260,8 @@ namespace client::graphics
         }
 
         if (!hasBounds &&
-            !state_->sky.enabled)
+            !state_->sky.enabled &&
+            !hasBackground)
         {
             error =
                 "Unable to calculate world bounds.";
@@ -3294,15 +3449,17 @@ namespace client::graphics
         error.clear();
 
         if (!state_ ||
-            !state_->context ||
-            !state_->swapChain ||
-            (
-                state_->meshes.empty() &&
-                !state_->sky.enabled
-            ))
+        !state_->context ||
+        !state_->swapChain ||
+        (
+            state_->meshes.empty() &&
+            !state_->sky.enabled &&
+            state_->backgroundTextureView.Get() ==
+                nullptr
+        ))
         {
             error =
-                "Renderer has no world scene.";
+                "Renderer has nothing to render.";
 
             return false;
         }
@@ -3368,6 +3525,96 @@ namespace client::graphics
 
         state_->context->RSSetState(
             state_->rasterizerState.Get());
+
+        //
+        // Main menu static background.
+        //
+        // Rendered before the 3D character.
+        //
+        if (state_->backgroundTextureView.Get() !=
+            nullptr)
+        {
+            state_->context->IASetInputLayout(
+                nullptr);
+
+            state_->context->IASetVertexBuffers(
+                0,
+                0,
+                nullptr,
+                nullptr,
+                nullptr);
+
+            state_->context->IASetIndexBuffer(
+                nullptr,
+                DXGI_FORMAT_UNKNOWN,
+                0);
+
+            state_->context->IASetPrimitiveTopology(
+                D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            state_->context->VSSetShader(
+                state_->backgroundVertexShader.Get(),
+                nullptr,
+                0);
+
+            state_->context->PSSetShader(
+                state_->backgroundPixelShader.Get(),
+                nullptr,
+                0);
+
+            //
+            // Background must never touch depth.
+            //
+            state_->context->OMSetDepthStencilState(
+                state_->flareDepthState.Get(),
+                0);
+
+            state_->context->OMSetBlendState(
+                nullptr,
+                nullptr,
+                0xFFFFFFFFu);
+
+            ID3D11SamplerState*
+                backgroundSamplers[] =
+            {
+                state_->backgroundSampler.Get()
+            };
+
+            state_->context->PSSetSamplers(
+                0,
+                1,
+                backgroundSamplers);
+
+            ID3D11ShaderResourceView*
+                backgroundViews[] =
+            {
+                state_->backgroundTextureView.Get()
+            };
+
+            state_->context->PSSetShaderResources(
+                0,
+                1,
+                backgroundViews);
+
+            state_->context->Draw(
+                3,
+                0);
+
+            ID3D11ShaderResourceView*
+                emptyBackgroundViews[] =
+            {
+                nullptr
+            };
+
+            state_->context->PSSetShaderResources(
+                0,
+                1,
+                emptyBackgroundViews);
+
+            state_->context->OMSetDepthStencilState(
+                state_->depthState.Get(),
+                0);
+        }
 
         using namespace DirectX;
 
