@@ -9,6 +9,9 @@
 
 namespace
 {
+    constexpr char MainServerId[] =
+        "zone_main";
+    
     core::math::Transform3x4
     ApplyYaw(
         const core::math::Transform3x4& base,
@@ -442,7 +445,8 @@ Application::CharacterTransform() const noexcept
                     accountSession_.
                         Establish(
                             result.login,
-                            result.sessionToken);
+                            result.sessionToken,
+                            MainServerId);
 
                     if (event.rememberLogin)
                     {
@@ -461,15 +465,33 @@ Application::CharacterTransform() const noexcept
                             "Authentication successful: ") +
                         result.login);
 
-                    //
-                    // Авторизация завершена.
-                    //
-                    // Как в последней версии клиента:
-                    // AuthorizeWin скрывается,
-                    // после него открывается ServersWin.
-                    //
+                    core::Log::Info(
+                        std::string(
+                            "Assigned server id: ") +
+                        accountSession_.
+                            ServerId());
+
+                    std::string
+                        characterSceneError;
+
+                    if (!InitializeCharacterSelectScene(
+                            characterSceneError))
+                    {
+                        core::Log::Error(
+                            characterSceneError);
+
+                        accountSession_.
+                            Clear();
+
+                        frontend_.
+                            SendLoginError(
+                                "Unable to initialize character selection scene.");
+
+                        break;
+                    }
+
                     frontend_.
-                        SendLoginAccepted();
+                        SendServerAccepted();
 
                     break;
                 }
