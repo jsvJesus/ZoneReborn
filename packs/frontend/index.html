@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="utf-8">
 
@@ -9,274 +9,48 @@
 
     <title>Zone Reborn</title>
 
-    <style>
-        html,
-        body {
-			width: 100%;
-			height: 100%;
-			margin: 0;
-			overflow: hidden;
+    <link
+        rel="stylesheet"
+        href="./core/frontend.css">
 
-			background: transparent;
-		}
+    <link
+        rel="stylesheet"
+        href="./login/login.css">
 
-        #frontend {
-            position: fixed;
-			inset: 0;
-			overflow: hidden;
+    <link
+        rel="stylesheet"
+        href="./main/main.css">
 
-			background: transparent;
-        }
+    <script
+        defer
+        src="./core/frontend.js">
+    </script>
 
-        #startup {
-            position: absolute;
-            inset: 0;
+    <script
+        defer
+        src="./characters/store.js">
+    </script>
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+    <script
+        defer
+        src="./login/login.js">
+    </script>
 
-            background: #000;
-
-            z-index: 10;
-        }
-
-        #startup canvas {
-            display: block;
-
-            max-width: 100vw;
-            max-height: 100vh;
-        }
-
-        #flash {
-            position: absolute;
-			inset: 0;
-
-			display: none;
-
-			background: transparent;
-        }
-
-        ruffle-player {
-            width: 100%;
-			height: 100%;
-
-			display: block;
-
-			background: transparent;
-        }
-    </style>
-	
-	<link rel="stylesheet" href="./login.css">
-
-    <script>
-		window.RufflePlayer =
-			window.RufflePlayer || {};
-
-		window.RufflePlayer.config = {
-			publicPath: "./ruffle/",
-
-			autoplay: "on",
-
-			// Не показывать эту ебаную кнопку "Включить звук".
-			unmuteOverlay: "hidden",
-
-			allowScriptAccess: true,
-
-			warnOnUnsupportedContent: true,
-
-			logLevel: "debug",
-			
-			wmode: "transparent",
-			backgroundColor: null
-		};
-
-		// Перехватываем ошибки Ruffle ДО загрузки ruffle.js
-		// и отправляем их в консоль ZoneReborn.
-		(() =>
-		{
-			const levels = [
-				"log",
-				"warn",
-				"error"
-			];
-
-			for (const level of levels)
-			{
-				const original =
-					console[level].bind(console);
-
-				console[level] =
-					(...args) =>
-					{
-						original(...args);
-
-						try
-						{
-							const text =
-								args
-									.map(value =>
-									{
-										if (typeof value === "string")
-										{
-											return value;
-										}
-
-										try
-										{
-											return JSON.stringify(value);
-										}
-										catch
-										{
-											return String(value);
-										}
-									})
-									.join(" ");
-
-							if (window.chrome &&
-								window.chrome.webview)
-							{
-								window.chrome.webview.postMessage(
-									"trace\t" +
-									encodeURIComponent(
-										"[Ruffle " +
-										level +
-										"] " +
-										text));
-							}
-						}
-						catch
-						{
-						}
-					};
-			}
-		})();
-	</script>
-
-    <script src="./ruffle/ruffle.js"></script>
-    <script defer src="./frontend.js"></script>
-	<script defer src="./login.js"></script>
+    <script
+        defer
+        src="./main/main.js">
+    </script>
 </head>
 
 <body>
     <div id="frontend">
+
         <div id="startup">
             <canvas id="startupCanvas"></canvas>
         </div>
-		
-		<div id="nativeLogin" class="native-login-root" hidden>
 
-			<div class="native-login-top">
-				<!--<button
-					id="nativeLoginSettings"
-					class="native-login-settings"
-					type="button">
-					&#x26ED;
-				</button>-->
+        <div id="screenRoot"></div>
 
-				<button
-					type="button"
-					data-login-locale="english">
-					EN
-				</button>
-
-				<span class="separator">|</span>
-
-				<button
-					type="button"
-					data-login-locale="chinese">
-					ZH
-				</button>
-
-				<span class="separator">|</span>
-
-				<button
-					type="button"
-					data-login-locale="russian">
-					RU
-				</button>
-
-				<!--<button
-					id="nativeLoginClose"
-					class="native-login-close"
-					type="button">
-					X
-				</button>-->
-			</div>
-
-
-			<div class="native-login-card">
-				<div
-					id="nativeLoginCaption"
-					class="native-login-caption">
-				</div>
-
-				<div class="native-login-content">
-
-					<input
-						id="nativeLoginName"
-						class="native-login-input"
-						type="text"
-						maxlength="40"
-						autocomplete="username">
-
-					<input
-						id="nativeLoginPassword"
-						class="native-login-input"
-						type="password"
-						maxlength="40"
-						autocomplete="current-password">
-
-					<div class="native-login-divider"></div>
-
-					<label class="native-login-remember">
-						<input
-							id="nativeRemember"
-							type="checkbox">
-
-						<span class="native-login-toggle"></span>
-
-						<span
-							id="nativeRememberText"
-							class="native-login-remember-text">
-						</span>
-					</label>
-
-					<button
-						id="nativeLoginButton"
-						class="native-login-main-button"
-						type="button"
-						disabled>
-					</button>
-
-					<button
-						id="nativeRegisterButton"
-						class="native-login-link"
-						type="button">
-					</button>
-
-					<button
-						id="nativeForgotButton"
-						class="native-login-link"
-						type="button">
-					</button>
-
-					<div
-						id="nativeLoginError"
-						class="native-login-error">
-					</div>
-
-				</div>
-			</div>
-
-			<div
-				id="nativeLoginVersion"
-				class="native-login-version">
-			</div>
-
-		</div>
-		
-        <div id="flash"></div>
     </div>
 </body>
 </html>
