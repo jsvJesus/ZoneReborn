@@ -162,7 +162,7 @@
 				"A shop where items and various customization items are sold.",
 				
 			storageTitle:
-				"Storage",
+				"STORAGE",
 				
 			storageDescription:
 				"All the items you purchased have been delivered to the warehouse.",
@@ -1273,24 +1273,6 @@
             .addEventListener(
                 "click",
                 copyAccountId);
-
-
-        element(
-            "mainStore")
-            .addEventListener(
-                "click",
-                () =>
-                    Frontend.trace(
-                        "Open store."));
-
-
-        element(
-            "mainStorage")
-            .addEventListener(
-                "click",
-                () =>
-                    Frontend.trace(
-                        "Open storage."));
 
 
         mountedRoot
