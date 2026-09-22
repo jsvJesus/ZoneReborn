@@ -99,12 +99,8 @@
 }
 
 .native-login-settings {
-    width: 28px;
-    height: 28px;
-
+    font-size: 22px !important;
     margin-right: 4px;
-
-    font-size: 25px !important;
     line-height: 28px;
 }
 
