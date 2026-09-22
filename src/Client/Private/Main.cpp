@@ -43,7 +43,7 @@ int main(
 #if defined(STUDIO_BUILD)
 
         std::string spaceName =
-            "start_tutorial_warehouse";
+            "shop_portals_apartments"; // load map for test
 
         if (argc >= 2 &&
             argv[1] != nullptr &&

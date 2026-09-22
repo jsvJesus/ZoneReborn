@@ -8,7 +8,7 @@
 
     overflow: hidden;
 
-    background: transparent;
+    background: #050505;
 
     color: #c7c7c7;
 
@@ -21,13 +21,39 @@
     pointer-events: none;
 
     user-select: none;
+
+    isolation: isolate;
 }
 
 
 /*
-    Реальный personages_select рендерится движком
-    под прозрачным WebView.
+    Static Zone Reborn main menu background.
 */
+.main-screen::before {
+    content: "";
+
+    position: absolute;
+
+    inset: -8px;
+
+    z-index: 0;
+
+    background:
+        url("https://zone.local/packs/res/soGUI/maps/MainMenu/main_bg.jpg")
+        center center /
+        cover
+        no-repeat;
+
+    filter:
+        brightness(0.62)
+        saturate(0.88);
+
+    transform:
+        scale(1.015);
+
+    pointer-events: none;
+}
+
 .main-vignette {
     position: absolute;
 
