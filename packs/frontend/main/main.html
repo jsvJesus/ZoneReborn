@@ -3,34 +3,96 @@
     <div class="main-vignette"></div>
 
 
-    <div class="main-account">
-
-        <span id="mainAccountName"></span>
-
-        <span class="account-id">
-            id
-        </span>
-
-        <span class="account-notification">
-            !
-        </span>
-
-    </div>
-
-
     <div class="main-top">
+
+        <div class="main-account">
+
+            <span
+                id="mainAccountName"
+                class="main-account-name">
+            </span>
+
+            <span class="main-account-separator">
+                |
+            </span>
+
+            <button
+                id="mainAccountId"
+                class="main-account-id"
+                type="button">
+                ID —
+            </button>
+
+        </div>
+
+
+        <div class="main-balances">
+
+            <div
+                class="main-balance"
+                id="mainSoftBalance">
+
+                <img
+                    class="main-balance-icon"
+                    src="/packs/res/soGUI/frame/paint/icon_money.png"
+                    alt="">
+
+                <span id="mainSoftBalanceValue">
+                    0
+                </span>
+
+            </div>
+
+
+            <div
+                class="main-balance"
+                id="mainPremiumBalance">
+
+                <canvas
+                    class="main-balance-icon main-tga"
+                    data-tga="/packs/res/soGUI/maps/premium/premium.tga">
+                </canvas>
+
+                <span id="mainPremiumBalanceValue">
+                    0
+                </span>
+
+            </div>
+
+        </div>
+
 
         <button
             id="mainStore"
+            class="main-top-action"
             type="button">
-            ◆ МАГАЗИН
+
+            <img
+                src="/packs/res/soGUI/frame/storehouse/basket.png"
+                alt="">
+
+            <span data-i18n="store">
+                МАГАЗИН
+            </span>
+
         </button>
+
 
         <button
             id="mainStorage"
+            class="main-top-action main-storage-action"
             type="button">
-            ◆ СКЛАД
+
+            <img
+                src="/packs/res/soGUI/frame/storehouse/label_center.png"
+                alt="">
+
+            <span data-i18n="storage">
+                СКЛАД
+            </span>
+
         </button>
+
 
         <div class="main-locales">
 
@@ -58,21 +120,14 @@
 
         </div>
 
-        <!--<button
-            id="mainClose"
-            class="main-close"
-            type="button">
-            X
-        </button>-->
-
     </div>
 
 
     <aside class="main-left">
 
         <div
-            id="mainTitle"
-            class="main-title">
+            class="main-title"
+            data-i18n="mainTitle">
             ГЛАВНОЕ МЕНЮ
         </div>
 
@@ -80,13 +135,16 @@
         <button
             id="mainPlay"
             class="main-play"
-            type="button">
+            type="button"
+            data-i18n="startGame">
             НАЧАТЬ ИГРУ
         </button>
 
 
-        <div class="main-section-title">
-            МОИ ПЕРСОНАЖИ
+        <div
+            class="main-section-title"
+            data-i18n="myCharacter">
+            МОЙ ПЕРСОНАЖ
         </div>
 
 
@@ -98,27 +156,45 @@
 
         <nav class="main-navigation">
 
-            <button type="button" data-action="settings">
+            <button
+                type="button"
+                data-action="settings"
+                data-i18n="settings">
                 НАСТРОЙКИ
             </button>
 
-            <button type="button" data-action="partner">
+            <button
+                type="button"
+                data-action="partner"
+                data-i18n="partner">
                 ПАРТНЕРСКАЯ ПРОГРАММА
             </button>
 
-            <button type="button" data-action="promo">
+            <button
+                type="button"
+                data-action="promo"
+                data-i18n="promo">
                 ВВЕСТИ ПРОМОКОД
             </button>
 
-            <button type="button" data-action="support">
+            <button
+                type="button"
+                data-action="support"
+                data-i18n="support">
                 ТЕХПОДДЕРЖКА
             </button>
 
-            <button type="button" data-action="news">
+            <button
+                type="button"
+                data-action="news"
+                data-i18n="news">
                 НОВОСТИ
             </button>
 
-            <button type="button" data-action="license">
+            <button
+                type="button"
+                data-action="license"
+                data-i18n="license">
                 ЛИЦЕНЗИОННОЕ СОГЛАШЕНИЕ
             </button>
 
@@ -131,7 +207,8 @@
         <button
             id="mainExit"
             class="main-exit"
-            type="button">
+            type="button"
+            data-i18n="exit">
             ВЫХОД
         </button>
 
@@ -151,20 +228,27 @@
             type="button"
             data-action="appearance">
 
-            <div class="promo-title">
+            <div
+                class="promo-title"
+                data-i18n="appearanceTitle">
                 МОДИФИКАЦИЯ ВНЕШНОСТИ
             </div>
 
             <div class="promo-body">
 
-                <div class="promo-icon promo-head">
-                    ◉
+                <div class="promo-image">
+
+                    <canvas
+                        class="main-tga"
+                        data-tga="/packs/res/soGUI/maps/Icons/chargen/icon_head_01.tga">
+                    </canvas>
+
                 </div>
 
-                <div class="promo-description">
-                    Здесь доступны любые формы
-                    изменения внешности, если она
-                    Вам надоела.
+                <div
+                    class="promo-description"
+                    data-i18n="appearanceDescription">
+                    Здесь доступны любые формы изменения внешности.
                 </div>
 
             </div>
@@ -177,20 +261,27 @@
             type="button"
             data-action="equipment">
 
-            <div class="promo-title">
+            <div
+                class="promo-title"
+                data-i18n="equipmentTitle">
                 МОДИФИКАЦИЯ ЭКИПИРОВКИ
             </div>
 
             <div class="promo-body">
 
-                <div class="promo-icon">
-                    ◈
+                <div class="promo-image">
+
+                    <canvas
+                        class="main-tga"
+                        data-tga="/packs/res/soGUI/maps/Icons/chargen/icon_body_01.tga">
+                    </canvas>
+
                 </div>
 
-                <div class="promo-description">
-                    Покрасьте свою одежду в любой
-                    из представленных камуфляжей.
-                    Соберите свой уникальный сет.
+                <div
+                    class="promo-description"
+                    data-i18n="equipmentDescription">
+                    Изменяйте внешний вид своей экипировки.
                 </div>
 
             </div>
@@ -203,20 +294,27 @@
             type="button"
             data-action="premium">
 
-            <div class="promo-title">
+            <div
+                class="promo-title"
+                data-i18n="premiumTitle">
                 ПРЕМИАЛЬНАЯ ПОДПИСКА
             </div>
 
             <div class="promo-body">
 
-                <div class="promo-icon promo-star">
-                    ★
+                <div class="promo-image promo-image-premium">
+
+                    <canvas
+                        class="main-tga"
+                        data-tga="/packs/res/soGUI/maps/premium/premium.tga">
+                    </canvas>
+
                 </div>
 
-                <div class="promo-description">
-                    Подключите, чтобы получать
-                    увеличенный опыт и другие
-                    интересные преимущества.
+                <div
+                    class="promo-description"
+                    data-i18n="premiumDescription">
+                    Получайте увеличенный опыт и другие преимущества.
                 </div>
 
             </div>
