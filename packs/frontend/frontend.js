@@ -15,10 +15,6 @@ const STARTUP_IMAGE =
     ROOT +
     "/packs/res/soGUI/maps/loadingScreen/appStart3.tga";
 
-const SERVER_CONFIG =
-    ROOT +
-    "/packs/res/scripts/client/data/servers_config.json";
-
 const LOCALES_CONFIG =
     ROOT +
     "/packs/res/local/localizations.json";
@@ -315,261 +311,6 @@ async function readVersion()
     return "ver dev";
 }
 
-
-async function buildServerList()
-{
-    const result =
-    {
-        list: [],
-        defaultServerId: ""
-    };
-
-    try
-    {
-        console.log(
-            "[Frontend] Loading server config:",
-            SERVER_CONFIG);
-
-        const response =
-            await fetch(
-                SERVER_CONFIG,
-                {
-                    cache: "no-store"
-                });
-
-        if (!response.ok)
-        {
-            throw new Error(
-                "HTTP " +
-                response.status +
-                " while loading " +
-                SERVER_CONFIG);
-        }
-
-        const config =
-            await response.json();
-
-        console.log(
-            "[Frontend] servers_config.json loaded:",
-            config);
-
-
-        function addServers(
-            servers,
-            developer)
-        {
-            if (!Array.isArray(servers))
-            {
-                return;
-            }
-
-            for (const serverInfo of servers)
-            {
-                if (!serverInfo)
-                {
-                    continue;
-                }
-
-                let host = "";
-                let online = true;
-
-                //
-                // Новый servers_config.json:
-                //
-                // {
-                //     name: "RU1",
-                //     host: "r1.stalker.so:15230",
-                //     uid: "server_EKB"
-                // }
-                //
-                if (serverInfo.host)
-                {
-                    host =
-                        String(
-                            serverInfo.host);
-                }
-
-                //
-                // Старый формат:
-                //
-                // {
-                //     name: "Cluster SPB",
-                //     server:
-                //     {
-                //         host: "...",
-                //         online: 1
-                //     }
-                // }
-                //
-                else if (serverInfo.server)
-                {
-                    host =
-                        String(
-                            serverInfo.server.host ||
-                            "");
-
-                    if ("online" in serverInfo.server)
-                    {
-                        online =
-                            serverInfo.server.online === true ||
-                            serverInfo.server.online === 1 ||
-                            serverInfo.server.online === "1";
-                    }
-                }
-
-                if (!host)
-				{
-					continue;
-				}
-
-                const id =
-                    String(
-                        result.list.length);
-						
-				const uid =
-					String(
-						serverInfo.uid ||
-						(
-							serverInfo.server &&
-							serverInfo.server.uid
-						) || id);
-
-                const label =
-                    String(
-                        serverInfo.name ||
-                        serverInfo.SERVTAG ||
-                        serverInfo.uid ||
-                        ("Server " + id));
-
-                result.list.push(
-				{
-					id:
-						id,
-
-					uid:
-						uid,
-
-					label:
-						label,
-
-					address:
-						host,
-
-					online:
-						online,
-
-					ping:
-						0,
-
-					using:
-						0,
-
-					is_dev_serv:
-						developer
-							? 1
-							: 0
-				});
-            }
-        }
-
-
-        //
-        // Текущий формат ресурсов SOnline.
-        //
-        if (Array.isArray(
-                config.release_servers))
-        {
-            addServers(
-                config.release_servers,
-                false);
-        }
-        //
-        // Совместимость со старым config.
-        //
-        else
-        {
-            addServers(
-                config.customers_servers,
-                false);
-        }
-
-
-        //
-        // Developer servers.
-        //
-        addServers(
-            config.developers_servers,
-            true);
-
-
-        //
-        // Выбираем обычный release-сервер
-        // по умолчанию.
-        //
-        let defaultServer = null;
-
-        defaultServer =
-            result.list.find(
-                server =>
-                    server.label === "EU1");
-
-        if (!defaultServer)
-        {
-            defaultServer =
-                result.list.find(
-                    server =>
-                        server.label === "RU1");
-        }
-
-        if (!defaultServer)
-        {
-            defaultServer =
-                result.list.find(
-                    server =>
-                        server.label ===
-                        "Cluster SPB");
-        }
-
-        if (!defaultServer)
-        {
-            defaultServer =
-                result.list.find(
-                    server =>
-                        server.is_dev_serv === 0);
-        }
-
-        if (!defaultServer &&
-            result.list.length > 0)
-        {
-            defaultServer =
-                result.list[0];
-        }
-
-        if (defaultServer)
-        {
-            result.defaultServerId =
-                defaultServer.id;
-        }
-
-
-        console.log(
-            "[Frontend] Built server list:",
-            JSON.stringify(result));
-    }
-    catch (error)
-    {
-        console.error(
-            "[Frontend] Failed to build server list:",
-            error);
-
-        trace(
-            "Server config read failed: " +
-            error);
-    }
-
-    return result;
-}
-
 window.FrontendBridge =
 {
     getLocale:
@@ -578,18 +319,11 @@ window.FrontendBridge =
             return currentLocale;
         },
 
-
     readRememberedLogin:
         readRememberedLogin,
 
-
     readVersion:
         readVersion,
-
-
-    buildServerList:
-        buildServerList,
-
 
     postLogin:
         function(
@@ -606,32 +340,12 @@ window.FrontendBridge =
                     : "0");
         },
 
-
-    selectServer:
-        function(
-            serverUid)
-        {
-            postToHost(
-                "server_select",
-                serverUid || "");
-        },
-
-
-    logout:
-        function()
-        {
-            postToHost(
-                "logout");
-        },
-
-
     quit:
         function()
         {
             postToHost(
                 "quit");
         },
-
 
     openUrl:
         function(
@@ -1787,7 +1501,6 @@ window.ZoneFrontend =
                 {});
         },
 
-
     loginError:function(message)
     {
         if (window.NativeLogin)
@@ -1807,47 +1520,23 @@ window.ZoneFrontend =
             });
     },
 
+	loginComplete:function()
+	{
+		transmit(
+			"activateAccountWindow",
+			{});
 
-	loginAccepted:function()
-    {
-        if (window.NativeLogin)
-        {
-            window.NativeLogin.
-                authenticated();
-
-            return;
-        }
-    },
-
-
-	serverError:function(message)
-    {
-        if (window.NativeLogin)
-        {
-            window.NativeLogin.
-                serverError(
-                    message);
-        }
-    },
-
-
-	serverAccepted:function()
-    {
-        transmit(
-            "activateAccountWindow",
-            {});
-
-        setTimeout(
-            () =>
-            {
-                if (window.NativeLogin)
-                {
-                    window.NativeLogin.
-                        serverAccepted();
-                }
-            },
-            0);
-    },
+		setTimeout(
+			() =>
+			{
+				if (window.NativeLogin)
+				{
+					window.NativeLogin.
+						loginComplete();
+				}
+			},
+			0);
+	},
 
 
 	localizationResult:function(data)
@@ -1855,7 +1544,6 @@ window.ZoneFrontend =
         transmit("getLocalizedResource", data || {});
     }
 };
-
 
 // --------------------------------------------------
 // Startup screen

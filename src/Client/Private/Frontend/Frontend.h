@@ -7,20 +7,18 @@
 #include <wrl.h>
 #include <WebView2.h>
 
+#include <cstdint>
 #include <deque>
 #include <filesystem>
 #include <string>
-#include <vector>
-#include <cstdint>
 #include <utility>
+#include <vector>
 
 namespace client::frontend
 {
     enum class FrontendEventType
     {
         Login,
-        ServerSelect,
-        Logout,
 
         Exit,
         OpenUrl,
@@ -42,7 +40,6 @@ namespace client::frontend
 
         std::string login;
         std::string password;
-        std::string serverId;
         std::string url;
         std::string soundName;
 
@@ -120,9 +117,7 @@ namespace client::frontend
         void SendLoginError(
             const std::string& message);
 
-        void SendLoginAccepted();
-        void SendServerError(const std::string& message);
-        void SendServerAccepted();
+        void SendLoginComplete();
 
         void Hide();
 

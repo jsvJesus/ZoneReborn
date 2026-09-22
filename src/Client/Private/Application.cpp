@@ -450,9 +450,7 @@ Application::CharacterTransform() const noexcept
 
                     if (event.rememberLogin)
                     {
-                        rememberedLogin_.
-                            Save(
-                                result.login);
+                        rememberedLogin_.Save(result.login);
                     }
                     else
                     {
@@ -491,66 +489,7 @@ Application::CharacterTransform() const noexcept
                     }
 
                     frontend_.
-                        SendServerAccepted();
-
-                    break;
-                }
-
-                case frontend::FrontendEventType::ServerSelect:
-                {
-                    if (!accountSession_.
-                            IsAuthenticated())
-                    {
-                        frontend_.
-                            SendServerError(
-                                "Authentication required.");
-
-                        break;
-                    }
-
-                    if (event.serverId.empty())
-                    {
-                        frontend_.
-                            SendServerError(
-                                "Server id is empty.");
-
-                        break;
-                    }
-
-                    core::Log::Info(
-                        std::string(
-                            "Selected server id: ") +
-                        event.serverId);
-
-                    std::string
-                        characterSceneError;
-
-                    if (!InitializeCharacterSelectScene(
-                            characterSceneError))
-                    {
-                        core::Log::Error(
-                            characterSceneError);
-
-                        frontend_.
-                            SendServerError(
-                                "Unable to initialize character selection scene.");
-
-                        break;
-                    }
-
-                    frontend_.
-                        SendServerAccepted();
-
-                    break;
-                }
-
-                case frontend::FrontendEventType::Logout:
-                {
-                    accountSession_.
-                        Clear();
-
-                    core::Log::Info(
-                        "Frontend account session cleared.");
+                        SendLoginComplete();
 
                     break;
                 }

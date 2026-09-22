@@ -1602,31 +1602,11 @@ namespace client::frontend
             "}");
     }
 
-    void OriginalFrontend::SendLoginAccepted()
+    void OriginalFrontend::SendLoginComplete()
     {
         ExecuteScriptUtf8(
             "if(window.ZoneFrontend){"
-            "window.ZoneFrontend.loginAccepted();"
-            "}");
-    }
-
-    void OriginalFrontend::SendServerError(const std::string& message)
-    {
-        ExecuteScriptUtf8(
-            "if(window.ZoneFrontend){"
-            "window.ZoneFrontend.serverError(" +
-            JsonString(
-                message) +
-            ");"
-            "}");
-    }
-
-
-    void OriginalFrontend::SendServerAccepted()
-    {
-        ExecuteScriptUtf8(
-            "if(window.ZoneFrontend){"
-            "window.ZoneFrontend.serverAccepted();"
+            "window.ZoneFrontend.loginComplete();"
             "}");
     }
 
@@ -1805,49 +1785,6 @@ namespace client::frontend
             event.rememberLogin =
                 fields[3] ==
                 "1";
-
-            events_.push_back(
-                std::move(
-                    event));
-
-            return;
-        }
-
-        if (command =="server_select")
-        {
-            if (fields.size() <
-                    2 ||
-                fields[1].empty())
-            {
-                core::Log::Warning(
-                    "Invalid frontend server_select message.");
-
-                return;
-            }
-
-            FrontendEvent event;
-
-            event.type =
-                FrontendEventType::
-                    ServerSelect;
-
-            event.serverId =
-                fields[1];
-
-            events_.push_back(
-                std::move(
-                    event));
-
-            return;
-        }
-
-        if (command =="logout")
-        {
-            FrontendEvent event;
-
-            event.type =
-                FrontendEventType::
-                    Logout;
 
             events_.push_back(
                 std::move(
