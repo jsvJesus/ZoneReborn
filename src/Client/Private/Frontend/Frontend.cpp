@@ -1152,23 +1152,6 @@ namespace client::frontend
             return false;
         }
 
-        const std::filesystem::path
-            ruffleScript =
-                gameRoot_ /
-                "packs" /
-                "frontend" /
-                "ruffle" /
-                "ruffle.js";
-
-        if (!std::filesystem::exists(
-                ruffleScript))
-        {
-            error =
-                "Missing packs/frontend/ruffle/ruffle.js";
-
-            return false;
-        }
-
         HRESULT result =
             CoInitializeEx(
                 nullptr,

@@ -1,0 +1,311 @@
+.login-screen {
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    color: #d7d7d7;
+}
+
+.login-screen::before {
+    content: "";
+
+    position: absolute;
+
+    inset: -8px;
+
+    background:
+        url("https://zone.local/packs/res/soGUI/maps/Login/login_bg.jpg")
+        center center /
+        cover
+        no-repeat;
+
+    filter:
+        blur(2px)
+        brightness(0.58);
+
+    transform:
+        scale(1.015);
+}
+
+.login-screen::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(0, 0, 0, 0.02) 0%,
+            rgba(0, 0, 0, 0.12) 48%,
+            rgba(0, 0, 0, 0.72) 100%
+        );
+}
+
+.login-top {
+    position: absolute;
+
+    z-index: 4;
+
+    top: 22px;
+    right: 24px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    color: #969696;
+
+    font-size: 17px;
+}
+
+.login-top button {
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #969696;
+
+    cursor: pointer;
+}
+
+.login-top button:hover,
+.login-top button.selected {
+    color: #ffffff;
+}
+
+.login-close {
+    margin-left: 10px;
+
+    font-size: 22px;
+}
+
+.login-card {
+    position: relative;
+
+    z-index: 3;
+
+    width: 380px;
+
+    background:
+        rgba(0, 0, 0, 0.82);
+
+    box-shadow:
+        0 0 40px
+        rgba(0, 0, 0, 0.28);
+}
+
+.login-caption {
+    height: 50px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        rgba(0, 0, 0, 0.96);
+
+    font-size: 18px;
+}
+
+.login-content {
+    padding:
+        26px
+        40px
+        34px;
+}
+
+.login-input {
+    display: block;
+
+    width: 300px;
+    height: 40px;
+
+    padding:
+        0
+        10px;
+
+    border: 0;
+
+    outline: 0;
+
+    background:
+        rgba(221, 221, 221, 0.96);
+
+    color: #252525;
+
+    font-size: 18px;
+}
+
+.login-input + .login-input {
+    margin-top: 10px;
+}
+
+.login-divider {
+    width: 300px;
+    height: 1px;
+
+    margin:
+        20px
+        0;
+
+    background:
+        rgba(95, 95, 95, 0.52);
+}
+
+.login-remember {
+    display: flex;
+
+    align-items: center;
+
+    height: 28px;
+
+    cursor: pointer;
+}
+
+.login-remember input {
+    position: absolute;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+.login-toggle {
+    position: relative;
+
+    width: 36px;
+    height: 20px;
+
+    border:
+        2px
+        solid
+        #e6e6e6;
+
+    border-radius: 12px;
+
+    background: #5b5b5b;
+}
+
+.login-toggle::after {
+    content: "";
+
+    position: absolute;
+
+    top: 2px;
+    left: 2px;
+
+    width: 12px;
+    height: 12px;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+}
+
+.login-remember input:checked +
+.login-toggle {
+    background: #39752d;
+}
+
+.login-remember input:checked +
+.login-toggle::after {
+    transform:
+        translateX(16px);
+}
+
+#loginRememberText {
+    margin-left: 12px;
+
+    color: #b00009;
+}
+
+.login-main-button {
+    width: 300px;
+    height: 54px;
+
+    margin-top: 18px;
+
+    border:
+        1px
+        solid
+        rgba(72, 81, 86, 0.52);
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(33, 41, 45, 0.92),
+            rgba(20, 27, 31, 0.96)
+        );
+
+    color: #bcbcbc;
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+.login-main-button:disabled {
+    opacity: 0.38;
+}
+
+.login-link {
+    display: block;
+
+    margin-top: 10px;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    color: #888888;
+
+    cursor: pointer;
+}
+
+.login-link:hover {
+    color: #d0d0d0;
+}
+
+.login-error {
+    min-height: 20px;
+
+    margin-top: 12px;
+
+    color: #b00009;
+
+    font-size: 14px;
+}
+
+.login-version {
+    position: absolute;
+
+    z-index: 4;
+
+    right: 25px;
+    bottom: 19px;
+
+    color:
+        rgba(
+            210,
+            210,
+            210,
+            0.56);
+
+    font-size: 12px;
+}
