@@ -75,6 +75,18 @@
 
             premiumDescription:
                 "Подключите, чтобы получать увеличенный опыт и другие преимущества.",
+				
+			storeTitle:
+				"МАГАЗИН ПРЕДМЕТОВ",
+				
+			storeDescription:
+				"Магазин, где продаются предметы и различные предметы кастомизации.",
+				
+			storageTitle:
+				"ХРАНИЛИЩЕ",
+				
+			storageDescription:
+				"Все приобретенные вами товары доставлены на склад.",
 
             deleteCharacter:
                 "Удалить персонажа",
@@ -142,6 +154,18 @@
 
             premiumDescription:
                 "Receive increased experience and other premium benefits.",
+				
+			storeTitle:
+				"MARKET",
+				
+			storeDescription:
+				"A shop where items and various customization items are sold.",
+				
+			storageTitle:
+				"Storage",
+				
+			storageDescription:
+				"All the items you purchased have been delivered to the warehouse.",
 
             deleteCharacter:
                 "Delete character",
@@ -209,6 +233,18 @@
 
             premiumDescription:
                 "获得额外经验以及其他高级特权。",
+				
+			storeTitle:
+				"店铺",
+				
+			storeDescription:
+				"出售各类物品及各种定制化物品的商店。",
+				
+			storageTitle:
+				"贮存",
+				
+			storageDescription:
+				"您购买的所有商品均已送至仓库。",
 
             deleteCharacter:
                 "删除角色",
