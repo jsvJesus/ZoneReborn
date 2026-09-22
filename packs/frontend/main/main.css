@@ -8,6 +8,11 @@
 
     overflow: hidden;
 
+    /*
+        ВАЖНО:
+        фон и 3D-персонаж рисуются DX11 renderer'ом
+        ПОД прозрачным WebView.
+    */
     background: transparent;
 
     color: #c7c7c7;
@@ -25,34 +30,6 @@
     isolation: isolate;
 }
 
-
-/*
-    Static Zone Reborn main menu background.
-*/
-.main-screen::before {
-    content: "";
-
-    position: absolute;
-
-    inset: -8px;
-
-    z-index: 0;
-
-    background:
-        url("https://zone.local/packs/res/soGUI/maps/MainMenu/main_bg.jpg")
-        center center /
-        cover
-        no-repeat;
-
-    filter:
-        brightness(0.62)
-        saturate(0.88);
-
-    transform:
-        scale(1.015);
-
-    pointer-events: none;
-}
 
 .main-vignette {
     position: absolute;
