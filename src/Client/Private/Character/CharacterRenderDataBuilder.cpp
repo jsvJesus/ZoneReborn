@@ -574,12 +574,16 @@ namespace
                     std::move(
                         sceneMesh));
 
-                animator.AddMesh(
-                    meshIndex,
-                    bundle.visual,
-                    renderSet.nodes,
-                    std::move(
-                        animationSource));
+                if (!animator.AddMesh(
+                meshIndex,
+                bundle.visual,
+                renderSet.nodes,
+                std::move(
+                    animationSource),
+                error))
+                {
+                    return false;
+                }
 
                 modelMeshes.push_back(
                     meshIndex);

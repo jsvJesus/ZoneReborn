@@ -482,8 +482,7 @@ Application::CharacterTransform() const noexcept
             renderer_.SetCamera(
                 characterSelectStage_.
                     camera);
-
-
+            
             if (characterVisible_ &&
                 characterAnimator_.IsReady())
             {
@@ -512,8 +511,7 @@ Application::CharacterTransform() const noexcept
                     return false;
                 }
             }
-
-
+            
             if (!renderer_.Render(
                     renderError))
             {

@@ -37,11 +37,13 @@ namespace client::character
             const core::resources::ResourceFileSystem& resources,
             std::string& error);
 
-        void AddMesh(
+        [[nodiscard]]
+        bool AddMesh(
             std::size_t sceneMeshIndex,
             const core::assets::VisualAsset& visual,
             const std::vector<std::string>& paletteNodes,
-            core::assets::MeshData sourceMesh);
+            core::assets::MeshData sourceMesh,
+            std::string& error);
 
         [[nodiscard]]
         bool Update(
