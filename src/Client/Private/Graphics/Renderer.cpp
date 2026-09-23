@@ -1021,6 +1021,7 @@ namespace client::graphics
             std::uint32_t indexCount = 0;
             std::int32_t terrainMaterialIndex = -1;
             std::int32_t waterMaterialIndex = -1;
+            std::size_t vertexCount = 0;
 
             std::vector<
                 core::assets::MeshPrimitiveGroup>
@@ -2489,6 +2490,9 @@ namespace client::graphics
                 return false;
             }
 
+            gpuMesh.vertexCount =
+                vertices.size();
+
             D3D11_BUFFER_DESC
                 indexDescription{};
 
@@ -3362,6 +3366,83 @@ namespace client::graphics
                 "GPU flare elements: ") +
             std::to_string(
                 state_->flares.size()));
+
+        return true;
+    }
+
+    bool Renderer::UpdateMeshVertices(
+        const std::size_t meshIndex,
+        const core::assets::MeshData& mesh,
+        std::string& error)
+    {
+        error.clear();
+
+        if (!state_ ||
+            !state_->context)
+        {
+            error =
+                "Renderer is not initialized.";
+
+            return false;
+        }
+
+        if (meshIndex >=
+            state_->meshes.size())
+        {
+            error =
+                "Animated mesh index is invalid.";
+
+            return false;
+        }
+
+        State::GpuMesh& gpuMesh =
+            state_->meshes[
+                meshIndex];
+
+        if (mesh.vertices.size() !=
+            gpuMesh.vertexCount)
+        {
+            error =
+                "Animated mesh vertex count changed.";
+
+            return false;
+        }
+
+        std::vector<GpuVertex>
+            vertices;
+
+        vertices.reserve(
+            mesh.vertices.size());
+
+        for (const core::assets::MeshVertex& vertex :
+             mesh.vertices)
+        {
+            const DirectX::XMFLOAT3 normal =
+                UnpackNormal(
+                    vertex.packedNormal);
+
+            vertices.push_back(
+            {
+                vertex.position.x,
+                vertex.position.y,
+                vertex.position.z,
+
+                normal.x,
+                normal.y,
+                normal.z,
+
+                vertex.u,
+                vertex.v
+            });
+        }
+
+        state_->context->UpdateSubresource(
+            gpuMesh.vertexBuffer.Get(),
+            0,
+            nullptr,
+            vertices.data(),
+            0,
+            0);
 
         return true;
     }

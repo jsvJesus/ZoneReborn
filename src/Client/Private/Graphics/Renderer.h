@@ -43,6 +43,12 @@ namespace client::graphics
             std::string& error);
 
         [[nodiscard]]
+        bool UpdateMeshVertices(
+            std::size_t meshIndex,
+            const core::assets::MeshData& mesh,
+            std::string& error);
+
+        [[nodiscard]]
         bool SetInstanceTransformRange(
             std::size_t firstInstance,
             std::size_t instanceCount,

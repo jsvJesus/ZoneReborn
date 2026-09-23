@@ -402,19 +402,22 @@ Application::CharacterTransform() const noexcept
         characterInstanceCount_ =
             0;
 
+        characterAnimator_.Reset();
+
         if (characterVisible_)
         {
             character::RenderDataBuilder
                 builder;
 
             if (!builder.Build(
-                    runtime_.Resources(),
-                    characterCatalog_,
-                    characterState_,
-                    CharacterTransform(),
-                    scene,
-                    characterInstanceCount_,
-                    error))
+                runtime_.Resources(),
+                characterCatalog_,
+                characterState_,
+                CharacterTransform(),
+                scene,
+                characterInstanceCount_,
+                characterAnimator_,
+                error))
             {
                 return false;
             }
@@ -425,6 +428,25 @@ Application::CharacterTransform() const noexcept
                 error))
         {
             return false;
+        }
+
+        characterAnimationStart_ =
+            std::chrono::steady_clock::now();
+
+        if (characterVisible_ &&
+            characterAnimator_.IsReady())
+        {
+            if (!characterAnimator_.Update(
+                    0.0f,
+                    renderer_,
+                    error))
+            {
+                error =
+                    "Unable to apply initial character idle pose: " +
+                    error;
+
+                return false;
+            }
         }
 
         renderer_.SetCamera(
@@ -460,6 +482,37 @@ Application::CharacterTransform() const noexcept
             renderer_.SetCamera(
                 characterSelectStage_.
                     camera);
+
+
+            if (characterVisible_ &&
+                characterAnimator_.IsReady())
+            {
+                const auto now =
+                    std::chrono::steady_clock::now();
+
+                const float elapsedSeconds =
+                    std::chrono::duration<float>(
+                        now -
+                        characterAnimationStart_).
+                        count();
+
+                std::string
+                    animationError;
+
+                if (!characterAnimator_.Update(
+                        elapsedSeconds,
+                        renderer_,
+                        animationError))
+                {
+                    core::Log::Error(
+                        std::string(
+                            "Character idle update failed: ") +
+                        animationError);
+
+                    return false;
+                }
+            }
+
 
             if (!renderer_.Render(
                     renderError))

@@ -16,8 +16,10 @@
 #include "Character/CharacterCatalog.h"
 #include "Character/CharacterRenderDataBuilder.h"
 #include "Character/CharacterState.h"
+#include "Character/CharacterAnimator.h"
 
 #include <cstddef>
+#include <chrono>
 
 namespace client
 {
@@ -89,6 +91,13 @@ namespace client
         std::size_t
             characterInstanceCount_ =
                 0;
+
+        character::Animator
+            characterAnimator_;
+
+        std::chrono::steady_clock::time_point
+            characterAnimationStart_ =
+                std::chrono::steady_clock::now();
 
         bool rendererInitialized_ =
             false;

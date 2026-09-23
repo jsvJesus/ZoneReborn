@@ -3,6 +3,7 @@
 #include "Character/CharacterCatalog.h"
 #include "Character/CharacterModelComposer.h"
 #include "Character/CharacterState.h"
+#include "Character/CharacterAnimator.h"
 
 #include "Graphics/SceneRenderData.h"
 
@@ -25,6 +26,7 @@ namespace client::character
             const core::math::Transform3x4& transform,
             graphics::SceneRenderData& scene,
             std::size_t& outputInstanceCount,
+            Animator& animator,
             std::string& error);
     };
 }

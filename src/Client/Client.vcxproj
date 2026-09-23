@@ -26,6 +26,7 @@
     <ClInclude Include="Private\Account\RememberedLogin.h" />
     <ClInclude Include="Private\Application.h" />
     <ClInclude Include="Private\Audio\AudioSystem.h" />
+    <ClInclude Include="Private\Character\CharacterAnimator.h" />
     <ClInclude Include="Private\Character\CharacterCatalog.h" />
     <ClInclude Include="Private\Character\CharacterModelComposer.h" />
     <ClInclude Include="Private\Character\CharacterRenderDataBuilder.h" />
@@ -60,6 +61,7 @@
     <ClCompile Include="Private\Account\RememberedLogin.cpp" Condition="'$(Configuration)|$(Platform)'=='Final|x64'" />
     <ClCompile Include="Private\Application.cpp" Condition="'$(Configuration)|$(Platform)'=='Final|x64'" />
     <ClCompile Include="Private\Audio\AudioSystem.cpp" Condition="'$(Configuration)|$(Platform)'=='Final|x64'" />
+    <ClCompile Include="Private\Character\CharacterAnimator.cpp" />
     <ClCompile Include="Private\Character\CharacterCatalog.cpp" />
     <ClCompile Include="Private\Character\CharacterModelComposer.cpp" />
     <ClCompile Include="Private\Character\CharacterRenderDataBuilder.cpp" />

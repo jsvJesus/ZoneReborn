@@ -439,342 +439,6 @@ namespace
         return true;
     }
 
-    bool ReadSectionText(
-        const core::resources::DataSection* section,
-        std::string& output)
-    {
-        output.clear();
-
-        if (section == nullptr)
-        {
-            return false;
-        }
-
-        if (const std::string* value =
-                section->AsString())
-        {
-            output =
-                *value;
-        }
-        else if (const auto* value =
-                     section->AsBinary())
-        {
-            output.reserve(
-                value->size());
-
-            for (const std::byte byte :
-                 *value)
-            {
-                const unsigned char character =
-                    std::to_integer<unsigned char>(
-                        byte);
-
-                if (character == 0)
-                {
-                    break;
-                }
-
-                output.push_back(
-                    static_cast<char>(
-                        character));
-            }
-        }
-        else
-        {
-            return false;
-        }
-
-        while (!output.empty() &&
-               output.back() == '\0')
-        {
-            output.pop_back();
-        }
-
-        return !output.empty();
-    }
-    
-    std::string NormalizeModelReference(
-        const std::string_view reference)
-    {
-        std::string normalized =
-            core::resources::ResourcePath::Normalize(
-                reference);
-
-        if (normalized.empty())
-        {
-            return {};
-        }
-
-        if (normalized.starts_with(
-                "res/"))
-        {
-            normalized.erase(
-                0,
-                4);
-        }
-
-        if (!normalized.ends_with(
-                ".model"))
-        {
-            normalized +=
-                ".model";
-        }
-
-        return normalized;
-    }
-
-    std::string AnimationLogicalPath(
-        const std::string_view reference)
-    {
-        std::string path =
-            core::resources::ResourcePath::Normalize(
-                reference);
-
-        if (path.empty())
-        {
-            return {};
-        }
-
-        if (!path.ends_with(
-                ".animation"))
-        {
-            path +=
-                ".animation";
-        }
-
-        return
-            core::resources::ResourcePath::ToResPath(
-                path);
-    }
-
-    void LogModelAnimationTree(
-        const core::resources::ResourceFileSystem& resources,
-        const std::string_view modelReference,
-        std::unordered_set<std::string>& visited)
-    {
-        core::assets::ModelSourceLoader
-            sourceLoader;
-
-        core::assets::ModelSource
-            source;
-
-        std::string
-            loadError;
-
-        if (!sourceLoader.Load(
-                resources,
-                modelReference,
-                source,
-                loadError))
-        {
-            core::Log::Warning(
-                std::string(
-                    "Character animation scan: unable to load model ") +
-                std::string(
-                    modelReference) +
-                ": " +
-                loadError);
-
-            return;
-        }
-
-        if (!visited.insert(
-                source.resource.logicalPath).
-                second)
-        {
-            return;
-        }
-
-        core::resources::PackedSectionReader
-            reader;
-
-        core::resources::DataSection
-            root;
-
-        std::string
-            parseError;
-
-        if (!reader.Read(
-                source.data,
-                root,
-                parseError))
-        {
-            core::Log::Warning(
-                std::string(
-                    "Character animation scan: unable to parse ") +
-                source.resource.logicalPath +
-                ": " +
-                parseError);
-
-            return;
-        }
-
-        //
-        // Сначала parent.
-        //
-        // BigWorld model наследует animations/actions
-        // от родительской модели.
-        //
-        std::string
-            parentReference;
-
-        if (ReadSectionText(
-                root.FindChild(
-                    "parent"),
-                parentReference))
-        {
-            const std::string normalizedParent =
-                NormalizeModelReference(
-                    parentReference);
-
-            if (!normalizedParent.empty())
-            {
-                LogModelAnimationTree(
-                    resources,
-                    normalizedParent,
-                    visited);
-            }
-        }
-
-        for (const auto* animation :
-             root.FindChildren(
-                 "animation"))
-        {
-            if (animation ==
-                nullptr)
-            {
-                continue;
-            }
-
-            std::string name;
-            std::string nodes;
-
-            ReadSectionText(
-                animation->FindChild(
-                    "name"),
-                name);
-
-            ReadSectionText(
-                animation->FindChild(
-                    "nodes"),
-                nodes);
-            
-            float frameRate =
-                30.0f;
-
-            if (const auto* value =
-                    animation->FindChild(
-                        "frameRate"))
-            {
-                value->TryGetFloat(
-                    frameRate);
-            }
-
-
-            std::int64_t firstFrame =
-                0;
-
-            std::int64_t lastFrame =
-                -1;
-
-            if (const auto* value =
-                    animation->FindChild(
-                        "firstFrame"))
-            {
-                if (const std::int64_t* integer =
-                        value->AsInteger())
-                {
-                    firstFrame =
-                        *integer;
-                }
-            }
-
-            if (const auto* value =
-                    animation->FindChild(
-                        "lastFrame"))
-            {
-                if (const std::int64_t* integer =
-                        value->AsInteger())
-                {
-                    lastFrame =
-                        *integer;
-                }
-            }
-            
-            const std::string animationPath =
-                AnimationLogicalPath(
-                    nodes);
-
-            core::Log::Info(
-                std::string(
-                    "[CHAR-ANIM] animation") +
-                " model=" +
-                source.resource.logicalPath +
-                " name=\"" +
-                name +
-                "\"" +
-                " nodes=\"" +
-                nodes +
-                "\"" +
-                " resource=\"" +
-                animationPath +
-                "\"" +
-                " exists=" +
-                (
-                    !animationPath.empty() &&
-                    resources.Exists(
-                        animationPath)
-                        ? "YES"
-                        : "NO"
-                ) +
-                " fps=" +
-                std::to_string(
-                    frameRate) +
-                " first=" +
-                std::to_string(
-                    firstFrame) +
-                " last=" +
-                std::to_string(
-                    lastFrame));
-        }
-        
-        for (const auto* action :
-             root.FindChildren(
-                 "action"))
-        {
-            if (action ==
-                nullptr)
-            {
-                continue;
-            }
-
-            std::string name;
-            std::string animationName;
-
-            ReadSectionText(
-                action->FindChild(
-                    "name"),
-                name);
-
-            ReadSectionText(
-                action->FindChild(
-                    "animation"),
-                animationName);
-
-            core::Log::Info(
-                std::string(
-                    "[CHAR-ANIM] action") +
-                " model=" +
-                source.resource.logicalPath +
-                " name=\"" +
-                name +
-                "\"" +
-                " animation=\"" +
-                animationName +
-                "\"");
-        }
-    }
-
     bool AppendModel(
         const core::resources::ResourceFileSystem& resources,
         const std::string_view modelReference,
@@ -782,6 +446,7 @@ namespace
         client::preview::ModelRenderDataBuilder& materialBuilder,
         client::graphics::SceneRenderData& scene,
         std::size_t& instanceCount,
+        client::character::Animator& animator,
         std::string& error)
     {
         core::assets::ModelBundleLoader
@@ -861,6 +526,9 @@ namespace
                     return false;
                 }
 
+                core::assets::MeshData
+                    animationSource = mesh;
+
                 if (mesh.skinned &&
                     !BakeSkinning(
                         mesh,
@@ -905,6 +573,13 @@ namespace
                 scene.meshes.push_back(
                     std::move(
                         sceneMesh));
+
+                animator.AddMesh(
+                    meshIndex,
+                    bundle.visual,
+                    renderSet.nodes,
+                    std::move(
+                        animationSource));
 
                 modelMeshes.push_back(
                     meshIndex);
@@ -959,12 +634,26 @@ namespace client::character
         const core::math::Transform3x4& transform,
         graphics::SceneRenderData& scene,
         std::size_t& outputInstanceCount,
+        Animator& animator,
         std::string& error)
     {
         error.clear();
 
         outputInstanceCount =
             0;
+
+        animator.Reset();
+
+        if (!animator.LoadIdle(
+            resources,
+            error))
+        {
+            error =
+                "Unable to initialize character idle animation: " +
+                error;
+
+            return false;
+        }
 
         ModelComposer composer;
         ModelPlan plan;
@@ -978,44 +667,6 @@ namespace client::character
             return false;
         }
 
-        //
-        // TEMP: discover the real SOnline character animations.
-        //
-        // В первую очередь проверяем настоящий skeleton model.
-        // Затем LOD/base model и конкретные части одежды,
-        // потому что часть animation/action определений может
-        // наследоваться через parent.
-        //
-        {
-            std::unordered_set<std::string>
-                scannedModels;
-
-            core::Log::Info(
-                "[CHAR-ANIM] ===== animation scan begin =====");
-
-            LogModelAnimationTree(
-                resources,
-                plan.skeletonModel,
-                scannedModels);
-
-            LogModelAnimationTree(
-                resources,
-                plan.lodModel,
-                scannedModels);
-
-            for (const std::string& model :
-                 plan.visibleModels)
-            {
-                LogModelAnimationTree(
-                    resources,
-                    model,
-                    scannedModels);
-            }
-
-            core::Log::Info(
-                "[CHAR-ANIM] ===== animation scan end =====");
-        }
-
         preview::ModelRenderDataBuilder
             materialBuilder;
 
@@ -1023,13 +674,14 @@ namespace client::character
              plan.visibleModels)
         {
             if (!AppendModel(
-                    resources,
-                    model,
-                    transform,
-                    materialBuilder,
-                    scene,
-                    outputInstanceCount,
-                    error))
+            resources,
+            model,
+            transform,
+            materialBuilder,
+            scene,
+            outputInstanceCount,
+            animator,
+            error))
             {
                 return false;
             }
