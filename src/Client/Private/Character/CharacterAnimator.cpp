@@ -16,6 +16,8 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <cctype>
+#include <string_view>
 
 namespace
 {
@@ -227,6 +229,74 @@ namespace
                 output.z) &&
             reader.Read(
                 output.w);
+    }
+
+    std::string ToLower(
+        const std::string_view value)
+    {
+        std::string result;
+
+        result.reserve(
+            value.size());
+
+        for (const char character :
+             value)
+        {
+            result.push_back(
+                static_cast<char>(
+                    std::tolower(
+                        static_cast<unsigned char>(
+                            character))));
+        }
+
+        return result;
+    }
+
+    bool IsMenuLockedBone(
+        const std::string_view identifier)
+    {
+        const std::string name =
+            ToLower(
+                identifier);
+
+        //
+        // Root + lower body stay at frame 0.
+        //
+        // Upper body continues playing the idle.
+        //
+        if (name == "bip01" ||
+            name == "bip001")
+        {
+            return true;
+        }
+
+        static constexpr
+            std::string_view LockedParts[] =
+        {
+            "root",
+            "pelvis",
+            "hip",
+            "thigh",
+            "upperleg",
+            "calf",
+            "shin",
+            "lowerleg",
+            "foot",
+            "toe"
+        };
+
+        for (const std::string_view part :
+             LockedParts)
+        {
+            if (name.find(
+                    part) !=
+                std::string::npos)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
     
     template<typename TValue, typename ReaderFunction>
@@ -1629,141 +1699,6 @@ namespace
     }
 
     [[nodiscard]]
-    bool BuildBindPoseNodeTransforms(
-        const core::assets::VisualAsset& visual,
-        std::vector<Transform>& output,
-        std::string& error)
-    {
-        output.clear();
-
-        output.resize(
-            visual.nodes.size());
-
-        for (std::size_t index = 0;
-             index < visual.nodes.size();
-             ++index)
-        {
-            const auto& node =
-                visual.nodes[index];
-
-            const Transform& local =
-                node.transform;
-
-            if (node.parentIndex < 0)
-            {
-                output[index] =
-                    local;
-
-                continue;
-            }
-
-            const std::size_t parent =
-                static_cast<std::size_t>(
-                    node.parentIndex);
-
-            if (parent >= index ||
-                parent >= output.size())
-            {
-                error =
-                    "Character bind pose contains invalid node hierarchy.";
-
-                return false;
-            }
-
-            output[index] =
-                Transform::Multiply(
-                    local,
-                    output[parent]);
-        }
-
-        return true;
-    }
-
-    [[nodiscard]]
-    bool InvertAffineTransform(
-        const Transform& input,
-        Transform& output)
-    {
-        const float a00 = input.values[0];
-        const float a01 = input.values[1];
-        const float a02 = input.values[2];
-
-        const float a10 = input.values[3];
-        const float a11 = input.values[4];
-        const float a12 = input.values[5];
-
-        const float a20 = input.values[6];
-        const float a21 = input.values[7];
-        const float a22 = input.values[8];
-
-        const float determinant =
-            a00 * (a11 * a22 - a12 * a21) -
-            a01 * (a10 * a22 - a12 * a20) +
-            a02 * (a10 * a21 - a11 * a20);
-
-        if (std::abs(determinant) <= 0.0000001f)
-        {
-            return false;
-        }
-
-        const float invDet =
-            1.0f / determinant;
-
-        output.values[0] =
-            (a11 * a22 - a12 * a21) * invDet;
-
-        output.values[1] =
-            (a02 * a21 - a01 * a22) * invDet;
-
-        output.values[2] =
-            (a01 * a12 - a02 * a11) * invDet;
-        
-        output.values[3] =
-            (a12 * a20 - a10 * a22) * invDet;
-
-        output.values[4] =
-            (a00 * a22 - a02 * a20) * invDet;
-
-        output.values[5] =
-            (a02 * a10 - a00 * a12) * invDet;
-        
-        output.values[6] =
-            (a10 * a21 - a11 * a20) * invDet;
-
-        output.values[7] =
-            (a01 * a20 - a00 * a21) * invDet;
-
-        output.values[8] =
-            (a00 * a11 - a01 * a10) * invDet;
-        
-        const float tx =
-            input.values[9];
-
-        const float ty =
-            input.values[10];
-
-        const float tz =
-            input.values[11];
-
-        output.values[9] =
-            -(tx * output.values[0] +
-              ty * output.values[3] +
-              tz * output.values[6]);
-
-        output.values[10] =
-            -(tx * output.values[1] +
-              ty * output.values[4] +
-              tz * output.values[7]);
-
-        output.values[11] =
-            -(tx * output.values[2] +
-              ty * output.values[5] +
-              tz * output.values[8]);
-
-        return true;
-    }
-
-    [[nodiscard]]
     bool BuildAnimatedNodeTransforms(
         const AnimationClip& clip,
         const core::assets::VisualAsset& visual,
@@ -1784,12 +1719,26 @@ namespace
                 visual.nodes[index];
 
             Transform local =
-                node.transform;
+    node.transform;
+
+            //
+            // Main-menu idle:
+            //
+            // Lower body is sampled from frame 0,
+            // so feet stay planted.
+            //
+            // Upper body uses the current animation frame.
+            //
+            const float sampleFrame =
+                IsMenuLockedBone(
+                    node.identifier)
+                    ? 0.0f
+                    : frame;
 
             SampleChannel(
                 clip,
                 node.identifier,
-                frame,
+                sampleFrame,
                 local);
 
             if (node.parentIndex <
@@ -1921,54 +1870,6 @@ namespace
 
             float totalWeight =
                 0.0f;
-            
-            for (std::size_t influence = 0;
-                 influence < 3;
-                 ++influence)
-            {
-                const float weight =
-                    sourceVertex.boneWeights[influence];
-
-                if (std::abs(weight) <= 0.000001f)
-                {
-                    continue;
-                }
-
-                const std::size_t boneIndex =
-                    sourceVertex.boneIndices[influence];
-
-                if (boneIndex >= skinPalette.size())
-                {
-                    error =
-                        "Animated character contains invalid bone index.";
-
-                    return false;
-                }
-
-                const Transform& skin =
-                    skinPalette[boneIndex];
-
-                finalPosition =
-                    Add(
-                        finalPosition,
-                        Multiply(
-                            TransformPoint(
-                                sourceVertex.position,
-                                skin),
-                            weight));
-
-                finalNormal =
-                    Add(
-                        finalNormal,
-                        Multiply(
-                            TransformVector(
-                                sourceNormal,
-                                skin),
-                            weight));
-
-                totalWeight +=
-                    weight;
-            }
 
             if (totalWeight <= 0.000001f)
             {
@@ -2032,15 +1933,6 @@ namespace client::character
 
             core::assets::MeshData
                 outputMesh;
-
-            std::vector<Transform>
-                bindPosePalette;
-
-            std::vector<Transform>
-                inverseBindPosePalette;
-
-            std::vector<Transform>
-                skinPalette;
         };
 
         AnimationClip
@@ -2125,48 +2017,6 @@ namespace client::character
         binding.outputMesh =
             binding.sourceMesh;
 
-        std::vector<Transform>
-            bindPoseNodeTransforms;
-
-        if (!BuildBindPoseNodeTransforms(
-                binding.visual,
-                bindPoseNodeTransforms,
-                error))
-        {
-            return false;
-        }
-
-        if (!BuildPalette(
-                binding.visual,
-                binding.paletteNodes,
-                bindPoseNodeTransforms,
-                binding.bindPosePalette,
-                error))
-        {
-            return false;
-        }
-
-        binding.inverseBindPosePalette.resize(
-            binding.bindPosePalette.size());
-
-        for (std::size_t index = 0;
-             index < binding.bindPosePalette.size();
-             ++index)
-        {
-            if (!InvertAffineTransform(
-                    binding.bindPosePalette[index],
-                    binding.inverseBindPosePalette[index]))
-            {
-                error =
-                    "Unable to invert bind pose bone transform.";
-
-                return false;
-            }
-        }
-
-        binding.skinPalette.resize(
-            binding.bindPosePalette.size());
-
         state_->meshes.push_back(
             std::move(binding));
 
@@ -2234,35 +2084,11 @@ namespace client::character
                 return false;
             }
 
-            if (currentPalette.size() !=
-                    binding.inverseBindPosePalette.size() ||
-                currentPalette.size() !=
-                    binding.skinPalette.size())
-            {
-                error =
-                    "Animated character palette size mismatch.";
-
-                return false;
-            }
-
-            for (std::size_t index = 0;
-                 index < currentPalette.size();
-                 ++index)
-            {
-                //
-                // skin = inverseBind * current
-                //
-                binding.skinPalette[index] =
-                    Transform::Multiply(
-                        binding.inverseBindPosePalette[index],
-                        currentPalette[index]);
-            }
-
             if (!SkinMesh(
-                    binding.sourceMesh,
-                    binding.outputMesh,
-                    binding.skinPalette,
-                    error))
+                binding.sourceMesh,
+                binding.outputMesh,
+                currentPalette,
+                error))
             {
                 return false;
             }
