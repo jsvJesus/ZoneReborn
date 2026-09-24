@@ -34,7 +34,7 @@
             "",
 
         currentScreen:
-            ""
+            "",
 			
 		character:
 			null
