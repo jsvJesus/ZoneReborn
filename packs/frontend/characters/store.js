@@ -2,198 +2,95 @@
 
 (() =>
 {
-    const CHARACTERS_KEY =
-        "zone.test.characters";
-
-    const CURRENT_CHARACTER_KEY =
-        "zone.test.currentCharacter";
+    let currentCharacter =
+        null;
 
 
-    function load()
-    {
-        try
-        {
-            const raw =
-                localStorage.getItem(
-                    CHARACTERS_KEY);
-
-            if (!raw)
-            {
-                return [];
-            }
-
-            const value =
-                JSON.parse(
-                    raw);
-
-            return Array.isArray(value)
-                ? value
-                : [];
-        }
-        catch
-        {
-            return [];
-        }
-    }
-
-
-    function save(
-        characters)
-    {
-        localStorage.setItem(
-            CHARACTERS_KEY,
-            JSON.stringify(
-                characters));
-    }
-
-
-    function currentIndex()
-    {
-        const characters =
-            load();
-
-        if (!characters.length)
-        {
-            return -1;
-        }
-
-        const value =
-            Number.parseInt(
-                localStorage.getItem(
-                    CURRENT_CHARACTER_KEY) ||
-                "0",
-                10);
-
-        if (!Number.isInteger(value) ||
-            value < 0 ||
-            value >= characters.length)
-        {
-            return 0;
-        }
-
-        return value;
-    }
-
-
-    function current()
-    {
-        const characters =
-            load();
-
-        const index =
-            currentIndex();
-
-        if (index < 0 ||
-            index >= characters.length)
-        {
-            return null;
-        }
-
-        return characters[
-            index];
-    }
-
-
-    function select(
-        index)
-    {
-        const characters =
-            load();
-
-        if (!Number.isInteger(index) ||
-            index < 0 ||
-            index >= characters.length)
-        {
-            return false;
-        }
-
-        localStorage.setItem(
-            CURRENT_CHARACTER_KEY,
-            String(
-                index));
-
-        return true;
-    }
-
-
-    function partId(
-        choiceGroup,
+    function normalize(
         value)
     {
         if (!value ||
             typeof value !==
                 "object")
         {
-            return 0;
+            return null;
         }
 
-        if (choiceGroup ===
-            "01_head")
-        {
-            return Number(
-                value.head_id ||
-                0);
-        }
+        const appearance =
+            Array.isArray(
+                value.appearance)
+                ? value.appearance
+                    .filter(
+                        part =>
+                            part &&
+                            typeof part.group ===
+                                "string" &&
+                            Number.isFinite(
+                                Number(
+                                    part.itemType)))
+                    .map(
+                        part =>
+                            ({
+                                group:
+                                    String(
+                                        part.group),
 
-        return Number(
-            value.item_type_ID ||
-            0);
+                                itemType:
+                                    Number(
+                                        part.itemType)
+                            }))
+                : [];
+
+        return {
+            id:
+                String(
+                    value.id ||
+                    ""),
+
+            name:
+                String(
+                    value.name ||
+                    ""),
+
+            appearance:
+                appearance
+        };
     }
 
 
-    function appearanceEntries(
-        appearance)
+    function set(
+        value)
     {
-        if (!appearance ||
-            typeof appearance !==
-                "object")
-        {
-            return [];
-        }
+        currentCharacter =
+            normalize(
+                value);
 
-        if (Array.isArray(
-                appearance.random))
-        {
-            return appearance.random;
-        }
+        return
+            currentCharacter;
+    }
 
-        const result =
-            [];
 
-        for (const [
-                 choiceGroup,
-                 value
-             ] of Object.entries(
-                 appearance))
-        {
-            if (!choiceGroup ||
-                choiceGroup ===
-                    "random" ||
-                !value ||
-                typeof value !==
-                    "object")
-            {
-                continue;
-            }
+    function clear()
+    {
+        currentCharacter =
+            null;
+    }
 
-            result.push(
-                {
-                    choiceGroup:
-                        choiceGroup,
 
-                    var:
-                        value
-                });
-        }
-
-        return result;
+    function current()
+    {
+        return
+            currentCharacter;
     }
 
 
     function appearanceFields(
-        character = current())
+        character =
+            currentCharacter)
     {
-        if (!character)
+        if (!character ||
+            !Array.isArray(
+                character.appearance))
         {
             return [];
         }
@@ -201,35 +98,31 @@
         const fields =
             [];
 
-        const entries =
-            appearanceEntries(
-                character.appearance);
-
-        for (const entry of entries)
+        for (const part of
+             character.appearance)
         {
-            if (!entry ||
-                !entry.choiceGroup ||
-                !entry.var)
+            if (!part ||
+                !part.group)
             {
                 continue;
             }
 
-            const id =
-                partId(
-                    entry.choiceGroup,
-                    entry.var);
+            const itemType =
+                Number(
+                    part.itemType);
 
-            if (!Number.isFinite(id) ||
-                id <= 0)
+            if (!Number.isFinite(
+                    itemType) ||
+                itemType <= 0)
             {
                 continue;
             }
 
             fields.push(
-                entry.choiceGroup);
+                part.group);
 
             fields.push(
-                id);
+                itemType);
         }
 
         return fields;
@@ -238,20 +131,14 @@
 
     window.CharacterStore =
     {
-        load:
-            load,
+        set:
+            set,
 
-        save:
-            save,
-
-        currentIndex:
-            currentIndex,
+        clear:
+            clear,
 
         current:
             current,
-
-        select:
-            select,
 
         appearanceFields:
             appearanceFields

@@ -17,9 +17,12 @@
 #include "Character/CharacterRenderDataBuilder.h"
 #include "Character/CharacterState.h"
 #include "Character/CharacterAnimator.h"
+#include "Character/CharacterProfile.h"
+#include "Character/CharacterService.h"
 
 #include <cstddef>
 #include <chrono>
+#include <optional>
 
 namespace client
 {
@@ -78,6 +81,13 @@ namespace client
         character::State
             characterState_;
 
+        character::Service
+            characterService_;
+
+        std::optional<
+            character::Profile>
+            characterProfile_;
+
         bool characterVisible_ =
             true;
 
@@ -115,5 +125,10 @@ namespace client
         [[nodiscard]]
         core::math::Transform3x4
             CharacterTransform() const noexcept;
+
+        [[nodiscard]]
+        bool ApplyCharacterProfile(
+            const character::Profile& profile,
+            std::string& error);
     };
 }

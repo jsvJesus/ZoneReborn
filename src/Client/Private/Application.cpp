@@ -136,6 +136,15 @@ namespace client
                 "Remembered login storage initialization failed.");
         }
 
+        if (!characterService_.Initialize(
+                runtime_.GameRoot()))
+        {
+            core::Log::Error(
+                "Character storage initialization failed.");
+
+            return false;
+        }
+
         if (!frontend_.Initialize(
                 window_.NativeHandle(),
                 runtime_.GameRoot(),
@@ -319,8 +328,27 @@ namespace client
             return false;
         }
 
+        if (characterProfile_.has_value())
+        {
+            if (!ApplyCharacterProfile(
+                    *characterProfile_,
+                    error))
+            {
+                characterCatalog_.Clear();
+
+                renderer_.Shutdown();
+
+                error =
+                    "Unable to apply character profile: " +
+                    error;
+
+                return false;
+            }
+        }
+
         characterVisible_ =
-            true;
+            characterProfile_.
+                has_value();
 
         characterYaw_ =
             0.0f;
@@ -342,6 +370,35 @@ namespace client
             "Character menu renderer activated.");
 
         return true;
+    }
+
+    bool Application::ApplyCharacterProfile(
+        const character::Profile& profile,
+        std::string& error)
+    {
+        std::vector<
+            std::pair<
+                std::string,
+                std::int32_t>>
+            values;
+
+        values.reserve(
+            profile.appearance.size());
+
+        for (const character::AppearancePart& part :
+             profile.appearance)
+        {
+            values.emplace_back(
+                part.group,
+                part.itemType);
+        }
+
+        return
+            characterState_.
+                ApplyCreatorSet(
+                    characterCatalog_,
+                    values,
+                    error);
     }
 
     void Application::ShutdownCharacterSelectScene()
@@ -600,7 +657,47 @@ Application::CharacterTransform() const noexcept
 
                     std::string
                         characterSceneError;
+                        
+                    characterProfile_.
+                        reset();
 
+                    std::string
+                        characterLoadError;
+
+                    if (!characterService_.Load(
+                            accountSession_.Login(),
+                            characterProfile_,
+                            characterLoadError))
+                    {
+                        core::Log::Error(
+                            std::string(
+                                "Character load failed: ") +
+                            characterLoadError);
+
+                        accountSession_.Clear();
+
+                        frontend_.
+                            SendLoginError(
+                                "Unable to load character.");
+
+                        break;
+                    }
+
+                    if (characterProfile_.
+                        has_value())
+                    {
+                        core::Log::Info(
+                            std::string(
+                                "Character loaded: ") +
+                            characterProfile_->
+                                name);
+                    }
+                    else
+                    {
+                        core::Log::Info(
+                            "Account has no character.");
+                    }
+                        
                     if (!InitializeCharacterSelectScene(
                             characterSceneError))
                     {
@@ -618,7 +715,11 @@ Application::CharacterTransform() const noexcept
                     }
 
                     frontend_.
-                        SendLoginComplete();
+                        SendLoginComplete(
+                            characterProfile_.
+                                has_value()
+                                    ? &*characterProfile_
+                                    : nullptr);
 
                     break;
                 }
@@ -652,6 +753,238 @@ Application::CharacterTransform() const noexcept
                         }
 
                         break;
+                }
+
+                case frontend::FrontendEventType::
+                    CharacterCreate:
+                {
+                    if (!accountSession_.
+                            IsAuthenticated())
+                    {
+                        frontend_.
+                            SendCharacterCreateResult(
+                                false,
+                                "Account is not authenticated.",
+                                nullptr);
+
+                        break;
+                    }
+
+                    if (!rendererInitialized_)
+                    {
+                        frontend_.
+                            SendCharacterCreateResult(
+                                false,
+                                "Character renderer is not initialized.",
+                                nullptr);
+
+                        break;
+                    }
+
+                    if (characterProfile_.
+                        has_value())
+                    {
+                        frontend_.
+                            SendCharacterCreateResult(
+                                false,
+                                "Character already exists.",
+                                &*characterProfile_);
+
+                        break;
+                    }
+
+                    character::Profile
+                        createdProfile;
+
+                    std::string
+                        createError;
+
+                    if (!characterService_.Create(
+                            accountSession_.Login(),
+                            event.characterName,
+                            characterCatalog_,
+                            createdProfile,
+                            createError))
+                    {
+                        core::Log::Warning(
+                            std::string(
+                                "Character creation failed: ") +
+                            createError);
+
+                        frontend_.
+                            SendCharacterCreateResult(
+                                false,
+                                createError,
+                                nullptr);
+
+                        break;
+                    }
+
+                    characterProfile_ =
+                        std::move(
+                            createdProfile);
+
+                    std::string
+                        stateError;
+
+                    if (!ApplyCharacterProfile(
+                            *characterProfile_,
+                            stateError))
+                    {
+                        std::string
+                            deleteError;
+
+                        characterService_.Delete(
+                            accountSession_.Login(),
+                            deleteError);
+
+                        characterProfile_.
+                            reset();
+
+                        frontend_.
+                            SendCharacterCreateResult(
+                                false,
+                                stateError,
+                                nullptr);
+
+                        break;
+                    }
+
+                    characterVisible_ =
+                        true;
+
+                    characterYaw_ =
+                        0.0f;
+
+                    std::string
+                        rebuildError;
+
+                    if (!RebuildCharacter(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            std::string(
+                                "Character creation rebuild failed: ") +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    core::Log::Info(
+                        std::string(
+                            "Character created: ") +
+                        characterProfile_->
+                            name);
+
+                    frontend_.
+                        SendCharacterCreateResult(
+                            true,
+                            {},
+                            &*characterProfile_);
+
+                    break;
+                }
+
+                case frontend::FrontendEventType::
+                    CharacterDelete:
+                {
+                    if (!accountSession_.
+                            IsAuthenticated())
+                    {
+                        frontend_.
+                            SendCharacterDeleteResult(
+                                false,
+                                "Account is not authenticated.");
+
+                        break;
+                    }
+
+                    if (!characterProfile_.
+                            has_value())
+                    {
+                        frontend_.
+                            SendCharacterDeleteResult(
+                                false,
+                                "Character does not exist.");
+
+                        break;
+                    }
+
+                    std::string
+                        deleteError;
+
+                    if (!characterService_.Delete(
+                            accountSession_.Login(),
+                            deleteError))
+                    {
+                        core::Log::Warning(
+                            std::string(
+                                "Character deletion failed: ") +
+                            deleteError);
+
+                        frontend_.
+                            SendCharacterDeleteResult(
+                                false,
+                                deleteError);
+
+                        break;
+                    }
+
+                    const std::string
+                        deletedName =
+                            characterProfile_->
+                                name;
+
+                    characterProfile_.
+                        reset();
+
+                    std::string
+                        resetError;
+
+                    if (!characterState_.
+                            ResetCreator(
+                                characterCatalog_,
+                                resetError))
+                    {
+                        core::Log::Error(
+                            std::string(
+                                "Unable to reset character state: ") +
+                            resetError);
+
+                        return false;
+                    }
+
+                    characterVisible_ =
+                        false;
+
+                    characterYaw_ =
+                        0.0f;
+
+                    std::string
+                        rebuildError;
+
+                    if (!RebuildCharacter(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            std::string(
+                                "Character deletion rebuild failed: ") +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    core::Log::Info(
+                        std::string(
+                            "Character deleted: ") +
+                        deletedName);
+
+                    frontend_.
+                        SendCharacterDeleteResult(
+                            true,
+                            {});
+
+                    break;
                 }
 
                 case frontend::FrontendEventType::CharacterShow:
@@ -840,15 +1173,25 @@ Application::CharacterTransform() const noexcept
                 }
 
                 case frontend::FrontendEventType::Play:
+                {
+                    if (!characterProfile_.
+                            has_value())
                     {
-                        core::Log::Info(
-                            "Frontend requested Play.");
-
-                        audio_.StopMenuMusic();
-                        ShutdownCharacterSelectScene();
+                        core::Log::Warning(
+                            "Play ignored: account has no character.");
 
                         break;
                     }
+
+                    core::Log::Info(
+                        "Frontend requested Play.");
+
+                    audio_.StopMenuMusic();
+
+                    ShutdownCharacterSelectScene();
+
+                    break;
+                }
 
                 case frontend::FrontendEventType::Exit:
                 {
@@ -874,6 +1217,8 @@ Application::CharacterTransform() const noexcept
 
         audio_.Shutdown();
 
+        characterProfile_.reset();
+        
         accountSession_.Clear();
 
         window_.Shutdown();

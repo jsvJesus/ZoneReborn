@@ -90,9 +90,39 @@
 				
 			storageDescription:
 				"Все приобретенные вами товары доставлены на склад.",
+				
+			createCharacter:
+                "СОЗДАТЬ ПЕРСОНАЖА",
+
+            createCharacterTitle:
+                "СОЗДАНИЕ ПЕРСОНАЖА",
+
+            characterName:
+                "ИМЯ ПЕРСОНАЖА",
+
+            characterNameHint:
+                "От 3 до 32 символов. Кириллица, латиница, цифры и один знак _",
+
+            characterNameInvalid:
+                "Имя должно содержать от 3 до 32 символов: кириллица, латиница, цифры и не более одного _",
+
+            create:
+                "СОЗДАТЬ",
+
+            cancel:
+                "ОТМЕНА",
+
+            deleteCharacterTitle:
+                "УДАЛЕНИЕ ПЕРСОНАЖА",
+
+            deleteCharacterQuestion:
+                "Удалить персонажа {name}? Это действие нельзя отменить.",
 
             deleteCharacter:
                 "Удалить персонажа",
+				
+			delete:
+                "УДАЛИТЬ",
 
             copyId:
                 "Скопировать ID",
@@ -172,9 +202,39 @@
 				
 			storageDescription:
 				"All the items you purchased have been delivered to the warehouse.",
+				
+			createCharacter:
+                "CREATE CHARACTER",
+
+            createCharacterTitle:
+                "CREATE CHARACTER",
+
+            characterName:
+                "CHARACTER NAME",
+
+            characterNameHint:
+                "3 to 32 characters. Latin, Cyrillic, numbers and one _",
+
+            characterNameInvalid:
+                "Name must contain 3 to 32 characters: Latin, Cyrillic, numbers and no more than one _",
+
+            create:
+                "CREATE",
+
+            cancel:
+                "CANCEL",
+
+            deleteCharacterTitle:
+                "DELETE CHARACTER",
+
+            deleteCharacterQuestion:
+                "Delete character {name}? This action cannot be undone.",
 
             deleteCharacter:
                 "Delete character",
+				
+			delete:
+                "DELETE",
 
             copyId:
                 "Copy ID",
@@ -254,9 +314,39 @@
 				
 			storageDescription:
 				"您购买的所有商品均已送至仓库。",
+				
+			createCharacter:
+                "创建角色",
 
-            deleteCharacter:
+            createCharacterTitle:
+                "创建角色",
+
+            characterName:
+                "角色名称",
+
+            characterNameHint:
+                "3 到 32 个字符，可使用字母、数字和一个 _",
+
+            characterNameInvalid:
+                "角色名称必须包含 3 到 32 个有效字符",
+
+            create:
+                "创建",
+
+            cancel:
+                "取消",
+
+            deleteCharacterTitle:
                 "删除角色",
+
+            deleteCharacterQuestion:
+                "删除角色 {name}？此操作无法撤销。",
+				
+			deleteCharacter:
+                "删除角色",
+
+            delete:
+                "删除",
 
             copyId:
                 "复制 ID",
@@ -513,6 +603,160 @@
             },
             900);
     }
+	
+	
+	function validateCharacterName(
+        value)
+    {
+        const characters =
+            Array.from(
+                value);
+
+        if (characters.length <
+                3 ||
+            characters.length >
+                32)
+        {
+            return translation(
+                "characterNameInvalid");
+        }
+
+        if (!/^[A-Za-z0-9_\u0400-\u052F]+$/u.test(
+                value))
+        {
+            return translation(
+                "characterNameInvalid");
+        }
+
+        const underscores =
+            characters.filter(
+                character =>
+                    character ===
+                        "_")
+                .length;
+
+        if (underscores >
+                1 ||
+            value.startsWith(
+                "_") ||
+            value.endsWith(
+                "_"))
+        {
+            return translation(
+                "characterNameInvalid");
+        }
+
+        return "";
+    }
+
+
+    function openCharacterCreate()
+    {
+        CharacterDialog.openCreate(
+            {
+                title:
+                    translation(
+                        "createCharacterTitle"),
+
+                message:
+                    translation(
+                        "characterNameHint"),
+
+                inputLabel:
+                    translation(
+                        "characterName"),
+
+                cancelText:
+                    translation(
+                        "cancel"),
+
+                confirmText:
+                    translation(
+                        "create"),
+
+                validate:
+                    validateCharacterName,
+
+                onConfirm(
+                    name)
+                {
+                    Frontend.createCharacter(
+                        name);
+                }
+            });
+    }
+
+
+    function openCharacterDelete(
+        character)
+    {
+        CharacterDialog.openConfirm(
+            {
+                title:
+                    translation(
+                        "deleteCharacterTitle"),
+
+                message:
+                    translation(
+                        "deleteCharacterQuestion")
+                        .replace(
+                            "{name}",
+                            String(
+                                character.name ||
+                                "")),
+
+                cancelText:
+                    translation(
+                        "cancel"),
+
+                confirmText:
+                    translation(
+                        "delete"),
+
+                onConfirm()
+                {
+                    Frontend.deleteCharacter();
+                }
+            });
+    }
+
+
+    function characterCreateResult(
+        success,
+        message)
+    {
+        if (!success)
+        {
+            CharacterDialog.fail(
+                message);
+
+            return;
+        }
+
+        CharacterDialog.close();
+
+        renderCharacter();
+
+        applyCurrentCharacter();
+    }
+
+
+    function characterDeleteResult(
+        success,
+        message)
+    {
+        if (!success)
+        {
+            CharacterDialog.fail(
+                message);
+
+            return;
+        }
+
+        CharacterDialog.close();
+
+        renderCharacter();
+    }
 
 
     function applyCurrentCharacter()
@@ -545,184 +789,243 @@
 
 
     function renderCharacter()
-	{
-		const container =
-			element(
-				"mainCharacterList");
+    {
+        const container =
+            element(
+                "mainCharacterList");
 
-		const play =
-			element(
-				"mainPlay");
+        const play =
+            element(
+                "mainPlay");
 
-		container.replaceChildren();
+        container.replaceChildren();
 
-		const character =
-			CharacterStore.current();
+        const character =
+            CharacterStore.current();
 
-		if (!character)
-		{
-			play.disabled =
-				true;
 
-			Frontend.hideCharacter();
+        if (!character)
+        {
+            play.disabled =
+                true;
 
-			return;
-		}
+            Frontend.hideCharacter();
 
-		play.disabled =
-			false;
 
-		const row =
-			document.createElement(
-				"div");
+            const create =
+                document.createElement(
+                    "button");
 
-		row.className =
-			"main-character";
+            create.type =
+                "button";
 
-		const avatar =
-			document.createElement(
-				"div");
+            create.className =
+                "main-character-create";
 
-		avatar.className =
-			"main-character-avatar";
 
-		const avatarCanvas =
-			document.createElement(
-				"canvas");
+            const plus =
+                document.createElement(
+                    "span");
 
-		avatarCanvas.className =
-			"main-tga";
+            plus.className =
+                "main-character-create-plus";
 
-		avatarCanvas.dataset.tga =
-			"/packs/res/soGUI/maps/MainMenu/Card/card_icon_character.tga";
+            plus.textContent =
+                "+";
 
-		avatar.appendChild(
-			avatarCanvas);
 
-		const info =
-			document.createElement(
-				"div");
+            const text =
+                document.createElement(
+                    "span");
 
-		info.className =
-			"main-character-info";
+            text.textContent =
+                translation(
+                    "createCharacter");
 
-		const active =
-			document.createElement(
-				"div");
 
-		active.className =
-			"main-character-active";
+            create.appendChild(
+                plus);
 
-		const name =
-			document.createElement(
-				"div");
+            create.appendChild(
+                text);
 
-		name.className =
-			"main-character-name";
 
-		name.textContent =
-			String(
-				character.name ||
-				"Character");
+            create.addEventListener(
+                "click",
+                openCharacterCreate);
 
-		const status =
-			document.createElement(
-				"div");
 
-		status.className =
-			"main-character-status";
+            container.appendChild(
+                create);
 
-		const statusDot =
-			document.createElement(
-				"span");
+            return;
+        }
 
-		statusDot.className =
-			"main-character-status-dot";
 
-		const statusText =
-			document.createElement(
-				"span");
+        play.disabled =
+            false;
 
-		statusText.textContent =
-			translation(
-				"readyCharacter");
 
-		status.appendChild(
-			statusDot);
+        const row =
+            document.createElement(
+                "div");
 
-		status.appendChild(
-			statusText);
+        row.className =
+            "main-character";
 
-		info.appendChild(
-			active);
 
-		info.appendChild(
-			name);
+        const avatar =
+            document.createElement(
+                "div");
 
-		info.appendChild(
-			status);
+        avatar.className =
+            "main-character-avatar";
 
-		const remove =
-			document.createElement(
-				"button");
 
-		remove.type =
-			"button";
+        const avatarCanvas =
+            document.createElement(
+                "canvas");
 
-		remove.className =
-			"main-character-delete";
+        avatarCanvas.className =
+            "main-tga";
 
-		remove.title =
-			translation(
-				"deleteCharacter");
+        avatarCanvas.dataset.tga =
+            "/packs/res/soGUI/maps/MainMenu/Card/card_icon_character.tga";
 
-		const icon =
-			document.createElement(
-				"img");
 
-		icon.src =
-			"/packs/res/soGUI/frame/storehouse/x_new.png";
+        avatar.appendChild(
+            avatarCanvas);
 
-		icon.alt =
-			"";
 
-		remove.appendChild(
-			icon);
+        const info =
+            document.createElement(
+                "div");
 
-		remove.addEventListener(
-			"click",
-			event =>
-			{
-				event.stopPropagation();
+        info.className =
+            "main-character-info";
 
-				if (!CharacterStore.removeCurrent())
-				{
-					return;
-				}
 
-				Frontend.hideCharacter();
+        const active =
+            document.createElement(
+                "div");
 
-				renderCharacter();
+        active.className =
+            "main-character-active";
 
-				Frontend.trace(
-					"Current character deleted.");
-			});
 
-		row.appendChild(
-			avatar);
+        const name =
+            document.createElement(
+                "div");
 
-		row.appendChild(
-			info);
+        name.className =
+            "main-character-name";
 
-		row.appendChild(
-			remove);
+        name.textContent =
+            String(
+                character.name ||
+                "Character");
 
-		container.appendChild(
-			row);
 
-		loadTga(
-			avatarCanvas);
-	}
+        const status =
+            document.createElement(
+                "div");
+
+        status.className =
+            "main-character-status";
+
+
+        const statusDot =
+            document.createElement(
+                "span");
+
+        statusDot.className =
+            "main-character-status-dot";
+
+
+        const statusText =
+            document.createElement(
+                "span");
+
+        statusText.textContent =
+            translation(
+                "readyCharacter");
+
+
+        status.appendChild(
+            statusDot);
+
+        status.appendChild(
+            statusText);
+
+
+        info.appendChild(
+            active);
+
+        info.appendChild(
+            name);
+
+        info.appendChild(
+            status);
+
+
+        const remove =
+            document.createElement(
+                "button");
+
+        remove.type =
+            "button";
+
+        remove.className =
+            "main-character-delete";
+
+        remove.title =
+            translation(
+                "deleteCharacter");
+
+
+        const icon =
+            document.createElement(
+                "img");
+
+        icon.src =
+            "/packs/res/soGUI/frame/storehouse/x_new.png";
+
+        icon.alt =
+            "";
+
+
+        remove.appendChild(
+            icon);
+
+
+        remove.addEventListener(
+            "click",
+            event =>
+            {
+                event.stopPropagation();
+
+                openCharacterDelete(
+                    character);
+            });
+
+
+        row.appendChild(
+            avatar);
+
+        row.appendChild(
+            info);
+
+        row.appendChild(
+            remove);
+
+
+        container.appendChild(
+            row);
+
+
+        loadTga(
+            avatarCanvas);
+    }
 
 
     function bindCharacterRotation()
@@ -1408,6 +1711,12 @@
                 "./main/main.html",
 
             mount:
-                mount
+                mount,
+
+            characterCreateResult:
+                characterCreateResult,
+
+            characterDeleteResult:
+                characterDeleteResult
         });
 })();

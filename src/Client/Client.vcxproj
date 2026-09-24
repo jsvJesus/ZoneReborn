@@ -29,7 +29,9 @@
     <ClInclude Include="Private\Character\CharacterAnimator.h" />
     <ClInclude Include="Private\Character\CharacterCatalog.h" />
     <ClInclude Include="Private\Character\CharacterModelComposer.h" />
+    <ClInclude Include="Private\Character\CharacterProfile.h" />
     <ClInclude Include="Private\Character\CharacterRenderDataBuilder.h" />
+    <ClInclude Include="Private\Character\CharacterService.h" />
     <ClInclude Include="Private\Character\CharacterSlots.h" />
     <ClInclude Include="Private\Character\CharacterState.h" />
     <ClInclude Include="Private\Diagnostics\ResourceValidation.h" />
@@ -65,6 +67,7 @@
     <ClCompile Include="Private\Character\CharacterCatalog.cpp" />
     <ClCompile Include="Private\Character\CharacterModelComposer.cpp" />
     <ClCompile Include="Private\Character\CharacterRenderDataBuilder.cpp" />
+    <ClCompile Include="Private\Character\CharacterService.cpp" />
     <ClCompile Include="Private\Character\CharacterState.cpp" />
     <ClCompile Include="Private\Frontend\Frontend.cpp" Condition="'$(Configuration)|$(Platform)'=='Final|x64'" />
 

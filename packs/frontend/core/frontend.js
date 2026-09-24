@@ -531,6 +531,21 @@
             post(
                 "play");
         },
+		
+		createCharacter(
+            name)
+        {
+            post(
+                "character_create",
+                name);
+        },
+
+
+        deleteCharacter()
+        {
+            post(
+                "character_delete");
+        },
 
 
         openUrl(
@@ -653,10 +668,69 @@
         },
 
 
-        async loginComplete()
+        async loginComplete(
+            character)
         {
+            if (window.CharacterStore)
+            {
+                CharacterStore.set(
+                    character);
+            }
+
             await Router.show(
                 "main");
+        },
+		
+		
+		characterCreateResult(
+            success,
+            message,
+            character)
+        {
+            if (success &&
+                window.CharacterStore)
+            {
+                CharacterStore.set(
+                    character);
+            }
+
+            const screen =
+                screens.get(
+                    state.currentScreen);
+
+            if (screen &&
+                typeof screen.characterCreateResult ===
+                    "function")
+            {
+                screen.characterCreateResult(
+                    success,
+                    message);
+            }
+        },
+		
+		
+		characterDeleteResult(
+            success,
+            message)
+        {
+            if (success &&
+                window.CharacterStore)
+            {
+                CharacterStore.clear();
+            }
+
+            const screen =
+                screens.get(
+                    state.currentScreen);
+
+            if (screen &&
+                typeof screen.characterDeleteResult ===
+                    "function")
+            {
+                screen.characterDeleteResult(
+                    success,
+                    message);
+            }
         },
 
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Character/CharacterProfile.h"
 #include "Core/Resources/ResourceFileSystem.h"
 
 #include <Windows.h>
@@ -26,6 +27,9 @@ namespace client::frontend
 
         UiSound,
 
+        CharacterCreate,
+        CharacterDelete,
+
         CharacterShow,
         CharacterHide,
         CharacterPart,
@@ -42,6 +46,8 @@ namespace client::frontend
         std::string password;
         std::string url;
         std::string soundName;
+
+        std::string characterName;
 
         std::string dummyGroup;
 
@@ -117,7 +123,17 @@ namespace client::frontend
         void SendLoginError(
             const std::string& message);
 
-        void SendLoginComplete();
+        void SendLoginComplete(
+            const character::Profile* profile);
+
+        void SendCharacterCreateResult(
+            bool success,
+            const std::string& message,
+            const character::Profile* profile);
+
+        void SendCharacterDeleteResult(
+            bool success,
+            const std::string& message);
 
         void Hide();
 

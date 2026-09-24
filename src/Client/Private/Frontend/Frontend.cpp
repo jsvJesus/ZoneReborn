@@ -391,6 +391,70 @@ namespace
         return result;
     }
 
+    std::string SerializeCharacter(
+        const client::character::Profile*
+            profile)
+    {
+        if (profile ==
+            nullptr)
+        {
+            return "null";
+        }
+
+        std::string result =
+            "{";
+
+        result +=
+            "\"id\":" +
+            JsonString(
+                profile->id);
+
+        result +=
+            ",\"name\":" +
+            JsonString(
+                profile->name);
+
+        result +=
+            ",\"appearance\":[";
+
+        bool first =
+            true;
+
+        for (const auto& part :
+             profile->appearance)
+        {
+            if (!first)
+            {
+                result +=
+                    ',';
+            }
+
+            first =
+                false;
+
+            result +=
+                "{";
+
+            result +=
+                "\"group\":" +
+                JsonString(
+                    part.group);
+
+            result +=
+                ",\"itemType\":" +
+                std::to_string(
+                    part.itemType);
+
+            result +=
+                "}";
+        }
+
+        result +=
+            "]}";
+
+        return result;
+    }
+
     std::string SerializeSection(
         const core::resources::DataSection&
             section);
@@ -1585,11 +1649,55 @@ namespace client::frontend
             "}");
     }
 
-    void OriginalFrontend::SendLoginComplete()
+    void OriginalFrontend::SendLoginComplete(
+        const character::Profile* profile)
     {
         ExecuteScriptUtf8(
             "if(window.ZoneFrontend){"
-            "window.ZoneFrontend.loginComplete();"
+            "window.ZoneFrontend.loginComplete(" +
+            SerializeCharacter(
+                profile) +
+            ");"
+            "}");
+    }
+
+    void OriginalFrontend::SendCharacterCreateResult(
+        const bool success,
+        const std::string& message,
+        const character::Profile* profile)
+    {
+        ExecuteScriptUtf8(
+            "if(window.ZoneFrontend){"
+            "window.ZoneFrontend.characterCreateResult(" +
+            std::string(
+                success
+                    ? "true"
+                    : "false") +
+            "," +
+            JsonString(
+                message) +
+            "," +
+            SerializeCharacter(
+                profile) +
+            ");"
+            "}");
+    }
+
+    void OriginalFrontend::SendCharacterDeleteResult(
+        const bool success,
+        const std::string& message)
+    {
+        ExecuteScriptUtf8(
+            "if(window.ZoneFrontend){"
+            "window.ZoneFrontend.characterDeleteResult(" +
+            std::string(
+                success
+                    ? "true"
+                    : "false") +
+            "," +
+            JsonString(
+                message) +
+            ");"
             "}");
     }
 
@@ -1825,6 +1933,48 @@ namespace client::frontend
             event.soundName = fields[1];
 
             events_.push_back(std::move(event));
+            return;
+        }
+
+        if (command =="character_create")
+        {
+            if (fields.size() <
+                2)
+            {
+                core::Log::Warning(
+                    "Invalid character_create message.");
+
+                return;
+            }
+
+            FrontendEvent event;
+
+            event.type =
+                FrontendEventType::
+                    CharacterCreate;
+
+            event.characterName =
+                fields[1];
+
+            events_.push_back(
+                std::move(
+                    event));
+
+            return;
+        }
+
+        if (command =="character_delete")
+        {
+            FrontendEvent event;
+
+            event.type =
+                FrontendEventType::
+                    CharacterDelete;
+
+            events_.push_back(
+                std::move(
+                    event));
+
             return;
         }
 
