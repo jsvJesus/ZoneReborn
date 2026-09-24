@@ -105,6 +105,7 @@ struct VertexInput
     float3 position : POSITION;
     float3 normal : NORMAL;
     float2 texcoord : TEXCOORD0;
+    float2 texcoord2 : TEXCOORD1;
 };
 
 struct PixelInput
@@ -114,6 +115,7 @@ struct PixelInput
     float3 localPosition : TEXCOORD0;
     float2 terrainUV : TEXCOORD1;
     float3 worldPosition : TEXCOORD2;
+    float2 modelOverlayUV : TEXCOORD3;
 };
 
 #endif

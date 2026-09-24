@@ -31,6 +31,9 @@ PixelInput VSMain(
     output.terrainUV =
         input.texcoord;
 
+    output.modelOverlayUV =
+        input.texcoord2;
+
     output.worldPosition =
         worldPosition.xyz;
 

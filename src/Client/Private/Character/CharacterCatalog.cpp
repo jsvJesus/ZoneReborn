@@ -1257,8 +1257,7 @@ namespace client::character
             return false;
         }
 
-        for (const std::string_view block :
-             ExtractTopLevelObjects(text))
+        const auto parseDefinition = [this](const std::string_view block)
         {
             ItemDefinition definition;
 
@@ -1267,7 +1266,7 @@ namespace client::character
                     "TypeID",
                     definition.typeId))
             {
-                continue;
+                return;
             }
 
             ParseStringField(
@@ -1315,6 +1314,35 @@ namespace client::character
                 definition.typeId,
                 std::move(
                     definition));
+        };
+
+        for (const std::string_view block :
+             ExtractTopLevelObjects(text))
+        {
+            parseDefinition(block);
+        }
+
+        constexpr std::int32_t HairSevenType = 10537;
+
+        if (!items_.contains(HairSevenType))
+        {
+            constexpr std::string_view RemovedPath =
+                "res/scripts/common/data/items_pyson/removed.pyson";
+            std::string removedText;
+
+            if (resources.ReadText(RemovedPath, removedText))
+            {
+                for (const std::string_view block : ExtractTopLevelObjects(removedText))
+                {
+                    std::int32_t typeId = 0;
+                    if (ParseIntegerField(block, "TypeID", typeId) &&
+                        typeId == HairSevenType)
+                    {
+                        parseDefinition(block);
+                        break;
+                    }
+                }
+            }
         }
 
         if (items_.empty())

@@ -66,7 +66,7 @@ float4 PSMain(
             const float angle = modelOverlayParameters.x;
             const float sine = sin(angle);
             const float cosine = cos(angle);
-            float2 overlayUV = input.terrainUV - float2(0.5f, 0.5f);
+            float2 overlayUV = input.modelOverlayUV - float2(0.5f, 0.5f);
             overlayUV = float2(
                 overlayUV.x * cosine - overlayUV.y * sine,
                 overlayUV.x * sine + overlayUV.y * cosine);

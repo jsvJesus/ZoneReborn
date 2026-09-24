@@ -39,6 +39,9 @@ namespace
 
         float u;
         float v;
+
+        float u2;
+        float v2;
     };
 
     constexpr std::uint32_t MaxOmniLights =
@@ -2107,13 +2110,22 @@ namespace client::graphics
                 24,
                 D3D11_INPUT_PER_VERTEX_DATA,
                 0
+            },
+            {
+                "TEXCOORD",
+                1,
+                DXGI_FORMAT_R32G32_FLOAT,
+                0,
+                32,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0
             }
         };
 
         result =
             state_->device->CreateInputLayout(
                 inputElements,
-                3,
+                4,
                 vertexShaderCode->GetBufferPointer(),
                 vertexShaderCode->GetBufferSize(),
                 &state_->inputLayout);
@@ -2406,7 +2418,10 @@ namespace client::graphics
                     normal.z,
 
                     vertex.u,
-                    vertex.v
+                    vertex.v,
+
+                    vertex.u2,
+                    vertex.v2
                 });
 
                 minimum.x =
@@ -3438,7 +3453,10 @@ namespace client::graphics
                 normal.z,
 
                 vertex.u,
-                vertex.v
+                vertex.v,
+
+                vertex.u2,
+                vertex.v2
             });
         }
 
