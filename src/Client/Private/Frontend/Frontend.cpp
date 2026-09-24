@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 #include <cstdlib>
+#include <charconv>
 
 namespace
 {
@@ -454,6 +455,45 @@ namespace
         result +=
             "]}";
 
+        return result;
+    }
+
+    std::string SerializeFaceState(
+        const client::character::FaceState& face)
+    {
+        std::string result = "{";
+        const auto add = [&result](const std::string_view name, const std::uint64_t value)
+        {
+            if (result.size() > 1u) result.push_back(',');
+            result += JsonString(name);
+            result.push_back(':');
+            result += std::to_string(value);
+        };
+
+        add("HairStyle", static_cast<std::uint64_t>(face.hairStyle));
+        add("MustacheStyle", static_cast<std::uint64_t>(face.moustacheStyle));
+        add("BeardStyle", static_cast<std::uint64_t>(face.beardStyle));
+        add("HairLength", (static_cast<std::uint64_t>(face.hairLength) * 100u + 127u) / 255u);
+        add("BeardLength", (static_cast<std::uint64_t>(face.beardLength) * 100u + 127u) / 255u);
+        add("MustacheLength", (static_cast<std::uint64_t>(face.moustacheLength) * 100u + 127u) / 255u);
+        add("Age", (static_cast<std::uint64_t>(face.age) * 100u + 127u) / 255u);
+        add("Details", (static_cast<std::uint64_t>(face.details) * 100u + 127u) / 255u);
+        add("Unshaven", (static_cast<std::uint64_t>(face.unshaven) * 100u + 127u) / 255u);
+        add("EyebrowsPosition", (static_cast<std::uint64_t>(face.eyebrowPosition) * 100u + 127u) / 255u);
+        add("EyebrowsRotation", (static_cast<std::uint64_t>(face.eyebrowRotation) * 100u + 127u) / 255u);
+        add("HairColor", face.hairColor);
+        add("SkinColor", face.skinColor);
+        add("EyeColor", face.eyeColor);
+        add("TatooColor", face.tattooColor);
+        add("EyebrowsStyle", static_cast<std::uint64_t>(face.eyebrowStyle));
+        add("TatooStyle", static_cast<std::uint64_t>(face.tattooStyle));
+        result += ",\"faceForm\":[";
+        for (std::size_t index = 0; index < face.faceForm.size(); ++index)
+        {
+            if (index != 0u) result.push_back(',');
+            result += JsonString(std::to_string(face.faceForm[index]));
+        }
+        result += "]}";
         return result;
     }
 
@@ -1151,6 +1191,15 @@ namespace
 
         return true;
     }
+
+    bool ParseUInt64(const std::string& text, std::uint64_t& output)
+    {
+        if (text.empty() || text.front() == '-' || text.front() == '+') return false;
+        const char* begin = text.data();
+        const char* end = begin + text.size();
+        const auto result = std::from_chars(begin, end, output, 10);
+        return result.ec == std::errc{} && result.ptr == end;
+    }
 }
 
 namespace client::frontend
@@ -1752,6 +1801,14 @@ namespace client::frontend
             "}");
     }
 
+    void OriginalFrontend::SendCharacterFaceState(
+        const character::FaceState& face)
+    {
+        ExecuteScriptUtf8(
+            "if(window.ZoneFrontend){window.ZoneFrontend.characterFaceState(" +
+            SerializeFaceState(face) + ");}");
+    }
+
     void OriginalFrontend::Hide()
     {
         if (controller_)
@@ -2095,6 +2152,41 @@ namespace client::frontend
                 std::move(
                     event));
 
+            return;
+        }
+
+        if (command == "character_face_open" ||
+            command == "character_face_random" ||
+            command == "character_face_reset" ||
+            command == "character_face_apply" ||
+            command == "character_face_cancel")
+        {
+            if (fields.size() != 1u)
+            {
+                core::Log::Warning("Invalid character face command.");
+                return;
+            }
+            FrontendEvent event;
+            if (command == "character_face_open") event.type = FrontendEventType::CharacterFaceOpen;
+            else if (command == "character_face_random") event.type = FrontendEventType::CharacterFaceRandom;
+            else if (command == "character_face_reset") event.type = FrontendEventType::CharacterFaceReset;
+            else if (command == "character_face_apply") event.type = FrontendEventType::CharacterFaceApply;
+            else event.type = FrontendEventType::CharacterFaceCancel;
+            events_.push_back(std::move(event));
+            return;
+        }
+
+        if (command == "character_face_value")
+        {
+            FrontendEvent event;
+            if (fields.size() != 3u || fields[1].empty() || !ParseUInt64(fields[2], event.faceValue))
+            {
+                core::Log::Warning("Invalid character_face_value message.");
+                return;
+            }
+            event.type = FrontendEventType::CharacterFaceValue;
+            event.faceChoiceGroup = fields[1];
+            events_.push_back(std::move(event));
             return;
         }
 

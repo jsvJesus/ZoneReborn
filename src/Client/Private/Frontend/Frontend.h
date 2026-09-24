@@ -31,6 +31,12 @@ namespace client::frontend
         CharacterCreatorReset,
         CharacterCreate,
         CharacterDelete,
+        CharacterFaceOpen,
+        CharacterFaceValue,
+        CharacterFaceRandom,
+        CharacterFaceReset,
+        CharacterFaceApply,
+        CharacterFaceCancel,
 
         CharacterShow,
         CharacterHide,
@@ -59,6 +65,11 @@ namespace client::frontend
         std::string characterGroup;
 
         std::int32_t characterItemType =
+            0;
+
+        std::string faceChoiceGroup;
+
+        std::uint64_t faceValue =
             0;
 
         float characterDeltaX =
@@ -139,6 +150,9 @@ namespace client::frontend
         void SendCharacterDeleteResult(
             bool success,
             const std::string& message);
+
+        void SendCharacterFaceState(
+            const character::FaceState& face);
 
         void Hide();
 

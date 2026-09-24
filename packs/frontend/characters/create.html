@@ -113,7 +113,7 @@
 
             <nav class="main-navigation creator-menu">
 
-                <button type="button" class="creator-future">
+                <button id="creatorAppearance" type="button">
                     <span class="main-navigation-marker"></span>
                     <span data-i18n="appearance">ВЫБОР ВНЕШНОСТИ</span>
                 </button>
@@ -155,6 +155,47 @@
         </div>
 
     </aside>
+
+
+    <section id="appearanceScreen" class="appearance-screen" hidden>
+
+        <aside class="main-left appearance-left">
+            <div class="main-left-panel appearance-left-panel">
+                <div class="main-menu-header">
+                    <div class="main-menu-header-line"></div>
+                    <div class="main-title" data-face-i18n="title">ВНЕШНОСТЬ</div>
+                </div>
+
+                <nav id="appearanceCategories" class="main-navigation appearance-categories"></nav>
+
+                <div class="main-divider"></div>
+
+                <button id="appearanceReset" class="main-exit" type="button">
+                    <span class="main-navigation-marker"></span>
+                    <span data-face-i18n="reset">СБРОСИТЬ</span>
+                </button>
+                <button id="appearanceRandom" class="main-exit" type="button">
+                    <span class="main-navigation-marker"></span>
+                    <span data-face-i18n="random">СЛУЧАЙНО</span>
+                </button>
+                <button id="appearanceApply" class="main-exit appearance-apply" type="button">
+                    <span class="main-navigation-marker"></span>
+                    <span data-face-i18n="apply">ПРИМЕНИТЬ</span>
+                </button>
+                <button id="appearanceBack" class="main-exit" type="button">
+                    <span class="main-navigation-marker"></span>
+                    <span data-face-i18n="back">НАЗАД</span>
+                </button>
+            </div>
+        </aside>
+
+        <aside class="appearance-options">
+            <div id="appearanceCaption" class="appearance-caption"></div>
+            <div id="appearanceControls" class="appearance-controls"></div>
+            <div id="appearanceDescription" class="appearance-description"></div>
+        </aside>
+
+    </section>
 
 
     <div

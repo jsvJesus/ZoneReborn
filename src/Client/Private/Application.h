@@ -88,6 +88,12 @@ namespace client
             character::Profile>
             characterProfile_;
 
+        std::optional<character::FaceState>
+            characterFaceSnapshot_;
+
+        bool characterFaceCamera_ =
+            false;
+
         bool characterVisible_ =
             true;
 
@@ -130,5 +136,8 @@ namespace client
         bool ApplyCharacterProfile(
             const character::Profile& profile,
             std::string& error);
+
+        [[nodiscard]]
+        graphics::CameraView CharacterCamera() const noexcept;
     };
 }

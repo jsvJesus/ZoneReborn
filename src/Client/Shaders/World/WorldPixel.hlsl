@@ -55,6 +55,11 @@ float4 PSMain(
 
         baseColour =
             modelSample.rgb;
+
+        baseColour = lerp(
+            baseColour,
+            baseColour * modelTint.rgb,
+            saturate(modelTint.a));
     }
 
     const float3 sunDirection =

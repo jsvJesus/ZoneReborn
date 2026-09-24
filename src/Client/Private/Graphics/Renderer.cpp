@@ -167,6 +167,8 @@ namespace
 
         DirectX::XMFLOAT4 modelParameters;
 
+        DirectX::XMFLOAT4 modelTint;
+
         DirectX::XMFLOAT4 waterDeepColour;
         DirectX::XMFLOAT4 waterReflectionTint;
         DirectX::XMFLOAT4 waterRefractionTint;
@@ -4550,6 +4552,14 @@ namespace client::graphics
                     0.0f
                 };
 
+                constants.modelTint =
+                {
+                    1.0f,
+                    1.0f,
+                    1.0f,
+                    0.0f
+                };
+
                 ID3D11ShaderResourceView*
                     modelTextureView =
                         nullptr;
@@ -4574,6 +4584,14 @@ namespace client::graphics
                         static_cast<float>(
                             static_cast<std::uint8_t>(
                                 material.alphaMode));
+
+                    constants.modelTint =
+                    {
+                        material.tintColour[0],
+                        material.tintColour[1],
+                        material.tintColour[2],
+                        material.tintColour[3]
+                    };
 
                     if (material.diffuseTextureIndex >= 0)
                     {

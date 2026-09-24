@@ -4,6 +4,7 @@
 #include "Core/Log.h"
 
 #include <cmath>
+#include <random>
 #include <span>
 #include <string>
 #include <vector>
@@ -466,6 +467,36 @@ Application::CharacterTransform() const noexcept
         return transform;
     }
 
+    graphics::CameraView Application::CharacterCamera() const noexcept
+    {
+        if (!characterFaceCamera_)
+        {
+            return characterSelectStage_.camera;
+        }
+
+        graphics::CameraView camera = characterSelectStage_.camera;
+        const core::math::Vector3 origin = CharacterTransform().Translation();
+        float x = camera.forward.x;
+        float z = camera.forward.z;
+        const float length = std::sqrt(x * x + z * z);
+        if (length > 0.0001f)
+        {
+            x /= length;
+            z /= length;
+        }
+        else
+        {
+            x = 0.0f;
+            z = 1.0f;
+        }
+        const core::math::Vector3 target{origin.x, origin.y + 1.63f, origin.z};
+        camera.position = {target.x - x * 0.63f, target.y, target.z - z * 0.63f};
+        camera.forward = {x, 0.0f, z};
+        camera.up = {0.0f, 1.0f, 0.0f};
+        camera.fieldOfViewDegrees = 40.107f;
+        return camera;
+    }
+
     bool Application::RebuildCharacter(
         std::string& error)
     {
@@ -528,8 +559,7 @@ Application::CharacterTransform() const noexcept
         }
 
         renderer_.SetCamera(
-            characterSelectStage_.
-                camera);
+            CharacterCamera());
 
         return true;
     }
@@ -558,8 +588,7 @@ Application::CharacterTransform() const noexcept
                 renderError;
 
             renderer_.SetCamera(
-                characterSelectStage_.
-                    camera);
+                CharacterCamera());
             
             if (characterVisible_ &&
                 characterAnimator_.IsReady())
@@ -802,6 +831,9 @@ Application::CharacterTransform() const noexcept
                         break;
                     }
 
+                    characterFaceSnapshot_.reset();
+                    characterFaceCamera_ = false;
+
                     std::string
                         resetError;
 
@@ -838,6 +870,100 @@ Application::CharacterTransform() const noexcept
                         return false;
                     }
 
+                    break;
+                }
+
+                case frontend::FrontendEventType::CharacterFaceOpen:
+                {
+                    if (!rendererInitialized_ || characterProfile_.has_value()) break;
+                    characterFaceSnapshot_ = characterState_.Face();
+                    characterFaceCamera_ = true;
+                    renderer_.SetCamera(CharacterCamera());
+                    frontend_.SendCharacterFaceState(characterState_.Face());
+                    break;
+                }
+
+                case frontend::FrontendEventType::CharacterFaceValue:
+                {
+                    if (!rendererInitialized_ || !characterFaceSnapshot_.has_value()) break;
+                    bool modelChanged = false;
+                    std::string faceError;
+                    if (!characterState_.ApplyFaceValue(
+                            characterCatalog_, event.faceChoiceGroup, event.faceValue,
+                            modelChanged, faceError))
+                    {
+                        core::Log::Warning(faceError);
+                        frontend_.SendCharacterFaceState(characterState_.Face());
+                        break;
+                    }
+                    std::string rebuildError;
+                    if (!RebuildCharacter(rebuildError))
+                    {
+                        core::Log::Error("Character face rebuild failed: " + rebuildError);
+                        return false;
+                    }
+                    frontend_.SendCharacterFaceState(characterState_.Face());
+                    break;
+                }
+
+                case frontend::FrontendEventType::CharacterFaceRandom:
+                {
+                    if (!rendererInitialized_ || !characterFaceSnapshot_.has_value()) break;
+                    static std::mt19937 random(std::random_device{}());
+                    std::string faceError;
+                    if (!characterState_.RandomizeFace(characterCatalog_, random, faceError))
+                    {
+                        core::Log::Warning(faceError);
+                        break;
+                    }
+                    std::string rebuildError;
+                    if (!RebuildCharacter(rebuildError)) return false;
+                    frontend_.SendCharacterFaceState(characterState_.Face());
+                    break;
+                }
+
+                case frontend::FrontendEventType::CharacterFaceReset:
+                {
+                    if (!rendererInitialized_ || !characterFaceSnapshot_.has_value()) break;
+                    std::string faceError;
+                    if (!characterState_.ResetFace(characterCatalog_, faceError))
+                    {
+                        core::Log::Warning(faceError);
+                        break;
+                    }
+                    std::string rebuildError;
+                    if (!RebuildCharacter(rebuildError)) return false;
+                    frontend_.SendCharacterFaceState(characterState_.Face());
+                    break;
+                }
+
+                case frontend::FrontendEventType::CharacterFaceApply:
+                {
+                    characterFaceSnapshot_.reset();
+                    characterFaceCamera_ = false;
+                    if (rendererInitialized_) renderer_.SetCamera(CharacterCamera());
+                    break;
+                }
+
+                case frontend::FrontendEventType::CharacterFaceCancel:
+                {
+                    if (rendererInitialized_ && characterFaceSnapshot_.has_value())
+                    {
+                        std::string faceError;
+                        if (!characterState_.ApplyFaceState(
+                                characterCatalog_, *characterFaceSnapshot_, faceError))
+                        {
+                            core::Log::Warning(faceError);
+                        }
+                        else
+                        {
+                            std::string rebuildError;
+                            if (!RebuildCharacter(rebuildError)) return false;
+                        }
+                    }
+                    characterFaceSnapshot_.reset();
+                    characterFaceCamera_ = false;
+                    if (rendererInitialized_) renderer_.SetCamera(CharacterCamera());
                     break;
                 }
 

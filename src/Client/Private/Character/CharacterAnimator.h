@@ -7,6 +7,8 @@
 #include <cstddef>
 #include <memory>
 #include <string>
+#include <span>
+#include <cstdint>
 #include <vector>
 
 namespace client::graphics
@@ -43,6 +45,11 @@ namespace client::character
             const core::assets::VisualAsset& visual,
             const std::vector<std::string>& paletteNodes,
             core::assets::MeshData sourceMesh,
+            std::string& error);
+
+        [[nodiscard]]
+        bool SetFaceForm(
+            std::span<const std::uint64_t> packed,
             std::string& error);
 
         [[nodiscard]]

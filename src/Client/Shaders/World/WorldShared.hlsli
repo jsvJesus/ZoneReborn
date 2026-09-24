@@ -18,6 +18,7 @@ cbuffer SceneConstants : register(b0)
     uint useWater;
 
     float4 modelParameters;
+    float4 modelTint;
 
     float4 waterDeepColour;
     float4 waterReflectionTint;

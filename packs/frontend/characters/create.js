@@ -310,6 +310,11 @@
             .disabled =
                 busy;
 
+        element(
+            "creatorAppearance")
+            .disabled =
+                busy;
+
         updateSubmit();
     }
 
@@ -683,6 +688,12 @@
                 "click",
                 leaveCreator);
 
+        element(
+            "creatorAppearance")
+            .addEventListener(
+                "click",
+                () => window.CharacterAppearance.open());
+
         mountedRoot
             .querySelectorAll(
                 ".creator-future")
@@ -772,6 +783,9 @@
         bindActions();
         bindRotation();
 
+        await window.CharacterAppearance.initialize(
+            mountedRoot);
+
         element(
             "creatorRandom")
             .disabled =
@@ -855,6 +869,14 @@
     }
 
 
+    function characterFaceState(
+        face)
+    {
+        window.CharacterAppearance.receiveState(
+            face);
+    }
+
+
     FrontendScreens.register(
         "character-create",
         {
@@ -865,6 +887,9 @@
                 mount,
 
             characterCreateResult:
-                characterCreateResult
+                characterCreateResult,
+
+            characterFaceState:
+                characterFaceState
         });
 })();

@@ -52,6 +52,11 @@ namespace client::graphics
 
         float alphaCutoff =
             0.5f;
+
+        std::array<float, 4> tintColour
+        {
+            1.0f, 1.0f, 1.0f, 0.0f
+        };
     };
 
     struct SceneTerrainLayer final

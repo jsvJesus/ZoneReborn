@@ -1,4 +1,5 @@
 #include "Character/CharacterAnimator.h"
+#include "Character/CharacterFaceCodec.h"
 
 #include "Graphics/Renderer.h"
 
@@ -1632,6 +1633,7 @@ namespace
     bool BuildAnimatedNodeTransforms(
         const AnimationClip& clip,
         const core::assets::VisualAsset& visual,
+        const std::unordered_map<std::string, Transform>& faceMorphs,
         const float frame,
         std::vector<Transform>& output,
         std::string& error)
@@ -1656,6 +1658,12 @@ namespace
                 node.identifier,
                 frame,
                 local);
+
+            const auto morph = faceMorphs.find(node.identifier);
+            if (morph != faceMorphs.end())
+            {
+                local = Transform::Multiply(morph->second, local);
+            }
 
             if (node.parentIndex <
                 0)
@@ -1908,6 +1916,9 @@ namespace client::character
         std::vector<MeshBinding>
             meshes;
 
+        std::unordered_map<std::string, Transform>
+            faceMorphs;
+
         bool ready =
             false;
     };
@@ -1989,6 +2000,38 @@ namespace client::character
 
         return true;
     }
+
+    bool Animator::SetFaceForm(
+        const std::span<const std::uint64_t> packed,
+        std::string& error)
+    {
+        std::vector<FaceBoneTransform> decoded;
+        if (!DecodeFaceForm(packed, decoded, error))
+        {
+            return false;
+        }
+
+        state_->faceMorphs.clear();
+        const auto add = [this](const std::string& bone, const FaceBoneTransform& value, const bool paired)
+        {
+            if (bone.empty()) return;
+            Transform transform = Transform::Identity();
+            transform.values[0] = value.scale[0];
+            transform.values[4] = value.scale[1];
+            transform.values[8] = value.scale[2];
+            transform.values[9] = paired ? -value.translation[0] : value.translation[0];
+            transform.values[10] = value.translation[1];
+            transform.values[11] = value.translation[2];
+            state_->faceMorphs[bone] = transform;
+        };
+
+        for (const FaceBoneTransform& value : decoded)
+        {
+            add(value.bone, value, false);
+            add(value.pairedBone, value, true);
+        }
+        return true;
+    }
     
     bool Animator::Update(
         const float elapsedSeconds,
@@ -2034,6 +2077,7 @@ namespace client::character
             if (!BuildAnimatedNodeTransforms(
                     state_->idle,
                     binding.visual,
+                    state_->faceMorphs,
                     frame,
                     nodeTransforms,
                     error))

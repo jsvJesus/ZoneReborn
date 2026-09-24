@@ -696,6 +696,42 @@
         },
 
 
+        openCharacterFace()
+        {
+            post("character_face_open");
+        },
+
+
+        setCharacterFaceValue(group, value)
+        {
+            post("character_face_value", group, value);
+        },
+
+
+        randomizeCharacterFace()
+        {
+            post("character_face_random");
+        },
+
+
+        resetCharacterFace()
+        {
+            post("character_face_reset");
+        },
+
+
+        applyCharacterFace()
+        {
+            post("character_face_apply");
+        },
+
+
+        cancelCharacterFace()
+        {
+            post("character_face_cancel");
+        },
+
+
         deleteCharacter()
         {
             post(
@@ -932,6 +968,16 @@
 				screen.characterState();
 			}
 		},
+
+
+        characterFaceState(face)
+        {
+            const screen = screens.get(state.currentScreen);
+            if (screen && typeof screen.characterFaceState === "function")
+            {
+                screen.characterFaceState(face);
+            }
+        },
 
 
         localizationResult(

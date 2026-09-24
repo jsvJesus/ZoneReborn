@@ -15,6 +15,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <cctype>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -38,6 +39,28 @@ namespace
             a.x + b.x,
             a.y + b.y,
             a.z + b.z
+        };
+    }
+
+    std::string Lower(std::string value)
+    {
+        std::transform(value.begin(), value.end(), value.begin(), [](const unsigned char c)
+        {
+            return static_cast<char>(std::tolower(c));
+        });
+        return value;
+    }
+
+    std::array<float, 4> FaceTint(
+        const std::uint32_t colour,
+        const float brightness = 1.0f)
+    {
+        return
+        {
+            (static_cast<float>((colour >> 16u) & 0xFFu) / 255.0f) * brightness,
+            (static_cast<float>((colour >> 8u) & 0xFFu) / 255.0f) * brightness,
+            (static_cast<float>(colour & 0xFFu) / 255.0f) * brightness,
+            0.78f
         };
     }
 
@@ -443,6 +466,7 @@ namespace
         const core::resources::ResourceFileSystem& resources,
         const std::string_view modelReference,
         const Transform& transform,
+        const client::character::FaceState& face,
         client::preview::ModelRenderDataBuilder& materialBuilder,
         client::graphics::SceneRenderData& scene,
         std::size_t& instanceCount,
@@ -567,6 +591,42 @@ namespace
                         materialError);
                 }
 
+                const std::string modelKey = Lower(std::string(modelReference));
+                for (const core::assets::VisualPrimitiveGroup& visualGroup : geometry.primitiveGroups)
+                {
+                    if (visualGroup.index < 0 ||
+                        static_cast<std::size_t>(visualGroup.index) >= sceneMesh.modelMaterials.size())
+                    {
+                        continue;
+                    }
+                    std::string key = modelKey + " " + Lower(visualGroup.material.identifier) + " " + Lower(visualGroup.material.effect);
+                    for (const core::assets::VisualMaterialProperty& property : visualGroup.material.properties)
+                    {
+                        key += " " + Lower(property.name);
+                        if (property.texture.has_value()) key += " " + Lower(property.texture->logicalPath);
+                    }
+
+                    auto& material = sceneMesh.modelMaterials[static_cast<std::size_t>(visualGroup.index)];
+                    if (key.find("eye") != std::string::npos)
+                    {
+                        material.tintColour = FaceTint(face.eyeColor);
+                    }
+                    else if (key.find("hair") != std::string::npos || key.find("beard") != std::string::npos ||
+                             key.find("mustache") != std::string::npos || key.find("moustache") != std::string::npos)
+                    {
+                        const float length = 0.88f + static_cast<float>(face.hairLength) / 2550.0f;
+                        material.tintColour = FaceTint(face.hairColor, length);
+                    }
+                    else if (key.find("skin") != std::string::npos || key.find("face") != std::string::npos ||
+                             key.find("head") != std::string::npos)
+                    {
+                        const float wear = 1.0f - static_cast<float>(face.age) / 255.0f * 0.12f
+                            - static_cast<float>(face.details) / 255.0f * 0.07f
+                            - static_cast<float>(face.unshaven) / 255.0f * 0.08f;
+                        material.tintColour = FaceTint(face.skinColor, wear);
+                    }
+                }
+
                 const std::size_t meshIndex =
                     scene.meshes.size();
 
@@ -659,6 +719,12 @@ namespace client::character
             return false;
         }
 
+        if (!animator.SetFaceForm(state.Face().faceForm, error))
+        {
+            error = "Unable to apply character face form: " + error;
+            return false;
+        }
+
         ModelComposer composer;
         ModelPlan plan;
 
@@ -681,6 +747,7 @@ namespace client::character
             resources,
             model,
             transform,
+            state.Face(),
             materialBuilder,
             scene,
             outputInstanceCount,
