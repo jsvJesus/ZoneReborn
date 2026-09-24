@@ -17,7 +17,7 @@ namespace
         "res/soGUI/maps/MainMenu/main_bg.jpg";
 
     constexpr float CharacterVerticalOffset =
-        0.05f;
+        0.2f;
     
     core::math::Transform3x4
     ApplyYaw(
