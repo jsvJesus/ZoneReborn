@@ -546,6 +546,13 @@
             post(
                 "character_delete");
         },
+		
+		
+		requestCharacter()
+		{
+			post(
+				"character_request");
+		},
 
 
         openUrl(
@@ -687,6 +694,13 @@
 			message,
 			character)
 		{
+			if (success &&
+				window.CharacterStore)
+			{
+				CharacterStore.set(
+					character);
+			}
+
 			const screen =
 				screens.get(
 					state.currentScreen);
@@ -697,8 +711,7 @@
 			{
 				screen.characterCreateResult(
 					success,
-					message,
-					character);
+					message);
 			}
 		},
 		
@@ -707,6 +720,12 @@
 			success,
 			message)
 		{
+			if (success &&
+				window.CharacterStore)
+			{
+				CharacterStore.clear();
+			}
+
 			const screen =
 				screens.get(
 					state.currentScreen);
@@ -718,6 +737,28 @@
 				screen.characterDeleteResult(
 					success,
 					message);
+			}
+		},
+		
+		
+		characterState(
+			character)
+		{
+			if (window.CharacterStore)
+			{
+				CharacterStore.set(
+					character);
+			}
+
+			const screen =
+				screens.get(
+					state.currentScreen);
+
+			if (screen &&
+				typeof screen.characterState ===
+					"function")
+			{
+				screen.characterState();
 			}
 		},
 

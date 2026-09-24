@@ -723,28 +723,12 @@
 
     function characterCreateResult(
 		success,
-		message,
-		character)
+		message)
 	{
 		if (!success)
 		{
 			CharacterDialog.fail(
 				message);
-
-			return;
-		}
-
-		const stored =
-			CharacterStore.set(
-				character);
-
-		if (!stored)
-		{
-			Frontend.trace(
-				"Character create result contains invalid character data.");
-
-			CharacterDialog.fail(
-				"Unable to apply created character.");
 
 			return;
 		}
@@ -769,14 +753,20 @@
 			return;
 		}
 
-		CharacterStore.clear();
-
 		CharacterDialog.close();
 
 		renderCharacter();
 
 		applyCurrentCharacter();
-}
+	}
+	
+	
+	function characterState()
+	{
+		renderCharacter();
+
+		applyCurrentCharacter();
+	}
 
 
     function applyCurrentCharacter()
@@ -1714,27 +1704,28 @@
 
         bindCharacterRotation();
 
-
         await loadTgaAssets();
 
-
-        applyCurrentCharacter();
+        Frontend.requestCharacter();
     }
 
 
     FrontendScreens.register(
-        "main",
-        {
-            template:
-                "./main/main.html",
+		"main",
+    {
+        template:
+            "./main/main.html",
 
-            mount:
-                mount,
+        mount:
+            mount,
 
-            characterCreateResult:
-                characterCreateResult,
+        characterCreateResult:
+            characterCreateResult,
 
-            characterDeleteResult:
-                characterDeleteResult
-        });
+        characterDeleteResult:
+            characterDeleteResult,
+
+        characterState:
+            characterState
+    });
 })();

@@ -4,6 +4,8 @@
 #include "Core/Resources/DataSection.h"
 #include "Core/Resources/PackedSectionReader.h"
 
+#include <WebView2EnvironmentOptions.h>
+
 #include <algorithm>
 #include <cctype>
 #include <iomanip>
@@ -1257,12 +1259,39 @@ namespace client::frontend
                 userDataDirectory,
                 directoryError);
 
+        auto environmentOptions =
+            Microsoft::WRL::Make<
+        CoreWebView2EnvironmentOptions>();
+
+        if (!environmentOptions)
+        {
+            error =
+                "Unable to create WebView2 environment options.";
+
+            return false;
+        }
+
+        const HRESULT browserArgumentsResult =
+            environmentOptions->
+                put_AdditionalBrowserArguments(
+                    L"--disable-http-cache");
+
+        if (FAILED(
+                browserArgumentsResult))
+        {
+            error =
+                "Unable to disable WebView2 HTTP cache.";
+
+            return false;
+        }
+
         result =
-            CreateCoreWebView2EnvironmentWithOptions(
-                nullptr,
-                userDataDirectory.
-                    c_str(),
-                nullptr,
+            result =
+                CreateCoreWebView2EnvironmentWithOptions(
+                    nullptr,
+                    userDataDirectory.
+                        c_str(),
+                    environmentOptions.Get(),
                 Callback<
                     ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
                     [this](
@@ -1661,6 +1690,18 @@ namespace client::frontend
             "}");
     }
 
+    void OriginalFrontend::SendCharacterState(
+        const character::Profile* profile)
+    {
+        ExecuteScriptUtf8(
+            "if(window.ZoneFrontend){"
+            "window.ZoneFrontend.characterState(" +
+            SerializeCharacter(
+                profile) +
+            ");"
+            "}");
+    }
+
     void OriginalFrontend::SendCharacterCreateResult(
         const bool success,
         const std::string& message,
@@ -1933,6 +1974,21 @@ namespace client::frontend
             event.soundName = fields[1];
 
             events_.push_back(std::move(event));
+            return;
+        }
+
+        if (command =="character_request")
+        {
+            FrontendEvent event;
+
+            event.type =
+                FrontendEventType::
+                    CharacterRequest;
+
+            events_.push_back(
+                std::move(
+                    event));
+
             return;
         }
 

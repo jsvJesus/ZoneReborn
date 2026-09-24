@@ -756,6 +756,29 @@ Application::CharacterTransform() const noexcept
                 }
 
                 case frontend::FrontendEventType::
+                    CharacterRequest:
+                {
+                    if (!accountSession_.
+                            IsAuthenticated())
+                    {
+                        frontend_.
+                            SendCharacterState(
+                                nullptr);
+
+                        break;
+                    }
+
+                    frontend_.
+                        SendCharacterState(
+                            characterProfile_.
+                                has_value()
+                                    ? &*characterProfile_
+                                    : nullptr);
+
+                    break;
+                }
+
+                case frontend::FrontendEventType::
                     CharacterCreate:
                 {
                     if (!accountSession_.

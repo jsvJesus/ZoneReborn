@@ -27,6 +27,7 @@ namespace client::frontend
 
         UiSound,
 
+        CharacterRequest,
         CharacterCreate,
         CharacterDelete,
 
@@ -124,6 +125,9 @@ namespace client::frontend
             const std::string& message);
 
         void SendLoginComplete(
+            const character::Profile* profile);
+
+        void SendCharacterState(
             const character::Profile* profile);
 
         void SendCharacterCreateResult(
