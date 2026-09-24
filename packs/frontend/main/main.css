@@ -1370,21 +1370,84 @@ canvas.main-balance-icon {
     z-index: 10;
 
     top: clamp(54px, 8.4vh, 78px);
-    right: clamp(14px, 1.5vw, 25px);
+    right: clamp(20px, 1.8vw, 34px);
 
     display: flex;
 
-    width: clamp(275px, 23.3vw, 330px);
+    width: clamp(300px, 20vw, 350px);
 
     flex-direction: column;
 
-    gap: clamp(5px, 0.8vh, 8px);
+    gap: 6px;
+
+    padding:
+        clamp(12px, 1.0vw, 16px);
+
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.045);
+
+    background:
+        linear-gradient(
+            260deg,
+            rgba(8, 8, 8, 0.82) 0%,
+            rgba(10, 10, 10, 0.68) 72%,
+            rgba(10, 10, 10, 0.28) 100%
+        );
+
+    box-shadow:
+        0 15px 45px
+        rgba(
+            0,
+            0,
+            0,
+            0.28),
+
+        inset -1px 0 0
+        rgba(
+            255,
+            255,
+            255,
+            0.025);
+
+    backdrop-filter:
+        blur(4px);
 
     pointer-events: auto;
 }
 
 
+.main-right::before {
+    position: absolute;
+
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    width: 2px;
+
+    content: "";
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(164, 47, 42, 0.95),
+            rgba(112, 31, 28, 0.60) 42%,
+            rgba(112, 31, 28, 0.08) 82%,
+            transparent
+        );
+
+    pointer-events: none;
+}
+
+
 .main-promo-card {
+    position: relative;
+
     display: block;
 
     width: 100%;
@@ -1396,130 +1459,447 @@ canvas.main-balance-icon {
     border:
         1px solid
         rgba(
-            76,
-            76,
-            76,
-            0.17);
+            255,
+            255,
+            255,
+            0.045);
 
     outline: 0;
 
     background:
+        linear-gradient(
+            105deg,
+            rgba(34, 34, 34, 0.72) 0%,
+            rgba(22, 22, 22, 0.62) 65%,
+            rgba(14, 14, 14, 0.45) 100%
+        );
+
+    box-shadow:
+        inset 0 1px 0
         rgba(
-            0,
-            0,
-            0,
-            0.48);
+            255,
+            255,
+            255,
+            0.018);
 
-    color: #bdbdbd;
+    color:
+        #c5c5c5;
 
-    font-family: inherit;
+    font-family:
+        inherit;
 
-    text-align: left;
+    text-align:
+        left;
 
-    cursor: pointer;
+    cursor:
+        pointer;
 
     transition:
-        background 100ms ease,
-        border-color 100ms ease;
+        border-color 120ms ease,
+        background 120ms ease,
+        transform 100ms ease,
+        box-shadow 120ms ease;
+}
+
+
+.main-promo-card::before {
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    width: 2px;
+
+    content: "";
+
+    background:
+        rgba(
+            145,
+            45,
+            41,
+            0);
+
+    transition:
+        background 120ms ease,
+        box-shadow 120ms ease;
+
+    pointer-events: none;
 }
 
 
 .main-promo-card:hover {
     border-color:
         rgba(
-            130,
-            130,
-            130,
-            0.22);
+            168,
+            61,
+            56,
+            0.34);
 
     background:
+        linear-gradient(
+            105deg,
+            rgba(47, 31, 30, 0.90) 0%,
+            rgba(28, 23, 22, 0.78) 60%,
+            rgba(16, 16, 16, 0.62) 100%
+        );
+
+    box-shadow:
+        inset 0 1px 0
         rgba(
-            12,
-            12,
-            12,
-            0.63);
+            255,
+            255,
+            255,
+            0.035),
+
+        0 4px 18px
+        rgba(
+            0,
+            0,
+            0,
+            0.20);
+
+    transform:
+        translateX(
+            -2px);
+}
+
+
+.main-promo-card:hover::before {
+    background:
+        #a93630;
+
+    box-shadow:
+        0 0 9px
+        rgba(
+            169,
+            54,
+            48,
+            0.25);
 }
 
 
 .promo-title {
+    position: relative;
+
     display: flex;
 
     align-items: center;
 
-    height: clamp(29px, 4.4vh, 35px);
+    height:
+        clamp(
+            28px,
+            3.5vh,
+            33px);
 
     padding:
         0
-        clamp(7px, 0.7vw, 10px);
+        11px;
+
+    border-bottom:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.035);
 
     background:
         linear-gradient(
             90deg,
-            rgba(68, 68, 68, 0.62),
-            rgba(30, 30, 30, 0.28) 65%,
-            rgba(0, 0, 0, 0));
+            rgba(65, 65, 65, 0.44) 0%,
+            rgba(37, 37, 37, 0.24) 68%,
+            transparent 100%
+        );
 
-    color: #cccccc;
+    color:
+        rgba(
+            225,
+            225,
+            225,
+            0.84);
 
-    font-size: clamp(12px, 1.0vw, 15px);
+    font-size:
+        clamp(
+            11px,
+            0.88vw,
+            14px);
 
-    font-weight: 500;
+    font-weight:
+        500;
+
+    letter-spacing:
+        0.15px;
+
+    transition:
+        color 120ms ease,
+        background 120ms ease;
+}
+
+
+.main-promo-card:hover
+.promo-title {
+    color:
+        #eeeeee;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(112, 39, 35, 0.30) 0%,
+            rgba(47, 31, 30, 0.16) 65%,
+            transparent 100%
+        );
 }
 
 
 .promo-body {
+    position: relative;
+
     display: flex;
 
     align-items: center;
 
-    min-height: clamp(82px, 12vh, 98px);
+    min-height:
+        clamp(
+            72px,
+            9vh,
+            84px);
 
     padding:
-        clamp(6px, 0.7vw, 10px);
+        7px
+        10px;
 }
 
 
 .promo-image {
+    position: relative;
+
     display: flex;
 
     align-items: center;
     justify-content: center;
 
-    width: clamp(60px, 5vw, 72px);
-    min-width: clamp(60px, 5vw, 72px);
-    height: clamp(67px, 8vh, 78px);
+    width:
+        clamp(
+            58px,
+            4.5vw,
+            68px);
 
-    margin-right: clamp(7px, 0.8vw, 12px);
+    min-width:
+        clamp(
+            58px,
+            4.5vw,
+            68px);
+
+    height:
+        clamp(
+            58px,
+            7vh,
+            68px);
+
+    margin-right:
+        11px;
+
+    border-right:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.045);
+}
+
+
+.promo-image::after {
+    position: absolute;
+
+    top: 6px;
+    right: -1px;
+    bottom: 6px;
+
+    width: 1px;
+
+    content: "";
+
+    background:
+        linear-gradient(
+            180deg,
+            transparent,
+            rgba(
+                255,
+                255,
+                255,
+                0.06),
+            transparent
+        );
 }
 
 
 .promo-image canvas {
     display: block;
 
+    width: 52px;
+    height: 52px;
+
     max-width: 100%;
     max-height: 100%;
 
-    width: 100%;
-    height: 100%;
+    object-fit:
+        contain;
 
-    object-fit: contain;
+    opacity:
+        0.82;
+
+    transform:
+        scale(
+            0.96);
+
+    transition:
+        opacity 120ms ease,
+        transform 120ms ease,
+        filter 120ms ease;
+}
+
+
+.main-promo-card:hover
+.promo-image canvas {
+    opacity:
+        1;
+
+    transform:
+        scale(
+            1.03);
+
+    filter:
+        drop-shadow(
+            0 2px 5px
+            rgba(
+                0,
+                0,
+                0,
+                0.45));
 }
 
 
 .promo-image-premium canvas {
-    width: 86%;
-    height: 86%;
+    width: 47px;
+    height: 47px;
 }
 
 
 .promo-description {
-    flex: 1;
+    flex:
+        1;
 
-    color: #999999;
+    padding-right:
+        4px;
 
-    font-size: clamp(11px, 0.88vw, 13px);
+    color:
+        rgba(
+            190,
+            190,
+            190,
+            0.68);
 
-    line-height: 1.32;
+    font-size:
+        clamp(
+            10px,
+            0.80vw,
+            12px);
+
+    font-weight:
+        400;
+
+    line-height:
+        1.30;
+
+    transition:
+        color 120ms ease;
+}
+
+
+.main-promo-card:hover
+.promo-description {
+    color:
+        rgba(
+            215,
+            215,
+            215,
+            0.82);
+}
+
+
+@media (max-width: 1100px) {
+
+    .main-right {
+        width: 270px;
+
+        padding: 10px;
+    }
+
+
+    .promo-body {
+        min-height: 68px;
+    }
+
+
+    .promo-image {
+        width: 54px;
+        min-width: 54px;
+        height: 54px;
+
+        margin-right: 8px;
+    }
+
+
+    .promo-image canvas {
+        width: 46px;
+        height: 46px;
+    }
+}
+
+
+@media (max-height: 650px) {
+
+    .main-right {
+        top: 53px;
+
+        gap: 4px;
+
+        padding: 8px;
+    }
+
+
+    .promo-title {
+        height: 25px;
+    }
+
+
+    .promo-body {
+        min-height: 58px;
+
+        padding:
+            4px
+            8px;
+    }
+
+
+    .promo-image {
+        width: 48px;
+        min-width: 48px;
+        height: 48px;
+    }
+
+
+    .promo-image canvas {
+        width: 42px;
+        height: 42px;
+    }
+
+
+    .promo-description {
+        font-size: 10px;
+    }
 }
 
 
