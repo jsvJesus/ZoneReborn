@@ -669,69 +669,57 @@
 
 
         async loginComplete(
-            character)
-        {
-            if (window.CharacterStore)
-            {
-                CharacterStore.set(
-                    character);
-            }
+			character)
+		{
+			if (window.CharacterStore)
+			{
+				CharacterStore.set(
+					character);
+			}
 
-            await Router.show(
-                "main");
-        },
+			await Router.show(
+				"main");
+		},
 		
 		
 		characterCreateResult(
-            success,
-            message,
-            character)
-        {
-            if (success &&
-                window.CharacterStore)
-            {
-                CharacterStore.set(
-                    character);
-            }
+			success,
+			message,
+			character)
+		{
+			const screen =
+				screens.get(
+					state.currentScreen);
 
-            const screen =
-                screens.get(
-                    state.currentScreen);
-
-            if (screen &&
-                typeof screen.characterCreateResult ===
-                    "function")
-            {
-                screen.characterCreateResult(
-                    success,
-                    message);
-            }
-        },
+			if (screen &&
+				typeof screen.characterCreateResult ===
+					"function")
+			{
+				screen.characterCreateResult(
+					success,
+					message,
+					character);
+			}
+		},
 		
 		
 		characterDeleteResult(
-            success,
-            message)
-        {
-            if (success &&
-                window.CharacterStore)
-            {
-                CharacterStore.clear();
-            }
+			success,
+			message)
+		{
+			const screen =
+				screens.get(
+					state.currentScreen);
 
-            const screen =
-                screens.get(
-                    state.currentScreen);
-
-            if (screen &&
-                typeof screen.characterDeleteResult ===
-                    "function")
-            {
-                screen.characterDeleteResult(
-                    success,
-                    message);
-            }
-        },
+			if (screen &&
+				typeof screen.characterDeleteResult ===
+					"function")
+			{
+				screen.characterDeleteResult(
+					success,
+					message);
+			}
+		},
 
 
         localizationResult(

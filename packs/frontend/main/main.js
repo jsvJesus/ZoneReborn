@@ -722,70 +722,90 @@
 
 
     function characterCreateResult(
-        success,
-        message)
-    {
-        if (!success)
-        {
-            CharacterDialog.fail(
-                message);
+		success,
+		message,
+		character)
+	{
+		if (!success)
+		{
+			CharacterDialog.fail(
+				message);
 
-            return;
-        }
+			return;
+		}
 
-        CharacterDialog.close();
+		const stored =
+			CharacterStore.set(
+				character);
 
-        renderCharacter();
+		if (!stored)
+		{
+			Frontend.trace(
+				"Character create result contains invalid character data.");
 
-        applyCurrentCharacter();
-    }
+			CharacterDialog.fail(
+				"Unable to apply created character.");
+
+			return;
+		}
+
+		CharacterDialog.close();
+
+		renderCharacter();
+
+		applyCurrentCharacter();
+	}
 
 
     function characterDeleteResult(
-        success,
-        message)
-    {
-        if (!success)
-        {
-            CharacterDialog.fail(
-                message);
+		success,
+		message)
+	{
+		if (!success)
+		{
+			CharacterDialog.fail(
+				message);
 
-            return;
-        }
+			return;
+		}
 
-        CharacterDialog.close();
+		CharacterStore.clear();
 
-        renderCharacter();
-    }
+		CharacterDialog.close();
+
+		renderCharacter();
+
+		applyCurrentCharacter();
+}
 
 
     function applyCurrentCharacter()
-    {
-        const character =
-            CharacterStore.current();
+	{
+		const character =
+			CharacterStore.current();
 
-        if (!character)
-        {
-            Frontend.hideCharacter();
+		if (!character)
+		{
+			Frontend.hideCharacter();
 
-            return;
-        }
+			return;
+		}
 
-        Frontend.showCharacter();
+		Frontend.showCharacter();
 
 
-        const fields =
-            CharacterStore.appearanceFields(
-                character);
+		const fields =
+			CharacterStore.appearanceFields(
+				character);
 
-        if (!fields.length)
-        {
-            return;
-        }
+		if (!fields.length)
+		{
+			return;
+		}
 
-        Frontend.setCharacterFull(
-            fields);
-    }
+		Frontend.setCharacterFull(
+			fields);
+	}
 
 
     function renderCharacter()
@@ -805,61 +825,59 @@
 
 
         if (!character)
-        {
-            play.disabled =
-                true;
-
-            Frontend.hideCharacter();
+		{
+			play.disabled =
+				true;
 
 
-            const create =
-                document.createElement(
-                    "button");
+			const create =
+				document.createElement(
+					"button");
 
-            create.type =
-                "button";
+			create.type =
+				"button";
 
-            create.className =
-                "main-character-create";
-
-
-            const plus =
-                document.createElement(
-                    "span");
-
-            plus.className =
-                "main-character-create-plus";
-
-            plus.textContent =
-                "+";
+			create.className =
+				"main-character-create";
 
 
-            const text =
-                document.createElement(
-                    "span");
+			const plus =
+				document.createElement(
+					"span");
 
-            text.textContent =
-                translation(
-                    "createCharacter");
+			plus.className =
+				"main-character-create-plus";
 
-
-            create.appendChild(
-                plus);
-
-            create.appendChild(
-                text);
+			plus.textContent =
+				"+";
 
 
-            create.addEventListener(
-                "click",
-                openCharacterCreate);
+			const text =
+				document.createElement(
+					"span");
+
+			text.textContent =
+				translation(
+					"createCharacter");
 
 
-            container.appendChild(
-                create);
+			create.appendChild(
+				plus);
 
-            return;
-        }
+			create.appendChild(
+				text);
+
+
+			create.addEventListener(
+				"click",
+				openCharacterCreate);
+
+
+			container.appendChild(
+				create);
+
+			return;
+		}
 
 
         play.disabled =
