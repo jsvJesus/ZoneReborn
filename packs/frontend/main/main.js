@@ -681,7 +681,7 @@
 				"img");
 
 		icon.src =
-			"/packs/res/soGUI/frame/storehouse/x.png";
+			"/packs/res/soGUI/frame/storehouse/x_new.png";
 
 		icon.alt =
 			"";
