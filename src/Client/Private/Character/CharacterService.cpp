@@ -1055,7 +1055,7 @@ namespace client::character
         }
 
         stream <<
-            FileHeader <<
+            (profile.face.faceForm.empty() ? LegacyFileHeader : FileHeader) <<
             '\n';
 
         stream <<
@@ -1083,23 +1083,26 @@ namespace client::character
                 '\n';
         }
 
-        const FaceState& face = profile.face;
-        stream << "face_style " << face.hairStyle << ' ' << face.moustacheStyle << ' ' << face.beardStyle << '\n';
-        stream << "face_scalar " << static_cast<unsigned>(face.hairLength) << ' '
-               << static_cast<unsigned>(face.beardLength) << ' '
-               << static_cast<unsigned>(face.moustacheLength) << ' '
-               << static_cast<unsigned>(face.age) << ' '
-               << static_cast<unsigned>(face.details) << ' '
-               << static_cast<unsigned>(face.unshaven) << ' '
-               << static_cast<unsigned>(face.eyebrowPosition) << ' '
-               << static_cast<unsigned>(face.eyebrowRotation) << '\n';
-        stream << "face_colour " << face.hairColor << ' ' << face.skinColor << ' '
-               << face.eyeColor << ' ' << face.tattooColor << '\n';
-        stream << "face_detail " << face.eyebrowStyle << ' ' << face.tattooStyle << '\n';
-        stream << "face_form_count " << face.faceForm.size() << '\n';
-        for (const std::uint64_t word : face.faceForm)
+        if (!profile.face.faceForm.empty())
         {
-            stream << "face_form " << word << '\n';
+            const FaceState& face = profile.face;
+            stream << "face_style " << face.hairStyle << ' ' << face.moustacheStyle << ' ' << face.beardStyle << '\n';
+            stream << "face_scalar " << static_cast<unsigned>(face.hairLength) << ' '
+                   << static_cast<unsigned>(face.beardLength) << ' '
+                   << static_cast<unsigned>(face.moustacheLength) << ' '
+                   << static_cast<unsigned>(face.age) << ' '
+                   << static_cast<unsigned>(face.details) << ' '
+                   << static_cast<unsigned>(face.unshaven) << ' '
+                   << static_cast<unsigned>(face.eyebrowPosition) << ' '
+                   << static_cast<unsigned>(face.eyebrowRotation) << '\n';
+            stream << "face_colour " << face.hairColor << ' ' << face.skinColor << ' '
+                   << face.eyeColor << ' ' << face.tattooColor << '\n';
+            stream << "face_detail " << face.eyebrowStyle << ' ' << face.tattooStyle << '\n';
+            stream << "face_form_count " << face.faceForm.size() << '\n';
+            for (const std::uint64_t word : face.faceForm)
+            {
+                stream << "face_form " << word << '\n';
+            }
         }
 
         stream.flush();

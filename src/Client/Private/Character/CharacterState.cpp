@@ -289,6 +289,10 @@ namespace client::character
                 std::int32_t>>& values,
         std::string& error)
     {
+        State backup = *this;
+        const FaceState preservedFace = face_;
+        const bool preserveFace = !preservedFace.faceForm.empty();
+
         Reset();
 
         constexpr std::int32_t ShirtBeluga =
@@ -313,6 +317,7 @@ namespace client::character
                 UnderPants,
                 error))
         {
+            *this = std::move(backup);
             return false;
         }
 
@@ -355,11 +360,18 @@ namespace client::character
                     itemType,
                     error))
             {
+                *this = std::move(backup);
                 return false;
             }
         }
 
         hiddenSlots_.clear();
+
+        if (preserveFace && !ApplyFaceState(catalog, preservedFace, error))
+        {
+            *this = std::move(backup);
+            return false;
+        }
 
         return true;
     }
