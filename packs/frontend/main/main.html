@@ -124,95 +124,66 @@
 
 
     <aside class="main-left">
+		<div class="main-left-panel">
+			<div class="main-menu-header">
+				<div class="main-menu-header-line"></div>
+				<div class="main-title" data-i18n="mainTitle">ГЛАВНОЕ МЕНЮ</div>
+			</div>
 
-        <div
-            class="main-title"
-            data-i18n="mainTitle">
-            ГЛАВНОЕ МЕНЮ
-        </div>
+			<button id="mainPlay" class="main-play" type="button">
+				<span class="main-play-title" data-i18n="startGame">НАЧАТЬ ИГРУ</span>
+				<span class="main-play-arrow">›</span>
+			</button>
 
+			<section class="main-character-section">
+				<div class="main-section-header">
+					<spandata-i18n="myCharacter">МОЙ ПЕРСОНАЖ
+					</span>
+					<span class="main-section-header-line"></span>
+				</div>
+				<div id="mainCharacterList" class="main-character-list"></div>
+			</section>
 
-        <button
-            id="mainPlay"
-            class="main-play"
-            type="button"
-            data-i18n="startGame">
-            НАЧАТЬ ИГРУ
-        </button>
+			<nav class="main-navigation">
+				<button type="button" data-action="settings">
+					<span class="main-navigation-marker"></span>
+					<span data-i18n="settings">НАСТРОЙКИ</span>
+				</button>
 
+				<button type="button" data-action="partner">
+					<span class="main-navigation-marker"></span>
+					<span data-i18n="partner">ПАРТНЕРСКАЯ ПРОГРАММА</span>
+				</button>
 
-        <div
-            class="main-section-title"
-            data-i18n="myCharacter">
-            МОЙ ПЕРСОНАЖ
-        </div>
+				<button type="button" data-action="promo">
+					<span class="main-navigation-marker"></span>
+					<span data-i18n="promo">ВВЕСТИ ПРОМОКОД</span>
+				</button>
 
+				<button type="button" data-action="support">
+					<span class="main-navigation-marker"></span>
+					<span data-i18n="support">ТЕХПОДДЕРЖКА</span>
+				</button>
 
-        <div
-            id="mainCharacterList"
-            class="main-character-list">
-        </div>
+				<button type="button" data-action="news">
+					<span class="main-navigation-marker"></span>
+					<span data-i18n="news">НОВОСТИ</span>
+				</button>
 
+				<button type="button" data-action="license">
+					<span class="main-navigation-marker"></span>
+					<span data-i18n="license">ЛИЦЕНЗИОННОЕ СОГЛАШЕНИЕ</span>
+				</button>
+			</nav>
 
-        <nav class="main-navigation">
+			<div class="main-divider"></div>
 
-            <button
-                type="button"
-                data-action="settings"
-                data-i18n="settings">
-                НАСТРОЙКИ
-            </button>
-
-            <button
-                type="button"
-                data-action="partner"
-                data-i18n="partner">
-                ПАРТНЕРСКАЯ ПРОГРАММА
-            </button>
-
-            <button
-                type="button"
-                data-action="promo"
-                data-i18n="promo">
-                ВВЕСТИ ПРОМОКОД
-            </button>
-
-            <button
-                type="button"
-                data-action="support"
-                data-i18n="support">
-                ТЕХПОДДЕРЖКА
-            </button>
-
-            <button
-                type="button"
-                data-action="news"
-                data-i18n="news">
-                НОВОСТИ
-            </button>
-
-            <button
-                type="button"
-                data-action="license"
-                data-i18n="license">
-                ЛИЦЕНЗИОННОЕ СОГЛАШЕНИЕ
-            </button>
-
-        </nav>
-
-
-        <div class="main-divider"></div>
-
-
-        <button
-            id="mainExit"
-            class="main-exit"
-            type="button"
-            data-i18n="exit">
-            ВЫХОД
-        </button>
-
-    </aside>
+			<button id="mainExit" class="main-exit" type="button">
+				<span class="main-navigation-marker"></span>
+				<span data-i18n="exit">ВЫХОД</span>
+			</button>
+		</div>
+	</aside>
 
 
     <div

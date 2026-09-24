@@ -65,37 +65,119 @@ namespace
         return true;
     }
 
-    std::string DecodeBinaryName(
+    std::string EncodeBase64(
         const std::vector<std::byte>& data)
     {
-        std::string result;
+        static constexpr char Alphabet[] =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-        result.reserve(
-            data.size());
+        std::string output;
 
-        for (const std::byte value : data)
+        output.reserve(
+            ((data.size() + 2) / 3) * 4);
+
+        for (std::size_t offset = 0;
+             offset < data.size();
+             offset += 3)
         {
-            const auto character =
+            const std::uint32_t first =
                 std::to_integer<unsigned char>(
-                    value);
+                    data[offset]);
 
-            if (character == 0)
-            {
-                break;
-            }
+            const bool hasSecond =
+                offset + 1 < data.size();
 
-            if (character < 32 ||
-                character > 126)
-            {
-                return {};
-            }
+            const bool hasThird =
+                offset + 2 < data.size();
 
-            result.push_back(
-                static_cast<char>(
-                    character));
+            const std::uint32_t second =
+                hasSecond
+                    ? std::to_integer<unsigned char>(
+                          data[offset + 1])
+                    : 0;
+
+            const std::uint32_t third =
+                hasThird
+                    ? std::to_integer<unsigned char>(
+                          data[offset + 2])
+                    : 0;
+
+            const std::uint32_t value =
+                (first << 16) |
+                (second << 8) |
+                third;
+
+            output.push_back(
+                Alphabet[
+                    (value >> 18) & 0x3f]);
+
+            output.push_back(
+                Alphabet[
+                    (value >> 12) & 0x3f]);
+
+            output.push_back(
+                hasSecond
+                    ? Alphabet[
+                          (value >> 6) & 0x3f]
+                    : '=');
+
+            output.push_back(
+                hasThird
+                    ? Alphabet[
+                          value & 0x3f]
+                    : '=');
         }
 
-        return result;
+        return output;
+    }
+
+    bool ReadTextValue(
+        const core::resources::DataSection& section,
+        std::string& output)
+    {
+        output.clear();
+
+        if (const std::string* value =
+                section.AsString())
+        {
+            output =
+                *value;
+        }
+        else if (const std::int64_t* value =
+                     section.AsInteger())
+        {
+            output =
+                std::to_string(
+                    *value);
+        }
+        else if (const bool* value =
+                     section.AsBoolean())
+        {
+            output =
+                *value
+                    ? "true"
+                    : "false";
+        }
+        else if (const auto* value =
+                     section.AsBinary())
+        {
+            output =
+                EncodeBase64(
+                    *value);
+        }
+        else
+        {
+            return false;
+        }
+
+        while (!output.empty() &&
+               output.back() == '\0')
+        {
+            output.pop_back();
+        }
+
+        return
+            !output.empty();
     }
 
     std::string PropertyKey(
@@ -110,7 +192,7 @@ namespace
 
         return
             ToLower(
-                DecodeBinaryName(
+                EncodeBase64(
                     property.binaryName));
     }
 
@@ -153,14 +235,12 @@ namespace
     {
         output = {};
 
-        if (const std::string* name =
-                section.AsString())
-        {
-            output.name =
-                *name;
-        }
-        else if (const auto* binary =
-                     section.AsBinary())
+        ReadTextValue(
+            section,
+            output.name);
+
+        if (const auto* binary =
+                section.AsBinary())
         {
             output.binaryName =
                 *binary;
@@ -170,11 +250,11 @@ namespace
                 section.FindChild(
                     "Texture"))
         {
-            const std::string* reference =
-                textureSection->AsString();
+            std::string reference;
 
-            if (reference == nullptr ||
-                reference->empty())
+            if (!ReadTextValue(
+                    *textureSection,
+                    reference))
             {
                 error =
                     "Material Texture property contains invalid reference.";
@@ -190,12 +270,12 @@ namespace
 
             if (!resolver.Resolve(
                     resources,
-                    *reference,
+                    reference,
                     texture))
             {
                 error =
                     "Unable to resolve material texture: " +
-                    *reference;
+                    reference;
 
                 return false;
             }
@@ -384,11 +464,11 @@ namespace core::assets
                 section.FindChild(
                     "mfm"))
         {
-            const std::string* reference =
-                mfm->AsString();
+            std::string reference;
 
-            if (reference != nullptr &&
-                !reference->empty())
+            if (ReadTextValue(
+                    *mfm,
+                    reference))
             {
                 VisualMaterial
                     inherited;
@@ -398,7 +478,7 @@ namespace core::assets
 
                 if (LoadReference(
                         resources,
-                        *reference,
+                        reference,
                         depth + 1,
                         inherited,
                         inheritanceError))
@@ -421,21 +501,15 @@ namespace core::assets
                 section.FindChild(
                     "identifier"))
         {
-            if (const std::string* value =
-                    identifier->AsString())
-            {
-                material.identifier =
-                    *value;
+            ReadTextValue(
+                *identifier,
+                material.identifier);
 
-                material.binaryIdentifier.clear();
-            }
-            else if (const auto* value =
-                         identifier->AsBinary())
+            if (const auto* value =
+                    identifier->AsBinary())
             {
                 material.binaryIdentifier =
                     *value;
-
-                material.identifier.clear();
             }
         }
 
@@ -443,10 +517,11 @@ namespace core::assets
                 section.FindChild(
                     "fx"))
         {
-            const std::string* value =
-                effect->AsString();
+            std::string value;
 
-            if (value == nullptr)
+            if (!ReadTextValue(
+                    *effect,
+                    value))
             {
                 error =
                     "Material fx value is invalid.";
@@ -455,7 +530,8 @@ namespace core::assets
             }
 
             material.effect =
-                *value;
+                std::move(
+                    value);
         }
 
         if (const resources::DataSection* collisionFlags =

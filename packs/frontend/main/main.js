@@ -31,6 +31,9 @@
             myCharacter:
                 "МОЙ ПЕРСОНАЖ",
 
+			readyCharacter:
+				"ГОТОВ К ВЫХОДУ В ЗОНУ",
+
             settings:
                 "НАСТРОЙКИ",
 
@@ -110,6 +113,9 @@
             myCharacter:
                 "MY CHARACTER",
 
+			readyCharacter:
+				"READY TO ENTER THE ZONE",
+
             settings:
                 "SETTINGS",
 
@@ -188,6 +194,9 @@
 
             myCharacter:
                 "我的角色",
+
+			readyCharacter:
+				"准备进入区域",
 
             settings:
                 "设置",
@@ -536,119 +545,184 @@
 
 
     function renderCharacter()
-    {
-        const container =
-            element(
-                "mainCharacterList");
+	{
+		const container =
+			element(
+				"mainCharacterList");
 
-        const play =
-            element(
-                "mainPlay");
+		const play =
+			element(
+				"mainPlay");
 
-        container.replaceChildren();
+		container.replaceChildren();
 
+		const character =
+			CharacterStore.current();
 
-        const character =
-            CharacterStore.current();
+		if (!character)
+		{
+			play.disabled =
+				true;
 
-        if (!character)
-        {
-            play.disabled =
-                true;
+			Frontend.hideCharacter();
 
-            Frontend.hideCharacter();
+			return;
+		}
 
-            return;
-        }
+		play.disabled =
+			false;
 
+		const row =
+			document.createElement(
+				"div");
 
-        play.disabled =
-            false;
+		row.className =
+			"main-character";
 
+		const avatar =
+			document.createElement(
+				"div");
 
-        const row =
-            document.createElement(
-                "div");
+		avatar.className =
+			"main-character-avatar";
 
-        row.className =
-            "main-character";
+		const avatarCanvas =
+			document.createElement(
+				"canvas");
 
+		avatarCanvas.className =
+			"main-tga";
 
-        const name =
-            document.createElement(
-                "div");
+		avatarCanvas.dataset.tga =
+			"/packs/res/soGUI/maps/MainMenu/Card/card_icon_character.tga";
 
-        name.className =
-            "main-character-name";
+		avatar.appendChild(
+			avatarCanvas);
 
-        name.textContent =
-            String(
-                character.name ||
-                "Character");
+		const info =
+			document.createElement(
+				"div");
 
+		info.className =
+			"main-character-info";
 
-        const remove =
-            document.createElement(
-                "button");
+		const active =
+			document.createElement(
+				"div");
 
-        remove.type =
-            "button";
+		active.className =
+			"main-character-active";
 
-        remove.className =
-            "main-character-delete";
+		const name =
+			document.createElement(
+				"div");
 
-        remove.title =
-            translation(
-                "deleteCharacter");
+		name.className =
+			"main-character-name";
 
+		name.textContent =
+			String(
+				character.name ||
+				"Character");
 
-        const icon =
-            document.createElement(
-                "img");
+		const status =
+			document.createElement(
+				"div");
 
-        icon.src =
-            "/packs/res/soGUI/frame/storehouse/x.png";
+		status.className =
+			"main-character-status";
 
-        icon.alt =
-            "";
+		const statusDot =
+			document.createElement(
+				"span");
 
+		statusDot.className =
+			"main-character-status-dot";
 
-        remove.appendChild(
-            icon);
+		const statusText =
+			document.createElement(
+				"span");
 
+		statusText.textContent =
+			translation(
+				"readyCharacter");
 
-        remove.addEventListener(
-            "click",
-            event =>
-            {
-                event.stopPropagation();
+		status.appendChild(
+			statusDot);
 
+		status.appendChild(
+			statusText);
 
-                if (!CharacterStore.removeCurrent())
-                {
-                    return;
-                }
+		info.appendChild(
+			active);
 
+		info.appendChild(
+			name);
 
-                Frontend.hideCharacter();
+		info.appendChild(
+			status);
 
-                renderCharacter();
+		const remove =
+			document.createElement(
+				"button");
 
+		remove.type =
+			"button";
 
-                Frontend.trace(
-                    "Current character deleted.");
-            });
+		remove.className =
+			"main-character-delete";
 
+		remove.title =
+			translation(
+				"deleteCharacter");
 
-        row.appendChild(
-            name);
+		const icon =
+			document.createElement(
+				"img");
 
-        row.appendChild(
-            remove);
+		icon.src =
+			"/packs/res/soGUI/frame/storehouse/x.png";
 
-        container.appendChild(
-            row);
-    }
+		icon.alt =
+			"";
+
+		remove.appendChild(
+			icon);
+
+		remove.addEventListener(
+			"click",
+			event =>
+			{
+				event.stopPropagation();
+
+				if (!CharacterStore.removeCurrent())
+				{
+					return;
+				}
+
+				Frontend.hideCharacter();
+
+				renderCharacter();
+
+				Frontend.trace(
+					"Current character deleted.");
+			});
+
+		row.appendChild(
+			avatar);
+
+		row.appendChild(
+			info);
+
+		row.appendChild(
+			remove);
+
+		container.appendChild(
+			row);
+
+		loadTga(
+			avatarCanvas);
+	}
 
 
     function bindCharacterRotation()

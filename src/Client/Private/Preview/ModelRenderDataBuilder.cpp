@@ -32,6 +32,72 @@ namespace
         return value;
     }
 
+    std::string EncodeBase64(
+        const std::vector<std::byte>& data)
+    {
+        static constexpr char Alphabet[] =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+        std::string output;
+
+        output.reserve(
+            ((data.size() + 2) / 3) * 4);
+
+        for (std::size_t offset = 0;
+             offset < data.size();
+             offset += 3)
+        {
+            const std::uint32_t first =
+                std::to_integer<unsigned char>(
+                    data[offset]);
+
+            const bool hasSecond =
+                offset + 1 < data.size();
+
+            const bool hasThird =
+                offset + 2 < data.size();
+
+            const std::uint32_t second =
+                hasSecond
+                    ? std::to_integer<unsigned char>(
+                          data[offset + 1])
+                    : 0;
+
+            const std::uint32_t third =
+                hasThird
+                    ? std::to_integer<unsigned char>(
+                          data[offset + 2])
+                    : 0;
+
+            const std::uint32_t value =
+                (first << 16) |
+                (second << 8) |
+                third;
+
+            output.push_back(
+                Alphabet[
+                    (value >> 18) & 0x3f]);
+
+            output.push_back(
+                Alphabet[
+                    (value >> 12) & 0x3f]);
+
+            output.push_back(
+                hasSecond
+                    ? Alphabet[
+                          (value >> 6) & 0x3f]
+                    : '=');
+
+            output.push_back(
+                hasThird
+                    ? Alphabet[
+                          value & 0x3f]
+                    : '=');
+        }
+
+        return output;
+    }
+
     std::string PropertyName(
         const core::assets::VisualMaterialProperty& property)
     {
@@ -42,38 +108,28 @@ namespace
                     property.name);
         }
 
-        std::string decoded;
-
-        decoded.reserve(
-            property.binaryName.size());
-
-        for (const std::byte value :
-             property.binaryName)
-        {
-            const auto character =
-                std::to_integer<unsigned char>(
-                    value);
-
-            if (character == 0)
-            {
-                break;
-            }
-
-            if (character < 32 ||
-                character > 126)
-            {
-                decoded.clear();
-                break;
-            }
-
-            decoded.push_back(
-                static_cast<char>(
-                    character));
-        }
-
         return
             ToLower(
-                std::move(decoded));
+                EncodeBase64(
+                    property.binaryName));
+    }
+
+    bool HasProperty(
+        const core::assets::VisualMaterial& material,
+        const std::string_view name)
+    {
+        for (const core::assets::VisualMaterialProperty& property :
+             material.properties)
+        {
+            if (PropertyName(
+                    property) ==
+                name)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     bool Contains(
@@ -197,6 +253,19 @@ namespace
                 path))
         {
             return -1;
+        }
+
+        if (propertyName == "diffusemap" ||
+            propertyName == "diffuse" ||
+            propertyName == "albedomap" ||
+            propertyName == "albedo" ||
+            propertyName == "basecolormap" ||
+            propertyName == "basecolor" ||
+            propertyName == "basecolourmap" ||
+            propertyName == "basecolour" ||
+            propertyName == "basetexture")
+        {
+            return 1000;
         }
 
         int score =
@@ -332,7 +401,11 @@ namespace
 
             Contains(
                 combined,
-                "blendalpha");
+                "blendalpha") ||
+
+            Contains(
+                combined,
+                "_alpha");
     }
 
     bool LooksLikeCutoutMaterial(
@@ -460,15 +533,6 @@ namespace
         // семантике материала/effect.
         //
 
-        if (LooksLikeBlendMaterial(
-                material,
-                texture.logicalPath))
-        {
-            return
-                client::graphics::
-                    SceneAlphaMode::Blend;
-        }
-
         if (LooksLikeCutoutMaterial(
                 material,
                 texture.logicalPath))
@@ -476,6 +540,22 @@ namespace
             return
                 client::graphics::
                     SceneAlphaMode::Cutout;
+        }
+
+        if (texture.hasTransparentPixels &&
+            (LooksLikeBlendMaterial(
+                 material,
+                 texture.logicalPath) ||
+             HasProperty(
+                 material,
+                 "srcblend") ||
+             HasProperty(
+                 material,
+                 "destblend")))
+        {
+            return
+                client::graphics::
+                    SceneAlphaMode::Blend;
         }
 
         //
@@ -702,7 +782,13 @@ namespace client::preview
                     textureIndex,
                     textureError))
             {
-                continue;
+                error =
+                    "Unable to load model diffuse texture " +
+                    diffuse->logicalPath +
+                    ": " +
+                    textureError;
+
+                return false;
             }
 
             graphics::SceneModelMaterial& material =
