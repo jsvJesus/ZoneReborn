@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Character/CharacterFaceState.h"
+
 #include <cstdint>
 #include <string>
 #include <vector>
@@ -21,5 +23,7 @@ namespace client::character
 
         std::vector<AppearancePart>
             appearance;
+
+        FaceState face;
     };
 }

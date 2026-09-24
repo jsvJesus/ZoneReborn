@@ -393,12 +393,24 @@ namespace client
                 part.itemType);
         }
 
-        return
-            characterState_.
-                ApplyCreatorSet(
-                    characterCatalog_,
-                    values,
-                    error);
+        character::State loaded;
+
+        if (!loaded.ApplyCreatorSet(characterCatalog_, values, error))
+        {
+            return false;
+        }
+
+        const bool faceApplied = profile.face.faceForm.empty()
+            ? loaded.ResetFace(characterCatalog_, error)
+            : loaded.ApplyFaceState(characterCatalog_, profile.face, error);
+
+        if (!faceApplied)
+        {
+            return false;
+        }
+
+        characterState_ = std::move(loaded);
+        return true;
     }
 
     void Application::ShutdownCharacterSelectScene()
@@ -878,6 +890,7 @@ Application::CharacterTransform() const noexcept
                             event.characterName,
                             characterCatalog_,
                             event.characterParts,
+                            characterState_.Face(),
                             createdProfile,
                             createError))
                     {

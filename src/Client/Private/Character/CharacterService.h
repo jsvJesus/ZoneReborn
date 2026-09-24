@@ -34,6 +34,7 @@ namespace client::character
                 std::pair<
                     std::string,
                     std::int32_t>>& appearance,
+            const FaceState& face,
             Profile& profile,
             std::string& error) const;
 

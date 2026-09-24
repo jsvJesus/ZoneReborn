@@ -1,5 +1,7 @@
 #include "Character/CharacterService.h"
 
+#include "Character/CharacterFaceCodec.h"
+
 #include "Core/Log.h"
 
 #include <algorithm>
@@ -12,8 +14,11 @@
 
 namespace
 {
-    constexpr char FileHeader[] =
+    constexpr char LegacyFileHeader[] =
         "CHARACTER_V1";
+
+    constexpr char FileHeader[] =
+        "CHARACTER_V2";
 
     bool ReadCodePoint(
         const std::string_view text,
@@ -351,6 +356,7 @@ namespace client::character
             std::pair<
                 std::string,
                 std::int32_t>>& appearance,
+        const FaceState& face,
         Profile& profile,
         std::string& error) const
     {
@@ -390,6 +396,14 @@ namespace client::character
         created.name =
             std::string(
                 name);
+
+        created.face = face;
+
+        if (!ValidateFaceForm(created.face.faceForm))
+        {
+            error = "Character face form is invalid.";
+            return false;
+        }
 
         for (const CreatorGroup& group :
              catalog.CreatorGroups())
@@ -857,8 +871,9 @@ namespace client::character
             stream,
             header);
 
-        if (header !=
-            FileHeader)
+        const bool legacy = header == LegacyFileHeader;
+
+        if (!legacy && header != FileHeader)
         {
             error =
                 "Unsupported character file format.";
@@ -944,6 +959,65 @@ namespace client::character
                         part));
         }
 
+        if (!legacy)
+        {
+            std::string row;
+            std::uint32_t hairLength = 0;
+            std::uint32_t beardLength = 0;
+            std::uint32_t moustacheLength = 0;
+            std::uint32_t age = 0;
+            std::uint32_t details = 0;
+            std::uint32_t unshaven = 0;
+            std::uint32_t eyebrowPosition = 0;
+            std::uint32_t eyebrowRotation = 0;
+            std::size_t faceFormCount = 0;
+
+            if (!(stream >> row) || row != "face_style" ||
+                !(stream >> loaded.face.hairStyle >> loaded.face.moustacheStyle >> loaded.face.beardStyle) ||
+                !(stream >> row) || row != "face_scalar" ||
+                !(stream >> hairLength >> beardLength >> moustacheLength >> age >> details >> unshaven >> eyebrowPosition >> eyebrowRotation) ||
+                hairLength > 255u || beardLength > 255u || moustacheLength > 255u ||
+                age > 255u || details > 255u || unshaven > 255u ||
+                eyebrowPosition > 255u || eyebrowRotation > 255u ||
+                !(stream >> row) || row != "face_colour" ||
+                !(stream >> loaded.face.hairColor >> loaded.face.skinColor >> loaded.face.eyeColor >> loaded.face.tattooColor) ||
+                !(stream >> row) || row != "face_detail" ||
+                !(stream >> loaded.face.eyebrowStyle >> loaded.face.tattooStyle) ||
+                !(stream >> row) || row != "face_form_count" ||
+                !(stream >> faceFormCount) || faceFormCount == 0u || faceFormCount > 256u)
+            {
+                error = "Character face data is invalid.";
+                return false;
+            }
+
+            loaded.face.hairLength = static_cast<std::uint8_t>(hairLength);
+            loaded.face.beardLength = static_cast<std::uint8_t>(beardLength);
+            loaded.face.moustacheLength = static_cast<std::uint8_t>(moustacheLength);
+            loaded.face.age = static_cast<std::uint8_t>(age);
+            loaded.face.details = static_cast<std::uint8_t>(details);
+            loaded.face.unshaven = static_cast<std::uint8_t>(unshaven);
+            loaded.face.eyebrowPosition = static_cast<std::uint8_t>(eyebrowPosition);
+            loaded.face.eyebrowRotation = static_cast<std::uint8_t>(eyebrowRotation);
+            loaded.face.faceForm.reserve(faceFormCount);
+
+            for (std::size_t index = 0; index < faceFormCount; ++index)
+            {
+                std::uint64_t word = 0;
+                if (!(stream >> row) || row != "face_form" || !(stream >> word))
+                {
+                    error = "Character face form is truncated.";
+                    return false;
+                }
+                loaded.face.faceForm.push_back(word);
+            }
+
+            if (!ValidateFaceForm(loaded.face.faceForm))
+            {
+                error = "Character face form is invalid.";
+                return false;
+            }
+        }
+
         if (loaded.id.empty() ||
             loaded.name.empty())
         {
@@ -1007,6 +1081,25 @@ namespace client::character
                 ' ' <<
                 part.itemType <<
                 '\n';
+        }
+
+        const FaceState& face = profile.face;
+        stream << "face_style " << face.hairStyle << ' ' << face.moustacheStyle << ' ' << face.beardStyle << '\n';
+        stream << "face_scalar " << static_cast<unsigned>(face.hairLength) << ' '
+               << static_cast<unsigned>(face.beardLength) << ' '
+               << static_cast<unsigned>(face.moustacheLength) << ' '
+               << static_cast<unsigned>(face.age) << ' '
+               << static_cast<unsigned>(face.details) << ' '
+               << static_cast<unsigned>(face.unshaven) << ' '
+               << static_cast<unsigned>(face.eyebrowPosition) << ' '
+               << static_cast<unsigned>(face.eyebrowRotation) << '\n';
+        stream << "face_colour " << face.hairColor << ' ' << face.skinColor << ' '
+               << face.eyeColor << ' ' << face.tattooColor << '\n';
+        stream << "face_detail " << face.eyebrowStyle << ' ' << face.tattooStyle << '\n';
+        stream << "face_form_count " << face.faceForm.size() << '\n';
+        for (const std::uint64_t word : face.faceForm)
+        {
+            stream << "face_form " << word << '\n';
         }
 
         stream.flush();
