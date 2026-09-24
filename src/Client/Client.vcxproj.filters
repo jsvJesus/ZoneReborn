@@ -21,9 +21,15 @@
     <ClCompile Include="Private\Character\CharacterFaceCatalog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Private\Character\CharacterFaceCodec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Private\Character\CharacterFaceCatalog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Private\Character\CharacterFaceCodec.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Private\Character\CharacterFaceState.h">

@@ -1,4 +1,5 @@
 #include "Character/CharacterState.h"
+#include "Character/CharacterFaceCodec.h"
 
 #include <algorithm>
 #include <limits>
@@ -372,6 +373,8 @@ namespace client::character
         defaults.skinColor = 0xE4E4E4u;
         defaults.eyeColor = 0xBAC7C9u;
         defaults.hairColor = 0xE1E0E0u;
+        std::mt19937 defaultFace(0x5A17u);
+        defaults.faceForm = GenerateRandomFaceForm(defaultFace);
 
         return ApplyFaceState(
             catalog,
@@ -603,6 +606,7 @@ namespace client::character
         randomized.unshaven = static_cast<std::uint8_t>(scalar(random));
         randomized.eyebrowPosition = static_cast<std::uint8_t>(scalar(random));
         randomized.eyebrowRotation = static_cast<std::uint8_t>(scalar(random));
+        randomized.faceForm = GenerateRandomFaceForm(random);
 
         return ApplyFaceState(catalog, randomized, error);
     }
