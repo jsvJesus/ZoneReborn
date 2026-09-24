@@ -57,6 +57,16 @@ namespace client::graphics
         {
             1.0f, 1.0f, 1.0f, 0.0f
         };
+
+        std::int32_t overlayTextureIndex =
+            -1;
+
+        std::array<float, 4> overlayColour
+        {
+            1.0f, 1.0f, 1.0f, 1.0f
+        };
+
+        std::array<float, 4> overlayParameters{};
     };
 
     struct SceneTerrainLayer final

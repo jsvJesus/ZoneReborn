@@ -489,11 +489,11 @@ Application::CharacterTransform() const noexcept
             x = 0.0f;
             z = 1.0f;
         }
-        const core::math::Vector3 target{origin.x, origin.y + 1.63f, origin.z};
-        camera.position = {target.x - x * 0.63f, target.y, target.z - z * 0.63f};
+        const core::math::Vector3 target{origin.x, origin.y + 1.57f, origin.z};
+        camera.position = {target.x - x * 1.25f, target.y, target.z - z * 1.25f};
         camera.forward = {x, 0.0f, z};
         camera.up = {0.0f, 1.0f, 0.0f};
-        camera.fieldOfViewDegrees = 40.107f;
+        camera.fieldOfViewDegrees = 45.0f;
         return camera;
     }
 

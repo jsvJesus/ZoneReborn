@@ -473,6 +473,8 @@ namespace
         client::character::Animator& animator,
         std::string& error)
     {
+        const std::string modelKey = Lower(std::string(modelReference));
+
         core::assets::ModelBundleLoader
             bundleLoader;
 
@@ -511,6 +513,27 @@ namespace
 
         std::vector<std::size_t>
             modelMeshes;
+
+        std::int32_t eyebrowTextureIndex = -1;
+
+        if (modelKey.ends_with("/manhead.model") &&
+            face.eyebrowStyle >= 1 && face.eyebrowStyle <= 4)
+        {
+            std::size_t textureIndex = 0;
+            std::string textureError;
+            const std::string path =
+                "res/characters2/clothing/ManNude/Brow/Brow_" +
+                std::to_string(face.eyebrowStyle) + ".dds";
+            if (materialBuilder.LoadTexture(
+                    resources, path, scene, textureIndex, textureError))
+            {
+                eyebrowTextureIndex = static_cast<std::int32_t>(textureIndex);
+            }
+            else
+            {
+                core::Log::Warning("Unable to load eyebrow texture " + path + ": " + textureError);
+            }
+        }
 
         for (const core::assets::VisualRenderSet& renderSet :
              bundle.visual.renderSets)
@@ -591,7 +614,17 @@ namespace
                         materialError);
                 }
 
-                const std::string modelKey = Lower(std::string(modelReference));
+                const bool hairPart = modelKey.find("/hair/") != std::string::npos;
+                const bool moustachePart = modelKey.find("/mustache/") != std::string::npos ||
+                    modelKey.find("/moustache/") != std::string::npos;
+                const bool beardPart = modelKey.find("/beard/") != std::string::npos;
+                const bool facialHairPart = hairPart || moustachePart || beardPart;
+                const bool exposedBody =
+                    modelKey.ends_with("/manhead.model") ||
+                    modelKey.ends_with("/mantorso.model") ||
+                    modelKey.ends_with("/manhands.model") ||
+                    modelKey.ends_with("/manlegs.model") ||
+                    modelKey.ends_with("/manfoot.model");
                 for (const core::assets::VisualPrimitiveGroup& visualGroup : geometry.primitiveGroups)
                 {
                     if (visualGroup.index < 0 ||
@@ -599,7 +632,7 @@ namespace
                     {
                         continue;
                     }
-                    std::string key = modelKey + " " + Lower(visualGroup.material.identifier) + " " + Lower(visualGroup.material.effect);
+                    std::string key = Lower(visualGroup.material.identifier) + " " + Lower(visualGroup.material.effect);
                     for (const core::assets::VisualMaterialProperty& property : visualGroup.material.properties)
                     {
                         key += " " + Lower(property.name);
@@ -607,23 +640,24 @@ namespace
                     }
 
                     auto& material = sceneMesh.modelMaterials[static_cast<std::size_t>(visualGroup.index)];
-                    if (key.find("eye") != std::string::npos)
+                    if (facialHairPart)
                     {
-                        material.tintColour = FaceTint(face.eyeColor);
+                        material.tintColour = FaceTint(face.hairColor);
+                        material.alphaMode = client::graphics::SceneAlphaMode::Cutout;
+                        material.alphaCutoff = 0.2f;
                     }
-                    else if (key.find("hair") != std::string::npos || key.find("beard") != std::string::npos ||
-                             key.find("mustache") != std::string::npos || key.find("moustache") != std::string::npos)
+                    else if (exposedBody &&
+                             key.find("eye") == std::string::npos &&
+                             key.find("teeth") == std::string::npos &&
+                             key.find("mouth") == std::string::npos)
                     {
-                        const float length = 0.88f + static_cast<float>(face.hairLength) / 2550.0f;
-                        material.tintColour = FaceTint(face.hairColor, length);
-                    }
-                    else if (key.find("skin") != std::string::npos || key.find("face") != std::string::npos ||
-                             key.find("head") != std::string::npos)
-                    {
-                        const float wear = 1.0f - static_cast<float>(face.age) / 255.0f * 0.12f
-                            - static_cast<float>(face.details) / 255.0f * 0.07f
-                            - static_cast<float>(face.unshaven) / 255.0f * 0.08f;
-                        material.tintColour = FaceTint(face.skinColor, wear);
+                        material.tintColour = FaceTint(face.skinColor);
+                        if (modelKey.ends_with("/manhead.model") && eyebrowTextureIndex >= 0)
+                        {
+                            material.overlayTextureIndex = eyebrowTextureIndex;
+                            material.overlayColour = FaceTint(face.hairColor);
+                            material.overlayColour[3] = 1.0f;
+                        }
                     }
                 }
 

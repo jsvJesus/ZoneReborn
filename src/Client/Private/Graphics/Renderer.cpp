@@ -169,6 +169,10 @@ namespace
 
         DirectX::XMFLOAT4 modelTint;
 
+        DirectX::XMFLOAT4 modelOverlayColour;
+
+        DirectX::XMFLOAT4 modelOverlayParameters;
+
         DirectX::XMFLOAT4 waterDeepColour;
         DirectX::XMFLOAT4 waterReflectionTint;
         DirectX::XMFLOAT4 waterRefractionTint;
@@ -4560,8 +4564,22 @@ namespace client::graphics
                     0.0f
                 };
 
+                constants.modelOverlayColour =
+                {
+                    1.0f,
+                    1.0f,
+                    1.0f,
+                    1.0f
+                };
+
+                constants.modelOverlayParameters = {};
+
                 ID3D11ShaderResourceView*
                     modelTextureView =
+                        nullptr;
+
+                ID3D11ShaderResourceView*
+                    overlayTextureView =
                         nullptr;
 
                 SceneAlphaMode alphaMode =
@@ -4593,6 +4611,22 @@ namespace client::graphics
                         material.tintColour[3]
                     };
 
+                    constants.modelOverlayColour =
+                    {
+                        material.overlayColour[0],
+                        material.overlayColour[1],
+                        material.overlayColour[2],
+                        material.overlayColour[3]
+                    };
+
+                    constants.modelOverlayParameters =
+                    {
+                        material.overlayParameters[0],
+                        material.overlayParameters[1],
+                        material.overlayParameters[2],
+                        material.overlayParameters[3]
+                    };
+
                     if (material.diffuseTextureIndex >= 0)
                     {
                         const std::size_t textureIndex =
@@ -4615,12 +4649,29 @@ namespace client::graphics
                         constants.useModelTexture =
                             1;
                     }
+
+                    if (material.overlayTextureIndex >= 0)
+                    {
+                        const std::size_t overlayIndex = static_cast<std::size_t>(material.overlayTextureIndex);
+                        if (overlayIndex >= state_->textures.size())
+                        {
+                            error = "Model material references invalid overlay texture.";
+                            return false;
+                        }
+                        overlayTextureView = state_->textures[overlayIndex].Get();
+                        constants.modelParameters.z = 1.0f;
+                    }
                 }
 
                 state_->context->PSSetShaderResources(
                     5,
                     1,
                     &modelTextureView);
+
+                state_->context->PSSetShaderResources(
+                    11,
+                    1,
+                    &overlayTextureView);
 
                 constexpr float BlendFactor[4]
                 {
@@ -4675,6 +4726,11 @@ namespace client::graphics
 
             state_->context->PSSetShaderResources(
                 5,
+                1,
+                &emptyModelTexture);
+
+            state_->context->PSSetShaderResources(
+                11,
                 1,
                 &emptyModelTexture);
 

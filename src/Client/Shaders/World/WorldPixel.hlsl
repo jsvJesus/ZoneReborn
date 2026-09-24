@@ -60,6 +60,25 @@ float4 PSMain(
             baseColour,
             baseColour * modelTint.rgb,
             saturate(modelTint.a));
+
+        if (modelParameters.z > 0.5f)
+        {
+            const float angle = modelOverlayParameters.x;
+            const float sine = sin(angle);
+            const float cosine = cos(angle);
+            float2 overlayUV = input.terrainUV - float2(0.5f, 0.5f);
+            overlayUV = float2(
+                overlayUV.x * cosine - overlayUV.y * sine,
+                overlayUV.x * sine + overlayUV.y * cosine);
+            overlayUV += float2(0.5f, 0.5f + modelOverlayParameters.y);
+            const float4 overlay = modelOverlayTexture.Sample(
+                terrainTextureSampler,
+                overlayUV);
+            baseColour = lerp(
+                baseColour,
+                modelOverlayColour.rgb,
+                saturate(overlay.a * modelOverlayColour.a));
+        }
     }
 
     const float3 sunDirection =

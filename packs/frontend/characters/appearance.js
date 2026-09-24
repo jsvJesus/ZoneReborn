@@ -64,11 +64,13 @@
             source.forEach((value, index) =>
             {
                 if (!value || value.donat_only) return;
+                if (value.label === "eye") return;
                 const controls = [];
                 collectControls(value, controls);
-                if (controls.length)
+                const visibleControls = controls.filter(control => control.type !== "Slider");
+                if (visibleControls.length)
                 {
-                    categories.push({ key: key + "_" + index, label: value.label || key.replace(/^\d+_/, ""), controls });
+                    categories.push({ key: key + "_" + index, label: value.label || key.replace(/^\d+_/, ""), controls: visibleControls });
                 }
             });
         });

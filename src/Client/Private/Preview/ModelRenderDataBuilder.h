@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 namespace client::preview
@@ -21,6 +22,14 @@ namespace client::preview
             graphics::SceneRenderData& scene,
             graphics::SceneMesh& sceneMesh,
             std::size_t& outputTexturedGroups,
+            std::string& error);
+
+        [[nodiscard]]
+        bool LoadTexture(
+            const core::resources::ResourceFileSystem& resources,
+            std::string_view logicalPath,
+            graphics::SceneRenderData& scene,
+            std::size_t& outputTextureIndex,
             std::string& error);
 
     private:

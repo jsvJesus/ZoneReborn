@@ -19,6 +19,8 @@ cbuffer SceneConstants : register(b0)
 
     float4 modelParameters;
     float4 modelTint;
+    float4 modelOverlayColour;
+    float4 modelOverlayParameters;
 
     float4 waterDeepColour;
     float4 waterReflectionTint;
@@ -93,6 +95,7 @@ Texture2D sceneDepthTexture : register(t7);
 Texture2D waterNormalTexture : register(t8);
 Texture2D waterFoamTexture : register(t9);
 Texture2D skyGradientTexture : register(t10);
+Texture2D modelOverlayTexture : register(t11);
 
 SamplerState terrainTextureSampler : register(s0);
 SamplerState terrainBlendSampler : register(s1);

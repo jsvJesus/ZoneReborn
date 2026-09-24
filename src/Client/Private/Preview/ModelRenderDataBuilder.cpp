@@ -570,6 +570,21 @@ namespace
 
 namespace client::preview
 {
+    bool ModelRenderDataBuilder::LoadTexture(
+        const core::resources::ResourceFileSystem& resources,
+        const std::string_view logicalPath,
+        graphics::SceneRenderData& scene,
+        std::size_t& outputTextureIndex,
+        std::string& error)
+    {
+        core::assets::TextureResource texture;
+        texture.logicalPath = std::string(logicalPath);
+        texture.sourceLogicalPath = texture.logicalPath;
+        texture.sourceReference = texture.logicalPath;
+        texture.exists = resources.Exists(logicalPath);
+        return ResolveTexture(resources, texture, scene, outputTextureIndex, error);
+    }
+
     const core::assets::TextureResource*
     ModelRenderDataBuilder::FindDiffuseTexture(
         const core::assets::VisualMaterial& material) const noexcept
