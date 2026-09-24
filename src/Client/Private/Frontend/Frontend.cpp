@@ -26,8 +26,8 @@ namespace
     constexpr wchar_t FrontendHost[] =
         L"zone.local";
 
-    constexpr wchar_t FrontendUrl[] =
-        L"https://zone.local/packs/frontend/index.html";
+    constexpr wchar_t FrontendUrlBase[] =
+        L"https://zone.local/packs/frontend/index.html?v=";
 
     int HexValue(
         const char value)
@@ -1512,10 +1512,20 @@ namespace client::frontend
                                                 put_IsVisible(
                                                     TRUE);
 
+                                            const std::wstring
+                                                navigationUrl =
+                                                    std::wstring(
+                                                        FrontendUrlBase) +
+                                                    std::to_wstring(
+                                                        GetTickCount64());
+
+                                            core::Log::Info(
+                                                "Frontend cache-bust navigation enabled.");
+
                                             const HRESULT navigationResult =
                                                 webView_->
                                                     Navigate(
-                                                        FrontendUrl);
+                                                        navigationUrl.c_str());
 
                                             if (FAILED(
                                                     navigationResult))

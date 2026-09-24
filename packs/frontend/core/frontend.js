@@ -35,6 +35,9 @@
 
         currentScreen:
             ""
+			
+		character:
+			null
     };
 
 
@@ -455,6 +458,118 @@
                 state.currentScreen);
         }
     };
+	
+	
+	function normalizeCharacter(
+		value)
+	{
+		if (!value ||
+			typeof value !==
+				"object")
+		{
+			return null;
+		}
+
+		const id =
+			String(
+				value.id ||
+				"");
+
+		const name =
+			String(
+				value.name ||
+				"");
+
+		if (!id ||
+			!name)
+		{
+			return null;
+		}
+
+		const appearance =
+			Array.isArray(
+				value.appearance)
+				? value.appearance
+					.filter(
+						part =>
+							part &&
+							typeof part.group ===
+								"string" &&
+							Number.isFinite(
+								Number(
+									part.itemType)) &&
+							Number(
+								part.itemType) >
+								0)
+					.map(
+						part =>
+							({
+								group:
+									String(
+										part.group),
+
+								itemType:
+									Number(
+										part.itemType)
+							}))
+				: [];
+
+		return {
+			id:
+				id,
+
+			name:
+				name,
+
+			appearance:
+				appearance
+		};
+	}
+
+
+	function characterAppearanceFields(
+		character)
+	{
+		if (!character ||
+			!Array.isArray(
+				character.appearance))
+		{
+			return [];
+		}
+
+		const fields =
+			[];
+
+		for (const part of
+			 character.appearance)
+		{
+			if (!part ||
+				!part.group)
+			{
+				continue;
+			}
+
+			const itemType =
+				Number(
+					part.itemType);
+
+			if (!Number.isFinite(
+					itemType) ||
+				itemType <=
+					0)
+			{
+				continue;
+			}
+
+			fields.push(
+				part.group);
+
+			fields.push(
+				itemType);
+		}
+
+		return fields;
+	}
 
 
     const Frontend =
@@ -476,6 +591,37 @@
 
         readVersion:
             readVersion,
+			
+			
+		setCurrentCharacter(
+			character)
+		{
+			state.character =
+				normalizeCharacter(
+					character);
+
+			return state.character;
+		},
+
+
+		clearCurrentCharacter()
+		{
+			state.character =
+				null;
+		},
+
+
+		currentCharacter()
+		{
+			return state.character;
+		},
+
+
+		currentCharacterFields()
+		{
+			return characterAppearanceFields(
+				state.character);
+		},
 
 
         getLocale()
@@ -678,11 +824,16 @@
         async loginComplete(
 			character)
 		{
-			if (window.CharacterStore)
-			{
-				CharacterStore.set(
-					character);
-			}
+			Frontend.setCurrentCharacter(
+				character);
+
+			Frontend.trace(
+				"Login character: " +
+				(
+					Frontend.currentCharacter()
+						? Frontend.currentCharacter().name
+						: "<none>"
+				));
 
 			await Router.show(
 				"main");
@@ -694,11 +845,18 @@
 			message,
 			character)
 		{
-			if (success &&
-				window.CharacterStore)
+			if (success)
 			{
-				CharacterStore.set(
+				Frontend.setCurrentCharacter(
 					character);
+
+				Frontend.trace(
+					"Character created in UI: " +
+					(
+						Frontend.currentCharacter()
+							? Frontend.currentCharacter().name
+							: "<invalid>"
+					));
 			}
 
 			const screen =
@@ -720,10 +878,9 @@
 			success,
 			message)
 		{
-			if (success &&
-				window.CharacterStore)
+			if (success)
 			{
-				CharacterStore.clear();
+				Frontend.clearCurrentCharacter();
 			}
 
 			const screen =
@@ -744,11 +901,16 @@
 		characterState(
 			character)
 		{
-			if (window.CharacterStore)
-			{
-				CharacterStore.set(
-					character);
-			}
+			Frontend.setCurrentCharacter(
+				character);
+
+			Frontend.trace(
+				"Character state received: " +
+				(
+					Frontend.currentCharacter()
+						? Frontend.currentCharacter().name
+						: "<none>"
+				));
 
 			const screen =
 				screens.get(

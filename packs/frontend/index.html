@@ -1,23 +1,72 @@
 <!doctype html>
 <html lang="ru">
+
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-    
-	<title>Zone Reborn</title>
-    <link rel="stylesheet" href="./core/frontend.css">
-    <link rel="stylesheet" href="./login/login.css">
-    <link rel="stylesheet" href="./main/main.css">
-	<link rel="stylesheet" href="./characters/dialog.css">
-    
-	<script defer src="./core/frontend.js"></script>
-    <script defer src="./characters/store.js"></script>
-    <script defer src="./login/login.js"></script>
-    <script defer src="./main/main.js"></script>
-	<script defer src="./characters/dialog.js"></script>
+
+    <meta
+        name="viewport"
+        content="width=device-width,initial-scale=1,user-scalable=no">
+
+    <title>Zone Reborn</title>
+
+    <script>
+        (() =>
+        {
+            const parameters =
+                new URLSearchParams(
+                    window.location.search);
+
+            const version =
+                parameters.get(
+                    "v") ||
+                String(
+                    Date.now());
+
+            const styles =
+            [
+                "./core/frontend.css",
+                "./login/login.css",
+                "./main/main.css",
+                "./characters/dialog.css"
+            ];
+
+            for (const path of styles)
+            {
+                document.write(
+                    '<link rel="stylesheet" href="' +
+                    path +
+                    '?v=' +
+                    encodeURIComponent(
+                        version) +
+                    '">');
+            }
+
+            const scripts =
+            [
+                "./core/frontend.js",
+                "./characters/store.js",
+                "./login/login.js",
+                "./main/main.js",
+                "./characters/dialog.js"
+            ];
+
+            for (const path of scripts)
+            {
+                document.write(
+                    '<script defer src="' +
+                    path +
+                    '?v=' +
+                    encodeURIComponent(
+                        version) +
+                    '"><\/script>');
+            }
+        })();
+    </script>
 </head>
 
 <body>
+
     <div id="frontend">
 
         <div id="startup">
@@ -27,5 +76,7 @@
         <div id="screenRoot"></div>
 
     </div>
+
 </body>
+
 </html>

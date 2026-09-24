@@ -772,21 +772,17 @@
     function applyCurrentCharacter()
 	{
 		const character =
-			CharacterStore.current();
+			Frontend.currentCharacter();
 
 		if (!character)
 		{
-			Frontend.hideCharacter();
-
 			return;
 		}
 
 		Frontend.showCharacter();
 
-
 		const fields =
-			CharacterStore.appearanceFields(
-				character);
+			Frontend.currentCharacterFields();
 
 		if (!fields.length)
 		{
@@ -811,7 +807,7 @@
         container.replaceChildren();
 
         const character =
-            CharacterStore.current();
+			Frontend.currentCharacter();
 
 
         if (!character)
@@ -1636,7 +1632,7 @@
                 "click",
                 () =>
                 {
-                    if (!CharacterStore.current())
+                    if (!Frontend.currentCharacter())
                     {
                         return;
                     }

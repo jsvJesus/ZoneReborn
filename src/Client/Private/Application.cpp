@@ -1012,8 +1012,21 @@ Application::CharacterTransform() const noexcept
 
                 case frontend::FrontendEventType::CharacterShow:
                 {
-                    if (!rendererInitialized_ ||
-                        characterVisible_)
+                    if (!rendererInitialized_)
+                    {
+                        break;
+                    }
+
+                    if (!characterProfile_.
+                            has_value())
+                    {
+                        core::Log::Warning(
+                        "Character show ignored: account has no character.");
+
+                        break;
+                    }
+
+                    if (characterVisible_)
                     {
                         break;
                     }
@@ -1021,7 +1034,8 @@ Application::CharacterTransform() const noexcept
                     characterVisible_ =
                         true;
 
-                    std::string rebuildError;
+                    std::string
+                        rebuildError;
 
                     if (!RebuildCharacter(
                             rebuildError))
@@ -1039,8 +1053,25 @@ Application::CharacterTransform() const noexcept
 
                 case frontend::FrontendEventType::CharacterHide:
                 {
-                    if (!rendererInitialized_ ||
-                        !characterVisible_)
+                    if (!rendererInitialized_)
+                    {
+                        break;
+                    }
+
+                    //
+                    // UI не имеет права скрывать реально существующего
+                    // персонажа в главном меню.
+                    //
+                    if (characterProfile_.
+                            has_value())
+                    {
+                        core::Log::Warning(
+                        "Character hide ignored: account has an active character.");
+
+                        break;
+                    }
+
+                    if (!characterVisible_)
                     {
                         break;
                     }
@@ -1048,20 +1079,21 @@ Application::CharacterTransform() const noexcept
                     characterVisible_ =
                         false;
 
-                    std::string rebuildError;
+                    std::string
+                        rebuildError;
 
                     if (!RebuildCharacter(
                             rebuildError))
                     {
                         core::Log::Error(
                             std::string(
-                                "Character hide failed: ") +
+                            "Character hide failed: ") +
                             rebuildError);
 
                         return false;
                     }
 
-                    break;
+                    break; 
                 }
 
                 case frontend::FrontendEventType::CharacterPart:
