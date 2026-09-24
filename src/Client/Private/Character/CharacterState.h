@@ -1,10 +1,12 @@
 #pragma once
 
 #include "Character/CharacterCatalog.h"
+#include "Character/CharacterFaceState.h"
 #include "Character/CharacterSlots.h"
 
 #include <array>
 #include <cstdint>
+#include <random>
 #include <string>
 #include <string_view>
 #include <unordered_set>
@@ -27,54 +29,6 @@ namespace client::character
             return
                 itemType == 0;
         }
-    };
-
-    struct FaceState final
-    {
-        std::uint8_t hairLength =
-            0;
-
-        std::uint8_t beardLength =
-            0;
-
-        std::uint8_t moustacheLength =
-            0;
-
-        std::uint8_t age =
-            0;
-
-        std::uint8_t details =
-            0;
-
-        std::uint8_t unshaven =
-            0;
-
-        std::uint8_t eyebrowPosition =
-            0;
-
-        std::uint8_t eyebrowRotation =
-            0;
-
-        std::uint32_t hairColor =
-            0;
-
-        std::uint32_t skinColor =
-            0;
-
-        std::uint32_t eyeColor =
-            0;
-
-        std::uint32_t tattooColor =
-            0;
-
-        std::int32_t eyebrowStyle =
-            0;
-
-        std::int32_t tattooStyle =
-            0;
-
-        std::vector<std::int16_t>
-            faceForm;
     };
 
     class State final
@@ -113,6 +67,31 @@ namespace client::character
                 std::pair<
                     std::string,
                     std::int32_t>>& values,
+            std::string& error);
+
+        [[nodiscard]]
+        bool ResetFace(
+            const Catalog& catalog,
+            std::string& error);
+
+        [[nodiscard]]
+        bool ApplyFaceValue(
+            const Catalog& catalog,
+            std::string_view group,
+            std::uint64_t value,
+            bool& modelChanged,
+            std::string& error);
+
+        [[nodiscard]]
+        bool ApplyFaceState(
+            const Catalog& catalog,
+            const FaceState& face,
+            std::string& error);
+
+        [[nodiscard]]
+        bool RandomizeFace(
+            const Catalog& catalog,
+            std::mt19937& random,
             std::string& error);
 
         void ClearPreviewMask();

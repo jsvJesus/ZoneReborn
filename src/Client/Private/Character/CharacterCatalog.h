@@ -1,10 +1,12 @@
 #pragma once
 
+#include "Character/CharacterFaceCatalog.h"
 #include "Character/CharacterSlots.h"
 
 #include "Core/Resources/ResourceFileSystem.h"
 
 #include <cstdint>
+#include <array>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -52,6 +54,14 @@ namespace client::character
 
         bool fixRollLeftHand =
             false;
+
+        std::string substrate;
+        std::string tintMaterial;
+
+        std::array<float, 2> lengthLimits{};
+
+        bool hasLengthLimits =
+            false;
     };
 
     struct CreatorOption final
@@ -93,6 +103,9 @@ namespace client::character
         CreatorGroups() const noexcept;
 
         [[nodiscard]]
+        const FaceCatalog& Faces() const noexcept;
+
+        [[nodiscard]]
         std::size_t ItemCount() const noexcept;
 
     private:
@@ -113,5 +126,7 @@ namespace client::character
 
         std::vector<CreatorGroup>
             creatorGroups_;
+
+        FaceCatalog faceCatalog_;
     };
 }

@@ -1,6 +1,19 @@
 #include "Character/CharacterState.h"
 
+#include <algorithm>
+#include <limits>
 #include <unordered_set>
+
+namespace
+{
+    std::uint8_t PercentageToByte(
+        const std::uint64_t value) noexcept
+    {
+        return static_cast<std::uint8_t>(
+            (value * 255u + 50u) /
+            100u);
+    }
+}
 
 namespace client::character
 {
@@ -86,6 +99,13 @@ namespace client::character
         }
 
         hiddenSlots_.clear();
+
+        if (!ResetFace(
+                catalog,
+                error))
+        {
+            return false;
+        }
 
         return true;
     }
@@ -341,6 +361,250 @@ namespace client::character
         hiddenSlots_.clear();
 
         return true;
+    }
+
+    bool State::ResetFace(
+        const Catalog& catalog,
+        std::string& error)
+    {
+        FaceState defaults;
+        defaults.eyebrowStyle = 1;
+        defaults.skinColor = 0xE4E4E4u;
+        defaults.eyeColor = 0xBAC7C9u;
+        defaults.hairColor = 0xE1E0E0u;
+
+        return ApplyFaceState(
+            catalog,
+            defaults,
+            error);
+    }
+
+    bool State::ApplyFaceValue(
+        const Catalog& catalog,
+        const std::string_view group,
+        const std::uint64_t value,
+        bool& modelChanged,
+        std::string& error)
+    {
+        error.clear();
+        modelChanged = false;
+
+        const auto applyStyle =
+            [&](const Slot slot, std::int32_t& target) -> bool
+            {
+                if (value > static_cast<std::uint64_t>(
+                        std::numeric_limits<std::int32_t>::max()))
+                {
+                    error = "Face style value is out of range.";
+                    return false;
+                }
+
+                const std::int32_t itemType =
+                    static_cast<std::int32_t>(value);
+
+                if (!catalog.Faces().IsStyleAllowed(group, itemType))
+                {
+                    error = "Face style is not allowed for " +
+                        std::string(group) + ": " +
+                        std::to_string(itemType);
+                    return false;
+                }
+
+                if (target == itemType)
+                {
+                    return true;
+                }
+
+                const std::int64_t previous = Get(slot).instanceId;
+
+                if (previous != 0)
+                {
+                    UnequipInstance(previous);
+                }
+
+                if (itemType != 0 && !Equip(catalog, itemType, error))
+                {
+                    return false;
+                }
+
+                target = itemType;
+                modelChanged = true;
+                return true;
+            };
+
+        if (group == "HairStyle")
+        {
+            return applyStyle(Slot::Hair, face_.hairStyle);
+        }
+        if (group == "MustacheStyle")
+        {
+            return applyStyle(Slot::Moustache, face_.moustacheStyle);
+        }
+        if (group == "BeardStyle")
+        {
+            return applyStyle(Slot::Beard, face_.beardStyle);
+        }
+
+        if (group == "EyebrowsStyle" || group == "TatooStyle")
+        {
+            if (value > static_cast<std::uint64_t>(
+                    std::numeric_limits<std::int32_t>::max()) ||
+                !catalog.Faces().IsStyleAllowed(
+                    group,
+                    static_cast<std::int32_t>(value)))
+            {
+                error = "Face detail style is not allowed for " +
+                    std::string(group) + ".";
+                return false;
+            }
+
+            if (group == "EyebrowsStyle")
+            {
+                face_.eyebrowStyle = static_cast<std::int32_t>(value);
+            }
+            else
+            {
+                face_.tattooStyle = static_cast<std::int32_t>(value);
+            }
+
+            return true;
+        }
+
+        if (group == "SkinColor" || group == "EyeColor" ||
+            group == "HairColor" || group == "TatooColor")
+        {
+            if (value > std::numeric_limits<std::uint32_t>::max() ||
+                !catalog.Faces().IsColourAllowed(
+                    group,
+                    static_cast<std::uint32_t>(value)))
+            {
+                error = "Face colour is not allowed for " +
+                    std::string(group) + ".";
+                return false;
+            }
+
+            const std::uint32_t colour = static_cast<std::uint32_t>(value);
+
+            if (group == "SkinColor") face_.skinColor = colour;
+            else if (group == "EyeColor") face_.eyeColor = colour;
+            else if (group == "HairColor") face_.hairColor = colour;
+            else face_.tattooColor = colour;
+
+            return true;
+        }
+
+        if (value > 100u)
+        {
+            error = "Face slider value must be between 0 and 100.";
+            return false;
+        }
+
+        const std::uint8_t scalar = PercentageToByte(value);
+
+        if (group == "HairLength") face_.hairLength = scalar;
+        else if (group == "BeardLength") face_.beardLength = scalar;
+        else if (group == "MustacheLength") face_.moustacheLength = scalar;
+        else if (group == "Age") face_.age = scalar;
+        else if (group == "Details") face_.details = scalar;
+        else if (group == "Unshaven") face_.unshaven = scalar;
+        else if (group == "EyebrowsPosition") face_.eyebrowPosition = scalar;
+        else if (group == "EyebrowsRotation") face_.eyebrowRotation = scalar;
+        else
+        {
+            error = "Unknown face choice group: " + std::string(group);
+            return false;
+        }
+
+        return true;
+    }
+
+    bool State::ApplyFaceState(
+        const Catalog& catalog,
+        const FaceState& face,
+        std::string& error)
+    {
+        State backup = *this;
+        bool modelChanged = false;
+
+        const auto apply =
+            [&](const std::string_view group,
+                const std::uint64_t value) -> bool
+            {
+                bool changed = false;
+
+                if (!ApplyFaceValue(
+                        catalog,
+                        group,
+                        value,
+                        changed,
+                        error))
+                {
+                    return false;
+                }
+
+                modelChanged = modelChanged || changed;
+                return true;
+            };
+
+        if (!apply("HairStyle", face.hairStyle) ||
+            !apply("MustacheStyle", face.moustacheStyle) ||
+            !apply("BeardStyle", face.beardStyle) ||
+            !apply("EyebrowsStyle", face.eyebrowStyle) ||
+            !apply("TatooStyle", face.tattooStyle) ||
+            !apply("SkinColor", face.skinColor) ||
+            !apply("EyeColor", face.eyeColor) ||
+            !apply("HairColor", face.hairColor) ||
+            !apply("TatooColor", face.tattooColor))
+        {
+            *this = std::move(backup);
+            return false;
+        }
+
+        face_.hairLength = face.hairLength;
+        face_.beardLength = face.beardLength;
+        face_.moustacheLength = face.moustacheLength;
+        face_.age = face.age;
+        face_.details = face.details;
+        face_.unshaven = face.unshaven;
+        face_.eyebrowPosition = face.eyebrowPosition;
+        face_.eyebrowRotation = face.eyebrowRotation;
+        face_.faceForm = face.faceForm;
+
+        return true;
+    }
+
+    bool State::RandomizeFace(
+        const Catalog& catalog,
+        std::mt19937& random,
+        std::string& error)
+    {
+        FaceState randomized = face_;
+        randomized.hairStyle = static_cast<std::int32_t>(
+            catalog.Faces().RandomWeighted("HairStyle", random));
+        randomized.moustacheStyle = static_cast<std::int32_t>(
+            catalog.Faces().RandomWeighted("MustacheStyle", random));
+        randomized.beardStyle = static_cast<std::int32_t>(
+            catalog.Faces().RandomWeighted("BeardStyle", random));
+        randomized.eyebrowStyle = static_cast<std::int32_t>(
+            catalog.Faces().RandomWeighted("EyebrowsStyle", random));
+        randomized.skinColor =
+            catalog.Faces().RandomWeighted("SkinColor", random);
+        randomized.eyeColor =
+            catalog.Faces().RandomWeighted("EyeColor", random);
+        randomized.hairColor =
+            catalog.Faces().RandomWeighted("HairColor", random);
+
+        std::uniform_int_distribution<int> scalar(0, 255);
+        randomized.hairLength = static_cast<std::uint8_t>(scalar(random));
+        randomized.beardLength = static_cast<std::uint8_t>(scalar(random));
+        randomized.moustacheLength = static_cast<std::uint8_t>(scalar(random));
+        randomized.age = static_cast<std::uint8_t>(scalar(random));
+        randomized.details = static_cast<std::uint8_t>(scalar(random));
+        randomized.unshaven = static_cast<std::uint8_t>(scalar(random));
+        randomized.eyebrowPosition = static_cast<std::uint8_t>(scalar(random));
+        randomized.eyebrowRotation = static_cast<std::uint8_t>(scalar(random));
+
+        return ApplyFaceState(catalog, randomized, error);
     }
 
     void State::ClearPreviewMask()

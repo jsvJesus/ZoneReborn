@@ -70,6 +70,32 @@ namespace
         return true;
     }
 
+    bool ReadFloatValue(
+        const std::string_view text,
+        std::size_t& position,
+        float& output)
+    {
+        position = SkipWhitespace(text, position);
+
+        if (position >= text.size())
+        {
+            return false;
+        }
+
+        const auto result = std::from_chars(
+            text.data() + position,
+            text.data() + text.size(),
+            output);
+
+        if (result.ec != std::errc())
+        {
+            return false;
+        }
+
+        position = static_cast<std::size_t>(result.ptr - text.data());
+        return true;
+    }
+
     bool ReadQuotedString(
         const std::string_view text,
         std::size_t& position,
@@ -935,6 +961,61 @@ namespace
         return fallback;
     }
 
+    bool ParseTintMaterial(
+        const std::string_view block,
+        std::string& output)
+    {
+        const std::size_t valuePosition = FindKeyValue(block, "Tint");
+        std::string_view section;
+
+        if (valuePosition == std::string_view::npos ||
+            !ExtractDelimited(block, valuePosition, '{', '}', section))
+        {
+            return false;
+        }
+
+        const std::size_t colon = section.find(':');
+
+        if (colon == std::string_view::npos)
+        {
+            return false;
+        }
+
+        std::size_t cursor = colon + 1;
+        return ReadQuotedString(section, cursor, output);
+    }
+
+    bool ParseLengthLimits(
+        const std::string_view block,
+        std::array<float, 2>& output)
+    {
+        const std::size_t valuePosition = FindKeyValue(block, "LengthLimits");
+        std::string_view section;
+
+        if (valuePosition == std::string_view::npos ||
+            !ExtractDelimited(block, valuePosition, '(', ')', section))
+        {
+            return false;
+        }
+
+        std::size_t cursor = 1;
+
+        if (!ReadFloatValue(section, cursor, output[0]))
+        {
+            return false;
+        }
+
+        const std::size_t comma = section.find(',', cursor);
+
+        if (comma == std::string_view::npos)
+        {
+            return false;
+        }
+
+        cursor = comma + 1;
+        return ReadFloatValue(section, cursor, output[1]);
+    }
+
     std::vector<
         std::pair<
             std::string,
@@ -1066,6 +1147,14 @@ namespace client::character
             return false;
         }
 
+        if (!faceCatalog_.Load(
+                resources,
+                error))
+        {
+            Clear();
+            return false;
+        }
+
         core::Log::Info(
             std::string(
                 "Character catalog loaded: items=") +
@@ -1073,7 +1162,10 @@ namespace client::character
                 items_.size()) +
             ", creator groups=" +
             std::to_string(
-                creatorGroups_.size()));
+                creatorGroups_.size()) +
+            ", face groups=" +
+            std::to_string(
+                faceCatalog_.GroupCount()));
 
         return true;
     }
@@ -1082,6 +1174,7 @@ namespace client::character
     {
         items_.clear();
         creatorGroups_.clear();
+        faceCatalog_.Clear();
     }
 
     const ItemDefinition* Catalog::Find(
@@ -1131,6 +1224,11 @@ namespace client::character
     {
         return
             creatorGroups_;
+    }
+
+    const FaceCatalog& Catalog::Faces() const noexcept
+    {
+        return faceCatalog_;
     }
 
     std::size_t Catalog::ItemCount() const noexcept
@@ -1198,6 +1296,20 @@ namespace client::character
                     block,
                     "FixRollLeftHand",
                     false);
+
+            ParseStringField(
+                block,
+                "Substrate",
+                definition.substrate);
+
+            ParseTintMaterial(
+                block,
+                definition.tintMaterial);
+
+            definition.hasLengthLimits =
+                ParseLengthLimits(
+                    block,
+                    definition.lengthLimits);
 
             items_.insert_or_assign(
                 definition.typeId,
