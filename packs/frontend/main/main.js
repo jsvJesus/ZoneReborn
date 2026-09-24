@@ -32,7 +32,7 @@
                 "МОЙ ПЕРСОНАЖ",
 
 			readyCharacter:
-				"ГОТОВ К ВЫХОДУ В ЗОНУ",
+				"ГОТОВ",
 
             settings:
                 "НАСТРОЙКИ",
@@ -114,7 +114,7 @@
                 "MY CHARACTER",
 
 			readyCharacter:
-				"READY TO ENTER THE ZONE",
+				"READY",
 
             settings:
                 "SETTINGS",
@@ -196,7 +196,7 @@
                 "我的角色",
 
 			readyCharacter:
-				"准备进入区域",
+				"准备好",
 
             settings:
                 "设置",
