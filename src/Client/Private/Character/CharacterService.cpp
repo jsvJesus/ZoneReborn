@@ -1,5 +1,7 @@
 #include "Character/CharacterService.h"
 
+#include "Core/Log.h"
+
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
@@ -225,9 +227,23 @@ namespace client::character
             AccountPath(
                 accountLogin);
 
+        const std::filesystem::path legacyPath =
+            LegacyAccountPath(
+                accountLogin);
+
+        core::Log::Info(
+            std::string(
+                "Character storage directory: ") +
+            storageDirectory_.string());
+
+        core::Log::Info(
+            std::string(
+                "Character profile path: ") +
+            path.string());
+
         std::error_code filesystemError;
 
-        const bool exists =
+        bool exists =
             std::filesystem::exists(
                 path,
                 filesystemError);
@@ -242,6 +258,65 @@ namespace client::character
 
         if (!exists)
         {
+            const bool legacyExists =
+                std::filesystem::exists(
+                    legacyPath,
+                    filesystemError);
+
+            if (filesystemError)
+            {
+                error =
+                    "Unable to access legacy character storage.";
+
+                return false;
+            }
+
+            if (legacyExists)
+            {
+                core::Log::Info(
+                    std::string(
+                        "Legacy character profile found: ") +
+                    legacyPath.string());
+
+                Profile legacyProfile;
+
+                if (!ReadProfile(
+                        legacyPath,
+                        legacyProfile,
+                        error))
+                {
+                    return false;
+                }
+
+                if (!WriteProfile(
+                        path,
+                        legacyProfile,
+                        error))
+                {
+                    return false;
+                }
+
+                std::error_code removeError;
+
+                std::filesystem::remove(
+                    legacyPath,
+                    removeError);
+
+                profile =
+                    std::move(
+                        legacyProfile);
+
+                core::Log::Info(
+                    std::string(
+                        "Legacy character profile migrated to: ") +
+                    path.string());
+
+                return true;
+            }
+
+            core::Log::Info(
+                "Character profile does not exist.");
+
             return true;
         }
 
@@ -254,6 +329,11 @@ namespace client::character
         {
             return false;
         }
+
+        core::Log::Info(
+            std::string(
+                "Character profile loaded from: ") +
+            path.string());
 
         profile =
             std::move(
@@ -329,14 +409,22 @@ namespace client::character
                         part));
         }
 
+        const std::filesystem::path path =
+            AccountPath(
+                accountLogin);
+
         if (!WriteProfile(
-                AccountPath(
-                    accountLogin),
+                path,
                 created,
                 error))
         {
             return false;
         }
+
+        core::Log::Info(
+            std::string(
+                "Character profile saved: ") +
+            path.string());
 
         profile =
             std::move(
@@ -344,7 +432,7 @@ namespace client::character
 
         return true;
     }
-
+    
     bool Service::Delete(
         const std::string_view accountLogin,
         std::string& error) const
@@ -371,22 +459,74 @@ namespace client::character
             AccountPath(
                 accountLogin);
 
+        const std::filesystem::path legacyPath =
+            LegacyAccountPath(
+                accountLogin);
+
         std::error_code filesystemError;
 
-        const bool exists =
-            std::filesystem::exists(
+        bool removed =
+            false;
+
+        if (std::filesystem::exists(
                 path,
-                filesystemError);
-
-        if (filesystemError)
+                filesystemError))
         {
-            error =
-                "Unable to access character storage.";
+            if (filesystemError)
+            {
+                error =
+                    "Unable to access character storage.";
 
-            return false;
+                return false;
+            }
+
+            removed =
+                std::filesystem::remove(
+                    path,
+                    filesystemError);
+
+            if (filesystemError)
+            {
+                error =
+                    "Unable to delete character.";
+
+                return false;
+            }
         }
 
-        if (!exists)
+        filesystemError.clear();
+
+        if (std::filesystem::exists(
+                legacyPath,
+                filesystemError))
+        {
+            if (filesystemError)
+            {
+                error =
+                    "Unable to access legacy character storage.";
+
+                return false;
+            }
+
+            const bool legacyRemoved =
+                std::filesystem::remove(
+                    legacyPath,
+                    filesystemError);
+
+            if (filesystemError)
+            {
+                error =
+                    "Unable to delete legacy character.";
+
+                return false;
+            }
+
+            removed =
+                removed ||
+                legacyRemoved;
+        }
+
+        if (!removed)
         {
             error =
                 "Character does not exist.";
@@ -394,26 +534,11 @@ namespace client::character
             return false;
         }
 
-        const bool removed =
-            std::filesystem::remove(
-                path,
-                filesystemError);
-
-        if (filesystemError ||
-            !removed)
-        {
-            error =
-                "Unable to delete character.";
-
-            return false;
-        }
-
         return true;
     }
 
-    std::filesystem::path
-    Service::AccountPath(
-        const std::string_view accountLogin) const
+    std::filesystem::path Service::AccountPath(
+    const std::string_view accountLogin) const
     {
         return
             storageDirectory_ /
@@ -424,8 +549,64 @@ namespace client::character
             );
     }
 
-    std::string Service::AccountKey(
-        const std::string_view accountLogin)
+    std::filesystem::path Service::LegacyAccountPath(const std::string_view accountLogin) const
+    {
+        return
+            storageDirectory_ /
+            (
+                LegacyAccountKey(
+                    accountLogin) +
+                ".dat"
+            );
+    }
+
+    std::string Service::AccountKey(const std::string_view accountLogin)
+    {
+        std::string result;
+
+        result.reserve(
+            accountLogin.size());
+
+        for (const unsigned char character :
+             accountLogin)
+        {
+            if (
+                (
+                    character >= 'A' &&
+                    character <= 'Z'
+                ) ||
+                (
+                    character >= 'a' &&
+                    character <= 'z'
+                ) ||
+                (
+                    character >= '0' &&
+                    character <= '9'
+                ) ||
+                character == '_' ||
+                character == '-')
+            {
+                result.push_back(
+                    static_cast<char>(
+                        character));
+            }
+            else
+            {
+                result.push_back(
+                    '_');
+            }
+        }
+
+        if (result.empty())
+        {
+            result =
+                "account";
+        }
+
+        return result;
+    }
+
+    std::string Service::LegacyAccountKey(const std::string_view accountLogin)
     {
         static constexpr char Hex[] =
             "0123456789abcdef";

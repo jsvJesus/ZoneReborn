@@ -42,7 +42,15 @@ namespace client::character
             std::string_view accountLogin) const;
 
         [[nodiscard]]
+        std::filesystem::path LegacyAccountPath(
+            std::string_view accountLogin) const;
+
+        [[nodiscard]]
         static std::string AccountKey(
+            std::string_view accountLogin);
+
+        [[nodiscard]]
+        static std::string LegacyAccountKey(
             std::string_view accountLogin);
 
         [[nodiscard]]
