@@ -16,8 +16,6 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <cctype>
-#include <string_view>
 
 namespace
 {
@@ -231,74 +229,6 @@ namespace
                 output.w);
     }
 
-    std::string ToLower(
-        const std::string_view value)
-    {
-        std::string result;
-
-        result.reserve(
-            value.size());
-
-        for (const char character :
-             value)
-        {
-            result.push_back(
-                static_cast<char>(
-                    std::tolower(
-                        static_cast<unsigned char>(
-                            character))));
-        }
-
-        return result;
-    }
-
-    bool IsMenuLockedBone(
-        const std::string_view identifier)
-    {
-        const std::string name =
-            ToLower(
-                identifier);
-
-        //
-        // Root + lower body stay at frame 0.
-        //
-        // Upper body continues playing the idle.
-        //
-        if (name == "bip01" ||
-            name == "bip001")
-        {
-            return true;
-        }
-
-        static constexpr
-            std::string_view LockedParts[] =
-        {
-            "root",
-            "pelvis",
-            "hip",
-            "thigh",
-            "upperleg",
-            "calf",
-            "shin",
-            "lowerleg",
-            "foot",
-            "toe"
-        };
-
-        for (const std::string_view part :
-             LockedParts)
-        {
-            if (name.find(
-                    part) !=
-                std::string::npos)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    
     template<typename TValue, typename ReaderFunction>
     [[nodiscard]]
     bool ReadKeyVector(
@@ -1719,26 +1649,12 @@ namespace
                 visual.nodes[index];
 
             Transform local =
-    node.transform;
-
-            //
-            // Main-menu idle:
-            //
-            // Lower body is sampled from frame 0,
-            // so feet stay planted.
-            //
-            // Upper body uses the current animation frame.
-            //
-            const float sampleFrame =
-                IsMenuLockedBone(
-                    node.identifier)
-                    ? 0.0f
-                    : frame;
+                node.transform;
 
             SampleChannel(
                 clip,
                 node.identifier,
-                sampleFrame,
+                frame,
                 local);
 
             if (node.parentIndex <
@@ -1870,6 +1786,57 @@ namespace
 
             float totalWeight =
                 0.0f;
+
+            for (std::size_t influence = 0;
+                 influence < sourceVertex.boneWeights.size();
+                 ++influence)
+            {
+                const float weight =
+                    sourceVertex.boneWeights[
+                        influence];
+
+                if (std::abs(weight) <= 0.000001f)
+                {
+                    continue;
+                }
+
+                const std::size_t boneIndex =
+                    sourceVertex.boneIndices[
+                        influence];
+
+                if (boneIndex >= skinPalette.size())
+                {
+                    error =
+                        "Animated character contains invalid bone index.";
+
+                    return false;
+                }
+
+                const Transform& skin =
+                    skinPalette[
+                        boneIndex];
+
+                finalPosition =
+                    Add(
+                        finalPosition,
+                        Multiply(
+                            TransformPoint(
+                                sourceVertex.position,
+                                skin),
+                            weight));
+
+                finalNormal =
+                    Add(
+                        finalNormal,
+                        Multiply(
+                            TransformVector(
+                                sourceNormal,
+                                skin),
+                            weight));
+
+                totalWeight +=
+                    weight;
+            }
 
             if (totalWeight <= 0.000001f)
             {

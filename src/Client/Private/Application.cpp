@@ -15,6 +15,9 @@ namespace
 
     constexpr char MainMenuBackgroundPath[] =
         "res/soGUI/maps/MainMenu/main_bg.jpg";
+
+    constexpr float CharacterVerticalOffset =
+        0.05f;
     
     core::math::Transform3x4
     ApplyYaw(
@@ -382,10 +385,16 @@ namespace client
     core::math::Transform3x4
 Application::CharacterTransform() const noexcept
     {
-        return ApplyYaw(
-            characterSelectStage_.
-                characterTransform,
-            characterYaw_);
+        core::math::Transform3x4 transform =
+            ApplyYaw(
+                characterSelectStage_.
+                    characterTransform,
+                characterYaw_);
+
+        transform.values[10] +=
+            CharacterVerticalOffset;
+
+        return transform;
     }
 
     bool Application::RebuildCharacter(

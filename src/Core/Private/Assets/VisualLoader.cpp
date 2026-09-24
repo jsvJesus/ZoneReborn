@@ -250,6 +250,81 @@ namespace
         return true;
     }
 
+    std::string EncodeBase64(
+        const core::resources::DataSection::BinaryData& data)
+    {
+        static constexpr char Alphabet[] =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz"
+            "0123456789+/";
+
+        std::string output;
+
+        output.reserve(
+            (
+                data.size() +
+                2
+            ) /
+            3 *
+            4);
+
+        for (std::size_t index = 0;
+             index < data.size();
+             index += 3)
+        {
+            const std::size_t remaining =
+                data.size() -
+                index;
+
+            const unsigned int first =
+                std::to_integer<unsigned char>(
+                    data[index]);
+
+            const unsigned int second =
+                remaining > 1
+                    ? std::to_integer<unsigned char>(
+                        data[index + 1])
+                    : 0u;
+
+            const unsigned int third =
+                remaining > 2
+                    ? std::to_integer<unsigned char>(
+                        data[index + 2])
+                    : 0u;
+
+            const unsigned int block =
+                (first << 16u) |
+                (second << 8u) |
+                third;
+
+            output.push_back(
+                Alphabet[
+                    (block >> 18u) &
+                    0x3Fu]);
+
+            output.push_back(
+                Alphabet[
+                    (block >> 12u) &
+                    0x3Fu]);
+
+            output.push_back(
+                remaining > 1
+                    ? Alphabet[
+                        (block >> 6u) &
+                        0x3Fu]
+                    : '=');
+
+            output.push_back(
+                remaining > 2
+                    ? Alphabet[
+                        block &
+                        0x3Fu]
+                    : '=');
+        }
+
+        return output;
+    }
+
     bool ReadTextValue(
     const core::resources::DataSection& section,
     std::string& output)
@@ -299,29 +374,9 @@ namespace
                      section.AsBinary();
                  value != nullptr)
         {
-            output.reserve(
-                value->size());
-
-            for (const std::byte byte :
-                 *value)
-            {
-                const unsigned char ch =
-                    std::to_integer<
-                        unsigned char>(
-                            byte);
-
-                //
-                // C-style terminator.
-                //
-                if (ch == 0)
-                {
-                    break;
-                }
-
-                output.push_back(
-                    static_cast<char>(
-                        ch));
-            }
+            output =
+                EncodeBase64(
+                    *value);
         }
         else
         {
