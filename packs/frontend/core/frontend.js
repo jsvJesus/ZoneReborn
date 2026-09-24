@@ -679,11 +679,20 @@
         },
 		
 		createCharacter(
-            name)
+            name,
+            appearance = [])
         {
             post(
                 "character_create",
-                name);
+                name,
+                ...appearance);
+        },
+
+
+        resetCharacterCreator()
+        {
+            post(
+                "character_creator_reset");
         },
 
 

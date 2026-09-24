@@ -2002,6 +2002,21 @@ namespace client::frontend
             return;
         }
 
+        if (command =="character_creator_reset")
+        {
+            FrontendEvent event;
+
+            event.type =
+                FrontendEventType::
+                    CharacterCreatorReset;
+
+            events_.push_back(
+                std::move(
+                    event));
+
+            return;
+        }
+
         if (command =="character_create")
         {
             if (fields.size() <
@@ -2009,6 +2024,20 @@ namespace client::frontend
             {
                 core::Log::Warning(
                     "Invalid character_create message.");
+
+                return;
+            }
+
+            if (
+                (
+                    fields.size() -
+                    2
+                ) %
+                2 !=
+                0)
+            {
+                core::Log::Warning(
+                    "Invalid character_create appearance data.");
 
                 return;
             }
@@ -2021,6 +2050,31 @@ namespace client::frontend
 
             event.characterName =
                 fields[1];
+
+            for (std::size_t index = 2;
+                 index + 1 < fields.size();
+                 index += 2)
+            {
+                std::int32_t itemType =
+                    0;
+
+                if (!ParseInt32(
+                        fields[
+                            index +
+                            1],
+                        itemType))
+                {
+                    core::Log::Warning(
+                        "Invalid character_create item type.");
+
+                    return;
+                }
+
+                event.characterParts.
+                    emplace_back(
+                        fields[index],
+                        itemType);
+            }
 
             events_.push_back(
                 std::move(

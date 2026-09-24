@@ -650,40 +650,12 @@
     }
 
 
-    function openCharacterCreate()
+    async function openCharacterCreate()
     {
-        CharacterDialog.openCreate(
-            {
-                title:
-                    translation(
-                        "createCharacterTitle"),
+        CharacterDialog.close();
 
-                message:
-                    translation(
-                        "characterNameHint"),
-
-                inputLabel:
-                    translation(
-                        "characterName"),
-
-                cancelText:
-                    translation(
-                        "cancel"),
-
-                confirmText:
-                    translation(
-                        "create"),
-
-                validate:
-                    validateCharacterName,
-
-                onConfirm(
-                    name)
-                {
-                    Frontend.createCharacter(
-                        name);
-                }
-            });
+        await FrontendRouter.show(
+            "character-create");
     }
 
 
@@ -1593,6 +1565,13 @@
                     loadTga(
                         canvas)));
     }
+
+
+    window.FrontendTga =
+    {
+        load:
+            loadTga
+    };
 
 
     function bindLocales()

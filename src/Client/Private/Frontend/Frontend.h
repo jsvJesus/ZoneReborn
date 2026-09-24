@@ -28,6 +28,7 @@ namespace client::frontend
         UiSound,
 
         CharacterRequest,
+        CharacterCreatorReset,
         CharacterCreate,
         CharacterDelete,
 

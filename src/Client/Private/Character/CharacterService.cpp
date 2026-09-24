@@ -2,6 +2,7 @@
 
 #include "Core/Log.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <fstream>
 #include <iomanip>
@@ -346,6 +347,10 @@ namespace client::character
         const std::string_view accountLogin,
         const std::string_view name,
         const Catalog& catalog,
+        const std::vector<
+            std::pair<
+                std::string,
+                std::int32_t>>& appearance,
         Profile& profile,
         std::string& error) const
     {
@@ -399,9 +404,53 @@ namespace client::character
             part.group =
                 group.name;
 
-            part.itemType =
-                group.options.front().
-                    itemType;
+            const auto selected =
+                std::find_if(
+                    appearance.begin(),
+                    appearance.end(),
+                    [&group](
+                        const auto& value)
+                    {
+                        return
+                            value.first ==
+                                group.name;
+                    });
+
+            if (selected ==
+                appearance.end())
+            {
+                part.itemType =
+                    group.options.front().
+                        itemType;
+            }
+            else
+            {
+                const auto allowed =
+                    std::find_if(
+                        group.options.begin(),
+                        group.options.end(),
+                        [selected](
+                            const CreatorOption& option)
+                        {
+                            return
+                                option.itemType ==
+                                    selected->second;
+                        });
+
+                if (allowed ==
+                    group.options.end())
+                {
+                    error =
+                        "Invalid character creator item for group " +
+                        group.name +
+                        ".";
+
+                    return false;
+                }
+
+                part.itemType =
+                    selected->second;
+            }
 
             created.appearance.
                 push_back(

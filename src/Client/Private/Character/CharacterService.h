@@ -7,6 +7,8 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 namespace client::character
 {
@@ -28,6 +30,10 @@ namespace client::character
             std::string_view accountLogin,
             std::string_view name,
             const Catalog& catalog,
+            const std::vector<
+                std::pair<
+                    std::string,
+                    std::int32_t>>& appearance,
             Profile& profile,
             std::string& error) const;
 

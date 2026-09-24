@@ -779,6 +779,57 @@ Application::CharacterTransform() const noexcept
                 }
 
                 case frontend::FrontendEventType::
+                    CharacterCreatorReset:
+                {
+                    if (!accountSession_.
+                            IsAuthenticated() ||
+                        !rendererInitialized_ ||
+                        characterProfile_.
+                            has_value())
+                    {
+                        break;
+                    }
+
+                    std::string
+                        resetError;
+
+                    if (!characterState_.
+                            ResetCreator(
+                                characterCatalog_,
+                                resetError))
+                    {
+                        core::Log::Error(
+                            std::string(
+                                "Unable to reset character creator: ") +
+                            resetError);
+
+                        return false;
+                    }
+
+                    characterVisible_ =
+                        true;
+
+                    characterYaw_ =
+                        0.0f;
+
+                    std::string
+                        rebuildError;
+
+                    if (!RebuildCharacter(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            std::string(
+                                "Character creator reset failed: ") +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    break;
+                }
+
+                case frontend::FrontendEventType::
                     CharacterCreate:
                 {
                     if (!accountSession_.
@@ -826,6 +877,7 @@ Application::CharacterTransform() const noexcept
                             accountSession_.Login(),
                             event.characterName,
                             characterCatalog_,
+                            event.characterParts,
                             createdProfile,
                             createError))
                     {
