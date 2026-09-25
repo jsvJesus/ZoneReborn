@@ -513,22 +513,36 @@ Application::CharacterTransform() const noexcept
 
         characterAnimator_.Reset();
 
-        if (characterVisible_)
+        // Build the default creator model even when the account has no
+        // character. Keeping its render resources in the scene avoids a
+        // completely empty character scene during login; only its instances
+        // are suppressed until the creator is opened.
         {
             character::RenderDataBuilder
                 builder;
 
             if (!builder.Build(
-                runtime_.Resources(),
-                characterCatalog_,
-                characterState_,
-                CharacterTransform(),
-                scene,
-                characterInstanceCount_,
-                characterAnimator_,
-                error))
+                    runtime_.Resources(),
+                    characterCatalog_,
+                    characterState_,
+                    CharacterTransform(),
+                    scene,
+                    characterInstanceCount_,
+                    characterAnimator_,
+                    error))
             {
                 return false;
+            }
+
+            if (!characterVisible_)
+            {
+                scene.instances.resize(
+                    characterFirstInstance_);
+
+                characterInstanceCount_ =
+                    0;
+
+                characterAnimator_.Reset();
             }
         }
 
