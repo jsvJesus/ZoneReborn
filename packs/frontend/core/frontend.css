@@ -58,6 +58,18 @@ button {
     background: transparent;
 }
 
+#sharedTop {
+    z-index: 100;
+}
+
+#sharedTop[hidden] {
+    display: none;
+}
+
+#screenRoot .main-screen > .main-top {
+    visibility: hidden;
+}
+
 #startup {
     position: absolute;
 

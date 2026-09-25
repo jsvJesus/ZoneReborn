@@ -397,6 +397,237 @@
     }
 
 
+    let sharedTopBound =
+        false;
+
+    let sharedTopAssetsLoaded =
+        false;
+
+
+    function formatSharedBalance(
+        value)
+    {
+        const number =
+            Number(
+                value);
+
+        if (!Number.isFinite(
+                number))
+        {
+            return "0";
+        }
+
+        const locale =
+            currentLocale === "english"
+                ? "en-US"
+                : currentLocale === "chinese"
+                    ? "zh-CN"
+                    : "ru-RU";
+
+        return new Intl.NumberFormat(
+            locale,
+            {
+                maximumFractionDigits:
+                    0
+            }).format(
+                Math.max(
+                    0,
+                    number));
+    }
+
+
+    async function copySharedAccountId()
+    {
+        const button =
+            document.getElementById(
+                "sharedAccountId");
+
+        const value =
+            String(
+                button?.dataset.value ||
+                "");
+
+        if (!button ||
+            !value)
+        {
+            return;
+        }
+
+        try
+        {
+            await navigator.clipboard.writeText(
+                value);
+        }
+        catch
+        {
+            const textarea =
+                document.createElement(
+                    "textarea");
+
+            textarea.value =
+                value;
+
+            textarea.style.position =
+                "fixed";
+
+            textarea.style.opacity =
+                "0";
+
+            document.body.appendChild(
+                textarea);
+
+            textarea.select();
+
+            document.execCommand(
+                "copy");
+
+            textarea.remove();
+        }
+
+        button.classList.add(
+            "copied");
+
+        window.setTimeout(
+            () =>
+            {
+                button.classList.remove(
+                    "copied");
+            },
+            900);
+    }
+
+
+    function bindSharedTop()
+    {
+        if (sharedTopBound)
+        {
+            return;
+        }
+
+        document.getElementById(
+            "sharedAccountId")?.
+            addEventListener(
+                "click",
+                copySharedAccountId);
+
+        document
+            .querySelectorAll(
+                "#sharedTop [data-shared-locale]")
+            .forEach(
+                button =>
+                {
+                    button.addEventListener(
+                        "click",
+                        async () =>
+                        {
+                            const locale =
+                                button.dataset.sharedLocale;
+
+                            if (locale !==
+                                currentLocale)
+                            {
+                                await Frontend.setLocale(
+                                    locale);
+                            }
+                        });
+                });
+
+        sharedTopBound =
+            true;
+    }
+
+
+    async function renderSharedTop(
+        screenName)
+    {
+        const top =
+            document.getElementById(
+                "sharedTop");
+
+        if (!top)
+        {
+            return;
+        }
+
+        const visible =
+            screenName !==
+                "login";
+
+        top.hidden =
+            !visible;
+
+        if (!visible)
+        {
+            return;
+        }
+
+        bindSharedTop();
+
+        document.getElementById(
+            "sharedAccountName").textContent =
+                state.accountLogin ||
+                "PLAYER";
+
+        const accountId =
+            state.accountId ??
+            "";
+
+        const accountButton =
+            document.getElementById(
+                "sharedAccountId");
+
+        accountButton.dataset.value =
+            String(
+                accountId);
+
+        accountButton.textContent =
+            accountId === ""
+                ? "ID —"
+                : "ID " +
+                  String(
+                      accountId);
+
+        document.getElementById(
+            "sharedSoftBalanceValue").textContent =
+                formatSharedBalance(
+                    state.softCurrency ??
+                    0);
+
+        document.getElementById(
+            "sharedPremiumBalanceValue").textContent =
+                formatSharedBalance(
+                    state.premiumCurrency ??
+                    0);
+
+        top.querySelectorAll(
+            "[data-shared-locale]")
+            .forEach(
+                button =>
+                {
+                    button.classList.toggle(
+                        "selected",
+                        button.dataset.sharedLocale ===
+                            currentLocale);
+                });
+
+        if (!sharedTopAssetsLoaded &&
+            window.FrontendTga)
+        {
+            await Promise.all(
+                Array.from(
+                    top.querySelectorAll(
+                        "canvas[data-tga]"))
+                    .map(
+                        canvas =>
+                            window.FrontendTga.load(
+                                canvas)));
+
+            sharedTopAssetsLoaded =
+                true;
+        }
+    }
+
+
     const Router =
     {
         async show(
@@ -438,12 +669,19 @@
             state.currentScreen =
                 name;
 
+            await renderSharedTop(
+                name);
+
             if (typeof screen.mount ===
                 "function")
             {
                 await screen.mount(
                     root);
             }
+
+            root.querySelector(
+                ".main-screen > .main-top")?.
+                remove();
         },
 
 

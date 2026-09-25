@@ -77,6 +77,47 @@
             <canvas id="startupCanvas"></canvas>
         </div>
 
+        <div
+            id="sharedTop"
+            class="main-top"
+            hidden>
+
+            <div class="main-account">
+                <span id="sharedAccountName" class="main-account-name"></span>
+                <span class="main-account-separator">|</span>
+                <button id="sharedAccountId" class="main-account-id" type="button">
+                    ID —
+                </button>
+            </div>
+
+            <div class="main-balances">
+                <div class="main-balance">
+                    <canvas
+                        class="main-balance-icon main-tga"
+                        data-tga="/packs/res/soGUI/maps/MainMenu/Icons/money_gold.tga">
+                    </canvas>
+                    <span id="sharedSoftBalanceValue">0</span>
+                </div>
+
+                <div class="main-balance">
+                    <canvas
+                        class="main-balance-icon main-tga"
+                        data-tga="/packs/res/soGUI/maps/MainMenu/Icons/money_silver.tga">
+                    </canvas>
+                    <span id="sharedPremiumBalanceValue">0</span>
+                </div>
+            </div>
+
+            <div class="main-locales">
+                <button type="button" data-shared-locale="english">EN</button>
+                <span>|</span>
+                <button type="button" data-shared-locale="chinese">ZH</button>
+                <span>|</span>
+                <button type="button" data-shared-locale="russian">RU</button>
+            </div>
+
+        </div>
+
         <div id="screenRoot"></div>
 
     </div>

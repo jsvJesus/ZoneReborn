@@ -1628,13 +1628,6 @@
                     Frontend.quit());
 
 
-        element(
-            "mainAccountId")
-            .addEventListener(
-                "click",
-                copyAccountId);
-
-
         mountedRoot
             .querySelectorAll(
                 "[data-action]")
@@ -1662,8 +1655,6 @@
 
         applyTranslations();
 
-        renderAccount();
-
         renderCharacter();
 
 
@@ -1672,8 +1663,6 @@
             .textContent =
                 await Frontend.readVersion();
 
-
-        bindLocales();
 
         bindActions();
 

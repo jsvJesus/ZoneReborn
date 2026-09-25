@@ -63,39 +63,15 @@ float4 PSMain(
 
         if (modelParameters.z > 0.5f)
         {
-            // Brow_*.dds contains a single eyebrow, not a head-sized UV
-            // overlay. Project it only onto the two brow areas and mirror
-            // it around the centre of the face. This also keeps it off the
-            // temples, ears and back of the head.
-            const float side = abs(input.localPosition.x);
-            const float horizontal = saturate(
-                (side - 0.008f) /
-                0.064f);
-            const float vertical = saturate(
-                (input.localPosition.y - 1.665f) /
-                0.075f);
-
-            const float2 overlayUV = float2(
-                lerp(0.94f, 0.06f, horizontal),
-                lerp(0.74f, 0.18f, vertical));
-
             const float4 overlay = modelOverlayTexture.Sample(
                 terrainTextureSampler,
-                overlayUV);
-
-            const float browMask =
-                smoothstep(0.004f, 0.012f, side) *
-                (1.0f - smoothstep(0.068f, 0.078f, side)) *
-                smoothstep(1.655f, 1.675f, input.localPosition.y) *
-                (1.0f - smoothstep(1.735f, 1.750f, input.localPosition.y)) *
-                smoothstep(0.070f, 0.105f, input.localPosition.z);
+                input.terrainUV);
 
             baseColour = lerp(
                 baseColour,
                 modelOverlayColour.rgb,
                 saturate(
                     overlay.a *
-                    browMask *
                     modelOverlayColour.a));
         }
     }
