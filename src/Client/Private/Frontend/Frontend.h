@@ -31,6 +31,7 @@ namespace client::frontend
         CharacterCreatorReset,
         CharacterCreate,
         CharacterDelete,
+        CharacterClothesOpen,
         CharacterFaceOpen,
         CharacterFaceValue,
         CharacterFaceRandom,

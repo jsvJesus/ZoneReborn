@@ -887,6 +887,15 @@ Application::CharacterTransform() const noexcept
                     break;
                 }
 
+                case frontend::FrontendEventType::CharacterClothesOpen:
+                {
+                    if (!rendererInitialized_ || characterProfile_.has_value()) break;
+                    characterFaceSnapshot_.reset();
+                    characterFaceCamera_ = false;
+                    renderer_.SetCamera(CharacterCamera());
+                    break;
+                }
+
                 case frontend::FrontendEventType::CharacterFaceOpen:
                 {
                     if (!rendererInitialized_ || characterProfile_.has_value()) break;

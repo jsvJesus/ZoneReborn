@@ -2155,6 +2155,20 @@ namespace client::frontend
             return;
         }
 
+        if (command == "character_clothes_open")
+        {
+            if (fields.size() != 1u)
+            {
+                core::Log::Warning("Invalid character clothes command.");
+                return;
+            }
+
+            FrontendEvent event;
+            event.type = FrontendEventType::CharacterClothesOpen;
+            events_.push_back(std::move(event));
+            return;
+        }
+
         if (command == "character_face_open" ||
             command == "character_face_random" ||
             command == "character_face_reset" ||

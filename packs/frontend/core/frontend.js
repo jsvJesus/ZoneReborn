@@ -940,6 +940,12 @@
         },
 
 
+        openCharacterClothes()
+        {
+            post("character_clothes_open");
+        },
+
+
         setCharacterFaceValue(group, value)
         {
             post("character_face_value", group, value);

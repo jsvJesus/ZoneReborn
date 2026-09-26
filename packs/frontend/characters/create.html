@@ -118,7 +118,7 @@
                     <span data-i18n="appearance">ВЫБОР ВНЕШНОСТИ</span>
                 </button>
 
-                <button type="button" class="creator-future">
+                <button id="creatorClothes" type="button">
                     <span class="main-navigation-marker"></span>
                     <span data-i18n="clothes">ВЫБОР ОДЕЖДЫ</span>
                 </button>
@@ -155,6 +155,43 @@
         </div>
 
     </aside>
+
+
+    <section id="clothesScreen" class="clothes-screen" hidden>
+
+        <aside class="main-left clothes-left">
+            <div class="main-left-panel clothes-left-panel">
+                <div class="main-menu-header">
+                    <div class="main-menu-header-line"></div>
+                    <div class="main-title" data-clothes-i18n="title">CLOTHES</div>
+                </div>
+
+                <nav id="clothesCategories" class="main-navigation clothes-categories"></nav>
+
+                <div class="main-divider"></div>
+
+                <button id="clothesRandom" class="main-exit" type="button">
+                    <span class="main-navigation-marker"></span>
+                    <span data-clothes-i18n="random">RANDOM</span>
+                </button>
+                <button id="clothesReset" class="main-exit" type="button">
+                    <span class="main-navigation-marker"></span>
+                    <span data-clothes-i18n="reset">RESET</span>
+                </button>
+                <button id="clothesBack" class="main-exit" type="button">
+                    <span class="main-navigation-marker"></span>
+                    <span data-clothes-i18n="back">BACK</span>
+                </button>
+            </div>
+        </aside>
+
+        <aside class="clothes-options">
+            <div id="clothesCaption" class="clothes-caption"></div>
+            <div id="clothesItems" class="clothes-items"></div>
+            <div id="clothesItemName" class="clothes-item-name"></div>
+        </aside>
+
+    </section>
 
 
     <section id="appearanceScreen" class="appearance-screen" hidden>

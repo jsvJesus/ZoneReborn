@@ -315,6 +315,12 @@
             .disabled =
                 busy;
 
+        element(
+            "creatorClothes")
+            .disabled =
+                busy ||
+                !ready;
+
         updateSubmit();
     }
 
@@ -345,7 +351,7 @@
                         group.name,
 
                     itemType:
-                        group.options[0]
+                        group.options[0].itemType
                 }));
     }
 
@@ -365,7 +371,7 @@
                         group.name,
 
                     itemType:
-                        group.options[index]
+                        group.options[index].itemType
                 };
             });
     }
@@ -405,13 +411,27 @@
                                     ? options
                                         .map(
                                             option =>
-                                                Number(
-                                                    option.item_id))
+                                                ({
+                                                    itemType:
+                                                        Number(
+                                                            option.item_id),
+
+                                                    texture:
+                                                        String(
+                                                            option.texture ||
+                                                            ""),
+
+                                                    caption:
+                                                        option.caption ||
+                                                        option.name ||
+                                                        ""
+                                                }))
                                         .filter(
-                                            itemType =>
+                                            option =>
                                                 Number.isFinite(
-                                                    itemType) &&
-                                                itemType > 0)
+                                                    option.itemType) &&
+                                                option.itemType > 0 &&
+                                                option.texture)
                                     : []
                         }))
                 .filter(
@@ -434,7 +454,24 @@
         showError(
             "");
 
+        window.CharacterClothes.setSelection(
+            selection);
+
         Frontend.resetCharacterCreator();
+    }
+
+
+    function resetClothes()
+    {
+        selection =
+            defaultSelection();
+
+        window.CharacterClothes.setSelection(
+            selection);
+
+        Frontend.setCharacterFull(
+            fieldsFor(
+                selection));
     }
 
 
@@ -446,9 +483,67 @@
         showError(
             "");
 
+        window.CharacterClothes.setSelection(
+            selection);
+
         Frontend.setCharacterFull(
             fieldsFor(
                 selection));
+    }
+
+
+    function selectClothingPart(
+        groupName,
+        itemType)
+    {
+        if (!ready ||
+            busy)
+        {
+            return;
+        }
+
+        const group =
+            groups.find(
+                value =>
+                    value.name ===
+                        groupName);
+
+        const valid =
+            group?.options.some(
+                option =>
+                    option.itemType ===
+                        Number(
+                            itemType));
+
+        if (!valid)
+        {
+            return;
+        }
+
+        const current =
+            selection.find(
+                value =>
+                    value.group ===
+                        groupName);
+
+        if (!current ||
+            current.itemType ===
+                Number(
+                    itemType))
+        {
+            return;
+        }
+
+        current.itemType =
+            Number(
+                itemType);
+
+        window.CharacterClothes.setSelection(
+            selection);
+
+        Frontend.setCharacterPart(
+            groupName,
+            current.itemType);
     }
 
 
@@ -694,6 +789,12 @@
                 "click",
                 () => window.CharacterAppearance.open());
 
+        element(
+            "creatorClothes")
+            .addEventListener(
+                "click",
+                () => window.CharacterClothes.open());
+
         mountedRoot
             .querySelectorAll(
                 ".creator-future")
@@ -786,8 +887,26 @@
         await window.CharacterAppearance.initialize(
             mountedRoot);
 
+        window.CharacterClothes.initialize(
+            mountedRoot,
+            {
+                select:
+                    selectClothingPart,
+
+                reset:
+                    resetClothes,
+
+                random:
+                    randomizeCreator
+            });
+
         element(
             "creatorRandom")
+            .disabled =
+                true;
+
+        element(
+            "creatorClothes")
             .disabled =
                 true;
 
@@ -800,11 +919,20 @@
             selection =
                 defaultSelection();
 
+            window.CharacterClothes.setData(
+                groups,
+                selection);
+
             ready =
                 true;
 
             element(
                 "creatorRandom")
+                .disabled =
+                    false;
+
+            element(
+                "creatorClothes")
                 .disabled =
                     false;
 
@@ -827,6 +955,11 @@
 
             element(
                 "creatorSubmit")
+                .disabled =
+                    true;
+
+            element(
+                "creatorClothes")
                 .disabled =
                     true;
 
