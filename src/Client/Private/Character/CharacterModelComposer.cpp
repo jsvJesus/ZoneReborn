@@ -16,6 +16,9 @@ namespace
     using ModelAlternative =
         client::character::ModelAlternative;
 
+    using VisibleModel =
+        client::character::VisibleModel;
+
     constexpr std::int32_t NpHead =
         11010;
 
@@ -49,8 +52,10 @@ namespace
     }
 
     void AddUnique(
-        std::vector<std::string>& output,
-        const std::vector<std::string>& models)
+        std::vector<VisibleModel>& output,
+        const std::vector<std::string>& models,
+        const std::string& tintMaterial,
+        const std::uint32_t colour)
     {
         for (const std::string& model :
              models)
@@ -60,14 +65,23 @@ namespace
                 continue;
             }
 
-            if (std::find(
+            if (std::find_if(
                     output.begin(),
                     output.end(),
-                    model) ==
+                    [&model](const VisibleModel& value)
+                    {
+                        return
+                            value.reference ==
+                                model;
+                    }) ==
                 output.end())
             {
                 output.push_back(
-                    model);
+                    {
+                        model,
+                        tintMaterial,
+                        colour
+                    });
             }
         }
     }
@@ -89,8 +103,8 @@ namespace client::character
         output.hiddenSlots =
             state.HiddenSlots();
 
-        std::vector<std::int32_t>
-            equippedTypes;
+        std::vector<EquippedItem>
+            equippedItems;
 
         std::unordered_set<std::int64_t>
             seenInstances;
@@ -111,8 +125,8 @@ namespace client::character
                 continue;
             }
 
-            equippedTypes.push_back(
-                equipped.itemType);
+            equippedItems.push_back(
+                equipped);
         }
 
         std::unordered_map<
@@ -123,12 +137,12 @@ namespace client::character
         std::unordered_set<Slot>
             hardHiddenSlots;
 
-        for (const std::int32_t itemType :
-             equippedTypes)
+        for (const EquippedItem& equipped :
+             equippedItems)
         {
             const ItemDefinition* definition =
                 catalog.Find(
-                    itemType);
+                    equipped.itemType);
 
             if (definition ==
                 nullptr)
@@ -136,7 +150,7 @@ namespace client::character
                 error =
                     "Unable to compose unknown item: " +
                     std::to_string(
-                        itemType);
+                        equipped.itemType);
 
                 return false;
             }
@@ -191,28 +205,28 @@ namespace client::character
             }
         }
 
-        std::vector<std::int32_t>
+        std::vector<EquippedItem>
             modelItems =
-                equippedTypes;
+                equippedItems;
 
         //
         // Base naked body.
         //
         modelItems.push_back(
-            NpTorso);
+            {0, NpTorso, 0xFFFFFFu});
 
         modelItems.push_back(
-            NpLegs);
+            {0, NpLegs, 0xFFFFFFu});
 
         modelItems.push_back(
-            NpFeet);
+            {0, NpFeet, 0xFFFFFFu});
 
         if (state.Get(
                 Slot::Head).
                 Empty())
         {
             modelItems.push_back(
-                NpHead);
+                {0, NpHead, 0xFFFFFFu});
         }
 
         if (state.Get(
@@ -220,17 +234,17 @@ namespace client::character
                 Empty())
         {
             modelItems.push_back(
-                NpHands);
+                {0, NpHands, 0xFFFFFFu});
         }
 
         std::unordered_set<std::int32_t>
             uniqueItems;
 
-        for (const std::int32_t itemType :
+        for (const EquippedItem& equipped :
              modelItems)
         {
             if (!uniqueItems.insert(
-                    itemType).
+                    equipped.itemType).
                     second)
             {
                 continue;
@@ -238,7 +252,7 @@ namespace client::character
 
             const ItemDefinition* definition =
                 catalog.Find(
-                    itemType);
+                    equipped.itemType);
 
             if (definition ==
                 nullptr)
@@ -246,7 +260,7 @@ namespace client::character
                 error =
                     "Character model definition not found: " +
                     std::to_string(
-                        itemType);
+                        equipped.itemType);
 
                 return false;
             }
@@ -327,7 +341,9 @@ namespace client::character
 
             AddUnique(
                 output.visibleModels,
-                *models);
+                *models,
+                definition->tintMaterial,
+                equipped.colour);
         }
 
         if (output.visibleModels.empty())

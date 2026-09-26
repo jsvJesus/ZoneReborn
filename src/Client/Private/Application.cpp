@@ -377,26 +377,12 @@ namespace client
         const character::Profile& profile,
         std::string& error)
     {
-        std::vector<
-            std::pair<
-                std::string,
-                std::int32_t>>
-            values;
-
-        values.reserve(
-            profile.appearance.size());
-
-        for (const character::AppearancePart& part :
-             profile.appearance)
-        {
-            values.emplace_back(
-                part.group,
-                part.itemType);
-        }
-
         character::State loaded;
 
-        if (!loaded.ApplyCreatorSet(characterCatalog_, values, error))
+        if (!loaded.ApplyCreatorSet(
+                characterCatalog_,
+                profile.appearance,
+                error))
         {
             return false;
         }
@@ -716,6 +702,10 @@ Application::CharacterTransform() const noexcept
                     characterProfile_.
                         reset();
 
+                    characterEditSnapshot_.reset();
+                    characterFaceSnapshot_.reset();
+                    characterFaceCamera_ = false;
+
                     std::string
                         characterLoadError;
 
@@ -887,9 +877,407 @@ Application::CharacterTransform() const noexcept
                     break;
                 }
 
+                case frontend::FrontendEventType::
+                    CharacterCreatorRandom:
+                {
+                    if (!accountSession_.IsAuthenticated() ||
+                        !rendererInitialized_ ||
+                        characterProfile_.has_value())
+                    {
+                        break;
+                    }
+
+                    character::State randomized =
+                        characterState_;
+
+                    std::string randomError;
+
+                    if (!randomized.ApplyCreatorSet(
+                            characterCatalog_,
+                            event.characterParts,
+                            randomError))
+                    {
+                        core::Log::Warning(
+                            "Unable to randomize creator clothes: " +
+                            randomError);
+
+                        break;
+                    }
+
+                    static std::mt19937 random(
+                        std::random_device{}());
+
+                    if (!randomized.RandomizeFace(
+                            characterCatalog_,
+                            random,
+                            randomError))
+                    {
+                        core::Log::Warning(
+                            "Unable to randomize creator face: " +
+                            randomError);
+
+                        break;
+                    }
+
+                    characterState_ =
+                        std::move(
+                            randomized);
+
+                    characterFaceSnapshot_.reset();
+                    characterFaceCamera_ = false;
+                    characterVisible_ = true;
+                    characterYaw_ = 0.0f;
+                    renderer_.SetCamera(
+                        CharacterCamera());
+
+                    std::string rebuildError;
+
+                    if (!RebuildCharacter(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            "Character creator random rebuild failed: " +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    break;
+                }
+
+                case frontend::FrontendEventType::
+                    CharacterCreatorCancel:
+                {
+                    if (!rendererInitialized_ ||
+                        characterProfile_.has_value())
+                    {
+                        break;
+                    }
+
+                    std::string resetError;
+
+                    if (!characterState_.ResetCreator(
+                            characterCatalog_,
+                            resetError))
+                    {
+                        core::Log::Error(
+                            "Unable to cancel character creator: " +
+                            resetError);
+
+                        return false;
+                    }
+
+                    characterFaceSnapshot_.reset();
+                    characterFaceCamera_ = false;
+                    characterVisible_ = false;
+                    characterYaw_ = 0.0f;
+                    renderer_.SetCamera(
+                        CharacterCamera());
+
+                    std::string rebuildError;
+
+                    if (!RebuildCharacter(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            "Character creator cancel rebuild failed: " +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    break;
+                }
+
+                case frontend::FrontendEventType::
+                    CharacterEditOpen:
+                {
+                    if (!accountSession_.IsAuthenticated() ||
+                        !rendererInitialized_ ||
+                        !characterProfile_.has_value())
+                    {
+                        break;
+                    }
+
+                    if (!characterEditSnapshot_.has_value())
+                    {
+                        characterEditSnapshot_ =
+                            characterState_;
+                    }
+
+                    characterFaceSnapshot_.reset();
+                    characterState_.ClearPreviewMask();
+                    characterFaceCamera_ = false;
+                    characterVisible_ = true;
+                    characterYaw_ = 0.0f;
+                    renderer_.SetCamera(
+                        CharacterCamera());
+
+                    std::string rebuildError;
+
+                    if (!RebuildCharacter(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            "Character editor open rebuild failed: " +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    break;
+                }
+
+                case frontend::FrontendEventType::
+                    CharacterEditReset:
+                {
+                    if (!rendererInitialized_ ||
+                        !characterProfile_.has_value() ||
+                        !characterEditSnapshot_.has_value())
+                    {
+                        break;
+                    }
+
+                    std::string resetError;
+
+                    if (!characterState_.ResetCreator(
+                            characterCatalog_,
+                            resetError))
+                    {
+                        core::Log::Error(
+                            "Unable to reset character editor: " +
+                            resetError);
+
+                        return false;
+                    }
+
+                    characterFaceSnapshot_.reset();
+                    characterFaceCamera_ = false;
+                    characterVisible_ = true;
+                    characterYaw_ = 0.0f;
+                    renderer_.SetCamera(
+                        CharacterCamera());
+
+                    std::string rebuildError;
+
+                    if (!RebuildCharacter(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            "Character editor reset rebuild failed: " +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    break;
+                }
+
+                case frontend::FrontendEventType::
+                    CharacterEditRandom:
+                {
+                    if (!rendererInitialized_ ||
+                        !characterProfile_.has_value() ||
+                        !characterEditSnapshot_.has_value())
+                    {
+                        break;
+                    }
+
+                    character::State randomized =
+                        characterState_;
+
+                    std::string randomError;
+
+                    if (!randomized.ApplyCreatorSet(
+                            characterCatalog_,
+                            event.characterParts,
+                            randomError))
+                    {
+                        core::Log::Warning(
+                            "Unable to randomize character editor clothes: " +
+                            randomError);
+
+                        break;
+                    }
+
+                    static std::mt19937 random(
+                        std::random_device{}());
+
+                    if (!randomized.RandomizeFace(
+                            characterCatalog_,
+                            random,
+                            randomError))
+                    {
+                        core::Log::Warning(
+                            "Unable to randomize character editor face: " +
+                            randomError);
+
+                        break;
+                    }
+
+                    characterState_ =
+                        std::move(
+                            randomized);
+
+                    characterFaceSnapshot_.reset();
+                    characterFaceCamera_ = false;
+                    characterVisible_ = true;
+                    characterYaw_ = 0.0f;
+                    renderer_.SetCamera(
+                        CharacterCamera());
+
+                    std::string rebuildError;
+
+                    if (!RebuildCharacter(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            "Character editor random rebuild failed: " +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    break;
+                }
+
+                case frontend::FrontendEventType::
+                    CharacterEditApply:
+                {
+                    if (!rendererInitialized_ ||
+                        !characterProfile_.has_value() ||
+                        !characterEditSnapshot_.has_value())
+                    {
+                        frontend_.SendCharacterEditResult(
+                            false,
+                            "Character editor is not active.",
+                            characterProfile_.has_value()
+                                ? &*characterProfile_
+                                : nullptr);
+
+                        break;
+                    }
+
+                    std::vector<character::AppearancePart>
+                        appearance;
+
+                    std::string updateError;
+
+                    if (!characterState_.CreatorAppearance(
+                            characterCatalog_,
+                            appearance,
+                            updateError))
+                    {
+                        frontend_.SendCharacterEditResult(
+                            false,
+                            updateError,
+                            &*characterProfile_);
+
+                        break;
+                    }
+
+                    character::Profile updated =
+                        *characterProfile_;
+
+                    updated.appearance =
+                        std::move(
+                            appearance);
+
+                    updated.face =
+                        characterState_.Face();
+
+                    if (!characterService_.Update(
+                            accountSession_.Login(),
+                            updated,
+                            updateError))
+                    {
+                        core::Log::Warning(
+                            "Character editor save failed: " +
+                            updateError);
+
+                        frontend_.SendCharacterEditResult(
+                            false,
+                            updateError,
+                            &*characterProfile_);
+
+                        break;
+                    }
+
+                    characterProfile_ =
+                        std::move(
+                            updated);
+
+                    characterState_.ClearPreviewMask();
+                    characterEditSnapshot_.reset();
+                    characterFaceSnapshot_.reset();
+                    characterFaceCamera_ = false;
+                    characterVisible_ = true;
+                    characterYaw_ = 0.0f;
+                    renderer_.SetCamera(
+                        CharacterCamera());
+
+                    std::string rebuildError;
+
+                    if (!RebuildCharacter(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            "Character editor apply rebuild failed: " +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    frontend_.SendCharacterEditResult(
+                        true,
+                        {},
+                        &*characterProfile_);
+
+                    break;
+                }
+
+                case frontend::FrontendEventType::
+                    CharacterEditCancel:
+                {
+                    if (!rendererInitialized_ ||
+                        !characterProfile_.has_value() ||
+                        !characterEditSnapshot_.has_value())
+                    {
+                        break;
+                    }
+
+                    characterState_ =
+                        std::move(
+                            *characterEditSnapshot_);
+
+                    characterEditSnapshot_.reset();
+                    characterFaceSnapshot_.reset();
+                    characterFaceCamera_ = false;
+                    characterVisible_ = true;
+                    characterYaw_ = 0.0f;
+                    renderer_.SetCamera(
+                        CharacterCamera());
+
+                    std::string rebuildError;
+
+                    if (!RebuildCharacter(
+                            rebuildError))
+                    {
+                        core::Log::Error(
+                            "Character editor cancel rebuild failed: " +
+                            rebuildError);
+
+                        return false;
+                    }
+
+                    break;
+                }
+
                 case frontend::FrontendEventType::CharacterClothesOpen:
                 {
-                    if (!rendererInitialized_ || characterProfile_.has_value()) break;
+                    if (!rendererInitialized_ ||
+                        (characterProfile_.has_value() &&
+                         !characterEditSnapshot_.has_value())) break;
                     characterFaceSnapshot_.reset();
                     characterFaceCamera_ = false;
                     renderer_.SetCamera(CharacterCamera());
@@ -898,7 +1286,9 @@ Application::CharacterTransform() const noexcept
 
                 case frontend::FrontendEventType::CharacterFaceOpen:
                 {
-                    if (!rendererInitialized_ || characterProfile_.has_value()) break;
+                    if (!rendererInitialized_ ||
+                        (characterProfile_.has_value() &&
+                         !characterEditSnapshot_.has_value())) break;
                     characterFaceSnapshot_ = characterState_.Face();
                     characterFaceCamera_ = true;
                     renderer_.SetCamera(CharacterCamera());
@@ -1031,14 +1421,30 @@ Application::CharacterTransform() const noexcept
                     character::Profile
                         createdProfile;
 
+                    std::vector<character::AppearancePart>
+                        currentAppearance;
+
                     std::string
                         createError;
+
+                    if (!characterState_.CreatorAppearance(
+                            characterCatalog_,
+                            currentAppearance,
+                            createError))
+                    {
+                        frontend_.SendCharacterCreateResult(
+                            false,
+                            createError,
+                            nullptr);
+
+                        break;
+                    }
 
                     if (!characterService_.Create(
                             accountSession_.Login(),
                             event.characterName,
                             characterCatalog_,
-                            event.characterParts,
+                            currentAppearance,
                             characterState_.Face(),
                             createdProfile,
                             createError))
@@ -1174,6 +1580,10 @@ Application::CharacterTransform() const noexcept
 
                     characterProfile_.
                         reset();
+
+                    characterEditSnapshot_.reset();
+                    characterFaceSnapshot_.reset();
+                    characterFaceCamera_ = false;
 
                     std::string
                         resetError;
@@ -1312,7 +1722,9 @@ Application::CharacterTransform() const noexcept
 
                 case frontend::FrontendEventType::CharacterPart:
                 {
-                    if (!rendererInitialized_)
+                    if (!rendererInitialized_ ||
+                        (characterProfile_.has_value() &&
+                         !characterEditSnapshot_.has_value()))
                     {
                         break;
                     }
@@ -1324,6 +1736,7 @@ Application::CharacterTransform() const noexcept
                                 characterCatalog_,
                                 event.characterGroup,
                                 event.characterItemType,
+                                event.characterColour,
                                 stateError))
                     {
                         core::Log::Warning(
@@ -1358,7 +1771,9 @@ Application::CharacterTransform() const noexcept
 
                 case frontend::FrontendEventType::CharacterFull:
                 {
-                    if (!rendererInitialized_)
+                    if (!rendererInitialized_ ||
+                        (characterProfile_.has_value() &&
+                         !characterEditSnapshot_.has_value()))
                     {
                         break;
                     }
@@ -1487,6 +1902,9 @@ Application::CharacterTransform() const noexcept
         audio_.Shutdown();
 
         characterProfile_.reset();
+        characterEditSnapshot_.reset();
+        characterFaceSnapshot_.reset();
+        characterFaceCamera_ = false;
         
         accountSession_.Clear();
 

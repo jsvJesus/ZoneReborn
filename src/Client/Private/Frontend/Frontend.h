@@ -29,6 +29,13 @@ namespace client::frontend
 
         CharacterRequest,
         CharacterCreatorReset,
+        CharacterCreatorRandom,
+        CharacterCreatorCancel,
+        CharacterEditOpen,
+        CharacterEditReset,
+        CharacterEditRandom,
+        CharacterEditApply,
+        CharacterEditCancel,
         CharacterCreate,
         CharacterDelete,
         CharacterClothesOpen,
@@ -68,6 +75,9 @@ namespace client::frontend
         std::int32_t characterItemType =
             0;
 
+        std::uint32_t characterColour =
+            0xFFFFFFu;
+
         std::string faceChoiceGroup;
 
         std::uint64_t faceValue =
@@ -79,10 +89,7 @@ namespace client::frontend
         float characterDeltaY =
             0.0f;
 
-        std::vector<
-            std::pair<
-                std::string,
-                std::int32_t>>
+        std::vector<character::AppearancePart>
             characterParts;
 
         float dummyDeltaX =
@@ -151,6 +158,11 @@ namespace client::frontend
         void SendCharacterDeleteResult(
             bool success,
             const std::string& message);
+
+        void SendCharacterEditResult(
+            bool success,
+            const std::string& message,
+            const character::Profile* profile);
 
         void SendCharacterFaceState(
             const character::FaceState& face);

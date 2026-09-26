@@ -91,6 +91,9 @@ namespace client
         std::optional<character::FaceState>
             characterFaceSnapshot_;
 
+        std::optional<character::State>
+            characterEditSnapshot_;
+
         bool characterFaceCamera_ =
             false;
 

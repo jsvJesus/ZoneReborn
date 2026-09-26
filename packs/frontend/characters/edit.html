@@ -2,174 +2,56 @@
 
     <div class="main-vignette"></div>
 
-
-    <div class="main-top">
-
-        <div class="main-account">
-
-            <span
-                id="creatorAccountName"
-                class="main-account-name">
-            </span>
-
-            <span class="main-account-separator">
-                |
-            </span>
-
-            <button
-                id="creatorAccountId"
-                class="main-account-id"
-                type="button">
-                ID —
-            </button>
-
-        </div>
-
-
-        <div class="main-balances">
-
-            <div class="main-balance">
-
-                <img
-                    class="main-balance-icon"
-                    src="/packs/res/soGUI/frame/paint/icon_money.png"
-                    alt="">
-
-                <span id="creatorSoftBalanceValue">
-                    0
-                </span>
-
-            </div>
-
-
-            <div class="main-balance">
-
-                <canvas
-                    id="creatorPremiumIcon"
-                    class="main-balance-icon main-tga"
-                    data-tga="/packs/res/soGUI/maps/premium/premium.tga">
-                </canvas>
-
-                <span id="creatorPremiumBalanceValue">
-                    0
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <div class="main-locales">
-
-            <button type="button" data-locale="english">
-                EN
-            </button>
-
-            <span>|</span>
-
-            <button type="button" data-locale="chinese">
-                ZH
-            </button>
-
-            <span>|</span>
-
-            <button type="button" data-locale="russian">
-                RU
-            </button>
-
-        </div>
-
-    </div>
-
-
     <aside class="main-left creator-left">
-
         <div class="main-left-panel creator-left-panel">
-
             <div class="main-menu-header">
                 <div class="main-menu-header-line"></div>
-
-                <div class="main-title" data-i18n="mainTitle">
-                    ГЛАВНОЕ МЕНЮ
-                </div>
+                <div class="main-title" data-editor-i18n="title">APPEARANCE MODIFICATION</div>
             </div>
-
-
-            <div class="creator-name-row">
-
-                <label for="creatorName" data-i18n="name">
-                    ИМЯ:
-                </label>
-
-                <input
-                    id="creatorName"
-                    type="text"
-                    maxlength="32"
-                    autocomplete="off"
-                    spellcheck="false">
-
-            </div>
-
 
             <nav class="main-navigation creator-menu">
-
-                <button id="creatorAppearance" type="button">
+                <button id="editorAppearance" type="button">
                     <span class="main-navigation-marker"></span>
-                    <span data-i18n="appearance">ВЫБОР ВНЕШНОСТИ</span>
+                    <span data-editor-i18n="appearance">CHOOSE APPEARANCE</span>
                 </button>
-
-                <button id="creatorClothes" type="button">
+                <button id="editorClothes" type="button">
                     <span class="main-navigation-marker"></span>
-                    <span data-i18n="clothes">ВЫБОР ОДЕЖДЫ</span>
+                    <span data-editor-i18n="clothes">CHOOSE CLOTHES</span>
                 </button>
-
-                <button id="creatorReset" type="button">
+                <button id="editorReset" type="button">
                     <span class="main-navigation-marker"></span>
-                    <span data-i18n="reset">СБРОСИТЬ</span>
+                    <span data-editor-i18n="reset">RESET</span>
                 </button>
-
-                <button id="creatorRandom" type="button">
+                <button id="editorRandom" type="button">
                     <span class="main-navigation-marker"></span>
-                    <span data-i18n="random">СЛУЧАЙНО</span>
+                    <span data-editor-i18n="random">RANDOM</span>
                 </button>
-
             </nav>
-
 
             <div class="main-divider"></div>
 
-
-            <button id="creatorSubmit" class="main-exit creator-submit" type="button" disabled>
+            <button id="editorApply" class="main-exit creator-submit" type="button">
                 <span class="main-navigation-marker"></span>
-                <span data-i18n="create">СОЗДАТЬ</span>
+                <span data-editor-i18n="apply">APPLY</span>
+            </button>
+            <button id="editorBack" class="main-exit creator-back" type="button">
+                <span class="main-navigation-marker"></span>
+                <span data-editor-i18n="back">BACK</span>
             </button>
 
-            <button id="creatorBack" class="main-exit creator-back" type="button">
-                <span class="main-navigation-marker"></span>
-                <span data-i18n="back">НАЗАД</span>
-            </button>
-
-
-            <div id="creatorError" class="creator-error" hidden></div>
-
+            <div id="editorError" class="creator-error" hidden></div>
         </div>
-
     </aside>
 
-
     <section id="clothesScreen" class="clothes-screen" hidden>
-
         <aside class="main-left clothes-left">
             <div class="main-left-panel clothes-left-panel">
                 <div class="main-menu-header">
                     <div class="main-menu-header-line"></div>
                     <div class="main-title" data-clothes-i18n="title">CLOTHES</div>
                 </div>
-
                 <nav id="clothesCategories" class="main-navigation clothes-categories"></nav>
-
                 <div class="main-divider"></div>
-
                 <button id="clothesRandom" class="main-exit" type="button">
                     <span class="main-navigation-marker"></span>
                     <span data-clothes-i18n="random">RANDOM</span>
@@ -184,7 +66,6 @@
                 </button>
             </div>
         </aside>
-
         <aside class="clothes-options">
             <div id="clothesCaption" class="clothes-caption"></div>
             <div id="clothesItems" class="clothes-items"></div>
@@ -192,60 +73,43 @@
             <div id="clothesColourLabel" class="clothes-colour-label"></div>
             <div id="clothesColours" class="clothes-colours"></div>
         </aside>
-
     </section>
 
-
     <section id="appearanceScreen" class="appearance-screen" hidden>
-
         <aside class="main-left appearance-left">
             <div class="main-left-panel appearance-left-panel">
                 <div class="main-menu-header">
                     <div class="main-menu-header-line"></div>
-                    <div class="main-title" data-face-i18n="title">ВНЕШНОСТЬ</div>
+                    <div class="main-title" data-face-i18n="title">APPEARANCE</div>
                 </div>
-
                 <nav id="appearanceCategories" class="main-navigation appearance-categories"></nav>
-
                 <div class="main-divider"></div>
-
                 <button id="appearanceReset" class="main-exit" type="button">
                     <span class="main-navigation-marker"></span>
-                    <span data-face-i18n="reset">СБРОСИТЬ</span>
+                    <span data-face-i18n="reset">RESET</span>
                 </button>
                 <button id="appearanceRandom" class="main-exit" type="button">
                     <span class="main-navigation-marker"></span>
-                    <span data-face-i18n="random">СЛУЧАЙНО</span>
+                    <span data-face-i18n="random">RANDOM</span>
                 </button>
                 <button id="appearanceApply" class="main-exit appearance-apply" type="button">
                     <span class="main-navigation-marker"></span>
-                    <span data-face-i18n="apply">ПРИМЕНИТЬ</span>
+                    <span data-face-i18n="apply">APPLY</span>
                 </button>
                 <button id="appearanceBack" class="main-exit" type="button">
                     <span class="main-navigation-marker"></span>
-                    <span data-face-i18n="back">НАЗАД</span>
+                    <span data-face-i18n="back">BACK</span>
                 </button>
             </div>
         </aside>
-
         <aside class="appearance-options">
             <div id="appearanceCaption" class="appearance-caption"></div>
             <div id="appearanceControls" class="appearance-controls"></div>
             <div id="appearanceDescription" class="appearance-description"></div>
         </aside>
-
     </section>
 
-
-    <div
-        id="creatorRotateArea"
-        class="character-rotate-area creator-rotate-area">
-    </div>
-
-
-    <div
-        id="creatorVersion"
-        class="main-version">
-    </div>
+    <div id="editorRotateArea" class="character-rotate-area creator-rotate-area"></div>
+    <div id="editorVersion" class="main-version"></div>
 
 </div>

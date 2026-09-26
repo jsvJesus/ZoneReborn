@@ -5,6 +5,18 @@
     const CONFIG_PATH =
         "/packs/res/scripts/common/data/charMakerCfg.json";
 
+    const CLOTHING_COLOURS =
+        Object.freeze(
+            [
+                0xFFFFFF, 0xD8D3C9, 0xB8AE9E, 0x918675,
+                0x6F675B, 0x555555, 0x2C2C2C, 0x171717,
+                0x33210E, 0x3C3123, 0x654832, 0xA86536,
+                0xCC9862, 0xE4CE93, 0xAA9464, 0x85806D,
+                0x66664E, 0x4C5339, 0x36442F, 0x29382D,
+                0x657A61, 0x718B82, 0x617B7A, 0x4E696A,
+                0x405859, 0x354C4E, 0x2B3F40, 0x223333
+            ]);
+
 
     const translations =
     {
@@ -335,7 +347,8 @@
         {
             fields.push(
                 value.group,
-                value.itemType);
+                value.itemType,
+                value.colour);
         }
 
         return fields;
@@ -351,7 +364,10 @@
                         group.name,
 
                     itemType:
-                        group.options[0].itemType
+                        group.options[0].itemType,
+
+                    colour:
+                        0xFFFFFF
                 }));
     }
 
@@ -371,7 +387,13 @@
                         group.name,
 
                     itemType:
-                        group.options[index].itemType
+                        group.options[index].itemType,
+
+                    colour:
+                        CLOTHING_COLOURS[
+                            Math.floor(
+                                Math.random() *
+                                CLOTHING_COLOURS.length)]
                 };
             });
     }
@@ -486,6 +508,28 @@
         window.CharacterClothes.setSelection(
             selection);
 
+        Frontend.randomizeCharacterCreator(
+            fieldsFor(
+                selection));
+    }
+
+
+    function randomizeClothes()
+    {
+        selection =
+            randomSelection();
+
+        window.CharacterClothes.setSelection(
+            selection);
+
+        Frontend.setCharacterFull(
+            fieldsFor(
+                selection));
+    }
+
+
+    function closeClothes()
+    {
         Frontend.setCharacterFull(
             fieldsFor(
                 selection));
@@ -543,7 +587,54 @@
 
         Frontend.setCharacterPart(
             groupName,
-            current.itemType);
+            current.itemType,
+            current.colour);
+    }
+
+
+    function selectClothingColour(
+        groupName,
+        colour)
+    {
+        if (!ready ||
+            busy)
+        {
+            return;
+        }
+
+        const selectedColour =
+            Number(
+                colour);
+
+        if (!CLOTHING_COLOURS.includes(
+                selectedColour))
+        {
+            return;
+        }
+
+        const current =
+            selection.find(
+                value =>
+                    value.group ===
+                        groupName);
+
+        if (!current ||
+            current.colour ===
+                selectedColour)
+        {
+            return;
+        }
+
+        current.colour =
+            selectedColour;
+
+        window.CharacterClothes.setSelection(
+            selection);
+
+        Frontend.setCharacterPart(
+            groupName,
+            current.itemType,
+            current.colour);
     }
 
 
@@ -585,7 +676,7 @@
             return;
         }
 
-        Frontend.hideCharacter();
+        Frontend.cancelCharacterCreator();
 
         await FrontendRouter.show(
             "main");
@@ -893,11 +984,17 @@
                 select:
                     selectClothingPart,
 
+                selectColour:
+                    selectClothingColour,
+
                 reset:
                     resetClothes,
 
                 random:
-                    randomizeCreator
+                    randomizeClothes,
+
+                close:
+                    closeClothes
             });
 
         element(
@@ -921,7 +1018,8 @@
 
             window.CharacterClothes.setData(
                 groups,
-                selection);
+                selection,
+                CLOTHING_COLOURS);
 
             ready =
                 true;

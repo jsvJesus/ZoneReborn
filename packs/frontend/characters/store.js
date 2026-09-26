@@ -37,7 +37,16 @@
 
                                 itemType:
                                     Number(
-                                        part.itemType)
+                                        part.itemType),
+
+                                colour:
+                                    Number.isInteger(
+                                        Number(
+                                            part.colour)) &&
+                                    Number(part.colour) >= 0 &&
+                                    Number(part.colour) <= 0xFFFFFF
+                                        ? Number(part.colour)
+                                        : 0xFFFFFF
                             }))
                 : [];
 
@@ -123,6 +132,17 @@
 
             fields.push(
                 itemType);
+
+            const colour =
+                Number(
+                    part.colour);
+
+            fields.push(
+                Number.isInteger(colour) &&
+                colour >= 0 &&
+                colour <= 0xFFFFFF
+                    ? colour
+                    : 0xFFFFFF);
         }
 
         return fields;

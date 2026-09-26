@@ -449,6 +449,11 @@ namespace
                     part.itemType);
 
             result +=
+                ",\"colour\":" +
+                std::to_string(
+                    part.colour);
+
+            result +=
                 "}";
         }
 
@@ -1200,6 +1205,70 @@ namespace
         const auto result = std::from_chars(begin, end, output, 10);
         return result.ec == std::errc{} && result.ptr == end;
     }
+
+    bool ParseColour(
+        const std::string& text,
+        std::uint32_t& output)
+    {
+        std::uint64_t value =
+            0;
+
+        if (!ParseUInt64(
+                text,
+                value) ||
+            value > 0xFFFFFFu)
+        {
+            return false;
+        }
+
+        output =
+            static_cast<std::uint32_t>(
+                value);
+
+        return true;
+    }
+
+    bool ParseAppearanceParts(
+        const std::vector<std::string>& fields,
+        const std::size_t start,
+        std::vector<client::character::AppearancePart>& output)
+    {
+        if (start > fields.size() ||
+            (
+                fields.size() - start
+            ) % 3u != 0u)
+        {
+            return false;
+        }
+
+        for (std::size_t index = start;
+             index + 2u < fields.size();
+             index += 3u)
+        {
+            client::character::AppearancePart part;
+
+            part.group =
+                fields[index];
+
+            if (part.group.empty() ||
+                !ParseInt32(
+                    fields[index + 1u],
+                    part.itemType) ||
+                part.itemType <= 0 ||
+                !ParseColour(
+                    fields[index + 2u],
+                    part.colour))
+            {
+                return false;
+            }
+
+            output.push_back(
+                std::move(
+                    part));
+        }
+
+        return true;
+    }
 }
 
 namespace client::frontend
@@ -1801,6 +1870,28 @@ namespace client::frontend
             "}");
     }
 
+    void OriginalFrontend::SendCharacterEditResult(
+        const bool success,
+        const std::string& message,
+        const character::Profile* profile)
+    {
+        ExecuteScriptUtf8(
+            "if(window.ZoneFrontend){"
+            "window.ZoneFrontend.characterEditResult(" +
+            std::string(
+                success
+                    ? "true"
+                    : "false") +
+            "," +
+            JsonString(
+                message) +
+            "," +
+            SerializeCharacter(
+                profile) +
+            ");"
+            "}");
+    }
+
     void OriginalFrontend::SendCharacterFaceState(
         const character::FaceState& face)
     {
@@ -2074,6 +2165,130 @@ namespace client::frontend
             return;
         }
 
+        if (command == "character_creator_random")
+        {
+            FrontendEvent event;
+
+            if (fields.size() < 4u ||
+                !ParseAppearanceParts(
+                    fields,
+                    1u,
+                    event.characterParts))
+            {
+                core::Log::Warning(
+                    "Invalid character_creator_random message.");
+
+                return;
+            }
+
+            event.type =
+                FrontendEventType::
+                    CharacterCreatorRandom;
+
+            events_.push_back(
+                std::move(
+                    event));
+
+            return;
+        }
+
+        if (command == "character_creator_cancel")
+        {
+            if (fields.size() != 1u)
+            {
+                core::Log::Warning(
+                    "Invalid character_creator_cancel message.");
+
+                return;
+            }
+
+            FrontendEvent event;
+
+            event.type =
+                FrontendEventType::
+                    CharacterCreatorCancel;
+
+            events_.push_back(
+                std::move(
+                    event));
+
+            return;
+        }
+
+        if (command == "character_edit_random")
+        {
+            FrontendEvent event;
+
+            if (fields.size() < 4u ||
+                !ParseAppearanceParts(
+                    fields,
+                    1u,
+                    event.characterParts))
+            {
+                core::Log::Warning(
+                    "Invalid character_edit_random message.");
+
+                return;
+            }
+
+            event.type =
+                FrontendEventType::
+                    CharacterEditRandom;
+
+            events_.push_back(
+                std::move(
+                    event));
+
+            return;
+        }
+
+        if (command == "character_edit_open" ||
+            command == "character_edit_reset" ||
+            command == "character_edit_apply" ||
+            command == "character_edit_cancel")
+        {
+            if (fields.size() != 1u)
+            {
+                core::Log::Warning(
+                    "Invalid character edit message.");
+
+                return;
+            }
+
+            FrontendEvent event;
+
+            if (command == "character_edit_open")
+            {
+                event.type =
+                    FrontendEventType::
+                        CharacterEditOpen;
+            }
+            else if (command == "character_edit_reset")
+            {
+                event.type =
+                    FrontendEventType::
+                        CharacterEditReset;
+            }
+            else if (command == "character_edit_apply")
+            {
+                event.type =
+                    FrontendEventType::
+                        CharacterEditApply;
+            }
+            else
+            {
+                event.type =
+                    FrontendEventType::
+                        CharacterEditCancel;
+            }
+
+            events_.push_back(
+                std::move(
+                    event));
+
+            return;
+        }
+
         if (command =="character_create")
         {
             if (fields.size() <
@@ -2081,20 +2296,6 @@ namespace client::frontend
             {
                 core::Log::Warning(
                     "Invalid character_create message.");
-
-                return;
-            }
-
-            if (
-                (
-                    fields.size() -
-                    2
-                ) %
-                2 !=
-                0)
-            {
-                core::Log::Warning(
-                    "Invalid character_create appearance data.");
 
                 return;
             }
@@ -2108,29 +2309,15 @@ namespace client::frontend
             event.characterName =
                 fields[1];
 
-            for (std::size_t index = 2;
-                 index + 1 < fields.size();
-                 index += 2)
+            if (!ParseAppearanceParts(
+                    fields,
+                    2u,
+                    event.characterParts))
             {
-                std::int32_t itemType =
-                    0;
+                core::Log::Warning(
+                    "Invalid character_create appearance data.");
 
-                if (!ParseInt32(
-                        fields[
-                            index +
-                            1],
-                        itemType))
-                {
-                    core::Log::Warning(
-                        "Invalid character_create item type.");
-
-                    return;
-                }
-
-                event.characterParts.
-                    emplace_back(
-                        fields[index],
-                        itemType);
+                return;
             }
 
             events_.push_back(
@@ -2236,7 +2423,7 @@ namespace client::frontend
         
         if (command == "dummy_part")
         {
-            if (fields.size() < 3)
+            if (fields.size() != 4u)
             {
                 core::Log::Warning(
                     "Invalid character_part message.");
@@ -2247,9 +2434,16 @@ namespace client::frontend
             std::int32_t itemType =
                 0;
 
+            std::uint32_t colour =
+                0xFFFFFFu;
+
             if (!ParseInt32(
                     fields[2],
-                    itemType))
+                    itemType) ||
+                itemType <= 0 ||
+                !ParseColour(
+                    fields[3],
+                    colour))
             {
                 core::Log::Warning(
                     "Invalid character item type.");
@@ -2269,6 +2463,9 @@ namespace client::frontend
             event.characterItemType =
                 itemType;
 
+            event.characterColour =
+                colour;
+
             events_.push_back(
                 std::move(
                     event));
@@ -2278,15 +2475,13 @@ namespace client::frontend
         
         if (command == "dummy_full")
         {
-            if (fields.size() < 3 ||
-                (
-                    (
-                        fields.size() -
-                        1
-                    ) %
-                    2
-                ) !=
-                0)
+            FrontendEvent event;
+
+            if (fields.size() < 4u ||
+                !ParseAppearanceParts(
+                    fields,
+                    1u,
+                    event.characterParts))
             {
                 core::Log::Warning(
                     "Invalid character_full message.");
@@ -2294,36 +2489,9 @@ namespace client::frontend
                 return;
             }
 
-            FrontendEvent event;
-
             event.type =
                 FrontendEventType::
                     CharacterFull;
-
-            for (std::size_t index = 1;
-                 index + 1 < fields.size();
-                 index += 2)
-            {
-                std::int32_t itemType =
-                    0;
-
-                if (!ParseInt32(
-                        fields[
-                            index +
-                            1],
-                        itemType))
-                {
-                    core::Log::Warning(
-                        "Invalid character_full item type.");
-
-                    return;
-                }
-
-                event.characterParts.
-                    emplace_back(
-                        fields[index],
-                        itemType);
-            }
 
             events_.push_back(
                 std::move(

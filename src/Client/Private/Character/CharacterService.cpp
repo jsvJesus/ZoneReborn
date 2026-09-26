@@ -17,8 +17,11 @@ namespace
     constexpr char LegacyFileHeader[] =
         "CHARACTER_V1";
 
-    constexpr char FileHeader[] =
+    constexpr char FaceFileHeader[] =
         "CHARACTER_V2";
+
+    constexpr char FileHeader[] =
+        "CHARACTER_V3";
 
     bool ReadCodePoint(
         const std::string_view text,
@@ -352,10 +355,7 @@ namespace client::character
         const std::string_view accountLogin,
         const std::string_view name,
         const Catalog& catalog,
-        const std::vector<
-            std::pair<
-                std::string,
-                std::int32_t>>& appearance,
+        const std::vector<AppearancePart>& appearance,
         const FaceState& face,
         Profile& profile,
         std::string& error) const
@@ -426,7 +426,7 @@ namespace client::character
                         const auto& value)
                     {
                         return
-                            value.first ==
+                            value.group ==
                                 group.name;
                     });
 
@@ -448,7 +448,7 @@ namespace client::character
                         {
                             return
                                 option.itemType ==
-                                    selected->second;
+                                    selected->itemType;
                         });
 
                 if (allowed ==
@@ -463,7 +463,21 @@ namespace client::character
                 }
 
                 part.itemType =
-                    selected->second;
+                    selected->itemType;
+
+                if (selected->colour >
+                    0xFFFFFFu)
+                {
+                    error =
+                        "Invalid character creator colour for group " +
+                        group.name +
+                        ".";
+
+                    return false;
+                }
+
+                part.colour =
+                    selected->colour;
             }
 
             created.appearance.
@@ -492,6 +506,91 @@ namespace client::character
         profile =
             std::move(
                 created);
+
+        return true;
+    }
+
+    bool Service::Update(
+        const std::string_view accountLogin,
+        const Profile& profile,
+        std::string& error) const
+    {
+        error.clear();
+
+        std::optional<Profile> existing;
+
+        if (!Load(
+                accountLogin,
+                existing,
+                error))
+        {
+            return false;
+        }
+
+        if (!existing.has_value())
+        {
+            error =
+                "Character does not exist.";
+
+            return false;
+        }
+
+        if (profile.id != existing->id ||
+            profile.name != existing->name)
+        {
+            error =
+                "Character identity cannot be changed.";
+
+            return false;
+        }
+
+        if (!ValidateFaceForm(
+                profile.face.faceForm))
+        {
+            error =
+                "Character face form is invalid.";
+
+            return false;
+        }
+
+        if (profile.appearance.empty())
+        {
+            error =
+                "Character appearance is empty.";
+
+            return false;
+        }
+
+        for (const AppearancePart& part :
+             profile.appearance)
+        {
+            if (part.group.empty() ||
+                part.itemType <= 0 ||
+                part.colour > 0xFFFFFFu)
+            {
+                error =
+                    "Character appearance is invalid.";
+
+                return false;
+            }
+        }
+
+        const std::filesystem::path path =
+            AccountPath(
+                accountLogin);
+
+        if (!WriteProfile(
+                path,
+                profile,
+                error))
+        {
+            return false;
+        }
+
+        core::Log::Info(
+            std::string(
+                "Character profile updated: ") +
+            path.string());
 
         return true;
     }
@@ -871,9 +970,15 @@ namespace client::character
             stream,
             header);
 
-        const bool legacy = header == LegacyFileHeader;
+        const bool legacy =
+            header == LegacyFileHeader;
 
-        if (!legacy && header != FileHeader)
+        const bool hasColour =
+            header == FileHeader;
+
+        if (!legacy &&
+            header != FaceFileHeader &&
+            header != FileHeader)
         {
             error =
                 "Unsupported character file format.";
@@ -944,8 +1049,19 @@ namespace client::character
                 return false;
             }
 
+            if (hasColour &&
+                !(stream >>
+                  part.colour))
+            {
+                error =
+                    "Unable to read character appearance colour.";
+
+                return false;
+            }
+
             if (part.group.empty() ||
-                part.itemType <= 0)
+                part.itemType <= 0 ||
+                part.colour > 0xFFFFFFu)
             {
                 error =
                     "Character appearance part is invalid.";
@@ -1054,8 +1170,11 @@ namespace client::character
             return false;
         }
 
+        const bool hasFace =
+            !profile.face.faceForm.empty();
+
         stream <<
-            (profile.face.faceForm.empty() ? LegacyFileHeader : FileHeader) <<
+            (hasFace ? FileHeader : LegacyFileHeader) <<
             '\n';
 
         stream <<
@@ -1079,11 +1198,20 @@ namespace client::character
                 std::quoted(
                     part.group) <<
                 ' ' <<
-                part.itemType <<
+                part.itemType;
+
+            if (hasFace)
+            {
+                stream <<
+                    ' ' <<
+                    part.colour;
+            }
+
+            stream <<
                 '\n';
         }
 
-        if (!profile.face.faceForm.empty())
+        if (hasFace)
         {
             const FaceState& face = profile.face;
             stream << "face_style " << face.hairStyle << ' ' << face.moustacheStyle << ' ' << face.beardStyle << '\n';

@@ -30,12 +30,15 @@ namespace client::character
             std::string_view accountLogin,
             std::string_view name,
             const Catalog& catalog,
-            const std::vector<
-                std::pair<
-                    std::string,
-                    std::int32_t>>& appearance,
+            const std::vector<AppearancePart>& appearance,
             const FaceState& face,
             Profile& profile,
+            std::string& error) const;
+
+        [[nodiscard]]
+        bool Update(
+            std::string_view accountLogin,
+            const Profile& profile,
             std::string& error) const;
 
         [[nodiscard]]

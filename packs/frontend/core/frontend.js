@@ -748,7 +748,16 @@
 
 								itemType:
 									Number(
-										part.itemType)
+										part.itemType),
+
+								colour:
+									Number.isInteger(
+										Number(
+											part.colour)) &&
+									Number(part.colour) >= 0 &&
+									Number(part.colour) <= 0xFFFFFF
+										? Number(part.colour)
+										: 0xFFFFFF
 							}))
 				: [];
 
@@ -804,6 +813,17 @@
 
 			fields.push(
 				itemType);
+
+			const colour =
+				Number(
+					part.colour);
+
+			fields.push(
+				Number.isInteger(colour) &&
+				colour >= 0 &&
+				colour <= 0xFFFFFF
+					? colour
+					: 0xFFFFFF);
 		}
 
 		return fields;
@@ -934,6 +954,71 @@
         },
 
 
+        randomizeCharacterCreator(
+            fields)
+        {
+            if (!Array.isArray(fields) ||
+                fields.length === 0)
+            {
+                return;
+            }
+
+            post(
+                "character_creator_random",
+                ...fields);
+        },
+
+
+        cancelCharacterCreator()
+        {
+            post(
+                "character_creator_cancel");
+        },
+
+
+        openCharacterEditor()
+        {
+            post(
+                "character_edit_open");
+        },
+
+
+        resetCharacterEditor()
+        {
+            post(
+                "character_edit_reset");
+        },
+
+
+        randomizeCharacterEditor(
+            fields)
+        {
+            if (!Array.isArray(fields) ||
+                fields.length === 0)
+            {
+                return;
+            }
+
+            post(
+                "character_edit_random",
+                ...fields);
+        },
+
+
+        applyCharacterEditor()
+        {
+            post(
+                "character_edit_apply");
+        },
+
+
+        cancelCharacterEditor()
+        {
+            post(
+                "character_edit_cancel");
+        },
+
+
         openCharacterFace()
         {
             post("character_face_open");
@@ -1029,12 +1114,14 @@
 
         setCharacterPart(
             group,
-            partId)
+            partId,
+            colour = 0xFFFFFF)
         {
             post(
                 "dummy_part",
                 group,
-                partId);
+                partId,
+                colour);
         },
 
 
@@ -1185,6 +1272,32 @@
 					message);
 			}
 		},
+
+
+        characterEditResult(
+            success,
+            message,
+            character)
+        {
+            if (success)
+            {
+                Frontend.setCurrentCharacter(
+                    character);
+            }
+
+            const screen =
+                screens.get(
+                    state.currentScreen);
+
+            if (screen &&
+                typeof screen.characterEditResult ===
+                    "function")
+            {
+                screen.characterEditResult(
+                    success,
+                    message);
+            }
+        },
 		
 		
 		characterState(

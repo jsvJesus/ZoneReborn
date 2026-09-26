@@ -12,6 +12,7 @@
             back: "\u041D\u0410\u0417\u0410\u0414",
             choose: "\u0412\u042B\u0411\u0415\u0420\u0418\u0422\u0415",
             item: "\u041F\u0420\u0415\u0414\u041C\u0415\u0422",
+            colour: "\u0426\u0412\u0415\u0422",
             "01_jacket": "\u041A\u0423\u0420\u0422\u041A\u0418",
             "02_pants": "\u0428\u0422\u0410\u041D\u042B",
             "03_under-shirt": "\u0420\u0423\u0411\u0410\u0428\u041A\u0418",
@@ -27,6 +28,7 @@
             back: "BACK",
             choose: "CHOOSE",
             item: "ITEM",
+            colour: "COLOUR",
             "01_jacket": "JACKETS",
             "02_pants": "PANTS",
             "03_under-shirt": "SHIRTS",
@@ -42,6 +44,7 @@
             back: "\u8FD4\u56DE",
             choose: "\u9009\u62E9",
             item: "\u7269\u54C1",
+            colour: "\u989C\u8272",
             "01_jacket": "\u5916\u5957",
             "02_pants": "\u88E4\u5B50",
             "03_under-shirt": "\u886C\u886B",
@@ -80,6 +83,7 @@
     let root = null;
     let groups = [];
     let selection = [];
+    let colours = [];
     let selectedCategory = 0;
     let handlers = {};
 
@@ -114,6 +118,11 @@
     function selectedItem(groupName)
     {
         return selection.find(value => value.group === groupName)?.itemType;
+    }
+
+    function selectedColour(groupName)
+    {
+        return selection.find(value => value.group === groupName)?.colour ?? 0xFFFFFF;
     }
 
     function makeNavigationButton(group, index)
@@ -163,6 +172,30 @@
         return button;
     }
 
+    function makeColourButton(group, colour)
+    {
+        const value =
+            Number(colour);
+        const hex =
+            value.toString(16).padStart(6, "0").toUpperCase();
+        const button =
+            document.createElement("button");
+
+        button.type = "button";
+        button.className = "clothes-colour";
+        button.title = "#" + hex;
+        button.setAttribute("aria-label", text("colour") + " #" + hex);
+        button.style.backgroundColor = "#" + hex;
+        button.classList.toggle(
+            "selected",
+            Number(selectedColour(group.name)) === value);
+        button.addEventListener(
+            "click",
+            () => handlers.selectColour?.(group.name, value));
+
+        return button;
+    }
+
     function render()
     {
         if (!root || !groups.length) return;
@@ -175,6 +208,7 @@
         const category = text(group.name);
         const nav = root.querySelector("#clothesCategories");
         const items = root.querySelector("#clothesItems");
+        const colourGrid = root.querySelector("#clothesColours");
 
         nav.replaceChildren(...groups.map(makeNavigationButton));
         root.querySelector("#clothesCaption").textContent =
@@ -186,12 +220,17 @@
 
         root.querySelector("#clothesItemName").textContent =
             selected ? itemName(selected) : "";
+        root.querySelector("#clothesColourLabel").textContent =
+            text("colour");
+        colourGrid.replaceChildren(
+            ...colours.map(colour => makeColourButton(group, colour)));
     }
 
-    function setData(nextGroups, nextSelection)
+    function setData(nextGroups, nextSelection, nextColours)
     {
         groups = Array.isArray(nextGroups) ? nextGroups : [];
         selection = Array.isArray(nextSelection) ? nextSelection : [];
+        colours = Array.isArray(nextColours) ? nextColours : [];
         render();
     }
 
@@ -204,6 +243,8 @@
     function close()
     {
         if (!root) return;
+
+        handlers.close?.();
         root.querySelector("#clothesScreen").hidden = true;
         root.querySelector(".creator-left").hidden = false;
     }

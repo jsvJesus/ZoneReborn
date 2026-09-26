@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Character/CharacterCatalog.h"
-#include "Character/CharacterFaceState.h"
+#include "Character/CharacterProfile.h"
 #include "Character/CharacterSlots.h"
 
 #include <array>
@@ -22,6 +22,9 @@ namespace client::character
 
         std::int32_t itemType =
             0;
+
+        std::uint32_t colour =
+            0xFFFFFFu;
 
         [[nodiscard]]
         bool Empty() const noexcept
@@ -45,7 +48,8 @@ namespace client::character
         bool Equip(
             const Catalog& catalog,
             std::int32_t itemType,
-            std::string& error);
+            std::string& error,
+            std::uint32_t colour = 0xFFFFFFu);
 
         void UnequipInstance(
             std::int64_t instanceId);
@@ -58,16 +62,20 @@ namespace client::character
             const Catalog& catalog,
             std::string_view group,
             std::int32_t itemType,
+            std::uint32_t colour,
             std::string& error);
 
         [[nodiscard]]
         bool ApplyCreatorSet(
             const Catalog& catalog,
-            const std::vector<
-                std::pair<
-                    std::string,
-                    std::int32_t>>& values,
+            const std::vector<AppearancePart>& values,
             std::string& error);
+
+        [[nodiscard]]
+        bool CreatorAppearance(
+            const Catalog& catalog,
+            std::vector<AppearancePart>& output,
+            std::string& error) const;
 
         [[nodiscard]]
         bool ResetFace(

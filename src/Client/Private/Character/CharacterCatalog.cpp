@@ -974,14 +974,7 @@ namespace
             return false;
         }
 
-        const std::size_t colon = section.find(':');
-
-        if (colon == std::string_view::npos)
-        {
-            return false;
-        }
-
-        std::size_t cursor = colon + 1;
+        std::size_t cursor = 1;
         return ReadQuotedString(section, cursor, output);
     }
 

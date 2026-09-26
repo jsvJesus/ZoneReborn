@@ -114,9 +114,19 @@ namespace client::character
     bool State::Equip(
         const Catalog& catalog,
         const std::int32_t itemType,
-        std::string& error)
+        std::string& error,
+        const std::uint32_t colour)
     {
         error.clear();
+
+        if (colour >
+            0xFFFFFFu)
+        {
+            error =
+                "Character item colour is out of range.";
+
+            return false;
+        }
 
         if (itemType == 0)
         {
@@ -166,6 +176,9 @@ namespace client::character
 
             equipped.itemType =
                 itemType;
+
+            equipped.colour =
+                colour;
         }
 
         return true;
@@ -210,6 +223,7 @@ namespace client::character
         const Catalog& catalog,
         const std::string_view group,
         const std::int32_t itemType,
+        const std::uint32_t colour,
         std::string& error)
     {
         error.clear();
@@ -278,15 +292,13 @@ namespace client::character
         return Equip(
             catalog,
             itemType,
-            error);
+            error,
+            colour);
     }
 
     bool State::ApplyCreatorSet(
         const Catalog& catalog,
-        const std::vector<
-            std::pair<
-                std::string,
-                std::int32_t>>& values,
+        const std::vector<AppearancePart>& values,
         std::string& error)
     {
         State backup = *this;
@@ -321,12 +333,12 @@ namespace client::character
             return false;
         }
 
-        for (const auto& [group, itemType] :
+        for (const AppearancePart& value :
              values)
         {
             const CreatorGroup* creatorGroup =
                 catalog.FindCreatorGroup(
-                    group);
+                    value.group);
 
             if (creatorGroup ==
                 nullptr)
@@ -341,7 +353,7 @@ namespace client::character
                  creatorGroup->options)
             {
                 if (option.itemType ==
-                    itemType)
+                    value.itemType)
                 {
                     allowed =
                         true;
@@ -357,8 +369,9 @@ namespace client::character
 
             if (!Equip(
                     catalog,
-                    itemType,
-                    error))
+                    value.itemType,
+                    error,
+                    value.colour))
             {
                 *this = std::move(backup);
                 return false;
@@ -371,6 +384,67 @@ namespace client::character
         {
             *this = std::move(backup);
             return false;
+        }
+
+        return true;
+    }
+
+    bool State::CreatorAppearance(
+        const Catalog& catalog,
+        std::vector<AppearancePart>& output,
+        std::string& error) const
+    {
+        output.clear();
+        error.clear();
+
+        for (const CreatorGroup& group :
+             catalog.CreatorGroups())
+        {
+            const EquippedItem* selected =
+                nullptr;
+
+            for (const CreatorOption& option :
+                 group.options)
+            {
+                const auto found =
+                    std::find_if(
+                        slots_.begin(),
+                        slots_.end(),
+                        [&option](const EquippedItem& equipped)
+                        {
+                            return
+                                equipped.itemType ==
+                                    option.itemType;
+                        });
+
+                if (found !=
+                    slots_.end())
+                {
+                    selected =
+                        &*found;
+
+                    break;
+                }
+            }
+
+            if (selected ==
+                nullptr)
+            {
+                error =
+                    "Character creator state has no item for group " +
+                    group.name +
+                    ".";
+
+                output.clear();
+                return false;
+            }
+
+            output.push_back(
+                {
+                    group.name,
+                    selected->itemType,
+                    selected->colour
+                });
         }
 
         return true;

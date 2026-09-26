@@ -3,12 +3,22 @@
 #include "Character/CharacterCatalog.h"
 #include "Character/CharacterState.h"
 
+#include <cstdint>
 #include <string>
 #include <unordered_set>
 #include <vector>
 
 namespace client::character
 {
+    struct VisibleModel final
+    {
+        std::string reference;
+        std::string tintMaterial;
+
+        std::uint32_t colour =
+            0xFFFFFFu;
+    };
+
     struct ModelPlan final
     {
         std::string skeletonModel =
@@ -17,7 +27,7 @@ namespace client::character
         std::string lodModel =
             "characters2/basemodel/Basem/Basem.model";
 
-        std::vector<std::string>
+        std::vector<VisibleModel>
             visibleModels;
 
         std::unordered_set<Slot>

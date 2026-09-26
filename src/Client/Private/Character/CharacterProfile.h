@@ -14,6 +14,9 @@ namespace client::character
 
         std::int32_t itemType =
             0;
+
+        std::uint32_t colour =
+            0xFFFFFFu;
     };
 
     struct Profile final

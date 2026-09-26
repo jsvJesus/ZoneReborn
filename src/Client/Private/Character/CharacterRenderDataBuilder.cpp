@@ -51,6 +51,30 @@ namespace
         return value;
     }
 
+    std::string CompactKey(
+        std::string value)
+    {
+        value =
+            Lower(
+                std::move(
+                    value));
+
+        value.erase(
+            std::remove_if(
+                value.begin(),
+                value.end(),
+                [](const unsigned char character)
+                {
+                    return
+                        std::isalnum(
+                            character) ==
+                        0;
+                }),
+            value.end());
+
+        return value;
+    }
+
     std::array<float, 4> FaceTint(
         const std::uint32_t colour,
         const float brightness = 1.0f)
@@ -62,6 +86,19 @@ namespace
             (static_cast<float>(colour & 0xFFu) / 255.0f) * brightness,
             0.78f
         };
+    }
+
+    std::array<float, 4> ClothingTint(
+        const std::uint32_t colour)
+    {
+        std::array<float, 4> result =
+            FaceTint(
+                colour);
+
+        result[3] =
+            0.86f;
+
+        return result;
     }
 
     float SmoothStep(
@@ -893,6 +930,8 @@ namespace
     bool AppendModel(
         const core::resources::ResourceFileSystem& resources,
         const std::string_view modelReference,
+        const std::string_view tintMaterial,
+        const std::uint32_t clothingColour,
         const Transform& transform,
         const client::character::FaceState& face,
         client::preview::ModelRenderDataBuilder& materialBuilder,
@@ -902,6 +941,15 @@ namespace
         std::string& error)
     {
         const std::string modelKey = Lower(std::string(modelReference));
+        const std::string compactModelKey = CompactKey(modelKey);
+        const std::string tintKey = CompactKey(std::string(tintMaterial));
+        const bool clothingTintEnabled =
+            clothingColour != 0xFFFFFFu &&
+            !tintKey.empty();
+        const bool tintEntireModel =
+            clothingTintEnabled &&
+            compactModelKey.find(tintKey) !=
+                std::string::npos;
 
         core::assets::ModelBundleLoader
             bundleLoader;
@@ -1117,6 +1165,14 @@ namespace
                         if (property.texture.has_value()) key += " " + Lower(property.texture->logicalPath);
                     }
 
+                    const bool tintClothingMaterial =
+                        clothingTintEnabled &&
+                        (
+                            tintEntireModel ||
+                            CompactKey(key).find(tintKey) !=
+                                std::string::npos
+                        );
+
                     auto& material = sceneMesh.modelMaterials[groupIndex];
                     if (facialHairPart)
                     {
@@ -1176,11 +1232,17 @@ namespace
                                         1.0f;
 
                                     scene.textures.push_back(
-                                        std::move(
-                                            eyebrowAtlas));
+                                    std::move(
+                                        eyebrowAtlas));
                                 }
                             }
                         }
+                    }
+                    else if (tintClothingMaterial)
+                    {
+                        material.tintColour =
+                            ClothingTint(
+                                clothingColour);
                     }
                 }
 
@@ -1297,12 +1359,14 @@ namespace client::character
         preview::ModelRenderDataBuilder
             materialBuilder;
 
-        for (const std::string& model :
+        for (const VisibleModel& model :
              plan.visibleModels)
         {
             if (!AppendModel(
             resources,
-            model,
+            model.reference,
+            model.tintMaterial,
+            model.colour,
             transform,
             state.Face(),
             materialBuilder,

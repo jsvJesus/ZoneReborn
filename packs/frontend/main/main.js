@@ -1636,8 +1636,17 @@
                 {
                     button.addEventListener(
                         "click",
-                        () =>
+                        async () =>
                         {
+                            if (button.dataset.action === "appearance" &&
+                                Frontend.currentCharacter())
+                            {
+                                await FrontendRouter.show(
+                                    "character-edit");
+
+                                return;
+                            }
+
                             Frontend.trace(
                                 "Main action: " +
                                 button.dataset.action);
