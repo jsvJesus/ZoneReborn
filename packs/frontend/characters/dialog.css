@@ -1,3 +1,7 @@
+/* ============================================================
+   CREATE CHARACTER CARD
+   ============================================================ */
+
 .main-character-create {
     position: relative;
 
@@ -11,57 +15,99 @@
 
     gap: 10px;
 
+    overflow: hidden;
+
     border:
         1px solid
-        rgba(255, 255, 255, 0.07);
+        var(--zr-panel-border);
 
     border-left:
         3px solid
-        #8f302c;
+        var(--zr-yellow);
 
     outline: 0;
 
     background:
         linear-gradient(
             110deg,
-            rgba(43, 43, 43, 0.88) 0%,
-            rgba(26, 26, 26, 0.78) 66%,
-            rgba(19, 19, 19, 0.62) 100%
+            rgba(28, 31, 26, 0.91) 0%,
+            rgba(18, 20, 17, 0.83) 65%,
+            rgba(10, 12, 10, 0.72) 100%
         );
 
+    box-shadow:
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.025);
+
     color:
-        rgba(225, 225, 225, 0.82);
+        rgba(216, 220, 209, 0.82);
 
     font-family: inherit;
 
     font-size:
-        clamp(13px, 0.95vw, 15px);
+        clamp(
+            13px,
+            0.95vw,
+            15px);
 
     font-weight: 600;
+
+    letter-spacing: 0.2px;
 
     cursor: pointer;
 
     transition:
         border-color 120ms ease,
         background 120ms ease,
-        color 120ms ease;
+        color 120ms ease,
+        box-shadow 120ms ease;
+}
+
+
+.main-character-create::after {
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 46px;
+    height: 3px;
+
+    content: "";
+
+    background:
+        repeating-linear-gradient(
+            135deg,
+            rgba(200, 170, 73, 0.58) 0px,
+            rgba(200, 170, 73, 0.58) 4px,
+            rgba(25, 27, 22, 0.72) 4px,
+            rgba(25, 27, 22, 0.72) 8px
+        );
+
+    opacity: 0.46;
 }
 
 
 .main-character-create:hover {
     border-color:
-        rgba(161, 56, 51, 0.70);
+        rgba(200, 170, 73, 0.34);
 
     background:
         linear-gradient(
             110deg,
-            rgba(52, 45, 44, 0.94) 0%,
-            rgba(31, 29, 29, 0.88) 66%,
-            rgba(22, 21, 21, 0.72) 100%
+            rgba(40, 42, 30, 0.94) 0%,
+            rgba(22, 24, 19, 0.88) 65%,
+            rgba(11, 13, 10, 0.76) 100%
         );
 
+    box-shadow:
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.035),
+        0 0 12px
+        rgba(200, 170, 73, 0.045);
+
     color:
-        #eeeeee;
+        var(--zr-text-strong);
 }
 
 
@@ -76,17 +122,43 @@
 
     border:
         1px solid
-        rgba(173, 62, 56, 0.72);
+        rgba(200, 170, 73, 0.54);
+
+    background:
+        rgba(200, 170, 73, 0.04);
 
     color:
-        #c75a54;
+        var(--zr-yellow-bright);
 
     font-size: 20px;
     font-weight: 300;
 
     line-height: 1;
+
+    transition:
+        background 120ms ease,
+        border-color 120ms ease,
+        box-shadow 120ms ease;
 }
 
+
+.main-character-create:hover
+.main-character-create-plus {
+    border-color:
+        var(--zr-yellow-bright);
+
+    background:
+        rgba(200, 170, 73, 0.09);
+
+    box-shadow:
+        0 0 8px
+        rgba(200, 170, 73, 0.14);
+}
+
+
+/* ============================================================
+   DIALOG OVERLAY
+   ============================================================ */
 
 .character-dialog-overlay {
     position: fixed;
@@ -101,12 +173,16 @@
     justify-content: center;
 
     background:
-        rgba(0, 0, 0, 0.68);
+        rgba(0, 0, 0, 0.72);
 
     backdrop-filter:
-        blur(3px);
+        blur(4px);
 }
 
+
+/* ============================================================
+   DIALOG WINDOW
+   ============================================================ */
 
 .character-dialog-window {
     position: relative;
@@ -116,6 +192,8 @@
             480px,
             calc(100vw - 48px));
 
+    overflow: hidden;
+
     padding:
         22px
         24px
@@ -123,39 +201,68 @@
 
     border:
         1px solid
-        rgba(255, 255, 255, 0.10);
+        var(--zr-panel-border);
 
     border-left:
         3px solid
-        #8f302c;
+        var(--zr-yellow);
 
     background:
         linear-gradient(
             145deg,
-            rgba(31, 31, 31, 0.98),
-            rgba(16, 16, 16, 0.98)
+            rgba(18, 21, 17, 0.985),
+            rgba(7, 9, 7, 0.985)
         );
 
     box-shadow:
         0 24px 80px
-        rgba(0, 0, 0, 0.62);
+        rgba(0, 0, 0, 0.66),
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.025);
 
     color:
-        #d7d7d7;
+        var(--zr-text);
 
     font-family: inherit;
 }
 
 
+.character-dialog-window::before {
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 70px;
+    height: 4px;
+
+    content: "";
+
+    background:
+        repeating-linear-gradient(
+            135deg,
+            rgba(200, 170, 73, 0.68) 0px,
+            rgba(200, 170, 73, 0.68) 6px,
+            rgba(25, 27, 22, 0.86) 6px,
+            rgba(25, 27, 22, 0.86) 12px
+        );
+
+    opacity: 0.60;
+}
+
+
+/* ============================================================
+   TITLE
+   ============================================================ */
+
 .character-dialog-title {
     color:
-        #eeeeee;
+        var(--zr-text-strong);
 
     font-size: 19px;
     font-weight: 700;
 
-    letter-spacing:
-        0.4px;
+    letter-spacing: 0.55px;
 }
 
 
@@ -171,19 +278,22 @@
     background:
         linear-gradient(
             90deg,
-            #8f302c,
-            rgba(143, 48, 44, 0.20),
+            var(--zr-yellow),
+            rgba(200, 170, 73, 0.18) 44%,
             transparent
         );
 }
 
 
+/* ============================================================
+   TEXT
+   ============================================================ */
+
 .character-dialog-message {
-    margin-bottom:
-        16px;
+    margin-bottom: 16px;
 
     color:
-        rgba(215, 215, 215, 0.78);
+        rgba(202, 206, 196, 0.78);
 
     font-size: 14px;
     line-height: 1.45;
@@ -191,16 +301,21 @@
 
 
 .character-dialog-label {
-    margin-bottom:
-        7px;
+    margin-bottom: 7px;
 
     color:
-        rgba(215, 215, 215, 0.68);
+        rgba(198, 202, 193, 0.68);
 
     font-size: 12px;
     font-weight: 600;
+
+    letter-spacing: 0.35px;
 }
 
+
+/* ============================================================
+   INPUT
+   ============================================================ */
 
 .character-dialog-input {
     width: 100%;
@@ -214,42 +329,65 @@
 
     border:
         1px solid
-        rgba(255, 255, 255, 0.12);
+        rgba(200, 170, 73, 0.14);
 
     outline: 0;
 
     background:
-        rgba(5, 5, 5, 0.68);
+        rgba(5, 7, 5, 0.78);
+
+    box-shadow:
+        inset 0 1px 4px
+        rgba(0, 0, 0, 0.55);
 
     color:
-        #eeeeee;
+        var(--zr-text-strong);
+
+    caret-color:
+        var(--zr-yellow-bright);
 
     font-family: inherit;
     font-size: 16px;
 
     transition:
-        border-color 100ms ease,
-        background 100ms ease;
+        border-color 120ms ease,
+        background 120ms ease,
+        box-shadow 120ms ease;
+}
+
+
+.character-dialog-input:hover {
+    border-color:
+        rgba(200, 170, 73, 0.27);
 }
 
 
 .character-dialog-input:focus {
     border-color:
-        rgba(154, 55, 50, 0.82);
+        rgba(219, 194, 93, 0.52);
 
     background:
-        rgba(10, 10, 10, 0.84);
+        rgba(8, 10, 7, 0.92);
+
+    box-shadow:
+        inset 0 1px 4px
+        rgba(0, 0, 0, 0.60),
+        0 0 0 1px
+        rgba(200, 170, 73, 0.07);
 }
 
+
+/* ============================================================
+   ERROR
+   ============================================================ */
 
 .character-dialog-error {
     min-height: 17px;
 
-    margin-top:
-        10px;
+    margin-top: 10px;
 
     color:
-        #d16c66;
+        #cf7565;
 
     font-size: 12px;
 }
@@ -262,6 +400,10 @@
 }
 
 
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+
 .character-dialog-buttons {
     display: flex;
 
@@ -269,8 +411,7 @@
 
     gap: 8px;
 
-    margin-top:
-        18px;
+    margin-top: 18px;
 }
 
 
@@ -284,54 +425,129 @@
 
     border:
         1px solid
-        rgba(255, 255, 255, 0.12);
+        rgba(200, 170, 73, 0.12);
 
     outline: 0;
 
     background:
-        rgba(45, 45, 45, 0.86);
+        linear-gradient(
+            180deg,
+            rgba(35, 38, 31, 0.90),
+            rgba(16, 18, 15, 0.92)
+        );
+
+    box-shadow:
+        inset 0 1px 0
+        rgba(255, 255, 255, 0.025);
 
     color:
-        rgba(230, 230, 230, 0.88);
+        rgba(218, 222, 211, 0.86);
 
     font-family: inherit;
     font-size: 12px;
     font-weight: 600;
 
+    letter-spacing: 0.25px;
+
     cursor: pointer;
+
+    transition:
+        border-color 120ms ease,
+        background 120ms ease,
+        color 120ms ease,
+        box-shadow 120ms ease;
 }
 
 
 .character-dialog-button:hover:not(:disabled) {
+    border-color:
+        rgba(200, 170, 73, 0.34);
+
     background:
-        rgba(58, 58, 58, 0.95);
+        linear-gradient(
+            180deg,
+            rgba(47, 48, 34, 0.96),
+            rgba(21, 23, 17, 0.96)
+        );
 
     color:
-        #ffffff;
+        var(--zr-text-strong);
 }
 
 
+/* ============================================================
+   PRIMARY
+   ============================================================ */
+
 .character-dialog-button.primary {
     border-color:
-        rgba(133, 55, 50, 0.72);
+        rgba(200, 170, 73, 0.40);
 
     background:
-        rgba(111, 42, 38, 0.80);
+        linear-gradient(
+            100deg,
+            rgba(70, 62, 30, 0.94),
+            rgba(31, 31, 21, 0.94)
+        );
+
+    color:
+        #e3dcbb;
 }
 
 
 .character-dialog-button.primary:hover:not(:disabled) {
+    border-color:
+        var(--zr-yellow-bright);
+
     background:
-        rgba(137, 48, 43, 0.94);
+        linear-gradient(
+            100deg,
+            rgba(88, 76, 34, 0.98),
+            rgba(38, 37, 23, 0.98)
+        );
+
+    color:
+        #f1e9c8;
+
+    box-shadow:
+        0 0 12px
+        rgba(200, 170, 73, 0.07);
 }
 
 
+/* ============================================================
+   DANGER
+   ============================================================ */
+
 .character-dialog-button.danger {
     border-color:
-        rgba(166, 55, 49, 0.84);
+        rgba(154, 74, 60, 0.62);
 
     background:
-        rgba(126, 37, 33, 0.88);
+        linear-gradient(
+            180deg,
+            rgba(91, 43, 35, 0.86),
+            rgba(48, 27, 23, 0.90)
+        );
+
+    color:
+        #ddb0a6;
+}
+
+
+.character-dialog-button.danger:hover:not(:disabled) {
+    border-color:
+        rgba(190, 88, 70, 0.78);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(115, 50, 40, 0.94),
+            rgba(61, 31, 25, 0.94)
+        );
+
+    color:
+        #efc0b5;
 }
 
 

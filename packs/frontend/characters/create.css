@@ -3,6 +3,10 @@
 }
 
 
+/* ============================================================
+   CHARACTER NAME
+   ============================================================ */
+
 .creator-name-row {
     position: relative;
 
@@ -26,21 +30,22 @@
 
     box-sizing: border-box;
 
+    overflow: hidden;
+
     border:
         1px solid
-        rgba(255, 255, 255, 0.07);
+        var(--zr-panel-border);
 
     background:
         linear-gradient(
             110deg,
-            rgba(43, 43, 43, 0.88) 0%,
-            rgba(26, 26, 26, 0.78) 66%,
-            rgba(19, 19, 19, 0.62) 100%
+            rgba(28, 31, 26, 0.91) 0%,
+            rgba(18, 20, 17, 0.83) 65%,
+            rgba(10, 12, 10, 0.72) 100%
         );
 
     box-shadow:
-        inset 0 1px 0
-        rgba(255, 255, 255, 0.025);
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
 
 
@@ -55,13 +60,40 @@
 
     content: "";
 
-    background: #8f302c;
+    background:
+        var(--zr-yellow);
+}
+
+
+.creator-name-row::after {
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 42px;
+    height: 3px;
+
+    content: "";
+
+    background:
+        repeating-linear-gradient(
+            135deg,
+            rgba(200, 170, 73, 0.58) 0px,
+            rgba(200, 170, 73, 0.58) 4px,
+            rgba(25, 27, 22, 0.72) 4px,
+            rgba(25, 27, 22, 0.72) 8px
+        );
+
+    opacity: 0.45;
+
+    pointer-events: none;
 }
 
 
 .creator-name-row label {
     color:
-        rgba(210, 210, 210, 0.72);
+        rgba(198, 202, 193, 0.68);
 
     font-size:
         clamp(
@@ -70,7 +102,8 @@
             12px);
 
     font-weight: 600;
-    letter-spacing: 0.6px;
+
+    letter-spacing: 0.8px;
 }
 
 
@@ -82,18 +115,30 @@
 
     padding:
         0
-        10px;
+        11px;
 
     border:
         1px solid
-        rgba(255, 255, 255, 0.20);
+        rgba(200, 170, 73, 0.16);
 
     outline: 0;
 
     background:
-        rgba(238, 238, 238, 0.96);
+        linear-gradient(
+            180deg,
+            rgba(8, 10, 8, 0.94),
+            rgba(13, 15, 12, 0.92)
+        );
 
-    color: #161616;
+    box-shadow:
+        inset 0 1px 4px rgba(0, 0, 0, 0.52),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+
+    color:
+        var(--zr-text-strong);
+
+    caret-color:
+        var(--zr-yellow-bright);
 
     font-family: inherit;
     font-size: 15px;
@@ -102,25 +147,40 @@
     user-select: text;
 
     transition:
-        border-color 100ms ease,
-        box-shadow 100ms ease;
+        border-color 120ms ease,
+        background 120ms ease,
+        box-shadow 120ms ease;
+}
+
+
+.creator-name-row input:hover {
+    border-color:
+        rgba(200, 170, 73, 0.28);
 }
 
 
 .creator-name-row input:focus {
     border-color:
-        rgba(182, 65, 59, 0.86);
+        rgba(219, 194, 93, 0.56);
+
+    background:
+        rgba(10, 12, 9, 0.97);
 
     box-shadow:
-        0 0 0 1px
-        rgba(143, 48, 44, 0.24);
+        inset 0 1px 4px rgba(0, 0, 0, 0.58),
+        0 0 0 1px rgba(200, 170, 73, 0.08),
+        0 0 12px rgba(200, 170, 73, 0.05);
 }
 
 
 .creator-name-row input:disabled {
-    opacity: 0.58;
+    opacity: 0.48;
 }
 
+
+/* ============================================================
+   CREATE MENU
+   ============================================================ */
 
 .creator-menu {
     margin-bottom: 0;
@@ -135,9 +195,11 @@
     border-left-color: transparent;
 
     color:
-        rgba(135, 135, 135, 0.40);
+        rgba(128, 132, 123, 0.38);
 
     cursor: default;
+
+    opacity: 0.62;
 }
 
 
@@ -148,17 +210,53 @@
 }
 
 
+.creator-menu button:disabled
+.main-navigation-marker,
+.creator-submit:disabled
+.main-navigation-marker,
+.creator-back:disabled
+.main-navigation-marker {
+    border-color:
+        rgba(130, 130, 120, 0.15);
+
+    background:
+        transparent;
+
+    box-shadow: none;
+}
+
+
 .creator-submit {
     color:
-        rgba(215, 215, 215, 0.78);
+        rgba(216, 220, 208, 0.82);
+}
+
+
+.creator-submit:hover:not(:disabled) {
+    color:
+        var(--zr-yellow-bright);
+}
+
+
+.creator-submit:hover:not(:disabled)
+.main-navigation-marker {
+    background:
+        var(--zr-yellow-bright);
+
+    border-color:
+        var(--zr-yellow-bright);
 }
 
 
 .creator-back {
     color:
-        rgba(184, 184, 184, 0.60);
+        rgba(176, 180, 170, 0.62);
 }
 
+
+/* ============================================================
+   ERROR
+   ============================================================ */
 
 .creator-error {
     min-height: 17px;
@@ -168,7 +266,8 @@
         12px
         0;
 
-    color: #d16c66;
+    color:
+        #cf7565;
 
     font-size: 12px;
     line-height: 1.35;
@@ -180,6 +279,10 @@
 }
 
 
+/* ============================================================
+   ROTATION AREA
+   ============================================================ */
+
 .creator-rotate-area {
     right:
         clamp(
@@ -188,6 +291,10 @@
             150px);
 }
 
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 
 @media (max-width: 1100px) {
 
@@ -199,7 +306,6 @@
         padding-right: 10px;
         padding-left: 13px;
     }
-
 
     .creator-rotate-area {
         right: 40px;
@@ -214,7 +320,6 @@
 
         margin-bottom: 7px;
     }
-
 
     .creator-name-row input {
         height: 32px;
