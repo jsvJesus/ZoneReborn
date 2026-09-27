@@ -1154,6 +1154,92 @@
                 "dummy_rotate",
                 deltaX,
                 deltaY);
+        },
+
+
+        resetCharacterRotation()
+        {
+            post(
+                "dummy_rotate_reset");
+        },
+
+
+        bindCharacterPointerControls(
+            area)
+        {
+            if (!area)
+            {
+                return;
+            }
+
+            let pointer = -1;
+            let lastX = 0;
+            let lastY = 0;
+
+            area.addEventListener(
+                "contextmenu",
+                event => event.preventDefault());
+
+            area.addEventListener(
+                "pointerdown",
+                event =>
+                {
+                    if (event.button !== 2 ||
+                        pointer !== -1)
+                    {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    pointer = event.pointerId;
+                    lastX = event.clientX;
+                    lastY = event.clientY;
+
+                    area.classList.add("rotating");
+
+                    area.setPointerCapture(pointer);
+                });
+
+            area.addEventListener(
+                "pointermove",
+                event =>
+                {
+                    if (event.pointerId !== pointer)
+                    {
+                        return;
+                    }
+
+                    const deltaX = event.clientX - lastX;
+                    const deltaY = event.clientY - lastY;
+                    lastX = event.clientX;
+                    lastY = event.clientY;
+
+                    Frontend.rotateCharacter(deltaX, deltaY);
+                });
+
+            const stop =
+                event =>
+                {
+                    if (event.pointerId !== pointer)
+                    {
+                        return;
+                    }
+
+                    const stoppedPointer = pointer;
+                    pointer = -1;
+                    area.classList.remove("rotating");
+
+                    if (area.hasPointerCapture(stoppedPointer))
+                    {
+                        area.releasePointerCapture(stoppedPointer);
+                    }
+
+                    Frontend.resetCharacterRotation();
+                };
+
+            area.addEventListener("pointerup", stop);
+            area.addEventListener("pointercancel", stop);
+            area.addEventListener("lostpointercapture", stop);
         }
     };
 

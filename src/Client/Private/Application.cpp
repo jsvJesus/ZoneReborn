@@ -22,6 +22,12 @@ namespace
 
     constexpr float CharacterVerticalOffset =
         0.15f;
+
+    constexpr float CharacterRotationReturnRate =
+        6.0f;
+
+    constexpr float CharacterRotationReturnEpsilon =
+        0.001f;
     
     core::math::Transform3x4
     ApplyYaw(
@@ -569,6 +575,29 @@ Application::CharacterTransform() const noexcept
 
     bool Application::Update()
     {
+        const auto updateNow =
+            std::chrono::steady_clock::now();
+
+        float updateSeconds =
+            std::chrono::duration<float>(
+                updateNow -
+                characterRotationUpdateTime_).
+                count();
+
+        characterRotationUpdateTime_ =
+            updateNow;
+
+        if (updateSeconds < 0.0f)
+        {
+            updateSeconds =
+                0.0f;
+        }
+        else if (updateSeconds > 0.1f)
+        {
+            updateSeconds =
+                0.1f;
+        }
+
         if (audio_.IsInitialized())
         {
             std::string audioError;
@@ -613,15 +642,41 @@ Application::CharacterTransform() const noexcept
             renderer_.SetCamera(
                 CharacterCamera());
 
+            if (characterYawReturning_ &&
+                characterVisible_)
+            {
+                characterYaw_ *=
+                    std::exp(
+                        -CharacterRotationReturnRate *
+                        updateSeconds);
+
+                if (std::abs(characterYaw_) <=
+                    CharacterRotationReturnEpsilon)
+                {
+                    characterYaw_ =
+                        0.0f;
+
+                    characterYawReturning_ =
+                        false;
+                }
+
+                if (!renderer_.
+                        SetInstanceTransformRange(
+                            characterFirstInstance_,
+                            characterInstanceCount_,
+                            CharacterTransform()))
+                {
+                    core::Log::Warning(
+                        "Unable to restore character rotation.");
+                }
+            }
+
             if (characterVisible_ &&
                 characterAnimator_.IsReady())
             {
-                const auto now =
-                    std::chrono::steady_clock::now();
-
                 const float elapsedSeconds =
                     std::chrono::duration<float>(
-                        now -
+                        updateNow -
                         characterAnimationStart_).
                         count();
 
@@ -1841,6 +1896,9 @@ Application::CharacterTransform() const noexcept
                         break;
                     }
 
+                    characterYawReturning_ =
+                        false;
+
                     characterYaw_ +=
                         event.characterDeltaX *
                         0.01f;
@@ -1874,6 +1932,27 @@ Application::CharacterTransform() const noexcept
                     {
                         core::Log::Warning(
                             "Unable to rotate character instances.");
+                    }
+
+                    break;
+                }
+
+                case frontend::FrontendEventType::CharacterRotateReset:
+                {
+                    if (!rendererInitialized_ ||
+                        !characterVisible_)
+                    {
+                        break;
+                    }
+
+                    characterYawReturning_ =
+                        std::abs(characterYaw_) >
+                        CharacterRotationReturnEpsilon;
+
+                    if (!characterYawReturning_)
+                    {
+                        characterYaw_ =
+                            0.0f;
                     }
 
                     break;

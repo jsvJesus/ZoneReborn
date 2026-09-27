@@ -5,19 +5,6 @@
     let mountedRoot =
         null;
 
-    let rotating =
-        false;
-
-    let rotatingPointer =
-        -1;
-
-    let lastMouseX =
-        0;
-
-    let lastMouseY =
-        0;
-
-
     const translations =
     {
         russian:
@@ -1015,135 +1002,8 @@
             return;
         }
 
-
-        area.addEventListener(
-            "contextmenu",
-            event =>
-            {
-                event.preventDefault();
-            });
-
-
-        area.addEventListener(
-            "pointerdown",
-            event =>
-            {
-                if (event.button !== 2)
-                {
-                    return;
-                }
-
-                event.preventDefault();
-
-
-                rotating =
-                    true;
-
-                rotatingPointer =
-                    event.pointerId;
-
-                lastMouseX =
-                    event.clientX;
-
-                lastMouseY =
-                    event.clientY;
-
-
-                area.classList.add(
-                    "rotating");
-
-
-                area.setPointerCapture(
-                    event.pointerId);
-            });
-
-
-        area.addEventListener(
-            "pointermove",
-            event =>
-            {
-                if (!rotating ||
-                    event.pointerId !==
-                        rotatingPointer)
-                {
-                    return;
-                }
-
-
-                const deltaX =
-                    event.clientX -
-                    lastMouseX;
-
-                const deltaY =
-                    event.clientY -
-                    lastMouseY;
-
-
-                lastMouseX =
-                    event.clientX;
-
-                lastMouseY =
-                    event.clientY;
-
-
-                Frontend.rotateCharacter(
-                    deltaX,
-                    deltaY);
-            });
-
-
-        const stopRotation =
-            event =>
-            {
-                if (!rotating ||
-                    event.pointerId !==
-                        rotatingPointer)
-                {
-                    return;
-                }
-
-
-                rotating =
-                    false;
-
-                rotatingPointer =
-                    -1;
-
-
-                area.classList.remove(
-                    "rotating");
-
-
-                if (area.hasPointerCapture(
-                        event.pointerId))
-                {
-                    area.releasePointerCapture(
-                        event.pointerId);
-                }
-            };
-
-
-        area.addEventListener(
-            "pointerup",
-            stopRotation);
-
-        area.addEventListener(
-            "pointercancel",
-            stopRotation);
-
-        area.addEventListener(
-            "lostpointercapture",
-            () =>
-            {
-                rotating =
-                    false;
-
-                rotatingPointer =
-                    -1;
-
-                area.classList.remove(
-                    "rotating");
-            });
+        Frontend.bindCharacterPointerControls(
+            area);
     }
 
 

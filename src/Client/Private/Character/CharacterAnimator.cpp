@@ -14,6 +14,7 @@
 #include <cstring>
 #include <limits>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -32,7 +33,7 @@ namespace
 
     constexpr float IdleFrameRate =
         22.0f;
-    
+
     struct Quaternion final
     {
         float x = 0.0f;
@@ -40,7 +41,7 @@ namespace
         float z = 0.0f;
         float w = 1.0f;
     };
-    
+
     template<typename T>
     struct Key final
     {
@@ -2032,7 +2033,7 @@ namespace client::character
         }
         return true;
     }
-    
+
     bool Animator::Update(
         const float elapsedSeconds,
         graphics::Renderer& renderer,

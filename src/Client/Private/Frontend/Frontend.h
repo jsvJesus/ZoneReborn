@@ -50,7 +50,8 @@ namespace client::frontend
         CharacterHide,
         CharacterPart,
         CharacterFull,
-        CharacterRotate
+        CharacterRotate,
+        CharacterRotateReset
     };
 
     struct FrontendEvent final

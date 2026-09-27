@@ -2538,6 +2538,20 @@ namespace client::frontend
             return;
         }
 
+        if (command == "dummy_rotate_reset")
+        {
+            FrontendEvent event;
+
+            event.type =
+                FrontendEventType::
+                    CharacterRotateReset;
+
+            events_.push_back(
+                std::move(event));
+
+            return;
+        }
+
         if (command ==
             "play")
         {

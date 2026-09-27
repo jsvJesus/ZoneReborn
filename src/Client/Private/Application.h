@@ -108,6 +108,13 @@ namespace client
         float characterYaw_ =
             0.0f;
 
+        bool characterYawReturning_ =
+            false;
+
+        std::chrono::steady_clock::time_point
+            characterRotationUpdateTime_ =
+                std::chrono::steady_clock::now();
+
         std::size_t
             characterFirstInstance_ =
                 0;
