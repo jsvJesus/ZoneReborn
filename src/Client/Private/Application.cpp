@@ -633,6 +633,17 @@ Application::CharacterTransform() const noexcept
 
                 return false;
             }
+
+            if (worldFirstFramePending_)
+            {
+                worldFirstFramePending_ =
+                    false;
+
+                frontend_.Hide();
+
+                frontend_.SetWorldLoading(
+                    false);
+            }
         }
         else if (rendererInitialized_)
         {
@@ -1963,6 +1974,9 @@ Application::CharacterTransform() const noexcept
                     if (!characterProfile_.
                             has_value())
                     {
+                        frontend_.SetWorldLoading(
+                            false);
+
                         core::Log::Warning(
                             "Play ignored: account has no character.");
 
@@ -1972,6 +1986,9 @@ Application::CharacterTransform() const noexcept
                     if (state_ !=
                         states::ClientState::Frontend)
                     {
+                        frontend_.SetWorldLoading(
+                            false);
+
                         core::Log::Warning(
                             "Play ignored: client is not in Frontend state.");
 
@@ -1981,13 +1998,14 @@ Application::CharacterTransform() const noexcept
                     core::Log::Info(
                         "Frontend requested Play.");
 
+                    worldFirstFramePending_ =
+                        false;
+
                     state_ =
                         states::ClientState::LoadingWorld;
 
                     core::Log::Info(
                         "Client state: LoadingWorld");
-
-                    frontend_.Hide();
 
                     audio_.StopMenuMusic();
 
@@ -2028,6 +2046,9 @@ Application::CharacterTransform() const noexcept
 
                         frontend_.Show();
 
+                        frontend_.SetWorldLoading(
+                            false);
+
                         if (audio_.IsInitialized())
                         {
                             std::string
@@ -2048,6 +2069,9 @@ Application::CharacterTransform() const noexcept
 
                     state_ =
                         states::ClientState::World;
+
+                    worldFirstFramePending_ =
+                        true;
 
                     core::Log::Info(
                         std::string(
@@ -2073,6 +2097,9 @@ Application::CharacterTransform() const noexcept
 
     void Application::Shutdown()
     {
+        worldFirstFramePending_ =
+            false;
+
         frontend_.Shutdown();
 
         worldSession_.Unload(

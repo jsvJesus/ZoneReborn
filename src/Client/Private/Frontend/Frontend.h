@@ -168,6 +168,9 @@ namespace client::frontend
         void SendCharacterFaceState(
             const character::FaceState& face);
 
+        void SetWorldLoading(
+            bool visible);
+
         void Hide();
 
         void Show();

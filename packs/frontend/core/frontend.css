@@ -91,3 +91,79 @@ button {
     max-width: 100vw;
     max-height: 100vh;
 }
+
+#worldLoading {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 9000;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #101210 0%,
+            #050605 38%,
+            #000000 76%
+        );
+
+    pointer-events: auto;
+    user-select: none;
+}
+
+#worldLoading[hidden] {
+    display: none;
+}
+
+.world-loading-content {
+    display: flex;
+
+    flex-direction: column;
+    align-items: center;
+
+    gap: 18px;
+}
+
+.world-loading-indicator {
+    display: block;
+
+    width: 64px;
+    height: 64px;
+
+    animation:
+        world-loading-rotation 1.05s linear infinite;
+}
+
+.world-loading-text {
+    color: #d6d6d6;
+
+    font-family:
+        "Arial Narrow",
+        "Roboto Condensed",
+        Arial,
+        sans-serif;
+
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+
+    text-shadow:
+        0 1px 2px #000000;
+}
+
+@keyframes world-loading-rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}

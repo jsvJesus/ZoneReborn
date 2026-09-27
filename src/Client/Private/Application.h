@@ -74,6 +74,9 @@ namespace client
         world::Session
             worldSession_;
 
+        bool worldFirstFramePending_ =
+            false;
+
         preview::CharacterSelectStageData
             characterSelectStage_;
 

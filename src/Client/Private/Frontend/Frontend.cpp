@@ -1910,6 +1910,18 @@ namespace client::frontend
             SerializeFaceState(face) + ");}");
     }
 
+    void OriginalFrontend::SetWorldLoading(
+        const bool visible)
+    {
+        ExecuteScriptUtf8(
+            "if(window.ZoneFrontend){window.ZoneFrontend.worldLoading(" +
+            std::string(
+                visible
+                    ? "true"
+                    : "false") +
+            ");}");
+    }
+
     void OriginalFrontend::Hide()
     {
         if (controller_)

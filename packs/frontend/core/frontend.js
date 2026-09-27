@@ -20,6 +20,18 @@
     const STARTUP_DURATION =
         1400;
 
+    const WORLD_LOADING_TEXT =
+    {
+        russian:
+            "ЗАГРУЗКА...",
+
+        english:
+            "LOADING...",
+
+        chinese:
+            "加载中..."
+    };
+
 
     let currentLocale =
         normalizeLocale(
@@ -37,7 +49,10 @@
             "",
 			
 		character:
-			null
+			null,
+
+        worldLoading:
+            false
     };
 
 
@@ -628,6 +643,76 @@
     }
 
 
+    function setWorldLoading(
+        visible)
+    {
+        const loading =
+            document.getElementById(
+                "worldLoading");
+
+        const root =
+            document.getElementById(
+                "screenRoot");
+
+        const top =
+            document.getElementById(
+                "sharedTop");
+
+        if (!loading)
+        {
+            return;
+        }
+
+        state.worldLoading =
+            Boolean(visible);
+
+        loading.hidden =
+            !state.worldLoading;
+
+        if (root)
+        {
+            root.inert =
+                state.worldLoading;
+        }
+
+        if (state.worldLoading)
+        {
+            if (top)
+            {
+                top.hidden =
+                    true;
+            }
+
+            const text =
+                document.getElementById(
+                    "worldLoadingText");
+
+            if (text)
+            {
+                text.textContent =
+                    WORLD_LOADING_TEXT[currentLocale] ||
+                    WORLD_LOADING_TEXT.russian;
+            }
+
+            return;
+        }
+
+        renderSharedTop(
+            state.currentScreen);
+    }
+
+
+    function afterNextPaint()
+    {
+        return new Promise(
+            resolve =>
+                requestAnimationFrame(
+                    () =>
+                        requestAnimationFrame(
+                            resolve)));
+    }
+
+
     const Router =
     {
         async show(
@@ -936,8 +1021,18 @@
         },
 
 
-        play()
+        async play()
         {
+            if (state.worldLoading)
+            {
+                return;
+            }
+
+            setWorldLoading(
+                true);
+
+            await afterNextPaint();
+
             post(
                 "play");
         },
@@ -1272,6 +1367,14 @@
 
     window.ZoneFrontend =
     {
+        worldLoading(
+            visible)
+        {
+            setWorldLoading(
+                visible);
+        },
+
+
         loginError(
             message)
         {
@@ -1462,6 +1565,11 @@
         {
             await Promise.all([
                 drawStartupTga(),
+                window.FrontendTga
+                    ? window.FrontendTga.load(
+                        document.getElementById(
+                            "worldLoadingIndicator"))
+                    : Promise.resolve(),
                 delay(
                     STARTUP_DURATION)
             ]);

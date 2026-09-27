@@ -81,6 +81,26 @@
         </div>
 
         <div
+            id="worldLoading"
+            role="status"
+            aria-live="polite"
+            hidden>
+
+            <div class="world-loading-content">
+                <canvas
+                    id="worldLoadingIndicator"
+                    class="world-loading-indicator"
+                    data-tga="/packs/res/soGUI/maps/loadingScreen/loadingCircle/loadingCircle1.tga">
+                </canvas>
+
+                <div id="worldLoadingText" class="world-loading-text">
+                    ЗАГРУЗКА...
+                </div>
+            </div>
+
+        </div>
+
+        <div
             id="sharedTop"
             class="main-top"
             hidden>
