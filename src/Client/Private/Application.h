@@ -20,6 +20,8 @@
 #include "Character/CharacterProfile.h"
 #include "Character/CharacterService.h"
 
+#include "World/WorldSession.h"
+
 #include <cstddef>
 #include <chrono>
 #include <optional>
@@ -68,6 +70,9 @@ namespace client
 
         graphics::Renderer
             renderer_;
+
+        world::Session
+            worldSession_;
 
         preview::CharacterSelectStageData
             characterSelectStage_;

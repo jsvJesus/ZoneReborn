@@ -14,6 +14,9 @@ namespace
     constexpr char MainServerId[] =
         "zone_main";
 
+    constexpr char TestWorldSpace[] =
+        "start_tutorial_warehouse"; // load map for test
+
     constexpr char MainMenuBackgroundPath[] =
         "res/soGUI/maps/MainMenu/main_bg.jpg";
 
@@ -582,14 +585,34 @@ Application::CharacterTransform() const noexcept
             }
         }
         
-        if (rendererInitialized_)
+        if (state_ == states::ClientState::World && worldSession_.IsLoaded())
+        {
+            worldSession_.Update(
+                window_,
+                renderer_);
+
+            std::string
+                renderError;
+
+            if (!renderer_.Render(
+                    renderError))
+            {
+                core::Log::Error(
+                    std::string(
+                        "World render failed: ") +
+                    renderError);
+
+                return false;
+            }
+        }
+        else if (rendererInitialized_)
         {
             std::string
                 renderError;
 
             renderer_.SetCamera(
                 CharacterCamera());
-            
+
             if (characterVisible_ &&
                 characterAnimator_.IsReady())
             {
@@ -618,7 +641,7 @@ Application::CharacterTransform() const noexcept
                     return false;
                 }
             }
-            
+
             if (!renderer_.Render(
                     renderError))
             {
@@ -628,7 +651,7 @@ Application::CharacterTransform() const noexcept
                 return false;
             }
         }
-        
+
         frontend_.Resize();
 
         std::string frontendError;
@@ -1867,12 +1890,91 @@ Application::CharacterTransform() const noexcept
                         break;
                     }
 
+                    if (state_ !=
+                        states::ClientState::Frontend)
+                    {
+                        core::Log::Warning(
+                            "Play ignored: client is not in Frontend state.");
+
+                        break;
+                    }
+
                     core::Log::Info(
                         "Frontend requested Play.");
+
+                    state_ =
+                        states::ClientState::LoadingWorld;
+
+                    core::Log::Info(
+                        "Client state: LoadingWorld");
+
+                    frontend_.Hide();
 
                     audio_.StopMenuMusic();
 
                     ShutdownCharacterSelectScene();
+
+                    std::string
+                        worldError;
+
+                    if (!worldSession_.Load(
+                            runtime_,
+                            window_,
+                            renderer_,
+                            TestWorldSpace,
+                            worldError))
+                    {
+                        core::Log::Error(
+                            worldError);
+
+                        state_ =
+                            states::ClientState::Frontend;
+
+                        core::Log::Info(
+                            "Client state: Frontend");
+
+                        std::string
+                            characterSceneError;
+
+                        if (!InitializeCharacterSelectScene(
+                                characterSceneError))
+                        {
+                            core::Log::Error(
+                                std::string(
+                                    "Unable to restore character menu after world load failure: ") +
+                                characterSceneError);
+
+                            return false;
+                        }
+
+                        frontend_.Show();
+
+                        if (audio_.IsInitialized())
+                        {
+                            std::string
+                                musicError;
+
+                            if (!audio_.StartMenuMusic(
+                                    musicError))
+                            {
+                                core::Log::Warning(
+                                    std::string(
+                                        "Unable to restore menu music: ") +
+                                    musicError);
+                            }
+                        }
+
+                        break;
+                    }
+
+                    state_ =
+                        states::ClientState::World;
+
+                    core::Log::Info(
+                        std::string(
+                            "Client state: World, space=") +
+                        std::string(
+                            worldSession_.SpaceName()));
 
                     break;
                 }
@@ -1893,6 +1995,11 @@ Application::CharacterTransform() const noexcept
     void Application::Shutdown()
     {
         frontend_.Shutdown();
+
+        worldSession_.Unload(
+            renderer_);
+
+        ShutdownCharacterSelectScene();
 
         renderer_.Shutdown();
 
