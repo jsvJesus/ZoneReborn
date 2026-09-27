@@ -286,6 +286,47 @@
                 "input",
                 updateButton);
 
+		const passwordToggle =
+			element(
+				"loginPasswordToggle");
+
+		if (passwordToggle)
+		{
+			passwordToggle.addEventListener(
+				"click",
+				() =>
+				{
+					const password =
+						element(
+							"loginPassword");
+
+					if (!password)
+					{
+						return;
+					}
+
+					const showPassword =
+						password.type ===
+						"password";
+
+					password.type =
+						showPassword
+							? "text"
+							: "password";
+
+					passwordToggle.classList.toggle(
+						"visible",
+						showPassword);
+
+					passwordToggle.setAttribute(
+						"aria-label",
+						showPassword
+							? "Hide password"
+							: "Show password");
+
+					password.focus();
+				});
+		}
 
         element(
             "loginPassword").

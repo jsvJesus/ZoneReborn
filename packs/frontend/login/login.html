@@ -50,16 +50,39 @@
                 maxlength="40"
                 autocomplete="username">
 
-            <input
-                id="loginPassword"
-                class="login-input"
-                type="password"
-                maxlength="40"
-                autocomplete="current-password">
+            <div class="login-password">
+				<input
+					id="loginPassword"
+					class="login-input login-password-input"
+					type="password"
+					maxlength="40"
+					autocomplete="current-password">
+				<button
+					id="loginPasswordToggle"
+					class="login-password-toggle"
+					type="button"
+					tabindex="-1"
+					aria-label="Show password">
+					<svg
+						class="login-password-eye"
+						viewBox="0 0 24 24"
+						aria-hidden="true">
 
+						<path
+							d="M2 12C4.6 7.8 7.9 5.7 12 5.7C16.1 5.7 19.4 7.8 22 12C19.4 16.2 16.1 18.3 12 18.3C7.9 18.3 4.6 16.2 2 12Z">
+						</path>
+
+						<circle
+							cx="12"
+							cy="12"
+							r="3.2">
+						</circle>
+
+					</svg>
+				</button>
+			</div>
 
             <div class="login-divider"></div>
-
 
             <label class="login-remember">
 
