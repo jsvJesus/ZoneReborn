@@ -55,7 +55,8 @@ namespace
         std::vector<VisibleModel>& output,
         const std::vector<std::string>& models,
         const std::string& tintMaterial,
-        const std::uint32_t colour)
+        const std::uint32_t colour,
+        const bool colourised)
     {
         for (const std::string& model :
              models)
@@ -80,7 +81,8 @@ namespace
                     {
                         model,
                         tintMaterial,
-                        colour
+                        colour,
+                        colourised
                     });
             }
         }
@@ -213,20 +215,20 @@ namespace client::character
         // Base naked body.
         //
         modelItems.push_back(
-            {0, NpTorso, 0xFFFFFFu});
+            {0, NpTorso, 0xFFFFFFu, false});
 
         modelItems.push_back(
-            {0, NpLegs, 0xFFFFFFu});
+            {0, NpLegs, 0xFFFFFFu, false});
 
         modelItems.push_back(
-            {0, NpFeet, 0xFFFFFFu});
+            {0, NpFeet, 0xFFFFFFu, false});
 
         if (state.Get(
                 Slot::Head).
                 Empty())
         {
             modelItems.push_back(
-                {0, NpHead, 0xFFFFFFu});
+                {0, NpHead, 0xFFFFFFu, false});
         }
 
         if (state.Get(
@@ -234,7 +236,7 @@ namespace client::character
                 Empty())
         {
             modelItems.push_back(
-                {0, NpHands, 0xFFFFFFu});
+                {0, NpHands, 0xFFFFFFu, false});
         }
 
         std::unordered_set<std::int32_t>
@@ -343,7 +345,8 @@ namespace client::character
                 output.visibleModels,
                 *models,
                 definition->tintMaterial,
-                equipped.colour);
+                equipped.colour,
+                equipped.colourised);
         }
 
         if (output.visibleModels.empty())

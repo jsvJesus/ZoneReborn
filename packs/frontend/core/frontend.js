@@ -757,7 +757,10 @@
 									Number(part.colour) >= 0 &&
 									Number(part.colour) <= 0xFFFFFF
 										? Number(part.colour)
-										: 0xFFFFFF
+										: 0xFFFFFF,
+
+								colourised:
+									part.colourised === true
 							}))
 				: [];
 
@@ -824,6 +827,9 @@
 				colour <= 0xFFFFFF
 					? colour
 					: 0xFFFFFF);
+
+			fields.push(
+				part.colourised === true ? 1 : 0);
 		}
 
 		return fields;

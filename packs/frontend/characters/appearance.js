@@ -7,8 +7,8 @@
 
     const labels =
     {
-        russian: { title: "ВНЕШНОСТЬ", face: "ЛИЦО", skin: "КОЖА", eye: "ГЛАЗА", hairstyle: "ПРИЧЁСКА", eyebrows: "БРОВИ", mustache: "УСЫ", beard: "БОРОДА", color: "ЦВЕТ", age: "ВОЗРАСТ", details: "ДЕТАЛИ", length: "ДЛИНА", position: "ПОЛОЖЕНИЕ", rotation: "НАКЛОН", unshaven: "ЩЕТИНА", reset: "СБРОСИТЬ", random: "СЛУЧАЙНО", apply: "ПРИМЕНИТЬ", back: "НАЗАД", randomFace: "СЛУЧАЙНАЯ ФОРМА ЛИЦА" },
-        english: { title: "APPEARANCE", face: "FACE", skin: "SKIN", eye: "EYES", hairstyle: "HAIRSTYLE", eyebrows: "EYEBROWS", mustache: "MUSTACHE", beard: "BEARD", color: "COLOUR", age: "AGE", details: "DETAILS", length: "LENGTH", position: "POSITION", rotation: "ROTATION", unshaven: "STUBBLE", reset: "RESET", random: "RANDOM", apply: "APPLY", back: "BACK", randomFace: "RANDOM FACE FORM" },
+        russian: { title: "ВНЕШНОСТЬ", face: "ЛИЦО", skin: "КОЖА", eye: "ГЛАЗА", hairstyle: "ПРИЧЁСКА", eyebrows: "БРОВИ", mustache: "УСЫ", beard: "БОРОДА", color: "ЦВЕТ", tatoo: "ТАТУ", age: "ВОЗРАСТ", details: "ДЕТАЛИ", length: "ДЛИНА", position: "ПОЛОЖЕНИЕ", rotation: "НАКЛОН", unshaven: "ЩЕТИНА", reset: "СБРОСИТЬ", random: "СЛУЧАЙНО", apply: "ПРИМЕНИТЬ", back: "НАЗАД", randomFace: "СЛУЧАЙНАЯ ФОРМА ЛИЦА" },
+        english: { title: "APPEARANCE", face: "FACE", skin: "SKIN", eye: "EYES", hairstyle: "HAIRSTYLE", eyebrows: "EYEBROWS", mustache: "MUSTACHE", beard: "BEARD", color: "COLOUR", tatoo: "TATTOO", age: "AGE", details: "DETAILS", length: "LENGTH", position: "POSITION", rotation: "ROTATION", unshaven: "STUBBLE", reset: "RESET", random: "RANDOM", apply: "APPLY", back: "BACK", randomFace: "RANDOM FACE FORM" },
         chinese: { title: "外观", face: "脸型", skin: "皮肤", eye: "眼睛", hairstyle: "发型", eyebrows: "眉毛", mustache: "胡子", beard: "胡须", color: "颜色", age: "年龄", details: "细节", length: "长度", position: "位置", rotation: "角度", unshaven: "胡茬", reset: "重置", random: "随机", apply: "应用", back: "返回", randomFace: "随机脸型" }
     };
 
@@ -39,7 +39,6 @@
             return;
         }
         if (typeof value !== "object") return;
-        if (value.donat_only) return;
         if (value.type === "Slider" || value.type === "ColorList" || value.type === "PictureButtonList")
         {
             output.push(value);
@@ -63,7 +62,7 @@
             const source = Array.isArray(config[key]) ? config[key] : [config[key]];
             source.forEach((value, index) =>
             {
-                if (!value || value.donat_only) return;
+                if (!value) return;
                 if (value.label === "eye") return;
                 const controls = [];
                 collectControls(value, controls);
@@ -110,7 +109,7 @@
         {
             const list = document.createElement("div");
             list.className = "appearance-pictures";
-            (control.data || []).filter(option => !option.donat_only).forEach(option =>
+            (control.data || []).forEach(option =>
             {
                 const value = Number(option.item_id);
                 const button = makeButton("appearance-picture", String(value), () => send(control.id, value));

@@ -454,6 +454,11 @@ namespace
                     part.colour);
 
             result +=
+                ",\"colourised\":" +
+                std::string(
+                    part.colourised ? "true" : "false");
+
+            result +=
                 "}";
         }
 
@@ -1236,14 +1241,14 @@ namespace
         if (start > fields.size() ||
             (
                 fields.size() - start
-            ) % 3u != 0u)
+            ) % 4u != 0u)
         {
             return false;
         }
 
         for (std::size_t index = start;
-             index + 2u < fields.size();
-             index += 3u)
+             index + 3u < fields.size();
+             index += 4u)
         {
             client::character::AppearancePart part;
 
@@ -1257,10 +1262,15 @@ namespace
                 part.itemType <= 0 ||
                 !ParseColour(
                     fields[index + 2u],
-                    part.colour))
+                    part.colour) ||
+                (fields[index + 3u] != "0" &&
+                 fields[index + 3u] != "1"))
             {
                 return false;
             }
+
+            part.colourised =
+                fields[index + 3u] == "1";
 
             output.push_back(
                 std::move(

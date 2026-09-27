@@ -23,6 +23,14 @@ namespace client::graphics
         Blend = 2
     };
 
+    enum class SceneModelTintMode : std::uint8_t
+    {
+        None = 0,
+        Skin = 1,
+        Hair = 2,
+        Dye = 3
+    };
+
     struct SceneTextureData final
     {
         std::string logicalPath;
@@ -53,10 +61,26 @@ namespace client::graphics
         float alphaCutoff =
             0.5f;
 
-        std::array<float, 4> tintColour
+        SceneModelTintMode tintMode =
+            SceneModelTintMode::None;
+
+        std::array<float, 4> skinColour
         {
-            1.0f, 1.0f, 1.0f, 0.0f
+            1.0f, 1.0f, 1.0f, 1.0f
         };
+
+        std::array<float, 4> hairColour
+        {
+            1.0f, 1.0f, 1.0f, 1.0f
+        };
+
+        std::array<float, 4> dyeColour
+        {
+            1.0f, 1.0f, 1.0f, 1.0f
+        };
+
+        std::int32_t dyeMaskTextureIndex =
+            -1;
 
         std::int32_t overlayTextureIndex =
             -1;
@@ -67,6 +91,14 @@ namespace client::graphics
         };
 
         std::array<float, 4> overlayParameters{};
+
+        std::int32_t tattooTextureIndex =
+            -1;
+
+        std::array<float, 4> tattooColour
+        {
+            1.0f, 1.0f, 1.0f, 1.0f
+        };
     };
 
     struct SceneTerrainLayer final

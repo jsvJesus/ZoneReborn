@@ -486,6 +486,96 @@ namespace
             output);
     }
 
+    bool ParseHexColour(
+        const std::string_view text,
+        std::uint32_t& output)
+    {
+        const std::size_t separator =
+            text.find(':');
+
+        const std::string_view digits =
+            text.substr(0, separator);
+
+        if (digits.size() != 6u)
+        {
+            return false;
+        }
+
+        const auto parsed =
+            std::from_chars(
+                digits.data(),
+                digits.data() + digits.size(),
+                output,
+                16);
+
+        return parsed.ec == std::errc() &&
+            parsed.ptr == digits.data() + digits.size();
+    }
+
+    bool ParseHexColourField(
+        const std::string_view block,
+        const std::string_view key,
+        std::uint32_t& output)
+    {
+        std::string value;
+
+        return ParseStringField(block, key, value) &&
+            ParseHexColour(value, output);
+    }
+
+    std::vector<std::uint32_t> ParseColourList(
+        const std::string_view block,
+        const std::string_view key)
+    {
+        const std::size_t position =
+            FindKeyValue(block, key);
+
+        std::string_view section;
+
+        if (position == std::string_view::npos ||
+            !ExtractDelimited(block, position, '[', ']', section))
+        {
+            return {};
+        }
+
+        std::vector<std::uint32_t> result;
+        std::size_t cursor = 1u;
+
+        while (cursor < section.size())
+        {
+            cursor = SkipWhitespace(section, cursor);
+
+            if (cursor >= section.size() ||
+                section[cursor] == ']')
+            {
+                break;
+            }
+
+            if (section[cursor] == ',')
+            {
+                ++cursor;
+                continue;
+            }
+
+            std::string value;
+
+            if (!ReadQuotedString(section, cursor, value))
+            {
+                ++cursor;
+                continue;
+            }
+
+            std::uint32_t colour = 0;
+
+            if (ParseHexColour(value, colour))
+            {
+                result.push_back(colour);
+            }
+        }
+
+        return result;
+    }
+
     std::vector<std::string>
     ParseModelStrings(
         const std::string_view text)
@@ -1315,9 +1405,23 @@ namespace client::character
             parseDefinition(block);
         }
 
-        constexpr std::int32_t HairSevenType = 10537;
+        constexpr std::array RemovedFaceTypes
+        {
+            10537,
+            10538,
+            10539
+        };
 
-        if (!items_.contains(HairSevenType))
+        const bool needsRemovedFaceItems =
+            std::any_of(
+                RemovedFaceTypes.begin(),
+                RemovedFaceTypes.end(),
+                [this](const std::int32_t typeId)
+                {
+                    return !items_.contains(typeId);
+                });
+
+        if (needsRemovedFaceItems)
         {
             constexpr std::string_view RemovedPath =
                 "res/scripts/common/data/items_pyson/removed.pyson";
@@ -1329,10 +1433,13 @@ namespace client::character
                 {
                     std::int32_t typeId = 0;
                     if (ParseIntegerField(block, "TypeID", typeId) &&
-                        typeId == HairSevenType)
+                        std::find(
+                            RemovedFaceTypes.begin(),
+                            RemovedFaceTypes.end(),
+                            typeId) != RemovedFaceTypes.end() &&
+                        !items_.contains(typeId))
                     {
                         parseDefinition(block);
-                        break;
                     }
                 }
             }
@@ -1396,6 +1503,37 @@ namespace client::character
                     block,
                     "texture",
                     option.texture);
+
+                ParseHexColourField(
+                    block,
+                    "default_colour",
+                    option.defaultColour);
+
+                option.colours =
+                    ParseColourList(
+                        block,
+                        "colours");
+
+                if (option.colours.empty())
+                {
+                    core::Log::Warning(
+                        std::string(
+                            "Character creator item has no dye palette: ") +
+                        std::to_string(
+                            option.itemType));
+
+                    continue;
+                }
+
+                if (std::find(
+                        option.colours.begin(),
+                        option.colours.end(),
+                        option.defaultColour) ==
+                    option.colours.end())
+                {
+                    option.defaultColour =
+                        option.colours.front();
+                }
 
                 if (Find(
                         option.itemType) ==

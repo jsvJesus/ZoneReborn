@@ -26,6 +26,9 @@ namespace client::character
         std::uint32_t colour =
             0xFFFFFFu;
 
+        bool colourised =
+            false;
+
         [[nodiscard]]
         bool Empty() const noexcept
         {
@@ -49,7 +52,8 @@ namespace client::character
             const Catalog& catalog,
             std::int32_t itemType,
             std::string& error,
-            std::uint32_t colour = 0xFFFFFFu);
+            std::uint32_t colour = 0xFFFFFFu,
+            bool colourised = false);
 
         void UnequipInstance(
             std::int64_t instanceId);

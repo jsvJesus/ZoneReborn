@@ -18,9 +18,12 @@ cbuffer SceneConstants : register(b0)
     uint useWater;
 
     float4 modelParameters;
-    float4 modelTint;
+    float4 modelSkinColour;
+    float4 modelHairColour;
+    float4 modelDyeColour;
     float4 modelOverlayColour;
     float4 modelOverlayParameters;
+    float4 modelTattooColour;
 
     float4 waterDeepColour;
     float4 waterReflectionTint;
@@ -96,6 +99,8 @@ Texture2D waterNormalTexture : register(t8);
 Texture2D waterFoamTexture : register(t9);
 Texture2D skyGradientTexture : register(t10);
 Texture2D modelOverlayTexture : register(t11);
+Texture2D modelDyeMaskTexture : register(t12);
+Texture2D modelTattooTexture : register(t13);
 
 SamplerState terrainTextureSampler : register(s0);
 SamplerState terrainBlendSampler : register(s1);

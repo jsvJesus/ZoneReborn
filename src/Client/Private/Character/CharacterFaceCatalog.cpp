@@ -110,15 +110,14 @@ namespace client::character
             "HairStyle",
             "MustacheStyle",
             "BeardStyle",
-            "EyebrowsStyle"
+            "EyebrowsStyle",
+            "TatooStyle"
         };
         const std::regex objectPattern("\\{[^{}]*\\}");
         const std::regex itemPattern(
             "\"item_id\"\\s*:\\s*(-?[0-9]+)");
         const std::regex weightPattern(
             "\"weight\"\\s*:\\s*([0-9]+)");
-        const std::regex donorPattern(
-            "\"donat_only\"\\s*:\\s*true");
 
         for (const std::string_view group : StyleGroups)
         {
@@ -145,11 +144,6 @@ namespace client::character
                  ++it)
             {
                 const std::string object = it->str();
-
-                if (std::regex_search(object, donorPattern))
-                {
-                    continue;
-                }
 
                 std::smatch itemMatch;
 
@@ -195,7 +189,8 @@ namespace client::character
         {
             "SkinColor",
             "EyeColor",
-            "HairColor"
+            "HairColor",
+            "TatooColor"
         };
         const std::regex colourPattern(
             "\"([0-9a-fA-F]{6}):([0-9]+)\"");
@@ -258,11 +253,6 @@ namespace client::character
         const std::string_view group,
         const std::int32_t value) const noexcept
     {
-        if (group == "TatooStyle")
-        {
-            return value == 0;
-        }
-
         const auto found = styles_.find(std::string(group));
 
         return found != styles_.end() &&
@@ -274,9 +264,10 @@ namespace client::character
         const std::string_view group,
         const std::uint32_t value) const noexcept
     {
-        if (group == "TatooColor")
+        if (group == "TatooColor" && value == 0u)
         {
-            return value == 0;
+            // Legacy/default state has no tattoo and therefore no colour.
+            return true;
         }
 
         const auto found = values_.find(std::string(group));

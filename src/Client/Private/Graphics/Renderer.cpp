@@ -167,11 +167,17 @@ namespace
 
         DirectX::XMFLOAT4 modelParameters;
 
-        DirectX::XMFLOAT4 modelTint;
+        DirectX::XMFLOAT4 modelSkinColour;
+
+        DirectX::XMFLOAT4 modelHairColour;
+
+        DirectX::XMFLOAT4 modelDyeColour;
 
         DirectX::XMFLOAT4 modelOverlayColour;
 
         DirectX::XMFLOAT4 modelOverlayParameters;
+
+        DirectX::XMFLOAT4 modelTattooColour;
 
         DirectX::XMFLOAT4 waterDeepColour;
         DirectX::XMFLOAT4 waterReflectionTint;
@@ -4556,12 +4562,28 @@ namespace client::graphics
                     0.0f
                 };
 
-                constants.modelTint =
+                constants.modelSkinColour =
                 {
                     1.0f,
                     1.0f,
                     1.0f,
-                    0.0f
+                    1.0f
+                };
+
+                constants.modelHairColour =
+                {
+                    1.0f,
+                    1.0f,
+                    1.0f,
+                    1.0f
+                };
+
+                constants.modelDyeColour =
+                {
+                    1.0f,
+                    1.0f,
+                    1.0f,
+                    1.0f
                 };
 
                 constants.modelOverlayColour =
@@ -4574,12 +4596,28 @@ namespace client::graphics
 
                 constants.modelOverlayParameters = {};
 
+                constants.modelTattooColour =
+                {
+                    1.0f,
+                    1.0f,
+                    1.0f,
+                    1.0f
+                };
+
                 ID3D11ShaderResourceView*
                     modelTextureView =
                         nullptr;
 
                 ID3D11ShaderResourceView*
                     overlayTextureView =
+                        nullptr;
+
+                ID3D11ShaderResourceView*
+                    dyeMaskTextureView =
+                        nullptr;
+
+                ID3D11ShaderResourceView*
+                    tattooTextureView =
                         nullptr;
 
                 SceneAlphaMode alphaMode =
@@ -4603,12 +4641,33 @@ namespace client::graphics
                             static_cast<std::uint8_t>(
                                 material.alphaMode));
 
-                    constants.modelTint =
+                    constants.modelParameters.w =
+                        static_cast<float>(
+                            static_cast<std::uint8_t>(
+                                material.tintMode));
+
+                    constants.modelSkinColour =
                     {
-                        material.tintColour[0],
-                        material.tintColour[1],
-                        material.tintColour[2],
-                        material.tintColour[3]
+                        material.skinColour[0],
+                        material.skinColour[1],
+                        material.skinColour[2],
+                        material.skinColour[3]
+                    };
+
+                    constants.modelHairColour =
+                    {
+                        material.hairColour[0],
+                        material.hairColour[1],
+                        material.hairColour[2],
+                        material.hairColour[3]
+                    };
+
+                    constants.modelDyeColour =
+                    {
+                        material.dyeColour[0],
+                        material.dyeColour[1],
+                        material.dyeColour[2],
+                        material.dyeColour[3]
                     };
 
                     constants.modelOverlayColour =
@@ -4625,6 +4684,14 @@ namespace client::graphics
                         material.overlayParameters[1],
                         material.overlayParameters[2],
                         material.overlayParameters[3]
+                    };
+
+                    constants.modelTattooColour =
+                    {
+                        material.tattooColour[0],
+                        material.tattooColour[1],
+                        material.tattooColour[2],
+                        material.tattooColour[3]
                     };
 
                     if (material.diffuseTextureIndex >= 0)
@@ -4661,6 +4728,39 @@ namespace client::graphics
                         overlayTextureView = state_->textures[overlayIndex].Get();
                         constants.modelParameters.z = 1.0f;
                     }
+
+                    if (material.dyeMaskTextureIndex >= 0)
+                    {
+                        const std::size_t dyeMaskIndex =
+                            static_cast<std::size_t>(
+                                material.dyeMaskTextureIndex);
+
+                        if (dyeMaskIndex >= state_->textures.size())
+                        {
+                            error = "Model material references invalid dye mask texture.";
+                            return false;
+                        }
+
+                        dyeMaskTextureView =
+                            state_->textures[dyeMaskIndex].Get();
+                    }
+
+                    if (material.tattooTextureIndex >= 0)
+                    {
+                        const std::size_t tattooIndex =
+                            static_cast<std::size_t>(
+                                material.tattooTextureIndex);
+
+                        if (tattooIndex >= state_->textures.size())
+                        {
+                            error = "Model material references invalid tattoo texture.";
+                            return false;
+                        }
+
+                        tattooTextureView =
+                            state_->textures[tattooIndex].Get();
+                        constants.modelOverlayParameters.x = 1.0f;
+                    }
                 }
 
                 state_->context->PSSetShaderResources(
@@ -4672,6 +4772,16 @@ namespace client::graphics
                     11,
                     1,
                     &overlayTextureView);
+
+                state_->context->PSSetShaderResources(
+                    12,
+                    1,
+                    &dyeMaskTextureView);
+
+                state_->context->PSSetShaderResources(
+                    13,
+                    1,
+                    &tattooTextureView);
 
                 constexpr float BlendFactor[4]
                 {
@@ -4731,6 +4841,16 @@ namespace client::graphics
 
             state_->context->PSSetShaderResources(
                 11,
+                1,
+                &emptyModelTexture);
+
+            state_->context->PSSetShaderResources(
+                12,
+                1,
+                &emptyModelTexture);
+
+            state_->context->PSSetShaderResources(
+                13,
                 1,
                 &emptyModelTexture);
 

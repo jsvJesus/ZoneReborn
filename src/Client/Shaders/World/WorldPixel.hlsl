@@ -56,10 +56,34 @@ float4 PSMain(
         baseColour =
             modelSample.rgb;
 
-        baseColour = lerp(
-            baseColour,
-            baseColour * modelTint.rgb,
-            saturate(modelTint.a));
+        const float tintMode =
+            modelParameters.w;
+
+        if (tintMode > 0.5f && tintMode < 1.5f)
+        {
+            baseColour = lerp(
+                baseColour,
+                baseColour * modelSkinColour.rgb,
+                saturate(modelSkinColour.a));
+        }
+        else if (tintMode > 1.5f && tintMode < 2.5f)
+        {
+            baseColour = lerp(
+                baseColour,
+                baseColour * modelHairColour.rgb,
+                saturate(modelHairColour.a));
+        }
+        else if (tintMode > 2.5f)
+        {
+            const float dyeMask = modelDyeMaskTexture.Sample(
+                terrainTextureSampler,
+                input.terrainUV).r;
+
+            baseColour = lerp(
+                baseColour,
+                baseColour * modelDyeColour.rgb,
+                saturate(dyeMask * modelDyeColour.a));
+        }
 
         if (modelParameters.z > 0.5f)
         {
@@ -69,10 +93,24 @@ float4 PSMain(
 
             baseColour = lerp(
                 baseColour,
-                modelOverlayColour.rgb,
+                overlay.rgb * modelOverlayColour.rgb,
                 saturate(
                     overlay.a *
                     modelOverlayColour.a));
+        }
+
+        if (modelOverlayParameters.x > 0.5f)
+        {
+            const float4 tattoo = modelTattooTexture.Sample(
+                terrainTextureSampler,
+                input.terrainUV);
+
+            baseColour = lerp(
+                baseColour,
+                tattoo.rgb * modelTattooColour.rgb,
+                saturate(
+                    tattoo.a *
+                    modelTattooColour.a));
         }
     }
 

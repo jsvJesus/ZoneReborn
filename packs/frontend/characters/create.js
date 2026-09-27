@@ -5,19 +5,6 @@
     const CONFIG_PATH =
         "/packs/res/scripts/common/data/charMakerCfg.json";
 
-    const CLOTHING_COLOURS =
-        Object.freeze(
-            [
-                0xFFFFFF, 0xD8D3C9, 0xB8AE9E, 0x918675,
-                0x6F675B, 0x555555, 0x2C2C2C, 0x171717,
-                0x33210E, 0x3C3123, 0x654832, 0xA86536,
-                0xCC9862, 0xE4CE93, 0xAA9464, 0x85806D,
-                0x66664E, 0x4C5339, 0x36442F, 0x29382D,
-                0x657A61, 0x718B82, 0x617B7A, 0x4E696A,
-                0x405859, 0x354C4E, 0x2B3F40, 0x223333
-            ]);
-
-
     const translations =
     {
         russian:
@@ -348,7 +335,8 @@
             fields.push(
                 value.group,
                 value.itemType,
-                value.colour);
+                value.colour,
+                value.colourised ? 1 : 0);
         }
 
         return fields;
@@ -367,7 +355,10 @@
                         group.options[0].itemType,
 
                     colour:
-                        0xFFFFFF
+                        group.options[0].defaultColour,
+
+                    colourised:
+                        true
                 }));
     }
 
@@ -382,18 +373,24 @@
                         Math.random() *
                         group.options.length);
 
+                const option =
+                    group.options[index];
+
                 return {
                     group:
                         group.name,
 
                     itemType:
-                        group.options[index].itemType,
+                        option.itemType,
 
                     colour:
-                        CLOTHING_COLOURS[
+                        option.colours[
                             Math.floor(
                                 Math.random() *
-                                CLOTHING_COLOURS.length)]
+                                option.colours.length)],
+
+                    colourised:
+                        true
                 };
             });
     }
@@ -446,14 +443,23 @@
                                                     caption:
                                                         option.caption ||
                                                         option.name ||
-                                                        ""
+                                                        "",
+
+                                                    colours:
+                                                        (option.colours || [])
+                                                            .map(value => Number.parseInt(String(value).split(":")[0], 16))
+                                                            .filter(value => Number.isInteger(value) && value >= 0 && value <= 0xFFFFFF),
+
+                                                    defaultColour:
+                                                        Number.parseInt(String(option.default_colour || ""), 16)
                                                 }))
                                         .filter(
                                             option =>
                                                 Number.isFinite(
                                                     option.itemType) &&
                                                 option.itemType > 0 &&
-                                                option.texture)
+                                                option.texture &&
+                                                option.colours.length > 0)
                                     : []
                         }))
                 .filter(
@@ -582,6 +588,17 @@
             Number(
                 itemType);
 
+        const option =
+            group.options.find(
+                value => value.itemType === current.itemType);
+
+        current.colour =
+            option.colours.includes(option.defaultColour)
+                ? option.defaultColour
+                : option.colours[0];
+        current.colourised =
+            true;
+
         window.CharacterClothes.setSelection(
             selection);
 
@@ -606,19 +623,20 @@
             Number(
                 colour);
 
-        if (!CLOTHING_COLOURS.includes(
-                selectedColour))
-        {
-            return;
-        }
-
         const current =
             selection.find(
                 value =>
                     value.group ===
                         groupName);
 
+        const group =
+            groups.find(value => value.name === groupName);
+
+        const option =
+            group?.options.find(value => value.itemType === current?.itemType);
+
         if (!current ||
+            !option?.colours.includes(selectedColour) ||
             current.colour ===
                 selectedColour)
         {
@@ -627,6 +645,8 @@
 
         current.colour =
             selectedColour;
+        current.colourised =
+            true;
 
         window.CharacterClothes.setSelection(
             selection);
@@ -1018,8 +1038,7 @@
 
             window.CharacterClothes.setData(
                 groups,
-                selection,
-                CLOTHING_COLOURS);
+                selection);
 
             ready =
                 true;

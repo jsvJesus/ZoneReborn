@@ -70,6 +70,12 @@ namespace client::character
             0;
 
         std::string texture;
+
+        std::uint32_t defaultColour =
+            0xFFFFFFu;
+
+        std::vector<std::uint32_t>
+            colours;
     };
 
     struct CreatorGroup final

@@ -84,21 +84,8 @@ namespace
             (static_cast<float>((colour >> 16u) & 0xFFu) / 255.0f) * brightness,
             (static_cast<float>((colour >> 8u) & 0xFFu) / 255.0f) * brightness,
             (static_cast<float>(colour & 0xFFu) / 255.0f) * brightness,
-            0.78f
+            1.0f
         };
-    }
-
-    std::array<float, 4> ClothingTint(
-        const std::uint32_t colour)
-    {
-        std::array<float, 4> result =
-            FaceTint(
-                colour);
-
-        result[3] =
-            0.86f;
-
-        return result;
     }
 
     float SmoothStep(
@@ -932,6 +919,7 @@ namespace
         const std::string_view modelReference,
         const std::string_view tintMaterial,
         const std::uint32_t clothingColour,
+        const bool clothingColourised,
         const Transform& transform,
         const client::character::FaceState& face,
         client::preview::ModelRenderDataBuilder& materialBuilder,
@@ -944,7 +932,7 @@ namespace
         const std::string compactModelKey = CompactKey(modelKey);
         const std::string tintKey = CompactKey(std::string(tintMaterial));
         const bool clothingTintEnabled =
-            clothingColour != 0xFFFFFFu &&
+            clothingColourised &&
             !tintKey.empty();
         const bool tintEntireModel =
             clothingTintEnabled &&
@@ -1038,6 +1026,7 @@ namespace
             modelMeshes;
 
         std::int32_t eyebrowTextureIndex = -1;
+        std::int32_t tattooTextureIndex = -1;
 
         if (modelKey.ends_with("/manhead.model") &&
             face.eyebrowStyle >= 1 && face.eyebrowStyle <= 4)
@@ -1055,6 +1044,29 @@ namespace
             else
             {
                 core::Log::Warning("Unable to load eyebrow texture " + path + ": " + textureError);
+            }
+        }
+
+        if (modelKey.ends_with("/manhead.model") &&
+            face.tattooStyle >= 1 && face.tattooStyle <= 4)
+        {
+            std::size_t textureIndex = 0;
+            std::string textureError;
+            const std::string path =
+                "res/characters2/clothing/ManNude/BattleMark/battle_mark_" +
+                std::to_string(face.tattooStyle) + ".dds";
+
+            if (materialBuilder.LoadTexture(
+                    resources, path, scene, textureIndex, textureError))
+            {
+                tattooTextureIndex =
+                    static_cast<std::int32_t>(textureIndex);
+            }
+            else
+            {
+                core::Log::Warning(
+                    "Unable to load tattoo texture " + path + ": " +
+                    textureError);
             }
         }
 
@@ -1176,7 +1188,9 @@ namespace
                     auto& material = sceneMesh.modelMaterials[groupIndex];
                     if (facialHairPart)
                     {
-                        material.tintColour = FaceTint(face.hairColor);
+                        material.tintMode =
+                            client::graphics::SceneModelTintMode::Hair;
+                        material.hairColour = FaceTint(face.hairColor);
                         material.alphaMode = client::graphics::SceneAlphaMode::Cutout;
                         material.alphaCutoff = 0.2f;
                     }
@@ -1185,7 +1199,18 @@ namespace
                              key.find("teeth") == std::string::npos &&
                              key.find("mouth") == std::string::npos)
                     {
-                        material.tintColour = FaceTint(face.skinColor);
+                        material.tintMode =
+                            client::graphics::SceneModelTintMode::Skin;
+                        material.skinColour = FaceTint(face.skinColor);
+
+                        if (modelKey.ends_with("/manhead.model") &&
+                            tattooTextureIndex >= 0)
+                        {
+                            material.tattooTextureIndex =
+                                tattooTextureIndex;
+                            material.tattooColour =
+                                FaceTint(face.tattooColor);
+                        }
                         if (modelKey.ends_with("/manhead.model") &&
                             eyebrowTextureIndex >= 0 &&
                             hasEyebrowAnchors &&
@@ -1240,9 +1265,43 @@ namespace
                     }
                     else if (tintClothingMaterial)
                     {
-                        material.tintColour =
-                            ClothingTint(
-                                clothingColour);
+                        material.tintMode =
+                            client::graphics::SceneModelTintMode::Dye;
+                        material.dyeColour =
+                            FaceTint(clothingColour);
+
+                        for (const core::assets::VisualMaterialProperty& property :
+                             visualGroup.material.properties)
+                        {
+                            if (CompactKey(property.name) != "maskfordiffuse" ||
+                                !property.texture.has_value())
+                            {
+                                continue;
+                            }
+
+                            std::size_t maskIndex = 0;
+                            std::string maskError;
+
+                            if (materialBuilder.LoadTexture(
+                                    resources,
+                                    property.texture->logicalPath,
+                                    scene,
+                                    maskIndex,
+                                    maskError))
+                            {
+                                material.dyeMaskTextureIndex =
+                                    static_cast<std::int32_t>(maskIndex);
+                            }
+                            else
+                            {
+                                core::Log::Warning(
+                                    "Unable to load clothing dye mask " +
+                                    property.texture->logicalPath + ": " +
+                                    maskError);
+                            }
+
+                            break;
+                        }
                     }
                 }
 
@@ -1367,6 +1426,7 @@ namespace client::character
             model.reference,
             model.tintMaterial,
             model.colour,
+            model.colourised,
             transform,
             state.Face(),
             materialBuilder,

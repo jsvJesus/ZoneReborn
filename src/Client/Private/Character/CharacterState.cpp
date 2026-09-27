@@ -93,7 +93,9 @@ namespace client::character
                     catalog,
                     group.options.front().
                         itemType,
-                    error))
+                    error,
+                    group.options.front().defaultColour,
+                    true))
             {
                 return false;
             }
@@ -115,7 +117,8 @@ namespace client::character
         const Catalog& catalog,
         const std::int32_t itemType,
         std::string& error,
-        const std::uint32_t colour)
+        const std::uint32_t colour,
+        const bool colourised)
     {
         error.clear();
 
@@ -179,6 +182,9 @@ namespace client::character
 
             equipped.colour =
                 colour;
+
+            equipped.colourised =
+                colourised;
         }
 
         return true;
@@ -243,8 +249,8 @@ namespace client::character
             return false;
         }
 
-        bool allowed =
-            false;
+        const CreatorOption* selectedOption =
+            nullptr;
 
         for (const CreatorOption& option :
              creatorGroup->options)
@@ -252,14 +258,14 @@ namespace client::character
             if (option.itemType ==
                 itemType)
             {
-                allowed =
-                    true;
+                selectedOption =
+                    &option;
 
                 break;
             }
         }
 
-        if (!allowed)
+        if (selectedOption == nullptr)
         {
             error =
                 "Item is not valid for creator group " +
@@ -267,6 +273,18 @@ namespace client::character
                 ": " +
                 std::to_string(
                     itemType);
+
+            return false;
+        }
+
+        if (std::find(
+                selectedOption->colours.begin(),
+                selectedOption->colours.end(),
+                colour) == selectedOption->colours.end())
+        {
+            error =
+                "Colour is not valid for creator item " +
+                std::to_string(itemType) + ".";
 
             return false;
         }
@@ -293,7 +311,8 @@ namespace client::character
             catalog,
             itemType,
             error,
-            colour);
+            colour,
+            true);
     }
 
     bool State::ApplyCreatorSet(
@@ -346,8 +365,8 @@ namespace client::character
                 continue;
             }
 
-            bool allowed =
-                false;
+            const CreatorOption* selectedOption =
+                nullptr;
 
             for (const CreatorOption& option :
                  creatorGroup->options)
@@ -355,23 +374,38 @@ namespace client::character
                 if (option.itemType ==
                     value.itemType)
                 {
-                    allowed =
-                        true;
+                    selectedOption =
+                        &option;
 
                     break;
                 }
             }
 
-            if (!allowed)
+            if (selectedOption == nullptr)
             {
                 continue;
+            }
+
+            if (value.colourised &&
+                std::find(
+                    selectedOption->colours.begin(),
+                    selectedOption->colours.end(),
+                    value.colour) == selectedOption->colours.end())
+            {
+                error =
+                    "Colour is not valid for creator item " +
+                    std::to_string(value.itemType) + ".";
+
+                *this = std::move(backup);
+                return false;
             }
 
             if (!Equip(
                     catalog,
                     value.itemType,
                     error,
-                    value.colour))
+                    value.colour,
+                    value.colourised))
             {
                 *this = std::move(backup);
                 return false;
@@ -443,7 +477,8 @@ namespace client::character
                 {
                     group.name,
                     selected->itemType,
-                    selected->colour
+                    selected->colour,
+                    selected->colourised
                 });
         }
 
@@ -676,12 +711,16 @@ namespace client::character
             catalog.Faces().RandomWeighted("BeardStyle", random));
         randomized.eyebrowStyle = static_cast<std::int32_t>(
             catalog.Faces().RandomWeighted("EyebrowsStyle", random));
+        randomized.tattooStyle = static_cast<std::int32_t>(
+            catalog.Faces().RandomWeighted("TatooStyle", random));
         randomized.skinColor =
             catalog.Faces().RandomWeighted("SkinColor", random);
         randomized.eyeColor =
             catalog.Faces().RandomWeighted("EyeColor", random);
         randomized.hairColor =
             catalog.Faces().RandomWeighted("HairColor", random);
+        randomized.tattooColor =
+            catalog.Faces().RandomWeighted("TatooColor", random);
 
         std::uniform_int_distribution<int> scalar(0, 255);
         randomized.hairLength = static_cast<std::uint8_t>(scalar(random));

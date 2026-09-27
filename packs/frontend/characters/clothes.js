@@ -83,7 +83,6 @@
     let root = null;
     let groups = [];
     let selection = [];
-    let colours = [];
     let selectedCategory = 0;
     let handlers = {};
 
@@ -223,14 +222,14 @@
         root.querySelector("#clothesColourLabel").textContent =
             text("colour");
         colourGrid.replaceChildren(
-            ...colours.map(colour => makeColourButton(group, colour)));
+            ...(selected?.colours || []).map(
+                colour => makeColourButton(group, colour)));
     }
 
-    function setData(nextGroups, nextSelection, nextColours)
+    function setData(nextGroups, nextSelection)
     {
         groups = Array.isArray(nextGroups) ? nextGroups : [];
         selection = Array.isArray(nextSelection) ? nextSelection : [];
-        colours = Array.isArray(nextColours) ? nextColours : [];
         render();
     }
 

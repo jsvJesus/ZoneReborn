@@ -5,18 +5,6 @@
     const CONFIG_PATH =
         "/packs/res/scripts/common/data/charMakerCfg.json";
 
-    const CLOTHING_COLOURS =
-        Object.freeze(
-            [
-                0xFFFFFF, 0xD8D3C9, 0xB8AE9E, 0x918675,
-                0x6F675B, 0x555555, 0x2C2C2C, 0x171717,
-                0x33210E, 0x3C3123, 0x654832, 0xA86536,
-                0xCC9862, 0xE4CE93, 0xAA9464, 0x85806D,
-                0x66664E, 0x4C5339, 0x36442F, 0x29382D,
-                0x657A61, 0x718B82, 0x617B7A, 0x4E696A,
-                0x405859, 0x354C4E, 0x2B3F40, 0x223333
-            ]);
-
     const translations =
     {
         russian:
@@ -74,13 +62,13 @@
 
     function fieldsFor(values)
     {
-        return values.flatMap(value => [value.group, value.itemType, value.colour]);
+        return values.flatMap(value => [value.group, value.itemType, value.colour, value.colourised ? 1 : 0]);
     }
 
     function defaultSelection()
     {
         return groups.map(group =>
-            ({ group: group.name, itemType: group.options[0].itemType, colour: 0xFFFFFF }));
+            ({ group: group.name, itemType: group.options[0].itemType, colour: group.options[0].defaultColour, colourised: true }));
     }
 
     function normalizeSelection(values)
@@ -93,13 +81,21 @@
             const itemType = Number(saved?.itemType);
             const validItem = group.options.some(option => option.itemType === itemType);
             const colour = Number(saved?.colour);
+            const selectedOption = validItem
+                ? group.options.find(option => option.itemType === itemType)
+                : group.options[0];
+            const colourised = saved?.colourised !== false;
+            const validColour = Number.isInteger(colour) &&
+                colour >= 0 && colour <= 0xFFFFFF &&
+                (!colourised || selectedOption.colours.includes(colour));
 
             return {
                 group: group.name,
-                itemType: validItem ? itemType : group.options[0].itemType,
-                colour: Number.isInteger(colour) && colour >= 0 && colour <= 0xFFFFFF
+                itemType: selectedOption.itemType,
+                colour: validColour
                     ? colour
-                    : 0xFFFFFF
+                    : selectedOption.defaultColour,
+                colourised: colourised
             };
         });
     }
@@ -109,8 +105,8 @@
         return groups.map(group =>
         {
             const option = group.options[Math.floor(Math.random() * group.options.length)];
-            const colour = CLOTHING_COLOURS[Math.floor(Math.random() * CLOTHING_COLOURS.length)];
-            return { group: group.name, itemType: option.itemType, colour: colour };
+            const colour = option.colours[Math.floor(Math.random() * option.colours.length)];
+            return { group: group.name, itemType: option.itemType, colour: colour, colourised: true };
         });
     }
 
@@ -128,8 +124,12 @@
                         ({
                             itemType: Number(option.item_id),
                             texture: String(option.texture || ""),
-                            caption: option.caption || option.name || ""
-                        })).filter(option => Number.isFinite(option.itemType) && option.itemType > 0 && option.texture)
+                            caption: option.caption || option.name || "",
+                            colours: (option.colours || [])
+                                .map(value => Number.parseInt(String(value).split(":")[0], 16))
+                                .filter(value => Number.isInteger(value) && value >= 0 && value <= 0xFFFFFF),
+                            defaultColour: Number.parseInt(String(option.default_colour || ""), 16)
+                        })).filter(option => Number.isFinite(option.itemType) && option.itemType > 0 && option.texture && option.colours.length > 0)
                     : []
             })).filter(group => group.options.length > 0);
 
@@ -202,6 +202,11 @@
         if (!group || !selected || !group.options.some(option => option.itemType === value) || selected.itemType === value) return;
 
         selected.itemType = value;
+        const option = group.options.find(item => item.itemType === value);
+        selected.colour = option.colours.includes(option.defaultColour)
+            ? option.defaultColour
+            : option.colours[0];
+        selected.colourised = true;
         CharacterClothes.setSelection(selection);
         Frontend.setCharacterPart(groupName, selected.itemType, selected.colour);
     }
@@ -211,9 +216,12 @@
         if (!ready || busy) return;
         const selected = selection.find(value => value.group === groupName);
         const value = Number(colour);
-        if (!selected || !CLOTHING_COLOURS.includes(value) || selected.colour === value) return;
+        const group = groups.find(item => item.name === groupName);
+        const option = group?.options.find(item => item.itemType === selected?.itemType);
+        if (!selected || !option?.colours.includes(value) || selected.colour === value) return;
 
         selected.colour = value;
+        selected.colourised = true;
         CharacterClothes.setSelection(selection);
         Frontend.setCharacterPart(groupName, selected.itemType, selected.colour);
     }
@@ -334,7 +342,7 @@
         {
             await loadGroups();
             selection = normalizeSelection(selection.length ? selection : character.appearance);
-            CharacterClothes.setData(groups, selection, CLOTHING_COLOURS);
+            CharacterClothes.setData(groups, selection);
             ready = true;
             setBusy(false);
         }

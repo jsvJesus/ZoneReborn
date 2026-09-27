@@ -23,6 +23,9 @@ namespace
     constexpr char FileHeader[] =
         "CHARACTER_V3";
 
+    constexpr char DyeFileHeader[] =
+        "CHARACTER_V4";
+
     bool ReadCodePoint(
         const std::string_view text,
         std::size_t& offset,
@@ -436,6 +439,12 @@ namespace client::character
                 part.itemType =
                     group.options.front().
                         itemType;
+
+                part.colour =
+                    group.options.front().defaultColour;
+
+                part.colourised =
+                    true;
             }
             else
             {
@@ -476,8 +485,24 @@ namespace client::character
                     return false;
                 }
 
+                if (selected->colourised &&
+                    std::find(
+                        allowed->colours.begin(),
+                        allowed->colours.end(),
+                        selected->colour) == allowed->colours.end())
+                {
+                    error =
+                        "Invalid character creator dye colour for group " +
+                        group.name + ".";
+
+                    return false;
+                }
+
                 part.colour =
                     selected->colour;
+
+                part.colourised =
+                    selected->colourised;
             }
 
             created.appearance.
@@ -993,11 +1018,16 @@ namespace client::character
             header == LegacyFileHeader;
 
         const bool hasColour =
-            header == FileHeader;
+            header == FileHeader ||
+            header == DyeFileHeader;
+
+        const bool hasColourFlag =
+            header == DyeFileHeader;
 
         if (!legacy &&
             header != FaceFileHeader &&
-            header != FileHeader)
+            header != FileHeader &&
+            header != DyeFileHeader)
         {
             error =
                 "Unsupported character file format.";
@@ -1076,6 +1106,29 @@ namespace client::character
                     "Unable to read character appearance colour.";
 
                 return false;
+            }
+
+            if (hasColourFlag)
+            {
+                std::uint32_t colourised = 0;
+
+                if (!(stream >> colourised) ||
+                    colourised > 1u)
+                {
+                    error =
+                        "Unable to read character appearance dye state.";
+
+                    return false;
+                }
+
+                part.colourised =
+                    colourised != 0u;
+            }
+            else if (hasColour)
+            {
+                // V3 used white as the old no-tint sentinel.
+                part.colourised =
+                    part.colour != 0xFFFFFFu;
             }
 
             if (part.group.empty() ||
@@ -1193,7 +1246,7 @@ namespace client::character
             !profile.face.faceForm.empty();
 
         stream <<
-            (hasFace ? FileHeader : LegacyFileHeader) <<
+            (hasFace ? DyeFileHeader : LegacyFileHeader) <<
             '\n';
 
         stream <<
@@ -1223,7 +1276,9 @@ namespace client::character
             {
                 stream <<
                     ' ' <<
-                    part.colour;
+                    part.colour <<
+                    ' ' <<
+                    (part.colourised ? 1 : 0);
             }
 
             stream <<

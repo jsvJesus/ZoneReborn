@@ -17,6 +17,9 @@ namespace client::character
 
         std::uint32_t colour =
             0xFFFFFFu;
+
+        bool colourised =
+            false;
     };
 
     struct ModelPlan final
