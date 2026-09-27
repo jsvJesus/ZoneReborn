@@ -983,7 +983,11 @@
     }
 }
 
-.login-password-field {
+/* ============================================================
+   PASSWORD VISIBILITY BUTTON
+   ============================================================ */
+
+.login-password {
     position: relative;
 
     width: 100%;
@@ -992,7 +996,7 @@
 }
 
 
-.login-password-field .login-input {
+.login-password .login-input {
     margin-top: 0;
 }
 
@@ -1008,10 +1012,14 @@
 }
 
 
+/* ============================================================
+   PASSWORD TOGGLE
+   ============================================================ */
+
 .login-password-toggle {
     position: absolute;
 
-    z-index: 3;
+    z-index: 5;
 
     top: 50%;
     right: 8px;
@@ -1039,7 +1047,7 @@
         transparent;
 
     color:
-        rgba(235, 238, 229, 0.82);
+        rgba(245, 245, 240, 0.88);
 
     cursor: pointer;
 
@@ -1052,7 +1060,7 @@
 
 .login-password-toggle:hover {
     border-color:
-        rgba(200, 170, 73, 0.22);
+        rgba(200, 170, 73, 0.24);
 
     background:
         rgba(200, 170, 73, 0.07);
@@ -1064,37 +1072,47 @@
 
 .login-password-toggle:active {
     background:
-        rgba(200, 170, 73, 0.11);
+        rgba(200, 170, 73, 0.12);
 }
 
 
-.login-eye {
+/* ============================================================
+   EYE ICON
+   ============================================================ */
+
+.login-password-eye {
+    display: block;
+
     width: 20px;
     height: 20px;
 
     fill: none;
 
-    stroke: currentColor;
+    stroke:
+        currentColor;
+
     stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+
+    stroke-linecap:
+        round;
+
+    stroke-linejoin:
+        round;
 
     pointer-events: none;
 }
 
 
-.login-eye-hide {
-    display: none;
+.login-password-toggle.visible {
+    color:
+        var(--zr-yellow-bright);
 }
 
 
 .login-password-toggle.visible
-.login-eye-show {
-    display: none;
-}
-
-
-.login-password-toggle.visible
-.login-eye-hide {
-    display: block;
+.login-password-eye {
+    filter:
+        drop-shadow(
+            0 0 4px
+            rgba(200, 170, 73, 0.20));
 }
