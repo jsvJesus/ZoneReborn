@@ -721,36 +721,6 @@ namespace client::preview
         mesh.vertexFormat =
             "ctree-billboard";
 
-        const auto readFloat =
-            [](
-                const core::assets::speedtree::CTreeBillboardVertex& vertex,
-                const std::size_t index)
-            {
-                const std::size_t offset =
-                    index *
-                    sizeof(float);
-
-                if (offset >
-                        vertex.extra.size() ||
-                    sizeof(float) >
-                        vertex.extra.size() -
-                            offset)
-                {
-                    return 0.0f;
-                }
-
-                float value =
-                    0.0f;
-
-                std::memcpy(
-                    &value,
-                    vertex.extra.data() +
-                        offset,
-                    sizeof(value));
-
-                return value;
-            };
-
         for (const core::assets::speedtree::CTreeBillboardGroup& group :
              source.groups)
         {
@@ -785,15 +755,8 @@ namespace client::preview
                     PackNormal(
                         sourceVertex.normal);
 
-                vertex.u =
-                    readFloat(
-                        sourceVertex,
-                        3);
-
-                vertex.v =
-                    readFloat(
-                        sourceVertex,
-                        4);
+                vertex.u = sourceVertex.u;
+                vertex.v = sourceVertex.v;
 
                 vertex.colour =
                     0xFFFFFFFFu;

@@ -24,8 +24,11 @@ namespace core::assets::speedtree
         math::Vector3 position;
         math::Vector3 normal;
 
-        float u = 0.0f;
-        float v = 0.0f;
+        float u =
+            0.0f;
+
+        float v =
+            0.0f;
 
         std::array<std::byte, 32>
             extra{};
@@ -44,6 +47,12 @@ namespace core::assets::speedtree
     {
         math::Vector3 position;
         math::Vector3 normal;
+
+        float u =
+            0.0f;
+
+        float v =
+            0.0f;
 
         std::array<std::byte, 44>
             extra{};
@@ -100,19 +109,30 @@ namespace core::assets::speedtree
     struct CTreeAsset final
     {
         static constexpr std::uint32_t
-            SupportedVersion =
+            Version103 =
                 103;
+
+        static constexpr std::uint32_t
+            Version105 =
+                105;
 
         std::string sptLogicalPath;
         std::string ctreeLogicalPath;
 
-        std::uint32_t version = 0;
+        std::uint32_t version =
+            0;
 
         math::Vector3 boundsMinimum;
         math::Vector3 boundsMaximum;
 
-        float parameter0 = 0.0f;
-        float parameter1 = 0.0f;
+        float parameter0 =
+            0.0f;
+
+        float parameter1 =
+            0.0f;
+
+        float parameter2 =
+            0.0f;
 
         CTreeIndexedGeometry
             branches;

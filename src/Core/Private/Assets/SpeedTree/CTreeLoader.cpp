@@ -25,7 +25,7 @@ namespace
         44;
 
     constexpr std::uint32_t MaximumLodCount =
-        16;
+        64;
 
     constexpr std::uint32_t MaximumBillboardGroups =
         16;
@@ -38,6 +38,16 @@ namespace
 
     constexpr std::uint32_t MaximumStringLength =
         4096;
+
+    bool IsSupportedCTreeVersion(
+        const std::uint32_t version) noexcept
+    {
+        return
+            version ==
+                core::assets::speedtree::CTreeAsset::Version103 ||
+            version ==
+                core::assets::speedtree::CTreeAsset::Version105;
+    }
 
     class BinaryReader final
     {
@@ -540,6 +550,7 @@ namespace
 
     bool ReadBillboard(
         BinaryReader& reader,
+        const std::uint32_t version,
         core::assets::speedtree::CTreeBillboardGeometry& output,
         std::string& error)
     {
@@ -611,21 +622,78 @@ namespace
                         group.vertices[
                             vertexIndex];
 
-                if (!ReadVector3(
-                        reader,
-                        vertex.position) ||
-                    !ReadVector3(
-                        reader,
-                        vertex.normal) ||
-                    !reader.ReadBytes(
-                        std::span<std::byte>(
-                            vertex.extra.data(),
-                            vertex.extra.size())))
+                if (version ==
+                    core::assets::speedtree::CTreeAsset::Version105)
                 {
-                    error =
-                        "CTREE billboard vertex data is truncated.";
+                    if (!ReadVector3(
+                            reader,
+                            vertex.position) ||
+                        !reader.ReadFloat(
+                            vertex.u) ||
+                        !reader.ReadFloat(
+                            vertex.v))
+                    {
+                        error =
+                            "CTREE 105 billboard vertex data is truncated.";
 
-                    return false;
+                        return false;
+                    }
+
+                    vertex.normal =
+                    {
+                        0.0f,
+                        1.0f,
+                        0.0f
+                    };
+                }
+                else
+                {
+                    if (!ReadVector3(
+                            reader,
+                            vertex.position) ||
+                        !ReadVector3(
+                            reader,
+                            vertex.normal) ||
+                        !reader.ReadBytes(
+                            std::span<std::byte>(
+                                vertex.extra.data(),
+                                vertex.extra.size())))
+                    {
+                        error =
+                            "CTREE 103 billboard vertex data is truncated.";
+
+                        return false;
+                    }
+
+                    constexpr std::size_t UOffset =
+                        sizeof(float) *
+                        3;
+
+                    constexpr std::size_t VOffset =
+                        sizeof(float) *
+                        4;
+
+                    static_assert(
+                        UOffset +
+                            sizeof(float) <=
+                        sizeof(vertex.extra));
+
+                    static_assert(
+                        VOffset +
+                            sizeof(float) <=
+                        sizeof(vertex.extra));
+
+                    std::memcpy(
+                        &vertex.u,
+                        vertex.extra.data() +
+                            UOffset,
+                        sizeof(vertex.u));
+
+                    std::memcpy(
+                        &vertex.v,
+                        vertex.extra.data() +
+                            VOffset,
+                        sizeof(vertex.v));
                 }
             }
 
@@ -770,8 +838,8 @@ namespace core::assets::speedtree
             return false;
         }
 
-        if (tree.version !=
-            CTreeAsset::SupportedVersion)
+        if (!IsSupportedCTreeVersion(
+            tree.version))
         {
             error =
                 "Unsupported CTREE version: " +
@@ -782,20 +850,33 @@ namespace core::assets::speedtree
         }
 
         if (!ReadVector3(
-                reader,
-                tree.boundsMinimum) ||
-            !ReadVector3(
-                reader,
-                tree.boundsMaximum) ||
-            !reader.ReadFloat(
-                tree.parameter0) ||
-            !reader.ReadFloat(
-                tree.parameter1))
+            reader,
+            tree.boundsMinimum) ||
+                !ReadVector3(
+            reader,
+            tree.boundsMaximum) ||
+                !reader.ReadFloat(
+            tree.parameter0) ||
+                !reader.ReadFloat(
+            tree.parameter1))
         {
             error =
                 "CTREE header is truncated.";
 
             return false;
+        }
+
+        if (tree.version ==
+            CTreeAsset::Version105)
+        {
+            if (!reader.ReadFloat(
+                    tree.parameter2))
+            {
+                error =
+                    "CTREE 105 header is truncated.";
+
+                return false;
+            }
         }
 
         if (!ReadIndexedGeometry(
@@ -835,9 +916,10 @@ namespace core::assets::speedtree
         }
 
         if (!ReadBillboard(
-                reader,
-                tree.billboard,
-                error))
+            reader,
+            tree.version,
+            tree.billboard,
+            error))
         {
             error =
                 "CTREE billboard: " +
