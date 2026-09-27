@@ -10,6 +10,12 @@
 
 namespace core::assets
 {
+    enum class MeshIndexFormat : std::uint8_t
+    {
+        UInt16 = 0,
+        UInt32 = 1
+    };
+
     struct MeshVertex final
     {
         math::Vector3 position;
@@ -28,19 +34,6 @@ namespace core::assets
         std::uint32_t colour =
             0xFFFFFFFFu;
 
-        //
-        // BigWorld skinned vertex:
-        //
-        // IIIWW =
-        //
-        // index1
-        // index2
-        // index3
-        // weight1
-        // weight2
-        //
-        // weight3 = 1 - w1 - w2
-        //
         std::array<
             std::uint16_t,
             3>
@@ -69,6 +62,9 @@ namespace core::assets
 
         std::uint32_t startVertex = 0;
         std::uint32_t vertexCount = 0;
+
+        bool renderEnabled =
+            true;
     };
 
     struct MeshData final
@@ -78,20 +74,101 @@ namespace core::assets
         bool skinned =
             false;
 
+        MeshIndexFormat indexFormat =
+            MeshIndexFormat::UInt16;
+
         std::vector<MeshVertex>
             vertices;
 
         std::vector<std::uint16_t>
             indices;
 
+        std::vector<std::uint32_t>
+            indices32;
+
         std::vector<MeshPrimitiveGroup>
             primitiveGroups;
+
+        [[nodiscard]]
+        std::size_t IndexCount() const noexcept
+        {
+            if (indexFormat ==
+                MeshIndexFormat::UInt32)
+            {
+                return
+                    indices32.size();
+            }
+
+            return
+                indices.size();
+        }
+
+        [[nodiscard]]
+        bool HasIndices() const noexcept
+        {
+            return
+                IndexCount() !=
+                0;
+        }
+
+        [[nodiscard]]
+        std::size_t IndexElementSize() const noexcept
+        {
+            if (indexFormat ==
+                MeshIndexFormat::UInt32)
+            {
+                return
+                    sizeof(std::uint32_t);
+            }
+
+            return
+                sizeof(std::uint16_t);
+        }
+
+        [[nodiscard]]
+        const void* IndexData() const noexcept
+        {
+            if (indexFormat ==
+                MeshIndexFormat::UInt32)
+            {
+                if (indices32.empty())
+                {
+                    return nullptr;
+                }
+
+                return
+                    indices32.data();
+            }
+
+            if (indices.empty())
+            {
+                return nullptr;
+            }
+
+            return
+                indices.data();
+        }
+
+        [[nodiscard]]
+        std::uint32_t IndexAt(
+            const std::size_t index) const noexcept
+        {
+            if (indexFormat ==
+                MeshIndexFormat::UInt32)
+            {
+                return
+                    indices32[index];
+            }
+
+            return
+                indices[index];
+        }
 
         [[nodiscard]]
         std::size_t TriangleCount() const noexcept
         {
             return
-                indices.size() /
+                IndexCount() /
                 3;
         }
     };

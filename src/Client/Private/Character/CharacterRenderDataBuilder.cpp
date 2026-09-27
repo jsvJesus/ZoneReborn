@@ -263,7 +263,7 @@ namespace
 
         const std::size_t finalIndex =
             std::min(
-                mesh.indices.size(),
+                mesh.IndexCount(),
                 firstIndex +
                     static_cast<std::size_t>(
                         group.primitiveCount) *
@@ -276,12 +276,17 @@ namespace
              index + 2u < finalIndex;
              index += 3u)
         {
-            const std::uint16_t index0 =
-                mesh.indices[index];
-            const std::uint16_t index1 =
-                mesh.indices[index + 1u];
-            const std::uint16_t index2 =
-                mesh.indices[index + 2u];
+            const std::uint32_t index0 =
+                mesh.IndexAt(
+                    index);
+
+            const std::uint32_t index1 =
+                mesh.IndexAt(
+                    index + 1u);
+
+            const std::uint32_t index2 =
+                mesh.IndexAt(
+                    index + 2u);
 
             if (index0 >= mesh.vertices.size() ||
                 index1 >= mesh.vertices.size() ||

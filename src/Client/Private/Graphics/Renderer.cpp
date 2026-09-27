@@ -1030,6 +1030,9 @@ namespace client::graphics
             ComPtr<ID3D11Buffer>
                 indexBuffer;
 
+            DXGI_FORMAT indexFormat =
+                DXGI_FORMAT_R16_UINT;
+
             std::uint32_t indexCount = 0;
             std::int32_t terrainMaterialIndex = -1;
             std::int32_t waterMaterialIndex = -1;
@@ -2372,7 +2375,7 @@ namespace client::graphics
                 sceneMesh.geometry;
             
             if (mesh.vertices.empty() ||
-                mesh.indices.empty())
+                !mesh.HasIndices())
             {
                 error =
                     "Scene contains empty mesh.";
@@ -2456,9 +2459,15 @@ namespace client::graphics
                 return false;
             }
 
-            if (mesh.indices.size() >
+            const std::size_t indexCount =
+                mesh.IndexCount();
+
+            const std::size_t indexElementSize =
+                mesh.IndexElementSize();
+
+            if (indexCount >
                 std::numeric_limits<UINT>::max() /
-                    sizeof(std::uint16_t))
+                    indexElementSize)
             {
                 error =
                     "Scene index buffer is too large.";
@@ -2510,8 +2519,8 @@ namespace client::graphics
 
             indexDescription.ByteWidth =
                 static_cast<UINT>(
-                    mesh.indices.size() *
-                    sizeof(std::uint16_t));
+                    indexCount *
+                    indexElementSize);
 
             indexDescription.Usage =
                 D3D11_USAGE_DEFAULT;
@@ -2523,7 +2532,7 @@ namespace client::graphics
                 indexData{};
 
             indexData.pSysMem =
-                mesh.indices.data();
+                mesh.IndexData();
 
             result =
                 state_->device->CreateBuffer(
@@ -2541,7 +2550,14 @@ namespace client::graphics
 
             gpuMesh.indexCount =
                 static_cast<std::uint32_t>(
-                    mesh.indices.size());
+                    indexCount);
+
+            gpuMesh.indexFormat =
+                mesh.indexFormat ==
+                    core::assets::
+                        MeshIndexFormat::UInt32
+                    ? DXGI_FORMAT_R32_UINT
+                    : DXGI_FORMAT_R16_UINT;
 
             gpuMesh.primitiveGroups =
                 mesh.primitiveGroups;
@@ -4336,7 +4352,7 @@ namespace client::graphics
 
             state_->context->IASetIndexBuffer(
                 mesh.indexBuffer.Get(),
-                DXGI_FORMAT_R16_UINT,
+                mesh.indexFormat,
                 0);
 
             const XMMATRIX world =
@@ -4550,6 +4566,12 @@ namespace client::graphics
                 constants.groupColour =
                     PrimitiveGroupColour(
                         groupIndex);
+
+                if (!group.renderEnabled ||
+                    group.primitiveCount == 0)
+                {
+                    continue;
+                }
 
                 constants.useModelTexture =
                     0;
@@ -4943,7 +4965,7 @@ namespace client::graphics
 
             state_->context->IASetIndexBuffer(
                 mesh.indexBuffer.Get(),
-                DXGI_FORMAT_R16_UINT,
+                mesh.indexFormat,
                 0);
 
             const XMMATRIX world =

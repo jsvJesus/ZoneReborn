@@ -260,15 +260,37 @@ namespace
             );
     }
 
+        std::string_view StreamLeaf(
+        const std::string_view streamName) noexcept
+    {
+        const std::size_t dot =
+            streamName.find_last_of('.');
+
+        if (dot !=
+                std::string_view::npos &&
+            dot + 1 <
+                streamName.size())
+        {
+            return
+                streamName.substr(
+                    dot + 1);
+        }
+
+        return
+            streamName;
+    }
+
     const core::assets::PrimitivesSection*
     ResolveStreamSection(
         const core::assets::PrimitivesContainer& primitives,
         const std::string_view vertexSection,
         const std::string_view streamName)
     {
-        //
-        // Сначала точное имя.
-        //
+        if (streamName.empty())
+        {
+            return nullptr;
+        }
+
         if (const auto* section =
                 primitives.FindSection(
                     streamName))
@@ -276,43 +298,142 @@ namespace
             return section;
         }
 
-        //
-        // Для vertices вида:
-        //
-        // object.vertices
-        //
-        // дополнительные streams называются:
-        //
-        // object.uv2
-        // object.colour
-        //
-        const std::size_t dot =
-            vertexSection.find_last_of('.');
+        const std::string_view streamLeaf =
+            StreamLeaf(
+                streamName);
 
-        if (dot ==
-            std::string_view::npos)
+        if (streamLeaf.empty())
         {
             return nullptr;
         }
 
-        std::string resolved;
+        const std::size_t vertexDot =
+            vertexSection.find_last_of('.');
 
-        resolved.reserve(
-            dot +
-            1 +
-            streamName.size());
+        std::string stem;
 
-        resolved.append(
-            vertexSection.substr(
-                0,
-                dot + 1));
+        if (vertexDot !=
+            std::string_view::npos)
+        {
+            stem.assign(
+                vertexSection.substr(
+                    0,
+                    vertexDot));
 
-        resolved.append(
-            streamName);
+            {
+                std::string candidate =
+                    stem;
 
-        return
-            primitives.FindSection(
-                resolved);
+                candidate.push_back('.');
+                candidate.append(
+                    streamLeaf);
+
+                if (const auto* section =
+                        primitives.FindSection(
+                            candidate))
+                {
+                    return section;
+                }
+            }
+
+            {
+                std::string candidate =
+                    stem;
+
+                candidate.push_back('_');
+                candidate.append(
+                    streamLeaf);
+
+                if (const auto* section =
+                        primitives.FindSection(
+                            candidate))
+                {
+                    return section;
+                }
+            }
+        }
+
+        {
+            std::string candidate(
+                vertexSection);
+
+            candidate.push_back('.');
+            candidate.append(
+                streamLeaf);
+
+            if (const auto* section =
+                    primitives.FindSection(
+                        candidate))
+            {
+                return section;
+            }
+        }
+
+        {
+            std::string candidate(
+                vertexSection);
+
+            candidate.push_back('_');
+            candidate.append(
+                streamLeaf);
+
+            if (const auto* section =
+                    primitives.FindSection(
+                        candidate))
+            {
+                return section;
+            }
+        }
+
+        const std::string dotSuffix =
+            "." +
+            std::string(
+                streamLeaf);
+
+        const std::string underscoreSuffix =
+            "_" +
+            std::string(
+                streamLeaf);
+
+        for (const core::assets::PrimitivesSection& section :
+             primitives.sections)
+        {
+            if (!stem.empty())
+            {
+                if (!section.name.starts_with(
+                        stem))
+                {
+                    continue;
+                }
+
+                if (section.name.size() <=
+                    stem.size())
+                {
+                    continue;
+                }
+
+                const char boundary =
+                    section.name[
+                        stem.size()];
+
+                if (boundary != '.' &&
+                    boundary != '_')
+                {
+                    continue;
+                }
+            }
+
+            if (section.name.ends_with(
+                    dotSuffix) ||
+                section.name.ends_with(
+                    underscoreSuffix))
+            {
+                return
+                    &section;
+            }
+        }
+
+        return nullptr;
     }
 
     bool ParseVertices(
@@ -757,6 +878,27 @@ namespace
                 continue;
             }
 
+            const std::string_view streamLeaf =
+                StreamLeaf(
+                    streamName);
+
+            const bool isColourStream =
+                streamLeaf == "colour" ||
+                streamLeaf == "color";
+
+            const bool isUv2Stream =
+                streamLeaf == "uv2";
+
+            if (!isColourStream &&
+                !isUv2Stream)
+            {
+                error =
+                    "Unsupported vertex stream: " +
+                    streamName;
+
+                return false;
+            }
+
             const core::assets::PrimitivesSection* section =
                 ResolveStreamSection(
                     primitives,
@@ -765,11 +907,19 @@ namespace
 
             if (section == nullptr)
             {
-                error =
-                    "Vertex stream was not found: " +
-                    streamName;
-
-                return false;
+                //
+                // Эти streams являются дополнительными.
+                //
+                // Для colour MeshVertex уже имеет
+                // нейтральный белый цвет.
+                //
+                // Для uv2 MeshVertex уже имеет 0,0.
+                //
+                // Некоторые ресурсы содержат ссылку
+                // на stream в visual, хотя самого
+                // stream blob в primitives нет.
+                //
+                continue;
             }
 
             const std::span<const std::byte> data =
@@ -780,20 +930,10 @@ namespace
             {
                 error =
                     "Vertex stream is empty: " +
-                    streamName;
+                    section->name;
 
                 return false;
             }
-
-            const bool isColourStream =
-                streamName == "colour" ||
-                streamName.ends_with(
-                    ".colour");
-
-            const bool isUv2Stream =
-                streamName == "uv2" ||
-                streamName.ends_with(
-                    ".uv2");
 
             if (isColourStream)
             {
@@ -811,7 +951,8 @@ namespace
                 }
 
                 for (std::size_t index = 0;
-                     index < output.vertices.size();
+                     index <
+                        output.vertices.size();
                      ++index)
                 {
                     if (!ReadValue(
@@ -830,56 +971,47 @@ namespace
                 continue;
             }
 
-            if (isUv2Stream)
-            {
-                constexpr std::size_t UvStride =
-                    sizeof(float) * 2;
+            constexpr std::size_t UvStride =
+                sizeof(float) *
+                2;
 
-                const std::size_t expectedSize =
-                    output.vertices.size() *
+            const std::size_t expectedSize =
+                output.vertices.size() *
+                UvStride;
+
+            if (data.size() !=
+                expectedSize)
+            {
+                error =
+                    "UV2 stream size does not match vertex count.";
+
+                return false;
+            }
+
+            for (std::size_t index = 0;
+                 index <
+                    output.vertices.size();
+                 ++index)
+            {
+                const std::size_t offset =
+                    index *
                     UvStride;
 
-                if (data.size() !=
-                    expectedSize)
+                if (!ReadValue(
+                        data,
+                        offset + 0,
+                        output.vertices[index].u2) ||
+                    !ReadValue(
+                        data,
+                        offset + 4,
+                        output.vertices[index].v2))
                 {
                     error =
-                        "UV2 stream size does not match vertex count.";
+                        "UV2 stream is truncated.";
 
                     return false;
                 }
-
-                for (std::size_t index = 0;
-                     index < output.vertices.size();
-                     ++index)
-                {
-                    const std::size_t offset =
-                        index *
-                        UvStride;
-
-                    if (!ReadValue(
-                            data,
-                            offset + 0,
-                            output.vertices[index].u2) ||
-                        !ReadValue(
-                            data,
-                            offset + 4,
-                            output.vertices[index].v2))
-                    {
-                        error =
-                            "UV2 stream is truncated.";
-
-                        return false;
-                    }
-                }
-
-                continue;
             }
-
-            error =
-                "Unsupported vertex stream: " +
-                streamName;
-
-            return false;
         }
 
         return true;
@@ -927,7 +1059,28 @@ namespace
             return false;
         }
 
-        if (format != "list")
+        core::assets::MeshIndexFormat indexFormat;
+        std::size_t indexStride = 0;
+
+        if (format == "list")
+        {
+            indexFormat =
+                core::assets::
+                    MeshIndexFormat::UInt16;
+
+            indexStride =
+                sizeof(std::uint16_t);
+        }
+        else if (format == "list32")
+        {
+            indexFormat =
+                core::assets::
+                    MeshIndexFormat::UInt32;
+
+            indexStride =
+                sizeof(std::uint32_t);
+        }
+        else
         {
             error =
                 "Unsupported index format: " +
@@ -962,19 +1115,47 @@ namespace
             return false;
         }
 
+        if (static_cast<std::size_t>(
+                indexCount) >
+            (
+                std::numeric_limits<std::size_t>::max() -
+                IndexHeaderSize
+            ) /
+            indexStride)
+        {
+            error =
+                "Index count is too large.";
+
+            return false;
+        }
+
         const std::size_t indexDataSize =
             static_cast<std::size_t>(
                 indexCount) *
-            sizeof(std::uint16_t);
+            indexStride;
+
+        const std::size_t afterIndices =
+            IndexHeaderSize +
+            indexDataSize;
+
+        if (static_cast<std::size_t>(
+                primitiveGroupCount) >
+            (
+                std::numeric_limits<std::size_t>::max() -
+                afterIndices
+            ) /
+            PrimitiveGroupSize)
+        {
+            error =
+                "Primitive group count is too large.";
+
+            return false;
+        }
 
         const std::size_t groupDataSize =
             static_cast<std::size_t>(
                 primitiveGroupCount) *
             PrimitiveGroupSize;
-
-        const std::size_t afterIndices =
-            IndexHeaderSize +
-            indexDataSize;
 
         const std::size_t expectedSize =
             afterIndices +
@@ -989,41 +1170,74 @@ namespace
             return false;
         }
 
-        if (geometry.primitiveGroups.size() !=
-            static_cast<std::size_t>(
-                primitiveGroupCount))
-        {
-            error =
-                "Visual primitive group count does not match index data.";
-
-            return false;
-        }
+        output.indexFormat =
+            indexFormat;
 
         output.indices.clear();
+        output.indices32.clear();
 
-        output.indices.resize(
-            indexCount);
+        if (indexFormat ==
+            core::assets::
+                MeshIndexFormat::UInt32)
+        {
+            output.indices32.resize(
+                indexCount);
+        }
+        else
+        {
+            output.indices.resize(
+                indexCount);
+        }
 
         for (std::size_t index = 0;
-             index < output.indices.size();
+             index <
+                static_cast<std::size_t>(
+                    indexCount);
              ++index)
         {
-            std::uint16_t value = 0;
+            std::uint32_t value = 0;
 
-            if (!ReadValue(
-                    data,
-                    IndexHeaderSize +
-                        index *
-                            sizeof(std::uint16_t),
-                    value))
+            const std::size_t offset =
+                IndexHeaderSize +
+                index *
+                    indexStride;
+
+            if (indexFormat ==
+                core::assets::
+                    MeshIndexFormat::UInt32)
             {
-                error =
-                    "Index data is truncated.";
+                if (!ReadValue(
+                        data,
+                        offset,
+                        value))
+                {
+                    error =
+                        "32-bit index data is truncated.";
 
-                return false;
+                    return false;
+                }
+            }
+            else
+            {
+                std::uint16_t value16 = 0;
+
+                if (!ReadValue(
+                        data,
+                        offset,
+                        value16))
+                {
+                    error =
+                        "16-bit index data is truncated.";
+
+                    return false;
+                }
+
+                value =
+                    value16;
             }
 
-            if (value >=
+            if (static_cast<std::size_t>(
+                    value) >=
                 output.vertices.size())
             {
                 error =
@@ -1032,8 +1246,19 @@ namespace
                 return false;
             }
 
-            output.indices[index] =
-                value;
+            if (indexFormat ==
+                core::assets::
+                    MeshIndexFormat::UInt32)
+            {
+                output.indices32[index] =
+                    value;
+            }
+            else
+            {
+                output.indices[index] =
+                    static_cast<std::uint16_t>(
+                        value);
+            }
         }
 
         output.primitiveGroups.clear();
@@ -1056,7 +1281,8 @@ namespace
                     PrimitiveGroupSize;
 
             core::assets::MeshPrimitiveGroup& group =
-                output.primitiveGroups[index];
+                output.primitiveGroups[
+                    index];
 
             if (!ReadValue(
                     data,
@@ -1092,7 +1318,7 @@ namespace
                 usedIndices;
 
             if (endIndex >
-                output.indices.size())
+                output.IndexCount())
             {
                 error =
                     "Primitive group exceeds index buffer.";
@@ -1114,20 +1340,53 @@ namespace
 
                 return false;
             }
+        }
 
-            const std::int32_t visualGroup =
-                geometry.primitiveGroups[index].index;
+        //
+        // Binary primitive groups и visual material groups
+        // не обязаны иметь одинаковое количество.
+        //
+        // Binary section описывает физические диапазоны
+        // индексов, visual выбирает используемые группы
+        // и назначает им материалы.
+        //
+        if (!geometry.primitiveGroups.empty())
+        {
+            for (core::assets::MeshPrimitiveGroup& group :
+                 output.primitiveGroups)
+            {
+                group.renderEnabled =
+                    false;
+            }
+        }
 
-            if (visualGroup < 0 ||
-                static_cast<std::uint32_t>(
-                    visualGroup) >=
-                    primitiveGroupCount)
+        for (const core::assets::VisualPrimitiveGroup& visualGroup :
+             geometry.primitiveGroups)
+        {
+            if (visualGroup.index < 0)
+            {
+                error =
+                    "Visual contains negative primitive group index.";
+
+                return false;
+            }
+
+            const std::size_t groupIndex =
+                static_cast<std::size_t>(
+                    visualGroup.index);
+
+            if (groupIndex >=
+                output.primitiveGroups.size())
             {
                 error =
                     "Visual contains invalid primitive group index.";
 
                 return false;
             }
+
+            output.primitiveGroups[
+                groupIndex].renderEnabled =
+                    true;
         }
 
         return true;
