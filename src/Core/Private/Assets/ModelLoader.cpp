@@ -413,24 +413,19 @@ namespace
         }
 
         if (const auto* visibilityBox =
-                root.FindChild(
-                    "visibilityBox"))
+        root.FindChild(
+            "visibilityBox"))
         {
             core::math::BoundingBox
                 box;
 
-            if (!ReadBoundingBox(
+            if (ReadBoundingBox(
                     *visibilityBox,
                     box))
             {
-                error =
-                    "Model contains invalid visibilityBox.";
-
-                return false;
+                model.visibilityBox =
+                    box;
             }
-
-            model.visibilityBox =
-                box;
         }
 
         const core::resources::DataSection* visualSection =

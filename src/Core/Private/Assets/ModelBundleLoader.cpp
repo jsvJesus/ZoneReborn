@@ -20,7 +20,8 @@ namespace core::assets
 
         ModelBundle bundle;
 
-        ModelLoader modelLoader;
+        ModelLoader
+            modelLoader;
 
         if (!modelLoader.Load(
                 resources,
@@ -49,7 +50,8 @@ namespace core::assets
             return false;
         }
 
-        VisualLoader visualLoader;
+        VisualLoader
+            visualLoader;
 
         if (!visualLoader.Load(
                 resources,
@@ -60,7 +62,8 @@ namespace core::assets
             return false;
         }
 
-        PrimitivesLoader primitivesLoader;
+        PrimitivesLoader
+            primitivesLoader;
 
         if (!primitivesLoader.Load(
                 resources,
@@ -87,20 +90,6 @@ namespace core::assets
                     return false;
                 }
 
-                for (const std::string& stream :
-                     geometry.streams)
-                {
-                    if (bundle.primitives.FindSection(
-                            stream) == nullptr)
-                    {
-                        error =
-                            "Vertex stream was not found in primitives: " +
-                            stream;
-
-                        return false;
-                    }
-                }
-
                 if (bundle.primitives.FindSection(
                         geometry.primitiveSection) == nullptr)
                 {
@@ -114,7 +103,8 @@ namespace core::assets
         }
 
         output =
-            std::move(bundle);
+            std::move(
+                bundle);
 
         return true;
     }

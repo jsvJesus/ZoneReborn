@@ -130,19 +130,24 @@ namespace
 
         if (material == nullptr)
         {
-            error =
-                "Visual primitive group does not contain material.";
-
-            return false;
+            return true;
         }
 
-        if (!materialLoader.Load(
+        core::assets::VisualMaterial
+            loadedMaterial;
+
+        std::string
+            materialError;
+
+        if (materialLoader.Load(
                 resources,
                 *material,
-                output.material,
-                error))
+                loadedMaterial,
+                materialError))
         {
-            return false;
+            output.material =
+                std::move(
+                    loadedMaterial);
         }
 
         return true;
@@ -506,6 +511,68 @@ namespace
         return true;
     }
 
+    bool ReadBooleanValue(
+        const core::resources::DataSection& section,
+        bool& output)
+    {
+        if (const bool* value =
+                section.AsBoolean())
+        {
+            output =
+                *value;
+
+            return true;
+        }
+
+        if (const std::int64_t* value =
+                section.AsInteger())
+        {
+            output =
+                *value != 0;
+
+            return true;
+        }
+
+        if (const auto* values =
+                section.AsFloats();
+            values != nullptr &&
+            values->size() == 1)
+        {
+            output =
+                (*values)[0] != 0.0f;
+
+            return true;
+        }
+
+        if (const std::string* value =
+                section.AsString())
+        {
+            if (*value == "true" ||
+                *value == "TRUE" ||
+                *value == "True" ||
+                *value == "1")
+            {
+                output =
+                    true;
+
+                return true;
+            }
+
+            if (*value == "false" ||
+                *value == "FALSE" ||
+                *value == "False" ||
+                *value == "0")
+            {
+                output =
+                    false;
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     bool ReadRenderSet(
         const core::resources::ResourceFileSystem& resources,
         const core::assets::MaterialLoader& materialLoader,
@@ -514,25 +581,27 @@ namespace
         std::string& error)
     {
         output = {};
+        error.clear();
 
         if (const auto* treatAsWorldSpaceObject =
                 section.FindChild(
                     "treatAsWorldSpaceObject"))
         {
-            const bool* value =
-                treatAsWorldSpaceObject->AsBoolean();
+            bool value =
+                false;
 
-            if (value == nullptr)
+            if (ReadBooleanValue(
+                    *treatAsWorldSpaceObject,
+                    value))
             {
-                return false;
+                output.treatAsWorldSpaceObject =
+                    value;
             }
-
-            output.treatAsWorldSpaceObject =
-                *value;
         }
 
         for (const auto* node :
-            section.FindChildren("node"))
+             section.FindChildren(
+                 "node"))
         {
             if (node == nullptr)
             {
@@ -545,13 +614,7 @@ namespace
                     *node,
                     value))
             {
-                error =
-                    "Visual renderSet contains invalid node reference. "
-                    "DataSection value type index=" +
-                    std::to_string(
-                        node->value.index());
-
-                return false;
+                continue;
             }
 
             output.nodes.push_back(
@@ -559,23 +622,61 @@ namespace
                     value));
         }
 
+        const std::vector<
+            const core::resources::DataSection*>
+            geometrySections =
+                section.FindChildren(
+                    "geometry");
+
+        std::string
+            firstGeometryError;
+
         for (const auto* geometry :
-             section.FindChildren("geometry"))
+             geometrySections)
         {
-            core::assets::VisualGeometry value;
+            if (geometry == nullptr)
+            {
+                continue;
+            }
+
+            core::assets::VisualGeometry
+                value;
+
+            std::string
+                geometryError;
 
             if (!ReadGeometry(
-                resources,
-                materialLoader,
-                *geometry,
-                value,
-                error))
+                    resources,
+                    materialLoader,
+                    *geometry,
+                    value,
+                    geometryError))
             {
-                return false;
+                if (firstGeometryError.empty())
+                {
+                    firstGeometryError =
+                        geometryError.empty()
+                            ? "Visual geometry uses an unsupported layout."
+                            : geometryError;
+                }
+
+                continue;
             }
 
             output.geometries.push_back(
-                std::move(value));
+                std::move(
+                    value));
+        }
+
+        if (!geometrySections.empty() &&
+            output.geometries.empty())
+        {
+            error =
+                firstGeometryError.empty()
+                    ? "Visual renderSet contains no supported geometry."
+                    : firstGeometryError;
+
+            return false;
         }
 
         return true;
@@ -671,45 +772,85 @@ namespace core::assets
             }
         }
 
+        const std::vector<
+    const resources::DataSection*>
+    renderSetSections =
+        root.FindChildren(
+            "renderSet");
+
+        std::string
+            firstRenderSetError;
+
         for (const auto* renderSet :
-             root.FindChildren("renderSet"))
+             renderSetSections)
         {
-            VisualRenderSet value;
+            if (renderSet == nullptr)
+            {
+                continue;
+            }
+
+            VisualRenderSet
+                value;
+
+            std::string
+                renderSetError;
 
             if (!ReadRenderSet(
-                resources,
-                materialLoader,
-                *renderSet,
-                value,
-                error))
+                    resources,
+                    materialLoader,
+                    *renderSet,
+                    value,
+                    renderSetError))
             {
-                error =
-                    "Visual contains invalid renderSet.";
+                if (firstRenderSetError.empty())
+                {
+                    firstRenderSetError =
+                        renderSetError;
+                }
 
-                return false;
+                continue;
             }
 
             visual.renderSets.push_back(
-                std::move(value));
+                std::move(
+                    value));
+        }
+
+        if (!renderSetSections.empty() &&
+            visual.renderSets.empty())
+        {
+            error =
+                "Visual contains no supported renderSet";
+
+            if (!firstRenderSetError.empty())
+            {
+                error +=
+                    ": ";
+
+                error +=
+                    firstRenderSetError;
+            }
+
+            error +=
+                ".";
+
+            return false;
         }
 
         if (const auto* boundingBox =
-                root.FindChild("boundingBox"))
+        root.FindChild(
+            "boundingBox"))
         {
-            math::BoundingBox box;
+            math::BoundingBox
+                box;
 
-            if (!ReadBoundingBox(
+            if (ReadBoundingBox(
                     *boundingBox,
                     box))
             {
-                error =
-                    "Visual contains invalid boundingBox.";
-
-                return false;
+                visual.boundingBox =
+                    box;
             }
-
-            visual.boundingBox =
-                box;
         }
 
         output =
