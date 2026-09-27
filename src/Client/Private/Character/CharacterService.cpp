@@ -970,6 +970,25 @@ namespace client::character
             stream,
             header);
 
+        if (!header.empty() &&
+            header.back() == '\r')
+        {
+            header.pop_back();
+        }
+
+        if (header.size() >= 3 &&
+            static_cast<unsigned char>(
+                header[0]) == 0xEF &&
+            static_cast<unsigned char>(
+                header[1]) == 0xBB &&
+            static_cast<unsigned char>(
+                header[2]) == 0xBF)
+        {
+            header.erase(
+                0,
+                3);
+        }
+
         const bool legacy =
             header == LegacyFileHeader;
 
