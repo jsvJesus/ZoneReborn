@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Graphics/SceneRenderData.h"
-
+#include "Loading/LoadingProgress.h"
 #include "Core/Runtime.h"
 
 #include <string>
@@ -14,5 +14,6 @@ namespace client::preview
         core::Runtime& runtime,
         std::string_view spaceName,
         graphics::SceneRenderData& output,
-        std::string& error);
+        std::string& error,
+        const loading::ProgressCallback& progress = {});
 }

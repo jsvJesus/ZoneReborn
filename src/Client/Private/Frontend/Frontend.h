@@ -14,6 +14,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <string_view>
 
 namespace client::frontend
 {
@@ -170,6 +171,10 @@ namespace client::frontend
 
         void SetWorldLoading(
             bool visible);
+
+        void SetWorldLoadingProgress(
+            std::uint32_t percent,
+            std::string_view stage);
 
         void Hide();
 

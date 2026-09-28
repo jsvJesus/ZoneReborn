@@ -48,6 +48,7 @@
     <ClInclude Include="Private\Graphics\SceneRenderData.h" />
     <ClInclude Include="Private\Graphics\Shaders\ShaderCompiler.h" />
     <ClInclude Include="Private\Input\CameraController.h" />
+    <ClInclude Include="Private\Loading\LoadingProgress.h" />
     <ClInclude Include="Private\Platform\Window.h" />
     <ClInclude Include="Private\Player\ThirdPersonCamera.h" />
     <ClInclude Include="Private\Player\PlayerController.h" />

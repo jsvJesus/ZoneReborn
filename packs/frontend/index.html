@@ -81,24 +81,58 @@
         </div>
 
         <div
-            id="worldLoading"
-            role="status"
-            aria-live="polite"
-            hidden>
+			id="worldLoading"
+			role="status"
+			aria-live="polite"
+			hidden>
 
-            <div class="world-loading-content">
-                <canvas
-                    id="worldLoadingIndicator"
-                    class="world-loading-indicator"
-                    data-tga="/packs/res/soGUI/maps/loadingScreen/loadingCircle/loadingCircle1.tga">
-                </canvas>
+			<canvas
+				id="worldLoadingBackground"
+				class="world-loading-background">
+			</canvas>
 
-                <div id="worldLoadingText" class="world-loading-text">
-                    ЗАГРУЗКА...
-                </div>
-            </div>
+			<div class="world-loading-overlay"></div>
 
-        </div>
+			<div class="world-loading-content">
+
+				<canvas
+					id="worldLoadingIndicator"
+					class="world-loading-indicator"
+					data-tga="/packs/res/soGUI/maps/loadingScreen/loadingCircle/loadingCircle1.tga">
+				</canvas>
+
+				<div class="world-loading-status">
+
+					<div class="world-loading-header">
+
+						<div
+							id="worldLoadingText"
+							class="world-loading-text">
+							ПОДГОТОВКА
+						</div>
+
+						<div
+							id="worldLoadingPercent"
+							class="world-loading-percent">
+							0%
+						</div>
+
+					</div>
+
+					<div class="world-loading-progress">
+
+						<div
+							id="worldLoadingProgressFill"
+							class="world-loading-progress-fill">
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
 
         <div
             id="sharedTop"

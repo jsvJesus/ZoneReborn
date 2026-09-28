@@ -23,9 +23,15 @@ namespace client::world
         graphics::Renderer& renderer,
         const std::string_view spaceName,
         const character::Profile& profile,
+        const loading::ProgressCallback& progress,
         std::string& error)
     {
         error.clear();
+
+        loading::Report(
+            progress,
+            2,
+            loading::stage::Preparing);
 
         if (spaceName.empty())
         {
@@ -51,10 +57,11 @@ namespace client::world
                 spaceName));
 
         if (!preview::LoadWorldPreview(
-                runtime,
-                spaceName,
-                scene,
-                error))
+            runtime,
+            spaceName,
+            scene,
+            error,
+            progress))
         {
             error =
                 "Unable to load world '" +
@@ -65,6 +72,11 @@ namespace client::world
 
             return false;
         }
+
+        loading::Report(
+            progress,
+            86,
+            loading::stage::Collision);
 
         if (!collision_.Build(
                 scene,
@@ -102,6 +114,11 @@ namespace client::world
             ", " +
             std::to_string(
                 spawnPosition.z));
+
+        loading::Report(
+            progress,
+            90,
+            loading::stage::Character);
 
         if (!playerCatalog_.Load(
                 runtime.Resources(),
@@ -170,6 +187,11 @@ namespace client::world
         character::RenderDataBuilder
             characterBuilder;
 
+        loading::Report(
+            progress,
+            93,
+            loading::stage::Character);
+
         if (!characterBuilder.Build(
                 runtime.Resources(),
                 playerCatalog_,
@@ -202,6 +224,11 @@ namespace client::world
                 "Tutorial warehouse TimeOfDay overridden to 12:00.");
         }
 
+        loading::Report(
+            progress,
+            96,
+            loading::stage::Renderer);
+
         if (!renderer.Initialize(
                 window.NativeHandle(),
                 window.Width(),
@@ -221,6 +248,11 @@ namespace client::world
 
             return false;
         }
+
+        loading::Report(
+            progress,
+            98,
+            loading::stage::Renderer);
 
         if (!renderer.SetScene(
                 scene,
@@ -267,6 +299,11 @@ namespace client::world
         renderer.SetCamera(
             playerCamera_.View());
 
+        loading::Report(
+            progress,
+            99,
+            loading::stage::Finalizing);
+
         previousUpdateTime_ =
             std::chrono::steady_clock::now();
 
@@ -286,6 +323,11 @@ namespace client::world
             std::string(
                 "World initialized: ") +
             spaceName_);
+
+        loading::Report(
+            progress,
+            100,
+            loading::stage::Ready);
 
         return true;
     }

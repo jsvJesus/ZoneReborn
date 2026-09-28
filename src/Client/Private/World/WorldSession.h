@@ -6,6 +6,8 @@
 #include "Character/CharacterState.h"
 #include "Character/CharacterAnimationStateMachine.h"
 
+#include "Loading/LoadingProgress.h"
+
 #include "Graphics/Renderer.h"
 
 #include "Platform/Window.h"
@@ -34,6 +36,7 @@ namespace client::world
             graphics::Renderer& renderer,
             std::string_view spaceName,
             const character::Profile& profile,
+            const loading::ProgressCallback& progress,
             std::string& error);
 
         void Update(

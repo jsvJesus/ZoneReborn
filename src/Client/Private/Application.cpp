@@ -3,6 +3,8 @@
 #include "Core/Images/WicImageDecoder.h"
 #include "Core/Log.h"
 
+#include "Loading/LoadingProgress.h"
+
 #include <cmath>
 #include <random>
 #include <span>
@@ -2024,6 +2026,22 @@ Application::CharacterTransform() const noexcept
 
                     ShutdownCharacterSelectScene();
 
+                        frontend_.SetWorldLoadingProgress(
+                            1,
+                            loading::stage::Preparing);
+
+                        const loading::ProgressCallback
+                            loadingProgress =
+                                [this](
+                                    const std::uint32_t percent,
+                                    const std::string_view stage)
+                                {
+                                    frontend_.
+                                        SetWorldLoadingProgress(
+                                            percent,
+                                            stage);
+                                };
+                        
                     std::string
                         worldError;
 
@@ -2033,6 +2051,7 @@ Application::CharacterTransform() const noexcept
                         renderer_,
                         TestWorldSpace,
                         *characterProfile_,
+                        loadingProgress,
                         worldError))
                     {
                         core::Log::Error(

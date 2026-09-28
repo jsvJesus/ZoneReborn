@@ -20,17 +20,143 @@
     const STARTUP_DURATION =
         1400;
 
-    const WORLD_LOADING_TEXT =
-    {
-        russian:
-            "ЗАГРУЗКА...",
+    const WORLD_LOADING_STAGES =
+	{
+		russian:
+		{
+			preparing:
+				"ПОДГОТОВКА",
 
-        english:
-            "LOADING...",
+			world:
+				"ЗАГРУЗКА МИРА",
 
-        chinese:
-            "加载中..."
-    };
+			resources:
+				"ЗАГРУЗКА РЕСУРСОВ",
+
+			textures:
+				"ЗАГРУЗКА ТЕКСТУР",
+
+			models:
+				"ЗАГРУЗКА МОДЕЛЕЙ",
+
+			terrain:
+				"ЗАГРУЗКА ЛАНДШАФТА",
+
+			vegetation:
+				"ЗАГРУЗКА РАСТИТЕЛЬНОСТИ",
+
+			effects:
+				"ЗАГРУЗКА ЭФФЕКТОВ",
+
+			water:
+				"ЗАГРУЗКА ВОДЫ",
+
+			collision:
+				"ПОСТРОЕНИЕ КОЛЛИЗИЙ",
+
+			character:
+				"ЗАГРУЗКА ПЕРСОНАЖА",
+
+			renderer:
+				"ПОДГОТОВКА РЕНДЕРА",
+
+			finalizing:
+				"ЗАВЕРШЕНИЕ ЗАГРУЗКИ",
+
+			ready:
+				"ГОТОВО"
+		},
+
+		english:
+		{
+			preparing:
+				"PREPARING",
+
+			world:
+				"LOADING WORLD",
+
+			resources:
+				"LOADING RESOURCES",
+
+			textures:
+				"LOADING TEXTURES",
+
+			models:
+				"LOADING MODELS",
+
+			terrain:
+				"LOADING TERRAIN",
+
+			vegetation:
+				"LOADING VEGETATION",
+
+			effects:
+				"LOADING EFFECTS",
+
+			water:
+				"LOADING WATER",
+
+			collision:
+				"BUILDING COLLISION",
+
+			character:
+				"LOADING CHARACTER",
+
+			renderer:
+				"PREPARING RENDERER",
+
+			finalizing:
+				"FINALIZING",
+
+			ready:
+				"READY"
+		},
+
+		chinese:
+		{
+			preparing:
+				"正在准备",
+
+			world:
+				"正在加载世界",
+
+			resources:
+				"正在加载资源",
+
+			textures:
+				"正在加载纹理",
+
+			models:
+				"正在加载模型",
+
+			terrain:
+				"正在加载地形",
+
+			vegetation:
+				"正在加载植被",
+
+			effects:
+				"正在加载特效",
+
+			water:
+				"正在加载水体",
+
+			collision:
+				"正在构建碰撞",
+
+			character:
+				"正在加载角色",
+
+			renderer:
+				"正在准备渲染器",
+
+			finalizing:
+				"正在完成加载",
+
+			ready:
+				"准备完成"
+		}
+	};
 
 
     let currentLocale =
@@ -53,6 +179,12 @@
 
         worldLoading:
             false
+			
+		worldLoadingPercent:
+			0,
+
+		worldLoadingStage:
+			"preparing"
     };
 
 
@@ -409,6 +541,28 @@
             image,
             0,
             0);
+			
+		const worldLoadingBackground =
+			document.getElementById(
+				"worldLoadingBackground");
+
+		if (worldLoadingBackground)
+		{
+			worldLoadingBackground.width =
+				width;
+
+			worldLoadingBackground.height =
+				height;
+
+			const loadingContext =
+				worldLoadingBackground.getContext(
+					"2d");
+
+			loadingContext.putImageData(
+				image,
+				0,
+				0);
+		}
     }
 
 
@@ -641,65 +795,136 @@
                 true;
         }
     }
+	
+	
+	function loadingStageText(stage)
+	{
+		const language =
+			WORLD_LOADING_STAGES[
+				currentLocale] ||
+			WORLD_LOADING_STAGES.russian;
+
+		return (
+			language[stage] ||
+			language.preparing
+		);
+	}
 
 
-    function setWorldLoading(
-        visible)
-    {
-        const loading =
-            document.getElementById(
-                "worldLoading");
+	function setWorldLoadingProgress(percent, stage)
+	{
+		const numericPercent =
+			Number(
+				percent);
 
-        const root =
-            document.getElementById(
-                "screenRoot");
+		const normalizedPercent =
+			Number.isFinite(
+				numericPercent)
+					? Math.max(
+						0,
+						Math.min(
+							100,
+							Math.round(
+								numericPercent)))
+					: 0;
 
-        const top =
-            document.getElementById(
-                "sharedTop");
+		const normalizedStage =
+			String(
+				stage ||
+				state.worldLoadingStage ||
+				"preparing");
 
-        if (!loading)
-        {
-            return;
-        }
+		state.worldLoadingPercent =
+			normalizedPercent;
 
-        state.worldLoading =
-            Boolean(visible);
+		state.worldLoadingStage =
+			normalizedStage;
 
-        loading.hidden =
-            !state.worldLoading;
+		const text =
+			document.getElementById(
+				"worldLoadingText");
 
-        if (root)
-        {
-            root.inert =
-                state.worldLoading;
-        }
+		const percentage =
+			document.getElementById(
+				"worldLoadingPercent");
 
-        if (state.worldLoading)
-        {
-            if (top)
-            {
-                top.hidden =
-                    true;
-            }
+		const fill =
+			document.getElementById(
+				"worldLoadingProgressFill");
 
-            const text =
-                document.getElementById(
-                    "worldLoadingText");
+		if (text)
+		{
+			text.textContent =
+				loadingStageText(
+					normalizedStage);
+		}
 
-            if (text)
-            {
-                text.textContent =
-                    WORLD_LOADING_TEXT[currentLocale] ||
-                    WORLD_LOADING_TEXT.russian;
-            }
+		if (percentage)
+		{
+			percentage.textContent =
+				normalizedPercent +
+				"%";
+		}
 
-            return;
-        }
+		if (fill)
+		{
+			fill.style.width =
+				normalizedPercent +
+				"%";
+		}
+	}
 
-        renderSharedTop(
-            state.currentScreen);
-    }
+
+    function setWorldLoading(visible)
+	{
+		const loading =
+			document.getElementById(
+				"worldLoading");
+
+		const root =
+			document.getElementById(
+				"screenRoot");
+
+		const top =
+			document.getElementById(
+				"sharedTop");
+
+		if (!loading)
+		{
+			return;
+		}
+
+		state.worldLoading =
+			Boolean(
+				visible);
+
+		loading.hidden =
+			!state.worldLoading;
+
+		if (root)
+		{
+			root.inert =
+				state.worldLoading;
+		}
+
+		if (state.worldLoading)
+		{
+			if (top)
+			{
+				top.hidden =
+					true;
+			}
+
+			setWorldLoadingProgress(
+				0,
+				"preparing");
+
+			return;
+		}
+
+		renderSharedTop(
+			state.currentScreen);
+	}
 
 
     function afterNextPaint()
@@ -1373,6 +1598,16 @@
             setWorldLoading(
                 visible);
         },
+		
+		
+		worldLoadingProgress(
+			percent,
+			stage)
+		{
+			setWorldLoadingProgress(
+				percent,
+				stage);
+		},
 
 
         loginError(

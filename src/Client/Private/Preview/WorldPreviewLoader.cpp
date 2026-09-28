@@ -43,10 +43,16 @@ namespace client::preview
         core::Runtime& runtime,
         const std::string_view spaceName,
         graphics::SceneRenderData& output,
-        std::string& error)
+        std::string& error,
+        const loading::ProgressCallback& progress)
     {
         output = {};
         error.clear();
+
+        loading::Report(
+            progress,
+            7,
+            loading::stage::World);
 
         core::world::WorldLoader
             worldLoader;
@@ -62,6 +68,11 @@ namespace client::preview
         {
             return false;
         }
+
+        loading::Report(
+            progress,
+            16,
+            loading::stage::Resources);
 
         core::world::particles::ParticleLoader
             particleLoader;
@@ -128,6 +139,11 @@ namespace client::preview
 
         std::size_t particleUnsupportedGenerators =
             0;
+
+        loading::Report(
+            progress,
+            22,
+            loading::stage::Effects);
 
         for (const std::string& particlePath :
              particleResourcePaths)
@@ -618,6 +634,11 @@ namespace client::preview
 
         std::string particleRenderError;
 
+        loading::Report(
+            progress,
+            31,
+            loading::stage::Textures);
+
         if (!particleRenderBuilder.Build(
                 runtime.Resources(),
                 scene,
@@ -1036,6 +1057,11 @@ namespace client::preview
 
         core::assets::MeshLoader
             meshLoader;
+
+        loading::Report(
+            progress,
+            44,
+            loading::stage::Models);
 
         ModelRenderDataBuilder
             modelRenderBuilder;
@@ -1720,6 +1746,11 @@ namespace client::preview
         core::world::TerrainLoader
             terrainLoader;
 
+        loading::Report(
+            progress,
+            61,
+            loading::stage::Terrain);
+
         TerrainRenderDataBuilder
             terrainRenderBuilder;
 
@@ -2095,6 +2126,11 @@ namespace client::preview
         core::world::flora::FloraVisualLoader
             floraVisualLoader;
 
+        loading::Report(
+            progress,
+            71,
+            loading::stage::Vegetation);
+
         FloraRenderDataBuilder
             floraRenderBuilder;
 
@@ -2342,7 +2378,11 @@ namespace client::preview
                     "Flora disabled for terrain texture: ") +
                 texture);
         }
-        
+
+        loading::Report(
+            progress,
+            77,
+            loading::stage::Water);
 
         WaterRenderDataBuilder
             waterRenderBuilder;
@@ -2501,6 +2541,11 @@ namespace client::preview
                 "Water VLO chunk coverage references: ") +
             std::to_string(
                 waterChunkReferences));
+
+        loading::Report(
+            progress,
+            81,
+            loading::stage::Effects);
 
         FlareRenderDataBuilder
             flareRenderBuilder;
@@ -2688,6 +2733,11 @@ namespace client::preview
                 "Textured model primitive groups: ") +
             std::to_string(
                 texturedModelGroups));
+
+        loading::Report(
+            progress,
+            84,
+            loading::stage::World);
 
         output =
             std::move(scene);

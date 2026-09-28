@@ -1922,6 +1922,27 @@ namespace client::frontend
             ");}");
     }
 
+    void OriginalFrontend::SetWorldLoadingProgress(
+        const std::uint32_t percent,
+        const std::string_view stage)
+    {
+        const std::uint32_t safePercent =
+            std::min(
+                percent,
+                100u);
+
+        ExecuteScriptUtf8(
+            "if(window.ZoneFrontend){"
+            "window.ZoneFrontend.worldLoadingProgress(" +
+            std::to_string(
+                safePercent) +
+            "," +
+            JsonString(
+                stage) +
+            ");"
+            "}");
+    }
+
     void OriginalFrontend::Hide()
     {
         if (controller_)
