@@ -52,30 +52,6 @@ namespace
         };
     }
 
-    core::math::Vector3 Add(
-        const core::math::Vector3& a,
-        const core::math::Vector3& b) noexcept
-    {
-        return
-        {
-            a.x + b.x,
-            a.y + b.y,
-            a.z + b.z
-        };
-    }
-
-    core::math::Vector3 Multiply(
-        const core::math::Vector3& value,
-        const float scalar) noexcept
-    {
-        return
-        {
-            value.x * scalar,
-            value.y * scalar,
-            value.z * scalar
-        };
-    }
-
     std::uint32_t PackNormal(
         const core::math::Vector3& value) noexcept
     {
@@ -316,54 +292,6 @@ namespace
             sizeof(value));
 
         return value;
-    }
-
-    core::math::Vector3 ReadLeafVector(
-        const core::assets::speedtree::CTreeLeafVertex& vertex,
-        const std::size_t firstIndex) noexcept
-    {
-        return
-        {
-            ReadLeafFloat(
-                vertex,
-                firstIndex),
-
-            ReadLeafFloat(
-                vertex,
-                firstIndex +
-                    1),
-
-            ReadLeafFloat(
-                vertex,
-                firstIndex +
-                    2)
-        };
-    }
-
-    std::uint32_t ReadLeafCorner(
-        const core::assets::speedtree::CTreeLeafVertex& vertex,
-        const std::size_t fallback) noexcept
-    {
-        const float value =
-            ReadLeafFloat(
-                vertex,
-                7);
-
-        if (value >=
-                0.0f &&
-            value <=
-                3.0f)
-        {
-            return
-                static_cast<std::uint32_t>(
-                    value +
-                    0.5f);
-        }
-
-        return
-            static_cast<std::uint32_t>(
-                fallback &
-                3u);
     }
 
     bool CopyTriangleList(
@@ -920,16 +848,6 @@ namespace client::preview
             return true;
         }
 
-        if ((source.vertices.size() %
-             4u) !=
-            0u)
-        {
-            error =
-                "CTREE leaf vertex count is not divisible by four.";
-
-            return false;
-        }
-
         if (source.lods.empty())
         {
             error =
@@ -959,140 +877,17 @@ namespace client::preview
         mesh.vertexFormat =
             "ctree-leaves";
 
-        mesh.vertices.resize(
+        mesh.vertices.reserve(
             source.vertices.size());
 
-        for (std::size_t index = 0;
-             index <
-                source.vertices.size();
-             ++index)
+        for (const core::assets::speedtree::CTreeLeafVertex& sourceVertex :
+             source.vertices)
         {
-            const core::assets::speedtree::CTreeLeafVertex&
-                sourceVertex =
-                    source.vertices[
-                        index];
-
-            const std::size_t cardStart =
-                (
-                    index /
-                    4u
-                ) *
-                4u;
-
-            const core::assets::speedtree::CTreeLeafVertex&
-                cardVertex =
-                    source.vertices[
-                        cardStart];
-
-            const core::math::Vector3 tangent =
-                Normalize(
-                    ReadLeafVector(
-                        cardVertex,
-                        13));
-
-            const core::math::Vector3 bitangent =
-                Normalize(
-                    ReadLeafVector(
-                        cardVertex,
-                        16));
-
-            float width =
-                std::abs(
-                    ReadLeafFloat(
-                        sourceVertex,
-                        9));
-
-            float height =
-                std::abs(
-                    ReadLeafFloat(
-                        sourceVertex,
-                        10));
-
-            if (width <
-                0.001f)
-            {
-                width =
-                    1.0f;
-            }
-
-            if (height <
-                0.001f)
-            {
-                height =
-                    width;
-            }
-
-            const std::uint32_t corner =
-                ReadLeafCorner(
-                    sourceVertex,
-                    index -
-                        cardStart);
-
-            float localX =
-                0.0f;
-
-            float localY =
-                0.0f;
-
-            switch (corner)
-            {
-                case 0:
-                    localX =
-                        -0.5f;
-
-                    localY =
-                        0.5f;
-                    break;
-
-                case 1:
-                    localX =
-                        0.5f;
-
-                    localY =
-                        0.5f;
-                    break;
-
-                case 2:
-                    localX =
-                        0.5f;
-
-                    localY =
-                        -0.5f;
-                    break;
-
-                default:
-                    localX =
-                        -0.5f;
-
-                    localY =
-                        -0.5f;
-                    break;
-            }
-
-            core::math::Vector3 position =
-                sourceVertex.position;
-
-            position =
-                Add(
-                    position,
-                    Multiply(
-                        tangent,
-                        localX *
-                            width));
-
-            position =
-                Add(
-                    position,
-                    Multiply(
-                        bitangent,
-                        localY *
-                            height));
-
             core::assets::MeshVertex
                 vertex;
 
             vertex.position =
-                position;
+                sourceVertex.position;
 
             vertex.packedNormal =
                 PackNormal(
@@ -1111,9 +906,8 @@ namespace client::preview
             vertex.colour =
                 0xFFFFFFFFu;
 
-            mesh.vertices[
-                index] =
-                vertex;
+            mesh.vertices.push_back(
+                vertex);
         }
 
         if (!CopyTriangleList(
