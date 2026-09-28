@@ -555,6 +555,7 @@ Application::CharacterTransform() const noexcept
             characterAnimator_.IsReady())
         {
             if (!characterAnimator_.Update(
+                    character::AnimationState::Idle,
                     0.0f,
                     renderer_,
                     error))
@@ -695,6 +696,7 @@ Application::CharacterTransform() const noexcept
                     animationError;
 
                 if (!characterAnimator_.Update(
+                        character::AnimationState::Idle,
                         elapsedSeconds,
                         renderer_,
                         animationError))
@@ -766,7 +768,12 @@ Application::CharacterTransform() const noexcept
 
                     if (event.rememberLogin)
                     {
-                        rememberedLogin_.Save(result.login);
+                        if (!rememberedLogin_.Save(
+                                result.login))
+                        {
+                            core::Log::Warning(
+                                "Unable to save remembered login.");
+                        }
                     }
                     else
                     {
@@ -1566,9 +1573,15 @@ Application::CharacterTransform() const noexcept
                         std::string
                             deleteError;
 
-                        characterService_.Delete(
-                            accountSession_.Login(),
-                            deleteError);
+                        if (!characterService_.Delete(
+                                accountSession_.Login(),
+                                deleteError))
+                        {
+                            core::Log::Warning(
+                                std::string(
+                                    "Unable to rollback created character: ") +
+                                deleteError);
+                        }
 
                         characterProfile_.
                             reset();
