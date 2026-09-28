@@ -20,6 +20,10 @@ namespace core::world::flora
             1.0f;
     };
 
+    [[nodiscard]]
+    std::string BuildFloraTextureFamilyKey(
+        std::string_view textureReference);
+
     struct FloraVisualRule final
     {
         std::string visualReference;

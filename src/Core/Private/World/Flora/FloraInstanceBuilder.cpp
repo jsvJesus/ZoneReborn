@@ -477,8 +477,8 @@ namespace
     }
 
     float EcotypeTextureWeight(
-        const core::world::flora::FloraEcotype& ecotype,
-        const std::string_view textureReference)
+    const core::world::flora::FloraEcotype& ecotype,
+    const std::string_view textureReference)
     {
         const std::string key =
             core::world::flora::BuildFloraTextureKey(
@@ -492,12 +492,49 @@ namespace
         float weight =
             0.0f;
 
+        bool exactMatch =
+            false;
+
         for (const core::world::flora::FloraTextureRule& rule :
              ecotype.textures)
         {
             if (core::world::flora::BuildFloraTextureKey(
                     rule.textureReference) !=
                 key)
+            {
+                continue;
+            }
+
+            exactMatch =
+                true;
+
+            weight +=
+                std::max(
+                    rule.weight,
+                    0.0f);
+        }
+
+        if (exactMatch)
+        {
+            return weight;
+        }
+
+        const std::string familyKey =
+            core::world::flora::BuildFloraTextureFamilyKey(
+                textureReference);
+
+        if (familyKey.empty() ||
+            familyKey == key)
+        {
+            return 0.0f;
+        }
+
+        for (const core::world::flora::FloraTextureRule& rule :
+             ecotype.textures)
+        {
+            if (core::world::flora::BuildFloraTextureFamilyKey(
+                    rule.textureReference) !=
+                familyKey)
             {
                 continue;
             }

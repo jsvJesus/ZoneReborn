@@ -2374,9 +2374,9 @@ namespace client::preview
             floraNoEcotypeTextures)
         {
             core::Log::Info(
-                std::string(
-                    "Flora disabled for terrain texture: ") +
-                texture);
+            std::string(
+                "No flora ecotype mapping for terrain texture: ") +
+            texture);
         }
 
         loading::Report(
