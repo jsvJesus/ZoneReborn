@@ -173,18 +173,18 @@
 
         currentScreen:
             "",
-			
-		character:
-			null,
+
+        character:
+            null,
 
         worldLoading:
-            false
-			
-		worldLoadingPercent:
-			0,
+            false,
 
-		worldLoadingStage:
-			"preparing"
+        worldLoadingPercent:
+            0,
+
+        worldLoadingStage:
+            "preparing"
     };
 
 
