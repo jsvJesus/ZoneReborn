@@ -58,6 +58,121 @@ namespace
         return true;
     }
 
+    bool ReadOptionalFloat(
+    const DataSection& parent,
+    const std::string_view name,
+    float& output,
+    bool& found,
+    std::string& error)
+    {
+        found =
+            false;
+
+        const DataSection* section =
+            parent.FindChild(
+                name);
+
+        if (section == nullptr)
+        {
+            return true;
+        }
+
+        if (!section->TryGetFloat(
+                output))
+        {
+            return SetInvalidFieldError(
+                name,
+                error);
+        }
+
+        found =
+            true;
+
+        return true;
+    }
+
+    bool ReadWaterSunPower(
+        const DataSection& section,
+        float& output,
+        std::string& error)
+    {
+        bool found =
+            false;
+
+        if (!ReadOptionalFloat(
+                section,
+                "sunPower",
+                output,
+                found,
+                error))
+        {
+            return false;
+        }
+
+        if (found)
+        {
+            return true;
+        }
+
+        float sunMaxPower =
+            0.0f;
+
+        if (!ReadOptionalFloat(
+                section,
+                "sunMaxPower",
+                sunMaxPower,
+                found,
+                error))
+        {
+            return false;
+        }
+
+        if (found)
+        {
+            output =
+                sunMaxPower;
+
+            return true;
+        }
+
+        float sunMinPower =
+            0.0f;
+
+        if (!ReadOptionalFloat(
+                section,
+                "sunMinPower",
+                sunMinPower,
+                found,
+                error))
+        {
+            return false;
+        }
+
+        if (found)
+        {
+            output =
+                sunMinPower;
+        }
+
+        return true;
+    }
+
+    bool ReadOptionalWaterSunScale(
+        const DataSection& section,
+        float& output,
+        std::string& error)
+    {
+        bool found =
+            false;
+
+        return ReadOptionalFloat(
+            section,
+            "sunScale",
+            output,
+            found,
+            error);
+    }
+
     template<std::size_t Count>
     bool ReadFloatArray(
         const DataSection& parent,
@@ -467,18 +582,16 @@ namespace
             return false;
         }
 
-        if (!ReadFloat(
-                section,
-                "sunPower",
-                output.sunPower,
-                error))
+        if (!ReadWaterSunPower(
+            section,
+            output.sunPower,
+            error))
         {
             return false;
         }
 
-        if (!ReadFloat(
+        if (!ReadOptionalWaterSunScale(
                 section,
-                "sunScale",
                 output.sunScale,
                 error))
         {

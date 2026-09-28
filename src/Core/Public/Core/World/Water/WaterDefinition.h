@@ -33,7 +33,7 @@ namespace core::world::water
 
         float windVelocity = 0.0f;
 
-        float sunPower = 0.0f;
+        float sunPower = 1.0f;
         float sunScale = 0.0f;
 
         assets::TextureResource waveTexture;
