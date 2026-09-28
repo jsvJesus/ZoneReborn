@@ -8,10 +8,7 @@
 
 namespace
 {
-    constexpr std::string_view TutorialWarehouseSpace =
-        "start_station_lesnaya";
-
-    constexpr float TutorialWarehouseStartHour =
+    constexpr float ForcedWorldStartHour =
         12.0f;
 }
 
@@ -214,14 +211,13 @@ namespace client::world
             return false;
         }
 
-        if (spaceName == TutorialWarehouseSpace &&
-            scene.sky.enabled)
+        if (scene.sky.enabled)
         {
             scene.sky.definition.startTimeHours =
-                TutorialWarehouseStartHour;
+                ForcedWorldStartHour;
 
             core::Log::Info(
-                "Tutorial warehouse TimeOfDay overridden to 12:00.");
+                "World TimeOfDay overridden to 12:00.");
         }
 
         loading::Report(
