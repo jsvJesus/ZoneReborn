@@ -4,6 +4,15 @@
 
 #include "Core/Log.h"
 
+namespace
+{
+    constexpr std::string_view TutorialWarehouseSpace =
+        "start_tutorial_warehouse";
+
+    constexpr float TutorialWarehouseStartHour =
+        12.0f;
+}
+
 namespace client::world
 {
     bool Session::Load(
@@ -51,6 +60,16 @@ namespace client::world
                 error;
 
             return false;
+        }
+
+        if (spaceName == TutorialWarehouseSpace &&
+            scene.sky.enabled)
+        {
+            scene.sky.definition.startTimeHours =
+                TutorialWarehouseStartHour;
+
+            core::Log::Info(
+                "Tutorial warehouse TimeOfDay overridden to 12:00.");
         }
 
         if (!renderer.Initialize(
