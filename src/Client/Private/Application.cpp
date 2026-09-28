@@ -15,7 +15,7 @@ namespace
         "zone_main";
 
     constexpr char TestWorldSpace[] =
-        "start_tutorial_warehouse"; // load map for test
+        "start_station_lesnaya"; // load map for Client
 
     constexpr char MainMenuBackgroundPath[] =
         "res/soGUI/maps/MainMenu/main_bg.jpg";
@@ -2015,11 +2015,12 @@ Application::CharacterTransform() const noexcept
                         worldError;
 
                     if (!worldSession_.Load(
-                            runtime_,
-                            window_,
-                            renderer_,
-                            TestWorldSpace,
-                            worldError))
+                        runtime_,
+                        window_,
+                        renderer_,
+                        TestWorldSpace,
+                        *characterProfile_,
+                        worldError))
                     {
                         core::Log::Error(
                             worldError);

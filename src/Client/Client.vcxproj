@@ -46,6 +46,8 @@
     <ClInclude Include="Private\Graphics\Shaders\ShaderCompiler.h" />
     <ClInclude Include="Private\Input\CameraController.h" />
     <ClInclude Include="Private\Platform\Window.h" />
+    <ClInclude Include="Private\Player\ThirdPersonCamera.h" />
+    <ClInclude Include="Private\Player\PlayerController.h" />
     <ClInclude Include="Private\Preview\CharacterSelectStage.h" />
     <ClInclude Include="Private\Preview\FlareRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\FloraRenderDataBuilder.h" />
@@ -75,6 +77,8 @@
     <ClCompile Include="Private\Character\CharacterService.cpp" />
     <ClCompile Include="Private\Character\CharacterState.cpp" />
     <ClCompile Include="Private\Frontend\Frontend.cpp" Condition="'$(Configuration)|$(Platform)'=='Final|x64'" />
+    <ClCompile Include="Private\Player\PlayerController.cpp" />
+    <ClCompile Include="Private\Player\ThirdPersonCamera.cpp" />
 
     <ClCompile Include="Private\Studio\Application.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     
@@ -97,6 +101,7 @@
     <ClCompile Include="Private\Preview\TerrainRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WaterRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WorldPreviewLoader.cpp" />
+    <ClCompile Include="Private\World\WorldCollision.cpp" />
     <ClCompile Include="Private\World\WorldSession.cpp" />
   </ItemGroup>
 
@@ -287,6 +292,7 @@
 
   <ItemGroup>
     <ClInclude Include="Private\Studio\Application.h" />
+    <ClInclude Include="Private\World\WorldCollision.h" />
     <ClInclude Include="Private\World\WorldSession.h" />
     <ClInclude Include="Resources\Resource.h" />
   </ItemGroup>

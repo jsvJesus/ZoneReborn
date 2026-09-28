@@ -1,12 +1,23 @@
 #pragma once
 
+#include "Character/CharacterAnimator.h"
+#include "Character/CharacterCatalog.h"
+#include "Character/CharacterProfile.h"
+#include "Character/CharacterState.h"
+
 #include "Graphics/Renderer.h"
-#include "Input/CameraController.h"
+
 #include "Platform/Window.h"
+
+#include "Player/PlayerController.h"
+#include "Player/ThirdPersonCamera.h"
+
+#include "World/WorldCollision.h"
 
 #include "Core/Runtime.h"
 
 #include <chrono>
+#include <cstddef>
 #include <string>
 #include <string_view>
 
@@ -21,6 +32,7 @@ namespace client::world
             platform::Window& window,
             graphics::Renderer& renderer,
             std::string_view spaceName,
+            const character::Profile& profile,
             std::string& error);
 
         void Update(
@@ -37,8 +49,34 @@ namespace client::world
         std::string_view SpaceName() const noexcept;
 
     private:
-        input::CameraController
-            cameraController_;
+        Collision
+            collision_;
+
+        player::Controller
+            playerController_;
+
+        player::ThirdPersonCamera
+            playerCamera_;
+
+        character::Catalog
+            playerCatalog_;
+
+        character::State
+            playerState_;
+
+        character::Animator
+            playerAnimator_;
+
+        std::size_t
+            playerFirstInstance_ =
+                0;
+
+        std::size_t
+            playerInstanceCount_ =
+                0;
+
+        float playerAnimationTime_ =
+            0.0f;
 
         std::chrono::steady_clock::time_point
             previousUpdateTime_ =
