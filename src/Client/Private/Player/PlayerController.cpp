@@ -9,10 +9,10 @@ namespace
         3.14159265358979323846f;
 
     constexpr float WalkSpeed =
-        3.0f;
+        1.3f;
 
     constexpr float RunSpeed =
-        6.2f;
+        3.6f;
 
     constexpr float Gravity =
         -19.62f;

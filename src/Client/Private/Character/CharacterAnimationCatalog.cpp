@@ -7,6 +7,7 @@
 #include <cctype>
 #include <limits>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace
@@ -44,6 +45,45 @@ namespace
             std::string::npos;
     }
 
+    bool IsInjuredVariant(
+        const std::string& path)
+    {
+        return
+            Contains(
+                path,
+                "injured") ||
+            Contains(
+                path,
+                "wounded") ||
+            Contains(
+                path,
+                "wound_") ||
+            Contains(
+                path,
+                "limp") ||
+            Contains(
+                path,
+                "cripple");
+    }
+
+    bool IsLocomotionTransition(
+        const std::string& path)
+    {
+        return
+            Contains(
+                path,
+                "stop_") ||
+            Contains(
+                path,
+                "_stop") ||
+            Contains(
+                path,
+                "start_") ||
+            Contains(
+                path,
+                "_start");
+    }
+
     int CommonScore(
         const std::string& path)
     {
@@ -55,7 +95,7 @@ namespace
                 "characters2/basemodel"))
         {
             score +=
-                300;
+                500;
         }
 
         if (Contains(
@@ -63,15 +103,30 @@ namespace
                 "/animations/"))
         {
             score +=
-                150;
+                250;
         }
 
         if (Contains(
                 path,
-                "unarmed"))
+                "/unarmed/"))
         {
             score +=
-                250;
+                700;
+        }
+        else if (Contains(
+                     path,
+                     "unarmed"))
+        {
+            score +=
+                450;
+        }
+
+        if (Contains(
+                path,
+                "stay_unarmed"))
+        {
+            score +=
+                500;
         }
 
         if (Contains(
@@ -88,10 +143,29 @@ namespace
                 "carabine") ||
             Contains(
                 path,
+                "shotgun") ||
+            Contains(
+                path,
                 "melee"))
         {
             score -=
-                500;
+                1000;
+        }
+
+        if (Contains(
+                path,
+                "incombat"))
+        {
+            score -=
+                250;
+        }
+
+        if (Contains(
+                path,
+                "aim"))
+        {
+            score -=
+                300;
         }
 
         return score;
@@ -108,6 +182,13 @@ namespace
                 std::numeric_limits<int>::min();
         }
 
+        if (IsInjuredVariant(
+                path))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
         if (Contains(
                 path,
                 "jump") ||
@@ -116,7 +197,13 @@ namespace
                 "fall") ||
             Contains(
                 path,
-                "death"))
+                "death") ||
+            Contains(
+                path,
+                "crawl") ||
+            Contains(
+                path,
+                "crouch"))
         {
             return
                 std::numeric_limits<int>::min();
@@ -131,7 +218,7 @@ namespace
                 "stay"))
         {
             score +=
-                250;
+                500;
         }
 
         if (Contains(
@@ -139,7 +226,15 @@ namespace
                 "move_stay"))
         {
             score +=
-                300;
+                900;
+        }
+
+        if (Contains(
+                path,
+                "idle_move_stay_unarmed"))
+        {
+            score +=
+                2000;
         }
 
         return score;
@@ -156,6 +251,15 @@ namespace
                 std::numeric_limits<int>::min();
         }
 
+        if (IsInjuredVariant(
+                path) ||
+            IsLocomotionTransition(
+                path))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
         if (Contains(
                 path,
                 "jump") ||
@@ -167,7 +271,19 @@ namespace
                 "crawl") ||
             Contains(
                 path,
-                "death"))
+                "crouch") ||
+            Contains(
+                path,
+                "death") ||
+            Contains(
+                path,
+                "sprint") ||
+            Contains(
+                path,
+                "swim") ||
+            Contains(
+                path,
+                "ladder"))
         {
             return
                 std::numeric_limits<int>::min();
@@ -179,10 +295,39 @@ namespace
 
         if (Contains(
                 path,
-                "forward"))
+                "walk_forwardr_stay_unarmed"))
         {
             score +=
-                300;
+                3000;
+        }
+        else if (Contains(
+                     path,
+                     "walk_forward_stay_unarmed"))
+        {
+            score +=
+                2800;
+        }
+        else if (Contains(
+                     path,
+                     "walk_forward"))
+        {
+            score +=
+                1500;
+        }
+        else if (Contains(
+                     path,
+                     "forward"))
+        {
+            score +=
+                900;
+        }
+
+        if (Contains(
+                path,
+                "stay_unarmed"))
+        {
+            score +=
+                700;
         }
 
         if (Contains(
@@ -190,7 +335,15 @@ namespace
                 "back"))
         {
             score -=
-                150;
+                1200;
+        }
+
+        if (Contains(
+                path,
+                "strafe"))
+        {
+            score -=
+                1200;
         }
 
         if (Contains(
@@ -201,7 +354,7 @@ namespace
                 "right"))
         {
             score -=
-                100;
+                800;
         }
 
         return score;
@@ -218,6 +371,15 @@ namespace
                 std::numeric_limits<int>::min();
         }
 
+        if (IsInjuredVariant(
+                path) ||
+            IsLocomotionTransition(
+                path))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
         if (Contains(
                 path,
                 "jump") ||
@@ -226,7 +388,22 @@ namespace
                 "fall") ||
             Contains(
                 path,
-                "death"))
+                "crawl") ||
+            Contains(
+                path,
+                "crouch") ||
+            Contains(
+                path,
+                "death") ||
+            Contains(
+                path,
+                "sprint") ||
+            Contains(
+                path,
+                "swim") ||
+            Contains(
+                path,
+                "ladder"))
         {
             return
                 std::numeric_limits<int>::min();
@@ -238,10 +415,39 @@ namespace
 
         if (Contains(
                 path,
-                "forward"))
+                "run_forwardr_stay_unarmed"))
         {
             score +=
-                300;
+                3000;
+        }
+        else if (Contains(
+                     path,
+                     "run_forward_stay_unarmed"))
+        {
+            score +=
+                2800;
+        }
+        else if (Contains(
+                     path,
+                     "run_forward"))
+        {
+            score +=
+                1500;
+        }
+        else if (Contains(
+                     path,
+                     "forward"))
+        {
+            score +=
+                900;
+        }
+
+        if (Contains(
+                path,
+                "stay_unarmed"))
+        {
+            score +=
+                700;
         }
 
         if (Contains(
@@ -249,7 +455,15 @@ namespace
                 "back"))
         {
             score -=
-                150;
+                1200;
+        }
+
+        if (Contains(
+                path,
+                "strafe"))
+        {
+            score -=
+                1200;
         }
 
         if (Contains(
@@ -260,15 +474,7 @@ namespace
                 "right"))
         {
             score -=
-                100;
-        }
-
-        if (Contains(
-                path,
-                "sprint"))
-        {
-            score -=
-                50;
+                800;
         }
 
         return score;
@@ -280,6 +486,13 @@ namespace
         if (!Contains(
                 path,
                 "jump"))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        if (IsInjuredVariant(
+                path))
         {
             return
                 std::numeric_limits<int>::min();
@@ -302,18 +515,18 @@ namespace
 
         if (Contains(
                 path,
-                "run_forward_jump_up__unarmed_old"))
+                "jump_up"))
         {
             score +=
-                2000;
+                1200;
         }
 
         if (Contains(
                 path,
-                "jump_up"))
+                "run_forward_jump_up__unarmed"))
         {
             score +=
-                700;
+                1800;
         }
 
         if (Contains(
@@ -321,7 +534,7 @@ namespace
                 "forward"))
         {
             score +=
-                200;
+                300;
         }
 
         if (Contains(
@@ -329,7 +542,7 @@ namespace
                 "fly"))
         {
             score -=
-                500;
+                800;
         }
 
         return score;
@@ -349,6 +562,13 @@ namespace
                 std::numeric_limits<int>::min();
         }
 
+        if (IsInjuredVariant(
+                path))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
         if (Contains(
                 path,
                 "down") ||
@@ -366,10 +586,10 @@ namespace
 
         if (Contains(
                 path,
-                "run_forward_jump_fly__unarmed_old"))
+                "run_forward_jump_fly__unarmed"))
         {
             score +=
-                2000;
+                1800;
         }
 
         if (Contains(
@@ -377,7 +597,7 @@ namespace
                 "jump_fly"))
         {
             score +=
-                800;
+                1200;
         }
 
         if (Contains(
@@ -385,7 +605,7 @@ namespace
                 "forward"))
         {
             score +=
-                150;
+                300;
         }
 
         return score;
@@ -394,6 +614,13 @@ namespace
     int ScoreLand(
         const std::string& path)
     {
+        if (IsInjuredVariant(
+                path))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
         const bool landingName =
             Contains(
                 path,
@@ -420,7 +647,7 @@ namespace
                 "jump_falldwnstrong"))
         {
             score +=
-                1500;
+                1800;
         }
 
         if (Contains(
@@ -428,7 +655,7 @@ namespace
                 "down_stop"))
         {
             score +=
-                700;
+                900;
         }
 
         if (Contains(
@@ -436,7 +663,7 @@ namespace
                 "down_move"))
         {
             score +=
-                500;
+                600;
         }
 
         if (Contains(
@@ -444,7 +671,7 @@ namespace
                 "land"))
         {
             score +=
-                600;
+                700;
         }
 
         return score;
@@ -529,13 +756,16 @@ namespace client::character
                 const core::resources::ResourceEntry* left,
                 const core::resources::ResourceEntry* right)
             {
-                if (left == nullptr)
+                if (left ==
+                    nullptr)
                 {
                     return
-                        right != nullptr;
+                        right !=
+                        nullptr;
                 }
 
-                if (right == nullptr)
+                if (right ==
+                    nullptr)
                 {
                     return false;
                 }

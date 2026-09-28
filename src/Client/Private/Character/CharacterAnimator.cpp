@@ -64,6 +64,15 @@ namespace
 
         std::vector<Key<Transform>>
             discreteKeys;
+
+        bool lockPlanarRootMotion =
+            false;
+
+        float lockedRootX =
+            0.0f;
+
+        float lockedRootZ =
+            0.0f;
     };
 
     struct AnimationClip final
@@ -82,6 +91,108 @@ namespace
             std::size_t>
             lookup;
     };
+
+    constexpr float RootMotionDetectionDistance =
+        0.20f;
+
+    void DetectPlanarRootMotion(
+        AnimationChannel& channel)
+    {
+        channel.lockPlanarRootMotion =
+            false;
+
+        channel.lockedRootX =
+            0.0f;
+
+        channel.lockedRootZ =
+            0.0f;
+
+        const float thresholdSquared =
+            RootMotionDetectionDistance *
+            RootMotionDetectionDistance;
+
+        if (!channel.positionKeys.empty())
+        {
+            const Vector3 origin =
+                channel.positionKeys.front().
+                    value;
+
+            channel.lockedRootX =
+                origin.x;
+
+            channel.lockedRootZ =
+                origin.z;
+
+            for (const Key<Vector3>& key :
+                 channel.positionKeys)
+            {
+                const float deltaX =
+                    key.value.x -
+                    origin.x;
+
+                const float deltaZ =
+                    key.value.z -
+                    origin.z;
+
+                const float distanceSquared =
+                    deltaX *
+                        deltaX +
+                    deltaZ *
+                        deltaZ;
+
+                if (distanceSquared >
+                    thresholdSquared)
+                {
+                    channel.lockPlanarRootMotion =
+                        true;
+
+                    return;
+                }
+            }
+
+            return;
+        }
+
+        if (!channel.discreteKeys.empty())
+        {
+            const Transform& origin =
+                channel.discreteKeys.front().
+                    value;
+
+            channel.lockedRootX =
+                origin.values[9];
+
+            channel.lockedRootZ =
+                origin.values[11];
+
+            for (const Key<Transform>& key :
+                 channel.discreteKeys)
+            {
+                const float deltaX =
+                    key.value.values[9] -
+                    channel.lockedRootX;
+
+                const float deltaZ =
+                    key.value.values[11] -
+                    channel.lockedRootZ;
+
+                const float distanceSquared =
+                    deltaX *
+                        deltaX +
+                    deltaZ *
+                        deltaZ;
+
+                if (distanceSquared >
+                    thresholdSquared)
+                {
+                    channel.lockPlanarRootMotion =
+                        true;
+
+                    return;
+                }
+            }
+        }
+    }
     
     class BinaryReader final
     {
@@ -861,6 +972,20 @@ namespace
 
             if (!channel.identifier.empty())
             {
+                DetectPlanarRootMotion(
+                    channel);
+
+                if (channel.lockPlanarRootMotion)
+                {
+                    core::Log::Info(
+                        std::string(
+                            "Character animation root motion locked [") +
+                        std::string(
+                            logicalPath) +
+                        "]: " +
+                        channel.identifier);
+                }
+
                 output.lookup.emplace(
                     channel.identifier,
                     output.channels.size());
@@ -1351,6 +1476,15 @@ namespace
                     )->value;
             }
 
+            if (channel.lockPlanarRootMotion)
+            {
+                output.values[9] =
+                    channel.lockedRootX;
+
+                output.values[11] =
+                    channel.lockedRootZ;
+            }
+
             return true;
         }
 
@@ -1375,7 +1509,7 @@ namespace
                             t);
                 });
 
-        const Vector3 position =
+        Vector3 position =
             SampleKeys<Vector3>(
                 channel.positionKeys,
                 frame,
@@ -1391,6 +1525,15 @@ namespace
                             b,
                             t);
                 });
+
+        if (channel.lockPlanarRootMotion)
+        {
+            position.x =
+                channel.lockedRootX;
+
+            position.z =
+                channel.lockedRootZ;
+        }
 
         const Quaternion rotation =
             SampleKeys<Quaternion>(
