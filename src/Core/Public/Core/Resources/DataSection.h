@@ -53,5 +53,9 @@ namespace core::resources
         [[nodiscard]]
         bool TryGetFloat(
             float& output) const noexcept;
+
+        [[nodiscard]]
+        bool TryGetBoolean(
+            bool& output) const noexcept;
     };
 }

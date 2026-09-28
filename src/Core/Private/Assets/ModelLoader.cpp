@@ -380,16 +380,19 @@ namespace
             source.resource;
 
         if (const auto* extent =
-                root.FindChild(
-                    "extent"))
+        root.FindChild(
+            "extent"))
         {
-            if (!extent->TryGetFloat(
-                    model.extent))
-            {
-                error =
-                    "Model contains invalid extent.";
+            float value =
+                0.0f;
 
-                return false;
+            if (extent->TryGetFloat(
+                    value) &&
+                value >=
+                    0.0f)
+            {
+                model.extent =
+                    value;
             }
         }
 
@@ -397,19 +400,15 @@ namespace
                 root.FindChild(
                     "batched"))
         {
-            const bool* value =
-                batched->AsBoolean();
+            bool value =
+                false;
 
-            if (value == nullptr)
+            if (batched->TryGetBoolean(
+                    value))
             {
-                error =
-                    "Model contains invalid batched value.";
-
-                return false;
+                model.batched =
+                    value;
             }
-
-            model.batched =
-                *value;
         }
 
         if (const auto* visibilityBox =

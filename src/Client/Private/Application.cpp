@@ -16,8 +16,8 @@ namespace
     constexpr char MainServerId[] =
         "zone_main";
 
-    constexpr char TestWorldSpace[] =
-        "start_tutorial_warehouse"; // load map for Client
+    constexpr char InitialWorldSpace[] =
+        "start_station_lesnaya"; // load map for Client
 
     constexpr char MainMenuBackgroundPath[] =
         "res/soGUI/maps/MainMenu/main_bg.jpg";
@@ -2049,7 +2049,7 @@ Application::CharacterTransform() const noexcept
                         runtime_,
                         window_,
                         renderer_,
-                        TestWorldSpace,
+                        InitialWorldSpace,
                         *characterProfile_,
                         loadingProgress,
                         worldError))

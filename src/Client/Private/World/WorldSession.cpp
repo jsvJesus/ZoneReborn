@@ -9,7 +9,7 @@
 namespace
 {
     constexpr std::string_view TutorialWarehouseSpace =
-        "start_tutorial_warehouse";
+        "start_station_lesnaya";
 
     constexpr float TutorialWarehouseStartHour =
         12.0f;
