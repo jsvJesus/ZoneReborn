@@ -9,7 +9,7 @@
 namespace
 {
     constexpr std::string_view TutorialWarehouseSpace =
-        "start_station_lesnaya";
+        "start_tutorial_warehouse";
 
     constexpr float TutorialWarehouseStartHour =
         12.0f;
@@ -158,14 +158,14 @@ namespace client::world
             spawnPosition,
             0.0f);
 
+        playerAnimationStateMachine_.Reset(
+            playerController_.IsGrounded());
+
         playerFirstInstance_ =
             scene.instances.size();
 
         playerInstanceCount_ =
             0;
-
-        playerAnimationTime_ =
-            0.0f;
 
         character::RenderDataBuilder
             characterBuilder;
@@ -245,7 +245,8 @@ namespace client::world
             std::string animationError;
 
             if (!playerAnimator_.Update(
-                    0.0f,
+                    playerAnimationStateMachine_.Current(),
+                    playerAnimationStateMachine_.StateTime(),
                     renderer,
                     animationError))
             {
@@ -326,6 +327,32 @@ namespace client::world
             playerCamera_.Yaw(),
             collision_);
 
+        const bool animationFinished =
+            playerAnimator_.IsReady() &&
+            playerAnimator_.IsFinished(
+                playerAnimationStateMachine_.Current(),
+                playerAnimationStateMachine_.StateTime());
+
+        character::AnimationInput
+            animationInput;
+
+        animationInput.moving =
+            playerController_.IsMoving();
+
+        animationInput.running =
+            playerController_.IsRunning();
+
+        animationInput.grounded =
+            playerController_.IsGrounded();
+
+        animationInput.verticalVelocity =
+            playerController_.VerticalVelocity();
+
+        playerAnimationStateMachine_.Update(
+            deltaSeconds,
+            animationInput,
+            animationFinished);
+
         if (playerInstanceCount_ >
             0)
         {
@@ -348,14 +375,12 @@ namespace client::world
 
         if (playerAnimator_.IsReady())
         {
-            playerAnimationTime_ +=
-                deltaSeconds;
-
             std::string
                 animationError;
 
             if (!playerAnimator_.Update(
-                    playerAnimationTime_,
+                    playerAnimationStateMachine_.Current(),
+                    playerAnimationStateMachine_.StateTime(),
                     renderer,
                     animationError))
             {
@@ -391,8 +416,8 @@ namespace client::world
         playerInstanceCount_ =
             0;
 
-        playerAnimationTime_ =
-            0.0f;
+        playerAnimationStateMachine_.Reset(
+            true);
 
         loaded_ =
             false;

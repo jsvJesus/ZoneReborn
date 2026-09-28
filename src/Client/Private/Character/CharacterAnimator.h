@@ -1,14 +1,17 @@
 #pragma once
 
+#include "Character/CharacterAnimationCatalog.h"
+#include "Character/CharacterAnimationState.h"
+
 #include "Core/Assets/MeshData.h"
 #include "Core/Assets/VisualAsset.h"
 #include "Core/Resources/ResourceFileSystem.h"
 
 #include <cstddef>
-#include <memory>
-#include <string>
-#include <span>
 #include <cstdint>
+#include <memory>
+#include <span>
+#include <string>
 #include <vector>
 
 namespace client::graphics
@@ -35,8 +38,9 @@ namespace client::character
         void Reset();
 
         [[nodiscard]]
-        bool LoadIdle(
+        bool LoadAnimations(
             const core::resources::ResourceFileSystem& resources,
+            const AnimationSet& animations,
             std::string& error);
 
         [[nodiscard]]
@@ -54,9 +58,19 @@ namespace client::character
 
         [[nodiscard]]
         bool Update(
-            float elapsedSeconds,
+            AnimationState animationState,
+            float stateTimeSeconds,
             graphics::Renderer& renderer,
             std::string& error);
+
+        [[nodiscard]]
+        float Duration(
+            AnimationState animationState) const noexcept;
+
+        [[nodiscard]]
+        bool IsFinished(
+            AnimationState animationState,
+            float stateTimeSeconds) const noexcept;
 
         [[nodiscard]]
         bool IsReady() const noexcept;

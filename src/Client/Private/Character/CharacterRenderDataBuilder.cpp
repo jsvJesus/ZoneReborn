@@ -1,5 +1,7 @@
 #include "Character/CharacterRenderDataBuilder.h"
 
+#include "Character/CharacterAnimationCatalog.h"
+
 #include "Preview/ModelRenderDataBuilder.h"
 
 #include "Core/Assets/MeshLoader.h"
@@ -1391,12 +1393,31 @@ namespace client::character
 
         animator.Reset();
 
-        if (!animator.LoadIdle(
-            resources,
-            error))
+        AnimationCatalog
+            animationCatalog;
+
+        AnimationSet
+            animationSet;
+
+        if (!animationCatalog.Resolve(
+                resources,
+                animationSet,
+                error))
         {
             error =
-                "Unable to initialize character idle animation: " +
+                "Unable to resolve character animations: " +
+                error;
+
+            return false;
+        }
+
+        if (!animator.LoadAnimations(
+                resources,
+                animationSet,
+                error))
+        {
+            error =
+                "Unable to initialize character animations: " +
                 error;
 
             return false;

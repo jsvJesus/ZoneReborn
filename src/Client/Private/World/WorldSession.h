@@ -4,6 +4,7 @@
 #include "Character/CharacterCatalog.h"
 #include "Character/CharacterProfile.h"
 #include "Character/CharacterState.h"
+#include "Character/CharacterAnimationStateMachine.h"
 
 #include "Graphics/Renderer.h"
 
@@ -67,6 +68,9 @@ namespace client::world
         character::Animator
             playerAnimator_;
 
+        character::AnimationStateMachine
+            playerAnimationStateMachine_;
+
         std::size_t
             playerFirstInstance_ =
                 0;
@@ -74,9 +78,6 @@ namespace client::world
         std::size_t
             playerInstanceCount_ =
                 0;
-
-        float playerAnimationTime_ =
-            0.0f;
 
         std::chrono::steady_clock::time_point
             previousUpdateTime_ =

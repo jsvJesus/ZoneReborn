@@ -7,6 +7,7 @@
 #include "Core/Math/Transform3x4.h"
 #include "Core/Math/Vector3.h"
 
+#include <array>
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -27,11 +28,7 @@ namespace
     using Vector3 =
         core::math::Vector3;
 
-    constexpr char IdleAnimationPath[] =
-        "res/characters2/basemodel/animations/unarmed/"
-        "idle_unarmed/idle_move_stay_unarmed.animation";
-
-    constexpr float IdleFrameRate =
+    constexpr float AnimationFrameRate =
         22.0f;
 
     struct Quaternion final
@@ -702,6 +699,7 @@ namespace
     [[nodiscard]]
     bool LoadAnimation(
         const core::resources::ResourceFileSystem& resources,
+        const std::string_view logicalPath,
         AnimationClip& output,
         std::string& error)
     {
@@ -712,13 +710,13 @@ namespace
             bytes;
 
         if (!resources.ReadBinary(
-                IdleAnimationPath,
+                logicalPath,
                 bytes))
         {
             error =
+                "Unable to read animation: " +
                 std::string(
-                    "Unable to read idle animation: ") +
-                IdleAnimationPath;
+                    logicalPath);
 
             return false;
         }
@@ -874,7 +872,10 @@ namespace
         }
 
         std::string typeLog =
-            "Character idle channel types:";
+            "Character animation channel types [" +
+            std::string(
+                logicalPath) +
+            "]:";
 
         for (const auto& [type, count] :
              typeCounts)
@@ -893,7 +894,10 @@ namespace
 
         core::Log::Info(
             std::string(
-                "Character idle loaded: frames=") +
+                "Character animation loaded: ") +
+            std::string(
+                logicalPath) +
+            ", frames=" +
             std::to_string(
                 output.totalFrames) +
             ", channels=" +
@@ -901,7 +905,7 @@ namespace
                 output.channels.size()) +
             ", fps=" +
             std::to_string(
-                IdleFrameRate));
+                AnimationFrameRate));
 
         return true;
     }
@@ -1911,8 +1915,15 @@ namespace client::character
                 outputMesh;
         };
 
-        AnimationClip
-            idle;
+        std::array<
+            AnimationClip,
+            AnimationStateCount>
+            clips;
+
+        std::array<
+            bool,
+            AnimationStateCount>
+            clipLoaded{};
 
         std::vector<MeshBinding>
             meshes;
@@ -1939,27 +1950,63 @@ namespace client::character
             std::make_unique<State>();
     }
     
-    bool Animator::LoadIdle(
+    bool Animator::LoadAnimations(
         const core::resources::ResourceFileSystem& resources,
+        const AnimationSet& animations,
         std::string& error)
     {
         error.clear();
 
-        if (!LoadAnimation(
-                resources,
-                state_->idle,
-                error))
+        for (std::size_t index = 0;
+             index <
+                 AnimationStateCount;
+             ++index)
         {
-            return false;
+            const AnimationState animationState =
+                static_cast<AnimationState>(
+                    index);
+
+            const std::string_view path =
+                animations.Path(
+                    animationState);
+
+            if (path.empty())
+            {
+                error =
+                    "Animation path is empty for state " +
+                    std::string(
+                        AnimationStateName(
+                            animationState));
+
+                return false;
+            }
+
+            if (!LoadAnimation(
+                    resources,
+                    path,
+                    state_->clips[index],
+                    error))
+            {
+                error =
+                    "Unable to load animation state " +
+                    std::string(
+                        AnimationStateName(
+                            animationState)) +
+                    " from " +
+                    std::string(
+                        path) +
+                    ": " +
+                    error;
+
+                return false;
+            }
+
+            state_->clipLoaded[index] =
+                true;
         }
 
         state_->ready =
             true;
-
-        core::Log::Info(
-            std::string(
-                "Character idle selected: ") +
-            IdleAnimationPath);
 
         return true;
     }
@@ -2034,8 +2081,9 @@ namespace client::character
         return true;
     }
 
-    bool Animator::Update(
-        const float elapsedSeconds,
+        bool Animator::Update(
+        const AnimationState animationState,
+        const float stateTimeSeconds,
         graphics::Renderer& renderer,
         std::string& error)
     {
@@ -2046,24 +2094,61 @@ namespace client::character
             return true;
         }
 
+        const std::size_t clipIndex =
+            AnimationStateIndex(
+                animationState);
+
+        if (clipIndex >=
+                state_->clips.size() ||
+            !state_->clipLoaded[
+                clipIndex])
+        {
+            error =
+                "Requested character animation is not loaded.";
+
+            return false;
+        }
+
+        const AnimationClip& clip =
+            state_->clips[
+                clipIndex];
+
         const float frameCount =
             std::max(
-                state_->idle.totalFrames,
+                clip.totalFrames,
                 1.0f);
 
         float frame =
-            elapsedSeconds *
-            IdleFrameRate;
+            std::max(
+                stateTimeSeconds,
+                0.0f) *
+            AnimationFrameRate;
 
-        frame =
-            std::fmod(
-                frame,
-                frameCount);
-
-        if (frame < 0.0f)
+        if (AnimationStateLoops(
+                animationState))
         {
-            frame +=
-                frameCount;
+            frame =
+                std::fmod(
+                    frame,
+                    frameCount);
+
+            if (frame <
+                0.0f)
+            {
+                frame +=
+                    frameCount;
+            }
+        }
+        else
+        {
+            frame =
+                std::clamp(
+                    frame,
+                    0.0f,
+                    std::max(
+                        frameCount -
+                            0.001f,
+                        0.0f));
         }
 
         std::vector<Transform>
@@ -2076,7 +2161,7 @@ namespace client::character
              state_->meshes)
         {
             if (!BuildAnimatedNodeTransforms(
-                    state_->idle,
+                    clip,
                     binding.visual,
                     state_->faceMorphs,
                     frame,
@@ -2097,10 +2182,10 @@ namespace client::character
             }
 
             if (!SkinMesh(
-                binding.sourceMesh,
-                binding.outputMesh,
-                currentPalette,
-                error))
+                    binding.sourceMesh,
+                    binding.outputMesh,
+                    currentPalette,
+                    error))
             {
                 return false;
             }
@@ -2115,6 +2200,61 @@ namespace client::character
         }
 
         return true;
+    }
+
+    float Animator::Duration(
+        const AnimationState animationState) const noexcept
+    {
+        if (state_ ==
+            nullptr)
+        {
+            return 0.0f;
+        }
+
+        const std::size_t index =
+            AnimationStateIndex(
+                animationState);
+
+        if (index >=
+                state_->clips.size() ||
+            !state_->clipLoaded[
+                index])
+        {
+            return 0.0f;
+        }
+
+        return
+            std::max(
+                state_->clips[
+                    index].
+                    totalFrames,
+                0.0f) /
+            AnimationFrameRate;
+    }
+
+    bool Animator::IsFinished(
+        const AnimationState animationState,
+        const float stateTimeSeconds) const noexcept
+    {
+        if (AnimationStateLoops(
+                animationState))
+        {
+            return false;
+        }
+
+        const float duration =
+            Duration(
+                animationState);
+
+        if (duration <=
+            0.0f)
+        {
+            return true;
+        }
+
+        return
+            stateTimeSeconds >=
+            duration;
     }
     
     bool Animator::IsReady() const noexcept

@@ -469,6 +469,12 @@ namespace client::player
         return grounded_;
     }
 
+    float Controller::VerticalVelocity() const noexcept
+    {
+        return
+            verticalVelocity_;
+    }
+
     core::math::Transform3x4
     Controller::Transform() const noexcept
     {

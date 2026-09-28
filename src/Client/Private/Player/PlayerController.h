@@ -39,6 +39,9 @@ namespace client::player
         bool IsGrounded() const noexcept;
 
         [[nodiscard]]
+        float VerticalVelocity() const noexcept;
+
+        [[nodiscard]]
         core::math::Transform3x4
         Transform() const noexcept;
 

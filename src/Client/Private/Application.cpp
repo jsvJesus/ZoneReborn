@@ -15,7 +15,7 @@ namespace
         "zone_main";
 
     constexpr char TestWorldSpace[] =
-        "start_station_lesnaya"; // load map for Client
+        "start_tutorial_warehouse"; // load map for Client
 
     constexpr char MainMenuBackgroundPath[] =
         "res/soGUI/maps/MainMenu/main_bg.jpg";
