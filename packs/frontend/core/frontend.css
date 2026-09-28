@@ -114,16 +114,24 @@ button {
 .world-loading-background {
     position: absolute;
 
-    inset: 0;
+    left: 50%;
+    top: 50%;
 
-    width: 100%;
-    height: 100%;
+    transform:
+        translate(-50%, -50%);
 
     display: block;
 
-    object-fit: cover;
+    width: auto;
+    height: auto;
 
-    background: #000000;
+    max-width: 100vw;
+    max-height: 100vh;
+
+    background:
+        #000000;
+
+    pointer-events: none;
 }
 
 .world-loading-overlay {
