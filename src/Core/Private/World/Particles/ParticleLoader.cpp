@@ -1486,6 +1486,36 @@ namespace
             output.type =
                 ParticleRendererType::Trail;
         }
+        else if (section.name ==
+                 "PointSpriteParticleRenderer")
+        {
+            output.type =
+                ParticleRendererType::PointSprite;
+        }
+        else if (section.name ==
+                 "BlurParticleRenderer")
+        {
+            output.type =
+                ParticleRendererType::Blur;
+        }
+        else if (section.name ==
+                 "AmpParticleRenderer")
+        {
+            output.type =
+                ParticleRendererType::Amp;
+        }
+        else if (section.name ==
+                 "MeshParticleRenderer")
+        {
+            output.type =
+                ParticleRendererType::Mesh;
+        }
+        else if (section.name ==
+                 "VisualParticleRenderer")
+        {
+            output.type =
+                ParticleRendererType::Visual;
+        }
         else
         {
             output.type =
@@ -1541,7 +1571,9 @@ namespace
         if (output.type ==
                 ParticleRendererType::Sprite ||
             output.type ==
-                ParticleRendererType::SpriteBlend)
+                ParticleRendererType::SpriteBlend ||
+            output.type ==
+                ParticleRendererType::PointSprite)
         {
             if (!ReadOptionalInteger(
                     section,
@@ -1650,6 +1682,129 @@ namespace
             {
                 error =
                     "Particle TrailParticleRenderer contains invalid useFog_.";
+
+                return false;
+            }
+        }
+
+        if (output.type ==
+            ParticleRendererType::Blur)
+        {
+            if (!ReadOptionalInteger(
+                    section,
+                    "materialFX_",
+                    output.materialFx) ||
+                !ReadOptionalFloat(
+                    section,
+                    "width_",
+                    output.width) ||
+                !ReadOptionalFloat(
+                    section,
+                    "time_",
+                    output.time) ||
+                !ReadOptionalBoolean(
+                    section,
+                    "useFog_",
+                    output.useFog))
+            {
+                error =
+                    "Particle BlurParticleRenderer contains invalid data.";
+
+                return false;
+            }
+        }
+
+        if (output.type ==
+            ParticleRendererType::Amp)
+        {
+            if (!ReadOptionalInteger(
+                    section,
+                    "materialFX_",
+                    output.materialFx) ||
+                !ReadOptionalFloat(
+                    section,
+                    "width_",
+                    output.width) ||
+                !ReadOptionalFloat(
+                    section,
+                    "height_",
+                    output.height) ||
+                !ReadOptionalInteger(
+                    section,
+                    "steps_",
+                    output.steps) ||
+                !ReadOptionalFloat(
+                    section,
+                    "variation_",
+                    output.variation) ||
+                !ReadOptionalBoolean(
+                    section,
+                    "circular_",
+                    output.circular) ||
+                !ReadOptionalBoolean(
+                    section,
+                    "useFog_",
+                    output.useFog))
+            {
+                error =
+                    "Particle AmpParticleRenderer contains invalid data.";
+
+                return false;
+            }
+        }
+
+        if (output.type ==
+                ParticleRendererType::Mesh ||
+            output.type ==
+                ParticleRendererType::Visual)
+        {
+            std::string visualReference;
+
+            if (!ReadOptionalString(
+                    section,
+                    "visualName_",
+                    visualReference))
+            {
+                error =
+                    "Particle visual renderer contains invalid visualName_.";
+
+                return false;
+            }
+
+            if (!visualReference.empty())
+            {
+                output.visualName =
+                    core::resources::ResourcePath::Normalize(
+                        visualReference);
+
+                if (output.visualName.empty())
+                {
+                    error =
+                        "Particle visual renderer contains an invalid visual reference.";
+
+                    return false;
+                }
+            }
+        }
+
+        if (output.type ==
+            ParticleRendererType::Mesh)
+        {
+            if (!ReadOptionalInteger(
+                    section,
+                    "sortType_",
+                    output.sortType) ||
+                !ReadOptionalInteger(
+                    section,
+                    "materialFX_",
+                    output.materialFx) ||
+                !ReadOptionalBoolean(
+                    section,
+                    "doubleSided_",
+                    output.doubleSided))
+            {
+                error =
+                    "Particle MeshParticleRenderer contains invalid data.";
 
                 return false;
             }

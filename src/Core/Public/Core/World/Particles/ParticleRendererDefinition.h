@@ -12,6 +12,11 @@ namespace core::world::particles
         Sprite,
         SpriteBlend,
         Trail,
+        PointSprite,
+        Blur,
+        Amp,
+        Mesh,
+        Visual,
         Unsupported
     };
 
@@ -36,6 +41,8 @@ namespace core::world::particles
 
         ParticleTextureReference texture;
         ParticleTextureReference normalMap;
+
+        std::string visualName;
 
         bool viewDependent =
             false;
@@ -64,10 +71,28 @@ namespace core::world::particles
         float width =
             0.0f;
 
+        float height =
+            0.0f;
+
+        float time =
+            0.0f;
+
+        float variation =
+            0.0f;
+
         std::int32_t skip =
             0;
 
         std::int32_t steps =
             0;
+
+        std::int32_t sortType =
+            0;
+
+        bool circular =
+            false;
+
+        bool doubleSided =
+            false;
     };
 }
