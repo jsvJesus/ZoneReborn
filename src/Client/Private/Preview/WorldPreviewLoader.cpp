@@ -22,8 +22,7 @@
 #include "Core/World/WorldLoader.h"
 #include "Core/World/Flora/FloraInstanceBuilder.h"
 #include "Core/World/Sky/SkyLoader.h"
-#include "Core/World/Particles/ParticleLoader.h"
-#include "Core/World/Particles/ParticlePackAudit.h"
+#include "Core/World/Particles/ParticleDefinitionCache.h"
 
 #include <array>
 #include <algorithm>
@@ -74,8 +73,8 @@ namespace client::preview
             16,
             loading::stage::Resources);
 
-        core::world::particles::ParticleLoader
-            particleLoader;
+        core::world::particles::ParticleDefinitionCache
+            particleDefinitionCache;
 
         std::unordered_set<std::string>
             uniqueParticleResources;
@@ -98,11 +97,6 @@ namespace client::preview
         std::sort(
             particleResourcePaths.begin(),
             particleResourcePaths.end());
-
-        std::unordered_map<
-            std::string,
-            core::world::particles::ParticleDefinition>
-            particleDefinitions;
 
         std::unordered_set<std::string>
             missingParticleTextures;
@@ -148,17 +142,18 @@ namespace client::preview
         for (const std::string& particlePath :
              particleResourcePaths)
         {
-            core::world::particles::ParticleDefinition
-                definition;
+            const core::world::particles::ParticleDefinition*
+                definition = nullptr;
 
             std::string
                 particleError;
 
-            if (!particleLoader.Load(
+            if (!particleDefinitionCache.Load(
                     runtime.Resources(),
                     particlePath,
                     definition,
-                    particleError))
+                    particleError) ||
+                definition == nullptr)
             {
                 ++particleResourcesFailed;
 
@@ -175,34 +170,34 @@ namespace client::preview
             ++particleResourcesLoaded;
 
             particleSystemsLoaded +=
-                definition.statistics.systemCount;
+                definition->statistics.systemCount;
 
             particleActionsLoaded +=
-                definition.statistics.actionCount;
+                definition->statistics.actionCount;
 
             particleRenderersLoaded +=
-                definition.statistics.rendererCount;
+                definition->statistics.rendererCount;
 
             particleVectorGeneratorsLoaded +=
-                definition.statistics.vectorGeneratorCount;
+                definition->statistics.vectorGeneratorCount;
 
             particleTextureReferences +=
-                definition.statistics.textureReferenceCount;
+                definition->statistics.textureReferenceCount;
 
             particleAnimatedTextureReferences +=
-                definition.statistics.animatedTextureReferenceCount;
+                definition->statistics.animatedTextureReferenceCount;
 
             particleUnsupportedActions +=
-                definition.statistics.unsupportedActionCount;
+                definition->statistics.unsupportedActionCount;
 
             particleUnsupportedRenderers +=
-                definition.statistics.unsupportedRendererCount;
+                definition->statistics.unsupportedRendererCount;
 
             particleUnsupportedGenerators +=
-                definition.statistics.unsupportedVectorGeneratorCount;
+                definition->statistics.unsupportedVectorGeneratorCount;
 
             for (const std::string& missing :
-                 definition.missingTextures)
+                 definition->missingTextures)
             {
                 if (!missing.empty())
                 {
@@ -214,26 +209,22 @@ namespace client::preview
             core::Log::Info(
                 std::string(
                     "Particle definition loaded: ") +
-                definition.logicalPath +
+                definition->logicalPath +
                 ", systems=" +
                 std::to_string(
-                    definition.statistics.systemCount) +
+                    definition->statistics.systemCount) +
                 ", actions=" +
                 std::to_string(
-                    definition.statistics.actionCount) +
+                    definition->statistics.actionCount) +
                 ", renderers=" +
                 std::to_string(
-                    definition.statistics.rendererCount) +
+                    definition->statistics.rendererCount) +
                 ", generators=" +
                 std::to_string(
-                    definition.statistics.vectorGeneratorCount) +
+                    definition->statistics.vectorGeneratorCount) +
                 ", textures=" +
                 std::to_string(
-                    definition.statistics.textureReferenceCount));
-
-            particleDefinitions.emplace(
-                particlePath,
-                std::move(definition));
+                    definition->statistics.textureReferenceCount));
         }
 
         core::Log::Info(
@@ -394,188 +385,6 @@ namespace client::preview
         graphics::SceneRenderData
             scene;
 
-        core::world::particles::ParticlePackAuditor
-            particlePackAuditor;
-
-        core::world::particles::ParticlePackAuditResult
-            particlePackAudit;
-
-        std::string
-            particlePackAuditError;
-
-        if (!particlePackAuditor.Run(
-                runtime.Resources(),
-                particlePackAudit,
-                particlePackAuditError))
-        {
-            error =
-                "Particle pack audit failed: " +
-                particlePackAuditError;
-
-            return false;
-        }
-
-        core::Log::Info(
-            std::string(
-                "Particle pack resources: ") +
-            std::to_string(
-                particlePackAudit.resourceCount));
-
-        core::Log::Info(
-            std::string(
-                "Particle pack resources loaded: ") +
-            std::to_string(
-                particlePackAudit.loadedResourceCount));
-
-        core::Log::Info(
-            std::string(
-                "Particle pack resources failed: ") +
-            std::to_string(
-                particlePackAudit.failedResourceCount));
-
-        core::Log::Info(
-            std::string(
-                "Particle pack systems: ") +
-            std::to_string(
-                particlePackAudit.systemCount));
-
-        core::Log::Info(
-            std::string(
-                "Particle pack actions: ") +
-            std::to_string(
-                particlePackAudit.actionCount));
-
-        core::Log::Info(
-            std::string(
-                "Particle pack renderers: ") +
-            std::to_string(
-                particlePackAudit.rendererCount));
-
-        core::Log::Info(
-            std::string(
-                "Particle pack vector generators: ") +
-            std::to_string(
-                particlePackAudit.vectorGeneratorCount));
-
-        core::Log::Info(
-            std::string(
-                "Particle pack texture references: ") +
-            std::to_string(
-                particlePackAudit.textureReferenceCount));
-
-        core::Log::Info(
-            std::string(
-                "Particle pack animated texture references: ") +
-            std::to_string(
-                particlePackAudit.animatedTextureReferenceCount));
-
-        core::Log::Info(
-            std::string(
-                "Particle pack missing textures: ") +
-            std::to_string(
-                particlePackAudit.missingTextureCount));
-
-        for (const auto& [texture, count] :
-             particlePackAudit.missingTextures)
-        {
-            core::Log::Warning(
-                std::string(
-                    "Missing particle texture [") +
-                texture +
-                "]: " +
-                std::to_string(
-                    count));
-        }
-
-        core::Log::Info(
-            std::string(
-                "Particle pack unsupported actions: ") +
-            std::to_string(
-                particlePackAudit.unsupportedActionCount));
-
-        core::Log::Info(
-            std::string(
-                "Particle pack unsupported renderers: ") +
-            std::to_string(
-                particlePackAudit.unsupportedRendererCount));
-
-        core::Log::Info(
-            std::string(
-                "Particle pack unsupported generators: ") +
-            std::to_string(
-                particlePackAudit.unsupportedVectorGeneratorCount));
-
-        for (const auto& [name, count] :
-             particlePackAudit.unsupportedActions)
-        {
-            core::Log::Warning(
-                std::string(
-                    "Unsupported particle action [") +
-                name +
-                "]: " +
-                std::to_string(
-                    count));
-        }
-
-        for (const auto& [name, count] :
-             particlePackAudit.unsupportedRenderers)
-        {
-            core::Log::Warning(
-                std::string(
-                    "Unsupported particle renderer [") +
-                name +
-                "]: " +
-                std::to_string(
-                    count));
-        }
-
-        for (const auto& [name, count] :
-             particlePackAudit.unsupportedVectorGenerators)
-        {
-            core::Log::Warning(
-                std::string(
-                    "Unsupported particle generator [") +
-                name +
-                "]: " +
-                std::to_string(
-                    count));
-        }
-
-        constexpr std::size_t MaximumReportedFailures =
-            32;
-
-        const std::size_t reportedFailureCount =
-            std::min(
-                particlePackAudit.failures.size(),
-                MaximumReportedFailures);
-
-        for (std::size_t index = 0;
-             index < reportedFailureCount;
-             ++index)
-        {
-            const auto& failure =
-                particlePackAudit.failures[
-                    index];
-
-            core::Log::Warning(
-                std::string(
-                    "Particle pack load failure: ") +
-                failure.resource +
-                ": " +
-                failure.error);
-        }
-
-        if (particlePackAudit.failures.size() >
-            MaximumReportedFailures)
-        {
-            core::Log::Warning(
-                std::string(
-                    "Additional particle pack failures not printed: ") +
-                std::to_string(
-                    particlePackAudit.failures.size() -
-                    MaximumReportedFailures));
-        }
-
         ParticleRuntimeDataBuilder
             particleRuntimeBuilder;
 
@@ -589,7 +398,7 @@ namespace client::preview
 
         if (!particleRuntimeBuilder.Build(
                 world,
-                particleDefinitions,
+                particleDefinitionCache.Definitions(),
                 scene,
                 particleRuntimeEmitterCount,
                 particleRuntimeCapacity,

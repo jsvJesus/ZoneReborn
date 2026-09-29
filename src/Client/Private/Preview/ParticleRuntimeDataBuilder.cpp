@@ -11,7 +11,7 @@ namespace client::preview
         const core::world::WorldScene& world,
         const std::unordered_map<
             std::string,
-            core::world::particles::ParticleDefinition>& definitions,
+            core::world::particles::ParticleDefinition>& cachedDefinitions,
         graphics::SceneRenderData& scene,
         std::size_t& outputEmitterCount,
         std::size_t& outputCapacity,
@@ -31,17 +31,13 @@ namespace client::preview
              world.particleInstances)
         {
             const auto definitionIterator =
-                definitions.find(
+                cachedDefinitions.find(
                     instance.particleLogicalPath);
 
             if (definitionIterator ==
-                definitions.end())
+                cachedDefinitions.end())
             {
-                error =
-                    "Particle runtime definition not loaded: " +
-                    instance.particleLogicalPath;
-
-                return false;
+                continue;
             }
 
             const core::world::particles::ParticleDefinition& definition =

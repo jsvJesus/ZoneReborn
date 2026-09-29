@@ -19,7 +19,7 @@ namespace client::preview
             const core::world::WorldScene& world,
             const std::unordered_map<
                 std::string,
-                core::world::particles::ParticleDefinition>& definitions,
+                core::world::particles::ParticleDefinition>& cachedDefinitions,
             graphics::SceneRenderData& scene,
             std::size_t& outputEmitterCount,
             std::size_t& outputCapacity,
