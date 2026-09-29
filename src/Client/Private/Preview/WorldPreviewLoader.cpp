@@ -495,6 +495,24 @@ namespace client::preview
             std::to_string(
                 particleTexturesLoaded));
 
+        const std::size_t disabledParticleRenderEmitters =
+            static_cast<std::size_t>(
+                std::count_if(
+                    scene.particleEmitters.begin(),
+                    scene.particleEmitters.end(),
+                    [](
+                        const graphics::SceneParticleEmitter& emitter)
+                    {
+                        return
+                            !emitter.renderable;
+                    }));
+
+        core::Log::Info(
+            std::string(
+                "Particle render emitters disabled: ") +
+            std::to_string(
+                disabledParticleRenderEmitters));
+
         const std::string& skyReference =
             !world.settings.timeOfDay.empty()
             ? world.settings.timeOfDay

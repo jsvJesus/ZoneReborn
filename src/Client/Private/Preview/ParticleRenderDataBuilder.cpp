@@ -1,7 +1,9 @@
 #include "Preview/ParticleRenderDataBuilder.h"
+#include "Preview/ParticleMeshRenderDataBuilder.h"
 
 #include "Core/Assets/TextureAnimationLoader.h"
 #include "Core/Images/DdsDecoder.h"
+#include "Core/Log.h"
 
 #include <cstddef>
 #include <cstdint>
@@ -22,6 +24,47 @@ namespace
         std::vector<std::int32_t>
             frameTextureIndices;
     };
+
+    bool IsMeshRenderer(
+        const core::world::particles::ParticleRendererType type) noexcept
+    {
+        return
+            type ==
+                core::world::particles::ParticleRendererType::Mesh ||
+            type ==
+                core::world::particles::ParticleRendererType::Visual;
+    }
+
+    bool RequiresTexture(
+        const core::world::particles::ParticleRendererType type) noexcept
+    {
+        using core::world::particles::ParticleRendererType;
+
+        return
+            type == ParticleRendererType::Sprite ||
+            type == ParticleRendererType::SpriteBlend ||
+            type == ParticleRendererType::Trail ||
+            type == ParticleRendererType::PointSprite ||
+            type == ParticleRendererType::Blur ||
+            type == ParticleRendererType::Amp;
+    }
+
+    void DisableEmitter(
+        client::graphics::SceneParticleEmitter& emitter,
+        const std::string& reason)
+    {
+        emitter.renderable =
+            false;
+
+        core::Log::Warning(
+            std::string(
+                "Particle render dependency failed: ") +
+            emitter.resource +
+            "/" +
+            emitter.system.name +
+            ": " +
+            reason);
+    }
 }
 
 namespace client::preview
@@ -194,6 +237,9 @@ namespace client::preview
         core::assets::TextureAnimationLoader
             animationLoader;
 
+        ParticleMeshRenderDataBuilder
+            meshBuilder;
+
         for (graphics::SceneParticleEmitter& emitter :
              scene.particleEmitters)
         {
@@ -208,18 +254,71 @@ namespace client::preview
 
             emitter.textureFrameIndices.clear();
 
+            emitter.meshIndices.clear();
+
+            emitter.materialFx =
+                0;
+
+            emitter.sortType =
+                0;
+
+            emitter.doubleSided =
+                false;
+
+            emitter.renderable =
+                true;
+
             if (!emitter.system.hasRenderer)
             {
                 continue;
             }
 
+            const core::world::particles::ParticleRendererDefinition&
+                renderer =
+                    emitter.system.renderer;
+
+            emitter.materialFx =
+                renderer.materialFx;
+
+            emitter.sortType =
+                renderer.sortType;
+
+            emitter.doubleSided =
+                renderer.doubleSided;
+
+            if (IsMeshRenderer(
+                    renderer.type) &&
+                !meshBuilder.Build(
+                    resources,
+                    renderer,
+                    scene,
+                    emitter.meshIndices,
+                    error))
+            {
+                DisableEmitter(
+                    emitter,
+                    error);
+
+                error.clear();
+
+                continue;
+            }
+
             const core::world::particles::ParticleTextureReference&
                 texture =
-                    emitter.system.renderer.texture;
+                    renderer.texture;
 
             if (texture.sourceReference.empty() ||
                 texture.logicalPath.empty())
             {
+                if (RequiresTexture(
+                        renderer.type))
+                {
+                    DisableEmitter(
+                        emitter,
+                        "renderer texture reference is empty.");
+                }
+
                 continue;
             }
 
@@ -236,14 +335,13 @@ namespace client::preview
                         created,
                         error))
                 {
-                    error =
-                        emitter.resource +
-                        "/" +
-                        emitter.system.name +
-                        ": " +
-                        error;
+                    DisableEmitter(
+                        emitter,
+                        error);
 
-                    return false;
+                    error.clear();
+
+                    continue;
                 }
 
                 if (created)
@@ -275,14 +373,13 @@ namespace client::preview
                         animation,
                         error))
                 {
-                    error =
-                        emitter.resource +
-                        "/" +
-                        emitter.system.name +
-                        ": " +
-                        error;
+                    DisableEmitter(
+                        emitter,
+                        error);
 
-                    return false;
+                    error.clear();
+
+                    continue;
                 }
 
                 AnimationRenderData
@@ -296,6 +393,9 @@ namespace client::preview
 
                 sourceTextureIndices.reserve(
                     animation.textures.size());
+
+                bool animationFailed =
+                    false;
 
                 for (const core::assets::TextureResource& frameTexture :
                      animation.textures)
@@ -319,7 +419,10 @@ namespace client::preview
                             ": " +
                             error;
 
-                        return false;
+                        animationFailed =
+                            true;
+
+                        break;
                     }
 
                     if (created)
@@ -329,6 +432,17 @@ namespace client::preview
 
                     sourceTextureIndices.push_back(
                         textureIndex);
+                }
+
+                if (animationFailed)
+                {
+                    DisableEmitter(
+                        emitter,
+                        error);
+
+                    error.clear();
+
+                    continue;
                 }
 
                 renderData.frameTextureIndices.reserve(
@@ -344,12 +458,26 @@ namespace client::preview
                             animation.logicalPath +
                             ": animation frame index is out of range.";
 
-                        return false;
+                        animationFailed =
+                            true;
+
+                        break;
                     }
 
                     renderData.frameTextureIndices.push_back(
                         sourceTextureIndices[
                             frameIndex]);
+                }
+
+                if (animationFailed)
+                {
+                    DisableEmitter(
+                        emitter,
+                        error);
+
+                    error.clear();
+
+                    continue;
                 }
 
                 if (renderData.frameTextureIndices.empty())
@@ -358,7 +486,13 @@ namespace client::preview
                         animation.logicalPath +
                         ": animation contains no renderable frames.";
 
-                    return false;
+                    DisableEmitter(
+                        emitter,
+                        error);
+
+                    error.clear();
+
+                    continue;
                 }
 
                 ++outputAnimationCount;
@@ -389,7 +523,13 @@ namespace client::preview
                     "Particle animation contains no frame textures: " +
                     texture.logicalPath;
 
-                return false;
+                DisableEmitter(
+                    emitter,
+                    error);
+
+                error.clear();
+
+                continue;
             }
 
             emitter.textureIndex =

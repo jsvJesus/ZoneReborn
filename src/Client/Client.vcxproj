@@ -58,6 +58,7 @@
     <ClInclude Include="Private\Preview\FloraRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\ModelPreviewLoader.h" />
     <ClInclude Include="Private\Preview\ModelRenderDataBuilder.h" />
+    <ClInclude Include="Private\Preview\ParticleMeshRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\ParticleRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\ParticleRuntimeDataBuilder.h" />
     <ClInclude Include="Private\Preview\SkyRenderDataBuilder.h" />
@@ -102,6 +103,7 @@
     <ClCompile Include="Private\Preview\FloraRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\ModelPreviewLoader.cpp" />
     <ClCompile Include="Private\Preview\ModelRenderDataBuilder.cpp" />
+    <ClCompile Include="Private\Preview\ParticleMeshRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\ParticleRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\ParticleRuntimeDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\SkyRenderDataBuilder.cpp" />

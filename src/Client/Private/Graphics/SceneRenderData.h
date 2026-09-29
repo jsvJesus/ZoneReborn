@@ -428,6 +428,21 @@ namespace client::graphics
 
         std::vector<std::int32_t>
             textureFrameIndices;
+
+        std::vector<std::size_t>
+            meshIndices;
+
+        std::int32_t materialFx =
+            0;
+
+        std::int32_t sortType =
+            0;
+
+        bool doubleSided =
+            false;
+
+        bool renderable =
+            true;
     };
 
     struct SceneRenderData final
