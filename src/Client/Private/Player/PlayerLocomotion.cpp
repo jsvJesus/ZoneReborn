@@ -2,28 +2,28 @@
 
 namespace
 {
-    constexpr float WalkSpeed =
+    constexpr float WalkSpeedValue =
         1.3f;
 
-    constexpr float RunSpeed =
+    constexpr float RunSpeedValue =
         3.6f;
 
-    constexpr float SprintSpeed =
+    constexpr float SprintSpeedValue =
         6.3f;
 
-    constexpr float CrouchSpeed =
+    constexpr float CrouchSpeedValue =
         1.5f;
 
-    constexpr float StandingCapsuleHeight =
+    constexpr float StandingCapsuleHeightValue =
         1.78f;
 
-    constexpr float CrouchedCapsuleHeight =
+    constexpr float CrouchedCapsuleHeightValue =
         1.20f;
 
-    constexpr float StandingCameraTargetHeight =
+    constexpr float StandingCameraTargetHeightValue =
         1.48f;
 
-    constexpr float CrouchedCameraTargetHeight =
+    constexpr float CrouchedCameraTargetHeightValue =
         1.05f;
 }
 
@@ -93,47 +93,47 @@ namespace client::player
         if (crouched_)
         {
             return
-                CrouchSpeed;
+                CrouchSpeedValue;
         }
 
         switch (mode_)
         {
         case LocomotionMode::Walk:
             return
-                WalkSpeed;
+                WalkSpeedValue;
 
         case LocomotionMode::Run:
             return
-                RunSpeed;
+                RunSpeedValue;
 
         case LocomotionMode::Sprint:
             return
-                SprintSpeed;
+                SprintSpeedValue;
         }
 
         return
-            RunSpeed;
+            RunSpeedValue;
     }
 
     float LocomotionState::CapsuleHeight() const noexcept
     {
         return
             crouched_
-                ? CrouchedCapsuleHeight
-                : StandingCapsuleHeight;
+                ? CrouchedCapsuleHeightValue
+                : StandingCapsuleHeightValue;
     }
 
     float LocomotionState::StandingCapsuleHeight() const noexcept
     {
         return
-            ::StandingCapsuleHeight;
+            StandingCapsuleHeightValue;
     }
 
     float LocomotionState::CameraTargetHeight() const noexcept
     {
         return
             crouched_
-                ? CrouchedCameraTargetHeight
-                : StandingCameraTargetHeight;
+                ? CrouchedCameraTargetHeightValue
+                : StandingCameraTargetHeightValue;
     }
 }

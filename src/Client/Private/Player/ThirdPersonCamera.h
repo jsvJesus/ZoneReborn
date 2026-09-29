@@ -21,6 +21,7 @@ namespace client::player
 
         void UpdateView(
             const core::math::Vector3& playerPosition,
+            float targetHeight,
             const world::Collision& collision) noexcept;
 
         [[nodiscard]]

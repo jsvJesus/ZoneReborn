@@ -318,12 +318,14 @@ namespace client::player
 
     float ThirdPersonCamera::Yaw() const noexcept
     {
-        return yaw_;
+        return
+            yaw_;
     }
 
     const graphics::CameraView&
     ThirdPersonCamera::View() const noexcept
     {
-        return view_;
+        return
+            view_;
     }
 }
