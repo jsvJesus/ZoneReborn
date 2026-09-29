@@ -114,6 +114,12 @@ float4 PSMain(
         }
     }
 
+    baseColour *=
+        instanceColour.rgb;
+
+    outputAlpha *=
+        instanceColour.a;
+
     const float3 sunDirection =
         normalize(
             skySunDirectionDaylight.xyz);

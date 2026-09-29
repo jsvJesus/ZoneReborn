@@ -153,6 +153,8 @@ namespace
 
         DirectX::XMFLOAT4 groupColour;
 
+        DirectX::XMFLOAT4 instanceColour;
+
         std::uint32_t useTerrain =
             0;
 
@@ -193,6 +195,11 @@ namespace
         DirectX::XMFLOAT4 cameraPosition;
         DirectX::XMFLOAT4 screenParameters;
     };
+
+    static_assert(
+        sizeof(SceneConstants) %
+            16u ==
+        0u);
 
     struct FlareConstants final
     {
@@ -296,6 +303,134 @@ namespace
             transform.values[10],
             transform.values[11],
             1.0f);
+    }
+
+    core::math::Transform3x4 ParticleMeshTransform(
+        const core::world::particles::ParticleRuntimeParticle& particle,
+        const core::math::Transform3x4& emitterTransform,
+        const bool local) noexcept
+    {
+        const float size =
+            std::isfinite(
+                particle.size)
+                ? std::max(
+                    particle.size,
+                    0.0f)
+                : 0.0f;
+
+        const float rotation =
+            std::isfinite(
+                particle.rotation)
+                ? particle.rotation
+                : 0.0f;
+
+        const float cosine =
+            std::cos(
+                rotation);
+
+        const float sine =
+            std::sin(
+                rotation);
+
+        core::math::Transform3x4 result;
+
+        result.values =
+        {
+            cosine * size, 0.0f, -sine * size,
+            0.0f, size, 0.0f,
+            sine * size, 0.0f, cosine * size,
+            particle.position.x,
+            particle.position.y,
+            particle.position.z
+        };
+
+        if (!local)
+        {
+            return result;
+        }
+
+        core::math::Transform3x4
+            emitterOrientation =
+                emitterTransform;
+
+        emitterOrientation.values[9] =
+            0.0f;
+
+        emitterOrientation.values[10] =
+            0.0f;
+
+        emitterOrientation.values[11] =
+            0.0f;
+
+        result.values[9] =
+            0.0f;
+
+        result.values[10] =
+            0.0f;
+
+        result.values[11] =
+            0.0f;
+
+        result =
+            core::math::Transform3x4::Multiply(
+                result,
+                emitterOrientation);
+
+        result.values[9] =
+            particle.position.x;
+
+        result.values[10] =
+            particle.position.y;
+
+        result.values[11] =
+            particle.position.z;
+
+        return result;
+    }
+
+    std::array<float, 4> NormalizedParticleColour(
+        const std::array<float, 4>& colour) noexcept
+    {
+        const auto normalize =
+            [](const float value)
+            {
+                return
+                    std::isfinite(
+                        value)
+                        ? std::clamp(
+                            value,
+                            0.0f,
+                            1.0f)
+                        : 0.0f;
+            };
+
+        return
+        {
+            normalize(colour[0]),
+            normalize(colour[1]),
+            normalize(colour[2]),
+            normalize(colour[3])
+        };
+    }
+
+    client::graphics::SceneInstanceMaterialMode
+    MeshParticleMaterialMode(
+        const std::int32_t materialFx) noexcept
+    {
+        using client::graphics::SceneInstanceMaterialMode;
+
+        switch (materialFx)
+        {
+            case 0:
+                return SceneInstanceMaterialMode::Additive;
+
+            case 1:
+                return SceneInstanceMaterialMode::Blend;
+
+            case 2:
+            default:
+                return SceneInstanceMaterialMode::Opaque;
+        }
     }
 
     DirectX::XMFLOAT4 PrimitiveGroupColour(
@@ -1096,6 +1231,9 @@ namespace client::graphics
             additiveBlendState;
 
         ComPtr<ID3D11BlendState>
+            particleAdditiveBlendState;
+
+        ComPtr<ID3D11BlendState>
             alphaBlendState;
 
         ComPtr<ID3D11SamplerState>
@@ -1109,6 +1247,9 @@ namespace client::graphics
 
         ComPtr<ID3D11RasterizerState>
             rasterizerState;
+
+        ComPtr<ID3D11RasterizerState>
+            particleCullRasterizerState;
 
         ComPtr<ID3D11VertexShader>
             vertexShader;
@@ -1646,6 +1787,26 @@ namespace client::graphics
             return false;
         }
 
+        D3D11_RASTERIZER_DESC
+            particleCullDescription =
+                rasterizerDescription;
+
+        particleCullDescription.CullMode =
+            D3D11_CULL_BACK;
+
+        result =
+            state_->device->CreateRasterizerState(
+                &particleCullDescription,
+                &state_->particleCullRasterizerState);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create particle mesh rasterizer.";
+
+            return false;
+        }
+
         D3D11_BLEND_DESC
             blendDescription{};
 
@@ -1682,6 +1843,28 @@ namespace client::graphics
         {
             error =
                 "Unable to create terrain additive blend state.";
+
+            return false;
+        }
+
+        D3D11_BLEND_DESC
+            particleAdditiveDescription =
+                blendDescription;
+
+        particleAdditiveDescription
+            .RenderTarget[0]
+            .SrcBlend =
+                D3D11_BLEND_SRC_ALPHA;
+
+        result =
+            state_->device->CreateBlendState(
+                &particleAdditiveDescription,
+                &state_->particleAdditiveBlendState);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create particle mesh additive blend state.";
 
             return false;
         }
@@ -2839,9 +3022,49 @@ namespace client::graphics
             return false;
         }
 
-        for (const SceneParticleEmitter& emitter :
+        for (SceneParticleEmitter& emitter :
              state_->particleEmitters)
         {
+            if (emitter.renderable &&
+                emitter.system.hasRenderer &&
+                (
+                    emitter.system.renderer.type ==
+                        core::world::particles::ParticleRendererType::Mesh ||
+                    emitter.system.renderer.type ==
+                        core::world::particles::ParticleRendererType::Visual
+                ))
+            {
+                bool validMeshIndices =
+                    !emitter.meshIndices.empty();
+
+                for (const std::size_t meshIndex :
+                     emitter.meshIndices)
+                {
+                    if (meshIndex >=
+                        state_->meshes.size())
+                    {
+                        validMeshIndices =
+                            false;
+
+                        break;
+                    }
+                }
+
+                if (!validMeshIndices)
+                {
+                    emitter.renderable =
+                        false;
+
+                    core::Log::Warning(
+                        std::string(
+                            "Particle mesh dependency failed: ") +
+                        emitter.resource +
+                        "/" +
+                        emitter.system.name +
+                        ": no valid GPU mesh indices.");
+                }
+            }
+
             if (emitter.textureIndex >=
                 0)
             {
@@ -4342,9 +4565,238 @@ namespace client::graphics
             }
         }
 
+        for (std::size_t emitterIndex = 0;
+             emitterIndex <
+                state_->particleEmitters.size();
+             ++emitterIndex)
+        {
+            const SceneParticleEmitter& emitter =
+                state_->particleEmitters[
+                    emitterIndex];
+
+            if (!emitter.renderable ||
+                emitter.meshIndices.empty() ||
+                emitterIndex >=
+                    state_->particleSystems.size() ||
+                !emitter.system.hasRenderer)
+            {
+                continue;
+            }
+
+            const core::world::particles::ParticleRendererDefinition&
+                renderer =
+                    emitter.system.renderer;
+
+            const bool isMesh =
+                renderer.type ==
+                core::world::particles::ParticleRendererType::Mesh;
+
+            const bool isVisual =
+                renderer.type ==
+                core::world::particles::ParticleRendererType::Visual;
+
+            if (!isMesh &&
+                !isVisual)
+            {
+                continue;
+            }
+
+            const core::world::particles::ParticleRuntimeSystem&
+                runtime =
+                    state_->particleSystems[
+                        emitterIndex];
+
+            const core::math::Vector3 emitterPosition =
+                runtime.Transform().Translation();
+
+            for (const core::world::particles::ParticleRuntimeParticle& particle :
+                 runtime.Particles())
+            {
+                if (!std::isfinite(
+                        particle.position.x) ||
+                    !std::isfinite(
+                        particle.position.y) ||
+                    !std::isfinite(
+                        particle.position.z))
+                {
+                    continue;
+                }
+
+                const core::math::Transform3x4 transform =
+                    ParticleMeshTransform(
+                        particle,
+                        runtime.Transform(),
+                        renderer.local);
+
+                for (const std::size_t meshIndex :
+                     emitter.meshIndices)
+                {
+                    if (meshIndex >=
+                        state_->meshes.size())
+                    {
+                        continue;
+                    }
+
+                    SceneInstance instance;
+
+                    instance.meshIndex =
+                        meshIndex;
+
+                    instance.transform =
+                        transform;
+
+                    instance.colour =
+                        NormalizedParticleColour(
+                            particle.colour);
+
+                    instance.materialMode =
+                        isMesh
+                            ? MeshParticleMaterialMode(
+                                emitter.materialFx)
+                            : SceneInstanceMaterialMode::Source;
+
+                    instance.sortingPosition =
+                        isMesh &&
+                        emitter.sortType == 0
+                            ? emitterPosition
+                            : particle.position;
+
+                    instance.usesSortingPosition =
+                        true;
+
+                    instance.particleMesh =
+                        isMesh;
+
+                    instance.doubleSided =
+                        !isMesh ||
+                        emitter.doubleSided;
+
+                    state_->renderInstances.push_back(
+                        std::move(
+                            instance));
+                }
+            }
+        }
+
+        const auto instanceRenderClass =
+            [this](
+                const SceneInstance& instance)
+            {
+                if (instance.meshIndex >=
+                    state_->meshes.size())
+                {
+                    return 3;
+                }
+
+                const State::GpuMesh& mesh =
+                    state_->meshes[
+                        instance.meshIndex];
+
+                if (mesh.waterMaterialIndex >=
+                    0)
+                {
+                    return 2;
+                }
+
+                if (instance.materialMode ==
+                        SceneInstanceMaterialMode::Blend ||
+                    instance.materialMode ==
+                        SceneInstanceMaterialMode::Additive)
+                {
+                    return 1;
+                }
+
+                if (instance.materialMode ==
+                    SceneInstanceMaterialMode::Opaque)
+                {
+                    return 0;
+                }
+
+                for (const SceneModelMaterial& material :
+                     mesh.modelMaterials)
+                {
+                    if (material.alphaMode ==
+                        SceneAlphaMode::Blend)
+                    {
+                        return 1;
+                    }
+                }
+
+                return 0;
+            };
+
+        const auto distanceSquared =
+            [this](
+                const SceneInstance& instance)
+            {
+                const core::math::Vector3 position =
+                    instance.usesSortingPosition
+                        ? instance.sortingPosition
+                        : instance.transform.Translation();
+
+                const float deltaX =
+                    position.x -
+                    state_->camera.position.x;
+
+                const float deltaY =
+                    position.y -
+                    state_->camera.position.y;
+
+                const float deltaZ =
+                    position.z -
+                    state_->camera.position.z;
+
+                return
+                    deltaX * deltaX +
+                    deltaY * deltaY +
+                    deltaZ * deltaZ;
+            };
+
+        std::stable_sort(
+            state_->renderInstances.begin(),
+            state_->renderInstances.end(),
+            [&](
+                const SceneInstance& left,
+                const SceneInstance& right)
+            {
+                const int leftClass =
+                    instanceRenderClass(
+                        left);
+
+                const int rightClass =
+                    instanceRenderClass(
+                        right);
+
+                if (leftClass !=
+                    rightClass)
+                {
+                    return
+                        leftClass <
+                        rightClass;
+                }
+
+                if (leftClass ==
+                    1)
+                {
+                    return
+                        distanceSquared(
+                            left) >
+                        distanceSquared(
+                            right);
+                }
+
+                return false;
+            });
+
         for (const SceneInstance& instance :
             state_->renderInstances)
         {
+            if (instance.meshIndex >=
+                state_->meshes.size())
+            {
+                continue;
+            }
+
             const State::GpuMesh& mesh =
                 state_->meshes[
                     instance.meshIndex];
@@ -4353,6 +4805,91 @@ namespace client::graphics
             {
                 continue;
             }
+
+            constants.instanceColour =
+            {
+                instance.colour[0],
+                instance.colour[1],
+                instance.colour[2],
+                instance.colour[3]
+            };
+
+            state_->context->RSSetState(
+                instance.particleMesh &&
+                    !instance.doubleSided
+                    ? state_->particleCullRasterizerState.Get()
+                    : state_->rasterizerState.Get());
+
+            const auto effectiveAlphaMode =
+                [&instance](
+                    const SceneAlphaMode sourceMode)
+                {
+                    switch (instance.materialMode)
+                    {
+                        case SceneInstanceMaterialMode::Opaque:
+                            return SceneAlphaMode::Opaque;
+
+                        case SceneInstanceMaterialMode::Blend:
+                        case SceneInstanceMaterialMode::Additive:
+                            return SceneAlphaMode::Blend;
+
+                        case SceneInstanceMaterialMode::Source:
+                        default:
+                            return sourceMode;
+                    }
+                };
+
+            const auto applyBlendState =
+                [&instance, this](
+                    const SceneAlphaMode alphaMode)
+                {
+                    constexpr float BlendFactor[4]
+                    {
+                        0.0f,
+                        0.0f,
+                        0.0f,
+                        0.0f
+                    };
+
+                    if (instance.materialMode ==
+                        SceneInstanceMaterialMode::Additive)
+                    {
+                        state_->context->OMSetBlendState(
+                            state_->particleAdditiveBlendState.Get(),
+                            BlendFactor,
+                            0xFFFFFFFFu);
+
+                        state_->context->OMSetDepthStencilState(
+                            state_->depthReadState.Get(),
+                            0);
+
+                        return;
+                    }
+
+                    if (alphaMode ==
+                        SceneAlphaMode::Blend)
+                    {
+                        state_->context->OMSetBlendState(
+                            state_->alphaBlendState.Get(),
+                            BlendFactor,
+                            0xFFFFFFFFu);
+
+                        state_->context->OMSetDepthStencilState(
+                            state_->depthReadState.Get(),
+                            0);
+
+                        return;
+                    }
+
+                    state_->context->OMSetBlendState(
+                        nullptr,
+                        BlendFactor,
+                        0xFFFFFFFFu);
+
+                    state_->context->OMSetDepthStencilState(
+                        state_->depthState.Get(),
+                        0);
+                };
 
             ID3D11Buffer*
                 vertexBuffers[] =
@@ -4554,6 +5091,10 @@ namespace client::graphics
                     0.67f,
                     1.0f
                 };
+
+                applyBlendState(
+                    effectiveAlphaMode(
+                        SceneAlphaMode::Opaque));
 
                 state_->context->UpdateSubresource(
                     state_->constantBuffer.Get(),
@@ -4822,37 +5363,17 @@ namespace client::graphics
                     1,
                     &tattooTextureView);
 
-                constexpr float BlendFactor[4]
-                {
-                    0.0f,
-                    0.0f,
-                    0.0f,
-                    0.0f
-                };
+                alphaMode =
+                    effectiveAlphaMode(
+                        alphaMode);
 
-                if (alphaMode ==
-                    SceneAlphaMode::Blend)
-                {
-                    state_->context->OMSetBlendState(
-                        state_->alphaBlendState.Get(),
-                        BlendFactor,
-                        0xFFFFFFFFu);
+                constants.modelParameters.y =
+                    static_cast<float>(
+                        static_cast<std::uint8_t>(
+                            alphaMode));
 
-                    state_->context->OMSetDepthStencilState(
-                        state_->depthReadState.Get(),
-                        0);
-                }
-                else
-                {
-                    state_->context->OMSetBlendState(
-                        nullptr,
-                        BlendFactor,
-                        0xFFFFFFFFu);
-
-                    state_->context->OMSetDepthStencilState(
-                        state_->depthState.Get(),
-                        0);
-                }
+                applyBlendState(
+                    alphaMode);
 
                 state_->context->UpdateSubresource(
                     state_->constantBuffer.Get(),
@@ -4902,6 +5423,18 @@ namespace client::graphics
                 state_->depthState.Get(),
                 0);
         }
+
+        state_->context->RSSetState(
+            state_->rasterizerState.Get());
+
+        state_->context->OMSetBlendState(
+            nullptr,
+            nullptr,
+            0xFFFFFFFFu);
+
+        state_->context->OMSetDepthStencilState(
+            state_->depthState.Get(),
+            0);
 
         // The opaque scene must be unbound before it can be used as an SRV.
         state_->context->OMSetRenderTargets(

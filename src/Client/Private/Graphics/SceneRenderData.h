@@ -31,6 +31,14 @@ namespace client::graphics
         Dye = 3
     };
 
+    enum class SceneInstanceMaterialMode : std::uint8_t
+    {
+        Source = 0,
+        Opaque,
+        Blend,
+        Additive
+    };
+
     struct SceneTextureData final
     {
         std::string logicalPath;
@@ -367,6 +375,26 @@ namespace client::graphics
 
         core::math::Transform3x4
             transform;
+
+        std::array<float, 4> colour
+        {
+            1.0f, 1.0f, 1.0f, 1.0f
+        };
+
+        SceneInstanceMaterialMode materialMode =
+            SceneInstanceMaterialMode::Source;
+
+        core::math::Vector3
+            sortingPosition{};
+
+        bool usesSortingPosition =
+            false;
+
+        bool particleMesh =
+            false;
+
+        bool doubleSided =
+            true;
 
         float maximumDistance =
             0.0f;

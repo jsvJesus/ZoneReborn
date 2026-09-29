@@ -11,6 +11,7 @@ cbuffer SceneConstants : register(b0)
     float4 terrainV[4];
 
     float4 groupColour;
+    float4 instanceColour;
 
     uint useTerrain;
     uint terrainLayerCount;
