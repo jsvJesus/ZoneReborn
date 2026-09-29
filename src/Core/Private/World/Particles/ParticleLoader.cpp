@@ -33,12 +33,15 @@ namespace
     using core::world::particles::ParticleJitterAction;
     using core::world::particles::ParticleLoadStatistics;
     using core::world::particles::ParticleMagnetAction;
+    using core::world::particles::ParticleMatrixSwarmAction;
+    using core::world::particles::ParticleNodeClampAction;
     using core::world::particles::ParticleOrbitorAction;
     using core::world::particles::ParticleRendererDefinition;
     using core::world::particles::ParticleRendererType;
     using core::world::particles::ParticleScalerAction;
     using core::world::particles::ParticleSinkAction;
     using core::world::particles::ParticleSourceAction;
+    using core::world::particles::ParticleSplatAction;
     using core::world::particles::ParticleStreamAction;
     using core::world::particles::ParticleSystemDefinition;
     using core::world::particles::ParticleTextureReference;
@@ -1343,6 +1346,88 @@ namespace
 
             output.type =
                 ParticleActionType::Collide;
+
+            output.data =
+                std::move(
+                    action);
+
+            return true;
+        }
+
+        if (section.name ==
+            "MatrixSwarm")
+        {
+            ParticleMatrixSwarmAction
+                action;
+
+            if (!ReadActionCommon(
+                    section,
+                    action.common))
+            {
+                error =
+                    "Particle MatrixSwarm action contains invalid data.";
+
+                return false;
+            }
+
+            output.type =
+                ParticleActionType::MatrixSwarm;
+
+            output.data =
+                std::move(
+                    action);
+
+            return true;
+        }
+
+        if (section.name ==
+            "NodeClamp")
+        {
+            ParticleNodeClampAction
+                action;
+
+            if (!ReadActionCommon(
+                    section,
+                    action.common) ||
+                !ReadOptionalBoolean(
+                    section,
+                    "fullyClamp_",
+                    action.fullyClamp))
+            {
+                error =
+                    "Particle NodeClamp action contains invalid data.";
+
+                return false;
+            }
+
+            output.type =
+                ParticleActionType::NodeClamp;
+
+            output.data =
+                std::move(
+                    action);
+
+            return true;
+        }
+
+        if (section.name ==
+            "Splat")
+        {
+            ParticleSplatAction
+                action;
+
+            if (!ReadActionCommon(
+                    section,
+                    action.common))
+            {
+                error =
+                    "Particle Splat action contains invalid data.";
+
+                return false;
+            }
+
+            output.type =
+                ParticleActionType::Splat;
 
             output.data =
                 std::move(

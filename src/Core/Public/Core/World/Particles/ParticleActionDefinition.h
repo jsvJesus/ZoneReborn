@@ -13,8 +13,7 @@ namespace core::world::particles
 {
     enum class ParticleActionType : std::uint8_t
     {
-        Unsupported = 0,
-        Source,
+        Source = 0,
         Sink,
         TintShader,
         Orbitor,
@@ -25,7 +24,11 @@ namespace core::world::particles
         Barrier,
         Scaler,
         Flare,
-        Collide
+        Collide,
+        MatrixSwarm,
+        NodeClamp,
+        Splat,
+        Unsupported
     };
 
     struct ParticleActionCommon final
@@ -327,6 +330,24 @@ namespace core::world::particles
             0.0f;
     };
 
+    struct ParticleMatrixSwarmAction final
+    {
+        ParticleActionCommon common;
+    };
+
+    struct ParticleNodeClampAction final
+    {
+        ParticleActionCommon common;
+
+        bool fullyClamp =
+            true;
+    };
+
+    struct ParticleSplatAction final
+    {
+        ParticleActionCommon common;
+    };
+
     using ParticleActionData =
         std::variant<
             std::monostate,
@@ -341,7 +362,10 @@ namespace core::world::particles
             ParticleBarrierAction,
             ParticleScalerAction,
             ParticleFlareAction,
-            ParticleCollideAction>;
+            ParticleCollideAction,
+            ParticleMatrixSwarmAction,
+            ParticleNodeClampAction,
+            ParticleSplatAction>;
 
     struct ParticleActionDefinition final
     {
