@@ -65,5 +65,8 @@ namespace client::player
 
         bool crouched_ =
             false;
+
+        bool moving_ =
+            false;
     };
 }

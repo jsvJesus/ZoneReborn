@@ -1823,6 +1823,192 @@ namespace
     }
 
     [[nodiscard]]
+    std::size_t FindNode(
+        const core::assets::VisualAsset& visual,
+        const std::string_view identifier) noexcept
+    {
+        for (std::size_t index = 0;
+             index < visual.nodes.size();
+             ++index)
+        {
+            if (visual.nodes[index].identifier ==
+                identifier)
+            {
+                return
+                    index;
+            }
+        }
+
+        return
+            std::numeric_limits<std::size_t>::max();
+    }
+
+    [[nodiscard]]
+    bool IsNodeInSubtree(
+        const core::assets::VisualAsset& visual,
+        std::size_t nodeIndex,
+        const std::size_t rootIndex) noexcept
+    {
+        if (nodeIndex >=
+                visual.nodes.size() ||
+            rootIndex >=
+                visual.nodes.size())
+        {
+            return false;
+        }
+
+        for (;;)
+        {
+            if (nodeIndex ==
+                rootIndex)
+            {
+                return true;
+            }
+
+            const std::int32_t parentIndex =
+                visual.nodes[
+                    nodeIndex].
+                    parentIndex;
+
+            if (parentIndex <
+                0)
+            {
+                return false;
+            }
+
+            nodeIndex =
+                static_cast<std::size_t>(
+                    parentIndex);
+
+            if (nodeIndex >=
+                visual.nodes.size())
+            {
+                return false;
+            }
+        }
+    }
+
+    [[nodiscard]]
+    Transform RotationAroundModelYAxis(
+        const core::math::Vector3& pivot,
+        const float yaw) noexcept
+    {
+        const Transform translateToOrigin =
+            Transform::Translation(
+                -pivot.x,
+                -pivot.y,
+                -pivot.z);
+
+        const Transform rotation =
+            RotationY(
+                yaw);
+
+        const Transform translateBack =
+            Transform::Translation(
+                pivot.x,
+                pivot.y,
+                pivot.z);
+
+        return
+            Transform::Multiply(
+                Transform::Multiply(
+                    translateToOrigin,
+                    rotation),
+                translateBack);
+    }
+
+    void RotateSubtreeAroundModelYAxis(
+        const core::assets::VisualAsset& visual,
+        const std::size_t rootIndex,
+        const float yaw,
+        std::vector<Transform>& transforms) noexcept
+    {
+        if (rootIndex >=
+                visual.nodes.size() ||
+            rootIndex >=
+                transforms.size() ||
+            std::abs(
+                yaw) <=
+                0.000001f)
+        {
+            return;
+        }
+
+        const core::math::Vector3 pivot =
+            transforms[
+                rootIndex].
+                Translation();
+
+        const Transform rotation =
+            RotationAroundModelYAxis(
+                pivot,
+                yaw);
+
+        for (std::size_t index = 0;
+             index < transforms.size();
+             ++index)
+        {
+            if (!IsNodeInSubtree(
+                    visual,
+                    index,
+                    rootIndex))
+            {
+                continue;
+            }
+
+            transforms[index] =
+                Transform::Multiply(
+                    transforms[index],
+                    rotation);
+        }
+    }
+
+    void ApplyCharacterTwist(
+        const core::assets::VisualAsset& visual,
+        const float bodyYawOffset,
+        const float footTwistYaw,
+        std::vector<Transform>& transforms) noexcept
+    {
+        const std::size_t hipsIndex =
+            FindNode(
+                visual,
+                "Hips");
+
+        const std::size_t spineIndex =
+            FindNode(
+                visual,
+                "Spine");
+
+        if (hipsIndex ==
+            std::numeric_limits<std::size_t>::max())
+        {
+            return;
+        }
+        
+        RotateSubtreeAroundModelYAxis(
+            visual,
+            hipsIndex,
+            footTwistYaw,
+            transforms);
+
+        if (spineIndex ==
+            std::numeric_limits<std::size_t>::max())
+        {
+            return;
+        }
+        
+        const float upperBodyCorrection =
+            bodyYawOffset -
+            footTwistYaw;
+
+        RotateSubtreeAroundModelYAxis(
+            visual,
+            spineIndex,
+            upperBodyCorrection,
+            transforms);
+    }
+
+    [[nodiscard]]
     bool BuildAnimatedNodeTransforms(
         const AnimationClip& clip,
         const core::assets::VisualAsset& visual,
@@ -1837,7 +2023,7 @@ namespace
 
         output.resize(
             visual.nodes.size());
-
+        
         for (std::size_t index = 0;
              index < visual.nodes.size();
              ++index)
@@ -1857,33 +2043,17 @@ namespace
 
             (void)sampled;
 
-            if (node.identifier ==
-                "Hips")
+            const auto morph =
+                faceMorphs.find(
+                    node.identifier);
+
+            if (morph !=
+                faceMorphs.end())
             {
                 local =
                     Transform::Multiply(
-                        RotationY(
-                            footTwistYaw),
+                        morph->second,
                         local);
-            }
-            else if (node.identifier ==
-                     "Spine")
-            {
-                const float torsoYaw =
-                    bodyYawOffset -
-                    footTwistYaw;
-
-                local =
-                    Transform::Multiply(
-                        RotationY(
-                            torsoYaw),
-                        local);
-            }
-
-            const auto morph = faceMorphs.find(node.identifier);
-            if (morph != faceMorphs.end())
-            {
-                local = Transform::Multiply(morph->second, local);
             }
 
             if (node.parentIndex <
@@ -1915,6 +2085,12 @@ namespace
                     local,
                     output[parent]);
         }
+        
+        ApplyCharacterTwist(
+            visual,
+            bodyYawOffset,
+            footTwistYaw,
+            output);
 
         return true;
     }

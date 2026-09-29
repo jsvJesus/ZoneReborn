@@ -12,6 +12,11 @@ namespace
         Pi *
         2.0f;
 
+    constexpr float MovingBodyYawMaximum =
+        35.0f *
+        Pi /
+        180.0f;
+
     constexpr float StandingTurnStart =
         90.0f *
         Pi /
@@ -114,6 +119,9 @@ namespace client::player
 
         crouched_ =
             false;
+
+        moving_ =
+            false;
     }
 
     void TurnController::Update(
@@ -135,6 +143,9 @@ namespace client::player
 
         crouched_ =
             crouched;
+
+        moving_ =
+            moving;
 
         if (!grounded)
         {
@@ -258,10 +269,19 @@ namespace client::player
                 controlYaw_ -
                 modelYaw_);
 
-        const float maximumBodyYaw =
-            crouched_
-                ? CrouchedTurnMaximum
-                : StandingTurnMaximum;
+        float maximumBodyYaw =
+            StandingTurnMaximum;
+
+        if (moving_)
+        {
+            maximumBodyYaw =
+                MovingBodyYawMaximum;
+        }
+        else if (crouched_)
+        {
+            maximumBodyYaw =
+                CrouchedTurnMaximum;
+        }
 
         bodyYawOffset_ =
             std::clamp(
@@ -278,6 +298,9 @@ namespace client::player
         if (deltaSeconds <=
             0.0f)
         {
+            footTwistYaw_ =
+                targetFootTwist;
+
             return;
         }
 
