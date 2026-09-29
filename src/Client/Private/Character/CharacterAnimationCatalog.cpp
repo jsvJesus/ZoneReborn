@@ -1056,55 +1056,78 @@ namespace
         const client::character::AnimationState state,
         const std::string& path)
     {
+        using client::character::AnimationState;
+
         switch (state)
         {
-            case client::character::AnimationState::Idle:
-                return
-                    ScoreIdle(
-                        path);
+        case AnimationState::Idle:
+            return
+                ScoreIdle(
+                    path);
 
-            case client::character::AnimationState::Walk:
-                return
-                    ScoreWalk(
-                        path);
+        case AnimationState::WalkForward:
+        case AnimationState::WalkBackward:
+        case AnimationState::WalkStrafeLeft:
+        case AnimationState::WalkStrafeRight:
+            return
+                ScoreWalk(
+                    path);
 
-            case client::character::AnimationState::Run:
-                return
-                    ScoreRun(
-                        path);
+        case AnimationState::RunForward:
+        case AnimationState::RunBackward:
+        case AnimationState::RunStrafeLeft:
+        case AnimationState::RunStrafeRight:
+            return
+                ScoreRun(
+                    path);
 
-            case client::character::AnimationState::Sprint:
-                return
-                    ScoreSprint(
-                        path);
+        case AnimationState::Sprint:
+            return
+                ScoreSprint(
+                    path);
 
-            case client::character::AnimationState::CrouchIdle:
-                return
-                    ScoreCrouchIdle(
-                        path);
+        case AnimationState::CrouchIdle:
+            return
+                ScoreCrouchIdle(
+                    path);
 
-            case client::character::AnimationState::CrouchMove:
-                return
-                    ScoreCrouchMove(
-                        path);
+        case AnimationState::CrouchForward:
+        case AnimationState::CrouchBackward:
+        case AnimationState::CrouchStrafeLeft:
+        case AnimationState::CrouchStrafeRight:
+            return
+                ScoreCrouchMove(
+                    path);
 
-            case client::character::AnimationState::Jump:
-                return
-                    ScoreJump(
-                        path);
+        case AnimationState::TurnLeft:
+        case AnimationState::TurnRight:
+            return
+                ScoreIdle(
+                    path);
 
-            case client::character::AnimationState::Fall:
-                return
-                    ScoreFall(
-                        path);
+        case AnimationState::CrouchTurnLeft:
+        case AnimationState::CrouchTurnRight:
+            return
+                ScoreCrouchIdle(
+                    path);
 
-            case client::character::AnimationState::Land:
-                return
-                    ScoreLand(
-                        path);
+        case AnimationState::Jump:
+            return
+                ScoreJump(
+                    path);
 
-            case client::character::AnimationState::Count:
-                break;
+        case AnimationState::Fall:
+            return
+                ScoreFall(
+                    path);
+
+        case AnimationState::Land:
+            return
+                ScoreLand(
+                    path);
+
+        case AnimationState::Count:
+            break;
         }
 
         return

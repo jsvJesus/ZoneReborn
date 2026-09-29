@@ -554,21 +554,19 @@ Application::CharacterTransform() const noexcept
         characterAnimationStart_ =
             std::chrono::steady_clock::now();
 
-        if (characterVisible_ &&
-            characterAnimator_.IsReady())
+        if (!characterAnimator_.Update(
+            character::AnimationState::Idle,
+            0.0f,
+            0.0f,
+            0.0f,
+            renderer_,
+            error))
         {
-            if (!characterAnimator_.Update(
-                    character::AnimationState::Idle,
-                    0.0f,
-                    renderer_,
-                    error))
-            {
-                error =
-                    "Unable to apply initial character idle pose: " +
-                    error;
+            error =
+                "Unable to apply initial character idle pose: " +
+                error;
 
-                return false;
-            }
+            return false;
         }
 
         renderer_.SetCamera(
@@ -699,10 +697,12 @@ Application::CharacterTransform() const noexcept
                     animationError;
 
                 if (!characterAnimator_.Update(
-                        character::AnimationState::Idle,
-                        elapsedSeconds,
-                        renderer_,
-                        animationError))
+                    character::AnimationState::Idle,
+                    elapsedSeconds,
+                    0.0f,
+                    0.0f,
+                    renderer_,
+                    animationError))
                 {
                     core::Log::Error(
                         std::string(

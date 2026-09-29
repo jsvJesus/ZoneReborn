@@ -1848,11 +1848,14 @@ namespace
             Transform local =
                 node.transform;
 
-            SampleChannel(
-                clip,
-                node.identifier,
-                frame,
-                local);
+            const bool sampled =
+                SampleChannel(
+                    clip,
+                    node.identifier,
+                    frame,
+                    local);
+
+            (void)sampled;
 
             if (node.identifier ==
                 "Hips")
