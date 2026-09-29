@@ -17,6 +17,9 @@ namespace
         Pi *
         2.0f;
 
+    constexpr float MeshMaximumSpin =
+        20.0f;
+
     core::math::Vector3 Add(
         const core::math::Vector3& first,
         const core::math::Vector3& second) noexcept
@@ -153,6 +156,36 @@ namespace
                 first
             ) *
             factor;
+    }
+
+    float WrapSignedAngle(
+        float angle) noexcept
+    {
+        if (!std::isfinite(
+                angle))
+        {
+            return 0.0f;
+        }
+
+        angle =
+            std::fmod(
+                angle,
+                TwoPi);
+
+        if (angle >
+            Pi)
+        {
+            angle -=
+                TwoPi;
+        }
+        else if (angle <
+            -Pi)
+        {
+            angle +=
+                TwoPi;
+        }
+
+        return angle;
     }
 
     core::math::Vector3 TransformPoint(
@@ -832,33 +865,68 @@ namespace core::world::particles
         particle.size =
             size;
 
+        const bool meshStyle =
+            definition_.hasRenderer &&
+            (
+                definition_.renderer.type ==
+                    ParticleRendererType::Mesh ||
+                definition_.renderer.type ==
+                    ParticleRendererType::Visual
+            );
+
         particle.colour =
-            source.initialColour;
+            meshStyle
+                ? std::array<float, 4>
+                    {
+                        1.0f,
+                        1.0f,
+                        1.0f,
+                        1.0f
+                    }
+                : source.initialColour;
+
+        particle.meshPitch =
+            source.initialRotation[0] +
+            source.randomInitialRotation[0] *
+                (
+                    Random01() -
+                    0.5f
+                );
+
+        particle.meshYaw =
+            source.initialRotation[1] +
+            source.randomInitialRotation[1] *
+                (
+                    Random01() -
+                    0.5f
+                );
 
         particle.rotation =
-            Lerp(
-                source.initialRotation[0],
-                source.initialRotation[1],
-                Random01());
+            particle.meshYaw;
 
-        particle.rotation +=
-            Lerp(
-                source.randomInitialRotation[0],
-                source.randomInitialRotation[1],
-                Random01());
+        particle.angularVelocity =
+            WrapSignedAngle(
+                particle.meshPitch) *
+            TwoPi;
 
         if (source.randomSpin)
         {
-            particle.angularVelocity =
-                Lerp(
-                    source.minSpin,
-                    source.maxSpin,
-                    Random01());
-        }
-        else
-        {
-            particle.angularVelocity =
-                source.minSpin;
+            particle.meshSpinAxis =
+                Normalize(
+                {
+                    Random01(),
+                    Random01(),
+                    Random01()
+                });
+
+            particle.meshSpinSpeed =
+                std::clamp(
+                    Lerp(
+                        source.minSpin,
+                        source.maxSpin,
+                        Random01()),
+                    0.0f,
+                    1.0f);
         }
 
         particles_.push_back(
@@ -1167,10 +1235,13 @@ namespace core::world::particles
                     -normalVelocity *
                         elasticity));
 
-        if (action.minAddedRotation !=
+        if (!action.spriteBased &&
+            (
+                action.minAddedRotation !=
                 0.0f ||
             action.maxAddedRotation !=
-                0.0f)
+                0.0f
+            ))
         {
             const float minimumRotation =
                 std::min(
@@ -1182,11 +1253,31 @@ namespace core::world::particles
                     action.minAddedRotation,
                     action.maxAddedRotation);
 
-            particle.angularVelocity +=
+            if (LengthSquared(
+                    particle.meshSpinAxis) <=
+                0.000001f)
+            {
+                particle.meshSpinAxis =
+                    Normalize(
+                        particle.velocity);
+            }
+
+            const float addedRotation =
                 Lerp(
                     minimumRotation,
                     maximumRotation,
-                    Random01());
+                    Random01()) *
+                std::min(
+                    Length(
+                        particle.velocity),
+                    1.0f);
+
+            particle.meshSpinSpeed =
+                std::clamp(
+                    particle.meshSpinSpeed +
+                        addedRotation,
+                    0.0f,
+                    1.0f);
         }
 
         return true;
@@ -1206,6 +1297,20 @@ namespace core::world::particles
         particle.rotation +=
             particle.angularVelocity *
             deltaSeconds;
+
+        particle.meshSpinAngle +=
+            particle.meshSpinSpeed *
+            MeshMaximumSpin *
+            deltaSeconds;
+
+        if (particle.meshSpinAngle >=
+            TwoPi)
+        {
+            particle.meshSpinAngle =
+                std::fmod(
+                    particle.meshSpinAngle,
+                    TwoPi);
+        }
 
         for (const ParticleActionDefinition& actionDefinition :
              definition_.actions)

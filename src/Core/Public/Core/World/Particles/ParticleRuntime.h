@@ -42,6 +42,20 @@ namespace core::world::particles
 
         float angularVelocity =
             0.0f;
+
+        float meshPitch =
+            0.0f;
+
+        float meshYaw =
+            0.0f;
+
+        math::Vector3 meshSpinAxis{};
+
+        float meshSpinSpeed =
+            0.0f;
+
+        float meshSpinAngle =
+            0.0f;
     };
 
     struct ParticleRuntimeStatistics final

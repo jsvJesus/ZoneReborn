@@ -318,72 +318,109 @@ namespace
                     0.0f)
                 : 0.0f;
 
-        const float rotation =
+        const float pitch =
             std::isfinite(
-                particle.rotation)
-                ? particle.rotation
+                particle.meshPitch)
+                ? particle.meshPitch
                 : 0.0f;
 
-        const float cosine =
-            std::cos(
-                rotation);
+        const float yaw =
+            std::isfinite(
+                particle.meshYaw)
+                ? particle.meshYaw
+                : 0.0f;
 
-        const float sine =
-            std::sin(
-                rotation);
+        const float spinAngle =
+            std::isfinite(
+                particle.meshSpinAngle)
+                ? particle.meshSpinAngle
+                : 0.0f;
+
+        DirectX::XMMATRIX rotation =
+            DirectX::XMMatrixRotationRollPitchYaw(
+                pitch,
+                yaw,
+                0.0f);
+
+        const core::math::Vector3& spinAxis =
+            particle.meshSpinAxis;
+
+        const float spinAxisLengthSquared =
+            spinAxis.x * spinAxis.x +
+            spinAxis.y * spinAxis.y +
+            spinAxis.z * spinAxis.z;
+
+        if (std::isfinite(
+                spinAxisLengthSquared) &&
+            spinAxisLengthSquared >
+                0.000001f &&
+            spinAngle !=
+                0.0f)
+        {
+            const DirectX::XMVECTOR axis =
+                DirectX::XMVector3Normalize(
+                    DirectX::XMVectorSet(
+                        spinAxis.x,
+                        spinAxis.y,
+                        spinAxis.z,
+                        0.0f));
+
+            rotation =
+                DirectX::XMMatrixRotationAxis(
+                    axis,
+                    spinAngle) *
+                rotation;
+        }
+
+        DirectX::XMMATRIX matrix =
+            DirectX::XMMatrixScaling(
+                size,
+                size,
+                size) *
+            rotation;
+
+        if (local)
+        {
+            core::math::Transform3x4 emitterOrientation =
+                emitterTransform;
+
+            emitterOrientation.values[9] =
+                0.0f;
+
+            emitterOrientation.values[10] =
+                0.0f;
+
+            emitterOrientation.values[11] =
+                0.0f;
+
+            matrix =
+                matrix *
+                ToMatrix(
+                    emitterOrientation);
+        }
+
+        matrix.r[3] =
+            DirectX::XMVectorSet(
+                particle.position.x,
+                particle.position.y,
+                particle.position.z,
+                1.0f);
+
+        DirectX::XMFLOAT4X4 stored{};
+
+        DirectX::XMStoreFloat4x4(
+            &stored,
+            matrix);
 
         core::math::Transform3x4 result;
 
         result.values =
         {
-            cosine * size, 0.0f, -sine * size,
-            0.0f, size, 0.0f,
-            sine * size, 0.0f, cosine * size,
-            particle.position.x,
-            particle.position.y,
-            particle.position.z
+            stored._11, stored._12, stored._13,
+            stored._21, stored._22, stored._23,
+            stored._31, stored._32, stored._33,
+            stored._41, stored._42, stored._43
         };
-
-        if (!local)
-        {
-            return result;
-        }
-
-        core::math::Transform3x4
-            emitterOrientation =
-                emitterTransform;
-
-        emitterOrientation.values[9] =
-            0.0f;
-
-        emitterOrientation.values[10] =
-            0.0f;
-
-        emitterOrientation.values[11] =
-            0.0f;
-
-        result.values[9] =
-            0.0f;
-
-        result.values[10] =
-            0.0f;
-
-        result.values[11] =
-            0.0f;
-
-        result =
-            core::math::Transform3x4::Multiply(
-                result,
-                emitterOrientation);
-
-        result.values[9] =
-            particle.position.x;
-
-        result.values[10] =
-            particle.position.y;
-
-        result.values[11] =
-            particle.position.z;
 
         return result;
     }
