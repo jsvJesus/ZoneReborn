@@ -50,6 +50,7 @@
     <ClInclude Include="Private\Input\CameraController.h" />
     <ClInclude Include="Private\Loading\LoadingProgress.h" />
     <ClInclude Include="Private\Platform\Window.h" />
+    <ClInclude Include="Private\Player\PlayerLocomotion.h" />
     <ClInclude Include="Private\Player\ThirdPersonCamera.h" />
     <ClInclude Include="Private\Player\PlayerController.h" />
     <ClInclude Include="Private\Preview\CharacterSelectStage.h" />
@@ -84,6 +85,7 @@
     <ClCompile Include="Private\Character\CharacterState.cpp" />
     <ClCompile Include="Private\Frontend\Frontend.cpp" Condition="'$(Configuration)|$(Platform)'=='Final|x64'" />
     <ClCompile Include="Private\Player\PlayerController.cpp" />
+    <ClCompile Include="Private\Player\PlayerLocomotion.cpp" />
     <ClCompile Include="Private\Player\ThirdPersonCamera.cpp" />
 
     <ClCompile Include="Private\Studio\Application.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />

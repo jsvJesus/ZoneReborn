@@ -9,8 +9,14 @@ namespace client::character
     enum class AnimationState : std::uint8_t
     {
         Idle = 0,
+
         Walk,
         Run,
+        Sprint,
+
+        CrouchIdle,
+        CrouchMove,
+
         Jump,
         Fall,
         Land,
@@ -48,6 +54,15 @@ namespace client::character
         case AnimationState::Run:
             return "Run";
 
+        case AnimationState::Sprint:
+            return "Sprint";
+
+        case AnimationState::CrouchIdle:
+            return "CrouchIdle";
+
+        case AnimationState::CrouchMove:
+            return "CrouchMove";
+
         case AnimationState::Jump:
             return "Jump";
 
@@ -61,7 +76,8 @@ namespace client::character
             break;
         }
 
-        return "Unknown";
+        return
+            "Unknown";
     }
 
     [[nodiscard]]
@@ -74,15 +90,21 @@ namespace client::character
         case AnimationState::Idle:
         case AnimationState::Walk:
         case AnimationState::Run:
+        case AnimationState::Sprint:
+        case AnimationState::CrouchIdle:
+        case AnimationState::CrouchMove:
         case AnimationState::Fall:
-            return true;
+            return
+                true;
 
         case AnimationState::Jump:
         case AnimationState::Land:
         case AnimationState::Count:
-            return false;
+            return
+                false;
         }
 
-        return false;
+        return
+            false;
     }
 }

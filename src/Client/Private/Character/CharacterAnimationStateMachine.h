@@ -9,7 +9,13 @@ namespace client::character
         bool moving =
             false;
 
-        bool running =
+        bool walking =
+            false;
+
+        bool sprinting =
+            false;
+
+        bool crouched =
             false;
 
         bool grounded =

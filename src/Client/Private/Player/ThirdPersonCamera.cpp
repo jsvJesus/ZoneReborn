@@ -221,12 +221,14 @@ namespace client::player
 
     void ThirdPersonCamera::UpdateView(
         const core::math::Vector3& playerPosition,
+        const float targetHeight,
         const world::Collision& collision) noexcept
     {
         const core::math::Vector3 target
         {
             playerPosition.x,
-            playerPosition.y + 1.48f,
+            playerPosition.y +
+                targetHeight,
             playerPosition.z
         };
 

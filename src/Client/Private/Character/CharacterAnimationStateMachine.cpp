@@ -29,20 +29,34 @@ namespace client::character
     AnimationStateMachine::GroundState(
         const AnimationInput& input) noexcept
     {
+        if (input.crouched)
+        {
+            return
+                input.moving
+                    ? AnimationState::CrouchMove
+                    : AnimationState::CrouchIdle;
+        }
+
         if (!input.moving)
         {
             return
                 AnimationState::Idle;
         }
 
-        if (input.running)
+        if (input.sprinting)
         {
             return
-                AnimationState::Run;
+                AnimationState::Sprint;
+        }
+
+        if (input.walking)
+        {
+            return
+                AnimationState::Walk;
         }
 
         return
-            AnimationState::Walk;
+            AnimationState::Run;
     }
 
     void AnimationStateMachine::ChangeState(
@@ -125,12 +139,14 @@ namespace client::character
     AnimationState
     AnimationStateMachine::Current() const noexcept
     {
-        return state_;
+        return
+            state_;
     }
 
     float
     AnimationStateMachine::StateTime() const noexcept
     {
-        return stateTime_;
+        return
+            stateTime_;
     }
 }

@@ -480,6 +480,381 @@ namespace
         return score;
     }
 
+    int ScoreSprint(
+        const std::string& path)
+    {
+        if (!Contains(
+                path,
+                "sprint"))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        if (IsInjuredVariant(
+                path) ||
+            IsLocomotionTransition(
+                path))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        if (Contains(
+                path,
+                "jump") ||
+            Contains(
+                path,
+                "fall") ||
+            Contains(
+                path,
+                "crawl") ||
+            Contains(
+                path,
+                "crouch") ||
+            Contains(
+                path,
+                "death") ||
+            Contains(
+                path,
+                "swim") ||
+            Contains(
+                path,
+                "ladder") ||
+            Contains(
+                path,
+                "_to_"))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        int score =
+            CommonScore(
+                path);
+
+        if (Contains(
+                path,
+                "sprint_forwardr_stay_unarmed"))
+        {
+            score +=
+                3500;
+        }
+        else if (Contains(
+                     path,
+                     "sprint_forward_stay_unarmed"))
+        {
+            score +=
+                3300;
+        }
+        else if (Contains(
+                     path,
+                     "sprint_forward"))
+        {
+            score +=
+                2000;
+        }
+        else if (Contains(
+                     path,
+                     "forward"))
+        {
+            score +=
+                1000;
+        }
+
+        if (Contains(
+                path,
+                "stay_unarmed"))
+        {
+            score +=
+                700;
+        }
+
+        if (Contains(
+                path,
+                "back"))
+        {
+            score -=
+                1500;
+        }
+
+        if (Contains(
+                path,
+                "strafe"))
+        {
+            score -=
+                1500;
+        }
+
+        if (Contains(
+                path,
+                "left") ||
+            Contains(
+                path,
+                "right"))
+        {
+            score -=
+                900;
+        }
+
+        return
+            score;
+    }
+
+    int ScoreCrouchIdle(
+        const std::string& path)
+    {
+        if (!Contains(
+                path,
+                "crouch"))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        if (IsInjuredVariant(
+                path) ||
+            IsLocomotionTransition(
+                path))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        if (Contains(
+                path,
+                "_to_") ||
+            Contains(
+                path,
+                "crawl") ||
+            Contains(
+                path,
+                "jump") ||
+            Contains(
+                path,
+                "fall") ||
+            Contains(
+                path,
+                "death") ||
+            Contains(
+                path,
+                "sprint") ||
+            Contains(
+                path,
+                "walk") ||
+            Contains(
+                path,
+                "run") ||
+            Contains(
+                path,
+                "forward") ||
+            Contains(
+                path,
+                "back") ||
+            Contains(
+                path,
+                "strafe"))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        if (!Contains(
+                path,
+                "idle") &&
+            !Contains(
+                path,
+                "stay"))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        int score =
+            CommonScore(
+                path);
+
+        if (Contains(
+                path,
+                "crouch_stay"))
+        {
+            score +=
+                2500;
+        }
+
+        if (Contains(
+                path,
+                "idle"))
+        {
+            score +=
+                1800;
+        }
+
+        if (Contains(
+                path,
+                "stay"))
+        {
+            score +=
+                900;
+        }
+
+        return
+            score;
+    }
+
+    int ScoreCrouchMove(
+        const std::string& path)
+    {
+        if (!Contains(
+                path,
+                "crouch"))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        if (IsInjuredVariant(
+                path) ||
+            IsLocomotionTransition(
+                path))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        if (Contains(
+                path,
+                "_to_") ||
+            Contains(
+                path,
+                "crawl") ||
+            Contains(
+                path,
+                "jump") ||
+            Contains(
+                path,
+                "fall") ||
+            Contains(
+                path,
+                "death") ||
+            Contains(
+                path,
+                "sprint") ||
+            Contains(
+                path,
+                "swim") ||
+            Contains(
+                path,
+                "ladder"))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        const bool movement =
+            Contains(
+                path,
+                "walk") ||
+            Contains(
+                path,
+                "run") ||
+            Contains(
+                path,
+                "forward");
+
+        if (!movement)
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        int score =
+            CommonScore(
+                path);
+
+        if (Contains(
+                path,
+                "walk_forwardr"))
+        {
+            score +=
+                3300;
+        }
+        else if (Contains(
+                     path,
+                     "walk_forward"))
+        {
+            score +=
+                3100;
+        }
+        else if (Contains(
+                     path,
+                     "run_forwardr"))
+        {
+            score +=
+                2600;
+        }
+        else if (Contains(
+                     path,
+                     "run_forward"))
+        {
+            score +=
+                2400;
+        }
+        else if (Contains(
+                     path,
+                     "forward"))
+        {
+            score +=
+                1500;
+        }
+
+        if (Contains(
+                path,
+                "walk"))
+        {
+            score +=
+                1000;
+        }
+
+        if (Contains(
+                path,
+                "stay_unarmed"))
+        {
+            score +=
+                700;
+        }
+
+        if (Contains(
+                path,
+                "back"))
+        {
+            score -=
+                1200;
+        }
+
+        if (Contains(
+                path,
+                "strafe"))
+        {
+            score -=
+                1200;
+        }
+
+        if (Contains(
+                path,
+                "left") ||
+            Contains(
+                path,
+                "right"))
+        {
+            score -=
+                800;
+        }
+
+        return
+            score;
+    }
+
     int ScoreJump(
         const std::string& path)
     {
@@ -696,6 +1071,21 @@ namespace
             case client::character::AnimationState::Run:
                 return
                     ScoreRun(
+                        path);
+
+            case client::character::AnimationState::Sprint:
+                return
+                    ScoreSprint(
+                        path);
+
+            case client::character::AnimationState::CrouchIdle:
+                return
+                    ScoreCrouchIdle(
+                        path);
+
+            case client::character::AnimationState::CrouchMove:
+                return
+                    ScoreCrouchMove(
                         path);
 
             case client::character::AnimationState::Jump:

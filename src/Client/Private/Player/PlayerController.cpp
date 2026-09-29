@@ -8,12 +8,6 @@ namespace
     constexpr float Pi =
         3.14159265358979323846f;
 
-    constexpr float WalkSpeed =
-        1.3f;
-
-    constexpr float RunSpeed =
-        3.6f;
-
     constexpr float Gravity =
         -19.62f;
 
@@ -22,9 +16,6 @@ namespace
 
     constexpr float CapsuleRadius =
         0.34f;
-
-    constexpr float CapsuleHeight =
-        1.78f;
 
     constexpr float StepHeight =
         0.42f;
@@ -90,11 +81,19 @@ namespace client::player
         moving_ =
             false;
 
-        running_ =
+        sprintWasDown_ =
+            false;
+
+        crouchWasDown_ =
+            false;
+
+        walkWasDown_ =
             false;
 
         jumpWasDown_ =
             false;
+
+        locomotion_.Reset();
     }
 
     void Controller::Update(
@@ -112,17 +111,88 @@ namespace client::player
         moving_ =
             false;
 
-        running_ =
-            false;
-
-        if (window == nullptr)
+        if (window ==
+            nullptr)
         {
+            sprintWasDown_ =
+                false;
+
+            crouchWasDown_ =
+                false;
+
+            walkWasDown_ =
+                false;
+
+            jumpWasDown_ =
+                false;
+
             return;
         }
 
         const bool active =
             GetForegroundWindow() ==
             window;
+
+        const bool sprintDown =
+            active &&
+            IsKeyDown(
+                VK_SHIFT);
+
+        const bool crouchDown =
+            active &&
+            IsKeyDown(
+                VK_CONTROL);
+
+        const bool walkDown =
+            active &&
+            IsKeyDown(
+                'X');
+
+        if (sprintDown &&
+            !sprintWasDown_)
+        {
+            locomotion_.ToggleSprint();
+        }
+
+        if (walkDown &&
+            !walkWasDown_)
+        {
+            locomotion_.ToggleWalk();
+        }
+
+        if (crouchDown &&
+            !crouchWasDown_)
+        {
+            if (!locomotion_.IsCrouched())
+            {
+                locomotion_.SetCrouched(
+                    true);
+            }
+            else
+            {
+                const bool blocked =
+                    collision.BlocksCapsule(
+                        position_,
+                        CapsuleRadius,
+                        locomotion_.
+                            StandingCapsuleHeight());
+
+                if (!blocked)
+                {
+                    locomotion_.SetCrouched(
+                        false);
+                }
+            }
+        }
+
+        sprintWasDown_ =
+            sprintDown;
+
+        crouchWasDown_ =
+            crouchDown;
+
+        walkWasDown_ =
+            walkDown;
 
         float inputX =
             0.0f;
@@ -132,25 +202,29 @@ namespace client::player
 
         if (active)
         {
-            if (IsKeyDown('W'))
+            if (IsKeyDown(
+                    'W'))
             {
                 inputZ +=
                     1.0f;
             }
 
-            if (IsKeyDown('S'))
+            if (IsKeyDown(
+                    'S'))
             {
                 inputZ -=
                     1.0f;
             }
 
-            if (IsKeyDown('D'))
+            if (IsKeyDown(
+                    'D'))
             {
                 inputX +=
                     1.0f;
             }
 
-            if (IsKeyDown('A'))
+            if (IsKeyDown(
+                    'A'))
             {
                 inputX -=
                     1.0f;
@@ -195,19 +269,25 @@ namespace client::player
 
             core::math::Vector3 direction
             {
-                cameraForward.x * inputZ +
-                    cameraRight.x * inputX,
+                cameraForward.x *
+                    inputZ +
+                cameraRight.x *
+                    inputX,
 
                 0.0f,
 
-                cameraForward.z * inputZ +
-                    cameraRight.z * inputX
+                cameraForward.z *
+                    inputZ +
+                cameraRight.z *
+                    inputX
             };
 
             const float directionLength =
                 std::sqrt(
-                    direction.x * direction.x +
-                    direction.z * direction.z);
+                    direction.x *
+                        direction.x +
+                    direction.z *
+                        direction.z);
 
             if (directionLength >
                 0.0001f)
@@ -218,15 +298,8 @@ namespace client::player
                 direction.z /=
                     directionLength;
 
-                running_ =
-                    active &&
-                    IsKeyDown(
-                        VK_SHIFT);
-
                 const float speed =
-                    running_
-                        ? RunSpeed
-                        : WalkSpeed;
+                    locomotion_.Speed();
 
                 const core::math::Vector3 movement
                 {
@@ -279,7 +352,8 @@ namespace client::player
 
         if (jumpDown &&
             !jumpWasDown_ &&
-            grounded_)
+            grounded_ &&
+            !locomotion_.IsCrouched())
         {
             grounded_ =
                 false;
@@ -356,6 +430,9 @@ namespace client::player
         const core::math::Vector3& movement,
         const world::Collision& collision) noexcept
     {
+        const float capsuleHeight =
+            locomotion_.CapsuleHeight();
+
         core::math::Vector3 target =
             position_;
 
@@ -382,7 +459,7 @@ namespace client::player
         if (!collision.BlocksCapsule(
                 target,
                 CapsuleRadius,
-                CapsuleHeight))
+                capsuleHeight))
         {
             position_ =
                 target;
@@ -410,7 +487,7 @@ namespace client::player
         if (!collision.BlocksCapsule(
                 target,
                 CapsuleRadius,
-                CapsuleHeight))
+                capsuleHeight))
         {
             position_ =
                 target;
@@ -436,7 +513,7 @@ namespace client::player
         if (!collision.BlocksCapsule(
                 target,
                 CapsuleRadius,
-                CapsuleHeight))
+                capsuleHeight))
         {
             position_ =
                 target;
@@ -446,33 +523,72 @@ namespace client::player
     const core::math::Vector3&
     Controller::Position() const noexcept
     {
-        return position_;
+        return
+            position_;
     }
 
     float Controller::Yaw() const noexcept
     {
-        return yaw_;
+        return
+            yaw_;
     }
 
     bool Controller::IsMoving() const noexcept
     {
-        return moving_;
+        return
+            moving_;
+    }
+
+    LocomotionMode
+    Controller::SelectedLocomotionMode() const noexcept
+    {
+        return
+            locomotion_.Mode();
+    }
+
+    bool Controller::IsWalking() const noexcept
+    {
+        return
+            locomotion_.Mode() ==
+            LocomotionMode::Walk;
     }
 
     bool Controller::IsRunning() const noexcept
     {
-        return running_;
+        return
+            locomotion_.Mode() ==
+            LocomotionMode::Run;
+    }
+
+    bool Controller::IsSprinting() const noexcept
+    {
+        return
+            locomotion_.Mode() ==
+            LocomotionMode::Sprint;
+    }
+
+    bool Controller::IsCrouched() const noexcept
+    {
+        return
+            locomotion_.IsCrouched();
     }
 
     bool Controller::IsGrounded() const noexcept
     {
-        return grounded_;
+        return
+            grounded_;
     }
 
     float Controller::VerticalVelocity() const noexcept
     {
         return
             verticalVelocity_;
+    }
+
+    float Controller::CameraTargetHeight() const noexcept
+    {
+        return
+            locomotion_.CameraTargetHeight();
     }
 
     core::math::Transform3x4
@@ -526,6 +642,7 @@ namespace client::player
         transform.values[11] =
             position_.z;
 
-        return transform;
+        return
+            transform;
     }
 }

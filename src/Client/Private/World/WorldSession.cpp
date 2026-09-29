@@ -290,6 +290,7 @@ namespace client::world
 
         playerCamera_.UpdateView(
             playerController_.Position(),
+            playerController_.CameraTargetHeight(),
             collision_);
 
         renderer.SetCamera(
@@ -377,8 +378,14 @@ namespace client::world
         animationInput.moving =
             playerController_.IsMoving();
 
-        animationInput.running =
-            playerController_.IsRunning();
+        animationInput.walking =
+            playerController_.IsWalking();
+
+        animationInput.sprinting =
+            playerController_.IsSprinting();
+
+        animationInput.crouched =
+            playerController_.IsCrouched();
 
         animationInput.grounded =
             playerController_.IsGrounded();
@@ -406,6 +413,7 @@ namespace client::world
 
         playerCamera_.UpdateView(
             playerController_.Position(),
+            playerController_.CameraTargetHeight(),
             collision_);
 
         renderer.SetCamera(
