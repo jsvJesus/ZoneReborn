@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Player/PlayerLocomotion.h"
+#include "Player/PlayerTurnController.h"
 
 #include "World/WorldCollision.h"
 
@@ -21,8 +22,10 @@ namespace client::player
         void Update(
             HWND window,
             float deltaSeconds,
-            float cameraYaw,
+            float controlYaw,
             const world::Collision& collision) noexcept;
+
+        void CompleteTurn() noexcept;
 
         [[nodiscard]]
         const core::math::Vector3&
@@ -30,6 +33,27 @@ namespace client::player
 
         [[nodiscard]]
         float Yaw() const noexcept;
+
+        [[nodiscard]]
+        float ModelYaw() const noexcept;
+
+        [[nodiscard]]
+        float BodyYawOffset() const noexcept;
+
+        [[nodiscard]]
+        float FootTwistYaw() const noexcept;
+
+        [[nodiscard]]
+        int TurnDirectionSign() const noexcept;
+
+        [[nodiscard]]
+        float MoveForwardInput() const noexcept;
+
+        [[nodiscard]]
+        float MoveRightInput() const noexcept;
+
+        [[nodiscard]]
+        MovementDirection Direction() const noexcept;
 
         [[nodiscard]]
         bool IsMoving() const noexcept;
@@ -67,6 +91,11 @@ namespace client::player
         static bool IsKeyDown(
             int key) noexcept;
 
+        [[nodiscard]]
+        static MovementDirection ResolveDirection(
+            float right,
+            float forward) noexcept;
+
         void MoveHorizontal(
             const core::math::Vector3& movement,
             const world::Collision& collision) noexcept;
@@ -77,7 +106,16 @@ namespace client::player
         LocomotionState
             locomotion_;
 
-        float yaw_ =
+        TurnController
+            turn_;
+
+        MovementDirection movementDirection_ =
+            MovementDirection::None;
+
+        float moveForwardInput_ =
+            0.0f;
+
+        float moveRightInput_ =
             0.0f;
 
         float verticalVelocity_ =

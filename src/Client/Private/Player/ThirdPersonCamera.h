@@ -17,7 +17,8 @@ namespace client::player
 
         void UpdateInput(
             HWND window,
-            float mouseWheelDelta) noexcept;
+            float mouseWheelDelta,
+            float deltaSeconds) noexcept;
 
         void UpdateView(
             const core::math::Vector3& playerPosition,
@@ -28,11 +29,17 @@ namespace client::player
         float Yaw() const noexcept;
 
         [[nodiscard]]
+        float ControlYaw() const noexcept;
+
+        [[nodiscard]]
         const graphics::CameraView&
         View() const noexcept;
 
     private:
         float yaw_ =
+            0.0f;
+
+        float controlYaw_ =
             0.0f;
 
         float pitch_ =
@@ -45,6 +52,12 @@ namespace client::player
             0.0025f;
 
         bool mouseReady_ =
+            false;
+
+        bool lookAroundWasDown_ =
+            false;
+
+        bool returningFromLookAround_ =
             false;
 
         graphics::CameraView

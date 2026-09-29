@@ -1777,12 +1777,59 @@ namespace
             );
     }
 
+    Transform RotationY(
+        const float yaw) noexcept
+    {
+        Transform result =
+            Transform::Identity();
+
+        const float cosine =
+            std::cos(
+                yaw);
+
+        const float sine =
+            std::sin(
+                yaw);
+
+        result.values[0] =
+            cosine;
+
+        result.values[1] =
+            0.0f;
+
+        result.values[2] =
+            -sine;
+
+        result.values[3] =
+            0.0f;
+
+        result.values[4] =
+            1.0f;
+
+        result.values[5] =
+            0.0f;
+
+        result.values[6] =
+            sine;
+
+        result.values[7] =
+            0.0f;
+
+        result.values[8] =
+            cosine;
+
+        return
+            result;
+    }
+
     [[nodiscard]]
     bool BuildAnimatedNodeTransforms(
         const AnimationClip& clip,
         const core::assets::VisualAsset& visual,
         const std::unordered_map<std::string, Transform>& faceMorphs,
         const float frame,
+        const float bodyYawOffset,
+        const float footTwistYaw,
         std::vector<Transform>& output,
         std::string& error)
     {
@@ -1806,6 +1853,29 @@ namespace
                 node.identifier,
                 frame,
                 local);
+
+            if (node.identifier ==
+                "Hips")
+            {
+                local =
+                    Transform::Multiply(
+                        RotationY(
+                            footTwistYaw),
+                        local);
+            }
+            else if (node.identifier ==
+                     "Spine")
+            {
+                const float torsoYaw =
+                    bodyYawOffset -
+                    footTwistYaw;
+
+                local =
+                    Transform::Multiply(
+                        RotationY(
+                            torsoYaw),
+                        local);
+            }
 
             const auto morph = faceMorphs.find(node.identifier);
             if (morph != faceMorphs.end())
@@ -2224,9 +2294,11 @@ namespace client::character
         return true;
     }
 
-        bool Animator::Update(
+    bool Animator::Update(
         const AnimationState animationState,
         const float stateTimeSeconds,
+        const float bodyYawOffset,
+        const float footTwistYaw,
         graphics::Renderer& renderer,
         std::string& error)
     {
@@ -2308,6 +2380,8 @@ namespace client::character
                     binding.visual,
                     state_->faceMorphs,
                     frame,
+                    bodyYawOffset,
+                    footTwistYaw,
                     nodeTransforms,
                     error))
             {

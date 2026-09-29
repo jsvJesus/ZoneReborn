@@ -91,11 +91,41 @@ namespace
 
 namespace client::player
 {
+    constexpr float LookAroundReturnResponse =
+        9.0f;
+
+    float NormalizeAngle(
+        float angle) noexcept
+    {
+        while (angle >
+               Pi)
+        {
+            angle -=
+                Pi *
+                2.0f;
+        }
+
+        while (angle <
+               -Pi)
+        {
+            angle +=
+                Pi *
+                2.0f;
+        }
+
+        return
+            angle;
+    }
+    
     void ThirdPersonCamera::Reset(
         const float yaw) noexcept
     {
         yaw_ =
-            yaw;
+            NormalizeAngle(
+                yaw);
+
+        controlYaw_ =
+            yaw_;
 
         pitch_ =
             -0.22f;
@@ -105,11 +135,18 @@ namespace client::player
 
         mouseReady_ =
             false;
+
+        lookAroundWasDown_ =
+            false;
+
+        returningFromLookAround_ =
+            false;
     }
 
     void ThirdPersonCamera::UpdateInput(
         const HWND window,
-        const float mouseWheelDelta) noexcept
+        const float mouseWheelDelta,
+        float deltaSeconds) noexcept
     {
         if (window ==
             nullptr)
@@ -126,6 +163,12 @@ namespace client::player
             return;
         }
 
+        deltaSeconds =
+            std::clamp(
+                deltaSeconds,
+                0.0f,
+                0.05f);
+
         if (mouseWheelDelta !=
             0.0f)
         {
@@ -136,6 +179,26 @@ namespace client::player
                         0.4f,
                     MinimumDistance,
                     MaximumDistance);
+        }
+
+        const bool lookAroundDown =
+            (
+                GetAsyncKeyState(
+                    VK_MENU) &
+                0x8000
+            ) != 0;
+
+        if (lookAroundWasDown_ &&
+            !lookAroundDown)
+        {
+            returningFromLookAround_ =
+                true;
+        }
+
+        if (lookAroundDown)
+        {
+            returningFromLookAround_ =
+                false;
         }
 
         RECT rectangle{};
@@ -175,6 +238,9 @@ namespace client::player
             mouseReady_ =
                 true;
 
+            lookAroundWasDown_ =
+                lookAroundDown;
+
             return;
         }
 
@@ -194,10 +260,15 @@ namespace client::player
             cursor.y -
             center.y;
 
-        yaw_ +=
+        const float yawDelta =
             static_cast<float>(
                 deltaX) *
             sensitivity_;
+
+        yaw_ =
+            NormalizeAngle(
+                yaw_ +
+                yawDelta);
 
         pitch_ -=
             static_cast<float>(
@@ -209,6 +280,69 @@ namespace client::player
                 pitch_,
                 MinimumPitch,
                 MaximumPitch);
+
+        if (lookAroundDown)
+        {
+            //
+            // ALT:
+            // камера вращается отдельно,
+            // направление персонажа не меняется.
+            //
+        }
+        else if (returningFromLookAround_)
+        {
+            if (deltaX !=
+                0)
+            {
+                //
+                // Игрок снова начал крутить мышь:
+                // прекращаем автоматический возврат.
+                //
+                returningFromLookAround_ =
+                    false;
+
+                controlYaw_ =
+                    yaw_;
+            }
+            else
+            {
+                const float difference =
+                    NormalizeAngle(
+                        controlYaw_ -
+                        yaw_);
+
+                const float factor =
+                    1.0f -
+                    std::exp(
+                        -LookAroundReturnResponse *
+                        deltaSeconds);
+
+                yaw_ =
+                    NormalizeAngle(
+                        yaw_ +
+                        difference *
+                        factor);
+
+                if (std::abs(
+                        difference) <
+                    0.001f)
+                {
+                    yaw_ =
+                        controlYaw_;
+
+                    returningFromLookAround_ =
+                        false;
+                }
+            }
+        }
+        else
+        {
+            controlYaw_ =
+                yaw_;
+        }
+
+        lookAroundWasDown_ =
+            lookAroundDown;
 
         if (deltaX != 0 ||
             deltaY != 0)
@@ -322,8 +456,14 @@ namespace client::player
             yaw_;
     }
 
+    float ThirdPersonCamera::ControlYaw() const noexcept
+    {
+        return
+            controlYaw_;
+    }
+
     const graphics::CameraView&
-    ThirdPersonCamera::View() const noexcept
+        ThirdPersonCamera::View() const noexcept
     {
         return
             view_;

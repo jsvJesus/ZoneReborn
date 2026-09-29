@@ -5,9 +5,6 @@
 
 namespace
 {
-    constexpr float Pi =
-        3.14159265358979323846f;
-
     constexpr float Gravity =
         -19.62f;
 
@@ -22,31 +19,6 @@ namespace
 
     constexpr float GroundProbe =
         1.1f;
-
-    constexpr float RotationSpeed =
-        14.0f;
-
-    float NormalizeAngle(
-        float angle) noexcept
-    {
-        while (angle >
-               Pi)
-        {
-            angle -=
-                Pi *
-                2.0f;
-        }
-
-        while (angle <
-               -Pi)
-        {
-            angle +=
-                Pi *
-                2.0f;
-        }
-
-        return angle;
-    }
 }
 
 namespace client::player
@@ -62,6 +34,78 @@ namespace client::player
             ) != 0;
     }
 
+    MovementDirection Controller::ResolveDirection(
+        const float right,
+        const float forward) noexcept
+    {
+        const bool hasForward =
+            forward >
+            0.0f;
+
+        const bool hasBackward =
+            forward <
+            0.0f;
+
+        const bool hasRight =
+            right >
+            0.0f;
+
+        const bool hasLeft =
+            right <
+            0.0f;
+
+        if (hasForward)
+        {
+            if (hasRight)
+            {
+                return
+                    MovementDirection::ForwardRight;
+            }
+
+            if (hasLeft)
+            {
+                return
+                    MovementDirection::ForwardLeft;
+            }
+
+            return
+                MovementDirection::Forward;
+        }
+
+        if (hasBackward)
+        {
+            if (hasRight)
+            {
+                return
+                    MovementDirection::BackwardRight;
+            }
+
+            if (hasLeft)
+            {
+                return
+                    MovementDirection::BackwardLeft;
+            }
+
+            return
+                MovementDirection::Backward;
+        }
+
+        if (hasRight)
+        {
+            return
+                MovementDirection::Right;
+        }
+
+        if (hasLeft)
+        {
+            return
+                MovementDirection::Left;
+        }
+
+        return
+            MovementDirection::None;
+    }
+
     void Controller::Reset(
         const core::math::Vector3& position,
         const float yaw) noexcept
@@ -69,8 +113,19 @@ namespace client::player
         position_ =
             position;
 
-        yaw_ =
-            yaw;
+        locomotion_.Reset();
+
+        turn_.Reset(
+            yaw);
+
+        movementDirection_ =
+            MovementDirection::None;
+
+        moveForwardInput_ =
+            0.0f;
+
+        moveRightInput_ =
+            0.0f;
 
         verticalVelocity_ =
             0.0f;
@@ -92,14 +147,12 @@ namespace client::player
 
         jumpWasDown_ =
             false;
-
-        locomotion_.Reset();
     }
 
     void Controller::Update(
         const HWND window,
         float deltaSeconds,
-        const float cameraYaw,
+        const float controlYaw,
         const world::Collision& collision) noexcept
     {
         deltaSeconds =
@@ -108,30 +161,11 @@ namespace client::player
                 0.0f,
                 0.05f);
 
-        moving_ =
-            false;
-
-        if (window ==
-            nullptr)
-        {
-            sprintWasDown_ =
-                false;
-
-            crouchWasDown_ =
-                false;
-
-            walkWasDown_ =
-                false;
-
-            jumpWasDown_ =
-                false;
-
-            return;
-        }
-
         const bool active =
+            window !=
+                nullptr &&
             GetForegroundWindow() ==
-            window;
+                window;
 
         const bool sprintDown =
             active &&
@@ -194,73 +228,113 @@ namespace client::player
         walkWasDown_ =
             walkDown;
 
-        float inputX =
+        float inputRight =
             0.0f;
 
-        float inputZ =
+        float inputForward =
             0.0f;
 
         if (active)
         {
             if (IsKeyDown(
-                    'W'))
+                    'W') ||
+                IsKeyDown(
+                    VK_UP))
             {
-                inputZ +=
+                inputForward +=
                     1.0f;
             }
 
             if (IsKeyDown(
-                    'S'))
+                    'S') ||
+                IsKeyDown(
+                    VK_DOWN))
             {
-                inputZ -=
+                inputForward -=
                     1.0f;
             }
 
             if (IsKeyDown(
-                    'D'))
+                    'D') ||
+                IsKeyDown(
+                    VK_RIGHT))
             {
-                inputX +=
+                inputRight +=
                     1.0f;
             }
 
             if (IsKeyDown(
-                    'A'))
+                    'A') ||
+                IsKeyDown(
+                    VK_LEFT))
             {
-                inputX -=
+                inputRight -=
                     1.0f;
             }
         }
 
+        movementDirection_ =
+            ResolveDirection(
+                inputRight,
+                inputForward);
+
         const float inputLength =
             std::sqrt(
-                inputX * inputX +
-                inputZ * inputZ);
+                inputRight *
+                    inputRight +
+                inputForward *
+                    inputForward);
 
-        if (inputLength >
-            0.0001f)
+        moving_ =
+            inputLength >
+            0.0001f;
+
+        moveRightInput_ =
+            0.0f;
+
+        moveForwardInput_ =
+            0.0f;
+
+        if (moving_)
         {
-            inputX /=
+            moveRightInput_ =
+                inputRight /
                 inputLength;
 
-            inputZ /=
+            moveForwardInput_ =
+                inputForward /
                 inputLength;
+        }
 
+        //
+        // В SO control yaw определяется мышью.
+        // WASD НЕ разворачивает персонажа.
+        //
+        turn_.Update(
+            controlYaw,
+            deltaSeconds,
+            moving_,
+            locomotion_.IsCrouched(),
+            grounded_);
+
+        if (moving_)
+        {
             const float sinYaw =
                 std::sin(
-                    cameraYaw);
+                    turn_.ControlYaw());
 
             const float cosYaw =
                 std::cos(
-                    cameraYaw);
+                    turn_.ControlYaw());
 
-            const core::math::Vector3 cameraForward
+            const core::math::Vector3 forward
             {
                 sinYaw,
                 0.0f,
                 cosYaw
             };
 
-            const core::math::Vector3 cameraRight
+            const core::math::Vector3 right
             {
                 cosYaw,
                 0.0f,
@@ -269,17 +343,17 @@ namespace client::player
 
             core::math::Vector3 direction
             {
-                cameraForward.x *
-                    inputZ +
-                cameraRight.x *
-                    inputX,
+                forward.x *
+                    moveForwardInput_ +
+                right.x *
+                    moveRightInput_,
 
                 0.0f,
 
-                cameraForward.z *
-                    inputZ +
-                cameraRight.z *
-                    inputX
+                forward.z *
+                    moveForwardInput_ +
+                right.z *
+                    moveRightInput_
             };
 
             const float directionLength =
@@ -297,52 +371,28 @@ namespace client::player
 
                 direction.z /=
                     directionLength;
-
-                const float speed =
-                    locomotion_.Speed();
-
-                const core::math::Vector3 movement
-                {
-                    direction.x *
-                        speed *
-                        deltaSeconds,
-
-                    0.0f,
-
-                    direction.z *
-                        speed *
-                        deltaSeconds
-                };
-
-                MoveHorizontal(
-                    movement,
-                    collision);
-
-                moving_ =
-                    true;
-
-                const float targetYaw =
-                    std::atan2(
-                        direction.x,
-                        direction.z);
-
-                const float difference =
-                    NormalizeAngle(
-                        targetYaw -
-                        yaw_);
-
-                const float factor =
-                    1.0f -
-                    std::exp(
-                        -RotationSpeed *
-                        deltaSeconds);
-
-                yaw_ =
-                    NormalizeAngle(
-                        yaw_ +
-                        difference *
-                        factor);
             }
+
+            const float speed =
+                locomotion_.Speed(
+                    movementDirection_);
+
+            const core::math::Vector3 movement
+            {
+                direction.x *
+                    speed *
+                    deltaSeconds,
+
+                0.0f,
+
+                direction.z *
+                    speed *
+                    deltaSeconds
+            };
+
+            MoveHorizontal(
+                movement,
+                collision);
         }
 
         const bool jumpDown =
@@ -520,6 +570,11 @@ namespace client::player
         }
     }
 
+    void Controller::CompleteTurn() noexcept
+    {
+        turn_.CompleteTurn();
+    }
+
     const core::math::Vector3&
     Controller::Position() const noexcept
     {
@@ -530,7 +585,49 @@ namespace client::player
     float Controller::Yaw() const noexcept
     {
         return
-            yaw_;
+            turn_.ControlYaw();
+    }
+
+    float Controller::ModelYaw() const noexcept
+    {
+        return
+            turn_.ModelYaw();
+    }
+
+    float Controller::BodyYawOffset() const noexcept
+    {
+        return
+            turn_.BodyYawOffset();
+    }
+
+    float Controller::FootTwistYaw() const noexcept
+    {
+        return
+            turn_.FootTwistYaw();
+    }
+
+    int Controller::TurnDirectionSign() const noexcept
+    {
+        return
+            turn_.DirectionSign();
+    }
+
+    float Controller::MoveForwardInput() const noexcept
+    {
+        return
+            moveForwardInput_;
+    }
+
+    float Controller::MoveRightInput() const noexcept
+    {
+        return
+            moveRightInput_;
+    }
+
+    MovementDirection Controller::Direction() const noexcept
+    {
+        return
+            movementDirection_;
     }
 
     bool Controller::IsMoving() const noexcept
@@ -549,22 +646,26 @@ namespace client::player
     bool Controller::IsWalking() const noexcept
     {
         return
-            locomotion_.Mode() ==
+            locomotion_.EffectiveMode(
+                movementDirection_) ==
             LocomotionMode::Walk;
     }
 
     bool Controller::IsRunning() const noexcept
     {
         return
-            locomotion_.Mode() ==
+            locomotion_.EffectiveMode(
+                movementDirection_) ==
             LocomotionMode::Run;
     }
 
     bool Controller::IsSprinting() const noexcept
     {
         return
-            locomotion_.Mode() ==
-            LocomotionMode::Sprint;
+            !locomotion_.IsCrouched() &&
+            locomotion_.EffectiveMode(
+                movementDirection_) ==
+                LocomotionMode::Sprint;
     }
 
     bool Controller::IsCrouched() const noexcept
@@ -594,17 +695,19 @@ namespace client::player
     core::math::Transform3x4
     Controller::Transform() const noexcept
     {
-        core::math::Transform3x4
-            transform =
-                core::math::Transform3x4::Identity();
+        core::math::Transform3x4 transform =
+            core::math::Transform3x4::Identity();
+
+        const float yaw =
+            turn_.ModelYaw();
 
         const float cosine =
             std::cos(
-                yaw_);
+                yaw);
 
         const float sine =
             std::sin(
-                yaw_);
+                yaw);
 
         transform.values[0] =
             cosine;

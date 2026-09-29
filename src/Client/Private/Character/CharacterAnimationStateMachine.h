@@ -21,6 +21,15 @@ namespace client::character
         bool grounded =
             true;
 
+        float moveForward =
+            0.0f;
+
+        float moveRight =
+            0.0f;
+
+        int turnDirection =
+            0;
+
         float verticalVelocity =
             0.0f;
     };

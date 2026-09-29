@@ -1,11 +1,99 @@
 #include "Character/CharacterAnimationStateMachine.h"
 
 #include <algorithm>
+#include <cmath>
 
 namespace
 {
     constexpr float JumpToFallVelocity =
         0.05f;
+
+    client::character::AnimationState WalkingState(
+        const float forward,
+        const float right) noexcept
+    {
+        using client::character::AnimationState;
+
+        if (std::abs(
+                forward) >=
+            std::abs(
+                right))
+        {
+            if (forward <
+                0.0f)
+            {
+                return
+                    AnimationState::WalkBackward;
+            }
+
+            return
+                AnimationState::WalkForward;
+        }
+
+        return
+            right <
+                0.0f
+                ? AnimationState::WalkStrafeLeft
+                : AnimationState::WalkStrafeRight;
+    }
+
+    client::character::AnimationState RunningState(
+        const float forward,
+        const float right) noexcept
+    {
+        using client::character::AnimationState;
+
+        if (std::abs(
+                forward) >=
+            std::abs(
+                right))
+        {
+            if (forward <
+                0.0f)
+            {
+                return
+                    AnimationState::RunBackward;
+            }
+
+            return
+                AnimationState::RunForward;
+        }
+
+        return
+            right <
+                0.0f
+                ? AnimationState::RunStrafeLeft
+                : AnimationState::RunStrafeRight;
+    }
+
+    client::character::AnimationState CrouchedState(
+        const float forward,
+        const float right) noexcept
+    {
+        using client::character::AnimationState;
+
+        if (std::abs(
+                forward) >=
+            std::abs(
+                right))
+        {
+            if (forward <
+                0.0f)
+            {
+                return
+                    AnimationState::CrouchBackward;
+            }
+
+            return
+                AnimationState::CrouchForward;
+        }
+
+        return
+            right <
+                0.0f
+                ? AnimationState::CrouchStrafeLeft
+                : AnimationState::CrouchStrafeRight;
+    }
 }
 
 namespace client::character
@@ -31,19 +119,55 @@ namespace client::character
     {
         if (input.crouched)
         {
+            if (input.moving)
+            {
+                return
+                    CrouchedState(
+                        input.moveForward,
+                        input.moveRight);
+            }
+
+            if (input.turnDirection <
+                0)
+            {
+                return
+                    AnimationState::CrouchTurnLeft;
+            }
+
+            if (input.turnDirection >
+                0)
+            {
+                return
+                    AnimationState::CrouchTurnRight;
+            }
+
             return
-                input.moving
-                    ? AnimationState::CrouchMove
-                    : AnimationState::CrouchIdle;
+                AnimationState::CrouchIdle;
         }
 
         if (!input.moving)
         {
+            if (input.turnDirection <
+                0)
+            {
+                return
+                    AnimationState::TurnLeft;
+            }
+
+            if (input.turnDirection >
+                0)
+            {
+                return
+                    AnimationState::TurnRight;
+            }
+
             return
                 AnimationState::Idle;
         }
 
-        if (input.sprinting)
+        if (input.sprinting &&
+            input.moveForward >
+                0.0f)
         {
             return
                 AnimationState::Sprint;
@@ -52,11 +176,15 @@ namespace client::character
         if (input.walking)
         {
             return
-                AnimationState::Walk;
+                WalkingState(
+                    input.moveForward,
+                    input.moveRight);
         }
 
         return
-            AnimationState::Run;
+            RunningState(
+                input.moveForward,
+                input.moveRight);
     }
 
     void AnimationStateMachine::ChangeState(

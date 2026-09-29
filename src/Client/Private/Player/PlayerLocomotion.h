@@ -11,6 +11,20 @@ namespace client::player
         Sprint
     };
 
+    enum class MovementDirection : std::uint8_t
+    {
+        None = 0,
+
+        Forward,
+        ForwardRight,
+        Right,
+        BackwardRight,
+        Backward,
+        BackwardLeft,
+        Left,
+        ForwardLeft
+    };
+
     class LocomotionState final
     {
     public:
@@ -27,10 +41,15 @@ namespace client::player
         LocomotionMode Mode() const noexcept;
 
         [[nodiscard]]
+        LocomotionMode EffectiveMode(
+            MovementDirection direction) const noexcept;
+
+        [[nodiscard]]
         bool IsCrouched() const noexcept;
 
         [[nodiscard]]
-        float Speed() const noexcept;
+        float Speed(
+            MovementDirection direction) const noexcept;
 
         [[nodiscard]]
         float CapsuleHeight() const noexcept;

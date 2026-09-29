@@ -60,6 +60,8 @@ namespace client::character
         bool Update(
             AnimationState animationState,
             float stateTimeSeconds,
+            float bodyYawOffset,
+            float footTwistYaw,
             graphics::Renderer& renderer,
             std::string& error);
 

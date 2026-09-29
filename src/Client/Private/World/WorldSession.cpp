@@ -276,6 +276,8 @@ namespace client::world
             if (!playerAnimator_.Update(
                     playerAnimationStateMachine_.Current(),
                     playerAnimationStateMachine_.StateTime(),
+                    playerController_.BodyYawOffset(),
+                    playerController_.FootTwistYaw(),
                     renderer,
                     animationError))
             {
@@ -359,12 +361,13 @@ namespace client::world
 
         playerCamera_.UpdateInput(
             window.NativeHandle(),
-            window.ConsumeMouseWheelDelta());
+            window.ConsumeMouseWheelDelta(),
+            deltaSeconds);
 
         playerController_.Update(
             window.NativeHandle(),
             deltaSeconds,
-            playerCamera_.Yaw(),
+            playerCamera_.ControlYaw(),
             collision_);
 
         const bool animationFinished =
@@ -372,6 +375,15 @@ namespace client::world
             playerAnimator_.IsFinished(
                 playerAnimationStateMachine_.Current(),
                 playerAnimationStateMachine_.StateTime());
+
+        if (animationFinished &&
+            character::AnimationStateIsTurn(
+                playerAnimationStateMachine_.
+                    Current()))
+        {
+            playerController_.
+                CompleteTurn();
+        }
 
         character::AnimationInput
             animationInput;
@@ -390,6 +402,18 @@ namespace client::world
 
         animationInput.grounded =
             playerController_.IsGrounded();
+
+        animationInput.moveForward =
+            playerController_.
+                MoveForwardInput();
+
+        animationInput.moveRight =
+            playerController_.
+                MoveRightInput();
+
+        animationInput.turnDirection =
+            playerController_.
+                TurnDirectionSign();
 
         animationInput.verticalVelocity =
             playerController_.VerticalVelocity();
@@ -428,8 +452,11 @@ namespace client::world
             if (!playerAnimator_.Update(
                     playerAnimationStateMachine_.Current(),
                     playerAnimationStateMachine_.StateTime(),
+                    playerController_.BodyYawOffset(),
+                    playerController_.FootTwistYaw(),
                     renderer,
                     animationError))
+                
             {
                 core::Log::Warning(
                     std::string(
