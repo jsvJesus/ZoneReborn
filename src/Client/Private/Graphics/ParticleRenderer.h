@@ -63,6 +63,11 @@ namespace client::graphics
         void Shutdown() noexcept;
 
     private:
+        [[nodiscard]]
+        bool ConfigureVertexCapacity(
+            std::size_t vertexCount,
+            std::string& error);
+
         struct State;
 
         std::unique_ptr<State>
