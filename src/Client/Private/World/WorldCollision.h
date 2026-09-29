@@ -3,6 +3,7 @@
 #include "Graphics/SceneRenderData.h"
 
 #include "Core/Math/Vector3.h"
+#include "Core/World/Particles/ParticleCollisionQuery.h"
 
 #include <cstdint>
 #include <string>
@@ -11,7 +12,8 @@
 
 namespace client::world
 {
-    class Collision final
+    class Collision final :
+        public core::world::particles::ParticleCollisionQuery
     {
     public:
         [[nodiscard]]
@@ -43,6 +45,13 @@ namespace client::world
             const core::math::Vector3& start,
             const core::math::Vector3& end,
             float& fraction) const noexcept;
+
+        [[nodiscard]]
+        bool Raycast(
+            const core::math::Vector3& start,
+            const core::math::Vector3& end,
+            float& fraction,
+            core::math::Vector3& normal) const noexcept override;
 
     private:
         struct Triangle final

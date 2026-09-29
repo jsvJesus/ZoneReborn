@@ -87,6 +87,23 @@ namespace studio
             return false;
         }
 
+        std::string collisionError;
+
+        collisionReady_ =
+            collision_.Build(
+                scene_,
+                collisionError);
+
+        if (!collisionReady_)
+        {
+            core::Log::Warning(
+                std::string(
+                    "Studio particle collision unavailable: ") +
+                collisionError);
+
+            collision_.Clear();
+        }
+
         if (!renderer_.Initialize(
                 window_.NativeHandle(),
                 window_.Width(),
@@ -104,6 +121,9 @@ namespace studio
 
         if (!renderer_.SetScene(
                 scene_,
+                collisionReady_
+                    ? &collision_
+                    : nullptr,
                 error))
         {
             core::Log::Error(
@@ -166,9 +186,6 @@ namespace studio
 
     void Application::Shutdown()
     {
-        scene_ =
-            {};
-
         if (rendererInitialized_)
         {
             renderer_.Shutdown();
@@ -176,6 +193,14 @@ namespace studio
             rendererInitialized_ =
                 false;
         }
+
+        collision_.Clear();
+
+        collisionReady_ =
+            false;
+
+        scene_ =
+            {};
 
         if (windowInitialized_)
         {

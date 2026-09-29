@@ -7,6 +7,7 @@
 
 #include "Input/CameraController.h"
 #include "Platform/Window.h"
+#include "World/WorldCollision.h"
 
 #include <chrono>
 #include <string>
@@ -39,6 +40,9 @@ namespace studio
         client::platform::Window
             window_;
 
+        client::world::Collision
+            collision_;
+
         client::graphics::Renderer
             renderer_;
 
@@ -52,6 +56,9 @@ namespace studio
             previousFrame_{};
 
         bool rendererInitialized_ =
+            false;
+
+        bool collisionReady_ =
             false;
 
         bool windowInitialized_ =

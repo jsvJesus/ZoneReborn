@@ -1230,8 +1230,27 @@ namespace client::world
         const core::math::Vector3& end,
         float& fraction) const noexcept
     {
+        core::math::Vector3 normal{};
+
+        return
+            Raycast(
+                start,
+                end,
+                fraction,
+                normal);
+    }
+
+    bool Collision::Raycast(
+        const core::math::Vector3& start,
+        const core::math::Vector3& end,
+        float& fraction,
+        core::math::Vector3& normal) const noexcept
+    {
         fraction =
             1.0f;
+
+        normal =
+            {};
 
         const float minimumX =
             std::min(
@@ -1335,6 +1354,9 @@ namespace client::world
                     {
                         fraction =
                             candidate;
+
+                        normal =
+                            triangle.normal;
 
                         hit =
                             true;

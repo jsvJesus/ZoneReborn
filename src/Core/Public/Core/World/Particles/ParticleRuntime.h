@@ -2,11 +2,13 @@
 
 #include "Core/Math/Transform3x4.h"
 #include "Core/Math/Vector3.h"
+#include "Core/World/Particles/ParticleCollisionQuery.h"
 #include "Core/World/Particles/ParticleDefinition.h"
 
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -55,6 +57,9 @@ namespace core::world::particles
 
         std::size_t collisionInteractions =
             0;
+
+        std::size_t splatInteractions =
+            0;
     };
 
     class ParticleRuntimeSystem final
@@ -66,6 +71,15 @@ namespace core::world::particles
             const math::Transform3x4& transform,
             std::uint32_t randomSeed,
             std::string& error);
+
+        void SetTransform(
+            const math::Transform3x4& transform) noexcept;
+
+        void SetSwarmTargets(
+            std::span<const math::Transform3x4> targets);
+
+        void SetCollisionQuery(
+            const ParticleCollisionQuery* collisionQuery) noexcept;
 
         void Update(
             float deltaSeconds) noexcept;
@@ -118,6 +132,7 @@ namespace core::world::particles
         [[nodiscard]]
         bool UpdateParticle(
             ParticleRuntimeParticle& particle,
+            std::size_t particleIndex,
             float deltaSeconds) noexcept;
 
         [[nodiscard]]
@@ -141,6 +156,18 @@ namespace core::world::particles
 
         std::vector<float>
             sourceAccumulators_;
+
+        std::vector<math::Transform3x4>
+            swarmTargets_;
+
+        const ParticleCollisionQuery*
+            collisionQuery_ = nullptr;
+
+        math::Vector3
+            previousEmitterPosition_{};
+
+        math::Vector3
+            emitterDisplacement_{};
 
         ParticleRuntimeStatistics
             statistics_;

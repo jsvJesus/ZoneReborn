@@ -545,6 +545,7 @@ Application::CharacterTransform() const noexcept
 
         if (!renderer_.SetScene(
                 scene,
+                nullptr,
                 error))
         {
             return false;

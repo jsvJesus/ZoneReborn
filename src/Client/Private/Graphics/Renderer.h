@@ -5,6 +5,7 @@
 
 #include "Core/Images/RgbaImage.h"
 #include "Core/Math/Vector3.h"
+#include "Core/World/Particles/ParticleCollisionQuery.h"
 
 #include <Windows.h>
 
@@ -40,6 +41,7 @@ namespace client::graphics
         [[nodiscard]]
         bool SetScene(
             const SceneRenderData& scene,
+            const core::world::particles::ParticleCollisionQuery* particleCollision,
             std::string& error);
 
         [[nodiscard]]

@@ -252,6 +252,7 @@ namespace client::world
 
         if (!renderer.SetScene(
                 scene,
+                &collision_,
                 error))
         {
             renderer.Shutdown();

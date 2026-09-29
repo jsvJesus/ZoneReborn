@@ -359,6 +359,17 @@ namespace core::world::particles
             definition_.actions.size(),
             0.0f);
 
+        swarmTargets_.clear();
+
+        collisionQuery_ =
+            nullptr;
+
+        previousEmitterPosition_ =
+            transform_.Translation();
+
+        emitterDisplacement_ =
+            {};
+
         randomState_ =
             randomSeed !=
                 0
@@ -369,6 +380,28 @@ namespace core::world::particles
             true;
 
         return true;
+    }
+
+    void ParticleRuntimeSystem::SetTransform(
+        const math::Transform3x4& transform) noexcept
+    {
+        transform_ =
+            transform;
+    }
+
+    void ParticleRuntimeSystem::SetSwarmTargets(
+        const std::span<const math::Transform3x4> targets)
+    {
+        swarmTargets_.assign(
+            targets.begin(),
+            targets.end());
+    }
+
+    void ParticleRuntimeSystem::SetCollisionQuery(
+        const ParticleCollisionQuery* collisionQuery) noexcept
+    {
+        collisionQuery_ =
+            collisionQuery;
     }
 
     float ParticleRuntimeSystem::Random01() noexcept
@@ -1161,6 +1194,7 @@ namespace core::world::particles
 
     bool ParticleRuntimeSystem::UpdateParticle(
         ParticleRuntimeParticle& particle,
+        const std::size_t particleIndex,
         const float deltaSeconds) noexcept
     {
         particle.previousPosition =
@@ -1562,6 +1596,9 @@ namespace core::world::particles
                 case ParticleActionType::Barrier:
                 case ParticleActionType::Flare:
                 case ParticleActionType::Collide:
+                case ParticleActionType::MatrixSwarm:
+                case ParticleActionType::NodeClamp:
+                case ParticleActionType::Splat:
                 case ParticleActionType::Unsupported:
                 default:
                 {
@@ -1632,6 +1669,110 @@ namespace core::world::particles
                     break;
                 }
 
+                case ParticleActionType::MatrixSwarm:
+                {
+                    const ParticleMatrixSwarmAction* action =
+                        std::get_if<ParticleMatrixSwarmAction>(
+                            &actionDefinition.data);
+
+                    if (action == nullptr ||
+                        swarmTargets_.empty() ||
+                        !IsActionActive(
+                            action->common,
+                            age_,
+                            particle.age))
+                    {
+                        break;
+                    }
+
+                    const math::Transform3x4& target =
+                        swarmTargets_[
+                            particleIndex %
+                            swarmTargets_.size()];
+
+                    particle.position =
+                        target.Translation();
+
+                    break;
+                }
+
+                case ParticleActionType::NodeClamp:
+                {
+                    const ParticleNodeClampAction* action =
+                        std::get_if<ParticleNodeClampAction>(
+                            &actionDefinition.data);
+
+                    if (action == nullptr ||
+                        !IsActionActive(
+                            action->common,
+                            age_,
+                            particle.age))
+                    {
+                        break;
+                    }
+
+                    if (action->fullyClamp)
+                    {
+                        particle.position =
+                            transform_.Translation();
+                    }
+                    else
+                    {
+                        particle.position =
+                            Add(
+                                particle.position,
+                                emitterDisplacement_);
+                    }
+
+                    break;
+                }
+
+                case ParticleActionType::Splat:
+                {
+                    const ParticleSplatAction* action =
+                        std::get_if<ParticleSplatAction>(
+                            &actionDefinition.data);
+
+                    if (action == nullptr ||
+                        collisionQuery_ == nullptr ||
+                        !IsActionActive(
+                            action->common,
+                            age_,
+                            particle.age))
+                    {
+                        break;
+                    }
+
+                    float fraction =
+                        1.0f;
+
+                    math::Vector3 normal{};
+
+                    if (collisionQuery_->Raycast(
+                            particle.previousPosition,
+                            particle.position,
+                            fraction,
+                            normal))
+                    {
+                        ++statistics_.splatInteractions;
+
+                        return false;
+                    }
+
+                    break;
+                }
+
+                case ParticleActionType::Source:
+                case ParticleActionType::Sink:
+                case ParticleActionType::TintShader:
+                case ParticleActionType::Orbitor:
+                case ParticleActionType::Jitter:
+                case ParticleActionType::Stream:
+                case ParticleActionType::Force:
+                case ParticleActionType::Magnet:
+                case ParticleActionType::Scaler:
+                case ParticleActionType::Flare:
+                case ParticleActionType::Unsupported:
                 default:
                 {
                     break;
@@ -1657,6 +1798,14 @@ namespace core::world::particles
                 deltaSeconds,
                 0.0f,
                 0.1f);
+
+        const math::Vector3 emitterPosition =
+            transform_.Translation();
+
+        emitterDisplacement_ =
+            Subtract(
+                emitterPosition,
+                previousEmitterPosition_);
 
         age_ +=
             deltaSeconds;
@@ -1701,6 +1850,7 @@ namespace core::world::particles
             if (UpdateParticle(
                     particles_[
                         index],
+                    index,
                     deltaSeconds))
             {
                 ++index;
@@ -1722,6 +1872,9 @@ namespace core::world::particles
 
             particles_.pop_back();
         }
+
+        previousEmitterPosition_ =
+            emitterPosition;
     }
 
     const ParticleSystemDefinition&

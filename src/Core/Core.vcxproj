@@ -65,6 +65,7 @@
     <ClInclude Include="Public\Core\World\Flora\FloraVisualAsset.h" />
     <ClInclude Include="Public\Core\World\Flora\FloraVisualLoader.h" />
     <ClInclude Include="Public\Core\World\Particles\ParticleActionDefinition.h" />
+    <ClInclude Include="Public\Core\World\Particles\ParticleCollisionQuery.h" />
     <ClInclude Include="Public\Core\World\Particles\ParticleDefinition.h" />
     <ClInclude Include="Public\Core\World\Particles\ParticleLoader.h" />
     <ClInclude Include="Public\Core\World\Particles\ParticlePackAudit.h" />

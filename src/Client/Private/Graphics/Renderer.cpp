@@ -2328,6 +2328,7 @@ namespace client::graphics
 
     bool Renderer::SetScene(
         const SceneRenderData& scene,
+        const core::world::particles::ParticleCollisionQuery* particleCollision,
         std::string& error)
     {
         error.clear();
@@ -2785,6 +2786,9 @@ namespace client::graphics
 
                 return false;
             }
+
+            runtimeSystem.SetCollisionQuery(
+                particleCollision);
 
             particleRuntimeCapacity +=
                 runtimeSystem.Capacity();
@@ -3843,6 +3847,9 @@ namespace client::graphics
         std::size_t particleCollisionInteractions =
             0;
 
+        std::size_t particleSplatInteractions =
+            0;
+
         for (core::world::particles::ParticleRuntimeSystem& particleSystem :
              state_->particleSystems)
         {
@@ -3865,6 +3872,10 @@ namespace client::graphics
             particleCollisionInteractions +=
                 particleSystem.Statistics()
                     .collisionInteractions;
+
+            particleSplatInteractions +=
+                particleSystem.Statistics()
+                    .splatInteractions;
         }
 
         if (!state_->particleRuntimeReported &&
@@ -3900,6 +3911,12 @@ namespace client::graphics
                     "Particle Collide interactions after 1s: ") +
                 std::to_string(
                     particleCollisionInteractions));
+
+            core::Log::Info(
+                std::string(
+                    "Particle Splat interactions after 1s: ") +
+                std::to_string(
+                    particleSplatInteractions));
 
             state_->particleRuntimeReported =
                 true;
