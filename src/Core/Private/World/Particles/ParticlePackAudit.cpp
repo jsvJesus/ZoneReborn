@@ -1,6 +1,8 @@
 #include "Core/World/Particles/ParticlePackAudit.h"
 
 #include "Core/Resources/ResourceType.h"
+#include "Core/Resources/ResourcePath.h"
+#include "Core/World/Effects/EffectResourceResolver.h"
 #include "Core/World/Particles/ParticleLoader.h"
 
 #include <algorithm>
@@ -11,18 +13,25 @@
 namespace
 {
     bool IsParticleResource(
+        const core::resources::ResourceFileSystem& resources,
         const std::string& path)
     {
+        const std::string normalized =
+            core::resources::ResourcePath::Normalize(
+                path);
+
         const bool particleDirectory =
-            path.starts_with(
+            normalized.starts_with(
                 "res/particles/") ||
-            path.starts_with(
+            normalized.starts_with(
                 "sys/particles/");
 
         return
             particleDirectory &&
-            path.ends_with(
-                ".xml");
+            !core::world::effects::EffectResourceResolver::Resolve(
+                resources,
+                path,
+                core::world::effects::EffectResourceKind::Particle).empty();
     }
 
     void RegisterUnsupportedGenerator(
@@ -151,6 +160,7 @@ namespace core::world::particles
         {
             if (entry == nullptr ||
                 !IsParticleResource(
+                    resources,
                     entry->logicalPath))
             {
                 continue;

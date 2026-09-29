@@ -4,6 +4,7 @@
 #include "Core/Resources/ResourcePath.h"
 #include "Core/Resources/ResourceType.h"
 #include "Core/World/ChunkLoader.h"
+#include "Core/World/Effects/EffectResourceResolver.h"
 #include "Core/World/SpaceLoader.h"
 #include "Core/World/Vlo/VloLoader.h"
 
@@ -137,44 +138,6 @@ namespace
                 0.0f,
                 static_cast<float>(gridZ) *
                     OutdoorChunkSize);
-
-        return true;
-    }
-
-    bool BuildParticlePath(
-        const std::string_view resourceReference,
-        std::string& output)
-    {
-        output.clear();
-
-        std::string resource =
-            core::resources::ResourcePath::Normalize(
-                resourceReference);
-
-        if (resource.empty())
-        {
-            return false;
-        }
-
-        if (!resource.ends_with(
-                ".xml"))
-        {
-            resource +=
-                ".xml";
-        }
-
-        if (resource.starts_with(
-                "res/"))
-        {
-            output =
-                resource;
-
-            return true;
-        }
-
-        output =
-            "res/" +
-            resource;
 
         return true;
     }
@@ -780,21 +743,16 @@ namespace
         instance.resourceReference =
             source.resource;
 
-        if (!BuildParticlePath(
+        instance.particleLogicalPath =
+            core::world::effects::EffectResourceResolver::Resolve(
+                resources,
                 source.resource,
-                instance.particleLogicalPath))
+                core::world::effects::EffectResourceKind::Particle);
+
+        if (instance.particleLogicalPath.empty())
         {
             missingResource =
                 source.resource;
-
-            return false;
-        }
-
-        if (!resources.Exists(
-                instance.particleLogicalPath))
-        {
-            missingResource =
-                instance.particleLogicalPath;
 
             return false;
         }

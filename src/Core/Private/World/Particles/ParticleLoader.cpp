@@ -4,6 +4,7 @@
 #include "Core/Resources/DataSection.h"
 #include "Core/Resources/PackedSectionReader.h"
 #include "Core/Resources/ResourcePath.h"
+#include "Core/World/Effects/EffectResourceResolver.h"
 
 #include <array>
 #include <cstddef>
@@ -343,63 +344,6 @@ namespace
             ReadArray(
                 *child,
                 output);
-    }
-
-    std::string BuildResourcePath(
-        const core::resources::ResourceFileSystem& resources,
-        const std::string_view reference)
-    {
-        std::string normalized =
-            core::resources::ResourcePath::Normalize(
-                reference);
-
-        if (normalized.empty())
-        {
-            return {};
-        }
-
-        std::filesystem::path path(
-            normalized);
-
-        if (!path.has_extension())
-        {
-            path.replace_extension(
-                ".xml");
-
-            normalized =
-                core::resources::ResourcePath::Normalize(
-                    path.generic_string());
-        }
-
-        if (normalized.starts_with(
-                "res/") ||
-            normalized.starts_with(
-                "sys/"))
-        {
-            return normalized;
-        }
-
-        const std::string resPath =
-            "res/" +
-            normalized;
-
-        if (resources.Exists(
-                resPath))
-        {
-            return resPath;
-        }
-
-        const std::string sysPath =
-            "sys/" +
-            normalized;
-
-        if (resources.Exists(
-                sysPath))
-        {
-            return sysPath;
-        }
-
-        return resPath;
     }
 
     bool ResolveTexture(
@@ -1821,26 +1765,17 @@ namespace core::world::particles
         }
 
         const std::string logicalPath =
-            BuildResourcePath(
+            core::world::effects::EffectResourceResolver::Resolve(
                 resources,
-                resourceReference);
+                resourceReference,
+                core::world::effects::EffectResourceKind::Particle);
 
         if (logicalPath.empty())
         {
             error =
-                "Particle resource reference is invalid: " +
+                "Particle resource reference is invalid or missing: " +
                 std::string(
                     resourceReference);
-
-            return false;
-        }
-
-        if (!resources.Exists(
-                logicalPath))
-        {
-            error =
-                "Particle resource not found: " +
-                logicalPath;
 
             return false;
         }
