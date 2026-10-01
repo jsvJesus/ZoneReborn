@@ -16,6 +16,37 @@ namespace
         "res/characters2/basemodel/animations/unarmed/"
         "idle_unarmed/idle_move_stay_unarmed.animation";
 
+    constexpr float DefaultAnimationFrameRate =
+        22.0f;
+
+    constexpr char VerifiedTurnLeft90Path[] =
+        "res/characters2/basemodel/animations/unarmed/"
+        "turn_unarmed/turn_left90_stay_unarmed.animation";
+
+    constexpr char VerifiedTurnRight90Path[] =
+        "res/characters2/basemodel/animations/unarmed/"
+        "turn_unarmed/turn_right90_stay_unarmed.animation";
+
+    constexpr char VerifiedCrouchTurnLeft90Path[] =
+        "res/characters2/basemodel/animations/unarmed/"
+        "crouch_turn_unarmed/turn_left90_crouch_unarmed.animation";
+
+    constexpr char VerifiedCrouchTurnRight90Path[] =
+        "res/characters2/basemodel/animations/unarmed/"
+        "crouch_turn_unarmed/turn_right90_crouch_unarmed.animation";
+
+    constexpr float TurnLeft90FrameRate =
+        60.0f;
+
+    constexpr float TurnRight90FrameRate =
+        65.0f;
+
+    constexpr float CrouchTurnLeft90FrameRate =
+        60.0f;
+
+    constexpr float CrouchTurnRight90FrameRate =
+        60.0f;
+
     std::string Lower(
         std::string value)
     {
@@ -1052,6 +1083,187 @@ namespace
         return score;
     }
 
+    int ScoreTurn(
+        const client::character::AnimationState state,
+        const std::string& path)
+    {
+        using client::character::AnimationState;
+
+        const bool left =
+            state ==
+                AnimationState::TurnLeft ||
+            state ==
+                AnimationState::CrouchTurnLeft;
+
+        const bool crouched =
+            state ==
+                AnimationState::CrouchTurnLeft ||
+            state ==
+                AnimationState::CrouchTurnRight;
+
+        if (!Contains(
+                path,
+                "turn"))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        if (left)
+        {
+            if (!Contains(
+                    path,
+                    "left") ||
+                Contains(
+                    path,
+                    "right"))
+            {
+                return
+                    std::numeric_limits<int>::min();
+            }
+        }
+        else
+        {
+            if (!Contains(
+                    path,
+                    "right") ||
+                Contains(
+                    path,
+                    "left"))
+            {
+                return
+                    std::numeric_limits<int>::min();
+            }
+        }
+
+        const bool pathCrouched =
+            Contains(
+                path,
+                "crouch");
+
+        if (pathCrouched !=
+            crouched)
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        if (IsInjuredVariant(
+                path) ||
+            Contains(
+                path,
+                "death") ||
+            Contains(
+                path,
+                "crawl") ||
+            Contains(
+                path,
+                "jump") ||
+            Contains(
+                path,
+                "ladder"))
+        {
+            return
+                std::numeric_limits<int>::min();
+        }
+
+        int score =
+            CommonScore(
+                path);
+
+        if (!crouched)
+        {
+            if (left &&
+                Contains(
+                    path,
+                    "turn_left90_stay_unarmed"))
+            {
+                score +=
+                    10000;
+            }
+
+            if (!left &&
+                Contains(
+                    path,
+                    "turn_right90_stay_unarmed"))
+            {
+                score +=
+                    10000;
+            }
+
+            if (Contains(
+                    path,
+                    "/turn_unarmed/"))
+            {
+                score +=
+                    3000;
+            }
+
+            if (Contains(
+                    path,
+                    "stay_unarmed"))
+            {
+                score +=
+                    1500;
+            }
+        }
+        else
+        {
+            if (left &&
+                Contains(
+                    path,
+                    "turn_left90_crouch_unarmed"))
+            {
+                score +=
+                    10000;
+            }
+
+            if (!left &&
+                Contains(
+                    path,
+                    "turn_right90_crouch_unarmed"))
+            {
+                score +=
+                    10000;
+            }
+
+            if (Contains(
+                    path,
+                    "/crouch_turn_unarmed/"))
+            {
+                score +=
+                    3000;
+            }
+        }
+
+        if (Contains(
+                path,
+                "135"))
+        {
+            score -=
+                2500;
+        }
+
+        if (Contains(
+                path,
+                "45"))
+        {
+            score -=
+                2000;
+        }
+
+        if (Contains(
+                path,
+                "90"))
+        {
+            score +=
+                1200;
+        }
+
+        return
+            score;
+    }
+
     int Score(
         const client::character::AnimationState state,
         const std::string& path)
@@ -1101,14 +1313,11 @@ namespace
 
         case AnimationState::TurnLeft:
         case AnimationState::TurnRight:
-            return
-                ScoreIdle(
-                    path);
-
         case AnimationState::CrouchTurnLeft:
         case AnimationState::CrouchTurnRight:
             return
-                ScoreCrouchIdle(
+                ScoreTurn(
+                    state,
                     path);
 
         case AnimationState::Jump:
@@ -1146,6 +1355,21 @@ namespace client::character
                     state)];
     }
 
+    float AnimationSet::FrameRate(
+        const AnimationState state) const noexcept
+    {
+        const float frameRate =
+            frameRates[
+                AnimationStateIndex(
+                    state)];
+
+        return
+            frameRate >
+                0.0f
+                ? frameRate
+                : DefaultAnimationFrameRate;
+    }
+
     bool AnimationCatalog::Resolve(
         const core::resources::ResourceFileSystem& resources,
         AnimationSet& output,
@@ -1153,6 +1377,9 @@ namespace client::character
     {
         output =
             {};
+
+        output.frameRates.fill(
+        DefaultAnimationFrameRate);
 
         error.clear();
 
@@ -1196,6 +1423,50 @@ namespace client::character
                     AnimationState::Idle)] =
                 VerifiedIdlePath;
         }
+
+        const auto bindVerified = [&resources, &output](
+            const AnimationState state,
+            const char* path,
+            const float frameRate)
+        {
+            if (!resources.Exists(
+                    path))
+            {
+                return;
+            }
+
+            const std::size_t index =
+                AnimationStateIndex(
+                    state);
+
+            output.paths[
+                index] =
+                path;
+
+            output.frameRates[
+                index] =
+                frameRate;
+        };
+
+        bindVerified(
+            AnimationState::TurnLeft,
+            VerifiedTurnLeft90Path,
+            TurnLeft90FrameRate);
+
+        bindVerified(
+            AnimationState::TurnRight,
+            VerifiedTurnRight90Path,
+            TurnRight90FrameRate);
+
+        bindVerified(
+            AnimationState::CrouchTurnLeft,
+            VerifiedCrouchTurnLeft90Path,
+            CrouchTurnLeft90FrameRate);
+
+        bindVerified(
+            AnimationState::CrouchTurnRight,
+            VerifiedCrouchTurnRight90Path,
+            CrouchTurnRight90FrameRate);
 
         for (std::size_t stateIndex = 0;
              stateIndex <

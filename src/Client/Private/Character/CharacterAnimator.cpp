@@ -28,7 +28,7 @@ namespace
     using Vector3 =
         core::math::Vector3;
 
-    constexpr float AnimationFrameRate =
+    constexpr float DefaultAnimationFrameRate =
         22.0f;
 
     struct Quaternion final
@@ -90,6 +90,9 @@ namespace
             std::string,
             std::size_t>
             lookup;
+
+        float frameRate =
+            DefaultAnimationFrameRate;
     };
 
     constexpr float RootMotionDetectionDistance =
@@ -1017,7 +1020,7 @@ namespace
         core::Log::Info(
             typeLog);
 
-        core::Log::Info(
+        /*core::Log::Info(
             std::string(
                 "Character animation loaded: ") +
             std::string(
@@ -1030,7 +1033,7 @@ namespace
                 output.channels.size()) +
             ", fps=" +
             std::to_string(
-                AnimationFrameRate));
+                AnimationFrameRate));*/
 
         return true;
     }
@@ -2393,6 +2396,12 @@ namespace client::character
                 return false;
             }
 
+            state_->clips[
+                index].
+                frameRate =
+                    animations.FrameRate(
+                        animationState);
+
             state_->clipLoaded[index] =
                 true;
         }
@@ -2512,11 +2521,17 @@ namespace client::character
                 clip.totalFrames,
                 1.0f);
 
-        float frame =
-            std::max(
-                stateTimeSeconds,
-                0.0f) *
-            AnimationFrameRate;
+        const float frameRate =
+            clip.frameRate >
+                0.0f
+                ? clip.frameRate
+                : DefaultAnimationFrameRate;
+
+                float frame =
+                    std::max(
+                        stateTimeSeconds,
+                        0.0f) *
+                    frameRate;
 
         if (AnimationStateLoops(
                 animationState))
@@ -2551,18 +2566,34 @@ namespace client::character
         std::vector<Transform>
             currentPalette;
 
+        float effectiveBodyYawOffset =
+            bodyYawOffset;
+
+        float effectiveFootTwistYaw =
+            footTwistYaw;
+
+        if (AnimationStateIsTurn(
+                animationState))
+        {
+            effectiveBodyYawOffset =
+                0.0f;
+
+            effectiveFootTwistYaw =
+                0.0f;
+        }
+
         for (State::MeshBinding& binding :
              state_->meshes)
         {
             if (!BuildAnimatedNodeTransforms(
-                    clip,
-                    binding.visual,
-                    state_->faceMorphs,
-                    frame,
-                    bodyYawOffset,
-                    footTwistYaw,
-                    nodeTransforms,
-                    error))
+                clip,
+                binding.visual,
+                state_->faceMorphs,
+                frame,
+                effectiveBodyYawOffset,
+                effectiveFootTwistYaw,
+                nodeTransforms,
+                error))
             {
                 return false;
             }
@@ -2619,13 +2650,21 @@ namespace client::character
             return 0.0f;
         }
 
+        const AnimationClip& clip =
+            state_->clips[
+                index];
+
+        const float frameRate =
+            clip.frameRate >
+                0.0f
+                ? clip.frameRate
+                : DefaultAnimationFrameRate;
+
         return
             std::max(
-                state_->clips[
-                    index].
-                    totalFrames,
+                clip.totalFrames,
                 0.0f) /
-            AnimationFrameRate;
+            frameRate;
     }
 
     bool Animator::IsFinished(
