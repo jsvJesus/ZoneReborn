@@ -1,4 +1,5 @@
 #include "Core/World/XRay/XRayLevelLoader.h"
+#include "Core/World/XRay/XRaySpatialMath.h"
 
 #include <algorithm>
 #include <array>
@@ -23,12 +24,15 @@ namespace
     constexpr std::uint32_t LevelHeaderChunk = 1u;
     constexpr std::uint32_t LevelShadersChunk = 2u;
     constexpr std::uint32_t LevelVisualsChunk = 3u;
+    constexpr std::uint32_t LevelPortalsChunk = 4u;
+    constexpr std::uint32_t LevelSectorsChunk = 8u;
     constexpr std::uint32_t LevelVertexBuffersChunk = 9u;
     constexpr std::uint32_t LevelIndexBuffersChunk = 10u;
 
     constexpr std::uint32_t OgfHeaderChunk = 1u;
     constexpr std::uint32_t OgfChildrenLinksChunk = 10u;
     constexpr std::uint32_t OgfGeometryContainerChunk = 21u;
+
 
     constexpr std::uint8_t DeclarationTypeUnused =
         17u;
@@ -952,6 +956,107 @@ namespace
         return true;
     }
 
+    bool ParseTopology(
+        BinaryFile& file, const Range& range,
+        core::world::xray::LevelData& output, std::string& error)
+    {
+        using namespace core::world::xray;
+        Chunk portals, sectors;
+        if (!RequireChunk(file, range, LevelPortalsChunk, portals, error, "X-Ray portals") ||
+            !RequireChunk(file, range, LevelSectorsChunk, sectors, error, "X-Ray sectors")) return false;
+        constexpr std::uint64_t PortalSize = 80u;
+        if (portals.data.size % PortalSize != 0u || portals.data.size / PortalSize > 65536u)
+        { error = "X-Ray portal array has an invalid size."; return false; }
+        output.portals.resize(static_cast<std::size_t>(portals.data.size / PortalSize));
+        for (std::size_t i = 0; i < output.portals.size(); ++i)
+        {
+            std::array<std::byte, PortalSize> bytes{};
+            if (!file.Read(portals.data.offset + i * PortalSize, bytes.data(), bytes.size(), error)) return false;
+            auto& p = output.portals[i];
+            std::memcpy(&p.frontSector, bytes.data(), 2u);
+            std::memcpy(&p.backSector, bytes.data() + 2u, 2u);
+            std::memcpy(p.vertices.data(), bytes.data() + 4u, 72u);
+            std::memcpy(&p.vertexCount, bytes.data() + 76u, 4u);
+            if (p.vertexCount < 3u || p.vertexCount > 6u)
+            { error = "X-Ray portal has an invalid vertex count."; return false; }
+            for (std::uint32_t v = 0; v < p.vertexCount; ++v)
+                if (!spatial::Finite(p.vertices[v]))
+                { error = "X-Ray portal contains non-finite coordinates."; return false; }
+        }
+        std::uint64_t cursor = sectors.data.offset;
+        const std::uint64_t end = cursor + sectors.data.size;
+        while (cursor < end)
+        {
+            std::array<std::uint32_t, 2> header{};
+            if (end - cursor < 8u || !file.Read(cursor, header.data(), 8u, error))
+            { error = "X-Ray sector chunk header is truncated."; return false; }
+            cursor += 8u;
+            if (header[0] != output.sectors.size() || header[1] > end - cursor ||
+                output.sectors.size() >= 65536u)
+            { error = "X-Ray sector chunk ID or range is invalid."; return false; }
+            const Range sectorRange{cursor, header[1]};
+            Chunk root, links;
+            if (!RequireChunk(file, sectorRange, 2u, root, error, "X-Ray sector root") ||
+                !RequireChunk(file, sectorRange, 1u, links, error, "X-Ray sector portals")) return false;
+            if (root.data.size != 4u || links.data.size % 2u != 0u)
+            { error = "X-Ray sector payload size is invalid."; return false; }
+            Sector sector;
+            if (!file.ReadValue(root.data.offset, sector.rootVisual, error)) return false;
+            if (sector.rootVisual >= output.visuals.size())
+            { error = "X-Ray sector root references a missing visual."; return false; }
+            sector.portals.resize(static_cast<std::size_t>(links.data.size / 2u));
+            if (!sector.portals.empty() && !file.Read(links.data.offset, sector.portals.data(),
+                sector.portals.size() * 2u, error)) return false;
+            for (const auto id : sector.portals)
+            {
+                if (id >= output.portals.size())
+                { error = "X-Ray sector references a missing portal."; return false; }
+                const auto& p = output.portals[id];
+                if (p.frontSector != output.sectors.size() && p.backSector != output.sectors.size())
+                { error = "X-Ray portal does not connect its owning sector."; return false; }
+            }
+            output.sectors.push_back(std::move(sector));
+            cursor += header[1];
+        }
+        if (output.sectors.empty()) { error = "X-Ray level has no sectors."; return false; }
+        for (const auto& p : output.portals)
+            if (p.frontSector >= output.sectors.size() || p.backSector >= output.sectors.size() ||
+                p.frontSector == p.backSector)
+            { error = "X-Ray portal sector indices are invalid."; return false; }
+        return true;
+    }
+
+    bool ParseSlideWindows(BinaryFile& file, const Range& range,
+        core::world::xray::LevelData& output, std::string& error)
+    {
+        Chunk chunk; bool found = false;
+        if (!FindChunk(file, range, 11u, chunk, found, error, "X-Ray slide windows")) return false;
+        if (!found) return true;
+        if (chunk.compressed || chunk.data.size < 4u)
+        { error = "X-Ray slide-window chunk is invalid."; return false; }
+        std::uint32_t count = 0;
+        if (!file.ReadValue(chunk.data.offset, count, error)) return false;
+        if (count > (chunk.data.size - 4u) / 20u)
+        { error = "X-Ray slide-window container count exceeds its chunk."; return false; }
+        output.slideWindows.resize(count);
+        std::uint64_t cursor = chunk.data.offset + 4u;
+        const auto end = chunk.data.offset + chunk.data.size;
+        for (auto& windows : output.slideWindows)
+        {
+            std::array<std::uint32_t, 5> header{};
+            if (end - cursor < 20u || !file.Read(cursor, header.data(), 20u, error)) return false;
+            cursor += 20u;
+            const auto windowCount = header[4];
+            if (windowCount > (end - cursor) / 8u)
+            { error = "X-Ray slide-window records exceed their chunk."; return false; }
+            windows.resize(windowCount);
+            static_assert(sizeof(core::world::xray::SlideWindow) == 8u);
+            if (!windows.empty() && !file.Read(cursor, windows.data(), windows.size() * 8u, error)) return false;
+            cursor += windows.size() * 8u;
+        }
+        return true;
+    }
+
     bool ParseVisuals(
         BinaryFile& file,
         const Chunk& chunk,
@@ -1233,6 +1338,81 @@ namespace
                         true;
                 }
                 else if (visualChunkId ==
+                             11u)
+                {
+                    constexpr std::size_t VertexSize = 28u;
+                    if (compressed || visualHeader[1] != 32u * VertexSize ||
+                        visual.lodIndex != core::world::xray::InvalidIndex)
+                    { error = context + " has invalid LOD facets."; return false; }
+                    core::world::xray::LodDefinition lod;
+                    const auto* source = data.data() + static_cast<std::size_t>(visualDataOffset);
+                    for (std::size_t v = 0; v < lod.vertices.size(); ++v)
+                    {
+                        auto& target = lod.vertices[v];
+                        std::memcpy(&target.position, source + v * VertexSize, 12u);
+                        std::memcpy(&target.u, source + v * VertexSize + 12u, 4u);
+                        std::memcpy(&target.v, source + v * VertexSize + 16u, 4u);
+                        std::memcpy(&target.colour, source + v * VertexSize + 20u, 4u);
+                        target.sun = std::to_integer<std::uint8_t>(source[v * VertexSize + 24u]);
+                        if (!core::world::xray::spatial::Finite(target.position) ||
+                            !std::isfinite(target.u) || !std::isfinite(target.v))
+                        { error = context + " has non-finite LOD vertices."; return false; }
+                    }
+                    visual.lodIndex = static_cast<std::uint32_t>(output.lods.size());
+                    output.lods.push_back(std::move(lod));
+                }
+                else if (visualChunkId == 12u)
+                {
+                    if (compressed || visualHeader[1] != 104u ||
+                        visual.treeIndex != core::world::xray::InvalidIndex)
+                    { error = context + " has an invalid tree definition."; return false; }
+                    std::array<float, 26> values{};
+                    std::memcpy(values.data(), data.data() + static_cast<std::size_t>(visualDataOffset), 104u);
+                    for (const float value : values)
+                        if (!std::isfinite(value))
+                        { error = context + " has a non-finite tree transform/lighting."; return false; }
+                    core::world::xray::TreeDefinition tree;
+                    constexpr std::array<std::size_t, 12> MatrixElements{0,1,2,4,5,6,8,9,10,12,13,14};
+                    for (std::size_t i = 0; i < MatrixElements.size(); ++i)
+                        tree.transform.values[i] = values[MatrixElements[i]];
+                    for (std::size_t i = 0; i < 5u; ++i)
+                    { tree.lightingScale[i] = values[16u+i]*0.5f; tree.lightingBias[i] = values[21u+i]*0.5f; }
+                    visual.treeIndex = static_cast<std::uint32_t>(output.trees.size());
+                    output.trees.push_back(tree);
+                }
+                else if (visualChunkId == 20u)
+                {
+                    if (compressed || visualHeader[1] != 4u)
+                    { error = context + " has an invalid slide-window reference."; return false; }
+                    std::memcpy(&visual.slideWindowIndex,
+                        data.data() + static_cast<std::size_t>(visualDataOffset), 4u);
+                }
+                else if (visualChunkId == 22u)
+                {
+                    if (compressed) { error = context + " has compressed fast geometry."; return false; }
+                    std::uint64_t fastCursor = visualDataOffset;
+                    while (fastCursor < visualChunkEnd)
+                    {
+                        std::array<std::uint32_t, 2> fastHeader{};
+                        if (visualChunkEnd - fastCursor < 8u)
+                        { error = context + " has truncated fast-geometry chunks."; return false; }
+                        std::memcpy(fastHeader.data(), data.data() + static_cast<std::size_t>(fastCursor), 8u);
+                        fastCursor += 8u;
+                        if (fastHeader[1] > visualChunkEnd - fastCursor || (fastHeader[0] & CompressionFlag))
+                        { error = context + " has invalid fast-geometry chunks."; return false; }
+                        if (fastHeader[0] == OgfGeometryContainerChunk)
+                        {
+                            if (fastHeader[1] != 24u)
+                            { error = context + " has an invalid fast-geometry reference."; return false; }
+                            std::array<std::uint32_t, 6> reference{};
+                            std::memcpy(reference.data(), data.data() + static_cast<std::size_t>(fastCursor), 24u);
+                            visual.fastGeometry = {reference[0], reference[1], reference[2],
+                                reference[3], reference[4], reference[5], true};
+                        }
+                        fastCursor += fastHeader[1];
+                    }
+                }
+                else if (visualChunkId ==
                              OgfChildrenLinksChunk &&
                          !childrenFound)
                 {
@@ -1308,6 +1488,12 @@ namespace
 
                 return false;
             }
+
+            const core::world::xray::spatial::Bounds bounds{visual.boundsMinimum, visual.boundsMaximum};
+            if (!bounds.Valid() ||
+                (visual.type == 6u && visual.lodIndex == core::world::xray::InvalidIndex) ||
+                ((visual.type == 7u || visual.type == 11u) && visual.treeIndex == core::world::xray::InvalidIndex))
+            { error = context + " has invalid bounds or missing type-specific metadata."; return false; }
 
             output.visuals.push_back(
                 std::move(
@@ -1498,6 +1684,28 @@ namespace core::world::xray
             return false;
         }
 
+        if (!ParseSlideWindows(geometry, geometryRange, output, error)) return false;
+
+        const auto geomxPath = levelDirectory / "level.geomx";
+        std::error_code existsError;
+        const bool geomxExists = std::filesystem::exists(geomxPath, existsError);
+        if (existsError) { error = "Unable to check level.geomx: " + existsError.message(); return false; }
+        if (geomxExists)
+        {
+            BinaryFile geomx;
+            if (!geomx.Open(geomxPath, error)) return false;
+            const Range geomxRange{0u, geomx.Size()};
+            Chunk vb, ib;
+            core::world::xray::LevelData descriptors;
+            if (!RequireChunk(geomx, geomxRange, LevelVertexBuffersChunk, vb, error, "X-Ray geomx") ||
+                !RequireChunk(geomx, geomxRange, LevelIndexBuffersChunk, ib, error, "X-Ray geomx") ||
+                !ParseVertexBuffers(geomx, vb, descriptors, error) ||
+                !ParseIndexBuffers(geomx, ib, descriptors, error)) return false;
+            output.secondaryGeometryFile = geomxPath;
+            output.secondaryVertexBuffers = std::move(descriptors.vertexBuffers);
+            output.secondaryIndexBuffers = std::move(descriptors.indexBuffers);
+        }
+
         Chunk visuals;
 
         if (!RequireChunk(
@@ -1529,6 +1737,9 @@ namespace core::world::xray
                 output.visuals[
                     visualIndex];
 
+            if (visual.slideWindowIndex != InvalidIndex && visual.slideWindowIndex >= output.slideWindows.size())
+            { error = "X-Ray visual references a missing slide-window container."; return false; }
+
             for (const std::uint32_t child :
                  visual.childVisuals)
             {
@@ -1548,6 +1759,27 @@ namespace core::world::xray
                 }
             }
         }
+
+        // Iterative tri-colour graph validation: no recursion on a 450k-node map.
+        std::vector<std::uint8_t> colours(output.visuals.size(), 0u);
+        struct Visit { std::uint32_t id; std::size_t next; };
+        std::vector<Visit> stack;
+        for (std::uint32_t root = 0; root < output.visuals.size(); ++root)
+        {
+            if (colours[root] != 0u) continue;
+            stack.push_back({root, 0u}); colours[root] = 1u;
+            while (!stack.empty())
+            {
+                auto& visit = stack.back();
+                const auto& children = output.visuals[visit.id].childVisuals;
+                if (visit.next == children.size())
+                { colours[visit.id] = 2u; stack.pop_back(); continue; }
+                const auto child = children[visit.next++];
+                if (colours[child] == 1u) { error = "X-Ray visual hierarchy contains a cycle."; return false; }
+                if (colours[child] == 0u) { colours[child] = 1u; stack.push_back({child, 0u}); }
+            }
+        }
+        if (!ParseTopology(level, levelRange, output, error)) return false;
 
         return true;
     }

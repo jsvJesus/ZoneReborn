@@ -60,9 +60,15 @@ namespace client::player
         [[nodiscard]]
         float CameraTargetHeight() const noexcept;
 
+        void Update(
+            float deltaSeconds) noexcept;
+
     private:
         LocomotionMode mode_ =
             LocomotionMode::Run;
+
+        float crouchVisualAlpha_ =
+            0.0f;
 
         bool crouched_ =
             false;

@@ -228,6 +228,9 @@ namespace client::player
         walkWasDown_ =
             walkDown;
 
+        locomotion_.Update(
+            deltaSeconds);
+
         float inputRight =
             0.0f;
 

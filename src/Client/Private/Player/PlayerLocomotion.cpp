@@ -1,5 +1,7 @@
 #include "Player/PlayerLocomotion.h"
 
+#include <algorithm>
+
 namespace
 {
     constexpr float WalkForwardSpeed =
@@ -22,6 +24,28 @@ namespace
 
     constexpr float SprintSpeed =
         6.3f;
+
+    constexpr float CrouchVisualBlendDuration =
+        0.20f;
+
+    float SmoothStep(
+        const float value) noexcept
+    {
+        const float t =
+            std::clamp(
+                value,
+                0.0f,
+                1.0f);
+
+        return
+            t *
+            t *
+            (
+                3.0f -
+                2.0f *
+                    t
+            );
+    }
 
     //
     // Во время приседа выбранный Walk / Run / Sprint
@@ -98,6 +122,9 @@ namespace client::player
 
         crouched_ =
             false;
+
+        crouchVisualAlpha_ =
+            0.0f;
     }
 
     void LocomotionState::ToggleWalk() noexcept
@@ -135,6 +162,47 @@ namespace client::player
     {
         crouched_ =
             crouched;
+    }
+
+    void LocomotionState::Update(
+        float deltaSeconds) noexcept
+    {
+        deltaSeconds =
+            std::clamp(
+                deltaSeconds,
+                0.0f,
+                0.05f);
+
+        const float target =
+            crouched_
+                ? 1.0f
+                : 0.0f;
+
+        const float step =
+            CrouchVisualBlendDuration >
+                    0.000001f
+                ? deltaSeconds /
+                    CrouchVisualBlendDuration
+                : 1.0f;
+
+        if (crouchVisualAlpha_ <
+            target)
+        {
+            crouchVisualAlpha_ =
+                std::min(
+                    crouchVisualAlpha_ +
+                        step,
+                    target);
+        }
+        else if (crouchVisualAlpha_ >
+                 target)
+        {
+            crouchVisualAlpha_ =
+                std::max(
+                    crouchVisualAlpha_ -
+                        step,
+                    target);
+        }
     }
 
     LocomotionMode
@@ -279,9 +347,16 @@ namespace client::player
 
     float LocomotionState::CameraTargetHeight() const noexcept
     {
+        const float alpha =
+            SmoothStep(
+                crouchVisualAlpha_);
+
         return
-            crouched_
-                ? CrouchedCameraTargetHeightValue
-                : StandingCameraTargetHeightValue;
+            StandingCameraTargetHeightValue +
+            (
+                CrouchedCameraTargetHeightValue -
+                StandingCameraTargetHeightValue
+            ) *
+            alpha;
     }
 }

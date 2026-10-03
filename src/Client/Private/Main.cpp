@@ -43,7 +43,7 @@ int main(
 #if defined(STUDIO_BUILD)
 
         std::string levelName =
-            "l01_escape";
+            "pripyat_full";
 
         if (argc >= 2 &&
             argv[1] != nullptr &&

@@ -56,6 +56,9 @@ namespace
     constexpr float FootTwistResponse =
         19.0f;
 
+    constexpr float BodyTwistResponse =
+        15.0f;
+
     //
     // SO tracker_global.pyson:
     // foot_rotate_limit = 0.45
@@ -283,11 +286,38 @@ namespace client::player
                 CrouchedTurnMaximum;
         }
 
-        bodyYawOffset_ =
+        const float targetBodyYaw =
             std::clamp(
                 difference,
                 -maximumBodyYaw,
                 maximumBodyYaw);
+
+        if (deltaSeconds <=
+            0.0f)
+        {
+            bodyYawOffset_ =
+                targetBodyYaw;
+
+            footTwistYaw_ =
+                std::clamp(
+                    targetBodyYaw,
+                    -FootRotateLimit,
+                    FootRotateLimit);
+
+            return;
+        }
+
+        const float bodyFactor =
+            ResponseFactor(
+                BodyTwistResponse,
+                deltaSeconds);
+
+        bodyYawOffset_ +=
+            (
+                targetBodyYaw -
+                bodyYawOffset_
+            ) *
+            bodyFactor;
 
         const float targetFootTwist =
             std::clamp(
@@ -295,16 +325,7 @@ namespace client::player
                 -FootRotateLimit,
                 FootRotateLimit);
 
-        if (deltaSeconds <=
-            0.0f)
-        {
-            footTwistYaw_ =
-                targetFootTwist;
-
-            return;
-        }
-
-        const float factor =
+        const float footFactor =
             ResponseFactor(
                 FootTwistResponse,
                 deltaSeconds);
@@ -314,7 +335,7 @@ namespace client::player
                 targetFootTwist -
                 footTwistYaw_
             ) *
-            factor;
+            footFactor;
     }
 
     float TurnController::ControlYaw() const noexcept

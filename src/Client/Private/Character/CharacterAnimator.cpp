@@ -1425,6 +1425,429 @@ namespace
 
         return result;
     }
+
+    struct DecomposedTransform final
+    {
+        Vector3 scale
+        {
+            1.0f,
+            1.0f,
+            1.0f
+        };
+
+        Quaternion rotation{};
+
+        Vector3 position{};
+    };
+
+    float VectorLength(
+        const float x,
+        const float y,
+        const float z) noexcept
+    {
+        return
+            std::sqrt(
+                x * x +
+                y * y +
+                z * z);
+    }
+
+    DecomposedTransform DecomposeTransform(
+        const Transform& transform) noexcept
+    {
+        DecomposedTransform result;
+
+        result.position =
+        {
+            transform.values[9],
+            transform.values[10],
+            transform.values[11]
+        };
+
+        result.scale.x =
+            VectorLength(
+                transform.values[0],
+                transform.values[1],
+                transform.values[2]);
+
+        result.scale.y =
+            VectorLength(
+                transform.values[3],
+                transform.values[4],
+                transform.values[5]);
+
+        result.scale.z =
+            VectorLength(
+                transform.values[6],
+                transform.values[7],
+                transform.values[8]);
+
+        constexpr float epsilon =
+            0.000001f;
+
+        if (result.scale.x <=
+            epsilon)
+        {
+            result.scale.x =
+                1.0f;
+        }
+
+        if (result.scale.y <=
+            epsilon)
+        {
+            result.scale.y =
+                1.0f;
+        }
+
+        if (result.scale.z <=
+            epsilon)
+        {
+            result.scale.z =
+                1.0f;
+        }
+
+        const float r00 =
+            transform.values[0] /
+            result.scale.x;
+
+        const float r01 =
+            transform.values[1] /
+            result.scale.x;
+
+        const float r02 =
+            transform.values[2] /
+            result.scale.x;
+
+        const float r10 =
+            transform.values[3] /
+            result.scale.y;
+
+        const float r11 =
+            transform.values[4] /
+            result.scale.y;
+
+        const float r12 =
+            transform.values[5] /
+            result.scale.y;
+
+        const float r20 =
+            transform.values[6] /
+            result.scale.z;
+
+        const float r21 =
+            transform.values[7] /
+            result.scale.z;
+
+        const float r22 =
+            transform.values[8] /
+            result.scale.z;
+
+        const float m00 = r00;
+        const float m01 = r10;
+        const float m02 = r20;
+
+        const float m10 = r01;
+        const float m11 = r11;
+        const float m12 = r21;
+
+        const float m20 = r02;
+        const float m21 = r12;
+        const float m22 = r22;
+
+        Quaternion rotation;
+
+        const float trace =
+            m00 +
+            m11 +
+            m22;
+
+        if (trace >
+            0.0f)
+        {
+            const float s =
+                std::sqrt(
+                    trace +
+                    1.0f) *
+                2.0f;
+
+            rotation.w =
+                0.25f *
+                s;
+
+            rotation.x =
+                (
+                    m21 -
+                    m12
+                ) /
+                s;
+
+            rotation.y =
+                (
+                    m02 -
+                    m20
+                ) /
+                s;
+
+            rotation.z =
+                (
+                    m10 -
+                    m01
+                ) /
+                s;
+        }
+        else if (m00 >
+                     m11 &&
+                 m00 >
+                     m22)
+        {
+            const float s =
+                std::sqrt(
+                    1.0f +
+                    m00 -
+                    m11 -
+                    m22) *
+                2.0f;
+
+            rotation.w =
+                (
+                    m21 -
+                    m12
+                ) /
+                s;
+
+            rotation.x =
+                0.25f *
+                s;
+
+            rotation.y =
+                (
+                    m01 +
+                    m10
+                ) /
+                s;
+
+            rotation.z =
+                (
+                    m02 +
+                    m20
+                ) /
+                s;
+        }
+        else if (m11 >
+                 m22)
+        {
+            const float s =
+                std::sqrt(
+                    1.0f +
+                    m11 -
+                    m00 -
+                    m22) *
+                2.0f;
+
+            rotation.w =
+                (
+                    m02 -
+                    m20
+                ) /
+                s;
+
+            rotation.x =
+                (
+                    m01 +
+                    m10
+                ) /
+                s;
+
+            rotation.y =
+                0.25f *
+                s;
+
+            rotation.z =
+                (
+                    m12 +
+                    m21
+                ) /
+                s;
+        }
+        else
+        {
+            const float s =
+                std::sqrt(
+                    1.0f +
+                    m22 -
+                    m00 -
+                    m11) *
+                2.0f;
+
+            rotation.w =
+                (
+                    m10 -
+                    m01
+                ) /
+                s;
+
+            rotation.x =
+                (
+                    m02 +
+                    m20
+                ) /
+                s;
+
+            rotation.y =
+                (
+                    m12 +
+                    m21
+                ) /
+                s;
+
+            rotation.z =
+                0.25f *
+                s;
+        }
+
+        result.rotation =
+            Normalize(
+                rotation);
+
+        return result;
+    }
+
+    Transform BlendTransform(
+        const Transform& from,
+        const Transform& to,
+        const float alpha) noexcept
+    {
+        const float t =
+            std::clamp(
+                alpha,
+                0.0f,
+                1.0f);
+
+        const DecomposedTransform a =
+            DecomposeTransform(
+                from);
+
+        const DecomposedTransform b =
+            DecomposeTransform(
+                to);
+
+        return
+            BuildTransform(
+                Slerp(
+                    a.rotation,
+                    b.rotation,
+                    t),
+
+                Lerp(
+                    a.scale,
+                    b.scale,
+                    t),
+
+                Lerp(
+                    a.position,
+                    b.position,
+                    t));
+    }
+
+    float SmoothStep(
+        const float value) noexcept
+    {
+        const float t =
+            std::clamp(
+                value,
+                0.0f,
+                1.0f);
+
+        return
+            t *
+            t *
+            (
+                3.0f -
+                2.0f *
+                    t
+            );
+    }
+
+    bool IsCrouchAnimation(
+        const client::character::AnimationState state) noexcept
+    {
+        using client::character::AnimationState;
+
+        switch (state)
+        {
+        case AnimationState::CrouchIdle:
+        case AnimationState::CrouchForward:
+        case AnimationState::CrouchBackward:
+        case AnimationState::CrouchStrafeLeft:
+        case AnimationState::CrouchStrafeRight:
+        case AnimationState::CrouchTurnLeft:
+        case AnimationState::CrouchTurnRight:
+            return true;
+
+        default:
+            return false;
+        }
+    }
+
+    float BlendDuration(
+        const client::character::AnimationState from,
+        const client::character::AnimationState to) noexcept
+    {
+        using client::character::AnimationState;
+        using client::character::AnimationStateIsTurn;
+
+        if (from ==
+            to)
+        {
+            return
+                0.0f;
+        }
+
+        //
+        // Turn-клип уже заканчивается в правильной
+        // конечной ориентации.
+        // После CompleteTurn model yaw фиксируется,
+        // поэтому второй blend тут не нужен.
+        //
+        if (AnimationStateIsTurn(
+                from))
+        {
+            return
+                0.0f;
+        }
+
+        if (AnimationStateIsTurn(
+                to))
+        {
+            return
+                0.10f;
+        }
+
+        if (IsCrouchAnimation(
+                from) !=
+            IsCrouchAnimation(
+                to))
+        {
+            return
+                0.20f;
+        }
+
+        if (to ==
+                AnimationState::Jump ||
+            from ==
+                AnimationState::Jump ||
+            to ==
+                AnimationState::Fall ||
+            to ==
+                AnimationState::Land)
+        {
+            return
+                0.08f;
+        }
+
+        return
+            0.12f;
+    }
     
     [[nodiscard]]
     bool SampleChannel(
@@ -1449,34 +1872,74 @@ namespace
 
         if (!channel.discreteKeys.empty())
         {
-            const auto upper =
-                std::upper_bound(
-                    channel.discreteKeys.begin(),
-                    channel.discreteKeys.end(),
-                    frame,
-                    [](
-                        const float value,
-                        const Key<Transform>& key)
-                    {
-                        return
-                            value <
-                            key.time;
-                    });
-
-            if (upper ==
-                channel.discreteKeys.begin())
+            if (channel.discreteKeys.size() ==
+                1)
             {
                 output =
                     channel.discreteKeys.front().
                         value;
             }
-            else
+            else if (frame <=
+                     channel.discreteKeys.front().
+                         time)
             {
                 output =
-                    (
-                        upper -
-                        1
-                    )->value;
+                    channel.discreteKeys.front().
+                        value;
+            }
+            else if (frame >=
+                     channel.discreteKeys.back().
+                         time)
+            {
+                output =
+                    channel.discreteKeys.back().
+                        value;
+            }
+            else
+            {
+                const auto upper =
+                    std::upper_bound(
+                        channel.discreteKeys.begin(),
+                        channel.discreteKeys.end(),
+                        frame,
+                        [](
+                            const float value,
+                            const Key<Transform>& key)
+                        {
+                            return
+                                value <
+                                key.time;
+                        });
+
+                const auto lower =
+                    upper -
+                    1;
+
+                const float duration =
+                    upper->time -
+                    lower->time;
+
+                if (duration <=
+                    0.000001f)
+                {
+                    output =
+                        lower->value;
+                }
+                else
+                {
+                    const float alpha =
+                        (
+                            frame -
+                            lower->time
+                        ) /
+                        duration;
+
+                    output =
+                        BlendTransform(
+                            lower->value,
+                            upper->value,
+                            alpha);
+                }
             }
 
             if (channel.lockPlanarRootMotion)
@@ -2308,7 +2771,22 @@ namespace client::character
 
             core::assets::MeshData
                 outputMesh;
+
+            std::vector<Transform>
+                lastNodeTransforms;
+
+            std::vector<Transform>
+                blendFromNodeTransforms;
         };
+
+        AnimationState activeState =
+            AnimationState::Idle;
+
+        bool activeStateInitialized =
+            false;
+
+        float blendDurationSeconds =
+            0.0f;
 
         std::array<
             AnimationClip,
@@ -2497,6 +2975,38 @@ namespace client::character
             return true;
         }
 
+        if (!state_->
+        activeStateInitialized)
+        {
+            state_->activeState =
+                animationState;
+
+            state_->
+                activeStateInitialized =
+                    true;
+
+            state_->blendDurationSeconds =
+                0.0f;
+        }
+        else if (state_->activeState !=
+                 animationState)
+        {
+            state_->blendDurationSeconds =
+                BlendDuration(
+                    state_->activeState,
+                    animationState);
+
+            for (State::MeshBinding& binding :
+                 state_->meshes)
+            {
+                binding.blendFromNodeTransforms =
+                    binding.lastNodeTransforms;
+            }
+
+            state_->activeState =
+                animationState;
+        }
+
         const std::size_t clipIndex =
             AnimationStateIndex(
                 animationState);
@@ -2560,6 +3070,19 @@ namespace client::character
                         0.0f));
         }
 
+        float blendAlpha =
+            1.0f;
+
+        if (state_->blendDurationSeconds >
+            0.000001f)
+        {
+            blendAlpha =
+                SmoothStep(
+                    stateTimeSeconds /
+                    state_->
+                        blendDurationSeconds);
+        }
+
         std::vector<Transform>
             nodeTransforms;
 
@@ -2598,6 +3121,35 @@ namespace client::character
                 return false;
             }
 
+            if (blendAlpha <
+                1.0f &&
+            binding.
+                blendFromNodeTransforms.
+                size() ==
+            nodeTransforms.size())
+            {
+                for (std::size_t index = 0;
+                     index <
+                         nodeTransforms.size();
+                     ++index)
+                {
+                    nodeTransforms[
+                        index] =
+                        BlendTransform(
+                            binding.
+                                blendFromNodeTransforms[
+                                    index],
+
+                            nodeTransforms[
+                                index],
+
+                            blendAlpha);
+                }
+            }
+
+            binding.lastNodeTransforms =
+                nodeTransforms;
+
             if (!BuildPalette(
                     binding.visual,
                     binding.paletteNodes,
@@ -2623,6 +3175,21 @@ namespace client::character
                     error))
             {
                 return false;
+            }
+        }
+
+        if (blendAlpha >=
+            1.0f)
+        {
+            state_->blendDurationSeconds =
+                0.0f;
+
+            for (State::MeshBinding& binding :
+                 state_->meshes)
+            {
+                binding.
+                    blendFromNodeTransforms.
+                    clear();
             }
         }
 

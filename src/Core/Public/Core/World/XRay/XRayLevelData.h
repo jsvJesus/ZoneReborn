@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Core/Math/Vector3.h"
+#include "Core/Math/Transform3x4.h"
 
+#include <array>
 #include <cstdint>
 #include <filesystem>
 #include <string>
@@ -9,6 +11,50 @@
 
 namespace core::world::xray
 {
+    inline constexpr std::uint32_t InvalidIndex = 0xFFFFFFFFu;
+
+    struct Portal final
+    {
+        std::uint16_t frontSector = 0;
+        std::uint16_t backSector = 0;
+        std::array<math::Vector3, 6> vertices{};
+        std::uint32_t vertexCount = 0;
+    };
+
+    struct Sector final
+    {
+        std::uint32_t rootVisual = InvalidIndex;
+        std::vector<std::uint16_t> portals;
+    };
+
+    struct SlideWindow final
+    {
+        std::uint32_t offset = 0;
+        std::uint16_t triangleCount = 0;
+        std::uint16_t vertexCount = 0;
+    };
+
+    struct LodVertex final
+    {
+        math::Vector3 position;
+        float u = 0.0f;
+        float v = 0.0f;
+        std::uint32_t colour = 0;
+        std::uint8_t sun = 0;
+    };
+
+    struct LodDefinition final
+    {
+        std::array<LodVertex, 32> vertices{};
+    };
+
+    struct TreeDefinition final
+    {
+        math::Transform3x4 transform;
+        std::array<float, 5> lightingScale{};
+        std::array<float, 5> lightingBias{};
+    };
+
     struct ShaderReference final
     {
         std::string renderer;
@@ -66,6 +112,11 @@ namespace core::world::xray
 
         GeometryReference geometry;
 
+        GeometryReference fastGeometry;
+        std::uint32_t lodIndex = InvalidIndex;
+        std::uint32_t treeIndex = InvalidIndex;
+        std::uint32_t slideWindowIndex = InvalidIndex;
+
         std::vector<std::uint32_t>
             childVisuals;
     };
@@ -75,6 +126,7 @@ namespace core::world::xray
         std::filesystem::path levelDirectory;
         std::filesystem::path levelFile;
         std::filesystem::path geometryFile;
+        std::filesystem::path secondaryGeometryFile;
 
         std::uint16_t version = 0;
         std::uint16_t quality = 0;
@@ -91,5 +143,13 @@ namespace core::world::xray
 
         std::vector<Visual>
             visuals;
+
+        std::vector<Portal> portals;
+        std::vector<Sector> sectors;
+        std::vector<LodDefinition> lods;
+        std::vector<TreeDefinition> trees;
+        std::vector<std::vector<SlideWindow>> slideWindows;
+        std::vector<VertexBuffer> secondaryVertexBuffers;
+        std::vector<IndexBuffer> secondaryIndexBuffers;
     };
 }
