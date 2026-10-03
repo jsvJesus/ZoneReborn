@@ -16,6 +16,12 @@ float4 PSMain(
     float outputAlpha =
         1.0f;
 
+    float staticHemi =
+        1.0f;
+
+    float staticSun =
+        1.0f;
+
     if (useWater != 0)
     {
         return
@@ -55,6 +61,12 @@ float4 PSMain(
 
         baseColour =
             modelSample.rgb;
+
+        if (modelLightmapParameters.y > 0.5f)
+        {
+            // Terrain alpha is baked hemisphere occlusion, not opacity.
+            staticHemi = saturate(modelSample.a);
+        }
 
         const float tintMode =
             modelParameters.w;
@@ -114,6 +126,26 @@ float4 PSMain(
         }
     }
 
+    if (modelLightmapParameters.x > 0.5f)
+    {
+        const float4 lightmap =
+            modelLightmapTexture.Sample(
+                terrainTextureSampler,
+                modelLightmapParameters.y > 0.5f
+                    ? input.terrainUV
+                    : input.lightmapUV);
+
+        if (modelLightmapParameters.y > 0.5f)
+        {
+            staticSun = saturate(lightmap.a);
+        }
+        else
+        {
+            staticHemi = saturate(lightmap.a);
+            staticSun = saturate(lightmap.g);
+        }
+    }
+
     baseColour *=
         instanceColour.rgb;
 
@@ -132,13 +164,19 @@ float4 PSMain(
 
     const float3 ambientLighting =
         skyAmbientColour.rgb *
-        0.35f;
+        (
+            0.35f * staticHemi +
+            // X-Ray adds ambient independently of baked hemi occlusion.
+            // This is the preview baseline until its environment is loaded.
+            (modelLightmapParameters.z > 0.5f ? 0.15f : 0.0f)
+        );
 
     const float3 directionalLighting =
         skySunColour.rgb *
         sunDiffuse *
         skySunDirectionDaylight.w *
-        0.85f;
+        0.85f *
+        staticSun;
 
     float3 omniDiffuse =
         0.0f;

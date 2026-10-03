@@ -45,6 +45,25 @@ namespace client::graphics
             std::string& error);
 
         [[nodiscard]]
+        bool BeginStreamedScene(
+            std::string& error);
+
+        [[nodiscard]]
+        bool AppendStreamedTexture(
+            const SceneTextureData& texture,
+            std::int32_t& outputTextureIndex,
+            std::string& error);
+
+        [[nodiscard]]
+        bool AppendStreamedMesh(
+            const SceneMesh& mesh,
+            std::string& error);
+
+        [[nodiscard]]
+        bool FinishStreamedScene(
+            std::string& error);
+
+        [[nodiscard]]
         bool UpdateMeshVertices(
             std::size_t meshIndex,
             const core::assets::MeshData& mesh,

@@ -3,7 +3,6 @@
 #include "Core/Runtime.h"
 
 #include "Graphics/Renderer.h"
-#include "Graphics/SceneRenderData.h"
 
 #include "Input/CameraController.h"
 #include "Platform/Window.h"
@@ -18,7 +17,7 @@ namespace studio
     {
     public:
         explicit Application(
-            std::string spaceName);
+            std::string levelName);
 
         int Run();
 
@@ -32,7 +31,7 @@ namespace studio
         void Shutdown();
 
         std::string
-            spaceName_;
+            levelName_;
 
         core::Runtime
             runtime_;
@@ -45,9 +44,6 @@ namespace studio
 
         client::graphics::Renderer
             renderer_;
-
-        client::graphics::SceneRenderData
-            scene_;
 
         client::input::CameraController
             camera_;

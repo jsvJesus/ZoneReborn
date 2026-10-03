@@ -31,6 +31,9 @@ PixelInput VSMain(
     output.terrainUV =
         input.texcoord;
 
+    output.lightmapUV =
+        input.lightmapTexcoord;
+
     output.worldPosition =
         worldPosition.xyz;
 

@@ -95,6 +95,8 @@
     <ClInclude Include="Public\Core\World\Water\WaterMeshBuilder.h" />
     <ClInclude Include="Public\Core\World\WorldLoader.h" />
     <ClInclude Include="Public\Core\World\WorldScene.h" />
+    <ClInclude Include="Public\Core\World\XRay\XRayLevelData.h" />
+    <ClInclude Include="Public\Core\World\XRay\XRayLevelLoader.h" />
   </ItemGroup>
 
   <ItemGroup>
@@ -151,6 +153,7 @@
     <ClCompile Include="Private\World\Vlo\VloLoader.cpp" />
     <ClCompile Include="Private\World\Water\WaterMeshBuilder.cpp" />
     <ClCompile Include="Private\World\WorldLoader.cpp" />
+    <ClCompile Include="Private\World\XRay\XRayLevelLoader.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   </ItemGroup>
 
   <PropertyGroup Label="Globals">

@@ -18,6 +18,7 @@
 #include <array>
 #include <chrono>
 #include <cmath>
+#include <cstring>
 #include <cstdint>
 #include <limits>
 #include <string>
@@ -39,6 +40,9 @@ namespace
 
         float u;
         float v;
+
+        float u2;
+        float v2;
     };
 
     constexpr std::uint32_t MaxOmniLights =
@@ -180,6 +184,8 @@ namespace
         DirectX::XMFLOAT4 modelOverlayParameters;
 
         DirectX::XMFLOAT4 modelTattooColour;
+
+        DirectX::XMFLOAT4 modelLightmapParameters;
 
         DirectX::XMFLOAT4 waterDeepColour;
         DirectX::XMFLOAT4 waterReflectionTint;
@@ -1016,6 +1022,408 @@ namespace
         }
 
         return constants;
+    }
+
+    bool CreateDdsTexture(
+        ID3D11Device* device,
+        const std::vector<std::byte>& encoded,
+        ComPtr<ID3D11ShaderResourceView>& output,
+        std::string& error)
+    {
+        constexpr std::uint32_t DdsMagic =
+            0x20534444u;
+
+        constexpr std::uint32_t FourCcDxt1 =
+            0x31545844u;
+
+        constexpr std::uint32_t FourCcDxt3 =
+            0x33545844u;
+
+        constexpr std::uint32_t FourCcDxt5 =
+            0x35545844u;
+
+        constexpr std::uint32_t DdsCubemap =
+            0x00000200u;
+
+        constexpr std::uint32_t DdsVolume =
+            0x00200000u;
+
+        constexpr std::size_t HeaderSize =
+            128u;
+
+        constexpr std::uint32_t StandardHeaderSize =
+            124u;
+
+        constexpr std::uint32_t LegacyExporterHeaderSize =
+            24u;
+
+        output.Reset();
+
+        if (device == nullptr ||
+            encoded.size() <
+                HeaderSize)
+        {
+            error =
+                "Invalid DDS texture parameters.";
+
+            return false;
+        }
+
+        const auto readU32 =
+            [&encoded](const std::size_t offset)
+            {
+                std::uint32_t value = 0;
+
+                std::memcpy(
+                    &value,
+                    encoded.data() +
+                        offset,
+                    sizeof(value));
+
+                return value;
+            };
+
+        const std::uint32_t declaredHeaderSize =
+            readU32(4u);
+
+        if (readU32(0u) !=
+                DdsMagic ||
+            (declaredHeaderSize !=
+                 StandardHeaderSize &&
+             declaredHeaderSize !=
+                 LegacyExporterHeaderSize) ||
+            readU32(76u) !=
+                32u)
+        {
+            error =
+                "DDS texture header is invalid.";
+
+            return false;
+        }
+
+        const std::uint32_t width =
+            readU32(16u);
+
+        const std::uint32_t height =
+            readU32(12u);
+
+        const std::uint32_t caps2 =
+            readU32(112u);
+
+        if (width ==
+                0u ||
+            height ==
+                0u ||
+            width >
+                D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION ||
+            height >
+                D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION ||
+            (caps2 &
+             (DdsCubemap |
+              DdsVolume)) !=
+                0u)
+        {
+            error =
+                "DDS texture dimensions or type are unsupported.";
+
+            return false;
+        }
+
+        const std::uint32_t fourCc =
+            readU32(84u);
+
+        if (declaredHeaderSize ==
+                LegacyExporterHeaderSize &&
+            fourCc !=
+                FourCcDxt1)
+        {
+            error =
+                "Legacy DDS texture header is only supported for DXT1 textures.";
+
+            return false;
+        }
+
+        DXGI_FORMAT format =
+            DXGI_FORMAT_UNKNOWN;
+
+        std::uint32_t blockSize =
+            0u;
+
+        if (fourCc ==
+            FourCcDxt1)
+        {
+            format =
+                DXGI_FORMAT_BC1_UNORM;
+
+            blockSize =
+                8u;
+        }
+        else if (fourCc ==
+                 FourCcDxt3)
+        {
+            format =
+                DXGI_FORMAT_BC2_UNORM;
+
+            blockSize =
+                16u;
+        }
+        else if (fourCc ==
+                 FourCcDxt5)
+        {
+            format =
+                DXGI_FORMAT_BC3_UNORM;
+
+            blockSize =
+                16u;
+        }
+        else if (fourCc ==
+                     0u &&
+                 readU32(88u) ==
+                     32u)
+        {
+            const std::uint32_t redMask =
+                readU32(92u);
+
+            const std::uint32_t greenMask =
+                readU32(96u);
+
+            const std::uint32_t blueMask =
+                readU32(100u);
+
+            const std::uint32_t alphaMask =
+                readU32(104u);
+
+            if (redMask ==
+                    0x00FF0000u &&
+                greenMask ==
+                    0x0000FF00u &&
+                blueMask ==
+                    0x000000FFu &&
+                alphaMask ==
+                    0xFF000000u)
+            {
+                format =
+                    DXGI_FORMAT_B8G8R8A8_UNORM;
+            }
+            else if (redMask ==
+                         0x000000FFu &&
+                     greenMask ==
+                         0x0000FF00u &&
+                     blueMask ==
+                         0x00FF0000u &&
+                     alphaMask ==
+                         0xFF000000u)
+            {
+                format =
+                    DXGI_FORMAT_R8G8B8A8_UNORM;
+            }
+        }
+
+        if (format ==
+            DXGI_FORMAT_UNKNOWN)
+        {
+            error =
+                "DDS texture pixel format is unsupported by the DX11 upload path.";
+
+            return false;
+        }
+
+        const std::uint32_t mipCount =
+            std::max(
+                1u,
+                readU32(28u));
+
+        if (mipCount >
+            D3D11_REQ_MIP_LEVELS)
+        {
+            error =
+                "DDS texture has too many mip levels.";
+
+            return false;
+        }
+
+        std::uint32_t maximumMipCount =
+            1u;
+
+        for (std::uint32_t dimension =
+                 std::max(
+                     width,
+                     height);
+             dimension >
+                 1u;
+             dimension /=
+                 2u)
+        {
+            ++maximumMipCount;
+        }
+
+        if (mipCount >
+            maximumMipCount)
+        {
+            error =
+                "DDS texture mip count exceeds its dimensions.";
+
+            return false;
+        }
+
+        std::vector<D3D11_SUBRESOURCE_DATA>
+            subresources;
+
+        subresources.reserve(
+            mipCount);
+
+        std::uint32_t mipWidth =
+            width;
+
+        std::uint32_t mipHeight =
+            height;
+
+        std::size_t dataOffset =
+            HeaderSize;
+
+        for (std::uint32_t mipIndex = 0;
+             mipIndex <
+                mipCount;
+             ++mipIndex)
+        {
+            const std::uint64_t rowPitch =
+                blockSize !=
+                    0u
+                    ? static_cast<std::uint64_t>(
+                          std::max(
+                              1u,
+                              (mipWidth +
+                               3u) /
+                                  4u)) *
+                          blockSize
+                    : static_cast<std::uint64_t>(
+                          mipWidth) *
+                          4u;
+
+            const std::uint64_t rowCount =
+                blockSize !=
+                    0u
+                    ? std::max(
+                          1u,
+                          (mipHeight +
+                           3u) /
+                              4u)
+                    : mipHeight;
+
+            const std::uint64_t slicePitch =
+                rowPitch *
+                rowCount;
+
+            if (rowPitch >
+                    std::numeric_limits<UINT>::max() ||
+                slicePitch >
+                    std::numeric_limits<UINT>::max() ||
+                dataOffset >
+                    encoded.size() ||
+                slicePitch >
+                    encoded.size() -
+                        dataOffset)
+            {
+                error =
+                    "DDS texture mip data is truncated or too large.";
+
+                return false;
+            }
+
+            D3D11_SUBRESOURCE_DATA
+                subresource{};
+
+            subresource.pSysMem =
+                encoded.data() +
+                dataOffset;
+
+            subresource.SysMemPitch =
+                static_cast<UINT>(
+                    rowPitch);
+
+            subresource.SysMemSlicePitch =
+                static_cast<UINT>(
+                    slicePitch);
+
+            subresources.push_back(
+                subresource);
+
+            dataOffset +=
+                static_cast<std::size_t>(
+                    slicePitch);
+
+            mipWidth =
+                std::max(
+                    1u,
+                    mipWidth /
+                        2u);
+
+            mipHeight =
+                std::max(
+                    1u,
+                    mipHeight /
+                        2u);
+        }
+
+        D3D11_TEXTURE2D_DESC
+            description{};
+
+        description.Width =
+            width;
+
+        description.Height =
+            height;
+
+        description.MipLevels =
+            mipCount;
+
+        description.ArraySize =
+            1u;
+
+        description.Format =
+            format;
+
+        description.SampleDesc.Count =
+            1u;
+
+        description.Usage =
+            D3D11_USAGE_IMMUTABLE;
+
+        description.BindFlags =
+            D3D11_BIND_SHADER_RESOURCE;
+
+        ComPtr<ID3D11Texture2D>
+            texture;
+
+        HRESULT result =
+            device->CreateTexture2D(
+                &description,
+                subresources.data(),
+                &texture);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create DDS texture.";
+
+            return false;
+        }
+
+        result =
+            device->CreateShaderResourceView(
+                texture.Get(),
+                nullptr,
+                &output);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create DDS texture SRV.";
+
+            return false;
+        }
+
+        return true;
     }
 
     bool CreateRgbaTexture(
@@ -2336,13 +2744,22 @@ namespace client::graphics
                 24,
                 D3D11_INPUT_PER_VERTEX_DATA,
                 0
+            },
+            {
+                "TEXCOORD",
+                1,
+                DXGI_FORMAT_R32G32_FLOAT,
+                0,
+                32,
+                D3D11_INPUT_PER_VERTEX_DATA,
+                0
             }
         };
 
         result =
             state_->device->CreateInputLayout(
                 inputElements,
-                3,
+                4,
                 vertexShaderCode->GetBufferPointer(),
                 vertexShaderCode->GetBufferSize(),
                 &state_->inputLayout);
@@ -2636,7 +3053,10 @@ namespace client::graphics
                     normal.z,
 
                     vertex.u,
-                    vertex.v
+                    vertex.v,
+
+                    vertex.u2,
+                    vertex.v2
                 });
 
                 minimum.x =
@@ -2829,13 +3249,22 @@ namespace client::graphics
             ComPtr<ID3D11ShaderResourceView>
                 view;
 
-            if (!CreateRgbaTexture(
-                state_->device.Get(),
-                state_->context.Get(),
-                texture.image,
-                texture.generateMipmaps,
-                view,
-                error))
+            const bool created =
+                !texture.encodedDds.empty()
+                    ? CreateDdsTexture(
+                          state_->device.Get(),
+                          texture.encodedDds,
+                          view,
+                          error)
+                    : CreateRgbaTexture(
+                          state_->device.Get(),
+                          state_->context.Get(),
+                          texture.image,
+                          texture.generateMipmaps,
+                          view,
+                          error);
+
+            if (!created)
             {
                 error =
                     texture.logicalPath +
@@ -3662,6 +4091,536 @@ namespace client::graphics
         return true;
     }
 
+    bool Renderer::BeginStreamedScene(
+        std::string& error)
+    {
+        error.clear();
+
+        if (!state_ ||
+            !state_->device ||
+            !state_->context)
+        {
+            error =
+                "Renderer is not initialized.";
+
+            return false;
+        }
+
+        state_->meshes.clear();
+        state_->textures.clear();
+        state_->terrainMaterials.clear();
+        state_->waterMaterials.clear();
+        state_->omniLights.clear();
+        state_->spotLights.clear();
+        state_->pulseLights.clear();
+        state_->flares.clear();
+        state_->particleSystems.clear();
+        state_->particleEmitters.clear();
+        state_->instances.clear();
+        state_->lodInstances.clear();
+        state_->renderInstances.clear();
+
+        state_->sky =
+            {};
+
+        state_->sceneCenter =
+            {};
+
+        state_->sceneRadius =
+            1.0f;
+
+        state_->particleGpuReported =
+            false;
+
+        state_->particleRuntimeReported =
+            false;
+
+        return true;
+    }
+
+    bool Renderer::AppendStreamedTexture(
+        const SceneTextureData& texture,
+        std::int32_t& outputTextureIndex,
+        std::string& error)
+    {
+        outputTextureIndex =
+            -1;
+
+        error.clear();
+
+        if (!state_ ||
+            !state_->device ||
+            !state_->context)
+        {
+            error =
+                "Renderer is not initialized.";
+
+            return false;
+        }
+
+        if (state_->textures.size() >=
+            static_cast<std::size_t>(
+                std::numeric_limits<std::int32_t>::max()))
+        {
+            error =
+                "Streamed scene texture table is too large.";
+
+            return false;
+        }
+
+        ComPtr<ID3D11ShaderResourceView>
+            view;
+
+        const bool created =
+            !texture.encodedDds.empty()
+                ? CreateDdsTexture(
+                      state_->device.Get(),
+                      texture.encodedDds,
+                      view,
+                      error)
+                : CreateRgbaTexture(
+                      state_->device.Get(),
+                      state_->context.Get(),
+                      texture.image,
+                      texture.generateMipmaps,
+                      view,
+                      error);
+
+        if (!created)
+        {
+            error =
+                texture.logicalPath +
+                ": " +
+                error;
+
+            return false;
+        }
+
+        outputTextureIndex =
+            static_cast<std::int32_t>(
+                state_->textures.size());
+
+        state_->textures.push_back(
+            std::move(
+                view));
+
+        return true;
+    }
+
+    bool Renderer::AppendStreamedMesh(
+        const SceneMesh& sceneMesh,
+        std::string& error)
+    {
+        error.clear();
+
+        if (!state_ ||
+            !state_->device)
+        {
+            error =
+                "Renderer is not initialized.";
+
+            return false;
+        }
+
+        if (sceneMesh.terrainMaterialIndex >=
+                0 ||
+            sceneMesh.waterMaterialIndex >=
+                0)
+        {
+            error =
+                "Streamed scene path currently accepts model meshes only.";
+
+            return false;
+        }
+
+        for (const SceneModelMaterial& material :
+             sceneMesh.modelMaterials)
+        {
+            const std::array<std::int32_t, 5>
+                textureIndices
+            {{
+                material.diffuseTextureIndex,
+                material.lightmapTextureIndex,
+                material.dyeMaskTextureIndex,
+                material.overlayTextureIndex,
+                material.tattooTextureIndex
+            }};
+
+            for (const std::int32_t textureIndex :
+                 textureIndices)
+            {
+                if (textureIndex >=
+                        0 &&
+                    static_cast<std::size_t>(
+                        textureIndex) >=
+                        state_->textures.size())
+                {
+                    error =
+                        "Streamed mesh references an unavailable texture.";
+
+                    return false;
+                }
+            }
+        }
+
+        const core::assets::MeshData& mesh =
+            sceneMesh.geometry;
+
+        if (mesh.vertices.empty() ||
+            !mesh.HasIndices())
+        {
+            error =
+                "Streamed scene contains an empty mesh.";
+
+            return false;
+        }
+
+        std::vector<GpuVertex>
+            vertices;
+
+        vertices.reserve(
+            mesh.vertices.size());
+
+        DirectX::XMFLOAT3 minimum
+        {
+            mesh.vertices.front().position.x,
+            mesh.vertices.front().position.y,
+            mesh.vertices.front().position.z
+        };
+
+        DirectX::XMFLOAT3 maximum =
+            minimum;
+
+        for (const core::assets::MeshVertex& vertex :
+             mesh.vertices)
+        {
+            const DirectX::XMFLOAT3 normal =
+                UnpackNormal(
+                    vertex.packedNormal);
+
+            vertices.push_back(
+            {
+                vertex.position.x,
+                vertex.position.y,
+                vertex.position.z,
+
+                normal.x,
+                normal.y,
+                normal.z,
+
+                vertex.u,
+                vertex.v,
+
+                vertex.u2,
+                vertex.v2
+            });
+
+            minimum.x =
+                std::min(
+                    minimum.x,
+                    vertex.position.x);
+
+            minimum.y =
+                std::min(
+                    minimum.y,
+                    vertex.position.y);
+
+            minimum.z =
+                std::min(
+                    minimum.z,
+                    vertex.position.z);
+
+            maximum.x =
+                std::max(
+                    maximum.x,
+                    vertex.position.x);
+
+            maximum.y =
+                std::max(
+                    maximum.y,
+                    vertex.position.y);
+
+            maximum.z =
+                std::max(
+                    maximum.z,
+                    vertex.position.z);
+        }
+
+        if (vertices.size() >
+            std::numeric_limits<UINT>::max() /
+                sizeof(GpuVertex))
+        {
+            error =
+                "Streamed scene vertex buffer is too large.";
+
+            return false;
+        }
+
+        const std::size_t indexCount =
+            mesh.IndexCount();
+
+        const std::size_t indexElementSize =
+            mesh.IndexElementSize();
+
+        if (indexCount >
+            std::numeric_limits<UINT>::max() /
+                indexElementSize)
+        {
+            error =
+                "Streamed scene index buffer is too large.";
+
+            return false;
+        }
+
+        State::GpuMesh gpuMesh;
+
+        D3D11_BUFFER_DESC
+            vertexDescription{};
+
+        vertexDescription.ByteWidth =
+            static_cast<UINT>(
+                vertices.size() *
+                sizeof(GpuVertex));
+
+        vertexDescription.Usage =
+            D3D11_USAGE_DEFAULT;
+
+        vertexDescription.BindFlags =
+            D3D11_BIND_VERTEX_BUFFER;
+
+        D3D11_SUBRESOURCE_DATA
+            vertexData{};
+
+        vertexData.pSysMem =
+            vertices.data();
+
+        HRESULT result =
+            state_->device->CreateBuffer(
+                &vertexDescription,
+                &vertexData,
+                &gpuMesh.vertexBuffer);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create streamed world vertex buffer.";
+
+            return false;
+        }
+
+        gpuMesh.vertexCount =
+            vertices.size();
+
+        D3D11_BUFFER_DESC
+            indexDescription{};
+
+        indexDescription.ByteWidth =
+            static_cast<UINT>(
+                indexCount *
+                indexElementSize);
+
+        indexDescription.Usage =
+            D3D11_USAGE_DEFAULT;
+
+        indexDescription.BindFlags =
+            D3D11_BIND_INDEX_BUFFER;
+
+        D3D11_SUBRESOURCE_DATA
+            indexData{};
+
+        indexData.pSysMem =
+            mesh.IndexData();
+
+        result =
+            state_->device->CreateBuffer(
+                &indexDescription,
+                &indexData,
+                &gpuMesh.indexBuffer);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create streamed world index buffer.";
+
+            return false;
+        }
+
+        gpuMesh.indexCount =
+            static_cast<std::uint32_t>(
+                indexCount);
+
+        gpuMesh.indexFormat =
+            mesh.indexFormat ==
+                core::assets::MeshIndexFormat::UInt32
+                ? DXGI_FORMAT_R32_UINT
+                : DXGI_FORMAT_R16_UINT;
+
+        gpuMesh.primitiveGroups =
+            mesh.primitiveGroups;
+
+        gpuMesh.modelMaterials =
+            sceneMesh.modelMaterials;
+
+        gpuMesh.minimum =
+            minimum;
+
+        gpuMesh.maximum =
+            maximum;
+
+        const std::size_t meshIndex =
+            state_->meshes.size();
+
+        state_->meshes.push_back(
+            std::move(
+                gpuMesh));
+
+        SceneInstance
+            instance;
+
+        instance.meshIndex =
+            meshIndex;
+
+        instance.transform =
+            core::math::Transform3x4::Identity();
+
+        state_->instances.push_back(
+            instance);
+
+        return true;
+    }
+
+    bool Renderer::FinishStreamedScene(
+        std::string& error)
+    {
+        error.clear();
+
+        if (!state_ ||
+            !state_->device)
+        {
+            error =
+                "Renderer is not initialized.";
+
+            return false;
+        }
+
+        if (state_->meshes.empty() ||
+            state_->instances.empty())
+        {
+            error =
+                "Streamed scene contains no geometry.";
+
+            return false;
+        }
+
+        state_->renderInstances =
+            state_->instances;
+
+        DirectX::XMFLOAT3 sceneMinimum =
+            state_->meshes.front().minimum;
+
+        DirectX::XMFLOAT3 sceneMaximum =
+            state_->meshes.front().maximum;
+
+        for (const State::GpuMesh& mesh :
+             state_->meshes)
+        {
+            sceneMinimum.x =
+                std::min(
+                    sceneMinimum.x,
+                    mesh.minimum.x);
+
+            sceneMinimum.y =
+                std::min(
+                    sceneMinimum.y,
+                    mesh.minimum.y);
+
+            sceneMinimum.z =
+                std::min(
+                    sceneMinimum.z,
+                    mesh.minimum.z);
+
+            sceneMaximum.x =
+                std::max(
+                    sceneMaximum.x,
+                    mesh.maximum.x);
+
+            sceneMaximum.y =
+                std::max(
+                    sceneMaximum.y,
+                    mesh.maximum.y);
+
+            sceneMaximum.z =
+                std::max(
+                    sceneMaximum.z,
+                    mesh.maximum.z);
+        }
+
+        state_->sceneCenter =
+        {
+            (sceneMinimum.x +
+             sceneMaximum.x) *
+                0.5f,
+
+            (sceneMinimum.y +
+             sceneMaximum.y) *
+                0.5f,
+
+            (sceneMinimum.z +
+             sceneMaximum.z) *
+                0.5f
+        };
+
+        const float sizeX =
+            sceneMaximum.x -
+            sceneMinimum.x;
+
+        const float sizeY =
+            sceneMaximum.y -
+            sceneMinimum.y;
+
+        const float sizeZ =
+            sceneMaximum.z -
+            sceneMinimum.z;
+
+        state_->sceneRadius =
+            std::max(
+                std::sqrt(
+                    sizeX * sizeX +
+                    sizeY * sizeY +
+                    sizeZ * sizeZ) *
+                    0.5f,
+                10.0f);
+
+        state_->startTime =
+            std::chrono::steady_clock::now();
+
+        core::Log::Info(
+            std::string(
+                "Streamed world bounds: X=") +
+            std::to_string(
+                sizeX) +
+            ", Y=" +
+            std::to_string(
+                sizeY) +
+            ", Z=" +
+            std::to_string(
+                sizeZ));
+
+        core::Log::Info(
+            std::string(
+                "Streamed GPU meshes created: ") +
+            std::to_string(
+                state_->meshes.size()));
+
+        core::Log::Info(
+            std::string(
+                "Streamed GPU textures created: ") +
+            std::to_string(
+                state_->textures.size()));
+
+        return true;
+    }
+
     bool Renderer::UpdateMeshVertices(
         const std::size_t meshIndex,
         const core::assets::MeshData& mesh,
@@ -3724,7 +4683,10 @@ namespace client::graphics
                 normal.z,
 
                 vertex.u,
-                vertex.v
+                vertex.v,
+
+                vertex.u2,
+                vertex.v2
             });
         }
 
@@ -4851,6 +5813,8 @@ namespace client::graphics
                 instance.colour[3]
             };
 
+            constants.modelLightmapParameters = {};
+
             state_->context->RSSetState(
                 instance.particleMesh &&
                     !instance.doubleSided
@@ -5221,6 +6185,8 @@ namespace client::graphics
                     1.0f
                 };
 
+                constants.modelLightmapParameters = {};
+
                 ID3D11ShaderResourceView*
                     modelTextureView =
                         nullptr;
@@ -5235,6 +6201,10 @@ namespace client::graphics
 
                 ID3D11ShaderResourceView*
                     tattooTextureView =
+                        nullptr;
+
+                ID3D11ShaderResourceView*
+                    lightmapTextureView =
                         nullptr;
 
                 SceneAlphaMode alphaMode =
@@ -5334,6 +6304,35 @@ namespace client::graphics
                             1;
                     }
 
+                    constants.modelLightmapParameters.y =
+                        material.useXRayTerrainLightmap ? 1.0f : 0.0f;
+
+                    constants.modelLightmapParameters.z =
+                        material.useXRayLighting ? 1.0f : 0.0f;
+
+                    if (material.lightmapTextureIndex >= 0)
+                    {
+                        const std::size_t lightmapIndex =
+                            static_cast<std::size_t>(
+                                material.lightmapTextureIndex);
+
+                        if (lightmapIndex >=
+                            state_->textures.size())
+                        {
+                            error =
+                                "Model material references invalid lightmap texture.";
+
+                            return false;
+                        }
+
+                        lightmapTextureView =
+                            state_->textures[
+                                lightmapIndex].Get();
+
+                        constants.modelLightmapParameters.x =
+                            1.0f;
+                    }
+
                     if (material.overlayTextureIndex >= 0)
                     {
                         const std::size_t overlayIndex = static_cast<std::size_t>(material.overlayTextureIndex);
@@ -5400,6 +6399,11 @@ namespace client::graphics
                     1,
                     &tattooTextureView);
 
+                state_->context->PSSetShaderResources(
+                    14,
+                    1,
+                    &lightmapTextureView);
+
                 alphaMode =
                     effectiveAlphaMode(
                         alphaMode);
@@ -5448,6 +6452,11 @@ namespace client::graphics
 
             state_->context->PSSetShaderResources(
                 13,
+                1,
+                &emptyModelTexture);
+
+            state_->context->PSSetShaderResources(
+                14,
                 1,
                 &emptyModelTexture);
 

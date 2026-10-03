@@ -42,21 +42,21 @@ int main(
     {
 #if defined(STUDIO_BUILD)
 
-        std::string spaceName =
-            "start_tutorial_warehouse"; // load map for Studio
+        std::string levelName =
+            "l01_escape";
 
         if (argc >= 2 &&
             argv[1] != nullptr &&
             argv[1][0] != '\0')
         {
-            spaceName =
+            levelName =
                 argv[1];
         }
 
         studio::Application
             application(
                 std::move(
-                    spaceName));
+                    levelName));
 
         exitCode =
             application.Run();

@@ -45,6 +45,9 @@ namespace client::graphics
 
         core::images::RgbaImage image;
 
+        std::vector<std::byte>
+            encodedDds;
+
         bool hasTransparentPixels =
             false;
 
@@ -62,6 +65,15 @@ namespace client::graphics
     {
         std::int32_t diffuseTextureIndex =
             -1;
+
+        std::int32_t lightmapTextureIndex =
+            -1;
+
+        bool useXRayLighting =
+            false;
+
+        bool useXRayTerrainLightmap =
+            false;
 
         SceneAlphaMode alphaMode =
             SceneAlphaMode::Opaque;

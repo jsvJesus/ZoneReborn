@@ -67,6 +67,7 @@
     <ClInclude Include="Private\Preview\TerrainRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\WaterRenderDataBuilder.h" />
     <ClInclude Include="Private\Preview\WorldPreviewLoader.h" />
+    <ClInclude Include="Private\Preview\XRayLevelRenderDataBuilder.h" />
     <ClInclude Include="Private\States\ClientState.h" />
   </ItemGroup>
 
@@ -113,6 +114,7 @@
     <ClCompile Include="Private\Preview\TerrainRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WaterRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WorldPreviewLoader.cpp" />
+    <ClCompile Include="Private\Preview\XRayLevelRenderDataBuilder.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <ClCompile Include="Private\World\WorldCollision.cpp" />
     <ClCompile Include="Private\World\WorldSession.cpp" />
   </ItemGroup>
