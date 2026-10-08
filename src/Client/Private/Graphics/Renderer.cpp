@@ -1640,6 +1640,18 @@ namespace client::graphics
             backBufferTexture;
 
         ComPtr<ID3D11Texture2D>
+            editorViewportTexture;
+
+        ComPtr<ID3D11ShaderResourceView>
+            editorViewportShaderResourceView;
+
+        FrameOverlayCallback frameOverlayCallback =
+            nullptr;
+
+        void* frameOverlayUserData =
+            nullptr;
+
+        ComPtr<ID3D11Texture2D>
             sceneColourTexture;
 
         ComPtr<ID3D11RenderTargetView>
@@ -1947,6 +1959,50 @@ namespace client::graphics
 
             return false;
         }
+        
+#if defined(STUDIO_BUILD)
+        D3D11_TEXTURE2D_DESC viewportDescription{};
+
+        state_->backBufferTexture->GetDesc(
+            &viewportDescription);
+
+        viewportDescription.Usage =
+            D3D11_USAGE_DEFAULT;
+
+        viewportDescription.BindFlags =
+            D3D11_BIND_SHADER_RESOURCE;
+
+        viewportDescription.CPUAccessFlags = 0;
+        viewportDescription.MiscFlags = 0;
+
+        result =
+            state_->device->CreateTexture2D(
+                &viewportDescription,
+                nullptr,
+                &state_->editorViewportTexture);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create editor viewport texture.";
+
+            return false;
+        }
+
+        result =
+            state_->device->CreateShaderResourceView(
+                state_->editorViewportTexture.Get(),
+                nullptr,
+                &state_->editorViewportShaderResourceView);
+
+        if (FAILED(result))
+        {
+            error =
+                "Unable to create editor viewport SRV.";
+
+            return false;
+        }
+#endif
 
         D3D11_TEXTURE2D_DESC
             sceneColourDescription{};
@@ -4778,23 +4834,54 @@ namespace client::graphics
             state_->sceneRadius;
     }
 
+    ID3D11Device*
+    Renderer::Device() const noexcept
+    {
+        return state_
+            ? state_->device.Get()
+            : nullptr;
+    }
+
+    ID3D11DeviceContext*
+    Renderer::Context() const noexcept
+    {
+        return state_
+            ? state_->context.Get()
+            : nullptr;
+    }
+
+    ID3D11ShaderResourceView*
+    Renderer::ViewportImage() const noexcept
+    {
+        return state_
+            ? state_->editorViewportShaderResourceView.Get()
+            : nullptr;
+    }
+
+    void Renderer::SetFrameOverlay(
+        FrameOverlayCallback callback,
+        void* userData) noexcept
+    {
+        if (!state_)
+        {
+            return;
+        }
+
+        state_->frameOverlayCallback = callback;
+        state_->frameOverlayUserData = userData;
+    }
+
     bool Renderer::Render(
         std::string& error)
     {
         error.clear();
 
         if (!state_ ||
-        !state_->context ||
-        !state_->swapChain ||
-        (
-            state_->meshes.empty() &&
-            !state_->sky.enabled &&
-            state_->backgroundTextureView.Get() ==
-                nullptr
-        ))
+            !state_->context ||
+            !state_->swapChain)
         {
             error =
-                "Renderer has nothing to render.";
+                "Renderer is not initialized.";
 
             return false;
         }
@@ -4806,6 +4893,29 @@ namespace client::graphics
             0.035f,
             1.0f
         };
+
+        const bool emptyScene =
+            state_->meshes.empty() &&
+            !state_->sky.enabled &&
+            state_->backgroundTextureView.Get() ==
+        nullptr;
+
+        if (emptyScene)
+        {
+            ID3D11RenderTargetView* target =
+                state_->renderTargetView.Get();
+
+            state_->context->OMSetRenderTargets(
+                1,
+                &target,
+                nullptr);
+
+            state_->context->ClearRenderTargetView(
+                target,
+                ClearColour);
+
+            return PresentFrame(error);
+        }
 
         state_->context->OMSetRenderTargets(
             0,
@@ -7022,6 +7132,81 @@ namespace client::graphics
                 0);
         }
 
+        return PresentFrame(error);
+    }
+
+    bool Renderer::PresentFrame(
+        std::string& error)
+    {
+        if (!state_ ||
+            !state_->context ||
+            !state_->swapChain)
+        {
+            error = "Invalid renderer state.";
+            return false;
+        }
+
+        if (state_->frameOverlayCallback)
+        {
+            ID3D11ShaderResourceView* nullView =
+                nullptr;
+
+            state_->context->PSSetShaderResources(
+                0,
+                1,
+                &nullView);
+
+            state_->context->OMSetRenderTargets(
+                0,
+                nullptr,
+                nullptr);
+
+            if (state_->editorViewportTexture)
+            {
+                state_->context->CopyResource(
+                    state_->editorViewportTexture.Get(),
+                    state_->backBufferTexture.Get());
+            }
+
+            ID3D11RenderTargetView* target =
+                state_->renderTargetView.Get();
+
+            state_->context->OMSetRenderTargets(
+                1,
+                &target,
+                nullptr);
+
+            constexpr float editorBackground[4]
+            {
+                0.07f,
+                0.075f,
+                0.08f,
+                1.0f
+            };
+
+            state_->context->ClearRenderTargetView(
+                target,
+                editorBackground);
+
+            D3D11_VIEWPORT viewport{};
+
+            viewport.Width =
+                static_cast<float>(state_->width);
+
+            viewport.Height =
+                static_cast<float>(state_->height);
+
+            viewport.MinDepth = 0.0f;
+            viewport.MaxDepth = 1.0f;
+
+            state_->context->RSSetViewports(
+                1,
+                &viewport);
+
+            state_->frameOverlayCallback(
+                state_->frameOverlayUserData);
+        }
+
         const HRESULT result =
             state_->swapChain->Present(
                 1,
@@ -7029,9 +7214,7 @@ namespace client::graphics
 
         if (FAILED(result))
         {
-            error =
-                "D3D11 Present failed.";
-
+            error = "D3D11 Present failed.";
             return false;
         }
 

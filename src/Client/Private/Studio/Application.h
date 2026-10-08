@@ -3,12 +3,12 @@
 #include "Core/Runtime.h"
 
 #include "Graphics/Renderer.h"
-
 #include "Input/CameraController.h"
 #include "Platform/Window.h"
-#include "World/WorldCollision.h"
 
-#include <chrono>
+#include "Studio/EditorScene.h"
+#include "Studio/UI/EditorUI.h"
+
 #include <string>
 
 namespace studio
@@ -16,8 +16,7 @@ namespace studio
     class Application final
     {
     public:
-        explicit Application(
-            std::string levelName);
+        Application() = default;
 
         int Run();
 
@@ -28,39 +27,29 @@ namespace studio
         [[nodiscard]]
         bool Update();
 
+        [[nodiscard]]
+        bool NewScene();
+
+        static void RenderOverlay(
+            void* userData);
+
         void Shutdown();
 
-        std::string
-            levelName_;
+        core::Runtime runtime_;
 
-        core::Runtime
-            runtime_;
+        client::platform::Window window_;
 
-        client::platform::Window
-            window_;
+        client::graphics::Renderer renderer_;
 
-        client::world::Collision
-            collision_;
+        client::input::CameraController camera_;
 
-        client::graphics::Renderer
-            renderer_;
+        EditorScene scene_;
 
-        client::input::CameraController
-            camera_;
+        ui::EditorUI editorUI_;
 
-        std::chrono::steady_clock::time_point
-            previousFrame_{};
-
-        bool rendererInitialized_ =
-            false;
-
-        bool collisionReady_ =
-            false;
-
-        bool windowInitialized_ =
-            false;
-
-        bool runtimeInitialized_ =
-            false;
+        bool rendererInitialized_ = false;
+        bool uiInitialized_ = false;
+        bool windowInitialized_ = false;
+        bool runtimeInitialized_ = false;
     };
 }

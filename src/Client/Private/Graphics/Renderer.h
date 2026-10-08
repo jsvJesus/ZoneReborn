@@ -14,6 +14,9 @@
 #include <memory>
 #include <string>
 
+struct ID3D11Device;
+struct ID3D11DeviceContext;
+struct ID3D11ShaderResourceView;
 
 namespace client::graphics
 {
@@ -90,7 +93,27 @@ namespace client::graphics
 
         void Shutdown();
 
+        using FrameOverlayCallback = void (*)(void* userData);
+
+        [[nodiscard]]
+        ID3D11Device* Device() const noexcept;
+
+        [[nodiscard]]
+        ID3D11DeviceContext* Context() const noexcept;
+
+        [[nodiscard]]
+        ID3D11ShaderResourceView*
+        ViewportImage() const noexcept;
+
+        void SetFrameOverlay(
+            FrameOverlayCallback callback,
+            void* userData) noexcept;
+
     private:
+        [[nodiscard]]
+        bool PresentFrame(
+            std::string& error);
+        
         struct State;
 
         std::unique_ptr<State>

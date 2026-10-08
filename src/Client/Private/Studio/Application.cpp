@@ -1,30 +1,17 @@
+
 #include "Studio/Application.h"
 
-#include "Preview/XRayLevelRenderDataBuilder.h"
-
 #include "Core/Log.h"
-#include "Core/World/XRay/XRayLevelLoader.h"
 
-#include <filesystem>
-#include <utility>
+#include <Windows.h>
 
 namespace studio
 {
-    Application::Application(
-        std::string levelName)
-        :
-        levelName_(
-            std::move(
-                levelName))
-    {
-    }
-
     int Application::Run()
     {
         if (!Initialize())
         {
             Shutdown();
-
             return 1;
         }
 
@@ -33,7 +20,6 @@ namespace studio
             if (!Update())
             {
                 Shutdown();
-
                 return 2;
             }
         }
@@ -50,8 +36,7 @@ namespace studio
             return false;
         }
 
-        runtimeInitialized_ =
-            true;
+        runtimeInitialized_ = true;
 
         std::string error;
 
@@ -61,73 +46,11 @@ namespace studio
                 L"Studio",
                 error))
         {
-            core::Log::Error(
-                error);
-
+            core::Log::Error(error);
             return false;
         }
 
-        windowInitialized_ =
-            true;
-
-        const std::filesystem::path levelComponent(
-            levelName_);
-
-        if (levelName_.empty() ||
-            levelComponent.is_absolute() ||
-            levelComponent.has_parent_path() ||
-            levelComponent ==
-                "." ||
-            levelComponent ==
-                "..")
-        {
-            core::Log::Error(
-                "X-Ray level name must be a single directory name.");
-
-            return false;
-        }
-
-        const std::filesystem::path levelDirectory =
-            runtime_.GameRoot() /
-            "gamedata" /
-            "levels" /
-            levelComponent;
-
-        core::Log::Info(
-            std::string(
-                "Studio loading X-Ray level: ") +
-            levelDirectory.string());
-
-        core::world::xray::LevelData
-            level;
-
-        core::world::xray::LevelLoader
-            levelLoader;
-
-        if (!levelLoader.Load(
-                levelDirectory,
-                level,
-                error))
-        {
-            core::Log::Error(
-                std::string(
-                    "Unable to load X-Ray level: ") +
-                error);
-
-            return false;
-        }
-
-        core::Log::Info(
-            std::string(
-                "X-Ray metadata ready: visuals=") +
-            std::to_string(
-                level.visuals.size()) +
-            ", vertex buffers=" +
-            std::to_string(
-                level.vertexBuffers.size()) +
-            ", index buffers=" +
-            std::to_string(
-                level.indexBuffers.size()));
+        windowInitialized_ = true;
 
         if (!renderer_.Initialize(
                 window_.NativeHandle(),
@@ -135,209 +58,149 @@ namespace studio
                 window_.Height(),
                 error))
         {
-            core::Log::Error(
-                error);
-
+            core::Log::Error(error);
             return false;
         }
 
-        rendererInitialized_ =
-            true;
+        rendererInitialized_ = true;
 
-        client::preview::XRayLevelRenderStatistics
-            statistics;
+        if (!NewScene())
+        {
+            return false;
+        }
 
-        if (!client::preview::StreamXRayLevelRenderData(
-                level,
-                renderer_,
-                statistics,
-                error))
+        if (!editorUI_.Initialize(
+                window_.NativeHandle(),
+                renderer_.Device(),
+                renderer_.Context()))
         {
             core::Log::Error(
-                std::string(
-                    "Unable to build X-Ray DX11 scene: ") +
-                error);
+                "Unable to initialize Dear ImGui.");
 
             return false;
         }
 
-        core::Log::Info(
-            std::string(
-                "X-Ray level version: ") +
-            std::to_string(
-                level.version));
+        uiInitialized_ = true;
+
+        renderer_.SetFrameOverlay(
+            &Application::RenderOverlay,
+            this);
 
         core::Log::Info(
-            std::string(
-                "X-Ray vertex buffers: ") +
-            std::to_string(
-                level.vertexBuffers.size()));
+            "Studio editor initialized.");
 
         core::Log::Info(
-            std::string(
-                "X-Ray index buffers: ") +
-            std::to_string(
-                level.indexBuffers.size()));
+            "Startup scene: empty.");
 
-        core::Log::Info(
-            std::string(
-                "X-Ray visuals: ") +
-            std::to_string(
-                level.visuals.size()));
+        return true;
+    }
 
-        core::Log::Info(
-            std::string(
-                "X-Ray shaders: ") +
-            std::to_string(
-                level.shaders.size()));
+    bool Application::NewScene()
+    {
+        std::string error;
 
-        core::Log::Info(
-            std::string(
-                "X-Ray static visuals loaded: ") +
-            std::to_string(
-                statistics.staticVisualCount));
+        if (!renderer_.BeginStreamedScene(error))
+        {
+            core::Log::Error(
+                "Unable to clear scene: " + error);
 
-        core::Log::Info(
-            std::string(
-                "X-Ray hierarchy visuals: ") +
-            std::to_string(
-                statistics.hierarchyVisualCount));
+            return false;
+        }
 
-        core::Log::Info(
-            std::string(
-                "X-Ray unsupported visuals skipped: ") +
-            std::to_string(
-                statistics.skippedVisualCount));
-
-        core::Log::Info(
-            std::string(
-                "X-Ray DX11 meshes: ") +
-            std::to_string(
-                statistics.meshCount));
-
-        core::Log::Info(
-            std::string(
-                "X-Ray DX11 vertices: ") +
-            std::to_string(
-                statistics.vertexCount));
-
-        core::Log::Info(
-            std::string(
-                "X-Ray DX11 triangles: ") +
-            std::to_string(
-                statistics.triangleCount));
-
-        core::Log::Info(
-            std::string(
-                "X-Ray material groups: ") +
-            std::to_string(
-                statistics.materialGroupCount));
-
-        core::Log::Info(
-            std::string(
-                "X-Ray textured material groups: ") +
-            std::to_string(
-                statistics.texturedMaterialCount));
-
-        core::Log::Info(
-            std::string(
-                "X-Ray lightmapped material groups: ") +
-            std::to_string(
-                statistics.lightmappedMaterialCount));
-
-        core::Log::Info(
-            std::string(
-                "X-Ray DDS textures loaded: ") +
-            std::to_string(
-                statistics.loadedTextureCount));
-
-        core::Log::Info(
-            std::string(
-                "X-Ray DDS textures missing: ") +
-            std::to_string(
-                statistics.missingTextureCount));
+        scene_.New();
 
         camera_.Reset(
-            renderer_.SceneCenter(),
-            renderer_.SceneRadius());
+            {0.0f, 0.0f, 0.0f},
+            10.0f);
 
         renderer_.SetCamera(
             camera_.View());
 
-        previousFrame_ =
-            std::chrono::steady_clock::now();
-
         core::Log::Info(
-            "Studio scene ready.");
+            "New empty scene created.");
 
         return true;
     }
 
     bool Application::Update()
     {
-        const auto now =
-            std::chrono::steady_clock::now();
+        editorUI_.BeginFrame(
+            scene_,
+            renderer_.ViewportImage());
 
-        const float deltaSeconds =
-            std::chrono::duration<float>(
-                now -
-                previousFrame_).
-                count();
+        if (editorUI_.ConsumeNewSceneRequest())
+        {
+            if (!NewScene())
+            {
+                return false;
+            }
+        }
 
-        previousFrame_ =
-            now;
-
-        camera_.Update(
-            window_.NativeHandle(),
-            window_.ConsumeMouseWheelDelta(),
-            deltaSeconds);
-
-        renderer_.SetCamera(
-            camera_.View());
+        if (editorUI_.ConsumeExitRequest())
+        {
+            PostMessageW(
+                window_.NativeHandle(),
+                WM_CLOSE,
+                0,
+                0);
+        }
 
         std::string error;
 
-        if (!renderer_.Render(
-                error))
+        if (!renderer_.Render(error))
         {
-            core::Log::Error(
-                error);
-
+            core::Log::Error(error);
             return false;
         }
 
         return true;
     }
 
+    void Application::RenderOverlay(
+        void* userData)
+    {
+        if (!userData)
+        {
+            return;
+        }
+
+        auto* application =
+            static_cast<Application*>(userData);
+
+        application->editorUI_.Render();
+    }
+
     void Application::Shutdown()
     {
         if (rendererInitialized_)
         {
-            renderer_.Shutdown();
-
-            rendererInitialized_ =
-                false;
+            renderer_.SetFrameOverlay(
+                nullptr,
+                nullptr);
         }
 
-        collision_.Clear();
+        if (uiInitialized_)
+        {
+            editorUI_.Shutdown();
+            uiInitialized_ = false;
+        }
 
-        collisionReady_ =
-            false;
+        if (rendererInitialized_)
+        {
+            renderer_.Shutdown();
+            rendererInitialized_ = false;
+        }
 
         if (windowInitialized_)
         {
             window_.Shutdown();
-
-            windowInitialized_ =
-                false;
+            windowInitialized_ = false;
         }
 
         if (runtimeInitialized_)
         {
             runtime_.Shutdown();
-
-            runtimeInitialized_ =
-                false;
+            runtimeInitialized_ = false;
         }
     }
 }

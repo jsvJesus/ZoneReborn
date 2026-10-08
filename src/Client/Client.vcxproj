@@ -115,6 +115,8 @@
     <ClCompile Include="Private\Preview\WaterRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WorldPreviewLoader.cpp" />
     <ClCompile Include="Private\Preview\XRayLevelRenderDataBuilder.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <ClCompile Include="Private\Studio\EditorScene.cpp" />
+    <ClCompile Include="Private\Studio\UI\EditorUI.cpp" />
     <ClCompile Include="Private\World\WorldCollision.cpp" />
     <ClCompile Include="Private\World\WorldSession.cpp" />
   </ItemGroup>
@@ -210,6 +212,8 @@
         $(ProjectDir);
         $(ProjectDir)Private;
         $(ProjectDir)..\Core\Public;
+        $(ProjectDir)..\..\third_party\DearImGui;
+        $(ProjectDir)..\..\third_party\DearImGui\backends;
         %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
       
@@ -306,6 +310,8 @@
 
   <ItemGroup>
     <ClInclude Include="Private\Studio\Application.h" />
+    <ClInclude Include="Private\Studio\EditorScene.h" />
+    <ClInclude Include="Private\Studio\UI\EditorUI.h" />
     <ClInclude Include="Private\World\WorldCollision.h" />
     <ClInclude Include="Private\World\WorldSession.h" />
     <ClInclude Include="Resources\Resource.h" />

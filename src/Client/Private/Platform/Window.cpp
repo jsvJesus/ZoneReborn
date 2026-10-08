@@ -1,6 +1,11 @@
 #include "Platform/Window.h"
 #include "Resources/Resource.h"
 
+#if defined(STUDIO_BUILD)
+#include "imgui.h"
+#include "backends/imgui_impl_win32.h"
+#endif
+
 namespace
 {
     constexpr wchar_t WindowClassName[] =
@@ -426,6 +431,20 @@ namespace client::platform
                 reinterpret_cast<LONG_PTR>(
                     instance));
         }
+
+#if defined(STUDIO_BUILD)
+        if (ImGui::GetCurrentContext() != nullptr)
+        {
+            if (ImGui_ImplWin32_WndProcHandler(
+                    window,
+                    message,
+                    wParam,
+                    lParam))
+            {
+                return 1;
+            }
+        }
+#endif
 
         if (instance !=
             nullptr)

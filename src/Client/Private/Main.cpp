@@ -1,3 +1,4 @@
+
 #if defined(STUDIO_BUILD)
 
 #include "Studio/Application.h"
@@ -12,7 +13,6 @@
 
 #include <exception>
 #include <iostream>
-#include <string>
 
 #include <Windows.h>
 
@@ -29,45 +29,23 @@ namespace
     }
 }
 
-int main(
-    const int argc,
-    char** argv)
+int main()
 {
     SetProcessDPIAware();
 
-    int exitCode =
-        0;
+    int exitCode = 0;
 
     try
     {
 #if defined(STUDIO_BUILD)
 
-        std::string levelName =
-            "pripyat_full";
-
-        if (argc >= 2 &&
-            argv[1] != nullptr &&
-            argv[1][0] != '\0')
-        {
-            levelName =
-                argv[1];
-        }
-
-        studio::Application
-            application(
-                std::move(
-                    levelName));
-
-        exitCode =
-            application.Run();
+        studio::Application application;
+        exitCode = application.Run();
 
 #elif defined(FINAL_BUILD)
 
-        client::Application
-            application;
-
-        exitCode =
-            application.Run();
+        client::Application application;
+        exitCode = application.Run();
 
 #else
 
@@ -80,8 +58,7 @@ int main(
         core::Log::Error(
             exception.what());
 
-        exitCode =
-            1;
+        exitCode = 1;
     }
     catch (...)
     {
@@ -97,8 +74,7 @@ int main(
 
 #endif
 
-        exitCode =
-            1;
+        exitCode = 1;
     }
 
     if (exitCode != 0)
