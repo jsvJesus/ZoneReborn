@@ -40,6 +40,20 @@ namespace studio::ui
 
         ImGuiIO& io = ImGui::GetIO();
 
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+        ImFont* editorFont = io.Fonts->AddFontFromFileTTF(
+            "C:\\Windows\\Fonts\\segoeui.ttf",
+            18.0f
+        );
+
+        if (editorFont != nullptr)
+        {
+            io.FontDefault = editorFont;
+        }
+
+        ImGui::GetStyle().ScaleAllSizes(1.15f);
+
         io.ConfigFlags |=
             ImGuiConfigFlags_NavEnableKeyboard;
 
