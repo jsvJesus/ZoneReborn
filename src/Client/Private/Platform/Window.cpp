@@ -4,6 +4,13 @@
 #if defined(STUDIO_BUILD)
 #include "imgui.h"
 #include "backends/imgui_impl_win32.h"
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(
+    HWND hWnd,
+    UINT msg,
+    WPARAM wParam,
+    LPARAM lParam
+);
 #endif
 
 namespace
@@ -436,10 +443,10 @@ namespace client::platform
         if (ImGui::GetCurrentContext() != nullptr)
         {
             if (ImGui_ImplWin32_WndProcHandler(
-                    window,
-                    message,
-                    wParam,
-                    lParam))
+                window,
+                message,
+                wParam,
+                lParam))
             {
                 return 1;
             }

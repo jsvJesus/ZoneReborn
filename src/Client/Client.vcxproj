@@ -119,6 +119,13 @@
     <ClCompile Include="Private\Studio\UI\EditorUI.cpp" />
     <ClCompile Include="Private\World\WorldCollision.cpp" />
     <ClCompile Include="Private\World\WorldSession.cpp" />
+
+    <ClCompile Include="..\..\third_party\DearImGui\imgui.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <ClCompile Include="..\..\third_party\DearImGui\imgui_draw.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <ClCompile Include="..\..\third_party\DearImGui\imgui_tables.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <ClCompile Include="..\..\third_party\DearImGui\imgui_widgets.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <ClCompile Include="..\..\third_party\DearImGui\backends\imgui_impl_win32.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <ClCompile Include="..\..\third_party\DearImGui\backends\imgui_impl_dx11.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   </ItemGroup>
 
   <ItemGroup>
