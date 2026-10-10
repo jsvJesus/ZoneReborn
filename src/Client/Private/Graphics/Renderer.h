@@ -77,6 +77,9 @@ namespace client::graphics
             std::string& error);
 
 #if defined(STUDIO_BUILD)
+        void SetParticleCollisionQuery(
+            std::shared_ptr<const core::world::particles::ParticleCollisionQuery> collision);
+
         void SetHomOccluders(
             const std::vector<core::world::xray::HomTriangle>& triangles);
 

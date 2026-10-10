@@ -528,6 +528,43 @@ namespace studio::ui
 
                 ImGui::Separator();
 
+                ImGui::Text("CFORM: %s", !stats.cformPresent ? "Not present" :
+                    (stats.collisionFaces == 0 ? "Empty" : "Loaded (indexed)"));
+                if (stats.cformPresent)
+                {
+                    ImGui::Text("Collision vertices: %u", stats.collisionVertices);
+                    ImGui::Text("Collision faces: %u", stats.collisionFaces);
+                    ImGui::Text("BVH nodes: %zu", stats.collisionNodes);
+                    ImGui::Text("Material IDs: %zu", stats.collisionMaterials);
+                    ImGui::Text("Sector IDs: %zu", stats.collisionSectors);
+                    ImGui::Text("Mapped file: %.1f MiB", double(stats.collisionMappedBytes)/1048576.0);
+                    ImGui::Text("BVH memory: %.1f MiB", double(stats.collisionIndexBytes)/1048576.0);
+                    ImGui::TextDisabled("Mapped pages are managed by Windows.");
+                    ImGui::BeginDisabled(stats.collisionFaces == 0);
+                    if (ImGui::Button("Probe collision (view centre)"))
+                        collisionProbeRequested_ = true;
+                    if (ImGui::IsItemHovered())
+                        ImGui::SetTooltip("Cast along the camera forward direction. Free camera is unchanged.");
+                    ImGui::EndDisabled();
+                    const auto& probe = stats.collisionProbe;
+                    if (probe.performed)
+                    {
+                        if (!probe.hit) ImGui::TextDisabled("Probe: no collision hit.");
+                        else
+                        {
+                            ImGui::Text("Hit face: %u | distance: %.2f", probe.face, probe.distance);
+                            ImGui::Text("Physical material ID: %u", unsigned(probe.material));
+                            if (probe.sector == 0xffffu) ImGui::Text("Sector: unknown (0xffff)");
+                            else ImGui::Text("Sector: %u", unsigned(probe.sector));
+                            ImGui::Text("Position: %.2f %.2f %.2f", probe.position.x, probe.position.y, probe.position.z);
+                            ImGui::Text("Normal: %.3f %.3f %.3f", probe.normal.x, probe.normal.y, probe.normal.z);
+                            ImGui::Text("Suppress shadows: %s", probe.suppressShadows ? "yes" : "no");
+                            ImGui::Text("Suppress wallmarks: %s", probe.suppressWallmarks ? "yes" : "no");
+                        }
+                    }
+                }
+                ImGui::Separator();
+
                 const std::string path =
                     PathToUtf8(scene.Directory());
 
@@ -914,6 +951,11 @@ namespace studio::ui
     bool EditorUI::ConsumeExitRequest() noexcept
     {
         return std::exchange(exitRequested_, false);
+    }
+
+    bool EditorUI::ConsumeCollisionProbeRequest() noexcept
+    {
+        return std::exchange(collisionProbeRequested_, false);
     }
 
     bool EditorUI::ViewportHovered() const noexcept

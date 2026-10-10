@@ -1,12 +1,31 @@
 #pragma once
 
+#include "Core/Math/Vector3.h"
+
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
+#include <memory>
 #include <string>
+
+namespace core::world::xray { class CformCollision; }
 
 namespace studio
 {
+    struct CollisionProbeStatistics final
+    {
+        bool performed = false;
+        bool hit = false;
+        std::uint32_t face = 0xffffffffu;
+        std::uint16_t material = 0;
+        std::uint16_t sector = 0xffffu;
+        float distance = 0.0f;
+        core::math::Vector3 position{};
+        core::math::Vector3 normal{};
+        bool suppressShadows = false;
+        bool suppressWallmarks = false;
+    };
+
     struct SceneStatistics final
     {
         std::size_t visuals = 0;
@@ -19,6 +38,15 @@ namespace studio
         std::size_t homTriangles = 0;
         std::size_t homTestedVisuals = 0;
         std::size_t homCulledVisuals = 0;
+        bool cformPresent = false;
+        std::uint32_t collisionVertices = 0;
+        std::uint32_t collisionFaces = 0;
+        std::size_t collisionNodes = 0;
+        std::size_t collisionMaterials = 0;
+        std::size_t collisionSectors = 0;
+        std::uint64_t collisionMappedBytes = 0;
+        std::size_t collisionIndexBytes = 0;
+        CollisionProbeStatistics collisionProbe;
     };
 
     class EditorScene final
@@ -30,7 +58,11 @@ namespace studio
 
         void Open(
             const std::filesystem::path& directory,
-            const SceneStatistics& statistics);
+            const SceneStatistics& statistics,
+            std::shared_ptr<const core::world::xray::CformCollision> collision = {});
+
+        const core::world::xray::CformCollision* Collision() const noexcept;
+        void SetCollisionProbe(const CollisionProbeStatistics& probe) noexcept;
 
         void SetHomFrameStatistics(
             std::size_t testedVisuals,
@@ -59,6 +91,7 @@ namespace studio
         std::filesystem::path directory_;
 
         SceneStatistics statistics_{};
+        std::shared_ptr<const core::world::xray::CformCollision> collision_;
 
         std::uint64_t revision_ = 0;
 

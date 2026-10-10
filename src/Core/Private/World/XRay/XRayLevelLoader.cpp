@@ -1,4 +1,5 @@
 #include "Core/World/XRay/XRayLevelLoader.h"
+#include "Core/World/XRay/CformCollision.h"
 #include "Core/World/XRay/XRaySpatialMath.h"
 
 #include <algorithm>
@@ -1895,6 +1896,21 @@ namespace core::world::xray
         }
         if (!ParseTopology(level, levelRange, output, error)) return false;
         if (!ParseHom(levelDirectory, output, error)) return false;
+
+        const auto collisionFile = levelDirectory / "level.cform";
+        std::error_code collisionError;
+        const bool collisionPresent = std::filesystem::exists(collisionFile, collisionError);
+        if (collisionError)
+        {
+            error = "Unable to inspect level.cform: " + collisionError.message();
+            return false;
+        }
+        if (collisionPresent)
+        {
+            auto collision = std::make_shared<CformCollision>();
+            if (!collision->Load(collisionFile, output.sectors.size(), error)) return false;
+            output.collision = std::move(collision);
+        }
 
         return true;
     }

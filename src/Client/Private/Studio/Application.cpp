@@ -3,12 +3,14 @@
 #include "Core/Log.h"
 #include "Core/Platform/Paths.h"
 #include "Core/World/XRay/XRayLevelLoader.h"
+#include "Core/World/XRay/CformCollision.h"
 
 #include "Preview/XRayLevelRenderDataBuilder.h"
 
 #include <Windows.h>
 
 #include <chrono>
+#include <algorithm>
 #include <string>
 
 namespace studio
@@ -234,7 +236,21 @@ namespace studio
         statistics.homPresent = level.homPresent;
         statistics.homTriangles = level.homTriangles.size();
 
-        scene_.Open(directory, statistics);
+        if (level.collision)
+        {
+            const auto collision = level.collision->Statistics();
+            statistics.cformPresent = true;
+            statistics.collisionVertices = collision.vertices;
+            statistics.collisionFaces = collision.faces;
+            statistics.collisionNodes = collision.nodes;
+            statistics.collisionMaterials = collision.materials;
+            statistics.collisionSectors = collision.sectors;
+            statistics.collisionMappedBytes = collision.mappedBytes;
+            statistics.collisionIndexBytes = collision.indexBytes;
+        }
+
+        scene_.Open(directory, statistics, level.collision);
+        renderer_.SetParticleCollisionQuery(level.collision);
 
         camera_.Reset(
             renderer_.SceneCenter(),
@@ -264,6 +280,16 @@ namespace studio
                 (level.homTriangles.empty() ? "disabled (empty map)." : "enabled.");
         core::Log::Info(homMessage);
         editorUI_.AddConsoleMessage(homMessage);
+        const std::string collisionMessage = !statistics.cformPresent
+            ? "CFORM: level.cform is absent; level collision unavailable."
+            : "CFORM: indexed vertices=" + std::to_string(statistics.collisionVertices) +
+                " | faces=" + std::to_string(statistics.collisionFaces) +
+                " | material IDs=" + std::to_string(statistics.collisionMaterials) +
+                " | sector IDs=" + std::to_string(statistics.collisionSectors) +
+                " | mapped MiB=" + std::to_string(double(statistics.collisionMappedBytes)/1048576.0) +
+                " | BVH MiB=" + std::to_string(double(statistics.collisionIndexBytes)/1048576.0);
+        core::Log::Info(collisionMessage);
+        editorUI_.AddConsoleMessage(collisionMessage);
     }
 
     bool Application::Update()
@@ -346,6 +372,39 @@ namespace studio
             viewportActive,
             &editorUI_.ViewportRectangle());
 
+        if (editorUI_.ConsumeCollisionProbeRequest() && scene_.Collision())
+        {
+            const auto& view = camera_.View();
+            const float distance = std::max(5000.0f, renderer_.SceneRadius()*10.0f);
+            const core::math::Vector3 end{
+                view.position.x+view.forward.x*distance,
+                view.position.y+view.forward.y*distance,
+                view.position.z+view.forward.z*distance};
+            core::world::xray::CformHit hit;
+            CollisionProbeStatistics probe;
+            probe.performed = true;
+            probe.hit = scene_.Collision()->Raycast(view.position,end,hit);
+            if (probe.hit)
+            {
+                probe.face = hit.face;
+                probe.material = hit.material;
+                probe.sector = hit.sector;
+                probe.distance = hit.fraction*distance;
+                probe.position = hit.position;
+                probe.normal = hit.normal;
+                probe.suppressShadows = (hit.attributes & 0x4000u) != 0;
+                probe.suppressWallmarks = (hit.attributes & 0x8000u) != 0;
+            }
+            scene_.SetCollisionProbe(probe);
+            const std::string message = probe.hit
+                ? "CFORM hit: face=" + std::to_string(probe.face) +
+                    " | material ID=" + std::to_string(probe.material) +
+                    " | sector=" + (probe.sector == 0xffffu ? std::string("unknown") : std::to_string(probe.sector)) +
+                    " | distance=" + std::to_string(probe.distance)
+                : "CFORM probe: no collision hit.";
+            editorUI_.AddConsoleMessage(message);
+        }
+
         renderer_.SetCamera(
             camera_.View());
 
@@ -392,6 +451,7 @@ namespace studio
             renderer_.Shutdown();
             rendererInitialized_ = false;
         }
+        scene_.New(); // Release the mapped collision after renderer query users.
 
         if (windowInitialized_)
         {

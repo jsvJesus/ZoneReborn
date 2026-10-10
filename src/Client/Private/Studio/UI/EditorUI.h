@@ -54,6 +54,8 @@ namespace studio::ui
         [[nodiscard]]
         bool ConsumeExitRequest() noexcept;
 
+        bool ConsumeCollisionProbeRequest() noexcept;
+
         [[nodiscard]]
         bool ViewportHovered() const noexcept;
 
@@ -95,6 +97,7 @@ namespace studio::ui
         bool openLevelRequested_ = false;
         bool refreshLevelsRequested_ = false;
         bool exitRequested_ = false;
+        bool collisionProbeRequested_ = false;
 
         bool viewportHovered_ = false;
 

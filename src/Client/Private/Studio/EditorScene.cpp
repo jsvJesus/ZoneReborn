@@ -1,6 +1,8 @@
 #include "Studio/EditorScene.h"
 #include "Studio/LevelCatalog.h"
 
+#include <utility>
+
 namespace studio
 {
     EditorScene::EditorScene()
@@ -14,6 +16,7 @@ namespace studio
         directory_.clear();
 
         statistics_ = {};
+        collision_.reset();
 
         ++revision_;
 
@@ -23,7 +26,8 @@ namespace studio
 
     void EditorScene::Open(
         const std::filesystem::path& directory,
-        const SceneStatistics& statistics)
+        const SceneStatistics& statistics,
+        std::shared_ptr<const core::world::xray::CformCollision> collision)
     {
         directory_ = directory;
 
@@ -31,11 +35,22 @@ namespace studio
             directory.filename());
 
         statistics_ = statistics;
+        collision_ = std::move(collision);
 
         ++revision_;
 
         empty_ = false;
         dirty_ = false;
+    }
+
+    const core::world::xray::CformCollision* EditorScene::Collision() const noexcept
+    {
+        return collision_.get();
+    }
+
+    void EditorScene::SetCollisionProbe(const CollisionProbeStatistics& probe) noexcept
+    {
+        statistics_.collisionProbe = probe;
     }
 
     void EditorScene::SetHomFrameStatistics(

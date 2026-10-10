@@ -6,11 +6,13 @@
 #include <array>
 #include <cstdint>
 #include <filesystem>
+#include <memory>
 #include <string>
 #include <vector>
 
 namespace core::world::xray
 {
+    class CformCollision;
     inline constexpr std::uint32_t InvalidIndex = 0xFFFFFFFFu;
 
     struct HomTriangle final
@@ -163,5 +165,6 @@ namespace core::world::xray
 
         bool homPresent = false;
         std::vector<HomTriangle> homTriangles;
+        std::shared_ptr<CformCollision> collision;
     };
 }

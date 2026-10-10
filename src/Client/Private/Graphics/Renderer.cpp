@@ -1783,6 +1783,10 @@ namespace client::graphics
         std::vector<SceneFlare>
             flares;
 
+#if defined(STUDIO_BUILD)
+        // Declare before systems: their raw query pointers die before ownership does.
+        std::shared_ptr<const core::world::particles::ParticleCollisionQuery> streamedCollision;
+#endif
         std::vector<
             core::world::particles::ParticleRuntimeSystem>
             particleSystems;
@@ -3085,6 +3089,8 @@ namespace client::graphics
 
 #if defined(STUDIO_BUILD)
         state_->hom.Clear();
+        if (particleCollision != state_->streamedCollision.get())
+            SetParticleCollisionQuery({});
 #endif
         state_->meshes.clear();
         state_->instances.clear();
@@ -4205,6 +4211,9 @@ namespace client::graphics
         state_->flares.clear();
         state_->particleSystems.clear();
         state_->particleEmitters.clear();
+#if defined(STUDIO_BUILD)
+        state_->streamedCollision.reset();
+#endif
         state_->instances.clear();
         state_->lodInstances.clear();
         state_->renderInstances.clear();
@@ -4615,6 +4624,15 @@ namespace client::graphics
     }
 
 #if defined(STUDIO_BUILD)
+    void Renderer::SetParticleCollisionQuery(
+        std::shared_ptr<const core::world::particles::ParticleCollisionQuery> collision)
+    {
+        if (!state_) return;
+        for (auto& system : state_->particleSystems)
+            system.SetCollisionQuery(collision.get());
+        state_->streamedCollision = std::move(collision);
+    }
+
     void Renderer::SetHomOccluders(
         const std::vector<core::world::xray::HomTriangle>& triangles)
     {
