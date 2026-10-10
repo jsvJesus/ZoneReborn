@@ -251,6 +251,16 @@ namespace studio
         }
 
         scene_.Open(directory, statistics, level.collision, level.spawn);
+        scene_.SetNativeLighting(LoadXRayLighting(level));
+        const auto& nativeLighting = scene_.NativeLighting();
+        editorUI_.AddConsoleMessage(nativeLighting.source + " | spawn lamps=" +
+            std::to_string(nativeLighting.lamps.size() + nativeLighting.lampSpots.size()) +
+            " | level lights=" + std::to_string(level.lights.size()));
+        for (const auto& warning : nativeLighting.warnings)
+        {
+            core::Log::Info(warning);
+            editorUI_.AddConsoleMessage(warning);
+        }
         std::string lightingError;
 
         if (!scene_.LoadLighting(lightingError))

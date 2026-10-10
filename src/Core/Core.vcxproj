@@ -99,6 +99,7 @@
     <ClInclude Include="Public\Core\World\XRay\CformCollision.h" />
     <ClInclude Include="Public\Core\World\XRay\XRayLevelLoader.h" />
     <ClInclude Include="Public\Core\World\XRay\XRaySpawnData.h" />
+    <ClInclude Include="Public\Core\World\XRay\XRayLightData.h" />
     <ClInclude Include="Public\Core\World\XRay\XRaySpawnLoader.h" />
   </ItemGroup>
 

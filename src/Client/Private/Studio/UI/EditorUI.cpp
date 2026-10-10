@@ -899,18 +899,43 @@ namespace studio::ui
             ImGui::TextUnformatted("Environment");
             ImGui::Separator();
 
+            const auto& lighting = scene.NativeLighting();
+            auto weatherIndex = scene.WeatherIndex();
+            float hours = scene.TimeOfDay();
+            bool native = scene.NativeLightingEnabled();
+            bool lamps = scene.NativeLampsEnabled();
+            bool statics = scene.StaticLightsEnabled();
+            bool changed = false;
+            const char* preview = weatherIndex < lighting.weather.size() ?
+                lighting.weather[weatherIndex].name.c_str() : "Editor daylight fallback";
+            if (ImGui::BeginCombo("Weather profile", preview))
+            {
+                for (std::size_t i = 0; i < lighting.weather.size(); ++i)
+                    if (ImGui::Selectable(lighting.weather[i].name.c_str(), weatherIndex == i))
+                    { weatherIndex = i; changed = true; }
+                ImGui::EndCombo();
+            }
+            changed |= ImGui::SliderFloat("Time of day", &hours, 0.0f, 24.0f, "%.2f h");
+            changed |= ImGui::Checkbox("Map sun / ambient / hemisphere", &native);
+            changed |= ImGui::Checkbox("Spawn lamps (root transforms)", &lamps);
+            changed |= ImGui::Checkbox("Static level lights (may double baked light)", &statics);
+            if (changed) scene.SetLightingPreview(weatherIndex, hours, native, lamps, statics);
+            ImGui::TextWrapped("%s", lighting.source.c_str());
+            ImGui::TextWrapped("Preview only: weather/time are not saved. No dynamic shadows yet.");
+            ImGui::Separator();
+
             std::array<float, 3> ambient =
                 scene.Ambient();
 
             if (ImGui::ColorEdit3(
-                "Ambient Color",
+                "Additional ambient",
                 ambient.data()))
             {
                 scene.SetAmbient(ambient);
             }
 
             if (ImGui::DragFloat3(
-                "Ambient RGB",
+                "Additional ambient RGB",
                 ambient.data(),
                 0.005f,
                 0.0f,

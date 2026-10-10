@@ -2,6 +2,7 @@
 
 #include "Core/Math/Vector3.h"
 #include "Core/Math/Transform3x4.h"
+#include "Core/World/XRay/XRayLightData.h"
 
 #include <array>
 #include <cstdint>
@@ -168,5 +169,6 @@ namespace core::world::xray
         std::vector<HomTriangle> homTriangles;
         std::shared_ptr<CformCollision> collision;
         std::shared_ptr<const SpawnData> spawn;
+        std::vector<LevelLight> lights;
     };
 }

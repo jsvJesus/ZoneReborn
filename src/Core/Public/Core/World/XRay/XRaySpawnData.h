@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Core/Math/Vector3.h"
+#include "Core/World/XRay/XRayLightData.h"
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -37,6 +39,7 @@ namespace core::world::xray
         std::size_t decodedStateBytes = 0;
         SpawnStateDecoding stateDecoding = SpawnStateDecoding::Opaque;
         std::string visual;
+        std::optional<SpawnLamp> lamp;
         std::string customData; // Embedded ALife ini text, never executed.
         std::vector<std::pair<std::string, std::string>> parameters;
         // Original bytes, including unknown STATE and trailing update bytes.

@@ -43,6 +43,8 @@ namespace
 
         float u2;
         float v2;
+        float hemi;
+        float sun;
     };
 
     constexpr std::uint32_t MaxOmniLights =
@@ -132,6 +134,7 @@ namespace
 
         DirectX::XMFLOAT4
             atmosphere1;
+        DirectX::XMFLOAT4 hemisphereColour;
     };
 
     static_assert(
@@ -2575,13 +2578,17 @@ namespace client::graphics
                 32,
                 D3D11_INPUT_PER_VERTEX_DATA,
                 0
+            },
+            {
+                "TEXCOORD", 2, DXGI_FORMAT_R32G32_FLOAT,
+                0, 40, D3D11_INPUT_PER_VERTEX_DATA, 0
             }
         };
 
         result =
             state_->device->CreateInputLayout(
                 inputElements,
-                4,
+                5,
                 vertexShaderCode->GetBufferPointer(),
                 vertexShaderCode->GetBufferSize(),
                 &state_->inputLayout);
@@ -3149,7 +3156,9 @@ namespace client::graphics
                     vertex.v,
 
                     vertex.u2,
-                    vertex.v2
+                    vertex.v2,
+                    vertex.xrayHemi,
+                    vertex.xraySun
                 });
 
                 minimum.x =
@@ -4430,7 +4439,9 @@ namespace client::graphics
                 vertex.v,
 
                 vertex.u2,
-                vertex.v2
+                vertex.v2,
+                vertex.xrayHemi,
+                vertex.xraySun
             });
 
             minimum.x =
@@ -4863,7 +4874,9 @@ namespace client::graphics
                 vertex.v,
 
                 vertex.u2,
-                vertex.v2
+                vertex.v2,
+                vertex.xrayHemi,
+                vertex.xraySun
             });
         }
 
@@ -5533,6 +5546,8 @@ namespace client::graphics
         {
             const StudioLightingData& lighting =
                 state_->studioLighting;
+            skyConstants.hemisphereColour =
+            {lighting.hemisphere[0], lighting.hemisphere[1], lighting.hemisphere[2], 1.0f};
 
             skyConstants.ambientColour =
             {

@@ -118,6 +118,7 @@
     <ClCompile Include="Private\Preview\WorldPreviewLoader.cpp" />
     <ClCompile Include="Private\Preview\XRayLevelRenderDataBuilder.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <ClCompile Include="Private\Studio\EditorScene.cpp" />
+    <ClCompile Include="Private\Studio\XRayLighting.cpp" />
     <ClCompile Include="Private\Studio\LevelCatalog.cpp" />
     <ClCompile Include="Private\Studio\UI\EditorUI.cpp" />
     <ClCompile Include="Private\Studio\UI\EditorSpawnUI.cpp" />
@@ -324,6 +325,7 @@
   <ItemGroup>
     <ClInclude Include="Private\Studio\Application.h" />
     <ClInclude Include="Private\Studio\EditorScene.h" />
+    <ClInclude Include="Private\Studio\XRayLighting.h" />
     <ClInclude Include="Private\Studio\LevelCatalog.h" />
     <ClInclude Include="Private\Studio\UI\EditorTheme.h" />
     <ClInclude Include="Private\Studio\UI\EditorUI.h" />

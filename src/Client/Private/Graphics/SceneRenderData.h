@@ -298,6 +298,7 @@ namespace client::graphics
     struct StudioLightingData final
     {
         bool enabled = false;
+        std::array<float, 3> hemisphere{};
 
         std::array<float, 3> ambient
         {

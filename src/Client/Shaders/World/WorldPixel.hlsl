@@ -17,10 +17,10 @@ float4 PSMain(
         1.0f;
 
     float staticHemi =
-        1.0f;
+        modelLightmapParameters.z > 0.5f ? saturate(input.bakedLighting.x) : 1.0f;
 
     float staticSun =
-        1.0f;
+        modelLightmapParameters.z > 0.5f ? saturate(input.bakedLighting.y) : 1.0f;
 
     if (useWater != 0)
     {
@@ -163,19 +163,16 @@ float4 PSMain(
                 sunDirection));
 
     const float3 ambientLighting =
-        skyAmbientColour.rgb *
-        (
-            0.35f * staticHemi +
-            // X-Ray adds ambient independently of baked hemi occlusion.
-            // This is the preview baseline until its environment is loaded.
-            (modelLightmapParameters.z > 0.5f ? 0.15f : 0.0f)
-        );
+        modelLightmapParameters.z > 0.5f ?
+            skyAmbientColour.rgb +
+                skyHemisphereColour.rgb * staticHemi * saturate(0.5f + 0.5f * normal.y) :
+            skyAmbientColour.rgb * 0.35f * staticHemi;
 
     const float3 directionalLighting =
         skySunColour.rgb *
         sunDiffuse *
         skySunDirectionDaylight.w *
-        0.85f *
+        (modelLightmapParameters.z > 0.5f ? 1.0f : 0.85f) *
         staticSun;
 
     float3 omniDiffuse =

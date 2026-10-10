@@ -1895,6 +1895,37 @@ namespace core::world::xray
                 if (colours[child] == 0u) { colours[child] = 1u; stack.push_back({child, 0u}); }
             }
         }
+        Chunk lightChunk;
+        bool lightsPresent = false;
+        if (!FindChunk(level,levelRange,6u,lightChunk,lightsPresent,error,"X-Ray lights")) return false;
+        if (lightsPresent)
+        {
+            constexpr std::size_t RecordBytes = 108; // controller u32 + native Flight (104 bytes).
+            if (lightChunk.compressed || lightChunk.data.size % RecordBytes != 0)
+            { error = "X-Ray level light chunk is compressed or has an invalid record size."; return false; }
+            for (std::uint64_t offset = 0; offset < lightChunk.data.size; offset += RecordBytes)
+            {
+                std::array<std::byte,RecordBytes> bytes{};
+                if (!level.Read(lightChunk.data.offset+offset,bytes.data(),bytes.size(),error)) return false;
+                const auto scalar = [&](std::size_t at)
+                { float result; std::memcpy(&result,bytes.data()+at,4); return result; };
+                const auto vector = [&](std::size_t at)
+                { return math::Vector3{scalar(at),scalar(at+4),scalar(at+8)}; };
+                LevelLight light;
+                std::memcpy(&light.controller,bytes.data(),4);
+                std::memcpy(&light.type,bytes.data()+4,4);
+                light.colour = vector(8);
+                light.position = vector(56);
+                light.direction = vector(68);
+                light.range = scalar(80);
+                light.coneRadians = scalar(104);
+                if (light.type < 1 || light.type > 3 || !spatial::Finite(light.colour) ||
+                    !spatial::Finite(light.position) || !spatial::Finite(light.direction) ||
+                    !std::isfinite(light.range) || light.range < 0 || !std::isfinite(light.coneRadians))
+                { error = "X-Ray level light contains invalid parameters."; return false; }
+                output.lights.push_back(light);
+            }
+        }
         if (!ParseTopology(level, levelRange, output, error)) return false;
         if (!ParseHom(levelDirectory, output, error)) return false;
 

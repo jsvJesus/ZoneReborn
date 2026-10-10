@@ -631,6 +631,7 @@ namespace
             FindElement(
                 source,
                 DeclarationUsageNormal);
+        const auto* bakedColour = FindElement(source, 10u); // D3DDECLUSAGE_COLOR.
 
         const core::world::xray::VertexElement* tangent =
             FindElement(
@@ -808,6 +809,13 @@ namespace
                 ReadVertexValue<std::uint32_t>(
                     bytes,
                     normal->offset);
+            vertex.xrayHemi = static_cast<float>((packedNormal >> 24u) & 255u) / 255.0f;
+            if (bakedColour && bakedColour->type == DeclarationTypeColour &&
+                static_cast<std::uint32_t>(bakedColour->offset) + 4u <= source.stride)
+            {
+                const auto colour = ReadVertexValue<std::uint32_t>(bytes, bakedColour->offset);
+                vertex.xraySun = static_cast<float>((colour >> 24u) & 255u) / 255.0f;
+            }
 
             vertex.packedNormal =
                 PackNormal(

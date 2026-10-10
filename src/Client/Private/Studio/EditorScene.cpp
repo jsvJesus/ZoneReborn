@@ -26,6 +26,7 @@ namespace studio
         selectedSpawnIndex_ = -1;
 
         lights_.clear();
+        SetNativeLighting({});
         ambient_ = {0.0f, 0.0f, 0.0f};
         selectedLightIndex_ = -1;
         nextLightNumber_ = 1;
@@ -42,6 +43,11 @@ namespace studio
         std::shared_ptr<const core::world::xray::CformCollision> collision,
         std::shared_ptr<const core::world::xray::SpawnData> spawn)
     {
+        // A map without editor.lighting must not inherit the previous map's lights.
+        lights_.clear();
+        ambient_ = {0.0f, 0.0f, 0.0f};
+        nextLightNumber_ = 1;
+        SetNativeLighting({});
         directory_ = directory;
 
         name_ = PathToUtf8(
@@ -305,6 +311,27 @@ namespace studio
         StudioLightingData output;
         output.enabled = true;
         output.ambient = ambient_;
+        if (nativeLightingEnabled_ && !empty_)
+        {
+            const auto weather = EvaluateXRayWeather(
+                weatherIndex_ < nativeLighting_.weather.size() ? &nativeLighting_.weather[weatherIndex_] : nullptr,
+                timeOfDay_);
+            for (std::size_t i = 0; i < 3u; ++i) output.ambient[i] += weather.ambient[i];
+            output.hemisphere = weather.hemisphere;
+            output.sunColour = weather.sunColour;
+            output.sunDirection = weather.sunDirection;
+            output.sunIntensity = 1.0f;
+        }
+        if (nativeLampsEnabled_)
+        {
+            output.omniLights = nativeLighting_.lamps;
+            output.spotLights = nativeLighting_.lampSpots;
+        }
+        if (staticLightsEnabled_)
+        {
+            output.omniLights.insert(output.omniLights.end(), nativeLighting_.staticLights.begin(), nativeLighting_.staticLights.end());
+            output.spotLights.insert(output.spotLights.end(), nativeLighting_.staticSpots.begin(), nativeLighting_.staticSpots.end());
+        }
 
         constexpr float DegreesToRadians =
             3.14159265358979323846f / 180.0f;
@@ -381,6 +408,27 @@ namespace studio
             return {};
 
         return directory_ / "editor.lighting";
+    }
+
+    void EditorScene::SetNativeLighting(XRayLighting lighting)
+    {
+        nativeLighting_ = std::move(lighting);
+        weatherIndex_ = nativeLighting_.defaultWeather;
+        timeOfDay_ = 12.0f;
+        nativeLightingEnabled_ = true;
+        nativeLampsEnabled_ = true;
+        staticLightsEnabled_ = false; // Usually already baked into the map.
+        ++revision_;
+    }
+
+    void EditorScene::SetLightingPreview(std::size_t weather, float hours, bool native, bool lamps, bool statics)
+    {
+        weatherIndex_ = weather < nativeLighting_.weather.size() ? weather : 0;
+        timeOfDay_ = std::isfinite(hours) ? std::clamp(hours, 0.0f, 24.0f) : 12.0f;
+        nativeLightingEnabled_ = native;
+        nativeLampsEnabled_ = lamps;
+        staticLightsEnabled_ = statics;
+        ++revision_; // Preview controls deliberately do not change editor.lighting v1.
     }
 
     bool EditorScene::SaveLighting(std::string& error)

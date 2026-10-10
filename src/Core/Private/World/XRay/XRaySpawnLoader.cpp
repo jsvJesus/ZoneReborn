@@ -170,25 +170,33 @@ namespace core::world::xray
                     }
                     if (lamp)
                     {
-                        Property(object,"Light ARGB",state.Read<std::uint32_t>());
-                        Property(object,"Brightness",state.Float());
+                        SpawnLamp light;
+                        light.colour = state.Read<std::uint32_t>();
+                        Property(object,"Light ARGB",light.colour);
+                        light.brightness = state.Float();
+                        Property(object,"Brightness",light.brightness);
                         Property(object,"Colour animator",state.String());
-                        Property(object,"Range",state.Float());
-                        Property(object,"Light flags",state.Read<std::uint16_t>());
+                        light.range = state.Float();
+                        Property(object,"Range",light.range);
+                        light.flags = state.Read<std::uint16_t>();
+                        Property(object,"Light flags",light.flags);
                         Property(object,"Startup animation",state.String());
                         Property(object,"Fixed bones",state.String());
-                        Property(object,"Health",state.Float());
+                        light.health = state.Float();
+                        Property(object,"Health",light.health);
                         Property(object,"Virtual size",state.Float());
                         Property(object,"Ambient radius",state.Float());
                         Property(object,"Ambient power",state.Float());
                         for (const auto* name : {"Ambient texture","Light texture","Main bone"})
                             Property(object,name,state.String());
-                        Property(object,"Spot cone radians",state.Float());
+                        light.coneRadians = state.Float();
+                        Property(object,"Spot cone radians",light.coneRadians);
                         Property(object,"Glow texture",state.String());
                         Property(object,"Glow radius",state.Float());
                         Property(object,"Ambient bone",state.String());
                         for (const auto* name : {"Volumetric quality","Volumetric intensity","Volumetric distance"})
                             Property(object,name,state.Float());
+                        object.lamp = light;
                     }
                     if (restrictor || changer || climbable)
                     {

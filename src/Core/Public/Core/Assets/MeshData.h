@@ -27,6 +27,9 @@ namespace core::assets
 
         float u2 = 0.0f;
         float v2 = 0.0f;
+        // X-Ray packed normal/colour alpha, independent of decoded normal/tint.
+        float xrayHemi = 1.0f;
+        float xraySun = 1.0f;
 
         std::uint32_t packedTangent = 0;
         std::uint32_t packedBinormal = 0;

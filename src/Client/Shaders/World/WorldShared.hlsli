@@ -86,6 +86,7 @@ cbuffer SkyConstants : register(b3)
 
     float4 skyAtmosphere0;
     float4 skyAtmosphere1;
+    float4 skyHemisphereColour;
 };
 
 Texture2D terrainTexture0 : register(t0);
@@ -115,6 +116,7 @@ struct VertexInput
     float3 normal : NORMAL;
     float2 texcoord : TEXCOORD0;
     float2 lightmapTexcoord : TEXCOORD1;
+    float2 bakedLighting : TEXCOORD2;
 };
 
 struct PixelInput
@@ -125,6 +127,7 @@ struct PixelInput
     float2 terrainUV : TEXCOORD1;
     float3 worldPosition : TEXCOORD2;
     float2 lightmapUV : TEXCOORD3;
+    float2 bakedLighting : TEXCOORD4;
 };
 
 #endif

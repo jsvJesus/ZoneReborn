@@ -2,6 +2,7 @@
 
 #include "Core/Math/Vector3.h"
 #include "Graphics/SceneRenderData.h"
+#include "Studio/XRayLighting.h"
 
 #include <array>
 #include <vector>
@@ -168,6 +169,15 @@ namespace studio
         [[nodiscard]]
         bool LoadLighting(std::string& error);
 
+        void SetNativeLighting(XRayLighting lighting);
+        const XRayLighting& NativeLighting() const noexcept { return nativeLighting_; }
+        std::size_t WeatherIndex() const noexcept { return weatherIndex_; }
+        float TimeOfDay() const noexcept { return timeOfDay_; }
+        bool NativeLightingEnabled() const noexcept { return nativeLightingEnabled_; }
+        bool NativeLampsEnabled() const noexcept { return nativeLampsEnabled_; }
+        bool StaticLightsEnabled() const noexcept { return staticLightsEnabled_; }
+        void SetLightingPreview(std::size_t weather, float hours, bool native, bool lamps, bool statics);
+
     private:
         std::string name_;
         std::filesystem::path directory_;
@@ -186,6 +196,12 @@ namespace studio
         std::filesystem::path LightingPath() const;
 
         std::vector<LightObject> lights_;
+        XRayLighting nativeLighting_;
+        std::size_t weatherIndex_ = 0;
+        float timeOfDay_ = 12.0f;
+        bool nativeLightingEnabled_ = true;
+        bool nativeLampsEnabled_ = true;
+        bool staticLightsEnabled_ = false;
 
         std::array<float, 3> ambient_
         {

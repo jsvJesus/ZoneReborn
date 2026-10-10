@@ -33,6 +33,7 @@ PixelInput VSMain(
 
     output.lightmapUV =
         input.lightmapTexcoord;
+    output.bakedLighting = input.bakedLighting;
 
     output.worldPosition =
         worldPosition.xyz;
