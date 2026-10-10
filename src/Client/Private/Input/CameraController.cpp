@@ -138,25 +138,22 @@ namespace client::input
     void CameraController::Update(
         const HWND window,
         const float mouseWheelDelta,
-        float deltaSeconds) noexcept
+        float deltaSeconds,
+        const bool allowInput,
+        const RECT* viewportRectangle) noexcept
     {
         if (window == nullptr)
-        {
             return;
-        }
 
         deltaSeconds =
-            std::clamp(
-                deltaSeconds,
-                0.0f,
-                0.1f);
+            std::clamp(deltaSeconds, 0.0f, 0.1f);
 
-        if (GetForegroundWindow() !=
-            window)
+        if (GetForegroundWindow() != window || !allowInput)
         {
-            mouseLookActive_ =
-                false;
+            if (mouseLookActive_ && GetCapture() == window)
+                ReleaseCapture();
 
+            mouseLookActive_ = false;
             return;
         }
 
@@ -262,7 +259,14 @@ namespace client::input
 
         if (rightMouseDown)
         {
-            RECT clientRectangle{};
+            RECT activeRectangle = clientRectangle;
+
+            if (viewportRectangle &&
+                viewportRectangle->right > viewportRectangle->left &&
+                viewportRectangle->bottom > viewportRectangle->top)
+            {
+                activeRectangle = *viewportRectangle;
+            }
 
             if (GetClientRect(
                     window,
@@ -270,17 +274,8 @@ namespace client::input
             {
                 POINT center
                 {
-                    (
-                        clientRectangle.right -
-                        clientRectangle.left
-                    ) /
-                        2,
-
-                    (
-                        clientRectangle.bottom -
-                        clientRectangle.top
-                    ) /
-                        2
+                    (activeRectangle.left + activeRectangle.right) / 2,
+                    (activeRectangle.top + activeRectangle.bottom) / 2
                 };
 
                 ClientToScreen(

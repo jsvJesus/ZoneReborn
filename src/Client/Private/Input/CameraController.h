@@ -16,7 +16,9 @@ namespace client::input
         void Update(
             HWND window,
             float mouseWheelDelta,
-            float deltaSeconds) noexcept;
+            float deltaSeconds,
+            bool allowInput = true,
+            const RECT* viewportRectangle = nullptr) noexcept;
 
         [[nodiscard]]
         const graphics::CameraView& View() const noexcept;

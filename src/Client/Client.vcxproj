@@ -116,16 +116,17 @@
     <ClCompile Include="Private\Preview\WorldPreviewLoader.cpp" />
     <ClCompile Include="Private\Preview\XRayLevelRenderDataBuilder.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <ClCompile Include="Private\Studio\EditorScene.cpp" />
+    <ClCompile Include="Private\Studio\LevelCatalog.cpp" />
     <ClCompile Include="Private\Studio\UI\EditorUI.cpp" />
     <ClCompile Include="Private\World\WorldCollision.cpp" />
     <ClCompile Include="Private\World\WorldSession.cpp" />
 
-    <ClCompile Include="..\..\third_party\DearImGui\imgui.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-    <ClCompile Include="..\..\third_party\DearImGui\imgui_draw.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-    <ClCompile Include="..\..\third_party\DearImGui\imgui_tables.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-    <ClCompile Include="..\..\third_party\DearImGui\imgui_widgets.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-    <ClCompile Include="..\..\third_party\DearImGui\backends\imgui_impl_win32.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-    <ClCompile Include="..\..\third_party\DearImGui\backends\imgui_impl_dx11.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <ClCompile Include="..\..\third_party\DearImGui\imgui.cpp" />
+    <ClCompile Include="..\..\third_party\DearImGui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\third_party\DearImGui\imgui_tables.cpp" />
+    <ClCompile Include="..\..\third_party\DearImGui\imgui_widgets.cpp" />
+    <ClCompile Include="..\..\third_party\DearImGui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\..\third_party\DearImGui\backends\imgui_impl_dx11.cpp" />
   </ItemGroup>
 
   <ItemGroup>
@@ -278,6 +279,8 @@
         $(ProjectDir)..\Core\Public;
         $(ProjectDir)..\..\third_party\WebView2\build\native\include;
         $(ProjectDir)..\..\third_party\fmod;
+        $(ProjectDir)..\..\third_party\DearImGui;
+        $(ProjectDir)..\..\third_party\DearImGui\backends;
         %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
 
@@ -318,6 +321,7 @@
   <ItemGroup>
     <ClInclude Include="Private\Studio\Application.h" />
     <ClInclude Include="Private\Studio\EditorScene.h" />
+    <ClInclude Include="Private\Studio\LevelCatalog.h" />
     <ClInclude Include="Private\Studio\UI\EditorUI.h" />
     <ClInclude Include="Private\World\WorldCollision.h" />
     <ClInclude Include="Private\World\WorldSession.h" />

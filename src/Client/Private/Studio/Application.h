@@ -7,8 +7,11 @@
 #include "Platform/Window.h"
 
 #include "Studio/EditorScene.h"
+#include "Studio/LevelCatalog.h"
 #include "Studio/UI/EditorUI.h"
 
+#include <chrono>
+#include <filesystem>
 #include <string>
 
 namespace studio
@@ -30,6 +33,11 @@ namespace studio
         [[nodiscard]]
         bool NewScene();
 
+        void OpenLevel(
+            const std::filesystem::path& directory);
+
+        void RefreshLevels();
+
         static void RenderOverlay(
             void* userData);
 
@@ -38,14 +46,16 @@ namespace studio
         core::Runtime runtime_;
 
         client::platform::Window window_;
-
         client::graphics::Renderer renderer_;
-
         client::input::CameraController camera_;
 
+        LevelCatalog catalog_;
         EditorScene scene_;
 
         ui::EditorUI editorUI_;
+
+        std::chrono::steady_clock::time_point
+            previousFrame_{};
 
         bool rendererInitialized_ = false;
         bool uiInitialized_ = false;
