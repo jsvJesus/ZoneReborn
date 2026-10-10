@@ -15,6 +15,10 @@ namespace studio
         std::size_t triangles = 0;
         std::size_t textures = 0;
         std::size_t missingTextures = 0;
+        bool homPresent = false;
+        std::size_t homTriangles = 0;
+        std::size_t homTestedVisuals = 0;
+        std::size_t homCulledVisuals = 0;
     };
 
     class EditorScene final
@@ -27,6 +31,10 @@ namespace studio
         void Open(
             const std::filesystem::path& directory,
             const SceneStatistics& statistics);
+
+        void SetHomFrameStatistics(
+            std::size_t testedVisuals,
+            std::size_t culledVisuals) noexcept;
 
         [[nodiscard]]
         const std::string& Name() const noexcept;

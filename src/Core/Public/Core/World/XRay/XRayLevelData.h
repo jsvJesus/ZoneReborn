@@ -13,6 +13,15 @@ namespace core::world::xray
 {
     inline constexpr std::uint32_t InvalidIndex = 0xFFFFFFFFu;
 
+    struct HomTriangle final
+    {
+        std::array<math::Vector3, 3> vertices{};
+        // X-Ray treats any nonzero flags value as a two-sided occluder.
+        std::uint32_t flags = 0;
+    };
+
+    static_assert(sizeof(HomTriangle) == 40u);
+
     struct Portal final
     {
         std::uint16_t frontSector = 0;
@@ -151,5 +160,8 @@ namespace core::world::xray
         std::vector<std::vector<SlideWindow>> slideWindows;
         std::vector<VertexBuffer> secondaryVertexBuffers;
         std::vector<IndexBuffer> secondaryIndexBuffers;
+
+        bool homPresent = false;
+        std::vector<HomTriangle> homTriangles;
     };
 }

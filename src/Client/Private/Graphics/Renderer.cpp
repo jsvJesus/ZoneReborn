@@ -1625,6 +1625,10 @@ namespace client::graphics
             std::vector<SceneModelMaterial>
                 modelMaterials;
 
+#if defined(STUDIO_BUILD)
+            std::vector<SceneOcclusionRange> occlusionRanges;
+#endif
+
             DirectX::XMFLOAT3 minimum{};
             DirectX::XMFLOAT3 maximum{};
         };
@@ -1752,6 +1756,10 @@ namespace client::graphics
 
         std::vector<GpuMesh>
             meshes;
+
+#if defined(STUDIO_BUILD)
+        XRayHomOcclusion hom;
+#endif
 
         std::vector<
             ComPtr<ID3D11ShaderResourceView>>
@@ -3075,6 +3083,9 @@ namespace client::graphics
             return false;
         }
 
+#if defined(STUDIO_BUILD)
+        state_->hom.Clear();
+#endif
         state_->meshes.clear();
         state_->instances.clear();
 
@@ -4181,6 +4192,9 @@ namespace client::graphics
             return false;
         }
 
+#if defined(STUDIO_BUILD)
+        state_->hom.Clear();
+#endif
         state_->meshes.clear();
         state_->textures.clear();
         state_->terrainMaterials.clear();
@@ -4437,6 +4451,38 @@ namespace client::graphics
         const std::size_t indexElementSize =
             mesh.IndexElementSize();
 
+#if defined(STUDIO_BUILD)
+        if (!sceneMesh.occlusionRanges.empty())
+        {
+            std::uint64_t nextIndex = 0;
+            for (const auto& range : sceneMesh.occlusionRanges)
+            {
+                if (range.startIndex != nextIndex || range.indexCount == 0u ||
+                    range.indexCount % 3u != 0u ||
+                    !std::isfinite(range.minimum.x) || !std::isfinite(range.minimum.y) ||
+                    !std::isfinite(range.minimum.z) || !std::isfinite(range.maximum.x) ||
+                    !std::isfinite(range.maximum.y) || !std::isfinite(range.maximum.z) ||
+                    range.minimum.x > range.maximum.x || range.minimum.y > range.maximum.y ||
+                    range.minimum.z > range.maximum.z)
+                {
+                    error = "Streamed mesh contains an invalid HOM visual range.";
+                    return false;
+                }
+                nextIndex += range.indexCount;
+                if (nextIndex > indexCount)
+                {
+                    error = "HOM visual range exceeds the streamed index buffer.";
+                    return false;
+                }
+            }
+            if (nextIndex != indexCount)
+            {
+                error = "HOM visual ranges do not cover the streamed index buffer.";
+                return false;
+            }
+        }
+#endif
+
         if (indexCount >
             std::numeric_limits<UINT>::max() /
                 indexElementSize)
@@ -4536,6 +4582,10 @@ namespace client::graphics
         gpuMesh.modelMaterials =
             sceneMesh.modelMaterials;
 
+#if defined(STUDIO_BUILD)
+        gpuMesh.occlusionRanges = sceneMesh.occlusionRanges;
+#endif
+
         gpuMesh.minimum =
             minimum;
 
@@ -4563,6 +4613,20 @@ namespace client::graphics
 
         return true;
     }
+
+#if defined(STUDIO_BUILD)
+    void Renderer::SetHomOccluders(
+        const std::vector<core::world::xray::HomTriangle>& triangles)
+    {
+        if (state_)
+            state_->hom.SetTriangles(triangles);
+    }
+
+    HomOcclusionStatistics Renderer::HomStatistics() const noexcept
+    {
+        return state_ ? state_->hom.Statistics() : HomOcclusionStatistics{};
+    }
+#endif
 
     bool Renderer::FinishStreamedScene(
         std::string& error)
@@ -5155,6 +5219,14 @@ namespace client::graphics
         const XMMATRIX viewProjection =
             view *
             projection;
+
+#if defined(STUDIO_BUILD)
+        XMFLOAT4X4 homMatrix;
+        XMStoreFloat4x4(&homMatrix, viewProjection);
+        std::array<float, 16> homProjection{};
+        std::memcpy(homProjection.data(), &homMatrix, sizeof(homMatrix));
+        state_->hom.Build(homProjection, state_->camera.position);
+#endif
 
         const XMMATRIX inverseViewProjection =
             XMMatrixInverse(
@@ -6047,6 +6119,44 @@ namespace client::graphics
                 &constants.world,
                 world);
 
+            const auto drawModelIndices =
+                [this, &mesh, &instance](std::uint32_t firstIndex, std::uint32_t count)
+                {
+#if defined(STUDIO_BUILD)
+                    if (state_->hom.Active() && !mesh.occlusionRanges.empty())
+                    {
+                        const std::uint64_t end = std::uint64_t(firstIndex) + count;
+                        auto range = std::lower_bound(
+                            mesh.occlusionRanges.begin(), mesh.occlusionRanges.end(), firstIndex,
+                            [](const SceneOcclusionRange& item, std::uint32_t index)
+                            { return std::uint64_t(item.startIndex) + item.indexCount <= index; });
+                        std::uint32_t batchStart = 0, batchCount = 0;
+                        const auto flush = [&]()
+                        {
+                            if (batchCount != 0u)
+                                state_->context->DrawIndexed(batchCount, batchStart, 0);
+                            batchCount = 0;
+                        };
+                        for (; range != mesh.occlusionRanges.end() && range->startIndex < end; ++range)
+                        {
+                            if (state_->hom.IsOccluded(range->minimum, range->maximum, instance.transform))
+                            {
+                                flush();
+                                continue;
+                            }
+                            const auto start = std::max(firstIndex, range->startIndex);
+                            const auto stop = std::min(end, std::uint64_t(range->startIndex) + range->indexCount);
+                            if (batchCount == 0u)
+                                batchStart = start;
+                            batchCount += static_cast<std::uint32_t>(stop - start);
+                        }
+                        flush();
+                        return;
+                    }
+#endif
+                    state_->context->DrawIndexed(count, firstIndex, 0);
+                };
+
             if (mesh.terrainMaterialIndex >= 0)
             {
                 const std::size_t materialIndex =
@@ -6234,10 +6344,7 @@ namespace client::graphics
                     0,
                     0);
 
-                state_->context->DrawIndexed(
-                    mesh.indexCount,
-                    0,
-                    0);
+                drawModelIndices(0u, mesh.indexCount);
 
                 continue;
             }
@@ -6553,11 +6660,7 @@ namespace client::graphics
                     0,
                     0);
 
-                state_->context->DrawIndexed(
-                    group.primitiveCount *
-                        3u,
-                    group.startIndex,
-                    0);
+                drawModelIndices(group.startIndex, group.primitiveCount * 3u);
             }
 
             ID3D11ShaderResourceView*

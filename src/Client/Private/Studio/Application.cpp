@@ -231,6 +231,9 @@ namespace studio
         statistics.missingTextures =
             renderStatistics.missingTextureCount;
 
+        statistics.homPresent = level.homPresent;
+        statistics.homTriangles = level.homTriangles.size();
+
         scene_.Open(directory, statistics);
 
         camera_.Reset(
@@ -254,6 +257,13 @@ namespace studio
 
         core::Log::Info(message);
         editorUI_.AddConsoleMessage(message);
+        const std::string homMessage = !level.homPresent
+            ? "HOM: level.hom is absent; occlusion culling disabled."
+            : "HOM: loaded " + std::to_string(level.homTriangles.size()) +
+                " occluder triangles; occlusion culling " +
+                (level.homTriangles.empty() ? "disabled (empty map)." : "enabled.");
+        core::Log::Info(homMessage);
+        editorUI_.AddConsoleMessage(homMessage);
     }
 
     bool Application::Update()
@@ -285,6 +295,10 @@ namespace studio
 
             return false;
         }
+
+        const auto homStatistics = renderer_.HomStatistics();
+        scene_.SetHomFrameStatistics(
+            homStatistics.testedVisuals, homStatistics.culledVisuals);
 
         editorUI_.BeginFrame(
             scene_,

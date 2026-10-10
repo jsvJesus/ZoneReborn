@@ -2,6 +2,7 @@
 
 #include "Core/Assets/MeshData.h"
 #include "Core/Log.h"
+#include "Core/World/XRay/XRaySpatialMath.h"
 
 #include <algorithm>
 #include <array>
@@ -1439,6 +1440,10 @@ namespace client::preview
                     return false;
                 }
 
+                const std::uint32_t visualStartIndex =
+                    static_cast<std::uint32_t>(mesh.indices32.size());
+                core::world::xray::spatial::Bounds visualBounds;
+
                 for (const std::uint16_t index :
                      indices)
                 {
@@ -1473,6 +1478,16 @@ namespace client::preview
 
                     mesh.indices32.push_back(
                         rebasedIndex);
+                    if (!level.homTriangles.empty())
+                        visualBounds.Include(mesh.vertices[rebasedIndex].position);
+                }
+
+                if (!level.homTriangles.empty())
+                {
+                    sceneMesh.occlusionRanges.push_back({
+                        visualBounds.minimum, visualBounds.maximum,
+                        visualStartIndex, reference.indexCount
+                    });
                 }
 
                 statistics.triangleCount +=
@@ -1541,8 +1556,10 @@ namespace client::preview
             return false;
         }
 
-        return
-            renderer.FinishStreamedScene(
-                error);
+        if (!renderer.FinishStreamedScene(error))
+            return false;
+
+        renderer.SetHomOccluders(level.homTriangles);
+        return true;
     }
 }

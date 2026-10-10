@@ -38,6 +38,14 @@ namespace studio
         dirty_ = false;
     }
 
+    void EditorScene::SetHomFrameStatistics(
+        const std::size_t testedVisuals,
+        const std::size_t culledVisuals) noexcept
+    {
+        statistics_.homTestedVisuals = testedVisuals;
+        statistics_.homCulledVisuals = culledVisuals;
+    }
+
     const std::string&
     EditorScene::Name() const noexcept
     {

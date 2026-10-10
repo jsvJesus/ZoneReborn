@@ -517,6 +517,16 @@ namespace studio::ui
                     stats.missingTextures);
 
                 ImGui::Separator();
+                ImGui::Text("HOM: %s", !stats.homPresent ? "Not present" :
+                    (stats.homTriangles == 0 ? "Empty" : "Enabled"));
+                if (stats.homPresent)
+                {
+                    ImGui::Text("HOM triangles: %zu", stats.homTriangles);
+                    ImGui::Text("HOM tested: %zu", stats.homTestedVisuals);
+                    ImGui::Text("HOM culled: %zu", stats.homCulledVisuals);
+                }
+
+                ImGui::Separator();
 
                 const std::string path =
                     PathToUtf8(scene.Directory());

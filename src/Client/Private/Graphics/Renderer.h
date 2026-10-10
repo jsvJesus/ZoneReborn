@@ -3,6 +3,10 @@
 #include "Graphics/CameraView.h"
 #include "Graphics/SceneRenderData.h"
 
+#if defined(STUDIO_BUILD)
+#include "Graphics/XRayHomOcclusion.h"
+#endif
+
 #include "Core/Images/RgbaImage.h"
 #include "Core/Math/Vector3.h"
 #include "Core/World/Particles/ParticleCollisionQuery.h"
@@ -71,6 +75,14 @@ namespace client::graphics
         [[nodiscard]]
         bool FinishStreamedScene(
             std::string& error);
+
+#if defined(STUDIO_BUILD)
+        void SetHomOccluders(
+            const std::vector<core::world::xray::HomTriangle>& triangles);
+
+        [[nodiscard]]
+        HomOcclusionStatistics HomStatistics() const noexcept;
+#endif
 
         [[nodiscard]]
         bool UpdateMeshVertices(

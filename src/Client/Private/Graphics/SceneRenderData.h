@@ -366,6 +366,14 @@ namespace client::graphics
             1.0f;
     };
 
+    struct SceneOcclusionRange final
+    {
+        core::math::Vector3 minimum;
+        core::math::Vector3 maximum;
+        std::uint32_t startIndex = 0;
+        std::uint32_t indexCount = 0;
+    };
+
     struct SceneMesh final
     {
         core::assets::MeshData geometry;
@@ -378,6 +386,9 @@ namespace client::graphics
 
         std::int32_t waterMaterialIndex =
             -1;
+
+        // Individual visual bounds survive material/VB batching for HOM.
+        std::vector<SceneOcclusionRange> occlusionRanges;
     };
 
     struct SceneInstance final

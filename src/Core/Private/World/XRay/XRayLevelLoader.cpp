@@ -956,6 +956,120 @@ namespace
         return true;
     }
 
+    bool ParseHom(
+        const std::filesystem::path& directory,
+        core::world::xray::LevelData& output,
+        std::string& error)
+    {
+        const auto path = directory / "level.hom";
+        std::error_code filesystemError;
+        const bool exists = std::filesystem::exists(path, filesystemError);
+        if (filesystemError)
+        {
+            error = "Unable to check level.hom: " + filesystemError.message();
+            return false;
+        }
+        if (!exists)
+            return true;
+
+        BinaryFile file;
+        if (!file.Open(path, error))
+            return false;
+
+        const Range range{0u, file.Size()};
+        Chunk header, polygons;
+        bool headerFound = false;
+        bool polygonsFound = false;
+        std::uint64_t cursor = 0;
+        // Validate the entire stream, including chunks after the polygon data.
+        while (cursor < range.size)
+        {
+            std::array<std::uint32_t, 2> rawHeader{};
+            if (range.size - cursor < sizeof(rawHeader))
+            {
+                error = "level.hom contains a truncated chunk header.";
+                return false;
+            }
+            if (!file.Read(cursor, rawHeader.data(), sizeof(rawHeader), error))
+                return false;
+            cursor += sizeof(rawHeader);
+            if (rawHeader[1] > range.size - cursor)
+            {
+                error = "level.hom contains an out-of-bounds chunk.";
+                return false;
+            }
+            const auto id = rawHeader[0] & ~CompressionFlag;
+            if (id == 0u || id == 1u)
+            {
+                bool& found = id == 0u ? headerFound : polygonsFound;
+                Chunk& chunk = id == 0u ? header : polygons;
+                if (found)
+                {
+                    error = "level.hom contains a duplicate chunk " + std::to_string(id) + ".";
+                    return false;
+                }
+                found = true;
+                chunk.id = id;
+                chunk.compressed = (rawHeader[0] & CompressionFlag) != 0u;
+                chunk.data = {cursor, rawHeader[1]};
+            }
+            cursor += rawHeader[1];
+        }
+        if (headerFound)
+        {
+            std::uint32_t version = 0;
+            if (header.compressed || header.data.size != sizeof(version))
+            {
+                error = "level.hom has an invalid version chunk.";
+                return false;
+            }
+            if (!file.ReadValue(header.data.offset, version, error))
+                return false;
+            if (version != 0u)
+            {
+                error = "Unsupported level.hom version " + std::to_string(version) + ".";
+                return false;
+            }
+        }
+
+        if (!polygonsFound || polygons.compressed)
+        {
+            error = !polygonsFound
+                ? "level.hom is missing polygon chunk 1."
+                : "level.hom uses unsupported compressed polygon data.";
+            return false;
+        }
+
+        using core::world::xray::HomTriangle;
+        if (polygons.data.size % sizeof(HomTriangle) != 0u ||
+            polygons.data.size > std::numeric_limits<std::size_t>::max())
+        {
+            error = "level.hom contains truncated polygon records.";
+            return false;
+        }
+
+        output.homTriangles.resize(
+            static_cast<std::size_t>(polygons.data.size / sizeof(HomTriangle)));
+        if (!file.Read(polygons.data.offset, output.homTriangles.data(),
+                static_cast<std::size_t>(polygons.data.size), error))
+            return false;
+
+        for (const auto& triangle : output.homTriangles)
+        {
+            for (const auto vertex : triangle.vertices)
+            {
+                if (!core::world::xray::spatial::Finite(vertex))
+                {
+                    error = "level.hom contains a non-finite polygon vertex.";
+                    return false;
+                }
+            }
+        }
+
+        output.homPresent = true;
+        return true;
+    }
+
     bool ParseTopology(
         BinaryFile& file, const Range& range,
         core::world::xray::LevelData& output, std::string& error)
@@ -1780,6 +1894,7 @@ namespace core::world::xray
             }
         }
         if (!ParseTopology(level, levelRange, output, error)) return false;
+        if (!ParseHom(levelDirectory, output, error)) return false;
 
         return true;
     }

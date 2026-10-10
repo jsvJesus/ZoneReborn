@@ -46,6 +46,7 @@
     <ClInclude Include="Private\Graphics\ParticleRenderer.h" />
     <ClInclude Include="Private\Graphics\Renderer.h" />
     <ClInclude Include="Private\Graphics\SceneRenderData.h" />
+    <ClInclude Include="Private\Graphics\XRayHomOcclusion.h" />
     <ClInclude Include="Private\Graphics\Shaders\ShaderCompiler.h" />
     <ClInclude Include="Private\Input\CameraController.h" />
     <ClInclude Include="Private\Loading\LoadingProgress.h" />
@@ -96,6 +97,7 @@
     
     <ClCompile Include="Private\Graphics\ParticleRenderer.cpp" />
     <ClCompile Include="Private\Graphics\Renderer.cpp" />
+    <ClCompile Include="Private\Graphics\XRayHomOcclusion.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <ClCompile Include="Private\Graphics\Shaders\ShaderCompiler.cpp" />
     <ClCompile Include="Private\Input\CameraController.cpp" />
     <ClCompile Include="Private\Main.cpp" />
