@@ -1031,7 +1031,7 @@ namespace studio::ui
     }
 
     void EditorUI::BuildDetails(
-        const EditorScene& scene)
+        EditorScene& scene)
     {
         if (ImGui::Begin("Details", &showDetails_))
         {

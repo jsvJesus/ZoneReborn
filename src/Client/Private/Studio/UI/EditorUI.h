@@ -92,12 +92,10 @@ namespace studio::ui
 
         void BuildSceneOutliner(EditorScene& scene);
 
-        void BuildDetails(EditorScene& scene);
+        void BuildDetails(
+            EditorScene& scene);
 
         void BuildSceneOutliner(
-            const EditorScene& scene);
-
-        void BuildDetails(
             const EditorScene& scene);
 
         void BuildContentBrowser(
