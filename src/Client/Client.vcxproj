@@ -120,6 +120,7 @@
     <ClCompile Include="Private\Studio\EditorScene.cpp" />
     <ClCompile Include="Private\Studio\LevelCatalog.cpp" />
     <ClCompile Include="Private\Studio\UI\EditorUI.cpp" />
+    <ClCompile Include="Private\Studio\UI\EditorSpawnUI.cpp" />
     <ClCompile Include="Private\World\WorldCollision.cpp" />
     <ClCompile Include="Private\World\WorldSession.cpp" />
 

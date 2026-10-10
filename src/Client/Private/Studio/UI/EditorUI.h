@@ -149,6 +149,14 @@ namespace studio::ui
         void BuildAddLightMenu();
 
         bool BuildLightDetails(EditorScene& scene);
+        void BuildSpawnOutliner(EditorScene& scene);
+        bool BuildSpawnDetails(const EditorScene& scene);
+
+        bool showSpawnMarkers_ = false;
+        char spawnSearch_[128]{};
+        std::uint64_t spawnFilterRevision_ = ~std::uint64_t{0};
+        std::string spawnFilterText_;
+        std::vector<int> filteredSpawnObjects_;
 
         int lightTypeRequested_ = -1;
         bool saveRequested_ = false;

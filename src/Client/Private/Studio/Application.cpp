@@ -4,6 +4,7 @@
 #include "Core/Platform/Paths.h"
 #include "Core/World/XRay/XRayLevelLoader.h"
 #include "Core/World/XRay/CformCollision.h"
+#include "Core/World/XRay/XRaySpawnData.h"
 
 #include "Preview/XRayLevelRenderDataBuilder.h"
 
@@ -249,7 +250,7 @@ namespace studio
             statistics.collisionIndexBytes = collision.indexBytes;
         }
 
-        scene_.Open(directory, statistics, level.collision);
+        scene_.Open(directory, statistics, level.collision, level.spawn);
         std::string lightingError;
 
         if (!scene_.LoadLighting(lightingError))
@@ -300,6 +301,16 @@ namespace studio
                 " | BVH MiB=" + std::to_string(double(statistics.collisionIndexBytes)/1048576.0);
         core::Log::Info(collisionMessage);
         editorUI_.AddConsoleMessage(collisionMessage);
+        const auto* spawn = scene_.Spawn();
+        const std::string spawnMessage = !spawn
+            ? "SPAWN: level.spawn is absent; no placed game objects."
+            : "SPAWN: objects=" + std::to_string(spawn->objects.size()) +
+                " | sections=" + std::to_string(spawn->sectionCount) +
+                " | decoded states=" + std::to_string(spawn->decodedStates) +
+                " | partial states=" + std::to_string(spawn->partialStates) +
+                " | opaque states=" + std::to_string(spawn->objects.size()-spawn->decodedStates-spawn->partialStates);
+        core::Log::Info(spawnMessage);
+        editorUI_.AddConsoleMessage(spawnMessage);
     }
 
     bool Application::Update()

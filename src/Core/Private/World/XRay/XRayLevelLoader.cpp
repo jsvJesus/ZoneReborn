@@ -1,6 +1,7 @@
 #include "Core/World/XRay/XRayLevelLoader.h"
 #include "Core/World/XRay/CformCollision.h"
 #include "Core/World/XRay/XRaySpatialMath.h"
+#include "Core/World/XRay/XRaySpawnLoader.h"
 
 #include <algorithm>
 #include <array>
@@ -1896,6 +1897,21 @@ namespace core::world::xray
         }
         if (!ParseTopology(level, levelRange, output, error)) return false;
         if (!ParseHom(levelDirectory, output, error)) return false;
+
+        const auto spawnFile = levelDirectory / "level.spawn";
+        std::error_code spawnError;
+        const bool spawnPresent = std::filesystem::exists(spawnFile, spawnError);
+        if (spawnError)
+        {
+            error = "Unable to inspect level.spawn: " + spawnError.message();
+            return false;
+        }
+        if (spawnPresent)
+        {
+            auto spawn = std::make_shared<SpawnData>();
+            if (!SpawnLoader{}.Load(spawnFile, *spawn, error)) return false;
+            output.spawn = std::move(spawn);
+        }
 
         const auto collisionFile = levelDirectory / "level.cform";
         std::error_code collisionError;

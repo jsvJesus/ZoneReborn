@@ -1,5 +1,6 @@
 #include "Studio/EditorScene.h"
 #include "Studio/LevelCatalog.h"
+#include "Core/World/XRay/XRaySpawnData.h"
 
 #include <algorithm>
 #include <cmath>
@@ -21,6 +22,8 @@ namespace studio
 
         statistics_ = {};
         collision_.reset();
+        spawn_.reset();
+        selectedSpawnIndex_ = -1;
 
         lights_.clear();
         ambient_ = {0.0f, 0.0f, 0.0f};
@@ -36,7 +39,8 @@ namespace studio
     void EditorScene::Open(
         const std::filesystem::path& directory,
         const SceneStatistics& statistics,
-        std::shared_ptr<const core::world::xray::CformCollision> collision)
+        std::shared_ptr<const core::world::xray::CformCollision> collision,
+        std::shared_ptr<const core::world::xray::SpawnData> spawn)
     {
         directory_ = directory;
 
@@ -45,6 +49,9 @@ namespace studio
 
         statistics_ = statistics;
         collision_ = std::move(collision);
+        spawn_ = std::move(spawn);
+        selectedSpawnIndex_ = -1;
+        selectedLightIndex_ = -1;
 
         ++revision_;
 
@@ -55,6 +62,29 @@ namespace studio
     const core::world::xray::CformCollision* EditorScene::Collision() const noexcept
     {
         return collision_.get();
+    }
+
+    const core::world::xray::SpawnData* EditorScene::Spawn() const noexcept
+    { return spawn_.get(); }
+
+    int EditorScene::SelectedSpawnIndex() const noexcept
+    { return selectedSpawnIndex_; }
+
+    const core::world::xray::SpawnObject* EditorScene::SelectedSpawnObject() const noexcept
+    {
+        if (!spawn_ || selectedSpawnIndex_ < 0 ||
+            static_cast<std::size_t>(selectedSpawnIndex_) >= spawn_->objects.size()) return nullptr;
+        return &spawn_->objects[static_cast<std::size_t>(selectedSpawnIndex_)];
+    }
+
+    void EditorScene::SelectSpawn(int index) noexcept
+    {
+        if (index == -1 || (spawn_ && index >= 0 &&
+            static_cast<std::size_t>(index) < spawn_->objects.size()))
+        {
+            selectedSpawnIndex_ = index;
+            selectedLightIndex_ = -1;
+        }
     }
 
     void EditorScene::SetCollisionProbe(const CollisionProbeStatistics& probe) noexcept
@@ -131,6 +161,7 @@ namespace studio
     {
         if (index == -1 || index == -2)
         {
+            selectedSpawnIndex_ = -1;
             selectedLightIndex_ = index;
             return;
         }
@@ -138,6 +169,7 @@ namespace studio
         if (index >= 0 &&
             static_cast<std::size_t>(index) < lights_.size())
         {
+            selectedSpawnIndex_ = -1;
             selectedLightIndex_ = index;
         }
     }
@@ -146,6 +178,7 @@ namespace studio
         LightType type,
         const core::math::Vector3& position)
     {
+        selectedSpawnIndex_ = -1;
         if (type == LightType::Directional)
         {
             for (std::size_t i = 0; i < lights_.size(); ++i)

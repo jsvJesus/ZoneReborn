@@ -3,6 +3,7 @@
 #include "Studio/EditorScene.h"
 #include "Studio/LevelCatalog.h"
 #include "Studio/UI/EditorTheme.h"
+#include "Core/World/XRay/XRaySpawnData.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -777,6 +778,27 @@ namespace studio::ui
                     ImGui::PopID();
                 }
 
+                if (const auto* spawn = scene.Spawn())
+                {
+                    const int selected = scene.SelectedSpawnIndex();
+                    const std::size_t first = showSpawnMarkers_ ? 0u :
+                        (selected >= 0 ? static_cast<std::size_t>(selected) : spawn->objects.size());
+                    const std::size_t last = showSpawnMarkers_ ? spawn->objects.size() :
+                        (first < spawn->objects.size() ? first+1u : first);
+                    // Editor overlays only: not OGF models or depth-tested geometry.
+                    for (std::size_t i = first; i < last; ++i)
+                    {
+                        const auto& object = spawn->objects[i];
+                        ImVec2 screen;
+                        float depth;
+                        if (!project({object.position.x,object.position.y,object.position.z},screen,depth)) continue;
+                        const bool active = selected == static_cast<int>(i);
+                        const auto colour = active ? IM_COL32(255,210,80,255) : IM_COL32(80,200,240,180);
+                        drawList->AddCircle(screen,active ? 7.0f : 4.0f,colour,12,1.5f);
+                        drawList->AddLine(ImVec2(screen.x-6,screen.y),ImVec2(screen.x+6,screen.y),colour);
+                        drawList->AddLine(ImVec2(screen.x,screen.y-6),ImVec2(screen.x,screen.y+6),colour);
+                    }
+                }
                 drawList->PopClipRect();
             }
         }
@@ -817,6 +839,8 @@ namespace studio::ui
             }
 
             ImGui::Spacing();
+
+            BuildSpawnOutliner(scene);
 
             ImGui::SetNextItemOpen(
                 true,
@@ -1035,7 +1059,7 @@ namespace studio::ui
     {
         if (ImGui::Begin("Details", &showDetails_))
         {
-            if (BuildLightDetails(scene))
+            if (BuildSpawnDetails(scene) || BuildLightDetails(scene))
             {
             }
             else if (scene.IsEmpty())
@@ -1119,6 +1143,15 @@ namespace studio::ui
                         }
                     }
                 }
+                ImGui::Separator();
+
+                if (const auto* spawn = scene.Spawn())
+                {
+                    ImGui::Text("SPAWN: %zu objects, %zu sections",spawn->objects.size(),spawn->sectionCount);
+                    ImGui::Text("States: %zu decoded, %zu partial, %zu opaque",spawn->decodedStates,
+                        spawn->partialStates,spawn->objects.size()-spawn->decodedStates-spawn->partialStates);
+                }
+                else ImGui::TextDisabled("SPAWN: Not present");
                 ImGui::Separator();
 
                 const std::string path =

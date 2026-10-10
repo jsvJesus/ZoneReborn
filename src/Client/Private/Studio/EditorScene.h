@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-namespace core::world::xray { class CformCollision; }
+namespace core::world::xray { class CformCollision; struct SpawnData; struct SpawnObject; }
 
 namespace studio
 {
@@ -99,7 +99,13 @@ namespace studio
         void Open(
             const std::filesystem::path& directory,
             const SceneStatistics& statistics,
-            std::shared_ptr<const core::world::xray::CformCollision> collision = {});
+            std::shared_ptr<const core::world::xray::CformCollision> collision = {},
+            std::shared_ptr<const core::world::xray::SpawnData> spawn = {});
+
+        const core::world::xray::SpawnData* Spawn() const noexcept;
+        int SelectedSpawnIndex() const noexcept;
+        const core::world::xray::SpawnObject* SelectedSpawnObject() const noexcept;
+        void SelectSpawn(int index) noexcept;
 
         const core::world::xray::CformCollision* Collision() const noexcept;
         void SetCollisionProbe(const CollisionProbeStatistics& probe) noexcept;
@@ -168,6 +174,8 @@ namespace studio
 
         SceneStatistics statistics_{};
         std::shared_ptr<const core::world::xray::CformCollision> collision_;
+        std::shared_ptr<const core::world::xray::SpawnData> spawn_;
+        int selectedSpawnIndex_ = -1;
 
         std::uint64_t revision_ = 0;
 
