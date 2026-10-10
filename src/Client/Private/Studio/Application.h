@@ -13,6 +13,7 @@
 #include <chrono>
 #include <filesystem>
 #include <string>
+#include <cstdint>
 
 namespace studio
 {
@@ -61,5 +62,7 @@ namespace studio
         bool uiInitialized_ = false;
         bool windowInitialized_ = false;
         bool runtimeInitialized_ = false;
+
+        std::uint64_t publishedLightingRevision_ = 0;
     };
 }

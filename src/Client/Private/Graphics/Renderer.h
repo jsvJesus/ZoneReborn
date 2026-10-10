@@ -83,6 +83,9 @@ namespace client::graphics
         void SetHomOccluders(
             const std::vector<core::world::xray::HomTriangle>& triangles);
 
+        void SetStudioLighting(
+            const StudioLightingData& lighting);
+
         [[nodiscard]]
         HomOcclusionStatistics HomStatistics() const noexcept;
 #endif

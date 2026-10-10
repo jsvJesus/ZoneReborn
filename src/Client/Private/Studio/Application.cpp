@@ -250,6 +250,16 @@ namespace studio
         }
 
         scene_.Open(directory, statistics, level.collision);
+        std::string lightingError;
+
+        if (!scene_.LoadLighting(lightingError))
+        {
+            const std::string message =
+                "Lighting load failed: " + lightingError;
+
+            core::Log::Error(message);
+            editorUI_.AddConsoleMessage(message);
+        }
         renderer_.SetParticleCollisionQuery(level.collision);
 
         camera_.Reset(
@@ -329,6 +339,7 @@ namespace studio
         editorUI_.BeginFrame(
             scene_,
             catalog_,
+            camera_.View(),
             renderer_.ViewportImage());
 
         if (editorUI_.ConsumeRefreshLevelsRequest())
@@ -348,6 +359,80 @@ namespace studio
             selectedLevel))
         {
             OpenLevel(selectedLevel);
+        }
+
+        LightType requestedLightType;
+
+        if (editorUI_.ConsumeAddLightRequest(
+            requestedLightType))
+        {
+            const auto& view = camera_.View();
+
+            core::math::Vector3 position
+            {
+                view.position.x + view.forward.x * 10.0f,
+                view.position.y + view.forward.y * 10.0f,
+                view.position.z + view.forward.z * 10.0f
+            };
+
+            if (requestedLightType != LightType::Directional &&
+                scene_.Collision())
+            {
+                const float distance =
+                    std::max(
+                        5000.0f,
+                        renderer_.SceneRadius() * 10.0f);
+
+                const core::math::Vector3 end
+                {
+                    view.position.x +
+                        view.forward.x * distance,
+
+                    view.position.y +
+                        view.forward.y * distance,
+
+                    view.position.z +
+                        view.forward.z * distance
+                };
+
+                core::world::xray::CformHit hit;
+
+                if (scene_.Collision()->Raycast(
+                    view.position,
+                    end,
+                    hit))
+                {
+                    position =
+                    {
+                        hit.position.x + hit.normal.x * 2.0f,
+                        hit.position.y + hit.normal.y * 2.0f,
+                        hit.position.z + hit.normal.z * 2.0f
+                    };
+                }
+            }
+
+            scene_.AddLight(
+                requestedLightType,
+                position);
+
+            editorUI_.AddConsoleMessage(
+                "Light created.");
+        }
+
+        if (editorUI_.ConsumeSaveRequest())
+        {
+            std::string saveError;
+
+            if (!scene_.SaveLighting(saveError))
+            {
+                editorUI_.AddConsoleMessage(
+                    "Lighting save failed: " + saveError);
+            }
+            else
+            {
+                editorUI_.AddConsoleMessage(
+                    "Lighting saved successfully.");
+            }
         }
 
         if (editorUI_.ConsumeExitRequest())
@@ -409,6 +494,16 @@ namespace studio
             camera_.View());
 
         std::string error;
+
+        if (publishedLightingRevision_ !=
+            scene_.Revision())
+        {
+            renderer_.SetStudioLighting(
+                scene_.BuildLighting());
+
+            publishedLightingRevision_ =
+                scene_.Revision();
+        }
 
         if (!renderer_.Render(error))
         {

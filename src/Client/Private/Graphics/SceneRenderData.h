@@ -295,6 +295,31 @@ namespace client::graphics
             false;
     };
 
+    struct StudioLightingData final
+    {
+        bool enabled = false;
+
+        std::array<float, 3> ambient
+        {
+            0.0f, 0.0f, 0.0f
+        };
+
+        std::array<float, 3> sunDirection
+        {
+            0.0f, -1.0f, 0.0f
+        };
+
+        std::array<float, 3> sunColour
+        {
+            1.0f, 1.0f, 1.0f
+        };
+
+        float sunIntensity = 0.0f;
+
+        std::vector<SceneOmniLight> omniLights;
+        std::vector<SceneSpotLight> spotLights;
+    };
+
     struct ScenePulseLightFrame final
     {
         float time =

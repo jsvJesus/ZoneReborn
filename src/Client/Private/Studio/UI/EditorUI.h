@@ -6,11 +6,18 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 namespace studio
 {
     class EditorScene;
     class LevelCatalog;
+    enum class LightType : std::uint8_t;
+}
+
+namespace client::graphics
+{
+    struct CameraView;
 }
 
 namespace studio::ui
@@ -33,8 +40,9 @@ namespace studio::ui
         void Shutdown();
 
         void BeginFrame(
-            const EditorScene& scene,
+            EditorScene& scene,
             const LevelCatalog& catalog,
+            const client::graphics::CameraView& camera,
             ID3D11ShaderResourceView* sceneTexture);
 
         void Render();
@@ -65,13 +73,26 @@ namespace studio::ui
         [[nodiscard]]
         const RECT& ViewportRectangle() const noexcept;
 
+        [[nodiscard]]
+        bool ConsumeAddLightRequest(
+            studio::LightType& type) noexcept;
+
+        [[nodiscard]]
+        bool ConsumeSaveRequest() noexcept;
+
     private:
         void BuildMainMenu();
         void BuildDockSpace();
         void BuildDefaultLayout(unsigned int dockspaceId);
 
         void BuildViewport(
+            EditorScene& scene,
+            const client::graphics::CameraView& camera,
             ID3D11ShaderResourceView* sceneTexture);
+
+        void BuildSceneOutliner(EditorScene& scene);
+
+        void BuildDetails(EditorScene& scene);
 
         void BuildSceneOutliner(
             const EditorScene& scene);
@@ -126,5 +147,12 @@ namespace studio::ui
         char contentSearch_[128]{};
 
         int contentSelectedIndex_ = -1;
+
+        void BuildAddLightMenu();
+
+        bool BuildLightDetails(EditorScene& scene);
+
+        int lightTypeRequested_ = -1;
+        bool saveRequested_ = false;
     };
 }

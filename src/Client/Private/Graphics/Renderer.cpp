@@ -1759,6 +1759,7 @@ namespace client::graphics
 
 #if defined(STUDIO_BUILD)
         XRayHomOcclusion hom;
+        StudioLightingData studioLighting;
 #endif
 
         std::vector<
@@ -4183,6 +4184,25 @@ namespace client::graphics
         return true;
     }
 
+#if defined(STUDIO_BUILD)
+    void Renderer::SetStudioLighting(
+        const StudioLightingData& lighting)
+    {
+        if (!state_)
+            return;
+
+        state_->studioLighting = lighting;
+
+        state_->omniLights =
+            lighting.omniLights;
+
+        state_->spotLights =
+            lighting.spotLights;
+
+        state_->pulseLights.clear();
+    }
+#endif
+
     bool Renderer::BeginStreamedScene(
         std::string& error)
     {
@@ -5503,11 +5523,67 @@ namespace client::graphics
             0,
             0);
 
-        const SkyConstants
-            skyConstants =
-                BuildSkyConstants(
-                    state_->sky,
-                    elapsedSeconds);
+        SkyConstants skyConstants =
+            BuildSkyConstants(
+                state_->sky,
+                elapsedSeconds);
+
+#if defined(STUDIO_BUILD)
+        if (state_->studioLighting.enabled)
+        {
+            const StudioLightingData& lighting =
+                state_->studioLighting;
+
+            skyConstants.ambientColour =
+            {
+                lighting.ambient[0],
+                lighting.ambient[1],
+                lighting.ambient[2],
+                1.0f
+            };
+
+            skyConstants.sunColour =
+            {
+                lighting.sunColour[0],
+                lighting.sunColour[1],
+                lighting.sunColour[2],
+                1.0f
+            };
+
+            const auto& direction =
+                lighting.sunDirection;
+
+            const float lengthSquared =
+                direction[0] * direction[0] +
+                direction[1] * direction[1] +
+                direction[2] * direction[2];
+
+            if (lengthSquared > 0.000001f &&
+                lighting.sunIntensity > 0.0f)
+            {
+                const float inverseLength =
+                    1.0f / std::sqrt(lengthSquared);
+
+                skyConstants.sunDirectionDaylight =
+                {
+                    -direction[0] * inverseLength,
+                    -direction[1] * inverseLength,
+                    -direction[2] * inverseLength,
+                    lighting.sunIntensity
+                };
+            }
+            else
+            {
+                skyConstants.sunDirectionDaylight =
+                {
+                    0.0f,
+                    1.0f,
+                    0.0f,
+                    0.0f
+                };
+            }
+        }
+#endif
 
         state_->context->UpdateSubresource(
             state_->skyConstantBuffer.Get(),
