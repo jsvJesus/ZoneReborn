@@ -235,9 +235,29 @@ namespace client::platform
         textInput_.clear();
 
         ShowWindow(window_, SW_MAXIMIZE);
+        UpdateWindow(window_);
 
-        UpdateWindow(
-            window_);
+        RECT clientRect{};
+
+        if (!GetClientRect(window_, &clientRect))
+        {
+            error = "Unable to query window client area.";
+            Shutdown();
+            return false;
+        }
+
+        width_ = static_cast<std::uint32_t>(
+            clientRect.right - clientRect.left);
+
+        height_ = static_cast<std::uint32_t>(
+            clientRect.bottom - clientRect.top);
+
+        if (width_ == 0 || height_ == 0)
+        {
+            error = "Window client area is empty.";
+            Shutdown();
+            return false;
+        }
 
         return true;
     }
@@ -541,6 +561,17 @@ namespace client::platform
                     }
 
                     return 0;
+                }
+
+                case WM_SIZE:
+                {
+                    instance->width_ =
+                        static_cast<std::uint32_t>(LOWORD(lParam));
+
+                    instance->height_ =
+                        static_cast<std::uint32_t>(HIWORD(lParam));
+
+                    break;
                 }
 
                 default:

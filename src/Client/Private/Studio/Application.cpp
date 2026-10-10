@@ -267,6 +267,25 @@ namespace studio
 
         previousFrame_ = now;
 
+        if (window_.Width() == 0 ||
+            window_.Height() == 0)
+        {
+            return true;
+        }
+
+        std::string resizeError;
+
+        if (!renderer_.Resize(
+                window_.Width(),
+                window_.Height(),
+                resizeError))
+        {
+            core::Log::Error(
+                "Unable to resize editor renderer: " + resizeError);
+
+            return false;
+        }
+
         editorUI_.BeginFrame(
             scene_,
             catalog_,

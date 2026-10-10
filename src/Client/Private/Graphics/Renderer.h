@@ -37,6 +37,12 @@ namespace client::graphics
             std::string& error);
 
         [[nodiscard]]
+        bool Resize(
+            std::uint32_t width,
+            std::uint32_t height,
+            std::string& error);
+
+        [[nodiscard]]
         bool SetBackgroundImage(
             const core::images::RgbaImage& image,
             std::string& error);
@@ -118,5 +124,11 @@ namespace client::graphics
 
         std::unique_ptr<State>
             state_;
+
+        [[nodiscard]]
+        bool CreateFrameTargets(
+            std::uint32_t width,
+            std::uint32_t height,
+            std::string& error);
     };
 }

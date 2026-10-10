@@ -2,15 +2,44 @@
 
 #include "Studio/EditorScene.h"
 #include "Studio/LevelCatalog.h"
+#include "Studio/UI/EditorTheme.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "backends/imgui_impl_dx11.h"
 #include "backends/imgui_impl_win32.h"
 
+#include <algorithm>
+#include <cctype>
+#include <cstring>
 #include <cstdint>
 #include <filesystem>
 #include <utility>
+
+namespace
+{
+    bool MatchesFilter(
+        const std::string& text,
+        const char* filter)
+    {
+        if (!filter || !filter[0])
+            return true;
+
+        const std::size_t length = std::strlen(filter);
+
+        const auto result = std::search(
+            text.begin(),
+            text.end(),
+            filter,
+            filter + length,
+            [](const unsigned char a, const unsigned char b)
+            {
+                return std::tolower(a) == std::tolower(b);
+            });
+
+        return result != text.end();
+    }
+}
 
 namespace studio::ui
 {
@@ -43,45 +72,19 @@ namespace studio::ui
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         io.IniFilename = "StudioLayout.ini";
 
+        uiScale_ = static_cast<float>(GetDpiForWindow(window)) / 96.0f;
+
+        if (uiScale_ < 1.0f)
+            uiScale_ = 1.0f;
+
         ImFont* font = io.Fonts->AddFontFromFileTTF(
             "C:\\Windows\\Fonts\\segoeui.ttf",
-            18.0f);
+            16.0f * uiScale_);
 
         if (font)
             io.FontDefault = font;
 
-        ImGui::StyleColorsDark();
-
-        ImGuiStyle& style = ImGui::GetStyle();
-
-        style.ScaleAllSizes(1.15f);
-
-        style.WindowRounding = 0.0f;
-        style.ChildRounding = 0.0f;
-        style.FrameRounding = 3.0f;
-        style.PopupRounding = 3.0f;
-        style.TabRounding = 3.0f;
-
-        style.WindowBorderSize = 0.0f;
-        style.FrameBorderSize = 0.0f;
-        style.WindowPadding = ImVec2(8, 8);
-        style.FramePadding = ImVec2(7, 5);
-        style.ItemSpacing = ImVec2(8, 6);
-
-        style.Colors[ImGuiCol_WindowBg] =
-            ImVec4(0.075f, 0.080f, 0.085f, 1.0f);
-
-        style.Colors[ImGuiCol_ChildBg] =
-            ImVec4(0.065f, 0.070f, 0.075f, 1.0f);
-
-        style.Colors[ImGuiCol_Tab] =
-            ImVec4(0.12f, 0.13f, 0.14f, 1.0f);
-
-        style.Colors[ImGuiCol_TabSelected] =
-            ImVec4(0.20f, 0.22f, 0.23f, 1.0f);
-
-        style.Colors[ImGuiCol_Separator] =
-            ImVec4(0.20f, 0.21f, 0.22f, 1.0f);
+        ApplyEditorTheme(uiScale_);
 
         if (!ImGui_ImplWin32_Init(window))
         {
@@ -137,6 +140,7 @@ namespace studio::ui
         ImGui::NewFrame();
 
         BuildMainMenu();
+        BuildToolbar();
         BuildDockSpace();
 
         if (showViewport_)
@@ -155,6 +159,67 @@ namespace studio::ui
             BuildConsole();
 
         BuildOpenLevelDialog(catalog);
+    }
+
+    void EditorUI::BuildToolbar()
+    {
+        ImGuiWindowFlags flags =
+            ImGuiWindowFlags_NoScrollbar |
+            ImGuiWindowFlags_NoSavedSettings |
+            ImGuiWindowFlags_NoNavFocus;
+
+        const float toolbarHeight = 45.0f * uiScale_;
+
+        ImGui::PushStyleVar(
+            ImGuiStyleVar_WindowPadding,
+            ImVec2(12.0f * uiScale_, 7.0f * uiScale_));
+
+        if (ImGui::BeginViewportSideBar(
+                "##EditorToolbar",
+                ImGui::GetMainViewport(),
+                ImGuiDir_Up,
+                toolbarHeight,
+                flags))
+        {
+            ImGui::AlignTextToFramePadding();
+
+            ImGui::TextDisabled("STUDIO");
+
+            ImGui::SameLine();
+
+            ImGui::Dummy(ImVec2(15.0f * uiScale_, 1.0f));
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("New Scene"))
+                newSceneRequested_ = true;
+
+            if (ImGui::IsItemHovered())
+                ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Open Level"))
+                openDialogRequested_ = true;
+
+            if (ImGui::IsItemHovered())
+                ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Refresh Levels"))
+                refreshLevelsRequested_ = true;
+
+            if (ImGui::IsItemHovered())
+                ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+
+            ImGui::SameLine();
+
+            ImGui::TextDisabled(" |  LEVEL EDITOR");
+        }
+
+        ImGui::End();
+        ImGui::PopStyleVar();
     }
 
     void EditorUI::Render()
@@ -341,20 +406,19 @@ namespace studio::ui
                 const ImVec2 maximum =
                     ImGui::GetItemRectMax();
 
+                const ImVec2 origin = ImGui::GetMainViewport()->Pos;
+
                 POINT topLeft
                 {
-                    static_cast<LONG>(minimum.x),
-                    static_cast<LONG>(minimum.y)
+                    static_cast<LONG>(minimum.x - origin.x),
+                    static_cast<LONG>(minimum.y - origin.y)
                 };
 
                 POINT bottomRight
                 {
-                    static_cast<LONG>(maximum.x),
-                    static_cast<LONG>(maximum.y)
+                    static_cast<LONG>(maximum.x - origin.x),
+                    static_cast<LONG>(maximum.y - origin.y)
                 };
-
-                ScreenToClient(window_, &topLeft);
-                ScreenToClient(window_, &bottomRight);
 
                 viewportRectangle_ =
                 {
@@ -469,26 +533,95 @@ namespace studio::ui
         const LevelCatalog& catalog)
     {
         if (ImGui::Begin(
-            "Content Browser", &showContentBrowser_))
+            "Content Browser",
+            &showContentBrowser_))
         {
             if (ImGui::Button("Open Level"))
                 openDialogRequested_ = true;
+
+            if (ImGui::IsItemHovered())
+                ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
             ImGui::SameLine();
 
             if (ImGui::Button("Refresh"))
                 refreshLevelsRequested_ = true;
 
+            if (ImGui::IsItemHovered())
+                ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+
+            ImGui::SameLine();
+
+            ImGui::TextDisabled(
+                "Levels: %zu",
+                catalog.Entries().size());
+
             ImGui::Separator();
 
-            ImGui::Text(
-                "Levels: %zu", catalog.Entries().size());
+            ImGui::SetNextItemWidth(-1.0f);
 
-            for (const LevelEntry& level : catalog.Entries())
+            ImGui::InputTextWithHint(
+                "##ContentSearch",
+                "Search level assets...",
+                contentSearch_,
+                sizeof(contentSearch_));
+
+            ImGui::Spacing();
+
+            if (ImGui::BeginChild(
+                    "##ContentItems",
+                    ImVec2(0.0f, 0.0f)))
             {
-                ImGui::BulletText(
-                    "%s", level.name.c_str());
+                const auto& levels = catalog.Entries();
+
+                for (std::size_t i = 0; i < levels.size(); ++i)
+                {
+                    const auto& level = levels[i];
+
+                    if (!MatchesFilter(
+                            level.name,
+                            contentSearch_))
+                    {
+                        continue;
+                    }
+
+                    ImGui::PushID(static_cast<int>(i));
+
+                    const bool selected =
+                        contentSelectedIndex_ ==
+                        static_cast<int>(i);
+
+                    if (ImGui::Selectable(
+                            level.name.c_str(),
+                            selected,
+                            ImGuiSelectableFlags_AllowDoubleClick))
+                    {
+                        contentSelectedIndex_ =
+                            static_cast<int>(i);
+
+                        if (ImGui::IsMouseDoubleClicked(
+                                ImGuiMouseButton_Left))
+                        {
+                            requestedLevel_ = level.directory;
+                            openLevelRequested_ = true;
+                        }
+                    }
+
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::SetMouseCursor(
+                            ImGuiMouseCursor_Hand);
+
+                        ImGui::SetTooltip(
+                            "%s",
+                            level.name.c_str());
+                    }
+
+                    ImGui::PopID();
+                }
             }
+
+            ImGui::EndChild();
         }
 
         ImGui::End();
@@ -519,97 +652,180 @@ namespace studio::ui
     {
         if (openDialogRequested_)
         {
+            selectedLevelIndex_ = -1;
+            levelSearch_[0] = '\0';
+
             ImGui::OpenPopup("Open Level");
 
-            selectedLevelIndex_ = -1;
             openDialogRequested_ = false;
         }
 
+        ImGuiViewport* viewport =
+            ImGui::GetMainViewport();
+
+        ImGui::SetNextWindowPos(
+            viewport->GetCenter(),
+            ImGuiCond_Appearing,
+            ImVec2(0.5f, 0.5f));
+
+        ImGui::SetNextWindowSize(
+            ImVec2(
+                660.0f * uiScale_,
+                540.0f * uiScale_),
+            ImGuiCond_Appearing);
+
         if (!ImGui::BeginPopupModal(
-            "Open Level",
-            nullptr,
-            ImGuiWindowFlags_AlwaysAutoResize))
+                "Open Level",
+                nullptr,
+                ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoCollapse))
         {
             return;
         }
 
-        ImGui::TextUnformatted(
-            "Select a level from gamedata/levels");
+        ImGui::TextDisabled(
+            "CONTENT BROWSER / GAMEDATA / LEVELS");
+
+        ImGui::Spacing();
+
+        ImGui::TextUnformatted("Select Level");
+
+        ImGui::SameLine();
+
+        ImGui::TextDisabled(
+            "(%zu available)",
+            catalog.Entries().size());
 
         ImGui::Separator();
+
+        ImGui::SetNextItemWidth(-1.0f);
+
+        ImGui::InputTextWithHint(
+            "##LevelSearch",
+            "Search levels...",
+            levelSearch_,
+            sizeof(levelSearch_));
+
+        ImGui::Spacing();
+
+        const auto& levels = catalog.Entries();
 
         if (catalog.Roots().empty())
         {
             ImGui::TextDisabled(
                 "gamedata/levels directory not found.");
         }
-        else if (catalog.Entries().empty())
+        else if (levels.empty())
         {
             ImGui::TextDisabled(
                 "No valid X-Ray levels found.");
         }
 
         if (selectedLevelIndex_ >=
-            static_cast<int>(catalog.Entries().size()))
+            static_cast<int>(levels.size()))
         {
             selectedLevelIndex_ = -1;
         }
 
-        ImGui::BeginChild(
-            "##level_list",
-            ImVec2(580.0f, 320.0f),
-            true);
-
-        const auto& levels = catalog.Entries();
-
-        for (std::size_t i = 0; i < levels.size(); ++i)
+        if (ImGui::BeginChild(
+                "##LevelList",
+                ImVec2(
+                    0.0f,
+                    305.0f * uiScale_),
+                ImGuiChildFlags_Borders))
         {
-            ImGui::PushID(static_cast<int>(i));
+            bool anyVisible = false;
 
-            const bool selected =
-                selectedLevelIndex_ == static_cast<int>(i);
-
-            if (ImGui::Selectable(
-                levels[i].name.c_str(), selected))
+            for (std::size_t i = 0; i < levels.size(); ++i)
             {
-                selectedLevelIndex_ =
+                const auto& level = levels[i];
+
+                if (!MatchesFilter(
+                        level.name,
+                        levelSearch_))
+                {
+                    continue;
+                }
+
+                anyVisible = true;
+
+                ImGui::PushID(static_cast<int>(i));
+
+                const bool selected =
+                    selectedLevelIndex_ ==
                     static_cast<int>(i);
 
-                if (ImGui::IsMouseDoubleClicked(
-                    ImGuiMouseButton_Left))
+                if (ImGui::Selectable(
+                        level.name.c_str(),
+                        selected,
+                        ImGuiSelectableFlags_AllowDoubleClick))
                 {
-                    requestedLevel_ = levels[i].directory;
-                    openLevelRequested_ = true;
+                    selectedLevelIndex_ =
+                        static_cast<int>(i);
 
-                    ImGui::CloseCurrentPopup();
+                    if (ImGui::IsMouseDoubleClicked(
+                            ImGuiMouseButton_Left))
+                    {
+                        requestedLevel_ = level.directory;
+                        openLevelRequested_ = true;
+
+                        ImGui::CloseCurrentPopup();
+                    }
                 }
+
+                if (ImGui::IsItemHovered())
+                {
+                    ImGui::SetMouseCursor(
+                        ImGuiMouseCursor_Hand);
+                }
+
+                ImGui::PopID();
             }
 
-            ImGui::PopID();
+            if (!anyVisible)
+            {
+                ImGui::TextDisabled(
+                    "No matching levels.");
+            }
         }
 
         ImGui::EndChild();
 
-        if (selectedLevelIndex_ >= 0 &&
-            selectedLevelIndex_ < static_cast<int>(levels.size()))
+        ImGui::Spacing();
+
+        const bool canOpen =
+            selectedLevelIndex_ >= 0 &&
+            selectedLevelIndex_ <
+                static_cast<int>(levels.size());
+
+        if (canOpen)
         {
             const std::string path =
                 PathToUtf8(
                     levels[selectedLevelIndex_].directory);
 
-            ImGui::TextWrapped(
-                "%s", path.c_str());
+            ImGui::TextDisabled("Selected:");
+
+            ImGui::SameLine();
+
+            ImGui::TextWrapped("%s", path.c_str());
+        }
+        else
+        {
+            ImGui::TextDisabled(
+                "Select a level to continue.");
         }
 
         ImGui::Separator();
 
-        const bool canOpen =
-            selectedLevelIndex_ >= 0 &&
-            selectedLevelIndex_ < static_cast<int>(levels.size());
+        const float buttonWidth = 125.0f * uiScale_;
 
         ImGui::BeginDisabled(!canOpen);
 
-        if (ImGui::Button("Open", ImVec2(120, 0)) && canOpen)
+        if (ImGui::Button(
+                "Open",
+                ImVec2(buttonWidth, 0.0f)) &&
+            canOpen)
         {
             requestedLevel_ =
                 levels[selectedLevelIndex_].directory;
@@ -619,17 +835,34 @@ namespace studio::ui
             ImGui::CloseCurrentPopup();
         }
 
+        if (ImGui::IsItemHovered())
+            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
+
         ImGui::EndDisabled();
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Refresh", ImVec2(120, 0)))
+        if (ImGui::Button(
+                "Refresh",
+                ImVec2(buttonWidth, 0.0f)))
+        {
             refreshLevelsRequested_ = true;
+        }
+
+        if (ImGui::IsItemHovered())
+            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Cancel", ImVec2(120, 0)))
+        if (ImGui::Button(
+                "Cancel",
+                ImVec2(buttonWidth, 0.0f)))
+        {
             ImGui::CloseCurrentPopup();
+        }
+
+        if (ImGui::IsItemHovered())
+            ImGui::SetMouseCursor(ImGuiMouseCursor_Hand);
 
         ImGui::EndPopup();
     }

@@ -1932,258 +1932,11 @@ namespace client::graphics
             return false;
         }
 
-        result =
-            state_->swapChain->GetBuffer(
-                0,
-                IID_PPV_ARGS(
-                    &state_->backBufferTexture));
-
-        if (FAILED(result))
+        if (!CreateFrameTargets(width, height, error))
         {
-            error =
-                "Unable to get back buffer.";
-
-            return false;
-        }
-
-        result =
-            state_->device->CreateRenderTargetView(
-                state_->backBufferTexture.Get(),
-                nullptr,
-                &state_->renderTargetView);
-
-        if (FAILED(result))
-        {
-            error =
-                "Unable to create render target.";
-
             return false;
         }
         
-#if defined(STUDIO_BUILD)
-        D3D11_TEXTURE2D_DESC viewportDescription{};
-
-        state_->backBufferTexture->GetDesc(
-            &viewportDescription);
-
-        viewportDescription.Usage =
-            D3D11_USAGE_DEFAULT;
-
-        viewportDescription.BindFlags =
-            D3D11_BIND_SHADER_RESOURCE;
-
-        viewportDescription.CPUAccessFlags = 0;
-        viewportDescription.MiscFlags = 0;
-
-        result =
-            state_->device->CreateTexture2D(
-                &viewportDescription,
-                nullptr,
-                &state_->editorViewportTexture);
-
-        if (FAILED(result))
-        {
-            error =
-                "Unable to create editor viewport texture.";
-
-            return false;
-        }
-
-        result =
-            state_->device->CreateShaderResourceView(
-                state_->editorViewportTexture.Get(),
-                nullptr,
-                &state_->editorViewportShaderResourceView);
-
-        if (FAILED(result))
-        {
-            error =
-                "Unable to create editor viewport SRV.";
-
-            return false;
-        }
-#endif
-
-        D3D11_TEXTURE2D_DESC
-            sceneColourDescription{};
-
-        state_->backBufferTexture->GetDesc(
-            &sceneColourDescription);
-
-        sceneColourDescription.BindFlags =
-            D3D11_BIND_RENDER_TARGET |
-            D3D11_BIND_SHADER_RESOURCE;
-
-        sceneColourDescription.CPUAccessFlags =
-            0;
-
-        sceneColourDescription.MiscFlags =
-            0;
-
-        sceneColourDescription.Usage =
-            D3D11_USAGE_DEFAULT;
-
-        result =
-            state_->device->CreateTexture2D(
-                &sceneColourDescription,
-                nullptr,
-                &state_->sceneColourTexture);
-
-        if (FAILED(result))
-        {
-            error =
-                "Unable to create scene colour texture.";
-
-            return false;
-        }
-
-        result =
-            state_->device->CreateRenderTargetView(
-                state_->sceneColourTexture.Get(),
-                nullptr,
-                &state_->sceneColourRenderTargetView);
-
-        if (FAILED(result))
-        {
-            error =
-                "Unable to create scene colour render target.";
-
-            return false;
-        }
-
-        result =
-            state_->device->CreateShaderResourceView(
-                state_->sceneColourTexture.Get(),
-                nullptr,
-                &state_->sceneColourShaderResourceView);
-
-        if (FAILED(result))
-        {
-            error =
-                "Unable to create scene colour shader resource.";
-
-            return false;
-        }
-
-        D3D11_TEXTURE2D_DESC
-            depthDescription{};
-
-        depthDescription.Width =
-            width;
-
-        depthDescription.Height =
-            height;
-
-        depthDescription.MipLevels =
-            1;
-
-        depthDescription.ArraySize =
-            1;
-
-        depthDescription.Format =
-            DXGI_FORMAT_R24G8_TYPELESS;
-
-        depthDescription.SampleDesc.Count =
-            1;
-
-        depthDescription.Usage =
-            D3D11_USAGE_DEFAULT;
-
-        depthDescription.BindFlags =
-            D3D11_BIND_DEPTH_STENCIL |
-            D3D11_BIND_SHADER_RESOURCE;
-
-        result =
-            state_->device->CreateTexture2D(
-                &depthDescription,
-                nullptr,
-                &state_->depthTexture);
-
-        if (FAILED(result))
-        {
-            error =
-                "Unable to create depth texture.";
-
-            return false;
-        }
-
-        D3D11_DEPTH_STENCIL_VIEW_DESC
-            depthViewDescription{};
-
-        depthViewDescription.Format =
-            DXGI_FORMAT_D24_UNORM_S8_UINT;
-
-        depthViewDescription.ViewDimension =
-            D3D11_DSV_DIMENSION_TEXTURE2D;
-
-        depthViewDescription.Texture2D.MipSlice =
-            0;
-
-        result =
-            state_->device->CreateDepthStencilView(
-                state_->depthTexture.Get(),
-                &depthViewDescription,
-                &state_->depthStencilView);
-
-        if (FAILED(result))
-        {
-            error =
-                "Unable to create depth view.";
-
-            return false;
-        }
-
-        D3D11_DEPTH_STENCIL_VIEW_DESC
-            depthReadOnlyViewDescription =
-                depthViewDescription;
-
-        depthReadOnlyViewDescription.Flags =
-            D3D11_DSV_READ_ONLY_DEPTH |
-            D3D11_DSV_READ_ONLY_STENCIL;
-
-        result =
-            state_->device->CreateDepthStencilView(
-                state_->depthTexture.Get(),
-                &depthReadOnlyViewDescription,
-                &state_->depthReadOnlyView);
-
-        if (FAILED(result))
-        {
-            error =
-                "Unable to create read-only depth view.";
-
-            return false;
-        }
-
-        D3D11_SHADER_RESOURCE_VIEW_DESC
-            depthResourceDescription{};
-
-        depthResourceDescription.Format =
-            DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-
-        depthResourceDescription.ViewDimension =
-            D3D11_SRV_DIMENSION_TEXTURE2D;
-
-        depthResourceDescription.Texture2D.MostDetailedMip =
-            0;
-
-        depthResourceDescription.Texture2D.MipLevels =
-            1;
-
-        result =
-            state_->device->CreateShaderResourceView(
-                state_->depthTexture.Get(),
-                &depthResourceDescription,
-                &state_->depthShaderResourceView);
-
-        if (FAILED(result))
-        {
-            error =
-                "Unable to create depth shader resource.";
-
-            return false;
-        }
-
         D3D11_DEPTH_STENCIL_DESC
             flareDepthDescription{};
 
@@ -2974,6 +2727,272 @@ namespace client::graphics
 
         state_->height =
             height;
+
+        return true;
+    }
+
+    bool Renderer::CreateFrameTargets(
+        const std::uint32_t width,
+        const std::uint32_t height,
+        std::string& error)
+    {
+        if (!state_ ||
+            !state_->device ||
+            !state_->swapChain ||
+            width == 0 ||
+            height == 0)
+        {
+            error = "Invalid frame target parameters.";
+            return false;
+        }
+
+        HRESULT result = state_->swapChain->GetBuffer(
+            0,
+            IID_PPV_ARGS(&state_->backBufferTexture));
+
+        if (FAILED(result))
+        {
+            error = "Unable to get swap chain back buffer.";
+            return false;
+        }
+
+        result = state_->device->CreateRenderTargetView(
+            state_->backBufferTexture.Get(),
+            nullptr,
+            &state_->renderTargetView);
+
+        if (FAILED(result))
+        {
+            error = "Unable to create back buffer render target.";
+            return false;
+        }
+
+        D3D11_TEXTURE2D_DESC backBufferDesc{};
+        state_->backBufferTexture->GetDesc(&backBufferDesc);
+
+    #if defined(STUDIO_BUILD)
+
+        D3D11_TEXTURE2D_DESC viewportDesc = backBufferDesc;
+        viewportDesc.Usage = D3D11_USAGE_DEFAULT;
+        viewportDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+        viewportDesc.CPUAccessFlags = 0;
+        viewportDesc.MiscFlags = 0;
+
+        result = state_->device->CreateTexture2D(
+            &viewportDesc,
+            nullptr,
+            &state_->editorViewportTexture);
+
+        if (FAILED(result))
+        {
+            error = "Unable to create editor viewport texture.";
+            return false;
+        }
+
+        result = state_->device->CreateShaderResourceView(
+            state_->editorViewportTexture.Get(),
+            nullptr,
+            &state_->editorViewportShaderResourceView);
+
+        if (FAILED(result))
+        {
+            error = "Unable to create editor viewport SRV.";
+            return false;
+        }
+
+    #endif
+
+        D3D11_TEXTURE2D_DESC colourDesc = backBufferDesc;
+
+        colourDesc.Usage = D3D11_USAGE_DEFAULT;
+        colourDesc.BindFlags =
+            D3D11_BIND_RENDER_TARGET |
+            D3D11_BIND_SHADER_RESOURCE;
+
+        colourDesc.CPUAccessFlags = 0;
+        colourDesc.MiscFlags = 0;
+
+        result = state_->device->CreateTexture2D(
+            &colourDesc,
+            nullptr,
+            &state_->sceneColourTexture);
+
+        if (FAILED(result))
+        {
+            error = "Unable to create scene colour texture.";
+            return false;
+        }
+
+        result = state_->device->CreateRenderTargetView(
+            state_->sceneColourTexture.Get(),
+            nullptr,
+            &state_->sceneColourRenderTargetView);
+
+        if (FAILED(result))
+        {
+            error = "Unable to create scene colour render target.";
+            return false;
+        }
+
+        result = state_->device->CreateShaderResourceView(
+            state_->sceneColourTexture.Get(),
+            nullptr,
+            &state_->sceneColourShaderResourceView);
+
+        if (FAILED(result))
+        {
+            error = "Unable to create scene colour SRV.";
+            return false;
+        }
+
+        D3D11_TEXTURE2D_DESC depthDesc{};
+
+        depthDesc.Width = width;
+        depthDesc.Height = height;
+        depthDesc.MipLevels = 1;
+        depthDesc.ArraySize = 1;
+        depthDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
+        depthDesc.SampleDesc.Count = 1;
+        depthDesc.Usage = D3D11_USAGE_DEFAULT;
+
+        depthDesc.BindFlags =
+            D3D11_BIND_DEPTH_STENCIL |
+            D3D11_BIND_SHADER_RESOURCE;
+
+        result = state_->device->CreateTexture2D(
+            &depthDesc,
+            nullptr,
+            &state_->depthTexture);
+
+        if (FAILED(result))
+        {
+            error = "Unable to create depth texture.";
+            return false;
+        }
+
+        D3D11_DEPTH_STENCIL_VIEW_DESC depthViewDesc{};
+
+        depthViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        depthViewDesc.ViewDimension =
+            D3D11_DSV_DIMENSION_TEXTURE2D;
+
+        depthViewDesc.Texture2D.MipSlice = 0;
+
+        result = state_->device->CreateDepthStencilView(
+            state_->depthTexture.Get(),
+            &depthViewDesc,
+            &state_->depthStencilView);
+
+        if (FAILED(result))
+        {
+            error = "Unable to create depth view.";
+            return false;
+        }
+
+        D3D11_DEPTH_STENCIL_VIEW_DESC readOnlyDesc =
+            depthViewDesc;
+
+        readOnlyDesc.Flags =
+            D3D11_DSV_READ_ONLY_DEPTH |
+            D3D11_DSV_READ_ONLY_STENCIL;
+
+        result = state_->device->CreateDepthStencilView(
+            state_->depthTexture.Get(),
+            &readOnlyDesc,
+            &state_->depthReadOnlyView);
+
+        if (FAILED(result))
+        {
+            error = "Unable to create read-only depth view.";
+            return false;
+        }
+
+        D3D11_SHADER_RESOURCE_VIEW_DESC depthSrvDesc{};
+
+        depthSrvDesc.Format =
+            DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+
+        depthSrvDesc.ViewDimension =
+            D3D11_SRV_DIMENSION_TEXTURE2D;
+
+        depthSrvDesc.Texture2D.MostDetailedMip = 0;
+        depthSrvDesc.Texture2D.MipLevels = 1;
+
+        result = state_->device->CreateShaderResourceView(
+            state_->depthTexture.Get(),
+            &depthSrvDesc,
+            &state_->depthShaderResourceView);
+
+        if (FAILED(result))
+        {
+            error = "Unable to create depth SRV.";
+            return false;
+        }
+
+        return true;
+    }
+
+    bool Renderer::Resize(
+        const std::uint32_t width,
+        const std::uint32_t height,
+        std::string& error)
+    {
+        error.clear();
+
+        if (!state_ ||
+            !state_->device ||
+            !state_->context ||
+            !state_->swapChain)
+        {
+            error = "Renderer is not initialized.";
+            return false;
+        }
+
+        if (width == 0 || height == 0)
+            return true;
+
+        if (state_->width == width &&
+            state_->height == height)
+        {
+            return true;
+        }
+
+        state_->context->ClearState();
+        state_->context->Flush();
+
+        state_->depthShaderResourceView.Reset();
+        state_->depthReadOnlyView.Reset();
+        state_->depthStencilView.Reset();
+        state_->depthTexture.Reset();
+
+        state_->sceneColourShaderResourceView.Reset();
+        state_->sceneColourRenderTargetView.Reset();
+        state_->sceneColourTexture.Reset();
+
+        state_->editorViewportShaderResourceView.Reset();
+        state_->editorViewportTexture.Reset();
+
+        state_->renderTargetView.Reset();
+        state_->backBufferTexture.Reset();
+
+        const HRESULT result = state_->swapChain->ResizeBuffers(
+            0,
+            width,
+            height,
+            DXGI_FORMAT_UNKNOWN,
+            0);
+
+        if (FAILED(result))
+        {
+            error = "Unable to resize swap chain buffers.";
+            return false;
+        }
+
+        if (!CreateFrameTargets(width, height, error))
+            return false;
+
+        state_->width = width;
+        state_->height = height;
 
         return true;
     }

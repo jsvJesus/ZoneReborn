@@ -114,5 +114,14 @@ namespace studio::ui
         bool showDetails_ = true;
         bool showContentBrowser_ = true;
         bool showConsole_ = true;
+
+        void BuildToolbar();
+
+        float uiScale_ = 1.0f;
+
+        char levelSearch_[128]{};
+        char contentSearch_[128]{};
+
+        int contentSelectedIndex_ = -1;
     };
 }

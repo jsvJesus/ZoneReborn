@@ -322,6 +322,7 @@
     <ClInclude Include="Private\Studio\Application.h" />
     <ClInclude Include="Private\Studio\EditorScene.h" />
     <ClInclude Include="Private\Studio\LevelCatalog.h" />
+    <ClInclude Include="Private\Studio\UI\EditorTheme.h" />
     <ClInclude Include="Private\Studio\UI\EditorUI.h" />
     <ClInclude Include="Private\World\WorldCollision.h" />
     <ClInclude Include="Private\World\WorldSession.h" />

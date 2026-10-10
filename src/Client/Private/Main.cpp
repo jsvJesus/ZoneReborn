@@ -31,7 +31,19 @@ namespace
 
 int main()
 {
+#if defined(STUDIO_BUILD)
+
+    if (!SetProcessDpiAwarenessContext(
+            DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2))
+    {
+        SetProcessDPIAware();
+    }
+
+#else
+
     SetProcessDPIAware();
+
+#endif
 
     int exitCode = 0;
 
