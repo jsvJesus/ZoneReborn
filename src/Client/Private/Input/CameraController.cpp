@@ -259,78 +259,60 @@ namespace client::input
 
         if (rightMouseDown)
         {
-            RECT activeRectangle = clientRectangle;
+            RECT clientRectangle{};
 
-            if (viewportRectangle &&
-                viewportRectangle->right > viewportRectangle->left &&
-                viewportRectangle->bottom > viewportRectangle->top)
+            if (GetClientRect(window, &clientRectangle))
             {
-                activeRectangle = *viewportRectangle;
-            }
+                RECT activeRectangle = clientRectangle;
 
-            if (GetClientRect(
-                    window,
-                    &clientRectangle))
-            {
+                if (viewportRectangle != nullptr &&
+                    viewportRectangle->right > viewportRectangle->left &&
+                    viewportRectangle->bottom > viewportRectangle->top)
+                {
+                    activeRectangle = *viewportRectangle;
+                }
+
                 POINT center
                 {
                     (activeRectangle.left + activeRectangle.right) / 2,
                     (activeRectangle.top + activeRectangle.bottom) / 2
                 };
 
-                ClientToScreen(
-                    window,
-                    &center);
+                ClientToScreen(window, &center);
 
                 if (!mouseLookActive_)
                 {
-                    mouseLookActive_ =
-                        true;
+                    mouseLookActive_ = true;
 
-                    SetCapture(
-                        window);
+                    SetCapture(window);
 
-                    SetCursorPos(
-                        center.x,
-                        center.y);
+                    SetCursorPos(center.x, center.y);
                 }
                 else
                 {
                     POINT cursor{};
 
-                    if (GetCursorPos(
-                            &cursor))
+                    if (GetCursorPos(&cursor))
                     {
-                        const LONG deltaX =
-                            cursor.x -
-                            center.x;
-
-                        const LONG deltaY =
-                            cursor.y -
-                            center.y;
+                        const LONG deltaX = cursor.x - center.x;
+                        const LONG deltaY = cursor.y - center.y;
 
                         yaw_ +=
-                            static_cast<float>(
-                                deltaX) *
+                            static_cast<float>(deltaX) *
                             mouseSensitivity_;
 
                         pitch_ -=
-                            static_cast<float>(
-                                deltaY) *
+                            static_cast<float>(deltaY) *
                             mouseSensitivity_;
 
-                        pitch_ =
-                            std::clamp(
-                                pitch_,
-                                MinimumPitch,
-                                MaximumPitch);
+                        pitch_ = std::clamp(
+                            pitch_,
+                            MinimumPitch,
+                            MaximumPitch);
 
-                        if (deltaX != 0 ||
-                            deltaY != 0)
+                        if (deltaX != 0 || deltaY != 0)
                         {
-                            SetCursorPos(
-                                center.x,
-                                center.y);
+                            SetCursorPos(center.x, center.y);
                         }
                     }
                 }
