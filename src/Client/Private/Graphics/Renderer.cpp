@@ -16,6 +16,7 @@
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include <d3d11shader.h>
 #include <DirectXMath.h>
 #include <wrl/client.h>
 
@@ -23,8 +24,10 @@
 #include <array>
 #include <chrono>
 #include <cmath>
+#include <cstddef>
 #include <cstring>
 #include <cstdint>
+#include <iterator>
 #include <limits>
 #include <string>
 #include <vector>
@@ -4742,14 +4745,62 @@ namespace client::graphics
         if (FAILED(state_->device->CreateVertexShader(code->GetBufferPointer(), code->GetBufferSize(),
             nullptr, &state_->detailVertexShader)))
         { error = "Unable to create detail vertex shader."; return false; }
-        const D3D11_INPUT_ELEMENT_DESC detailElements[] = {
-            {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
-            {"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,12,D3D11_INPUT_PER_VERTEX_DATA,0},
-            {"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,24,D3D11_INPUT_PER_VERTEX_DATA,0},
-            {"TEXCOORD",1,DXGI_FORMAT_R32G32_FLOAT,0,32,D3D11_INPUT_PER_VERTEX_DATA,0}};
-        if (FAILED(state_->device->CreateInputLayout(detailElements, 4,
-            code->GetBufferPointer(), code->GetBufferSize(), &state_->detailInputLayout)))
-        { error = "Unable to create detail input layout."; return false; }
+        const D3D11_INPUT_ELEMENT_DESC vertexElements[] = {
+            {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,offsetof(GpuVertex,x),D3D11_INPUT_PER_VERTEX_DATA,0},
+            {"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,offsetof(GpuVertex,nx),D3D11_INPUT_PER_VERTEX_DATA,0},
+            {"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,offsetof(GpuVertex,u),D3D11_INPUT_PER_VERTEX_DATA,0},
+            {"TEXCOORD",1,DXGI_FORMAT_R32G32_FLOAT,0,offsetof(GpuVertex,u2),D3D11_INPUT_PER_VERTEX_DATA,0},
+            {"TEXCOORD",2,DXGI_FORMAT_R32G32_FLOAT,0,offsetof(GpuVertex,hemi),D3D11_INPUT_PER_VERTEX_DATA,0}};
+        // Even unused struct fields may remain in the compiled input signature.
+        // Include every vertex semantic it declares; SV_InstanceID is generated
+        // by the input assembler and must not be fetched from the vertex buffer.
+        ComPtr<ID3D11ShaderReflection> reflection;
+        HRESULT layoutResult = D3DReflect(code->GetBufferPointer(), code->GetBufferSize(),
+            __uuidof(ID3D11ShaderReflection), reinterpret_cast<void**>(reflection.GetAddressOf()));
+        if (FAILED(layoutResult))
+        {
+            error = "Unable to reflect detail vertex shader (HRESULT=" +
+                std::to_string(static_cast<std::int32_t>(layoutResult)) + ").";
+            return false;
+        }
+        D3D11_SHADER_DESC shaderDescription{};
+        layoutResult = reflection->GetDesc(&shaderDescription);
+        if (FAILED(layoutResult))
+        { error = "Unable to read detail vertex shader signature."; return false; }
+        std::vector<D3D11_INPUT_ELEMENT_DESC> detailElements;
+        for (UINT parameter = 0; parameter < shaderDescription.InputParameters; ++parameter)
+        {
+            D3D11_SIGNATURE_PARAMETER_DESC signature{};
+            layoutResult = reflection->GetInputParameterDesc(parameter, &signature);
+            if (FAILED(layoutResult))
+            { error = "Unable to read detail vertex shader input parameter."; return false; }
+            if (signature.SystemValueType == D3D_NAME_INSTANCE_ID) continue;
+            const auto element = std::find_if(std::begin(vertexElements), std::end(vertexElements),
+                [&signature](const D3D11_INPUT_ELEMENT_DESC& candidate)
+                {
+                    return signature.SemanticIndex == candidate.SemanticIndex &&
+                        _stricmp(signature.SemanticName, candidate.SemanticName) == 0;
+                });
+            if (element == std::end(vertexElements))
+            {
+                error = "Unsupported detail vertex input: " + std::string(signature.SemanticName) +
+                    std::to_string(signature.SemanticIndex) + ".";
+                return false;
+            }
+            detailElements.push_back(*element);
+        }
+        layoutResult = state_->device->CreateInputLayout(detailElements.data(),
+            static_cast<UINT>(detailElements.size()), code->GetBufferPointer(), code->GetBufferSize(),
+            &state_->detailInputLayout);
+        if (FAILED(layoutResult))
+        {
+            error = "Unable to create detail input layout (HRESULT=" +
+                std::to_string(static_cast<std::int32_t>(layoutResult)) + "; inputs=";
+            for (const auto& element : detailElements)
+                error += std::string(element.SemanticName) + std::to_string(element.SemanticIndex) + " ";
+            error += ").";
+            return false;
+        }
         D3D11_BUFFER_DESC buffer{};
         buffer.ByteWidth = static_cast<UINT>(XRayDetailCache::MaxInstances*sizeof(DetailInstance));
         buffer.Usage = D3D11_USAGE_DEFAULT;
