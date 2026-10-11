@@ -902,23 +902,44 @@ namespace studio::ui
             const auto& lighting = scene.NativeLighting();
             auto weatherIndex = scene.WeatherIndex();
             float hours = scene.TimeOfDay();
+            
             bool native = scene.NativeLightingEnabled();
             bool lamps = scene.NativeLampsEnabled();
             bool statics = scene.StaticLightsEnabled();
             bool changed = false;
+            
             const char* preview = weatherIndex < lighting.weather.size() ?
                 lighting.weather[weatherIndex].name.c_str() : "Editor daylight fallback";
+            
             if (ImGui::BeginCombo("Weather profile", preview))
             {
-                for (std::size_t i = 0; i < lighting.weather.size(); ++i)
-                    if (ImGui::Selectable(lighting.weather[i].name.c_str(), weatherIndex == i))
-                    { weatherIndex = i; changed = true; }
+                for (std::size_t i = 0;
+                     i < lighting.weather.size();
+                     ++i)
+                {
+                    const bool selected = weatherIndex == i;
+
+                    if (ImGui::Selectable(
+                        lighting.weather[i].name.c_str(),
+                        selected))
+                    {
+                        weatherIndex = i;
+                        native = true;
+                        changed = true;
+                    }
+
+                    if (selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+
                 ImGui::EndCombo();
             }
+            
             changed |= ImGui::SliderFloat("Time of day", &hours, 0.0f, 24.0f, "%.2f h");
             changed |= ImGui::Checkbox("Map sun / ambient / hemisphere", &native);
             changed |= ImGui::Checkbox("Spawn lamps (root transforms)", &lamps);
             changed |= ImGui::Checkbox("Static level + build RGB (may double baked light)", &statics);
+            
             if (changed) scene.SetLightingPreview(weatherIndex, hours, native, lamps, statics);
             ImGui::TextWrapped("%s", lighting.source.c_str());
             
