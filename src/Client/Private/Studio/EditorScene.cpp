@@ -304,18 +304,27 @@ namespace studio
         ++revision_;
     }
 
-    client::graphics::StudioLightingData EditorScene::BuildLighting() const
+    client::graphics::StudioLightingData EditorScene::BuildLighting(const core::math::Vector3& cameraPosition)
     {
         using namespace client::graphics;
 
         StudioLightingData output;
         output.enabled = true;
         output.ambient = ambient_;
+        statistics_.activeEnvironmentModifiers = 0;
+        statistics_.environmentModifierPower = 0.0;
         if (nativeLightingEnabled_ && !empty_)
         {
-            const auto weather = EvaluateXRayWeather(
+            auto weather = EvaluateXRayWeather(
                 weatherIndex_ < nativeLighting_.weather.size() ? &nativeLighting_.weather[weatherIndex_] : nullptr,
                 timeOfDay_);
+            if (environmentModifiersEnabled_)
+            {
+                auto local = EvaluateXRayEnvironmentModifiers(std::move(weather), nativeLighting_.environmentModifiers, cameraPosition);
+                weather = std::move(local.weather);
+                statistics_.activeEnvironmentModifiers = local.active;
+                statistics_.environmentModifierPower = local.totalPower;
+            }
             for (std::size_t i = 0; i < 3u; ++i) output.ambient[i] += weather.ambient[i];
             output.hemisphere = weather.hemisphere;
             output.sunColour = weather.sunColour;
@@ -440,6 +449,7 @@ namespace studio
     void EditorScene::SetNativeLighting(XRayLighting lighting)
     {
         nativeLighting_ = std::move(lighting);
+        environmentModifiersEnabled_ = true;
         weatherIndex_ = nativeLighting_.defaultWeather;
         timeOfDay_ = 12.0f;
         nativeLightingEnabled_ = true;
@@ -456,6 +466,13 @@ namespace studio
         nativeLampsEnabled_ = lamps;
         staticLightsEnabled_ = statics;
         ++revision_; // Preview controls deliberately do not change editor.lighting v1.
+    }
+
+    void EditorScene::SetEnvironmentModifiersEnabled(bool enabled)
+    {
+        if (environmentModifiersEnabled_ == enabled) return;
+        environmentModifiersEnabled_ = enabled;
+        ++revision_; // Preview only: don't rewrite the original level.env_mod.
     }
 
     bool EditorScene::SaveLighting(std::string& error)

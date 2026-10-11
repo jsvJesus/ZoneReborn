@@ -5277,7 +5277,7 @@ namespace client::graphics
         constexpr float NearPlane =
             0.1f;
 
-        const float farPlane =
+        float farPlane =
             state_->sky.enabled &&
             state_->sky.definition.farPlane >
                 NearPlane
@@ -5286,6 +5286,14 @@ namespace client::graphics
                     5000.0f,
                     state_->sceneRadius *
                         10.0f);
+
+#if defined(STUDIO_BUILD)
+        // Weather/local view-distance must affect projection and its culling frustum,
+        // not only the atmosphere constant shown by the UI.
+        if (state_->studioLighting.enabled && state_->studioLighting.atmosphereEnabled &&
+            std::isfinite(state_->studioLighting.farPlane))
+            farPlane = std::clamp(state_->studioLighting.farPlane, 1.0f, 50000.0f);
+#endif
 
         const XMMATRIX projection =
             XMMatrixPerspectiveFovLH(

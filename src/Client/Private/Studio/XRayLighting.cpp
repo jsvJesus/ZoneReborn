@@ -269,6 +269,7 @@ namespace studio
     XRayLighting LoadXRayLighting(const core::world::xray::LevelData& level)
     {
         XRayLighting result;
+        result.environmentModifiers = level.environmentModifiers;
         std::filesystem::path config;
         for (auto parent = level.levelDirectory; !parent.empty();)
         {
@@ -519,6 +520,57 @@ namespace studio
                 buildFileError.message());
         }
         
+        return result;
+    }
+
+    EnvironmentModifierEvaluation EvaluateXRayEnvironmentModifiers(
+        XRayWeatherKey weather,
+        const std::vector<core::world::xray::EnvironmentModifier>& modifiers,
+        const core::math::Vector3& cameraPosition)
+    {
+        using namespace core::world::xray;
+        EnvironmentModifierEvaluation result{std::move(weather)};
+        if (!std::isfinite(cameraPosition.x) || !std::isfinite(cameraPosition.y) ||
+            !std::isfinite(cameraPosition.z)) return result;
+        std::uint16_t used = 0;
+        std::array<double, 3> fog{}, ambient{}, sky{}, hemisphere{};
+        double farPlane = 0.0, fogDensity = 0.0;
+        const auto accumulate = [](std::array<double, 3>& sum, core::math::Vector3 colour, double weight)
+        { sum[0] += colour.x * weight; sum[1] += colour.y * weight; sum[2] += colour.z * weight; };
+        for (const auto& modifier : modifiers)
+        {
+            if (modifier.radius <= 0.0f || modifier.power <= 0.0f) continue;
+            // Double precision avoids overflowing distance/weighted sums for finite exports.
+            const double dx = static_cast<double>(cameraPosition.x) - modifier.position.x;
+            const double dy = static_cast<double>(cameraPosition.y) - modifier.position.y;
+            const double dz = static_cast<double>(cameraPosition.z) - modifier.position.z;
+            const double distance = std::sqrt(dx * dx + dy * dy + dz * dz);
+            if (distance >= modifier.radius) continue;
+            const double weight = (1.0 - distance / modifier.radius) * modifier.power;
+            if (weight <= 0.0) continue;
+            ++result.active;
+            result.totalPower += weight;
+            used |= modifier.flags;
+            if (modifier.flags & ModifyViewDistance) farPlane += modifier.farPlane * weight;
+            if (modifier.flags & ModifyFogDensity) fogDensity += modifier.fogDensity * weight;
+            if (modifier.flags & ModifyFogColour) accumulate(fog, modifier.fogColour, weight);
+            if (modifier.flags & ModifyAmbient) accumulate(ambient, modifier.ambient, weight);
+            if (modifier.flags & ModifySkyColour) accumulate(sky, modifier.skyColour, weight);
+            if (modifier.flags & ModifyHemisphere) accumulate(hemisphere, modifier.hemisphere, weight);
+        }
+        // Native X-Ray uses ONE denominator for all affected fields, not per-field
+        // weights. Unflagged fields stay unchanged; sun/weather textures are never modified.
+        const double denominator = 1.0 + result.totalPower;
+        const auto mix = [&](std::array<float, 3>& base, const std::array<double, 3>& sum)
+        { for (std::size_t i = 0; i < 3u; ++i) base[i] = static_cast<float>((base[i] + sum[i]) / denominator); };
+        if (used & ModifyViewDistance)
+            result.weather.farPlane = std::clamp(static_cast<float>((result.weather.farPlane + farPlane) / denominator), 1.0f, 50000.0f);
+        if (used & ModifyFogDensity)
+            result.weather.fogDensity = std::clamp(static_cast<float>((result.weather.fogDensity + fogDensity) / denominator), 0.0f, 1.0f);
+        if (used & ModifyFogColour) mix(result.weather.fogColour, fog);
+        if (used & ModifyAmbient) mix(result.weather.ambient, ambient);
+        if (used & ModifySkyColour) mix(result.weather.skyColour, sky);
+        if (used & ModifyHemisphere) mix(result.weather.hemisphere, hemisphere);
         return result;
     }
 

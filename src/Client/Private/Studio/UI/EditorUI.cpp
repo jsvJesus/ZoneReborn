@@ -937,6 +937,14 @@ namespace studio::ui
             
             changed |= ImGui::SliderFloat("Time of day", &hours, 0.0f, 24.0f, "%.2f h");
             changed |= ImGui::Checkbox("Map sun / ambient / hemisphere", &native);
+            bool environmentModifiers = scene.EnvironmentModifiersEnabled();
+            if (ImGui::Checkbox("Local environment modifiers", &environmentModifiers))
+                scene.SetEnvironmentModifiersEnabled(environmentModifiers);
+            const auto& envStatistics = scene.Statistics();
+            ImGui::Text("ENV_MOD: %s | version 0x%X", envStatistics.environmentModifiersPresent ? "loaded" : "not present",
+                static_cast<unsigned>(envStatistics.environmentModifiersVersion));
+            ImGui::Text("Modifiers: %zu | active: %zu | power: %.3f", envStatistics.environmentModifiers,
+                envStatistics.activeEnvironmentModifiers, envStatistics.environmentModifierPower);
             changed |= ImGui::Checkbox("Spawn lamps (root transforms)", &lamps);
             changed |= ImGui::Checkbox("Static level + build RGB (may double baked light)", &statics);
             
@@ -950,7 +958,8 @@ namespace studio::ui
                         &lighting.weather[weatherIndex],
                         hours);
 
-                ImGui::SeparatorText("Weather & Atmosphere");
+                ImGui::SeparatorText("Base Weather & Atmosphere");
+                ImGui::TextWrapped("Profile values below are before local environment modifiers.");
 
                 ImGui::TextWrapped(
                     "Sky texture: %s",

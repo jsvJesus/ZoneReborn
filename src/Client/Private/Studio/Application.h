@@ -64,5 +64,6 @@ namespace studio
         bool runtimeInitialized_ = false;
 
         std::uint64_t publishedLightingRevision_ = 0;
+        core::math::Vector3 publishedLightingPosition_{};
     };
 }

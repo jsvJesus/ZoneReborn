@@ -2,6 +2,7 @@
 
 #include "Graphics/SceneRenderData.h"
 #include "Studio/BuildLightsLoader.h"
+#include "Core/World/XRay/XRayEnvironmentModifier.h"
 
 #include <array>
 #include <string>
@@ -86,6 +87,7 @@ namespace studio
         std::vector<client::graphics::SceneSpotLight> staticSpots;
         std::vector<std::string> warnings;
         std::string source;
+        std::vector<core::world::xray::EnvironmentModifier> environmentModifiers;
 
         BuildLightsData buildLights;
 
@@ -98,4 +100,16 @@ namespace studio
 
     XRayLighting LoadXRayLighting(const core::world::xray::LevelData& level);
     XRayWeatherKey EvaluateXRayWeather(const XRayWeather* weather, float hours);
+
+    struct EnvironmentModifierEvaluation final
+    {
+        XRayWeatherKey weather;
+        std::size_t active = 0;
+        double totalPower = 0.0;
+    };
+
+    EnvironmentModifierEvaluation EvaluateXRayEnvironmentModifiers(
+        XRayWeatherKey weather,
+        const std::vector<core::world::xray::EnvironmentModifier>& modifiers,
+        const core::math::Vector3& cameraPosition);
 }

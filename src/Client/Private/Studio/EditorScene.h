@@ -51,6 +51,11 @@ namespace studio
         std::uint64_t collisionMappedBytes = 0;
         std::size_t collisionIndexBytes = 0;
         CollisionProbeStatistics collisionProbe;
+        bool environmentModifiersPresent = false;
+        std::uint32_t environmentModifiersVersion = 0x0015u;
+        std::size_t environmentModifiers = 0;
+        std::size_t activeEnvironmentModifiers = 0;
+        double environmentModifierPower = 0.0;
     };
 
     enum class LightType : std::uint8_t
@@ -161,7 +166,7 @@ namespace studio
             const std::array<float, 3>& colour);
 
         [[nodiscard]]
-        client::graphics::StudioLightingData BuildLighting() const;
+        client::graphics::StudioLightingData BuildLighting(const core::math::Vector3& cameraPosition = {});
 
         [[nodiscard]]
         bool SaveLighting(std::string& error);
@@ -171,6 +176,8 @@ namespace studio
 
         void SetNativeLighting(XRayLighting lighting);
         const XRayLighting& NativeLighting() const noexcept { return nativeLighting_; }
+        bool EnvironmentModifiersEnabled() const noexcept { return environmentModifiersEnabled_; }
+        void SetEnvironmentModifiersEnabled(bool enabled);
         std::size_t WeatherIndex() const noexcept { return weatherIndex_; }
         float TimeOfDay() const noexcept { return timeOfDay_; }
         bool NativeLightingEnabled() const noexcept { return nativeLightingEnabled_; }
@@ -197,6 +204,7 @@ namespace studio
 
         std::vector<LightObject> lights_;
         XRayLighting nativeLighting_;
+        bool environmentModifiersEnabled_ = true;
         std::size_t weatherIndex_ = 0;
         float timeOfDay_ = 12.0f;
         bool nativeLightingEnabled_ = true;

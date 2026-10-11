@@ -100,6 +100,7 @@
     <ClInclude Include="Public\Core\World\XRay\XRayLevelLoader.h" />
     <ClInclude Include="Public\Core\World\XRay\XRaySpawnData.h" />
     <ClInclude Include="Public\Core\World\XRay\XRayLightData.h" />
+    <ClInclude Include="Public\Core\World\XRay\XRayEnvironmentModifier.h" />
     <ClInclude Include="Public\Core\World\XRay\XRaySpawnLoader.h" />
   </ItemGroup>
 

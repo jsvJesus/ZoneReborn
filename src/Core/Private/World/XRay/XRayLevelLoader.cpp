@@ -11,6 +11,7 @@
 #include <limits>
 #include <string>
 #include <utility>
+#include <unordered_set>
 
 namespace
 {
@@ -955,6 +956,96 @@ namespace
                 buffer);
         }
 
+        return true;
+    }
+
+    bool ParseEnvironmentModifiers(
+        const std::filesystem::path& directory,
+        core::world::xray::LevelData& output,
+        std::string& error)
+    {
+        using namespace core::world::xray;
+        const auto path = directory / "level.env_mod";
+        std::error_code filesystemError;
+        output.environmentModifiersPresent = std::filesystem::exists(path, filesystemError);
+        if (filesystemError)
+        { error = "Unable to inspect level.env_mod: " + filesystemError.message(); return false; }
+        if (!output.environmentModifiersPresent) return true;
+        BinaryFile file;
+        if (!file.Open(path, error)) return false;
+
+        // Scan once: headers need not be ordered, but duplicate IDs are ambiguous.
+        // Cap optional data before allocating. No vertex/geometry-sized allocations.
+        constexpr std::size_t MaxModifiers = 65536u;
+        if (file.Size() > 12u + MaxModifiers * 86ull)
+        { error = "level.env_mod exceeds the modifier limit."; return false; }
+        std::vector<Chunk> records;
+        std::unordered_set<std::uint32_t> ids;
+        std::uint64_t cursor = 0;
+        while (cursor < file.Size())
+        {
+            std::array<std::uint32_t, 2> header{};
+            if (file.Size() - cursor < sizeof(header))
+            { error = "level.env_mod contains a truncated chunk header."; return false; }
+            if (!file.Read(cursor, header.data(), sizeof(header), error)) return false;
+            cursor += sizeof(header);
+            if (header[1] > file.Size() - cursor)
+            { error = "level.env_mod contains an out-of-bounds chunk."; return false; }
+            const auto id = header[0] & ~CompressionFlag;
+            if (!ids.insert(id).second)
+            { error = "level.env_mod contains duplicate chunk " + std::to_string(id) + "."; return false; }
+            if ((header[0] & CompressionFlag) != 0u)
+            { error = "Compressed level.env_mod chunks are unsupported."; return false; }
+            if (id == 0u && header[1] == sizeof(std::uint32_t))
+            {
+                if (!file.Read(cursor, &output.environmentModifiersVersion, sizeof(std::uint32_t), error)) return false;
+                // Known SoC/CS/CoP exports; 0x17 has the same flagged layout as 0x16.
+                if (output.environmentModifiersVersion < 0x15u || output.environmentModifiersVersion > 0x17u)
+                { error = "Unsupported level.env_mod version " + std::to_string(output.environmentModifiersVersion) + "."; return false; }
+            }
+            else
+            {
+                if (records.size() == MaxModifiers)
+                { error = "level.env_mod exceeds the modifier limit."; return false; }
+                records.push_back({{cursor, header[1]}, id, false});
+            }
+            cursor += header[1];
+        }
+        const std::size_t bytesPerRecord = output.environmentModifiersVersion >= 0x16u ? 78u : 76u;
+        for (const auto& record : records)
+        {
+            if (record.data.size != bytesPerRecord)
+            { error = "level.env_mod modifier " + std::to_string(record.id) + " has an invalid record size."; return false; }
+            std::array<std::byte, 78> bytes{};
+            if (!file.Read(record.data.offset, bytes.data(), bytesPerRecord, error)) return false;
+            const auto scalar = [&](std::size_t offset)
+            { float value; std::memcpy(&value, bytes.data() + offset, sizeof(value)); return value; };
+            const auto vector = [&](std::size_t offset)
+            { return core::math::Vector3{scalar(offset), scalar(offset + 4u), scalar(offset + 8u)}; };
+            EnvironmentModifier modifier;
+            modifier.chunkId = record.id;
+            modifier.position = vector(0u);
+            modifier.radius = scalar(12u);
+            modifier.power = scalar(16u);
+            modifier.farPlane = scalar(20u);
+            modifier.fogColour = vector(24u);
+            modifier.fogDensity = scalar(36u);
+            modifier.ambient = vector(40u);
+            modifier.skyColour = vector(52u);
+            modifier.hemisphere = vector(64u);
+            if (bytesPerRecord == 78u)
+                std::memcpy(&modifier.flags, bytes.data() + 76u, sizeof(modifier.flags));
+            const auto validColour = [](core::math::Vector3 v)
+            { return spatial::Finite(v) && v.x >= 0.0f && v.y >= 0.0f && v.z >= 0.0f; };
+            if (!spatial::Finite(modifier.position) || !std::isfinite(modifier.radius) || modifier.radius < 0.0f ||
+                !std::isfinite(modifier.power) || modifier.power < 0.0f ||
+                !std::isfinite(modifier.farPlane) || modifier.farPlane < 0.0f ||
+                !std::isfinite(modifier.fogDensity) || modifier.fogDensity < 0.0f ||
+                !validColour(modifier.fogColour) || !validColour(modifier.ambient) ||
+                !validColour(modifier.skyColour) || !validColour(modifier.hemisphere))
+            { error = "level.env_mod modifier " + std::to_string(record.id) + " contains invalid parameters."; return false; }
+            output.environmentModifiers.push_back(modifier);
+        }
         return true;
     }
 
@@ -1928,6 +2019,7 @@ namespace core::world::xray
         }
         if (!ParseTopology(level, levelRange, output, error)) return false;
         if (!ParseHom(levelDirectory, output, error)) return false;
+        if (!ParseEnvironmentModifiers(levelDirectory, output, error)) return false;
 
         const auto spawnFile = levelDirectory / "level.spawn";
         std::error_code spawnError;

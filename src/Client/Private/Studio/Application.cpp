@@ -217,6 +217,9 @@ namespace studio
         }
 
         SceneStatistics statistics;
+        statistics.environmentModifiersPresent = level.environmentModifiersPresent;
+        statistics.environmentModifiersVersion = level.environmentModifiersVersion;
+        statistics.environmentModifiers = level.environmentModifiers.size();
 
         statistics.visuals =
             renderStatistics.staticVisualCount;
@@ -260,6 +263,12 @@ namespace studio
 
         scene_.Open(directory, statistics, level.collision, level.spawn);
         scene_.SetNativeLighting(LoadXRayLighting(level));
+        const std::string envMessage = !level.environmentModifiersPresent ? "ENV_MOD: not present (optional)." :
+            "ENV_MOD: version=" + std::to_string(level.environmentModifiersVersion) +
+            " | modifiers=" + std::to_string(level.environmentModifiers.size()) +
+            " | camera-local blending enabled.";
+        core::Log::Info(envMessage);
+        editorUI_.AddConsoleMessage(envMessage);
         const auto& nativeLighting = scene_.NativeLighting();
         editorUI_.AddConsoleMessage(nativeLighting.source + " | spawn lamps=" +
             std::to_string(nativeLighting.lamps.size() + nativeLighting.lampSpots.size()) +
@@ -524,11 +533,18 @@ namespace studio
 
         std::string error;
 
-        if (publishedLightingRevision_ !=
-            scene_.Revision())
+        const auto& lightingPosition = camera_.View().position;
+        const bool lightingPositionChanged =
+            lightingPosition.x != publishedLightingPosition_.x ||
+            lightingPosition.y != publishedLightingPosition_.y ||
+            lightingPosition.z != publishedLightingPosition_.z;
+        if (publishedLightingRevision_ != scene_.Revision() ||
+            (lightingPositionChanged && scene_.NativeLightingEnabled() &&
+                scene_.EnvironmentModifiersEnabled() && !scene_.NativeLighting().environmentModifiers.empty()))
         {
             renderer_.SetStudioLighting(
-                scene_.BuildLighting());
+                scene_.BuildLighting(lightingPosition));
+            publishedLightingPosition_ = lightingPosition;
 
             publishedLightingRevision_ =
                 scene_.Revision();
