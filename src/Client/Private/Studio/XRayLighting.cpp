@@ -111,6 +111,117 @@ namespace studio
                 // finite keys, and reduce angles before converting to avoid overflow.
                 key.sunDirection = Direction(std::remainder(heading, 360.0f) * (Pi / 180.0f),
                     std::remainder(pitch, 360.0f) * (Pi / 180.0f));
+
+                const auto readOptional = [&](const char* field, float* destination, std::size_t count)
+                {
+                    const auto it = values.find(field);
+
+                    if (it == values.end())
+                        return true;
+
+                    return Numbers(
+                        it->second,
+                        destination,
+                        count);
+                };
+
+                if (!readOptional(
+                        "sky_color",
+                        key.skyColour.data(),
+                        3) ||
+                    !readOptional(
+                        "fog_color",
+                        key.fogColour.data(),
+                        3) ||
+                    !readOptional(
+                        "clouds_color",
+                        key.cloudsColour.data(),
+                        5) ||
+                    !readOptional(
+                        "sky_rotation",
+                        &key.skyRotation,
+                        1) ||
+                    !readOptional(
+                        "fog_distance",
+                        &key.fogDistance,
+                        1) ||
+                    !readOptional(
+                        "fog_density",
+                        &key.fogDensity,
+                        1) ||
+                    !readOptional(
+                        "far_plane",
+                        &key.farPlane,
+                        1) ||
+                    !readOptional(
+                        "rain_density",
+                        &key.rainDensity,
+                        1) ||
+                    !readOptional(
+                        "wind_velocity",
+                        &key.windVelocity,
+                        1) ||
+                    !readOptional(
+                        "wind_direction",
+                        &key.windDirection,
+                        1))
+                {
+                    return false;
+                }
+
+                const auto validColour =
+                    [](const auto& colour)
+                    {
+                        return std::all_of(
+                            colour.begin(),
+                            colour.end(),
+                            [](float value)
+                            {
+                                return std::isfinite(value) &&
+                                    value >= 0.0f &&
+                                    value <= 100.0f;
+                            });
+                    };
+
+                if (!validColour(key.skyColour) ||
+                    !validColour(key.fogColour) ||
+                    !validColour(key.cloudsColour) ||
+                    key.fogDistance <= 0.0f ||
+                    key.farPlane <= 0.0f ||
+                    key.fogDensity < 0.0f ||
+                    key.rainDensity < 0.0f ||
+                    key.windVelocity < 0.0f)
+                {
+                    return false;
+                }
+
+                key.fogDistance =
+                    std::clamp(key.fogDistance, 1.0f, 50000.0f);
+
+                key.farPlane =
+                    std::clamp(key.farPlane, 1.0f, 50000.0f);
+
+                key.fogDensity =
+                    std::clamp(key.fogDensity, 0.0f, 10.0f);
+
+                key.rainDensity =
+                    std::clamp(key.rainDensity, 0.0f, 1.0f);
+
+                key.windVelocity =
+                    std::clamp(key.windVelocity, 0.0f, 10000.0f);
+
+                if (const auto it = values.find("sky_texture");
+                    it != values.end())
+                {
+                    key.skyTexture = Trim(it->second);
+                }
+
+                if (const auto it = values.find("clouds_texture");
+                    it != values.end())
+                {
+                    key.cloudsTexture = Trim(it->second);
+                }
+                
                 weather.keys.push_back(key);
             }
             std::sort(weather.keys.begin(), weather.keys.end(),
@@ -427,6 +538,7 @@ namespace studio
         if (elapsed < 0.0f) elapsed += Day;
         const float blend = std::clamp(elapsed / span, 0.0f, 1.0f);
         XRayWeatherKey key; key.seconds = seconds;
+        
         for (std::size_t i = 0; i < 3u; ++i)
         {
             key.ambient[i] = std::lerp(a.ambient[i], b.ambient[i], blend);
@@ -434,6 +546,91 @@ namespace studio
             key.sunColour[i] = std::lerp(a.sunColour[i], b.sunColour[i], blend);
             key.sunDirection[i] = std::lerp(a.sunDirection[i], b.sunDirection[i], blend);
         }
+
+        for (std::size_t i = 0; i < 3; ++i)
+        {
+            key.skyColour[i] =
+                std::lerp(
+                    a.skyColour[i],
+                    b.skyColour[i],
+                    blend);
+
+            key.fogColour[i] =
+                std::lerp(
+                    a.fogColour[i],
+                    b.fogColour[i],
+                    blend);
+        }
+
+        for (std::size_t i = 0; i < 5; ++i)
+        {
+            key.cloudsColour[i] =
+                std::lerp(
+                    a.cloudsColour[i],
+                    b.cloudsColour[i],
+                    blend);
+        }
+
+        const auto interpolateAngle = [blend](float first, float second)
+        {
+            const float difference =
+                std::remainder(
+                    second - first,
+                    360.0f);
+
+            return first + difference * blend;
+        };
+
+        key.skyRotation =
+            interpolateAngle(
+        a.skyRotation,
+        b.skyRotation);
+
+        key.windDirection =
+            interpolateAngle(
+                a.windDirection,
+                b.windDirection);
+
+        key.fogDistance =
+            std::lerp(
+                a.fogDistance,
+                b.fogDistance,
+                blend);
+
+        key.fogDensity =
+            std::lerp(
+                a.fogDensity,
+                b.fogDensity,
+                blend);
+
+        key.farPlane =
+            std::lerp(
+                a.farPlane,
+                b.farPlane,
+                blend);
+
+        key.rainDensity =
+            std::lerp(
+                a.rainDensity,
+                b.rainDensity,
+                blend);
+
+        key.windVelocity =
+            std::lerp(
+                a.windVelocity,
+                b.windVelocity,
+                blend);
+
+        key.skyTexture =
+            blend < 0.5f
+                ? a.skyTexture
+                : b.skyTexture;
+
+        key.cloudsTexture =
+            blend < 0.5f
+                ? a.cloudsTexture
+                : b.cloudsTexture;
+        
         const float length = std::sqrt(key.sunDirection[0] * key.sunDirection[0] +
             key.sunDirection[1] * key.sunDirection[1] + key.sunDirection[2] * key.sunDirection[2]);
         if (length > 0.0001f) for (float& value : key.sunDirection) value /= length;

@@ -321,6 +321,25 @@ namespace studio
             output.sunColour = weather.sunColour;
             output.sunDirection = weather.sunDirection;
             output.sunIntensity = 1.0f;
+
+            output.atmosphereEnabled = true;
+
+            output.skyColour = weather.skyColour;
+            output.fogColour = weather.fogColour;
+            output.cloudsColour = weather.cloudsColour;
+
+            output.skyRotation = weather.skyRotation;
+
+            output.fogDistance = weather.fogDistance;
+            output.fogDensity = weather.fogDensity;
+            output.farPlane = weather.farPlane;
+
+            output.rainDensity = weather.rainDensity;
+
+            output.windVelocity = weather.windVelocity;
+            output.windDirection = weather.windDirection;
+
+            output.timeHours = timeOfDay_;
         }
         if (nativeLampsEnabled_)
         {

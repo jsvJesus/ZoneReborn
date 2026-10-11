@@ -87,7 +87,76 @@ cbuffer SkyConstants : register(b3)
     float4 skyAtmosphere0;
     float4 skyAtmosphere1;
     float4 skyHemisphereColour;
+    float4 weatherSkyColour;
+
+    // xyz = fog RGB, w = fog distance
+    float4 weatherFogColourDistance;
+
+    // x = enabled
+    // y = density
+    // z = far plane
+    // w = rain density
+    float4 weatherFogParameters;
+
+    // rgb = clouds RGB
+    // w = clouds multiplier
+    float4 weatherCloudColour;
+
+    // x = clouds parameter
+    // y = wind velocity
+    // z = wind direction
+    // w = elapsed seconds
+    float4 weatherCloudParameters;
 };
+
+float3 ApplyWeatherFog(
+    float3 colour,
+    float3 worldPosition)
+{
+    if (weatherFogParameters.x < 0.5f)
+        return colour;
+
+    const float fogDistance =
+        max(
+            1.0f,
+            min(
+                weatherFogColourDistance.w,
+                weatherFogParameters.z));
+
+    const float density =
+        clamp(
+            weatherFogParameters.y,
+            0.0f,
+            10.0f);
+
+    const float distanceToCamera =
+        distance(
+            worldPosition,
+            cameraPosition.xyz);
+
+    const float fogStart =
+        fogDistance * 0.08f;
+
+    const float linearFog =
+        saturate(
+            (distanceToCamera - fogStart) /
+            max(fogDistance - fogStart, 1.0f));
+
+    const float fogExponent =
+        max(
+            0.3f,
+            1.4f - density * 0.85f);
+
+    const float fogFactor =
+        pow(
+            linearFog,
+            fogExponent);
+
+    return lerp(
+        colour,
+        weatherFogColourDistance.rgb,
+        fogFactor);
+}
 
 Texture2D terrainTexture0 : register(t0);
 Texture2D terrainTexture1 : register(t1);

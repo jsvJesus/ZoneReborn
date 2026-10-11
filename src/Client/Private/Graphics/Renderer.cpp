@@ -120,21 +120,17 @@ namespace
 
     struct SkyConstants final
     {
-        DirectX::XMFLOAT4
-            sunDirectionDaylight;
-
-        DirectX::XMFLOAT4
-            sunColour;
-
-        DirectX::XMFLOAT4
-            ambientColour;
-
-        DirectX::XMFLOAT4
-            atmosphere0;
-
-        DirectX::XMFLOAT4
-            atmosphere1;
+        DirectX::XMFLOAT4 sunDirectionDaylight;
+        DirectX::XMFLOAT4 sunColour;
+        DirectX::XMFLOAT4 ambientColour;
+        DirectX::XMFLOAT4 atmosphere0;
+        DirectX::XMFLOAT4 atmosphere1;
         DirectX::XMFLOAT4 hemisphereColour;
+        DirectX::XMFLOAT4 weatherSkyColour;
+        DirectX::XMFLOAT4 weatherFogColourDistance;
+        DirectX::XMFLOAT4 weatherFogParameters;
+        DirectX::XMFLOAT4 weatherCloudColour;
+        DirectX::XMFLOAT4 weatherCloudParameters;
     };
 
     static_assert(
@@ -5597,6 +5593,52 @@ namespace client::graphics
                     0.0f
                 };
             }
+
+            if (lighting.atmosphereEnabled)
+            {
+                skyConstants.atmosphere1.z =
+                    lighting.timeHours;
+
+                skyConstants.weatherSkyColour =
+                {
+                    lighting.skyColour[0],
+                    lighting.skyColour[1],
+                    lighting.skyColour[2],
+                    lighting.skyRotation
+                };
+
+                skyConstants.weatherFogColourDistance =
+                {
+                    lighting.fogColour[0],
+                    lighting.fogColour[1],
+                    lighting.fogColour[2],
+                    lighting.fogDistance
+                };
+
+                skyConstants.weatherFogParameters =
+                {
+                    1.0f,
+                    lighting.fogDensity,
+                    lighting.farPlane,
+                    lighting.rainDensity
+                };
+
+                skyConstants.weatherCloudColour =
+                {
+                    lighting.cloudsColour[0],
+                    lighting.cloudsColour[1],
+                    lighting.cloudsColour[2],
+                    lighting.cloudsColour[3]
+                };
+
+                skyConstants.weatherCloudParameters =
+                {
+                    lighting.cloudsColour[4],
+                    lighting.windVelocity,
+                    lighting.windDirection,
+                    elapsedSeconds
+                };
+            }
         }
 #endif
 
@@ -5619,7 +5661,18 @@ namespace client::graphics
             1,
             skyBuffers);
 
-        if (state_->sky.enabled)
+        bool renderSky = state_->sky.enabled;
+
+#if defined(STUDIO_BUILD)
+        renderSky =
+            renderSky ||
+            (
+                state_->studioLighting.enabled &&
+                state_->studioLighting.atmosphereEnabled
+            );
+#endif
+
+        if (renderSky)
         {
             state_->context->IASetInputLayout(
                 nullptr);

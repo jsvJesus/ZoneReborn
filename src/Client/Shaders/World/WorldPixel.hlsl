@@ -24,9 +24,15 @@ float4 PSMain(
 
     if (useWater != 0)
     {
-        return
-            ShadeWater(
-                input);
+        float4 waterColour =
+            ShadeWater(input);
+
+        waterColour.rgb =
+            ApplyWeatherFog(
+                waterColour.rgb,
+                input.worldPosition);
+
+        return waterColour;
     }
 
     if (useTerrain != 0)
@@ -211,6 +217,11 @@ float4 PSMain(
     finalColour +=
         omniSpecular +
         spotSpecular;
+
+    finalColour =
+        ApplyWeatherFog(
+            finalColour,
+            input.worldPosition);
 
     return
         float4(

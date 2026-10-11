@@ -89,6 +89,150 @@ float3 BuildFallbackSky(
             horizonFactor);
 }
 
+float3 BuildWeatherSky(
+    float3 viewDirection)
+{
+    const float height =
+        saturate(
+            viewDirection.y * 0.5f + 0.5f);
+
+    const float3 fogColour =
+        saturate(
+            weatherFogColourDistance.rgb);
+
+    const float3 skyTint =
+        saturate(
+            weatherSkyColour.rgb);
+
+    const float daylight =
+        saturate(
+            dot(
+                skySunColour.rgb,
+                float3(0.2126f, 0.7152f, 0.0722f)) *
+            skySunDirectionDaylight.w *
+            1.5f);
+
+    const float3 zenithColour =
+        lerp(
+            fogColour * 0.55f,
+            float3(0.20f, 0.34f, 0.54f) * skyTint,
+            saturate(daylight * 0.8f + 0.1f));
+
+    float3 colour =
+        lerp(
+            fogColour,
+            zenithColour,
+            smoothstep(
+                0.1f,
+                0.95f,
+                height));
+
+    const float3 cloudsColour =
+        saturate(
+            weatherCloudColour.rgb);
+
+    const float rain =
+        saturate(
+            weatherFogParameters.w);
+
+    const float cloudBrightness =
+        max(
+            cloudsColour.r,
+            max(
+                cloudsColour.g,
+                cloudsColour.b));
+
+    const float cloudsMultiplier =
+        saturate(
+            weatherCloudColour.a);
+
+    const float coverage =
+        saturate(
+            cloudBrightness * 0.65f +
+            rain * 0.45f) *
+        cloudsMultiplier;
+
+    if (coverage > 0.001f)
+    {
+        const float rotation =
+            radians(
+                weatherSkyColour.w);
+
+        const float azimuth =
+            atan2(
+                viewDirection.x,
+                viewDirection.z) + rotation;
+
+        float2 coordinates =
+            float2(
+                azimuth * 2.5f,
+                viewDirection.y * 6.0f);
+
+        const float windAngle =
+            radians(
+                weatherCloudParameters.z);
+
+        const float2 wind =
+            float2(
+                cos(windAngle),
+                sin(windAngle));
+
+        const float windOffset =
+            weatherCloudParameters.y *
+            weatherCloudParameters.w *
+            0.000003f;
+
+        coordinates +=
+            wind * windOffset;
+
+        const float cloudPattern =
+            0.5f +
+            0.22f *
+                sin(
+                    coordinates.x * 2.1f +
+                    coordinates.y * 1.3f) +
+            0.17f *
+                sin(
+                    coordinates.x * 3.7f -
+                    coordinates.y * 2.4f) +
+            0.10f *
+                sin(
+                    coordinates.x * 6.3f +
+                    coordinates.y * 4.9f);
+
+        const float cloudMask =
+            smoothstep(
+                1.0f - coverage - 0.20f,
+                1.0f - coverage + 0.15f,
+                cloudPattern);
+
+        const float cloudContrast =
+            lerp(
+                0.7f,
+                1.0f,
+                saturate(
+                    weatherCloudParameters.x));
+
+        const float3 cloudSurface =
+            cloudsColour *
+            lerp(
+                0.50f,
+                0.90f,
+                daylight);
+
+        colour =
+            lerp(
+                colour,
+                cloudSurface,
+                cloudMask *
+                    cloudContrast);
+    }
+
+    return max(
+        colour,
+        float3(0.0f, 0.0f, 0.0f));
+}
+
 float4 PSSky(
     SkyVertexOutput input) : SV_TARGET
 {
@@ -130,17 +274,21 @@ float4 PSSky(
                 0.5f +
             0.5f);
 
+    const bool weatherEnabled =
+        weatherFogParameters.x > 0.5f;
+
     float3 colour =
-        BuildFallbackSky(
-            viewDirection);
+        weatherEnabled
+            ? BuildWeatherSky(viewDirection)
+            : BuildFallbackSky(viewDirection);
 
     const float currentTime =
         frac(
             skyAtmosphere1.z /
             24.0f);
 
-    if (skyAtmosphere1.w >
-        0.5f)
+    if (!weatherEnabled &&
+        skyAtmosphere1.w > 0.5f)
     {
         const float2 gradientUv =
             float2(
@@ -170,10 +318,12 @@ float4 PSSky(
                 height
             ));
 
-    colour *=
-        1.0f -
-        turbidity *
-            0.12f;
+    if (!weatherEnabled)
+    {
+        colour *=
+            1.0f -
+            turbidity * 0.12f;
+    }
 
     const float3 sunDirection =
         normalize(

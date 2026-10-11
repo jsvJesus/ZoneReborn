@@ -942,6 +942,85 @@ namespace studio::ui
             
             if (changed) scene.SetLightingPreview(weatherIndex, hours, native, lamps, statics);
             ImGui::TextWrapped("%s", lighting.source.c_str());
+
+            if (weatherIndex < lighting.weather.size())
+            {
+                const XRayWeatherKey weather =
+                    EvaluateXRayWeather(
+                        &lighting.weather[weatherIndex],
+                        hours);
+
+                ImGui::SeparatorText("Weather & Atmosphere");
+
+                ImGui::TextWrapped(
+                    "Sky texture: %s",
+                    weather.skyTexture.empty()
+                        ? "Not specified"
+                        : weather.skyTexture.c_str());
+
+                ImGui::TextWrapped(
+                    "Clouds texture: %s",
+                    weather.cloudsTexture.empty()
+                        ? "Not specified"
+                        : weather.cloudsTexture.c_str());
+
+                ImGui::Text(
+                    "Fog distance: %.1f",
+                    weather.fogDistance);
+
+                ImGui::Text(
+                    "Fog density: %.3f",
+                    weather.fogDensity);
+
+                ImGui::Text(
+                    "Far plane: %.1f",
+                    weather.farPlane);
+
+                ImGui::Text(
+                    "Sky rotation: %.1f",
+                    weather.skyRotation);
+
+                ImGui::Text(
+                    "Rain density: %.3f",
+                    weather.rainDensity);
+
+                ImGui::Text(
+                    "Wind velocity: %.1f",
+                    weather.windVelocity);
+
+                ImGui::ColorButton(
+                    "Sky Color",
+                    ImVec4(
+                        weather.skyColour[0],
+                        weather.skyColour[1],
+                        weather.skyColour[2],
+                        1.0f));
+
+                ImGui::SameLine();
+                ImGui::TextUnformatted("Sky Color");
+
+                ImGui::ColorButton(
+                    "Fog Color",
+                    ImVec4(
+                        weather.fogColour[0],
+                        weather.fogColour[1],
+                        weather.fogColour[2],
+                        1.0f));
+
+                ImGui::SameLine();
+                ImGui::TextUnformatted("Fog Color");
+
+                ImGui::ColorButton(
+                    "Clouds Color",
+                    ImVec4(
+                        weather.cloudsColour[0],
+                        weather.cloudsColour[1],
+                        weather.cloudsColour[2],
+                        1.0f));
+
+                ImGui::SameLine();
+                ImGui::TextUnformatted("Clouds Color");
+            }
             
             if (lighting.buildLightsLoaded)
             {

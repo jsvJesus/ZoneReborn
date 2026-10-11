@@ -14,10 +14,55 @@ namespace studio
     struct XRayWeatherKey final
     {
         float seconds = 0.0f;
-        std::array<float, 3> ambient{0.05f, 0.05f, 0.05f};
-        std::array<float, 3> hemisphere{0.5f, 0.5f, 0.5f};
-        std::array<float, 3> sunColour{0.9f, 0.84f, 0.69f};
-        std::array<float, 3> sunDirection{0.0f, -1.0f, 0.0f}; // Light ray direction.
+
+        std::array<float, 3> ambient
+        {
+            0.05f, 0.05f, 0.05f
+        };
+
+        std::array<float, 3> hemisphere
+        {
+            0.5f, 0.5f, 0.5f
+        };
+
+        std::array<float, 3> sunColour
+        {
+            0.9f, 0.84f, 0.69f
+        };
+
+        std::array<float, 3> sunDirection
+        {
+            0.0f, -1.0f, 0.0f
+        };
+
+        std::array<float, 3> skyColour
+        {
+            0.7f, 0.7f, 0.7f
+        };
+
+        std::array<float, 3> fogColour
+        {
+            0.3f, 0.3f, 0.35f
+        };
+
+        std::array<float, 5> cloudsColour
+        {
+            0.0f, 0.0f, 0.0f, 1.0f, 0.0f
+        };
+
+        std::string skyTexture;
+        std::string cloudsTexture;
+
+        float skyRotation = 0.0f;
+
+        float fogDistance = 700.0f;
+        float fogDensity = 0.0f;
+        float farPlane = 700.0f;
+
+        float rainDensity = 0.0f;
+
+        float windVelocity = 0.0f;
+        float windDirection = 0.0f;
     };
 
     struct XRayWeather final
