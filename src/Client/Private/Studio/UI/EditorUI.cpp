@@ -918,9 +918,61 @@ namespace studio::ui
             changed |= ImGui::SliderFloat("Time of day", &hours, 0.0f, 24.0f, "%.2f h");
             changed |= ImGui::Checkbox("Map sun / ambient / hemisphere", &native);
             changed |= ImGui::Checkbox("Spawn lamps (root transforms)", &lamps);
-            changed |= ImGui::Checkbox("Static level lights (may double baked light)", &statics);
+            changed |= ImGui::Checkbox("Static level + build RGB (may double baked light)", &statics);
             if (changed) scene.SetLightingPreview(weatherIndex, hours, native, lamps, statics);
             ImGui::TextWrapped("%s", lighting.source.c_str());
+            
+            if (lighting.buildLightsLoaded)
+            {
+                ImGui::SeparatorText("Build Lights");
+
+                ImGui::Text(
+                    "Version: %u",
+                    static_cast<unsigned>(
+                        lighting.buildLights.version));
+
+                ImGui::Text(
+                    "RGB: %zu",
+                    lighting.buildLights.rgb.size());
+
+                ImGui::Text(
+                    "HEMI: %zu",
+                    lighting.buildLights.hemi.size());
+
+                ImGui::Text(
+                    "SUN: %zu",
+                    lighting.buildLights.sun.size());
+
+                ImGui::Text(
+                    "Auxiliary chunks: %zu",
+                    lighting.buildLights.auxiliaryChunks);
+
+                ImGui::Separator();
+
+                ImGui::Text(
+                    "Imported: %zu",
+                    lighting.buildRgbImported);
+
+                ImGui::Text(
+                    "Duplicates: %zu",
+                    lighting.buildRgbDuplicates);
+
+                ImGui::Text(
+                    "Rejected: %zu",
+                    lighting.buildRgbRejected);
+
+                ImGui::TextDisabled(
+                    "RGB preview uses static light toggle.");
+
+                ImGui::TextDisabled(
+                    "HEMI / SUN: data retained, rendering disabled.");
+            }
+            else
+            {
+                ImGui::TextDisabled(
+                    "Build Lights: not loaded");
+            }
+            
             ImGui::TextWrapped("Preview only: weather/time are not saved. No dynamic shadows yet.");
             ImGui::Separator();
 

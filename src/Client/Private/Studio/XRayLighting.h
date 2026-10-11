@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Graphics/SceneRenderData.h"
+#include "Studio/BuildLightsLoader.h"
+
 #include <array>
 #include <string>
 #include <vector>
@@ -34,6 +36,14 @@ namespace studio
         std::vector<client::graphics::SceneSpotLight> staticSpots;
         std::vector<std::string> warnings;
         std::string source;
+
+        BuildLightsData buildLights;
+
+        bool buildLightsLoaded = false;
+
+        std::size_t buildRgbImported = 0;
+        std::size_t buildRgbDuplicates = 0;
+        std::size_t buildRgbRejected = 0;
     };
 
     XRayLighting LoadXRayLighting(const core::world::xray::LevelData& level);

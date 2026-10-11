@@ -117,6 +117,7 @@
     <ClCompile Include="Private\Preview\WaterRenderDataBuilder.cpp" />
     <ClCompile Include="Private\Preview\WorldPreviewLoader.cpp" />
     <ClCompile Include="Private\Preview\XRayLevelRenderDataBuilder.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <ClCompile Include="Private\Studio\BuildLightsLoader.cpp" />
     <ClCompile Include="Private\Studio\EditorScene.cpp" />
     <ClCompile Include="Private\Studio\XRayLighting.cpp" />
     <ClCompile Include="Private\Studio\LevelCatalog.cpp" />
@@ -324,6 +325,7 @@
 
   <ItemGroup>
     <ClInclude Include="Private\Studio\Application.h" />
+    <ClInclude Include="Private\Studio\BuildLightsLoader.h" />
     <ClInclude Include="Private\Studio\EditorScene.h" />
     <ClInclude Include="Private\Studio\XRayLighting.h" />
     <ClInclude Include="Private\Studio\LevelCatalog.h" />

@@ -8,6 +8,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
+#include <utility>
 
 namespace studio
 {
@@ -238,6 +239,175 @@ namespace studio
             }
         if (!result.lamps.empty() || !result.lampSpots.empty())
             result.warnings.push_back("Spawn lamps use root transforms until OGF light-bone transforms are available; no shadows yet.");
+
+        const std::filesystem::path buildPath =
+            level.levelDirectory / "build.lights";
+
+        std::error_code buildFileError;
+
+        if (std::filesystem::is_regular_file(buildPath, buildFileError))
+        {
+            BuildLightsData buildData;
+
+            std::string buildError;
+
+            if (!LoadBuildLights(
+                    buildPath,
+                    buildData,
+                    buildError))
+            {
+                result.warnings.push_back(
+                    "BUILD LIGHTS: " + buildError);
+            }
+            else
+            {
+                result.buildLightsLoaded = true;
+
+                const auto validRecord =[](const BuildLightRecord& record)
+                {
+                    if (record.type != 1u)
+                        return false;
+
+                    if (!std::isfinite(record.range) ||
+                        !std::isfinite(record.energy))
+                    {
+                        return false;
+                    }
+
+                    if (record.range <= 0.0f ||
+                        record.range > 100000.0f ||
+                        record.energy <= 0.0f ||
+                        record.energy > 1000.0f)
+                    {
+                        return false;
+                    }
+
+                    for (float value : record.position)
+                    {
+                        if (!std::isfinite(value) || std::abs(value) > 10000000.0f)
+                            { return false; }
+                    }
+
+                    for (float value : record.diffuse)
+                    {
+                        if (!std::isfinite(value) || value < 0.0f || value > 1000.0f)
+                        { return false; }
+                    }
+
+                    return true;
+                };
+
+                const auto isDuplicate = [](const client::graphics::SceneOmniLight& a, const client::graphics::SceneOmniLight& b)
+                {
+                    const float dx = a.position[0] - b.position[0];
+
+                    const float dy = a.position[1] - b.position[1];
+                    const float dz = a.position[2] - b.position[2];
+                    constexpr float PositionTolerance = 0.15f;
+
+                    const float distanceSquared = dx * dx + dy * dy + dz * dz;
+
+                    if (distanceSquared > PositionTolerance * PositionTolerance)
+                    {
+                        return false;
+                    }
+
+                    const float radiusTolerance =
+                        std::max(
+                            0.25f,
+                            0.05f * std::max(
+                                a.outerRadius,
+                                b.outerRadius));
+
+                    return std::abs(
+                        a.outerRadius - b.outerRadius) <=
+                            radiusTolerance;
+                };
+
+                for (const BuildLightRecord& record : buildData.rgb)
+                {
+                    if (!validRecord(record))
+                    {
+                        ++result.buildRgbRejected;
+                        continue;
+                    }
+
+                    client::graphics::SceneOmniLight light;
+
+                    light.position = record.position;
+                    light.colour = record.diffuse;
+
+                    light.innerRadius = 0.0f;
+                    light.outerRadius = record.range;
+
+                    light.multiplier = record.energy;
+
+                    light.isStatic = true;
+                    light.isDynamic = false;
+                    light.specular = false;
+
+                    light.priority = 0;
+
+                    bool duplicate = false;
+
+                    for (const auto& existing :
+                         result.staticLights)
+                    {
+                        if (isDuplicate(existing, light))
+                        {
+                            duplicate = true;
+                            break;
+                        }
+                    }
+
+                    if (duplicate)
+                    {
+                        ++result.buildRgbDuplicates;
+                        continue;
+                    }
+
+                    result.staticLights.push_back(
+                        std::move(light));
+
+                    ++result.buildRgbImported;
+                }
+
+                const std::size_t rgbCount = buildData.rgb.size();
+                const std::size_t hemiCount = buildData.hemi.size();
+                const std::size_t sunCount = buildData.sun.size();
+                const std::size_t auxiliaryCount = buildData.auxiliaryChunks;
+
+                result.buildLights = std::move(buildData);
+
+                result.warnings.push_back(
+                    "BUILD LIGHTS: version=" +
+                    std::to_string(result.buildLights.version) +
+                    " | RGB=" + std::to_string(rgbCount) +
+                    " | HEMI=" + std::to_string(hemiCount) +
+                    " | SUN=" + std::to_string(sunCount) +
+                    " | auxiliary=" + std::to_string(auxiliaryCount));
+
+                result.warnings.push_back(
+                    "BUILD LIGHTS: imported=" +
+                    std::to_string(result.buildRgbImported) +
+                    " | duplicates=" +
+                    std::to_string(result.buildRgbDuplicates) +
+                    " | rejected=" +
+                    std::to_string(result.buildRgbRejected));
+
+                result.warnings.push_back(
+                    "BUILD LIGHTS: RGB preview uses approximate "
+                    "distance attenuation; HEMI/SUN are retained "
+                    "but not converted to runtime lights.");
+            }
+        }
+        else if (buildFileError)
+        {
+            result.warnings.push_back(
+                "BUILD LIGHTS: cannot access build.lights: " +
+                buildFileError.message());
+        }
+        
         return result;
     }
 
