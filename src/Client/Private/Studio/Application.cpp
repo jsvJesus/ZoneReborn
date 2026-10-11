@@ -534,6 +534,24 @@ namespace studio
                 scene_.Revision();
         }
 
+        const RECT& viewport =
+            editorUI_.ViewportRectangle();
+
+        const LONG viewportWidth =
+            viewport.right - viewport.left;
+
+        const LONG viewportHeight =
+            viewport.bottom - viewport.top;
+
+        const float viewportAspect =
+            viewportWidth > 1 && viewportHeight > 1
+                ? static_cast<float>(viewportWidth) /
+                  static_cast<float>(viewportHeight)
+                : 0.0f;
+
+        renderer_.SetStudioViewportAspect(
+            viewportAspect);
+
         if (!renderer_.Render(error))
         {
             core::Log::Error(error);

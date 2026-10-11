@@ -1767,6 +1767,7 @@ namespace client::graphics
         XRayHomOcclusion hom;
         StudioLightingData studioLighting;
         StudioSkyTextures skyTextures;
+        float studioViewportAspect = 0.0f;
 #endif
 
         std::vector<
@@ -4215,6 +4216,18 @@ namespace client::graphics
         state_->pulseLights.clear();
     }
 
+    void Renderer::SetStudioViewportAspect(
+        float aspect) noexcept
+    {
+        if (!state_)
+            return;
+
+        state_->studioViewportAspect =
+            std::isfinite(aspect) && aspect > 0.0f
+                ? aspect
+                : 0.0f;
+    }
+
     void Renderer::SetStudioSkyTextureRoot(
         const std::filesystem::path& root)
     {
@@ -5250,11 +5263,16 @@ namespace client::graphics
                 target,
                 up);
 
-        const float aspect =
-            static_cast<float>(
-                state_->width) /
-            static_cast<float>(
-                state_->height);
+        float aspect =
+            static_cast<float>(state_->width) /
+            static_cast<float>(state_->height);
+
+#if defined(STUDIO_BUILD)
+        if (state_->studioViewportAspect > 0.0f)
+        {
+            aspect = state_->studioViewportAspect;
+        }
+#endif
 
         constexpr float NearPlane =
             0.1f;

@@ -92,6 +92,8 @@ namespace client::graphics
 
         void SetStudioSkyTextureRoot(
             const std::filesystem::path& root);
+
+        void SetStudioViewportAspect(float aspect) noexcept;
 #endif
 
         [[nodiscard]]
