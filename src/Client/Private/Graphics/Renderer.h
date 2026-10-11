@@ -5,6 +5,7 @@
 
 #if defined(STUDIO_BUILD)
 #include "Graphics/XRayHomOcclusion.h"
+#include "Graphics/XRayDetailCache.h"
 #endif
 
 #include "Core/Images/RgbaImage.h"
@@ -90,10 +91,18 @@ namespace client::graphics
         [[nodiscard]]
         HomOcclusionStatistics HomStatistics() const noexcept;
 
+        bool SetXRayDetails(
+            std::shared_ptr<const core::world::xray::DetailsData> details,
+            std::shared_ptr<const core::world::xray::CformCollision> collision,
+            std::string& error);
+        DetailFrameStatistics DetailStatistics() const noexcept;
+
         void SetStudioSkyTextureRoot(
             const std::filesystem::path& root);
 
-        void SetStudioViewportAspect(float aspect) noexcept;
+        void SetStudioViewportSize(
+            std::uint32_t width,
+            std::uint32_t height) noexcept;
 #endif
 
         [[nodiscard]]

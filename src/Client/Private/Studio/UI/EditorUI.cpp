@@ -467,7 +467,36 @@ namespace studio::ui
                         reinterpret_cast<std::uintptr_t>(
                             sceneTexture));
 
-                ImGui::Image(textureId, size);
+                RECT clientRectangle{};
+                GetClientRect(window_, &clientRectangle);
+
+                const float textureWidth =
+                    static_cast<float>(
+                        std::max(
+                            1L,
+                            clientRectangle.right - clientRectangle.left));
+
+                const float textureHeight =
+                    static_cast<float>(
+                        std::max(
+                            1L,
+                            clientRectangle.bottom - clientRectangle.top));
+
+                const ImVec2 textureUV(
+                    std::clamp(
+                        size.x / textureWidth,
+                        0.0f,
+                        1.0f),
+                    std::clamp(
+                        size.y / textureHeight,
+                        0.0f,
+                        1.0f));
+
+                ImGui::Image(
+                    textureId,
+                    size,
+                    ImVec2(0.0f, 0.0f),
+                    textureUV);
 
                 const ImVec2 minimum =
                     ImGui::GetItemRectMin();

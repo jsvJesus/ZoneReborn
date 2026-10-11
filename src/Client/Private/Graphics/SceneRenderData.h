@@ -442,6 +442,9 @@ namespace client::graphics
     {
         core::assets::MeshData geometry;
 
+        // Studio detail model ID; geometry is instanced, never drawn at its local origin.
+        std::int32_t xrayDetailModel = -1;
+
         std::vector<SceneModelMaterial>
             modelMaterials;
 

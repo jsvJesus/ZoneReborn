@@ -96,6 +96,7 @@
     <ClInclude Include="Public\Core\World\WorldLoader.h" />
     <ClInclude Include="Public\Core\World\WorldScene.h" />
     <ClInclude Include="Public\Core\World\XRay\XRayLevelData.h" />
+    <ClInclude Include="Public\Core\World\XRay\XRayDetails.h" />
     <ClInclude Include="Public\Core\World\XRay\CformCollision.h" />
     <ClInclude Include="Public\Core\World\XRay\XRayLevelLoader.h" />
     <ClInclude Include="Public\Core\World\XRay\XRaySpawnData.h" />
@@ -159,6 +160,7 @@
     <ClCompile Include="Private\World\Water\WaterMeshBuilder.cpp" />
     <ClCompile Include="Private\World\WorldLoader.cpp" />
     <ClCompile Include="Private\World\XRay\XRayLevelLoader.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+    <ClCompile Include="Private\World\XRay\XRayDetails.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <ClCompile Include="Private\World\XRay\CformCollision.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
     <ClCompile Include="Private\World\XRay\XRaySpawnLoader.cpp" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   </ItemGroup>

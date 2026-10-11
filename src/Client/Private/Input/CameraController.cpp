@@ -118,7 +118,7 @@ namespace client::input
                 60.0f);
 
         fieldOfViewDegrees_ =
-            60.0f;
+            90.0f;
 
         mouseLookActive_ =
             false;

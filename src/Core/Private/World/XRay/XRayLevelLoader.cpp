@@ -2,6 +2,7 @@
 #include "Core/World/XRay/CformCollision.h"
 #include "Core/World/XRay/XRaySpatialMath.h"
 #include "Core/World/XRay/XRaySpawnLoader.h"
+#include "Core/World/XRay/XRayDetails.h"
 
 #include <algorithm>
 #include <array>
@@ -2034,6 +2035,21 @@ namespace core::world::xray
             auto spawn = std::make_shared<SpawnData>();
             if (!SpawnLoader{}.Load(spawnFile, *spawn, error)) return false;
             output.spawn = std::move(spawn);
+        }
+
+        const auto detailsFile = levelDirectory / "level.details";
+        std::error_code detailsError;
+        const bool detailsPresent = std::filesystem::exists(detailsFile, detailsError);
+        if (detailsError)
+        {
+            error = "Unable to inspect level.details: " + detailsError.message();
+            return false;
+        }
+        if (detailsPresent)
+        {
+            auto details = std::make_shared<DetailsData>();
+            if (!details->Load(detailsFile, error)) return false;
+            output.details = std::move(details);
         }
 
         const auto collisionFile = levelDirectory / "level.cform";

@@ -5,6 +5,7 @@
 
 #if defined(STUDIO_BUILD)
 #include "Graphics/Studio/SkyTextures.h"
+#include "Graphics/XRayDetailCache.h"
 #endif
 
 #include "Core/Animation/ScalarAnimation.h"
@@ -1631,6 +1632,7 @@ namespace client::graphics
                 modelMaterials;
 
 #if defined(STUDIO_BUILD)
+            std::int32_t xrayDetailModel = -1;
             std::vector<SceneOcclusionRange> occlusionRanges;
             StudioSkyTextures skyTextures;
 #endif
@@ -1765,9 +1767,14 @@ namespace client::graphics
 
 #if defined(STUDIO_BUILD)
         XRayHomOcclusion hom;
+        XRayDetailCache details;
+        ComPtr<ID3D11VertexShader> detailVertexShader;
+        ComPtr<ID3D11Buffer> detailInstanceBuffer, detailConstantBuffer;
+        ComPtr<ID3D11ShaderResourceView> detailInstanceView;
         StudioLightingData studioLighting;
         StudioSkyTextures skyTextures;
-        float studioViewportAspect = 0.0f;
+        std::uint32_t studioViewportWidth = 0;
+        std::uint32_t studioViewportHeight = 0;
 #endif
 
         std::vector<
@@ -3102,6 +3109,11 @@ namespace client::graphics
 
 #if defined(STUDIO_BUILD)
         state_->hom.Clear();
+        state_->details.Reset();
+        state_->detailInstanceView.Reset();
+        state_->detailInstanceBuffer.Reset();
+        state_->detailConstantBuffer.Reset();
+        state_->detailVertexShader.Reset();
         if (particleCollision != state_->streamedCollision.get())
             SetParticleCollisionQuery({});
 #endif
@@ -4216,16 +4228,15 @@ namespace client::graphics
         state_->pulseLights.clear();
     }
 
-    void Renderer::SetStudioViewportAspect(
-        float aspect) noexcept
+    void Renderer::SetStudioViewportSize(
+        std::uint32_t width,
+        std::uint32_t height) noexcept
     {
         if (!state_)
             return;
 
-        state_->studioViewportAspect =
-            std::isfinite(aspect) && aspect > 0.0f
-                ? aspect
-                : 0.0f;
+        state_->studioViewportWidth = width;
+        state_->studioViewportHeight = height;
     }
 
     void Renderer::SetStudioSkyTextureRoot(
@@ -4255,6 +4266,13 @@ namespace client::graphics
 
 #if defined(STUDIO_BUILD)
         state_->hom.Clear();
+        state_->details.Reset();
+        ID3D11ShaderResourceView* noDetails = nullptr;
+        state_->context->VSSetShaderResources(19, 1, &noDetails);
+        state_->detailInstanceView.Reset();
+        state_->detailInstanceBuffer.Reset();
+        state_->detailConstantBuffer.Reset();
+        state_->detailVertexShader.Reset();
 #endif
         state_->meshes.clear();
         state_->textures.clear();
@@ -4650,6 +4668,7 @@ namespace client::graphics
 
 #if defined(STUDIO_BUILD)
         gpuMesh.occlusionRanges = sceneMesh.occlusionRanges;
+        gpuMesh.xrayDetailModel = sceneMesh.xrayDetailModel;
 #endif
 
         gpuMesh.minimum =
@@ -4700,6 +4719,49 @@ namespace client::graphics
     HomOcclusionStatistics Renderer::HomStatistics() const noexcept
     {
         return state_ ? state_->hom.Statistics() : HomOcclusionStatistics{};
+    }
+
+    DetailFrameStatistics Renderer::DetailStatistics() const noexcept
+    { return state_ ? state_->details.Statistics() : DetailFrameStatistics{}; }
+
+    bool Renderer::SetXRayDetails(
+        std::shared_ptr<const core::world::xray::DetailsData> details,
+        std::shared_ptr<const core::world::xray::CformCollision> collision,
+        std::string& error)
+    {
+        error.clear();
+        if (!state_ || !state_->device) { error = "Detail renderer is not initialized."; return false; }
+        state_->details.Reset(std::move(details), std::move(collision));
+        if (!state_->details.Statistics().enabled) return true;
+        ComPtr<ID3DBlob> code;
+        if (!shaders::CompileFromFile(L"World\\WorldDetailsVertex.hlsl", "VSMain", "vs_5_0", &code, error))
+            return false;
+        if (FAILED(state_->device->CreateVertexShader(code->GetBufferPointer(), code->GetBufferSize(),
+            nullptr, &state_->detailVertexShader)))
+        { error = "Unable to create detail vertex shader."; return false; }
+        D3D11_BUFFER_DESC buffer{};
+        buffer.ByteWidth = static_cast<UINT>(XRayDetailCache::MaxInstances*sizeof(DetailInstance));
+        buffer.Usage = D3D11_USAGE_DYNAMIC;
+        buffer.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+        buffer.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+        buffer.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+        buffer.StructureByteStride = sizeof(DetailInstance);
+        if (FAILED(state_->device->CreateBuffer(&buffer, nullptr, &state_->detailInstanceBuffer)))
+        { error = "Unable to create detail instance buffer."; return false; }
+        D3D11_SHADER_RESOURCE_VIEW_DESC view{};
+        view.Format = DXGI_FORMAT_UNKNOWN;
+        view.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+        view.Buffer.NumElements = static_cast<UINT>(XRayDetailCache::MaxInstances);
+        if (FAILED(state_->device->CreateShaderResourceView(state_->detailInstanceBuffer.Get(), &view,
+            &state_->detailInstanceView)))
+        { error = "Unable to create detail instance view."; return false; }
+        buffer = {};
+        buffer.ByteWidth = 32;
+        buffer.Usage = D3D11_USAGE_DEFAULT;
+        buffer.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        if (FAILED(state_->device->CreateBuffer(&buffer, nullptr, &state_->detailConstantBuffer)))
+        { error = "Unable to create detail constant buffer."; return false; }
+        return true;
     }
 #endif
 
@@ -5108,6 +5170,23 @@ namespace client::graphics
             state_->depthState.Get(),
             0);
 
+        std::uint32_t renderWidth = state_->width;
+        std::uint32_t renderHeight = state_->height;
+
+#if defined(STUDIO_BUILD)
+        if (state_->studioViewportWidth > 1 &&
+            state_->studioViewportHeight > 1)
+        {
+            renderWidth = std::min(
+                state_->studioViewportWidth,
+                state_->width);
+
+            renderHeight = std::min(
+                state_->studioViewportHeight,
+                state_->height);
+        }
+#endif
+
         D3D11_VIEWPORT viewport{};
 
         viewport.Width =
@@ -5263,16 +5342,9 @@ namespace client::graphics
                 target,
                 up);
 
-        float aspect =
-            static_cast<float>(state_->width) /
-            static_cast<float>(state_->height);
-
-#if defined(STUDIO_BUILD)
-        if (state_->studioViewportAspect > 0.0f)
-        {
-            aspect = state_->studioViewportAspect;
-        }
-#endif
+        const float aspect =
+            static_cast<float>(renderWidth) /
+            static_cast<float>(renderHeight);
 
         constexpr float NearPlane =
             0.1f;
@@ -7588,10 +7660,10 @@ namespace client::graphics
             D3D11_VIEWPORT viewport{};
 
             viewport.Width =
-                static_cast<float>(state_->width);
+                static_cast<float>(renderWidth);
 
             viewport.Height =
-                static_cast<float>(state_->height);
+                static_cast<float>(renderHeight);
 
             viewport.MinDepth = 0.0f;
             viewport.MaxDepth = 1.0f;

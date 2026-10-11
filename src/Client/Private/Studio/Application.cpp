@@ -559,14 +559,13 @@ namespace studio
         const LONG viewportHeight =
             viewport.bottom - viewport.top;
 
-        const float viewportAspect =
-            viewportWidth > 1 && viewportHeight > 1
-                ? static_cast<float>(viewportWidth) /
-                  static_cast<float>(viewportHeight)
-                : 0.0f;
-
-        renderer_.SetStudioViewportAspect(
-            viewportAspect);
+        renderer_.SetStudioViewportSize(
+        viewportWidth > 1
+            ? static_cast<std::uint32_t>(viewportWidth)
+            : 0u,
+        viewportHeight > 1
+            ? static_cast<std::uint32_t>(viewportHeight)
+            : 0u);
 
         if (!renderer_.Render(error))
         {

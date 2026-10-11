@@ -16,6 +16,7 @@ namespace core::world::xray
 {
     class CformCollision;
     struct SpawnData;
+    class DetailsData;
     inline constexpr std::uint32_t InvalidIndex = 0xFFFFFFFFu;
 
     struct HomTriangle final
@@ -170,6 +171,7 @@ namespace core::world::xray
         std::vector<HomTriangle> homTriangles;
         std::shared_ptr<CformCollision> collision;
         std::shared_ptr<const SpawnData> spawn;
+        std::shared_ptr<const DetailsData> details;
         std::vector<LevelLight> lights;
         bool environmentModifiersPresent = false;
         std::uint32_t environmentModifiersVersion = 0x0015u;
