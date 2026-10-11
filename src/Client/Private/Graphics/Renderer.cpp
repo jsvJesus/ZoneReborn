@@ -1766,6 +1766,7 @@ namespace client::graphics
 #if defined(STUDIO_BUILD)
         XRayHomOcclusion hom;
         StudioLightingData studioLighting;
+        StudioSkyTextures skyTextures;
 #endif
 
         std::vector<
@@ -5187,8 +5188,6 @@ namespace client::graphics
                 1,
                 backgroundViews);
 
-            state_->context->PSSetShaderResources(15, static_cast<UINT>(weatherTextureViews.size()), weatherTextureViews.data());
-
             state_->context->Draw(
                 3,
                 0);
@@ -5799,6 +5798,18 @@ namespace client::graphics
                 1,
                 &skyView);
 
+            // Bind original weather sky and cloud textures.
+            state_->context->PSSetShaderResources(
+                15,
+                static_cast<UINT>(weatherTextureViews.size()),
+                weatherTextureViews.data());
+
+            // Render sky.
+            state_->context->Draw(
+                3,
+                0);
+
+            // Unbind weather textures after sky rendering.
             std::array<ID3D11ShaderResourceView*, 4>
                 emptyWeatherViews{};
 
@@ -5807,13 +5818,9 @@ namespace client::graphics
                 static_cast<UINT>(emptyWeatherViews.size()),
                 emptyWeatherViews.data());
 
-            state_->context->Draw(
-                3,
-                0);
-
+            // Unbind sky gradient.
             ID3D11ShaderResourceView*
-                emptySkyView =
-                    nullptr;
+                emptySkyView = nullptr;
 
             state_->context->PSSetShaderResources(
                 10,
