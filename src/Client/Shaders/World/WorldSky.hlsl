@@ -300,14 +300,11 @@ float3 BuildTexturedWeatherSky(
             viewDirection,
             weatherSkyColour.w);
 
-    //const bool hasSkyA =
-        //weatherTextureAvailability.x > 0.5f;
+    const bool hasSkyA =
+    weatherTextureAvailability.x > 0.5f;
 
-    //const bool hasSkyB =
-        //weatherTextureAvailability.y > 0.5f;
-
-    const bool hasSkyA = false;
-    const bool hasSkyB = false;
+    const bool hasSkyB =
+        weatherTextureAvailability.y > 0.5f;
 
     const bool hasCloudsA =
         weatherTextureAvailability.z > 0.5f;
