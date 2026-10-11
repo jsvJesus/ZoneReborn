@@ -590,9 +590,6 @@ namespace studio::ui
                 const float tangent =
                     std::tan(fov * 0.5f);
 
-                RECT clientRectangle{};
-                GetClientRect(window_, &clientRectangle);
-
                 const float targetWidth =
                     static_cast<float>(std::max(
                         1L,
