@@ -261,7 +261,7 @@ float2 WeatherCloudUV(float3 direction)
     const float2 projectedPosition =
         rayDirection.xz / layerHeight;
 
-    const float cloudScale = 0.045f;
+    const float cloudScale = 0.9f;
 
     float2 uv =
         projectedPosition * cloudScale +
@@ -300,11 +300,14 @@ float3 BuildTexturedWeatherSky(
             viewDirection,
             weatherSkyColour.w);
 
-    const bool hasSkyA =
-        weatherTextureAvailability.x > 0.5f;
+    //const bool hasSkyA =
+        //weatherTextureAvailability.x > 0.5f;
 
-    const bool hasSkyB =
-        weatherTextureAvailability.y > 0.5f;
+    //const bool hasSkyB =
+        //weatherTextureAvailability.y > 0.5f;
+
+    const bool hasSkyA = false;
+    const bool hasSkyB = false;
 
     const bool hasCloudsA =
         weatherTextureAvailability.z > 0.5f;
