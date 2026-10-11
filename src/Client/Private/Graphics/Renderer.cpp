@@ -3,6 +3,10 @@
 #include "Graphics/Shaders/ShaderCompiler.h"
 #include "Graphics/ParticleRenderer.h"
 
+#if defined(STUDIO_BUILD)
+#include "Graphics/Studio/SkyTextures.h"
+#endif
+
 #include "Core/Animation/ScalarAnimation.h"
 #include "Core/World/Sky/SkyEvaluator.h"
 #include "Core/World/Particles/ParticleRuntime.h"
@@ -131,6 +135,8 @@ namespace
         DirectX::XMFLOAT4 weatherFogParameters;
         DirectX::XMFLOAT4 weatherCloudColour;
         DirectX::XMFLOAT4 weatherCloudParameters;
+        DirectX::XMFLOAT4 weatherTextureAvailability;
+        DirectX::XMFLOAT4 weatherTextureTransition;
     };
 
     static_assert(
@@ -1626,6 +1632,7 @@ namespace client::graphics
 
 #if defined(STUDIO_BUILD)
             std::vector<SceneOcclusionRange> occlusionRanges;
+            StudioSkyTextures skyTextures;
 #endif
 
             DirectX::XMFLOAT3 minimum{};
@@ -4206,6 +4213,15 @@ namespace client::graphics
 
         state_->pulseLights.clear();
     }
+
+    void Renderer::SetStudioSkyTextureRoot(
+        const std::filesystem::path& root)
+    {
+        if (!state_)
+            return;
+
+        state_->skyTextures.SetRoot(root);
+    }
 #endif
 
     bool Renderer::BeginStreamedScene(
@@ -5171,6 +5187,8 @@ namespace client::graphics
                 1,
                 backgroundViews);
 
+            state_->context->PSSetShaderResources(15, static_cast<UINT>(weatherTextureViews.size()), weatherTextureViews.data());
+
             state_->context->Draw(
                 3,
                 0);
@@ -5532,6 +5550,9 @@ namespace client::graphics
             0,
             0);
 
+        std::array<ID3D11ShaderResourceView*, 4>
+            weatherTextureViews{};
+
         SkyConstants skyConstants =
             BuildSkyConstants(
                 state_->sky,
@@ -5640,6 +5661,57 @@ namespace client::graphics
                 };
             }
         }
+
+        if (state_->studioLighting.enabled &&
+            state_->studioLighting.atmosphereEnabled)
+        {
+            const auto& lighting = state_->studioLighting;
+
+            ID3D11Device* device = state_->device.Get();
+
+            weatherTextureViews[0] =
+                state_->skyTextures.Get(
+                    device,
+                    lighting.skyTextureA,
+                    true);
+
+            weatherTextureViews[1] =
+                state_->skyTextures.Get(
+                    device,
+                    lighting.skyTextureB,
+                    true);
+
+            weatherTextureViews[2] =
+                state_->skyTextures.Get(
+                    device,
+                    lighting.cloudsTextureA,
+                    false);
+
+            weatherTextureViews[3] =
+                state_->skyTextures.Get(
+                    device,
+                    lighting.cloudsTextureB,
+                    false);
+
+            skyConstants.weatherTextureAvailability =
+            {
+                weatherTextureViews[0] ? 1.0f : 0.0f,
+                weatherTextureViews[1] ? 1.0f : 0.0f,
+                weatherTextureViews[2] ? 1.0f : 0.0f,
+                weatherTextureViews[3] ? 1.0f : 0.0f
+            };
+
+            skyConstants.weatherTextureTransition =
+            {
+                std::clamp(
+                    lighting.textureBlend,
+                    0.0f,
+                    1.0f),
+                0.0f,
+                0.0f,
+                0.0f
+            };
+        }
 #endif
 
         state_->context->UpdateSubresource(
@@ -5726,6 +5798,14 @@ namespace client::graphics
                 10,
                 1,
                 &skyView);
+
+            std::array<ID3D11ShaderResourceView*, 4>
+                emptyWeatherViews{};
+
+            state_->context->PSSetShaderResources(
+                15,
+                static_cast<UINT>(emptyWeatherViews.size()),
+                emptyWeatherViews.data());
 
             state_->context->Draw(
                 3,

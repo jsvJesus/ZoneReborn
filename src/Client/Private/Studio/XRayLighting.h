@@ -53,6 +53,11 @@ namespace studio
         std::string skyTexture;
         std::string cloudsTexture;
 
+        std::string skyTextureNext;
+        std::string cloudsTextureNext;
+
+        float textureBlend = 0.0f;
+
         float skyRotation = 0.0f;
 
         float fogDistance = 700.0f;

@@ -140,6 +140,8 @@ namespace studio
             return false;
         }
 
+        renderer_.SetStudioSkyTextureRoot({});
+
         scene_.New();
 
         camera_.Reset(
@@ -249,6 +251,12 @@ namespace studio
             statistics.collisionMappedBytes = collision.mappedBytes;
             statistics.collisionIndexBytes = collision.indexBytes;
         }
+
+        renderer_.SetStudioSkyTextureRoot(
+            level.levelDirectory
+                .parent_path()
+                .parent_path() /
+            "textures");
 
         scene_.Open(directory, statistics, level.collision, level.spawn);
         scene_.SetNativeLighting(LoadXRayLighting(level));

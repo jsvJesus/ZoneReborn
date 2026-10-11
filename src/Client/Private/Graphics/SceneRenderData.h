@@ -347,6 +347,14 @@ namespace client::graphics
 
         float timeHours = 12.0f;
 
+        std::string skyTextureA;
+        std::string skyTextureB;
+
+        std::string cloudsTextureA;
+        std::string cloudsTextureB;
+
+        float textureBlend = 0.0f;
+
         std::vector<SceneOmniLight> omniLights;
         std::vector<SceneSpotLight> spotLights;
     };

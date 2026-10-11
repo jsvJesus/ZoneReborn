@@ -17,6 +17,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <filesystem>
 
 struct ID3D11Device;
 struct ID3D11DeviceContext;
@@ -88,6 +89,9 @@ namespace client::graphics
 
         [[nodiscard]]
         HomOcclusionStatistics HomStatistics() const noexcept;
+
+        void SetStudioSkyTextureRoot(
+            const std::filesystem::path& root);
 #endif
 
         [[nodiscard]]

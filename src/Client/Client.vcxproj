@@ -46,6 +46,7 @@
     <ClInclude Include="Private\Graphics\ParticleRenderer.h" />
     <ClInclude Include="Private\Graphics\Renderer.h" />
     <ClInclude Include="Private\Graphics\SceneRenderData.h" />
+    <ClInclude Include="Private\Graphics\Studio\SkyTextures.h" />
     <ClInclude Include="Private\Graphics\XRayHomOcclusion.h" />
     <ClInclude Include="Private\Graphics\Shaders\ShaderCompiler.h" />
     <ClInclude Include="Private\Input\CameraController.h" />
@@ -88,6 +89,7 @@
     <ClCompile Include="Private\Character\CharacterService.cpp" />
     <ClCompile Include="Private\Character\CharacterState.cpp" />
     <ClCompile Include="Private\Frontend\Frontend.cpp" Condition="'$(Configuration)|$(Platform)'=='Final|x64'" />
+    <ClCompile Include="Private\Graphics\Studio\SkyTextures.cpp" />
     <ClCompile Include="Private\Player\PlayerController.cpp" />
     <ClCompile Include="Private\Player\PlayerLocomotion.cpp" />
     <ClCompile Include="Private\Player\PlayerTurnController.cpp" />

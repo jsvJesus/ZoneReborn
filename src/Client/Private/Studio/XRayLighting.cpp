@@ -621,15 +621,13 @@ namespace studio
                 b.windVelocity,
                 blend);
 
-        key.skyTexture =
-            blend < 0.5f
-                ? a.skyTexture
-                : b.skyTexture;
+        key.skyTexture = a.skyTexture;
+        key.skyTextureNext = b.skyTexture;
 
-        key.cloudsTexture =
-            blend < 0.5f
-                ? a.cloudsTexture
-                : b.cloudsTexture;
+        key.cloudsTexture = a.cloudsTexture;
+        key.cloudsTextureNext = b.cloudsTexture;
+
+        key.textureBlend = blend;
         
         const float length = std::sqrt(key.sunDirection[0] * key.sunDirection[0] +
             key.sunDirection[1] * key.sunDirection[1] + key.sunDirection[2] * key.sunDirection[2]);

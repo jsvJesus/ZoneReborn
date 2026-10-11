@@ -107,6 +107,15 @@ cbuffer SkyConstants : register(b3)
     // z = wind direction
     // w = elapsed seconds
     float4 weatherCloudParameters;
+
+    // x = sky A available
+    // y = sky B available
+    // z = clouds A available
+    // w = clouds B available
+    float4 weatherTextureAvailability;
+
+    // x = interpolation between weather keys
+    float4 weatherTextureTransition;
 };
 
 float3 ApplyWeatherFog(
@@ -175,6 +184,10 @@ Texture2D modelOverlayTexture : register(t11);
 Texture2D modelDyeMaskTexture : register(t12);
 Texture2D modelTattooTexture : register(t13);
 Texture2D modelLightmapTexture : register(t14);
+TextureCube weatherSkyTextureA : register(t15);
+TextureCube weatherSkyTextureB : register(t16);
+Texture2D weatherCloudsTextureA : register(t17);
+Texture2D weatherCloudsTextureB : register(t18);
 
 SamplerState terrainTextureSampler : register(s0);
 SamplerState terrainBlendSampler : register(s1);

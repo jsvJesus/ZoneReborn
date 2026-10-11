@@ -340,6 +340,14 @@ namespace studio
             output.windDirection = weather.windDirection;
 
             output.timeHours = timeOfDay_;
+
+            output.skyTextureA = weather.skyTexture;
+            output.skyTextureB = weather.skyTextureNext;
+
+            output.cloudsTextureA = weather.cloudsTexture;
+            output.cloudsTextureB = weather.cloudsTextureNext;
+
+            output.textureBlend = weather.textureBlend;
         }
         if (nativeLampsEnabled_)
         {

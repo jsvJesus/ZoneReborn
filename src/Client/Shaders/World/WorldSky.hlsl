@@ -233,6 +233,196 @@ float3 BuildWeatherSky(
         float3(0.0f, 0.0f, 0.0f));
 }
 
+float3 RotateSkyDirection(
+    float3 direction,
+    float degrees)
+{
+    const float angle = radians(degrees);
+
+    float s;
+    float c;
+
+    sincos(angle, s, c);
+
+    return float3(
+        direction.x * c - direction.z * s,
+        direction.y,
+        direction.x * s + direction.z * c);
+}
+
+float2 WeatherCloudUV(
+    float3 direction)
+{
+    static const float InverseTwoPi =
+        0.15915494309189535f;
+
+    static const float InversePi =
+        0.31830988618379067f;
+
+    const float longitude =
+        atan2(direction.x, direction.z);
+
+    const float latitude =
+        asin(clamp(direction.y, -1.0f, 1.0f));
+
+    float2 uv = float2(
+        longitude * InverseTwoPi + 0.5f,
+        0.5f - latitude * InversePi);
+
+    const float windAngle =
+        radians(weatherCloudParameters.z);
+
+    const float2 windDirection =
+        float2(
+            cos(windAngle),
+            sin(windAngle));
+
+    const float movement =
+        weatherCloudParameters.y *
+        weatherCloudParameters.w *
+        0.000003f;
+
+    uv += windDirection * movement;
+
+    uv.x = frac(uv.x);
+    uv.y = saturate(uv.y);
+
+    return uv;
+}
+
+float3 BuildTexturedWeatherSky(
+    float3 viewDirection,
+    float3 fallbackColour)
+{
+    const float blend =
+        saturate(weatherTextureTransition.x);
+
+    const float3 direction =
+        RotateSkyDirection(
+            viewDirection,
+            weatherSkyColour.w);
+
+    const bool hasSkyA =
+        weatherTextureAvailability.x > 0.5f;
+
+    const bool hasSkyB =
+        weatherTextureAvailability.y > 0.5f;
+
+    const bool hasCloudsA =
+        weatherTextureAvailability.z > 0.5f;
+
+    const bool hasCloudsB =
+        weatherTextureAvailability.w > 0.5f;
+
+    float3 colour = fallbackColour;
+
+    if (hasSkyA && hasSkyB)
+    {
+        const float3 first =
+            weatherSkyTextureA.SampleLevel(
+                terrainTextureSampler,
+                direction,
+                0.0f).rgb;
+
+        const float3 second =
+            weatherSkyTextureB.SampleLevel(
+                terrainTextureSampler,
+                direction,
+                0.0f).rgb;
+
+        colour =
+            lerp(first, second, blend) *
+            weatherSkyColour.rgb;
+    }
+    else if (hasSkyA)
+    {
+        colour =
+            weatherSkyTextureA.SampleLevel(
+                terrainTextureSampler,
+                direction,
+                0.0f).rgb *
+            weatherSkyColour.rgb;
+    }
+    else if (hasSkyB)
+    {
+        colour =
+            weatherSkyTextureB.SampleLevel(
+                terrainTextureSampler,
+                direction,
+                0.0f).rgb *
+            weatherSkyColour.rgb;
+    }
+
+    if (hasCloudsA || hasCloudsB)
+    {
+        const float2 uv =
+            WeatherCloudUV(direction);
+
+        float4 cloudSample = 0.0f;
+
+        if (hasCloudsA && hasCloudsB)
+        {
+            const float4 first =
+                weatherCloudsTextureA.SampleLevel(
+                    terrainTextureSampler,
+                    uv,
+                    0.0f);
+
+            const float4 second =
+                weatherCloudsTextureB.SampleLevel(
+                    terrainTextureSampler,
+                    uv,
+                    0.0f);
+
+            cloudSample =
+                lerp(first, second, blend);
+        }
+        else if (hasCloudsA)
+        {
+            cloudSample =
+                weatherCloudsTextureA.SampleLevel(
+                    terrainTextureSampler,
+                    uv,
+                    0.0f);
+        }
+        else
+        {
+            cloudSample =
+                weatherCloudsTextureB.SampleLevel(
+                    terrainTextureSampler,
+                    uv,
+                    0.0f);
+        }
+
+        const float heightMask =
+            smoothstep(
+                -0.10f,
+                0.12f,
+                viewDirection.y);
+
+        const float cloudOpacity =
+            saturate(
+                cloudSample.a *
+                weatherCloudParameters.x) *
+            heightMask;
+
+        const float3 cloudColour =
+            cloudSample.rgb *
+            weatherCloudColour.rgb *
+            max(
+                0.0f,
+                weatherCloudColour.a);
+
+        colour =
+            lerp(
+                colour,
+                cloudColour,
+                cloudOpacity);
+    }
+
+    return max(colour, 0.0f);
+}
+
 float4 PSSky(
     SkyVertexOutput input) : SV_TARGET
 {
@@ -325,6 +515,14 @@ float4 PSSky(
             turbidity * 0.12f;
     }
 
+    if (weatherEnabled)
+    {
+        colour =
+            BuildTexturedWeatherSky(
+                viewDirection,
+                colour);
+    }
+
     const float3 sunDirection =
         normalize(
             skySunDirectionDaylight.xyz);
@@ -348,10 +546,21 @@ float4 PSSky(
         skyAtmosphere0.x *
         skySunDirectionDaylight.w;
 
+    const bool texturedSky =
+        weatherEnabled &&
+    (
+        weatherTextureAvailability.x > 0.5f ||
+        weatherTextureAvailability.y > 0.5f
+    );
+
+    const float sunOverlayStrength =
+        texturedSky ? 0.08f : 1.0f;
+
     colour +=
         skySunColour.rgb *
         mieGlow *
-        0.35f;
+        0.35f *
+        sunOverlayStrength;
 
     const float sunDisk =
         pow(
@@ -365,7 +574,8 @@ float4 PSSky(
     colour +=
         skySunColour.rgb *
         sunDisk *
-        1.6f;
+        1.6f *
+        sunOverlayStrength;
 
     return
         float4(
