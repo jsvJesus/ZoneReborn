@@ -98,6 +98,9 @@ namespace studio
         statistics_.collisionProbe = probe;
     }
 
+    void EditorScene::SetDetailFrameStatistics(const client::graphics::DetailFrameStatistics& statistics) noexcept
+    { statistics_.detailFrame = statistics; }
+
     void EditorScene::SetHomFrameStatistics(
         const std::size_t testedVisuals,
         const std::size_t culledVisuals) noexcept

@@ -217,6 +217,8 @@ namespace studio
         }
 
         SceneStatistics statistics;
+        statistics.detailsPresent = bool(level.details);
+        if (level.details) statistics.details = level.details->Statistics();
         statistics.environmentModifiersPresent = level.environmentModifiersPresent;
         statistics.environmentModifiersVersion = level.environmentModifiersVersion;
         statistics.environmentModifiers = level.environmentModifiers.size();
@@ -263,6 +265,15 @@ namespace studio
 
         scene_.Open(directory, statistics, level.collision, level.spawn);
         scene_.SetNativeLighting(LoadXRayLighting(level));
+        const std::string detailsMessage = !level.details ? "DETAILS: not present (optional)." :
+            "DETAILS: models=" + std::to_string(statistics.details.models) +
+            " | grid=" + std::to_string(statistics.details.sizeX) + "x" + std::to_string(statistics.details.sizeZ) +
+            " | populated slots=" + std::to_string(statistics.details.populatedSlots) +
+            " | mapped MiB=" + std::to_string(double(statistics.details.mappedBytes)/1048576.0) +
+            (renderer_.DetailStatistics().enabled ? " | DX11 instancing, range 40 m; incremental ground placement." :
+                " | placement disabled (empty data or missing/empty CFORM).");
+        core::Log::Info(detailsMessage);
+        editorUI_.AddConsoleMessage(detailsMessage);
         const std::string envMessage = !level.environmentModifiersPresent ? "ENV_MOD: not present (optional)." :
             "ENV_MOD: version=" + std::to_string(level.environmentModifiersVersion) +
             " | modifiers=" + std::to_string(level.environmentModifiers.size()) +
@@ -373,6 +384,7 @@ namespace studio
         const auto homStatistics = renderer_.HomStatistics();
         scene_.SetHomFrameStatistics(
             homStatistics.testedVisuals, homStatistics.culledVisuals);
+        scene_.SetDetailFrameStatistics(renderer_.DetailStatistics());
 
         editorUI_.BeginFrame(
             scene_,

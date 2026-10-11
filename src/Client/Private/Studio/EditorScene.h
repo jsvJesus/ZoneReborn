@@ -2,6 +2,7 @@
 
 #include "Core/Math/Vector3.h"
 #include "Graphics/SceneRenderData.h"
+#include "Graphics/XRayDetailCache.h"
 #include "Studio/XRayLighting.h"
 
 #include <array>
@@ -56,6 +57,9 @@ namespace studio
         std::size_t environmentModifiers = 0;
         std::size_t activeEnvironmentModifiers = 0;
         double environmentModifierPower = 0.0;
+        bool detailsPresent = false;
+        core::world::xray::DetailStatistics details;
+        client::graphics::DetailFrameStatistics detailFrame;
     };
 
     enum class LightType : std::uint8_t
@@ -115,6 +119,7 @@ namespace studio
 
         const core::world::xray::CformCollision* Collision() const noexcept;
         void SetCollisionProbe(const CollisionProbeStatistics& probe) noexcept;
+        void SetDetailFrameStatistics(const client::graphics::DetailFrameStatistics& statistics) noexcept;
 
         void SetHomFrameStatistics(
             std::size_t testedVisuals,

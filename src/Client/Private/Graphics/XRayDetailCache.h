@@ -4,6 +4,7 @@
 #include "Core/World/XRay/CformCollision.h"
 
 #include <array>
+#include <future>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -41,13 +42,20 @@ namespace client::graphics
     private:
         struct Placement { DetailInstance instance; std::uint32_t model = 0; };
         struct Cell { std::vector<Placement> placements; unsigned nextSample = 0; };
-        void Sample(Cell& cell, std::int64_t x, std::int64_t z,
-            const core::world::xray::DetailSlot& slot);
+        struct PreparedCell { std::uint64_t key = 0; Cell cell; };
+        struct JobResult { std::vector<PreparedCell> cells; std::size_t groundQueries = 0; };
+        static void Sample(Cell& cell, std::int64_t x, std::int64_t z,
+            const core::world::xray::DetailSlot& slot,
+            const core::world::xray::DetailsData& data,
+            const core::world::xray::CformCollision& collision, std::size_t& groundQueries);
         std::shared_ptr<const core::world::xray::DetailsData> details_;
         std::shared_ptr<const core::world::xray::CformCollision> collision_;
         std::unordered_map<std::uint64_t, Cell> cells_;
         std::vector<DetailInstance> instances_;
         std::array<std::uint32_t, 63> counts_{}, starts_{};
         DetailFrameStatistics statistics_;
+        // Declared last: joins before cache/source destruction. Only one bounded
+        // preparation job is in flight; Render never waits for ground traversal.
+        std::future<JobResult> job_;
     };
 }

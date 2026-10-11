@@ -871,6 +871,14 @@ namespace studio::ui
 
             BuildSpawnOutliner(scene);
 
+            if (scene.Statistics().detailsPresent && ImGui::TreeNode("Detail vegetation"))
+            {
+                const auto& stats = scene.Statistics();
+                ImGui::Text("Models: %zu", stats.details.models);
+                ImGui::Text("Visible plants: %zu", stats.detailFrame.visibleInstances);
+                ImGui::TreePop();
+            }
+
             ImGui::SetNextItemOpen(
                 true,
                 ImGuiCond_Once);
@@ -1319,6 +1327,25 @@ namespace studio::ui
                     ImGui::Text("HOM triangles: %zu", stats.homTriangles);
                     ImGui::Text("HOM tested: %zu", stats.homTestedVisuals);
                     ImGui::Text("HOM culled: %zu", stats.homCulledVisuals);
+                }
+
+                ImGui::Separator();
+                ImGui::Text("DETAILS: %s", !stats.detailsPresent ? "Not present" :
+                    (stats.detailFrame.enabled ? "DX11 instanced" : "Placement disabled"));
+                if (stats.detailsPresent)
+                {
+                    ImGui::Text("Detail models: %zu", stats.details.models);
+                    ImGui::Text("Slot grid: %u x %u (2 m cells)", stats.details.sizeX, stats.details.sizeZ);
+                    ImGui::Text("Populated slots: %llu / %llu",
+                        static_cast<unsigned long long>(stats.details.populatedSlots),
+                        static_cast<unsigned long long>(stats.details.slots));
+                    ImGui::Text("Mapped details: %.1f MiB", double(stats.details.mappedBytes)/1048576.0);
+                    ImGui::Text("Cached cells: %zu | Pending: %zu", stats.detailFrame.cachedCells, stats.detailFrame.pendingCells);
+                    ImGui::Text("Plants: %zu cached, %zu visible", stats.detailFrame.cachedInstances, stats.detailFrame.visibleInstances);
+                    ImGui::Text("Ground queries/frame: %zu", stats.detailFrame.groundQueries);
+                    ImGui::TextDisabled("Draw distance: 40 m; approach the ground to see grass.");
+                    if (!stats.detailFrame.collisionAvailable)
+                        ImGui::TextWrapped("Grass placement needs a nonempty level.cform; no guessed flat height is used.");
                 }
 
                 ImGui::Separator();

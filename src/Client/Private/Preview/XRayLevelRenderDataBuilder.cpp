@@ -3,6 +3,7 @@
 #include "Core/Assets/MeshData.h"
 #include "Core/Log.h"
 #include "Core/World/XRay/XRaySpatialMath.h"
+#include "Core/World/XRay/XRayDetails.h"
 
 #include <algorithm>
 #include <array>
@@ -1567,6 +1568,43 @@ namespace client::preview
         if (!renderer.FinishStreamedScene(error))
             return false;
 
+        // Finalize static bounds BEFORE adding local-space grass models, which must
+        // not move the initial editor camera or be drawn at the origin.
+        if (level.details)
+        {
+            const auto& models = level.details->Models();
+            for (std::size_t modelId = 0; modelId < models.size(); ++modelId)
+            {
+                const auto& model = models[modelId];
+                graphics::SceneMesh mesh;
+                mesh.xrayDetailModel = static_cast<std::int32_t>(modelId);
+                mesh.geometry.vertexFormat = "X-Ray detail";
+                mesh.geometry.vertices.reserve(model.vertices.size());
+                for (const auto& source : model.vertices)
+                {
+                    core::assets::MeshVertex vertex;
+                    vertex.position = source.position;
+                    // Details have no stored normals: upward foliage lighting.
+                    vertex.packedNormal = 1023u << 11u;
+                    vertex.u = source.u; vertex.v = source.v;
+                    mesh.geometry.vertices.push_back(vertex);
+                }
+                mesh.geometry.indices = model.indices;
+                core::assets::MeshPrimitiveGroup group;
+                group.primitiveCount = static_cast<std::uint32_t>(model.indices.size()/3);
+                group.vertexCount = static_cast<std::uint32_t>(model.vertices.size());
+                mesh.geometry.primitiveGroups.push_back(group);
+                graphics::SceneModelMaterial material;
+                material.useXRayLighting = true;
+                material.alphaMode = graphics::SceneAlphaMode::Cutout;
+                material.alphaCutoff = 0.5f;
+                if (!ResolveTexture(level, model.texture, false, renderer, textureCache,
+                    statistics, material.diffuseTextureIndex, error)) return false;
+                mesh.modelMaterials.push_back(material);
+                if (!renderer.AppendStreamedMesh(mesh, error)) return false;
+            }
+        }
+        if (!renderer.SetXRayDetails(level.details, level.collision, error)) return false;
         renderer.SetHomOccluders(level.homTriangles);
         return true;
     }

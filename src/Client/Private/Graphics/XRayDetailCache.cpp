@@ -40,17 +40,23 @@ namespace client::graphics
     void XRayDetailCache::Reset(std::shared_ptr<const core::world::xray::DetailsData> details,
         std::shared_ptr<const core::world::xray::CformCollision> collision)
     {
+        // Scene replacement/shutdown, never normal frame preparation. The worker
+        // owns shared immutable data and must stop before releasing mapped files.
+        if (job_.valid()) { job_.wait(); job_ = {}; }
         details_ = std::move(details); collision_ = std::move(collision);
         cells_.clear(); instances_.clear(); counts_ = {}; starts_ = {}; statistics_ = {};
         statistics_.collisionAvailable = collision_ && collision_->Statistics().faces != 0;
-        statistics_.enabled = details_ && statistics_.collisionAvailable && !details_->Models().empty();
+        statistics_.enabled = details_ && statistics_.collisionAvailable &&
+            details_->Statistics().slots != 0 && !details_->Models().empty();
     }
 
     void XRayDetailCache::Sample(Cell& cell, std::int64_t x, std::int64_t z,
-        const core::world::xray::DetailSlot& slot)
+        const core::world::xray::DetailSlot& slot,
+        const core::world::xray::DetailsData& data,
+        const core::world::xray::CformCollision& collision, std::size_t& groundQueries)
     {
         const auto sample = cell.nextSample++;
-        const auto stats = details_->Statistics();
+        const auto stats = data.Statistics();
         const float u = float(sample%(Steps+1))/Steps, v = float(sample/(Steps+1))/Steps;
         auto seed = Hash(static_cast<std::uint32_t>(x)) ^ Hash(static_cast<std::uint32_t>(z)+0x12071980u) ^ Hash(sample);
         std::array<std::uint32_t, 4> selected{};
@@ -63,11 +69,11 @@ namespace client::graphics
         const float px = float(x-stats.offsetX)*2.0f+u*2.0f+(Random(seed)*2.0f-1.0f)*(0.4f/1.7f);
         const float pz = float(z-stats.offsetZ)*2.0f+v*2.0f+(Random(seed)*2.0f-1.0f)*(0.4f/1.7f);
         core::world::xray::CformHit hit;
-        ++statistics_.groundQueries;
-        if (!collision_->Raycast({px, slot.Base()+slot.Height()+0.05f, pz},
+        ++groundQueries;
+        if (!collision.Raycast({px, slot.Base()+slot.Height()+0.05f, pz},
             {px, slot.Base()-0.05f, pz}, hit) || hit.position.y < slot.Base()-0.05f || hit.normal.y < 0.1f)
             return;
-        const auto& model = details_->Models()[modelId];
+        const auto& model = data.Models()[modelId];
         const float minimum = model.minimumScale*0.5f, maximum = model.maximumScale*0.9f;
         const float scale = minimum+(maximum-minimum)*Random(seed);
         const float yaw = Random(seed)*6.28318530718f;
@@ -84,6 +90,13 @@ namespace client::graphics
         statistics_.cachedCells = statistics_.pendingCells = statistics_.cachedInstances = 0;
         statistics_.visibleInstances = statistics_.groundQueries = 0;
         if (!statistics_.enabled) return;
+        if (job_.valid() && job_.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
+        {
+            auto result = job_.get();
+            statistics_.groundQueries = result.groundQueries;
+            for (auto& prepared : result.cells)
+                cells_[prepared.key] = std::move(prepared.cell);
+        }
         if (!std::isfinite(camera.x) || !std::isfinite(camera.y) || !std::isfinite(camera.z) ||
             std::abs(camera.x) > 1e8f || std::abs(camera.z) > 1e8f)
         { cells_.clear(); return; }
@@ -119,16 +132,38 @@ namespace client::graphics
             }
         std::sort(pending.begin(), pending.end(), [](const Candidate& a, const Candidate& b)
         { return a.distance < b.distance || (a.distance == b.distance && (a.z < b.z || (a.z == b.z && a.x < b.x))); });
-        const auto deadline = std::chrono::steady_clock::now()+std::chrono::milliseconds(3);
-        unsigned samples = 0;
-        for (const auto& candidate : pending)
+        if (!job_.valid() && !pending.empty())
         {
-            core::world::xray::DetailSlot slot;
-            details_->ReadSlot(candidate.x, candidate.z, slot);
-            auto& cell = cells_[std::uint64_t(candidate.z)*stats.sizeX+std::uint64_t(candidate.x)];
-            while (cell.nextSample < Samples && samples < QueryBudget && std::chrono::steady_clock::now() < deadline)
-            { Sample(cell, candidate.x, candidate.z, slot); ++samples; }
-            if (samples == QueryBudget || std::chrono::steady_clock::now() >= deadline) break;
+            JobResult batch;
+            for (std::size_t i = 0; i < std::min<std::size_t>(16, pending.size()); ++i)
+            {
+                const auto& candidate = pending[i];
+                const auto key = std::uint64_t(candidate.z)*stats.sizeX+std::uint64_t(candidate.x);
+                const auto existing = cells_.find(key);
+                batch.cells.push_back({key,existing == cells_.end() ? Cell{} : existing->second});
+            }
+            job_ = std::async(std::launch::async,
+                [data = details_, collision = collision_, batch = std::move(batch)]() mutable
+                {
+                    const auto dimensions = data->Statistics();
+                    const auto deadline = std::chrono::steady_clock::now()+std::chrono::milliseconds(3);
+                    unsigned samples = 0;
+                    for (auto& prepared : batch.cells)
+                    {
+                        const auto x = static_cast<std::int64_t>(prepared.key%dimensions.sizeX);
+                        const auto z = static_cast<std::int64_t>(prepared.key/dimensions.sizeX);
+                        core::world::xray::DetailSlot slot;
+                        if (!data->ReadSlot(x,z,slot)) continue;
+                        while (prepared.cell.nextSample < Samples && samples < QueryBudget &&
+                            std::chrono::steady_clock::now() < deadline)
+                        {
+                            Sample(prepared.cell,x,z,slot,*data,*collision,batch.groundQueries);
+                            ++samples;
+                        }
+                        if (samples == QueryBudget || std::chrono::steady_clock::now() >= deadline) break;
+                    }
+                    return batch;
+                });
         }
         statistics_.pendingCells = pending.size();
         std::array<std::vector<DetailInstance>, 63> visible;
@@ -141,14 +176,12 @@ namespace client::graphics
                 const auto& instance = placement.instance;
                 const auto& p = instance.positionScale;
                 const auto& model = details_->Models()[placement.model];
-                const float mx = (model.minimum.x+model.maximum.x)*0.5f*p[3];
-                const float my = (model.minimum.y+model.maximum.y)*0.5f*p[3];
-                const float mz = (model.minimum.z+model.maximum.z)*0.5f*p[3];
-                const auto& r = instance.rotationLighting;
-                const core::math::Vector3 center{p[0]+mx*r[0]+mz*r[1],p[1]+my,p[2]-mx*r[1]+mz*r[0]};
-                const float ex = (model.maximum.x-model.minimum.x)*0.5f*p[3];
-                const float ey = (model.maximum.y-model.minimum.y)*0.5f*p[3];
-                const float ez = (model.maximum.z-model.minimum.z)*0.5f*p[3];
+                // An origin-centred sphere also encloses the distance-scaled model
+                // as it shrinks towards the base, and includes its wind excursion.
+                const core::math::Vector3 center{p[0],p[1],p[2]};
+                const float ex = std::max(std::abs(model.minimum.x),std::abs(model.maximum.x))*p[3];
+                const float ey = std::max(std::abs(model.minimum.y),std::abs(model.maximum.y))*p[3];
+                const float ez = std::max(std::abs(model.minimum.z),std::abs(model.maximum.z))*p[3];
                 const float radius = std::sqrt(ex*ex+ey*ey+ez*ez)+0.5f;
                 const float dx = p[0]-camera.x, dy = p[1]-camera.y, dz = p[2]-camera.z;
                 if (dx*dx+dy*dy+dz*dz > RenderDistance*RenderDistance || !Visible(projection, center, radius) ||

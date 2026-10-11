@@ -1769,6 +1769,7 @@ namespace client::graphics
         XRayHomOcclusion hom;
         XRayDetailCache details;
         ComPtr<ID3D11VertexShader> detailVertexShader;
+        ComPtr<ID3D11InputLayout> detailInputLayout;
         ComPtr<ID3D11Buffer> detailInstanceBuffer, detailConstantBuffer;
         ComPtr<ID3D11ShaderResourceView> detailInstanceView;
         StudioLightingData studioLighting;
@@ -3114,6 +3115,7 @@ namespace client::graphics
         state_->detailInstanceBuffer.Reset();
         state_->detailConstantBuffer.Reset();
         state_->detailVertexShader.Reset();
+        state_->detailInputLayout.Reset();
         if (particleCollision != state_->streamedCollision.get())
             SetParticleCollisionQuery({});
 #endif
@@ -4273,6 +4275,7 @@ namespace client::graphics
         state_->detailInstanceBuffer.Reset();
         state_->detailConstantBuffer.Reset();
         state_->detailVertexShader.Reset();
+        state_->detailInputLayout.Reset();
 #endif
         state_->meshes.clear();
         state_->textures.clear();
@@ -4739,11 +4742,18 @@ namespace client::graphics
         if (FAILED(state_->device->CreateVertexShader(code->GetBufferPointer(), code->GetBufferSize(),
             nullptr, &state_->detailVertexShader)))
         { error = "Unable to create detail vertex shader."; return false; }
+        const D3D11_INPUT_ELEMENT_DESC detailElements[] = {
+            {"POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0},
+            {"NORMAL",0,DXGI_FORMAT_R32G32B32_FLOAT,0,12,D3D11_INPUT_PER_VERTEX_DATA,0},
+            {"TEXCOORD",0,DXGI_FORMAT_R32G32_FLOAT,0,24,D3D11_INPUT_PER_VERTEX_DATA,0},
+            {"TEXCOORD",1,DXGI_FORMAT_R32G32_FLOAT,0,32,D3D11_INPUT_PER_VERTEX_DATA,0}};
+        if (FAILED(state_->device->CreateInputLayout(detailElements, 4,
+            code->GetBufferPointer(), code->GetBufferSize(), &state_->detailInputLayout)))
+        { error = "Unable to create detail input layout."; return false; }
         D3D11_BUFFER_DESC buffer{};
         buffer.ByteWidth = static_cast<UINT>(XRayDetailCache::MaxInstances*sizeof(DetailInstance));
-        buffer.Usage = D3D11_USAGE_DYNAMIC;
+        buffer.Usage = D3D11_USAGE_DEFAULT;
         buffer.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-        buffer.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
         buffer.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
         buffer.StructureByteStride = sizeof(DetailInstance);
         if (FAILED(state_->device->CreateBuffer(&buffer, nullptr, &state_->detailInstanceBuffer)))
@@ -5190,12 +5200,10 @@ namespace client::graphics
         D3D11_VIEWPORT viewport{};
 
         viewport.Width =
-            static_cast<float>(
-                state_->width);
+            static_cast<float>(renderWidth);
 
         viewport.Height =
-            static_cast<float>(
-                state_->height);
+            static_cast<float>(renderHeight);
 
         viewport.MinDepth =
             0.0f;
@@ -5388,6 +5396,16 @@ namespace client::graphics
         std::array<float, 16> homProjection{};
         std::memcpy(homProjection.data(), &homMatrix, sizeof(homMatrix));
         state_->hom.Build(homProjection, state_->camera.position);
+        state_->details.Update(state_->camera.position, homProjection);
+        const auto& detailInstances = state_->details.Instances();
+        if (!detailInstances.empty() && state_->detailInstanceBuffer)
+        {
+            ID3D11ShaderResourceView* noDetails = nullptr;
+            state_->context->VSSetShaderResources(19, 1, &noDetails);
+            const D3D11_BOX box{0, 0, 0, static_cast<UINT>(detailInstances.size()*sizeof(DetailInstance)), 1, 1};
+            state_->context->UpdateSubresource(state_->detailInstanceBuffer.Get(), 0, &box,
+                detailInstances.data(), 0, 0);
+        }
 #endif
 
         const XMMATRIX inverseViewProjection =
@@ -6353,6 +6371,35 @@ namespace client::graphics
                 continue;
             }
 
+#if defined(STUDIO_BUILD)
+            if (mesh.xrayDetailModel >= 0)
+            {
+                const auto modelId = static_cast<std::size_t>(mesh.xrayDetailModel);
+                const auto* details = state_->details.Data();
+                if (!details || modelId >= details->Models().size() ||
+                    state_->details.Counts()[modelId] == 0 || !state_->detailVertexShader) continue;
+                const auto& model = details->Models()[modelId];
+                const std::array<DirectX::XMFLOAT4, 2> detailConstants{{
+                    {model.minimum.y, 1.0f/std::max(0.001f,model.maximum.y-model.minimum.y),
+                        (model.flags & 1u) == 0 ? 1.0f : 0.0f, float(state_->details.Starts()[modelId])},
+                    {elapsedSeconds, state_->studioLighting.windVelocity,
+                        state_->studioLighting.windDirection, XRayDetailCache::RenderDistance}}};
+                state_->context->UpdateSubresource(state_->detailConstantBuffer.Get(), 0, nullptr,
+                    detailConstants.data(), 0, 0);
+                ID3D11Buffer* detailBuffer = state_->detailConstantBuffer.Get();
+                state_->context->VSSetConstantBuffers(4, 1, &detailBuffer);
+                ID3D11ShaderResourceView* detailView = state_->detailInstanceView.Get();
+                state_->context->VSSetShaderResources(19, 1, &detailView);
+                state_->context->VSSetShader(state_->detailVertexShader.Get(), nullptr, 0);
+                state_->context->IASetInputLayout(state_->detailInputLayout.Get());
+            }
+            else
+            {
+                state_->context->VSSetShader(state_->vertexShader.Get(), nullptr, 0);
+                state_->context->IASetInputLayout(state_->inputLayout.Get());
+            }
+#endif
+
             constants.instanceColour =
             {
                 instance.colour[0],
@@ -6470,6 +6517,12 @@ namespace client::graphics
                 [this, &mesh, &instance](std::uint32_t firstIndex, std::uint32_t count)
                 {
 #if defined(STUDIO_BUILD)
+                    if (mesh.xrayDetailModel >= 0)
+                    {
+                        state_->context->DrawIndexedInstanced(count,
+                            state_->details.Counts()[static_cast<std::size_t>(mesh.xrayDetailModel)], firstIndex, 0, 0);
+                        return;
+                    }
                     if (state_->hom.Active() && !mesh.occlusionRanges.empty())
                     {
                         const std::uint64_t end = std::uint64_t(firstIndex) + count;
@@ -7061,6 +7114,12 @@ namespace client::graphics
             state_->depthState.Get(),
             0);
 
+#if defined(STUDIO_BUILD)
+        state_->context->VSSetShader(state_->vertexShader.Get(), nullptr, 0);
+        state_->context->IASetInputLayout(state_->inputLayout.Get());
+        ID3D11ShaderResourceView* noDetails = nullptr;
+        state_->context->VSSetShaderResources(19, 1, &noDetails);
+#endif
         // The opaque scene must be unbound before it can be used as an SRV.
         state_->context->OMSetRenderTargets(
             0,
@@ -7656,14 +7715,14 @@ namespace client::graphics
             state_->context->ClearRenderTargetView(
                 target,
                 editorBackground);
-
+            
             D3D11_VIEWPORT viewport{};
 
             viewport.Width =
-                static_cast<float>(renderWidth);
+                static_cast<float>(state_->width);
 
             viewport.Height =
-                static_cast<float>(renderHeight);
+                static_cast<float>(state_->height);
 
             viewport.MinDepth = 0.0f;
             viewport.MaxDepth = 1.0f;
