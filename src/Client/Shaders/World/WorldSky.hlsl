@@ -250,44 +250,42 @@ float3 RotateSkyDirection(
         direction.x * s + direction.z * c);
 }
 
-float2 WeatherCloudUV(
-    float3 direction)
+float2 WeatherCloudUV(float3 direction)
 {
-    static const float InverseTwoPi =
-        0.15915494309189535f;
+    const float3 rayDirection =
+        normalize(direction);
 
-    static const float InversePi =
-        0.31830988618379067f;
+    const float layerHeight =
+        max(rayDirection.y, 0.12f);
 
-    const float longitude =
-        atan2(direction.x, direction.z);
+    const float2 projectedPosition =
+        rayDirection.xz / layerHeight;
 
-    const float latitude =
-        asin(clamp(direction.y, -1.0f, 1.0f));
+    const float cloudScale = 0.045f;
 
-    float2 uv = float2(
-        longitude * InverseTwoPi + 0.5f,
-        0.5f - latitude * InversePi);
+    float2 uv =
+        projectedPosition * cloudScale +
+        float2(0.5f, 0.5f);
 
     const float windAngle =
         radians(weatherCloudParameters.z);
 
-    const float2 windDirection =
-        float2(
-            cos(windAngle),
-            sin(windAngle));
+    float s;
+    float c;
 
-    const float movement =
+    sincos(windAngle, s, c);
+
+    const float2 windDirection =
+        float2(c, s);
+
+    const float windOffset =
         weatherCloudParameters.y *
         weatherCloudParameters.w *
         0.000003f;
 
-    uv += windDirection * movement;
+    uv += windDirection * windOffset;
 
-    uv.x = frac(uv.x);
-    uv.y = saturate(uv.y);
-
-    return uv;
+    return frac(uv);
 }
 
 float3 BuildTexturedWeatherSky(
@@ -396,8 +394,8 @@ float3 BuildTexturedWeatherSky(
 
         const float heightMask =
             smoothstep(
-                -0.10f,
-                0.12f,
+                0.08f,
+                0.25f,
                 viewDirection.y);
 
         const float cloudOpacity =
