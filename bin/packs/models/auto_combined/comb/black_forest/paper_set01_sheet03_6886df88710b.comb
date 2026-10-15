@@ -1,0 +1,38 @@
+{
+    "firstguid": "6D7EC39F.447DFF7E.06CE509D.77A848C8", 
+    "models": {
+        "5957F8CE.40B1157D.8FDC2AB7.5D50C01D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "67ffac6ei@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "07/11/2025", 
+                "description": "paper_set01_sheet03", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "10/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.857728302479*0.0*-0.514104783535*0.0|0.0*1.0*0.0*0.0|0.514104783535*0.0*0.857728302479*0.0|-1349.31176758*1.86575388908*576.317993164*1.0", 
+            "path": "models/props/science_base/paper_set01_sheet03.model"
+        }, 
+        "6D7EC39F.447DFF7E.06CE509D.77A848C8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "67ffac6ei@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "07/11/2025", 
+                "description": "paper_set01_sheet03", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "07/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.852583229542*-0.111858002841*0.510481894016*0.0|0.096208371222*-0.993723988533*-0.0570635609329*0.0|0.513661623001*0.000461999996332*0.857994616032*0.0|-1348.64648438*1.86503505707*576.98815918*1.0", 
+            "path": "models/props/science_base/paper_set01_sheet03.model"
+        }
+    }, 
+    "spawn_transform": "-0.852583229542*-0.111858002841*0.510481894016*0.0|0.096208371222*-0.993723988533*-0.0570635609329*0.0|0.513661623001*0.000461999996332*0.857994616032*0.0|-1348.64648438*1.86503505707*576.98815918*1.0"
+}

@@ -1,0 +1,62 @@
+{
+    "models": {
+        "41DA0A05.408C0A05.D1A7CB9B.F46989E3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "raylo", 
+                "created on": "03/07/2024", 
+                "description": "ceiling_lamp_2_2", 
+                "modified by": "raylo", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {
+                "ceiling_lamp": "ON"
+            }, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*0.999998986721*0.0*0.0|0.999997973442*0.0*0.0*0.0|219.277923584*205.025115967*-32.1365242004*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_2_2.model"
+        }, 
+        "5595E7C5.4D6076C2.099F08B0.057866FB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "raylo", 
+                "created on": "03/07/2024", 
+                "description": "ceiling_lamp_2_2", 
+                "modified by": "raylo", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {
+                "ceiling_lamp": "ON"
+            }, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*0.999998986721*0.0*0.0|0.999997973442*0.0*0.0*0.0|219.329788208*204.994338989*-37.9276275635*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_2_2.model"
+        }, 
+        "CE4563A2.4427FF11.0F977798.FAEE5548": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "ceiling_lamp_2_2", 
+                "modified by": "ice_c", 
+                "modified on": "11/06/2024"
+            }, 
+            "dyes": {
+                "ceiling_lamp": "ON"
+            }, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*0.999998986721*0.0*0.0|0.999997973442*0.0*0.0*0.0|217.840408325*204.999908447*-13.527923584*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_2_2.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-0.999997973442*0.0|0.0*0.999998986721*0.0*0.0|0.999997973442*0.0*0.0*0.0|217.840408325*204.999908447*-13.527923584*1.0"
+}

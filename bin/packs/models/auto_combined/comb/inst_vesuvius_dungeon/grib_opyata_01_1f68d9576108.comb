@@ -1,0 +1,101 @@
+{
+    "models": {
+        "1203CE18.47063ED1.FBC58A9C.55FDE740": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "grib_opyata_01", 
+                "modified by": "ice_c", 
+                "modified on": "03/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.16357195377*-0.000132999994094*-0.031086999923*0.0|0.0253049992025*0.680193006992*0.944226026535*0.0|0.0180580001324*-0.94456499815*0.679952979088*0.0|301.445343018*174.650802612*-121.157714844*1.0", 
+            "path": "models/entities/flora/grib_opyata_01.model"
+        }, 
+        "A90C6124.4D57CA46.98E311B6.EBEB1305": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "grib_opyata_01", 
+                "modified by": "ice_c", 
+                "modified on": "03/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.712866008282*-4.60000010207e-05*-0.231572002172*0.0|-0.119364999235*0.642215013504*-0.367579013109*0.0|0.198438003659*0.386474013329*0.610789000988*0.0|306.2472229*177.008590698*-124.337875366*1.0", 
+            "path": "models/entities/flora/grib_opyata_01.model"
+        }, 
+        "B813ECD3.44CBB559.A3A980AC.AFC307F5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "grib_opyata_01", 
+                "modified by": "ice_c", 
+                "modified on": "03/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.566929996014*-0.196722999215*0.836426019669*0.0|0.231224000454*1.00004601479*0.0784830003977*0.0|-0.827552974224*0.144650995731*0.594937026501*0.0|308.868286133*176.468658447*-125.024749756*1.0", 
+            "path": "models/entities/flora/grib_opyata_01.model"
+        }, 
+        "BEA8E65C.46C9DFC9.EC17E89D.656D266B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "grib_opyata_01", 
+                "modified by": "ice_c", 
+                "modified on": "03/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.491259992123*-0.293700993061*-0.467530995607*0.0|0.426921993494*0.598900973797*0.0723629966378*0.0|0.350118011236*-0.318179994822*0.56776702404*0.0|307.342956543*177.020736694*-125.523666382*1.0", 
+            "path": "models/entities/flora/grib_opyata_01.model"
+        }, 
+        "CB254D65.48DBF578.A7872CB3.18CBBB76": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "grib_opyata_01", 
+                "modified by": "ice_c", 
+                "modified on": "03/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.12425494194*0.0*-0.0589199997485*0.0|0.0*1.12579798698*0.0*0.0|0.0589199997485*0.0*-1.12425494194*0.0|302.922790527*174.658004761*-121.160263062*1.0", 
+            "path": "models/entities/flora/grib_opyata_01.model"
+        }, 
+        "EC5D26E0.420503B0.9B2B3FA1.893B79C8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "grib_opyata_01", 
+                "modified by": "ice_c", 
+                "modified on": "03/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.401688009501*-0.177802994847*1.07402694225*0.0|-0.0398340001702*1.14644098282*0.174893006682*0.0|-1.08791601658*0.0236719995737*-0.402963012457*0.0|306.054901123*176.128417969*-123.889373779*1.0", 
+            "path": "models/entities/flora/grib_opyata_01.model"
+        }
+    }, 
+    "spawn_transform": "1.16357195377*-0.000132999994094*-0.031086999923*0.0|0.0253049992025*0.680193006992*0.944226026535*0.0|0.0180580001324*-0.94456499815*0.679952979088*0.0|301.445343018*174.650802612*-121.157714844*1.0"
+}

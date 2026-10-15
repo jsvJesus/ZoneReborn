@@ -1,0 +1,57 @@
+{
+    "firstguid": "18A573C9.42CD4F6C.B3E711AE.3AAFFFE1", 
+    "models": {
+        "03773A9B.47BCCA20.BD3EA8AA.F38BA805": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "fukushima_frame", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.588582992554*0.0|0.0*0.366683989763*0.0*0.0|-0.420628011227*0.0*0.0*0.0|42.0061035156*20.6450004578*64.3653106689*1.0", 
+            "path": "models/props/industrial/fukushima_frame.model"
+        }, 
+        "18A573C9.42CD4F6C.B3E711AE.3AAFFFE1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "dam_constr01", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|-0.999997973442*0.0*0.0*0.0|40.5702934265*19.2088489532*64.5504760742*1.0", 
+            "path": "models/props/industrial/dam_constr01.model"
+        }, 
+        "46DD2741.4DF875D6.F8E9A18D.4472DE13": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "dam_constr01", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999997019768*0.0|0.0*0.999997019768*0.0*0.0|0.999997019768*0.0*0.0*0.0|40.533416748*19.2088356018*62.0894355774*1.0", 
+            "path": "models/props/industrial/dam_constr01.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|-0.999997973442*0.0*0.0*0.0|40.5702934265*19.2088489532*64.5504760742*1.0"
+}

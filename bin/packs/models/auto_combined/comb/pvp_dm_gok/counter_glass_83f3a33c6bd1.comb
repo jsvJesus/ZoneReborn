@@ -1,0 +1,57 @@
+{
+    "firstguid": "9707CEF6.43E283A4.4671E888.47DC6653", 
+    "models": {
+        "9707CEF6.43E283A4.4671E888.47DC6653": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "anton_zyryanov", 
+                "created on": "20/07/2022", 
+                "description": "counter_glass", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.61975800991*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|47.4125061035*1.03299999237*61.0289611816*1.0", 
+            "path": "models/misc/furniture/postal/counter_glass.model"
+        }, 
+        "9B9B7383.44AB5AC1.4BE83FA7.4F0C1639": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "anton_zyryanov", 
+                "created on": "20/07/2022", 
+                "description": "counter_glass", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.61975800991*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.09126901627*0.0|47.409324646*1.03299999237*55.8150024414*1.0", 
+            "path": "models/misc/furniture/postal/counter_glass.model"
+        }, 
+        "E6CB74A2.4B9D7F5E.9E7427A3.64C61822": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "anton_zyryanov", 
+                "created on": "20/07/2022", 
+                "description": "counter_glass", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.61975800991*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|47.3963088989*1.03299999237*50.1769599915*1.0", 
+            "path": "models/misc/furniture/postal/counter_glass.model"
+        }
+    }, 
+    "spawn_transform": "1.61975800991*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|47.4125061035*1.03299999237*61.0289611816*1.0"
+}

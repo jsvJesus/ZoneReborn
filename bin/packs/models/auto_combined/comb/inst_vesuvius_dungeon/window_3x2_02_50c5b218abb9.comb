@@ -1,0 +1,39 @@
+{
+    "models": {
+        "01D8D49F.462A7042.C50D7C9E.9757A7AC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2024", 
+                "description": "window_3x2_02", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.17030894756*0.0*0.0*0.0|0.0*1.58688998222*-0.165417000651*0.0|0.0*-0.165368005633*-1.58640098572*0.0|198.85534668*212.991989136*-57.026763916*1.0", 
+            "path": "models/instances/vesuvius_dungeon/window_3x2_02.model"
+        }, 
+        "91D56B1F.465630C7.348C1CAB.E6710C88": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2024", 
+                "description": "window_3x2_02", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.17031002045*0.0*0.0*0.0|0.0*1.58689105511*-0.165417000651*0.0|0.0*-0.165368005633*-1.5864020586*0.0|192.366348267*212.991989136*-57.0267677307*1.0", 
+            "path": "models/instances/vesuvius_dungeon/window_3x2_02.model"
+        }
+    }, 
+    "spawn_transform": "-1.17031002045*0.0*0.0*0.0|0.0*1.58689105511*-0.165417000651*0.0|0.0*-0.165368005633*-1.5864020586*0.0|192.366348267*212.991989136*-57.0267677307*1.0"
+}

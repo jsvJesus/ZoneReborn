@@ -1,0 +1,53 @@
+{
+    "models": {
+        "86FE9673.4B5DFAFC.CD7DA5B5.6C34CF5C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "6203b0aei@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "musor_gazet_01", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.139173001051*0.0*0.99026799202*0.0|0.0*1.0*0.0*0.0|-0.99026799202*0.0*-0.139173001051*0.0|351.033569336*212.999801636*-44.2430343628*1.0", 
+            "path": "models/misc/garbage/musor_gazet_01.model"
+        }, 
+        "D70B2F80.4B1BFF86.FC3CB1B1.CB14451A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "6203b0aei@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "musor_gazet_01", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.224950999022*0.0*0.974370002747*0.0|0.0*1.0*0.0*0.0|-0.974370002747*0.0*0.224950999022*0.0|363.36038208*212.999816895*-59.1712799072*1.0", 
+            "path": "models/misc/garbage/musor_gazet_01.model"
+        }, 
+        "E584A9D4.40E8FDD1.170AD2AB.0469B6FD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "6203b0aei@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "musor_gazet_01", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.601814985275*0.0*0.798635005951*0.0|0.0*1.0*0.0*0.0|-0.798635005951*0.0*-0.601814985275*0.0|365.746307373*212.999816895*-49.5007858276*1.0", 
+            "path": "models/misc/garbage/musor_gazet_01.model"
+        }
+    }, 
+    "spawn_transform": "-0.601814985275*0.0*0.798635005951*0.0|0.0*1.0*0.0*0.0|-0.798635005951*0.0*-0.601814985275*0.0|365.746307373*212.999816895*-49.5007858276*1.0"
+}

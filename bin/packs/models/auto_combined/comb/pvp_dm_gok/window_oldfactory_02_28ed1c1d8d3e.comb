@@ -1,0 +1,40 @@
+{
+    "firstguid": "624A2CEA.45FC2D14.23F29280.83D2E293", 
+    "models": {
+        "624A2CEA.45FC2D14.23F29280.83D2E293": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "window_oldfactory_02", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999996006489*0.0*0.0*0.0|0.0*0.999996006489*0.0*0.0|0.0*0.0*-0.999996006489*0.0|58.4028205872*9.55442619324*36.5312767029*1.0", 
+            "path": "models/buildings/windows/window_oldfactory_02.model"
+        }, 
+        "A4D31B47.4F50FAD1.3B473FA4.21CCD930": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "window_oldfactory_02", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*-0.999997019768*0.0|58.4128189087*11.3967266083*36.5312805176*1.0", 
+            "path": "models/buildings/windows/window_oldfactory_02.model"
+        }
+    }, 
+    "spawn_transform": "-0.999996006489*0.0*0.0*0.0|0.0*0.999996006489*0.0*0.0|0.0*0.0*-0.999996006489*0.0|58.4028205872*9.55442619324*36.5312767029*1.0"
+}

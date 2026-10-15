@@ -1,0 +1,59 @@
+{
+    "models": {
+        "3A9DE927.412CC217.83AC82AC.0EA905D5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "lamp05_wall", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {
+                "lamps": "default"
+            }, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|345.859680176*215.019500732*-73.6581344604*1.0", 
+            "path": "models/misc/furniture/lamp05_wall.model"
+        }, 
+        "50B0EC65.460760B6.53566B9A.E321B97B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "lamp05_wall", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {
+                "lamps": "default"
+            }, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|345.859680176*215.019546509*-70.8581237793*1.0", 
+            "path": "models/misc/furniture/lamp05_wall.model"
+        }, 
+        "649B4096.44405F15.F9B1C8AC.441BDC92": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "lamp05_wall", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {
+                "lamps": "default"
+            }, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|345.859680176*215.019500732*-75.0581283569*1.0", 
+            "path": "models/misc/furniture/lamp05_wall.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|345.859680176*215.019546509*-70.8581237793*1.0"
+}

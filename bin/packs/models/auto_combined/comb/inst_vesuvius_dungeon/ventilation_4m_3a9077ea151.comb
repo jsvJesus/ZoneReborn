@@ -1,0 +1,39 @@
+{
+    "models": {
+        "36B2453B.4CB145F5.1B50F5B0.A1B802D0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "01/04/2024", 
+                "description": "ventilation_4m", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.989657998085*-0.143345996737*-9.99999997475e-07*0.0|0.143345996737*0.989657998085*9.99999997475e-07*0.0|0.0*-9.99999997475e-07*0.99998497963*0.0|485.72869873*185.841751099*-49.3654441833*1.0", 
+            "path": "models/props/ventilation/ventilation_4m.model"
+        }, 
+        "734631B7.496B54D2.27748F85.5B49945C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "01/04/2024", 
+                "description": "ventilation_4m", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999094009399*-0.0422159992158*-0.0*0.0|0.0422159992158*0.999094009399*9.99999997475e-07*0.0|0.0*-9.99999997475e-07*0.99998497963*0.0|481.771636963*186.16053772*-49.3654403687*1.0", 
+            "path": "models/props/ventilation/ventilation_4m.model"
+        }
+    }, 
+    "spawn_transform": "0.989657998085*-0.143345996737*-9.99999997475e-07*0.0|0.143345996737*0.989657998085*9.99999997475e-07*0.0|0.0*-9.99999997475e-07*0.99998497963*0.0|485.72869873*185.841751099*-49.3654441833*1.0"
+}

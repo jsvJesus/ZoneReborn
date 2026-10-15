@@ -1,0 +1,56 @@
+{
+    "models": {
+        "521F3B60.4122E28F.6FA168A5.5C39349B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "moika_kuhonnaya", 
+                "modified by": "ice_c", 
+                "modified on": "05/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.874243021011*0.0*0.0*0.0|0.0*0.874243021011*0.0*0.0|0.0*0.0*-0.874243021011*0.0|383.694732666*212.999664307*-92.1422348022*1.0", 
+            "path": "models/misc/furniture/moika_kuhonnaya.model"
+        }, 
+        "B80C70C3.4EEA46FC.154AC5A1.2F104006": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "moika_kuhonnaya", 
+                "modified by": "ice_c", 
+                "modified on": "05/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.874243021011*0.0*0.0*0.0|0.0*0.874243021011*0.0*0.0|0.0*0.0*-0.874243021011*0.0|382.038879395*212.99937439*-92.1459579468*1.0", 
+            "path": "models/misc/furniture/moika_kuhonnaya.model"
+        }, 
+        "C4B445D6.449FC352.DA825D84.551727E5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "moika_kuhonnaya", 
+                "modified by": "ice_c", 
+                "modified on": "05/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.874243021011*0.0*0.0*0.0|0.0*0.874243021011*0.0*0.0|0.0*0.0*-0.874243021011*0.0|382.867095947*212.999664307*-92.1368026733*1.0", 
+            "path": "models/misc/furniture/moika_kuhonnaya.model"
+        }
+    }, 
+    "spawn_transform": "-0.874243021011*0.0*0.0*0.0|0.0*0.874243021011*0.0*0.0|0.0*0.0*-0.874243021011*0.0|382.038879395*212.99937439*-92.1459579468*1.0"
+}

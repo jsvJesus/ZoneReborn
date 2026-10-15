@@ -1,0 +1,38 @@
+{
+    "firstguid": "9DB46A38.441349EC.A382F49C.5D599A9D", 
+    "models": {
+        "716FD364.4F50154E.F2DC6AAE.6B12D3FC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "17/07/2020", 
+                "description": "placard06", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "22/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.12608098984*0.0*0.0*0.0|0.0*0.0*-2.12608098984*0.0|0.0*-2.12608098984*0.0*0.0|55.2463417053*3.36291790009*69.6541671753*1.0", 
+            "path": "models/misc/posters/placard06.model"
+        }, 
+        "9DB46A38.441349EC.A382F49C.5D599A9D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "17/07/2020", 
+                "description": "placard05", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "22/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.12608194351*0.0*0.0*0.0|0.0*0.0*-2.12608194351*0.0|0.0*-2.12608098984*0.0*0.0|54.0432624817*3.29349708557*69.6541671753*1.0", 
+            "path": "models/misc/posters/placard05.model"
+        }
+    }, 
+    "spawn_transform": "-2.12608194351*0.0*0.0*0.0|0.0*0.0*-2.12608194351*0.0|0.0*-2.12608098984*0.0*0.0|54.0432624817*3.29349708557*69.6541671753*1.0"
+}

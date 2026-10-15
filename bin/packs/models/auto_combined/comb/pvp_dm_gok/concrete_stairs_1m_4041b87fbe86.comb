@@ -1,0 +1,70 @@
+{
+    "firstguid": "4B78F422.439514D9.A903DBAD.3F2C5AFE", 
+    "models": {
+        "06724425.44EE68EC.65D4A280.C7F51EE5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "aaacf83ei@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "11:36:18", 
+                "description": "concrete_stairs_1m", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11:36:18"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.9710919857*0.0*-4.99999987369e-06*0.0|0.0*2.23042488098*0.0*0.0|0.0*0.0*-2.23043990135*0.0|87.9867553711*12.2786684036*71.4844665527*1.0", 
+            "path": "models/city/props/war_cemetery/concrete_stairs_1m.model"
+        }, 
+        "4B78F422.439514D9.A903DBAD.3F2C5AFE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "aaacf83ei@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "11:36:18", 
+                "description": "concrete_stairs_1m", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11:36:18"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.97110009193*0.0*-4.99999987369e-06*0.0|0.0*2.23043394089*0.0*0.0|0.0*0.0*-2.23044800758*0.0|87.9868164062*11.5488815308*72.9266357422*1.0", 
+            "path": "models/city/props/war_cemetery/concrete_stairs_1m.model"
+        }, 
+        "AD9C1A86.4AA0B7AC.6B07DE94.70BB37B2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "aaacf83ei@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "11:36:18", 
+                "description": "concrete_stairs_1m", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11:36:18"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.97109794617*0.0*-4.99999987369e-06*0.0|0.0*2.23043107986*0.0*0.0|0.0*0.0*-2.23044610023*0.0|87.9867935181*12.0954437256*71.8418273926*1.0", 
+            "path": "models/city/props/war_cemetery/concrete_stairs_1m.model"
+        }, 
+        "C68376C4.4458C1C6.9F5B13AA.1D9F3A6E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "aaacf83ei@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "11:36:18", 
+                "description": "concrete_stairs_1m", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11:36:18"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.97110295296*0.0*-4.99999987369e-06*0.0|0.0*2.23043608665*0.0*0.0|0.0*0.0*-2.23045110703*0.0|87.9868469238*11.0020742416*74.009979248*1.0", 
+            "path": "models/city/props/war_cemetery/concrete_stairs_1m.model"
+        }
+    }, 
+    "spawn_transform": "-3.97110009193*0.0*-4.99999987369e-06*0.0|0.0*2.23043394089*0.0*0.0|0.0*0.0*-2.23044800758*0.0|87.9868164062*11.5488815308*72.9266357422*1.0"
+}

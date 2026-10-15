@@ -1,0 +1,73 @@
+{
+    "models": {
+        "184FD738.45BE15F0.A7A9649A.5C6A8F62": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "chair_80x_01", 
+                "modified by": "ice_c", 
+                "modified on": "06/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.911781013012*-6.00000021223e-06*0.410674005747*0.0|-3.00000010611e-06*0.999998986721*7.00000009601e-06*0.0|-0.410674005747*4.99999987369e-06*-0.911781013012*0.0|406.989105225*212.99961853*-99.195350647*1.0", 
+            "path": "models/misc/furniture/mebel_80x/chair_80x_01.model"
+        }, 
+        "49C01C99.409ED7B3.9CFFB5B2.6719F1D4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "chair_80x_01", 
+                "modified by": "ice_c", 
+                "modified on": "06/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.42961999774*-3.00000010611e-06*0.903007984161*0.0|7.9999999798e-06*0.999998986721*0.0*0.0|-0.903007984161*7.00000009601e-06*0.42961999774*0.0|404.639312744*212.99949646*-100.675346375*1.0", 
+            "path": "models/misc/furniture/mebel_80x/chair_80x_01.model"
+        }, 
+        "7850FF08.4FAF8C99.F241CE84.4C5D5CC5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "chair_80x_01", 
+                "modified by": "ice_c", 
+                "modified on": "06/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.707091987133*7.69999969634e-05*-0.707120001316*0.0|0.707117021084*0.0028389999643*-0.707089006901*0.0|0.00195299996994*-0.999993979931*-0.00206200010143*0.0|406.618621826*213.261428833*-94.8214492798*1.0", 
+            "path": "models/misc/furniture/mebel_80x/chair_80x_01.model"
+        }, 
+        "CF67F360.4A48FBB2.C0CCD7BF.75429480": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "06/03/2024", 
+                "description": "chair_80x_01", 
+                "modified by": "ice_c", 
+                "modified on": "06/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0173560008407*-0.997750997543*-0.0647040009499*0.0|-0.258285999298*0.0669910013676*-0.963741004467*0.0|0.96591001749*-1.4000000192e-05*-0.258868992329*0.0|397.639251709*213.255432129*-94.7387390137*1.0", 
+            "path": "models/misc/furniture/mebel_80x/chair_80x_01.model"
+        }
+    }, 
+    "spawn_transform": "-0.707091987133*7.69999969634e-05*-0.707120001316*0.0|0.707117021084*0.0028389999643*-0.707089006901*0.0|0.00195299996994*-0.999993979931*-0.00206200010143*0.0|406.618621826*213.261428833*-94.8214492798*1.0"
+}

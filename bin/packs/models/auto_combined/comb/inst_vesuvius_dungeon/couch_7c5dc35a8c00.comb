@@ -1,0 +1,39 @@
+{
+    "models": {
+        "42A8606A.40BEA94C.4BB082B8.ACD803E8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c27a325bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "07/03/2024", 
+                "description": "couch", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0101260002702*-0.999292016029*0.0360529981554*0.0|-0.270049005747*0.0374480001628*0.962112009525*0.0|-0.962786018848*6.00000021223e-06*-0.270238012075*0.0|260.270996094*213.343399048*-41.7747001648*1.0", 
+            "path": "models/misc/furniture/library/couch.model"
+        }, 
+        "89698EC6.414149D3.2CD195A3.547CB432": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c27a325bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "07/03/2024", 
+                "description": "couch", 
+                "modified by": "evgeny_yashkin", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.421079009771*-0.876654982567*0.232720002532*0.0|0.892378985882*0.446327000856*0.0666610002518*0.0|-0.162307992578*0.179606005549*0.970251977444*0.0|247.879928589*213.729888916*-55.1999588013*1.0", 
+            "path": "models/misc/furniture/library/couch.model"
+        }
+    }, 
+    "spawn_transform": "0.421079009771*-0.876654982567*0.232720002532*0.0|0.892378985882*0.446327000856*0.0666610002518*0.0|-0.162307992578*0.179606005549*0.970251977444*0.0|247.879928589*213.729888916*-55.1999588013*1.0"
+}

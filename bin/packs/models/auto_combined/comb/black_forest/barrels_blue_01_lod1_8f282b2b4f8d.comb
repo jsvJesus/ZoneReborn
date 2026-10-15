@@ -1,0 +1,42 @@
+{
+    "firstguid": "528E8C5F.4ECB4CB4.3C5DDC99.020F2BDE", 
+    "models": {
+        "528E8C5F.4ECB4CB4.3C5DDC99.020F2BDE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fff20006o@black_forest@0x000002430D0AC120", 
+                "created by": "sergey_busygin", 
+                "created on": "24/10/2025", 
+                "description": "barrels_blue_01_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "24/10/2025"
+            }, 
+            "dyes": {
+                "Barrels": "default"
+            }, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|-1345.65649414*0.684204995632*620.335693359*1.0", 
+            "path": "models/props/warehouse/barrels_blue_01_lod1.model"
+        }, 
+        "6F462994.4B8F85EA.A83CF8B9.965ADD44": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fff20006o@black_forest@0x000002430D0AC120", 
+                "created by": "sergey_busygin", 
+                "created on": "24/10/2025", 
+                "description": "barrels_blue_01_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "24/10/2025"
+            }, 
+            "dyes": {
+                "Barrels": "default"
+            }, 
+            "matrix": "-0.0298779997975*0.0*0.999553978443*0.0|0.0*1.0*0.0*0.0|-0.999553978443*0.0*-0.0298779997975*0.0|-1343.81469727*0.670898020267*620.521911621*1.0", 
+            "path": "models/props/warehouse/barrels_blue_01_lod1.model"
+        }
+    }, 
+    "spawn_transform": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|-1345.65649414*0.684204995632*620.335693359*1.0"
+}

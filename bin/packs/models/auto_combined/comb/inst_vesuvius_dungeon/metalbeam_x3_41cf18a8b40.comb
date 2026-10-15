@@ -1,0 +1,73 @@
+{
+    "models": {
+        "1E54C185.4FFA5813.3FE09D8B.70128D8B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalbeam_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.53955197334*0.0*0.0*0.0|0.0*1.53955197334*0.0*0.0|0.0*0.0*-1.53955197334*0.0|237.674118042*215.417388916*-48.0333862305*1.0", 
+            "path": "models/city/props/filtration_station/metalbeam_x3.model"
+        }, 
+        "A7014A8F.452C946C.551A9F8F.AB9A9996": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalbeam_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.53955197334*0.0*0.0*0.0|0.0*1.53955197334*0.0*0.0|0.0*0.0*-1.53955197334*0.0|243.896194458*215.551147461*-48.0333938599*1.0", 
+            "path": "models/city/props/filtration_station/metalbeam_x3.model"
+        }, 
+        "CD87ADEA.4B029BDB.257312AF.0EE2D730": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalbeam_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.53955101967*0.0*0.0*0.0|0.0*1.53955197334*0.0*0.0|0.0*0.0*-1.53955101967*0.0|224.558288574*215.464736938*-48.0333786011*1.0", 
+            "path": "models/city/props/filtration_station/metalbeam_x3.model"
+        }, 
+        "E6285889.409FC5AA.E3AEA5B3.C19F6271": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalbeam_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.53955197334*0.0*0.0*0.0|0.0*1.53955197334*0.0*0.0|0.0*0.0*-1.53955197334*0.0|230.901275635*215.551147461*-48.0333938599*1.0", 
+            "path": "models/city/props/filtration_station/metalbeam_x3.model"
+        }
+    }, 
+    "spawn_transform": "-1.53955101967*0.0*0.0*0.0|0.0*1.53955197334*0.0*0.0|0.0*0.0*-1.53955101967*0.0|224.558288574*215.464736938*-48.0333786011*1.0"
+}

@@ -1,0 +1,37 @@
+{
+    "models": {
+        "21C5BF38.4F5A384E.A7FACCB6.AC32E510": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "15:58:03", 
+                "description": "paper_magazines03", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:58:03"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0871549993753*0.0*0.996191978455*0.0|0.0*0.999997973442*0.0*0.0|-0.996191978455*0.0*-0.0871549993753*0.0|381.978729248*213.889938354*-74.7785797119*1.0", 
+            "path": "models/misc/furniture/mebel_80x/paper_magazines03.model"
+        }, 
+        "DC0430ED.48A777DB.46963E84.DD89273B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "15:58:03", 
+                "description": "paper_magazines03", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:58:03"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0380330011249*3.00000010611e-06*0.999273002148*0.0|3.9999999899e-06*0.999997973442*-3.00000010611e-06*0.0|-0.999273002148*3.9999999899e-06*0.0380330011249*0.0|381.951477051*213.890167236*-73.7294387817*1.0", 
+            "path": "models/misc/furniture/mebel_80x/paper_magazines03.model"
+        }
+    }, 
+    "spawn_transform": "0.0380330011249*3.00000010611e-06*0.999273002148*0.0|3.9999999899e-06*0.999997973442*-3.00000010611e-06*0.0|-0.999273002148*3.9999999899e-06*0.0380330011249*0.0|381.951477051*213.890167236*-73.7294387817*1.0"
+}

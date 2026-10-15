@@ -1,0 +1,39 @@
+{
+    "models": {
+        "268E53E5.45C5E15D.BC9D6099.4753C13C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "barrels_blue_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0697560012341*0.0*0.997561991215*0.0|0.0*0.999998986721*0.0*0.0|-0.997561991215*0.0*-0.0697560012341*0.0|202.698913574*201.471359253*-52.9008903503*1.0", 
+            "path": "models/props/warehouse/barrels_blue_01_lod2.model"
+        }, 
+        "F71E4B59.4D168A54.4E7B53A2.5886DCD2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "barrels_blue_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "11/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.998055994511*0.0*0.0622930005193*0.0|0.0*0.999997973442*0.0*0.0|-0.0622930005193*0.0*0.998055994511*0.0|200.763473511*204.3646698*-57.3494758606*1.0", 
+            "path": "models/props/warehouse/barrels_blue_01_lod2.model"
+        }
+    }, 
+    "spawn_transform": "0.998055994511*0.0*0.0622930005193*0.0|0.0*0.999997973442*0.0*0.0|-0.0622930005193*0.0*0.998055994511*0.0|200.763473511*204.3646698*-57.3494758606*1.0"
+}

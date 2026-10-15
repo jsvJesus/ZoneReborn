@@ -1,0 +1,39 @@
+{
+    "models": {
+        "59501A5A.4B338BFF.F794CDAD.44B1BDA4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "biomass_3", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.784339010715*0.0*0.138300001621*0.0|0.0*0.796438992023*0.0*0.0|-0.138300001621*0.0*0.784339010715*0.0|422.053985596*170.89805603*-99.3503341675*1.0", 
+            "path": "models/flora/biomass/biomass_3/biomass_3.model"
+        }, 
+        "9695B8B9.40D33E58.63BDF2B8.B8A0B02B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "biomass_3", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.682520985603*0.0*0.120347000659*0.0|0.0*0.693050026894*0.0*0.0|-0.120347000659*0.0*0.682520985603*0.0|421.928375244*171.725891113*-99.3670272827*1.0", 
+            "path": "models/flora/biomass/biomass_3/biomass_3.model"
+        }
+    }, 
+    "spawn_transform": "0.682520985603*0.0*0.120347000659*0.0|0.0*0.693050026894*0.0*0.0|-0.120347000659*0.0*0.682520985603*0.0|421.928375244*171.725891113*-99.3670272827*1.0"
+}

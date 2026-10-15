@@ -1,0 +1,44 @@
+{
+    "firstguid": "510F93F6.420386C3.CD8D618B.A5349465", 
+    "models": {
+        "44B66EF9.4B8B9C4B.39FD5583.5B4BC042": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "raylo", 
+                "created on": "03/07/2024", 
+                "description": "lamp02_wall", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {
+                "pasted__pasted__pasted__lambert35": "violet"
+            }, 
+            "matrix": "-0.345176011324*-0.000134999994771*0.668114006519*0.0|0.0*-0.955030977726*-0.000192999999854*0.0|0.668114006519*-6.90000015311e-05*0.345176011324*0.0|445.146118164*178.540390015*-102.894760132*1.0", 
+            "path": "models/misc/furniture/lamp02_wall.model"
+        }, 
+        "510F93F6.420386C3.CD8D618B.A5349465": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "raylo", 
+                "created on": "03/07/2024", 
+                "description": "lamp02_wall", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {
+                "pasted__pasted__pasted__lambert35": "violet"
+            }, 
+            "matrix": "-0.345108002424*-0.0173739995807*0.667922973633*0.0|0.0074410000816*-0.954771995544*-0.0209899991751*0.0|0.668123006821*-0.00238099996932*0.345149993896*0.0|445.174530029*179.360717773*-102.997612*1.0", 
+            "path": "models/misc/furniture/lamp02_wall.model"
+        }
+    }, 
+    "spawn_transform": "-0.345108002424*-0.0173739995807*0.667922973633*0.0|0.0074410000816*-0.954771995544*-0.0209899991751*0.0|0.668123006821*-0.00238099996932*0.345149993896*0.0|445.174530029*179.360717773*-102.997612*1.0"
+}

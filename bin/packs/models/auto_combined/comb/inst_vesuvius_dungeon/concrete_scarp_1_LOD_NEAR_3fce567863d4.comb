@@ -1,0 +1,56 @@
+{
+    "models": {
+        "3EEDAA44.4FE81534.126E848B.37C9A8FB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "DEFI", 
+                "created on": "29/04/2024", 
+                "description": "concrete_scarp_1_LOD_NEAR", 
+                "modified by": "DEFI", 
+                "modified on": "29/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.947912991047*-0.0396789982915*0.09959500283*0.0|0.0528689995408*0.943973004818*-0.127113997936*0.0|-0.0932670012116*0.131827995181*0.940189003944*0.0|484.702667236*180.680145264*-41.271572113*1.0", 
+            "path": "models/misc/garbage/concrete_scarp/concrete_scarp_1_LOD_NEAR.model"
+        }, 
+        "941B14CA.4B12594A.D6123BB6.F17CCA35": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "04/04/2024", 
+                "description": "concrete_scarp_1_LOD_NEAR", 
+                "modified by": "ice_c", 
+                "modified on": "04/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.15129494667*-0.167965993285*-0.23006400466*0.0|0.200655996799*1.15810394287*0.158619001508*0.0|0.20218500495*-0.192899003625*1.15262103081*0.0|484.838104248*180.77130127*-49.8420906067*1.0", 
+            "path": "models/misc/garbage/concrete_scarp/concrete_scarp_1_LOD_NEAR.model"
+        }, 
+        "C1F239A6.4DFE952A.76707099.1E24FE56": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "DEFI", 
+                "created on": "29/04/2024", 
+                "description": "concrete_scarp_1_LOD_NEAR", 
+                "modified by": "DEFI", 
+                "modified on": "29/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.244404003024*-0.124733000994*0.837446987629*0.0|0.0110309999436*0.872035980225*0.126664996147*0.0|-0.846614003181*-0.024645999074*0.243406996131*0.0|480.014190674*181.04888916*-46.1228866577*1.0", 
+            "path": "models/misc/garbage/concrete_scarp/concrete_scarp_1_LOD_NEAR.model"
+        }
+    }, 
+    "spawn_transform": "0.947912991047*-0.0396789982915*0.09959500283*0.0|0.0528689995408*0.943973004818*-0.127113997936*0.0|-0.0932670012116*0.131827995181*0.940189003944*0.0|484.702667236*180.680145264*-41.271572113*1.0"
+}

@@ -1,0 +1,38 @@
+{
+    "firstguid": "457BE4E9.43C92D0B.F133CCB0.9A21F5DB", 
+    "models": {
+        "240190F4.4B9B8C59.8DCD1F99.B0A004DD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "sergey_busygin", 
+                "created on": "20/09/2024", 
+                "description": "animal_skull_bear", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.881250023842*-0.0340979993343*-0.48729801178*0.0|0.077610000968*1.00213205814*0.0702309980989*0.0|0.482284992933*-0.0989599972963*0.879109025002*0.0|-1434.69604492*0.503979980946*1519.53320312*1.0", 
+            "path": "models/props/corpse/animal_skull_bear.model"
+        }, 
+        "457BE4E9.43C92D0B.F133CCB0.9A21F5DB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "sergey_busygin", 
+                "created on": "20/09/2024", 
+                "description": "animal_skull_bear", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.884337007999*-0.30044901371*-0.0326209999621*0.0|-0.288397014141*0.869126021862*-0.186636000872*0.0|0.0903389975429*-0.166541993618*-0.915144026279*0.0|-1433.42773438*0.366169989109*1529.79150391*1.0", 
+            "path": "models/props/corpse/animal_skull_bear.model"
+        }
+    }, 
+    "spawn_transform": "-0.884337007999*-0.30044901371*-0.0326209999621*0.0|-0.288397014141*0.869126021862*-0.186636000872*0.0|0.0903389975429*-0.166541993618*-0.915144026279*0.0|-1433.42773438*0.366169989109*1529.79150391*1.0"
+}

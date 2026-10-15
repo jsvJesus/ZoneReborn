@@ -1,0 +1,54 @@
+{
+    "firstguid": "A54EF037.4812D51E.CEC905A6.C17C8715", 
+    "models": {
+        "6C47701E.46E04B3C.AD559C8B.D4933699": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "12/11/2025", 
+                "description": "kettlebell_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "12/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.26801240444*-2.43915565079e-07*0.12134937942*0.0|6.2402250478e-07*1.27380502224*2.78000698017e-08*0.0|-0.12134937942*1.02342983155e-06*-1.26801240444*0.0|-1377.47949219*0.856756567955*621.601013184*1.0", 
+            "path": "models/misc/furniture/sport/kettlebell_01.model"
+        }, 
+        "8C6F3B06.47C90C8C.A1FD6482.4BFE3F1A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "12/11/2025", 
+                "description": "kettlebell_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "12/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.974981486797*-2.67307768809e-07*0.222285985947*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|-0.222285985947*9.1268975666e-07*-0.974981486797*0.0|-1377.0300293*0.856779515743*621.743591309*1.0", 
+            "path": "models/misc/furniture/sport/kettlebell_01.model"
+        }, 
+        "A54EF037.4812D51E.CEC905A6.C17C8715": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "12/11/2025", 
+                "description": "kettlebell_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "12/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0631737262011*-8.409547263e-07*1.53492796421*0.0|-1.95388565771e-07*1.53622794151*7.47509147914e-08*0.0|-1.53492796421*1.1169759091e-06*-0.0631737262011*0.0|-1378.37573242*0.856736123562*621.694335938*1.0", 
+            "path": "models/misc/furniture/sport/kettlebell_01.model"
+        }
+    }, 
+    "spawn_transform": "-0.0631737262011*-8.409547263e-07*1.53492796421*0.0|-1.95388565771e-07*1.53622794151*7.47509147914e-08*0.0|-1.53492796421*1.1169759091e-06*-0.0631737262011*0.0|-1378.37573242*0.856736123562*621.694335938*1.0"
+}

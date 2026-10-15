@@ -1,0 +1,42 @@
+{
+    "firstguid": "657F1F2A.40C9B304.5C50CC92.DF8F4DED", 
+    "models": {
+        "51DD6351.41956343.F2B935B2.919CE311": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000cfff2o@outlands@0x000001A827A91FE0", 
+                "created by": "DEFI", 
+                "created on": "11/10/2021", 
+                "description": "dead_tree28", 
+                "modified by": "DEFI", 
+                "modified on": "11/10/2021"
+            }, 
+            "dyes": {
+                "tree": "default"
+            }, 
+            "matrix": "-0.861311018467*-0.03809799999*0.510257005692*0.0|0.0443929992616*0.989721000195*0.148831993341*0.0|-0.509747982025*0.150565996766*-0.849209010601*0.0|1208.41699219*-3.49541592598*-1397.55761719*1.0", 
+            "path": "models/flora/trees/dead_tree28.model"
+        }, 
+        "657F1F2A.40C9B304.5C50CC92.DF8F4DED": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000bfff2o@outlands@0x000001A827A91FE0", 
+                "created by": "DEFI", 
+                "created on": "11/10/2021", 
+                "description": "dead_tree28", 
+                "modified by": "DEFI", 
+                "modified on": "11/10/2021"
+            }, 
+            "dyes": {
+                "tree": "default"
+            }, 
+            "matrix": "-1.32798397541*0.197969004512*-0.259438991547*0.0|0.199138998985*1.35285604*0.0129890004173*0.0|0.258542001247*-0.0251669995487*-1.34259700775*0.0|1195.01184082*-2.64126300812*-1391.29968262*1.0", 
+            "path": "models/flora/trees/dead_tree28.model"
+        }
+    }, 
+    "spawn_transform": "-1.32798397541*0.197969004512*-0.259438991547*0.0|0.199138998985*1.35285604*0.0129890004173*0.0|0.258542001247*-0.0251669995487*-1.34259700775*0.0|1195.01184082*-2.64126300812*-1391.29968262*1.0"
+}

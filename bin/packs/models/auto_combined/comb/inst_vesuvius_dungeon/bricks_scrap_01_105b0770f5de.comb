@@ -1,0 +1,39 @@
+{
+    "models": {
+        "27F02D65.4E128D2C.A8EDBB9C.00F494CD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "bricks_scrap_01", 
+                "modified by": "ice_c", 
+                "modified on": "05/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.555868983269*0.0*0.374938994646*0.0|0.0*0.67049998045*0.0*0.0|-0.374938994646*0.0*-0.555868983269*0.0|391.659362793*212.925628662*-98.1291732788*1.0", 
+            "path": "models/misc/garbage/bricks_scrap/bricks_scrap_01.model"
+        }, 
+        "49B7A393.464D4C33.9A0CCEB6.ADB55A24": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "bricks_scrap_01", 
+                "modified by": "ice_c", 
+                "modified on": "05/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.293927013874*0.0*-0.602639973164*0.0|0.0*0.670499026775*0.0*0.0|0.602639973164*0.0*0.293927013874*0.0|386.519104004*212.924880981*-92.8697357178*1.0", 
+            "path": "models/misc/garbage/bricks_scrap/bricks_scrap_01.model"
+        }
+    }, 
+    "spawn_transform": "0.293927013874*0.0*-0.602639973164*0.0|0.0*0.670499026775*0.0*0.0|0.602639973164*0.0*0.293927013874*0.0|386.519104004*212.924880981*-92.8697357178*1.0"
+}

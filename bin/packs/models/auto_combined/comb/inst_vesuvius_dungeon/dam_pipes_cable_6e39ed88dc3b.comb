@@ -1,0 +1,37 @@
+{
+    "models": {
+        "7D20CABA.42665496.42106882.D6BD49B1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "29/02/2024", 
+                "description": "dam_pipes_cable", 
+                "modified by": "sergey_busygin", 
+                "modified on": "01/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0402799993753*0.0*2.71993088722*0.0|0.0*2.72017097473*0.0*0.0|-3.03259301186*0.0*0.0361270010471*0.0|194.76373291*211.823410034*-56.1224098206*1.0", 
+            "path": "models/props/walls/dam_pipes_cable.model"
+        }, 
+        "C7D76963.4CB57A74.1D2CC78F.DCE3FFBD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "29/02/2024", 
+                "description": "dam_pipes_cable", 
+                "modified by": "sergey_busygin", 
+                "modified on": "01/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0402799993753*0.0*2.71993088722*0.0|0.0*2.72017097473*0.0*0.0|-3.03259301186*0.0*0.0361270010471*0.0|209.875610352*211.823410034*-56.2878417969*1.0", 
+            "path": "models/props/walls/dam_pipes_cable.model"
+        }
+    }, 
+    "spawn_transform": "0.0402799993753*0.0*2.71993088722*0.0|0.0*2.72017097473*0.0*0.0|-3.03259301186*0.0*0.0361270010471*0.0|194.76373291*211.823410034*-56.1224098206*1.0"
+}

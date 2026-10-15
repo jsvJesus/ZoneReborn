@@ -1,0 +1,44 @@
+{
+    "firstguid": "5B7F2F27.4352B02E.3D5326A3.0D8354DC", 
+    "models": {
+        "1783118D.4E587F59.097936AC.8754AD4C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "e41f9e81i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "sergey_busygin", 
+                "modified on": "29/05/2023"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.999997973442*0.0*0.0*0.0|0.0*0.999997973442*0.0*0.0|0.0*0.0*0.999997973442*0.0|1.73236894608*14.999994278*73.365486145*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }, 
+        "5B7F2F27.4352B02E.3D5326A3.0D8354DC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "e41f9e81i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "sergey_busygin", 
+                "modified on": "29/05/2023"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.999997973442*0.0*0.0*0.0|0.0*0.999997973442*0.0*0.0|0.0*0.0*0.999997973442*0.0|1.73236095905*14.9999923706*73.6862792969*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }
+    }, 
+    "spawn_transform": "0.999997973442*0.0*0.0*0.0|0.0*0.999997973442*0.0*0.0|0.0*0.0*0.999997973442*0.0|1.73236095905*14.9999923706*73.6862792969*1.0"
+}

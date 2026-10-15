@@ -1,0 +1,124 @@
+{
+    "models": {
+        "57EDFA50.45BC346B.E3F8D79A.534232DD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_stove01", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*-0.999997019768*0.0|281.49017334*212.99961853*-16.1828594208*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_stove01.model"
+        }, 
+        "8B47252F.48594BDD.A88BC897.F0DFA704": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_stove01", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*-0.999997019768*0.0|282.508209229*212.999633789*-16.1554069519*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_stove01.model"
+        }, 
+        "93BC0FFE.4972967F.02AB8B87.7E3F3C41": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_stove01", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999997973442*0.0*0.0*0.0|0.0*0.999997973442*0.0*0.0|0.0*0.0*-0.999997973442*0.0|280.472198486*212.999633789*-16.1554069519*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_stove01.model"
+        }, 
+        "A3CDED3B.48432EFE.A0616489.A4AD6BBA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_stove01", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999996006489*0.0|0.0*0.999997019768*0.0*0.0|0.999996006489*0.0*0.0*0.0|278.850585938*212.999725342*-22.9144687653*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_stove01.model"
+        }, 
+        "B2700270.450E83F8.F3C2F291.1D1C07E0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_stove01", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999996006489*0.0|0.0*0.999996006489*0.0*0.0|0.999996006489*0.0*0.0*0.0|278.850524902*212.999694824*-20.8246688843*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_stove01.model"
+        }, 
+        "C664FFC6.4C2E438F.72EE46BF.EBC7CE3C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_stove01", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.997402012348*-9.99999997475e-07*0.071987003088*0.0|-9.99999997475e-07*0.999997019768*9.99999997475e-07*0.0|-0.071987003088*9.99999997475e-07*-0.997402012348*0.0|283.595428467*212.999572754*-16.2445831299*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_stove01.model"
+        }, 
+        "FD7A3ECD.4EFE02C6.F3D10D84.1DA5B26B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_stove01", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999996006489*0.0|0.0*0.999996006489*0.0*0.0|0.999996006489*0.0*0.0*0.0|278.899291992*212.999679565*-21.8426933289*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_stove01.model"
+        }
+    }, 
+    "spawn_transform": "-0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*-0.999997019768*0.0|282.508209229*212.999633789*-16.1554069519*1.0"
+}

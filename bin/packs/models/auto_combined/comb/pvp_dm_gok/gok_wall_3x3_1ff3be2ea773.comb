@@ -1,0 +1,139 @@
+{
+    "firstguid": "36A40E11.4EA4EA13.0A19F781.A180A4C6", 
+    "models": {
+        "08CA6CC3.4C02A869.510019A2.5DDBDA01": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "gok_wall_3x3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {
+                "default": "floor"
+            }, 
+            "matrix": "0.0*0.0*-1.99999201298*0.0|-1.88972902298*0.0*0.0*0.0|0.0*0.199999004602*0.0*0.0|57.678730011*7.0057592392*70.1547241211*1.0", 
+            "path": "models/props/industrial/gok_wall_3x3.model"
+        }, 
+        "36A40E11.4EA4EA13.0A19F781.A180A4C6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "gok_wall_3x3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {
+                "default": "floor"
+            }, 
+            "matrix": "0.0*0.0*-1.99999296665*0.0|-1.99999201298*0.0*0.0*0.0|0.0*0.199999004602*0.0*0.0|70.2153930664*7.00576305389*70.1547546387*1.0", 
+            "path": "models/props/industrial/gok_wall_3x3.model"
+        }, 
+        "9D5E9840.4017A984.46262089.A938D568": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "gok_wall_3x3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {
+                "default": "floor"
+            }, 
+            "matrix": "0.0*0.0*-1.74741995335*0.0|-0.747352004051*0.0*0.0*0.0|0.0*0.199999004602*0.0*0.0|59.9531478882*7.0057592392*70.1547241211*1.0", 
+            "path": "models/props/industrial/gok_wall_3x3.model"
+        }, 
+        "D7DEDC5E.40DD4C98.40AD85A3.2742FF35": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "gok_wall_3x3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/11/2023"
+            }, 
+            "dyes": {
+                "default": "floor"
+            }, 
+            "matrix": "0.0*0.0*-1.99999296665*0.0|-1.99999201298*0.0*0.0*0.0|0.0*0.199999004602*0.0*0.0|70.2150039673*7.00600004196*64.0590057373*1.0", 
+            "path": "models/props/industrial/gok_wall_3x3.model"
+        }, 
+        "DB05BCB6.4EC7664D.DA059A91.BCE8D41B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "gok_wall_3x3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {
+                "default": "floor"
+            }, 
+            "matrix": "0.0*0.0*-1.99999296665*0.0|-1.36692202091*0.0*0.0*0.0|0.0*0.199999004602*0.0*0.0|64.1195068359*7.00576305389*64.0588378906*1.0", 
+            "path": "models/props/industrial/gok_wall_3x3.model"
+        }, 
+        "FC0C10E0.4634F916.EE5B5B88.CB2701A5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "gok_wall_3x3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {
+                "default": "floor"
+            }, 
+            "matrix": "0.0*0.0*-1.99999201298*0.0|-1.88972699642*0.0*0.0*0.0|0.0*0.199999004602*0.0*0.0|57.6787223816*7.0057592392*64.058807373*1.0", 
+            "path": "models/props/industrial/gok_wall_3x3.model"
+        }, 
+        "FC86840F.428E2825.5D8FE7AF.A7BECCDF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "gok_wall_3x3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {
+                "default": "floor"
+            }, 
+            "matrix": "0.0*0.0*-1.99999296665*0.0|-1.36692297459*0.0*0.0*0.0|0.0*0.199999004602*0.0*0.0|64.1195220947*7.00576305389*70.1547393799*1.0", 
+            "path": "models/props/industrial/gok_wall_3x3.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-1.99999296665*0.0|-1.99999201298*0.0*0.0*0.0|0.0*0.199999004602*0.0*0.0|70.2153930664*7.00576305389*70.1547546387*1.0"
+}

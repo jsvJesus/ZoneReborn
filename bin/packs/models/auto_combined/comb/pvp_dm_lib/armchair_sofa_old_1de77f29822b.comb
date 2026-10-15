@@ -1,0 +1,40 @@
+{
+    "firstguid": "11CA505D.4A2A1803.924E039F.D1132EC8", 
+    "models": {
+        "11CA505D.4A2A1803.924E039F.D1132EC8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "armchair_sofa_old", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "22/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.325567990541*0.0*-0.945518016815*0.0|0.0*1.0*0.0*0.0|0.945518016815*0.0*-0.325567990541*0.0|51.6279907227*9.99999713898*23.5179767609*1.0", 
+            "path": "models/misc/furniture/armchair_sofa_old.model"
+        }, 
+        "7D0054D8.468E93D4.D8AD658E.300395B7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "armchair_sofa_old", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.933579981327*0.0*0.35836699605*0.0|0.0*0.999998986721*0.0*0.0|-0.35836699605*0.0*-0.933579981327*0.0|45.2676696777*9.9999961853*23.3158912659*1.0", 
+            "path": "models/misc/furniture/armchair_sofa_old.model"
+        }
+    }, 
+    "spawn_transform": "-0.325567990541*0.0*-0.945518016815*0.0|0.0*1.0*0.0*0.0|0.945518016815*0.0*-0.325567990541*0.0|51.6279907227*9.99999713898*23.5179767609*1.0"
+}

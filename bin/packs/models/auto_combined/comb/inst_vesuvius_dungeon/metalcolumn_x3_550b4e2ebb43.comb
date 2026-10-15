@@ -1,0 +1,124 @@
+{
+    "models": {
+        "20C07C52.44253BB2.B1DEFE88.717BDC37": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalcolumn_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.53955101967*0.0*0.0*0.0|0.0*1.53955197334*0.0*0.0|0.0*0.0*-1.53955101967*0.0|243.898605347*215.304595947*-43.5379257202*1.0", 
+            "path": "models/city/props/filtration_station/metalcolumn_x3.model"
+        }, 
+        "3A6DA92F.4EB7140C.62DD50A5.D6E96CE6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalcolumn_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.53955304623*0.0*0.0*0.0|0.0*1.53955304623*0.0*0.0|0.0*0.0*1.53955304623*0.0|230.903884888*215.3046875*-47.9081954956*1.0", 
+            "path": "models/city/props/filtration_station/metalcolumn_x3.model"
+        }, 
+        "3DCC76F2.4B89B1F7.DC02219D.1BE92632": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalcolumn_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.53955101967*0.0*0.0*0.0|0.0*1.53955197334*0.0*0.0|0.0*0.0*-1.53955101967*0.0|237.676528931*215.170837402*-43.5379180908*1.0", 
+            "path": "models/city/props/filtration_station/metalcolumn_x3.model"
+        }, 
+        "5170D2FE.427A5FDA.5229CEBC.C66C9219": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalcolumn_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.53955101967*0.0*0.0*0.0|0.0*1.53955197334*0.0*0.0|0.0*0.0*-1.53955101967*0.0|230.903686523*215.304595947*-43.5379257202*1.0", 
+            "path": "models/city/props/filtration_station/metalcolumn_x3.model"
+        }, 
+        "A6E8E4C9.49D93B01.D236F898.84BF4EF5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalcolumn_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.53955304623*0.0*0.0*0.0|0.0*1.53955304623*0.0*0.0|0.0*0.0*1.53955304623*0.0|237.676727295*215.170928955*-47.9081878662*1.0", 
+            "path": "models/city/props/filtration_station/metalcolumn_x3.model"
+        }, 
+        "E0C15B83.4B031CFB.CA269782.D4470D62": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalcolumn_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.53955304623*0.0*0.0*0.0|0.0*1.53955304623*0.0*0.0|0.0*0.0*1.53955304623*0.0|243.898803711*215.3046875*-47.9081954956*1.0", 
+            "path": "models/city/props/filtration_station/metalcolumn_x3.model"
+        }, 
+        "FB1EE58F.424C9142.48642BA8.B5181FA2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalcolumn_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.53955197334*0.0*0.0*0.0|0.0*1.53955197334*0.0*0.0|0.0*0.0*1.53955197334*0.0|224.560897827*215.218276978*-47.9081802368*1.0", 
+            "path": "models/city/props/filtration_station/metalcolumn_x3.model"
+        }
+    }, 
+    "spawn_transform": "1.53955197334*0.0*0.0*0.0|0.0*1.53955197334*0.0*0.0|0.0*0.0*1.53955197334*0.0|224.560897827*215.218276978*-47.9081802368*1.0"
+}

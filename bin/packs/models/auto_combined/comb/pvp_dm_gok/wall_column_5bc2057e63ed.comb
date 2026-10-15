@@ -1,0 +1,158 @@
+{
+    "firstguid": "F80B9BD4.45AD35D4.EBCC47A5.135F9817", 
+    "models": {
+        "2228F0C6.4C009C0B.64AF7EA0.199CB9C3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "22/07/2024", 
+                "description": "wall_column", 
+                "modified by": "ice_c", 
+                "modified on": "22/07/2024"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508796215*0.0*0.0*0.0|0.0*1.748939991*0.0*0.0|0.0*0.0*1.51509404182*0.0|33.9840278625*13.2005033493*69.5249328613*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "31E3E783.4931721F.DFDADA90.24233FEA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "wall_column", 
+                "modified by": "ice_c", 
+                "modified on": "22/07/2024"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508796215*0.0*0.0*0.0|0.0*1.748939991*0.0*0.0|0.0*0.0*1.51509404182*0.0|42.9279441833*13.2005052567*69.5249481201*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "3A569276.4EC7E56D.C5BADA8A.38D66B4A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "wall_column", 
+                "modified by": "ice_c", 
+                "modified on": "22/07/2024"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508402824*0.0*0.0*0.0|0.0*1.7486230135*0.0*0.0|0.0*0.0*1.51509201527*0.0|42.9239425659*13.1991672516*64.9739532471*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "43439743.4BA797EC.1C16AF84.4BEEDD16": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "wall_column", 
+                "modified by": "ice_c", 
+                "modified on": "22/07/2024"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508796215*0.0*0.0*0.0|0.0*1.73632705212*0.0*0.0|0.0*0.0*1.51508998871*0.0|47.4299430847*13.2005052567*69.5379486084*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "47CEE4E7.4D1CA484.724386BA.F9038023": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "wall_column", 
+                "modified by": "ice_c", 
+                "modified on": "22/07/2024"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508498192*0.0*0.0*0.0|0.0*1.7321959734*0.0*0.0|0.0*0.0*1.51508796215*0.0|56.2545394897*13.200217247*69.5676956177*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "8363FEF3.400DC425.3958BCBD.B2409EB0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "wall_column", 
+                "modified by": "ice_c", 
+                "modified on": "22/07/2024"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508200169*0.0*0.0*0.0|0.0*1.73188102245*0.0*0.0|0.0*0.0*1.5150860548*0.0|56.2509346008*13.1991672516*65.0509567261*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "B48D8D21.4A64B373.00CF65AA.3327A3D7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "wall_column", 
+                "modified by": "ice_c", 
+                "modified on": "22/07/2024"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508402824*0.0*0.0*0.0|0.0*1.73601198196*0.0*0.0|0.0*0.0*1.51508700848*0.0|47.426940918*13.1991672516*64.9639511108*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "F80B9BD4.45AD35D4.EBCC47A5.135F9817": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "wall_column", 
+                "modified by": "ice_c", 
+                "modified on": "22/07/2024"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508200169*0.0*0.0*0.0|0.0*1.82843995094*0.0*0.0|0.0*0.0*1.51508700848*0.0|33.6669578552*13.018696785*65.0659561157*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }
+    }, 
+    "spawn_transform": "1.51508200169*0.0*0.0*0.0|0.0*1.82843995094*0.0*0.0|0.0*0.0*1.51508700848*0.0|33.6669578552*13.018696785*65.0659561157*1.0"
+}

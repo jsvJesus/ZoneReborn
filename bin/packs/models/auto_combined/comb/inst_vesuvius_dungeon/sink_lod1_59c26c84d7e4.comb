@@ -1,0 +1,56 @@
+{
+    "models": {
+        "568E3461.468FED09.4E7BE6B2.5AB44DFE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "sink_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|-0.999997973442*0.0*0.0*0.0|345.963653564*212.999679565*-74.32837677*1.0", 
+            "path": "models/misc/furniture/wc/sink_lod1.model"
+        }, 
+        "69C50055.4DF4A8F8.1367B989.12E8B6D7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "sink_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|345.963775635*212.999740601*-70.2035827637*1.0", 
+            "path": "models/misc/furniture/wc/sink_lod1.model"
+        }, 
+        "7D2C759D.41545ABA.A3FA7EA7.CD2484A8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "sink_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|345.9637146*212.999710083*-72.9469528198*1.0", 
+            "path": "models/misc/furniture/wc/sink_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|345.963775635*212.999740601*-70.2035827637*1.0"
+}

@@ -1,0 +1,59 @@
+{
+    "models": {
+        "218AB1B5.4F70B362.3FABF0BA.B82C27D4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "b821d3dai@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "mushrooms_5", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.00463700015098*-0.271809995174*-0.232121005654*0.0|0.357394993305*-6.00000021223e-06*-0.00713300006464*0.0|0.0054199998267*-0.232167005539*0.271755993366*0.0|260.942199707*176.1925354*-108.365203857*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_5/mushrooms_5.model"
+        }, 
+        "784AE710.496DD67E.D1FD6790.D663931A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "b821d3dai@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "mushrooms_5", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.373410999775*0.0*-0.271299004555*0.0|0.0*0.461560994387*0.0*0.0|0.271299004555*0.0*-0.373410999775*0.0|261.649078369*175.999450684*-108.594093323*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_5/mushrooms_5.model"
+        }, 
+        "7C3CFFEB.46E531E7.8C6E04AB.EE444724": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "b821d3dai@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "mushrooms_5", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.520240008831*-0.42398801446*1.99999999495e-06*0.0|3.00000010611e-06*-9.99999997475e-07*0.671130001545*0.0|-0.42398801446*0.520240008831*1.99999999495e-06*0.0|261.013275146*176.314727783*-108.869667053*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_5/mushrooms_5.model"
+        }
+    }, 
+    "spawn_transform": "-0.00463700015098*-0.271809995174*-0.232121005654*0.0|0.357394993305*-6.00000021223e-06*-0.00713300006464*0.0|0.0054199998267*-0.232167005539*0.271755993366*0.0|260.942199707*176.1925354*-108.365203857*1.0"
+}

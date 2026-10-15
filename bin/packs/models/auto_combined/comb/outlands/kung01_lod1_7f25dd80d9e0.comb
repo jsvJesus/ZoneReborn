@@ -1,0 +1,38 @@
+{
+    "firstguid": "3D77E937.45DE62B0.FB1E9EA9.872AFF6D", 
+    "models": {
+        "3D77E937.45DE62B0.FB1E9EA9.872AFF6D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00110006o@outlands@0x000001649BEE0050", 
+                "created by": "sergey_busygin", 
+                "created on": "12/05/2021", 
+                "description": "kung01_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "12/05/2021"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.00642499979585*0.0116459997371*1.31524395943*0.0|6.5000000177e-05*1.31526005268*-0.011645000428*0.0|-1.315294981*9.00000031834e-06*-0.00642499979585*0.0|1765.82263184*-0.923564970493*610.629699707*1.0", 
+            "path": "models/transport/heavy/kung01_lod1.model"
+        }, 
+        "6410FF74.442174F8.AF17CD96.645EB194": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00110006o@outlands@0x000001649BEE0050", 
+                "created by": "sergey_busygin", 
+                "created on": "12/05/2021", 
+                "description": "kung01_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "11/06/2021"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.30237996578*-0.00155899999663*-0.183953002095*0.0|0.0173920001835*1.30832600594*-0.134231001139*0.0|0.183135002851*-0.135343000293*-1.29544603825*0.0|1771.82397461*-1.51569199562*611.868591309*1.0", 
+            "path": "models/transport/heavy/kung01_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-0.00642499979585*0.0116459997371*1.31524395943*0.0|6.5000000177e-05*1.31526005268*-0.011645000428*0.0|-1.315294981*9.00000031834e-06*-0.00642499979585*0.0|1765.82263184*-0.923564970493*610.629699707*1.0"
+}

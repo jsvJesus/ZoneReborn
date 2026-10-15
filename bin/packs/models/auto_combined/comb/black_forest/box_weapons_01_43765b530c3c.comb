@@ -1,0 +1,54 @@
+{
+    "firstguid": "23976805.4804C847.7C0C7AA1.F71AE8DC", 
+    "models": {
+        "23976805.4804C847.7C0C7AA1.F71AE8DC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "4bd0effdi@black_forest@0x000002430D0AC120", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/11/2025", 
+                "description": "box_weapons_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999162912369*-1.1399999833e-09*-0.0409150086343*0.0|-4.20540011703e-08*1.0*8.85052031663e-10*0.0|0.0409150086343*0.0*0.999162912369*0.0|-1435.32678223*1.72792363167*608.696044922*1.0", 
+            "path": "models/misc/containers/box_weapons_01.model"
+        }, 
+        "5BB941CC.482DA05E.5442E29F.57082E93": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "4bd0effdi@black_forest@0x000002430D0AC120", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/11/2025", 
+                "description": "box_weapons_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.00000035763*-4.20540011703e-08*-4.47034835815e-08*0.0|-4.20540011703e-08*1.0*8.85052031663e-10*0.0|4.47034835815e-08*8.84028850123e-10*1.00000035763*0.0|-1435.02832031*1.37664747238*608.677062988*1.0", 
+            "path": "models/misc/containers/box_weapons_01.model"
+        }, 
+        "79EAA7C5.42292830.DC50EEB6.AD71225C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "4bd0effdi@black_forest@0x000002430D0AC120", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/11/2025", 
+                "description": "box_weapons_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999162912369*-1.1399999833e-09*-0.0409150086343*0.0|-4.20540011703e-08*1.0*8.85052031663e-10*0.0|0.0409150086343*0.0*0.999162912369*0.0|-1435.95495605*1.37664651871*608.713623047*1.0", 
+            "path": "models/misc/containers/box_weapons_01.model"
+        }
+    }, 
+    "spawn_transform": "0.999162912369*-1.1399999833e-09*-0.0409150086343*0.0|-4.20540011703e-08*1.0*8.85052031663e-10*0.0|0.0409150086343*0.0*0.999162912369*0.0|-1435.32678223*1.72792363167*608.696044922*1.0"
+}

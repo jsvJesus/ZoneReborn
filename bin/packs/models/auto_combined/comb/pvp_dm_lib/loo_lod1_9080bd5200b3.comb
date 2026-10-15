@@ -1,0 +1,108 @@
+{
+    "firstguid": "C4D820D6.4F841CD4.131F378E.725C0CEC", 
+    "models": {
+        "1BD8FDC7.460FB1F9.BF09D08F.221FE485": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "loo_cracked_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.0*0.000345000007655*0.0*0.0|-0.000345000007655*1.0*0.0*0.0|0.0*0.0*1.0*0.0|30.6042098999*-2.00000022232e-06*69.9200744629*1.0", 
+            "path": "models/misc/furniture/wc/loo_cracked_lod1.model"
+        }, 
+        "1D5C0928.4087873D.9E76BB9F.DD80096E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "loo_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|28.9330177307*-3.00000010611e-06*69.9255828857*1.0", 
+            "path": "models/misc/furniture/wc/loo_lod1.model"
+        }, 
+        "5A976CCD.4A6BEF0A.AC50A2AE.2252DA64": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "loo_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|22.3737697601*-3.00000010611e-06*69.9383392334*1.0", 
+            "path": "models/misc/furniture/wc/loo_lod1.model"
+        }, 
+        "A808E1EE.4628BEAF.6E79958D.76F44938": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "loo_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|25.6403617859*-3.00000010611e-06*69.9593505859*1.0", 
+            "path": "models/misc/furniture/wc/loo_lod1.model"
+        }, 
+        "C4D820D6.4F841CD4.131F378E.725C0CEC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "loo_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|27.3490447998*-2.00000022232e-06*69.9580993652*1.0", 
+            "path": "models/misc/furniture/wc/loo_lod1.model"
+        }, 
+        "F321F309.49054DD7.AB454B98.B9B34F66": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "loo_cracked_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.0*0.000345000007655*0.0*0.0|-0.000345000007655*1.0*0.0*0.0|0.0*0.0*1.0*0.0|24.0253639221*-3.00000010611e-06*69.9618682861*1.0", 
+            "path": "models/misc/furniture/wc/loo_cracked_lod1.model"
+        }
+    }, 
+    "spawn_transform": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|27.3490447998*-2.00000022232e-06*69.9580993652*1.0"
+}

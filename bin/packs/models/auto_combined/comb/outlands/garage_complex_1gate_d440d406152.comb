@@ -1,0 +1,70 @@
+{
+    "firstguid": "68E9087E.4877DDDC.896EE0B4.8A0ED2EC", 
+    "models": {
+        "0C18421D.45EABE13.2E87A7A2.39554D86": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00100009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "10/11/2021", 
+                "description": "garage_complex_1gate", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.40263199806*0.0*0.0*0.0|0.0*1.40263199806*0.0*0.0|0.0*0.0*-1.40263199806*0.0|1639.2532959*18.5646018982*951.098388672*1.0", 
+            "path": "models/buildings/common/garages/garage_complex_1gate.model"
+        }, 
+        "33F43EC2.4728DF05.F91F62B9.8B88749E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00100009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "10/11/2021", 
+                "description": "garage_complex_1gate", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.40263199806*0.0*0.0*0.0|0.0*1.40263199806*0.0*0.0|0.0*0.0*-1.40263199806*0.0|1625.24206543*18.5646018982*951.098205566*1.0", 
+            "path": "models/buildings/common/garages/garage_complex_1gate.model"
+        }, 
+        "68E9087E.4877DDDC.896EE0B4.8A0ED2EC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00100009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "10/11/2021", 
+                "description": "garage_complex_1gate", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.40263104439*0.0*0.0*0.0|0.0*1.40263104439*0.0*0.0|0.0*0.0*-1.40263104439*0.0|1646.26611328*18.5645942688*951.098327637*1.0", 
+            "path": "models/buildings/common/garages/garage_complex_1gate.model"
+        }, 
+        "92607BB8.411B877E.E83C2481.6D6AD699": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00100009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "10/11/2021", 
+                "description": "garage_complex_1gate", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.40263199806*0.0*0.0*0.0|0.0*1.40263199806*0.0*0.0|0.0*0.0*-1.40263199806*0.0|1632.24023438*18.5646095276*951.098449707*1.0", 
+            "path": "models/buildings/common/garages/garage_complex_1gate.model"
+        }
+    }, 
+    "spawn_transform": "-1.40263104439*0.0*0.0*0.0|0.0*1.40263104439*0.0*0.0|0.0*0.0*-1.40263104439*0.0|1646.26611328*18.5645942688*951.098327637*1.0"
+}

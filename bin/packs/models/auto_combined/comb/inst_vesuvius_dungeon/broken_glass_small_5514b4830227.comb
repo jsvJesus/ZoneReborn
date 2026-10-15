@@ -1,0 +1,54 @@
+{
+    "firstguid": "2DF7F3A6.4FB2C0F3.66F5F8B5.2FFADFF8", 
+    "models": {
+        "2DF7F3A6.4FB2C0F3.66F5F8B5.2FFADFF8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fa4a41e6i@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "28/02/2024", 
+                "description": "broken_glass_small", 
+                "modified by": "ice_c", 
+                "modified on": "28/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.484809011221*0.0*0.874619007111*0.0|0.0*1.0*0.0*0.0|-0.874619007111*0.0*-0.484809011221*0.0|297.402160645*212.999816895*-49.4202728271*1.0", 
+            "path": "models/misc/garbage/broken_glass_small.model"
+        }, 
+        "B2B3F7A2.428C9B13.8CBAF993.6BD8DB86": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fa4a41e6i@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "28/02/2024", 
+                "description": "broken_glass_small", 
+                "modified by": "ice_c", 
+                "modified on": "28/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.017451999709*0.0*0.999845981598*0.0|0.0*1.0*0.0*0.0|-0.999845981598*0.0*0.017451999709*0.0|299.915924072*212.999862671*-50.6905822754*1.0", 
+            "path": "models/misc/garbage/broken_glass_small.model"
+        }, 
+        "B99924E9.4C032C62.23B5F19A.E0C6BCC3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fa4a41e6i@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "28/02/2024", 
+                "description": "broken_glass_small", 
+                "modified by": "ice_c", 
+                "modified on": "28/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.017451999709*0.0*0.999845981598*0.0|0.0*1.0*0.0*0.0|-0.999845981598*0.0*0.017451999709*0.0|301.20880127*212.999893188*-42.6292915344*1.0", 
+            "path": "models/misc/garbage/broken_glass_small.model"
+        }
+    }, 
+    "spawn_transform": "-0.484809011221*0.0*0.874619007111*0.0|0.0*1.0*0.0*0.0|-0.874619007111*0.0*-0.484809011221*0.0|297.402160645*212.999816895*-49.4202728271*1.0"
+}

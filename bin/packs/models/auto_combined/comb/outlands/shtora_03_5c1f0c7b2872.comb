@@ -1,0 +1,70 @@
+{
+    "firstguid": "60F573B1.4D5B080F.EAAD0D82.8B86BD0D", 
+    "models": {
+        "1FC1B20B.403B24B7.F505FEB8.3BB52B3F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/262848bfi@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "31/08/2021", 
+                "description": "shtora_03", 
+                "modified by": "Home", 
+                "modified on": "05/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.8999998651e-05*-0.0115510001779*-0.99993699789*0.0|-1.00002598763*0.000114000002213*3.70000016119e-05*0.0|0.000157999995281*1.39006996155*-0.0160579998046*0.0|1647.95153809*21.3061065674*934.479003906*1.0", 
+            "path": "models/misc/furniture/shtora_03.model"
+        }, 
+        "60F573B1.4D5B080F.EAAD0D82.8B86BD0D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/262848bfi@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "31/08/2021", 
+                "description": "shtora_03", 
+                "modified by": "Home", 
+                "modified on": "05/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "3.8999998651e-05*-0.0115510001779*0.999935984612*0.0|1.00002396107*0.000114000002213*-3.70000016119e-05*0.0|-0.000157999995281*1.3900680542*0.0160579998046*0.0|1640.53381348*21.379327774*938.080871582*1.0", 
+            "path": "models/misc/furniture/shtora_03.model"
+        }, 
+        "6DBDDE35.419B5395.6B58BCBD.FE678F81": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/262848bfi@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "31/08/2021", 
+                "description": "shtora_03", 
+                "modified by": "Home", 
+                "modified on": "05/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999935984612*-0.0115510001779*-3.8999998651e-05*0.0|-3.70000016119e-05*0.000114000002213*-1.00002598763*0.0|0.0160579998046*1.39006996155*0.000157999995281*0.0|1646.06982422*21.4234371185*939.992126465*1.0", 
+            "path": "models/misc/furniture/shtora_03.model"
+        }, 
+        "92DD12F3.47DE8B20.73638092.24D610C2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/262848bfi@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "31/08/2021", 
+                "description": "shtora_03", 
+                "modified by": "Home", 
+                "modified on": "05/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999934971333*-0.0115510001779*-3.8999998651e-05*0.0|-3.70000016119e-05*0.000114000002213*-1.00002503395*0.0|0.0160579998046*1.3900680542*0.000157999995281*0.0|1642.09851074*21.33735466*939.992919922*1.0", 
+            "path": "models/misc/furniture/shtora_03.model"
+        }
+    }, 
+    "spawn_transform": "3.8999998651e-05*-0.0115510001779*0.999935984612*0.0|1.00002396107*0.000114000002213*-3.70000016119e-05*0.0|-0.000157999995281*1.3900680542*0.0160579998046*0.0|1640.53381348*21.379327774*938.080871582*1.0"
+}

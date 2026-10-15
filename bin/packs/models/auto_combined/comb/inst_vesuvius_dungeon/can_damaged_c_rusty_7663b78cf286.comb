@@ -1,0 +1,39 @@
+{
+    "models": {
+        "55E3505F.44F8BC2B.19B77481.08650879": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "a86494b5i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "25/04/2024", 
+                "description": "can_damaged_c_rusty", 
+                "modified by": "ice_c", 
+                "modified on": "25/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.996194005013*0.0*-0.0871559977531*0.0|0.0*1.0*0.0*0.0|0.0871559977531*0.0*-0.996194005013*0.0|525.836730957*171.999801636*-123.37940979*1.0", 
+            "path": "models/misc/furniture/food/can_damaged_c_rusty.model"
+        }, 
+        "B50984D7.4A62CB65.8C02C29D.9D20E144": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "a86494b5i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "25/04/2024", 
+                "description": "can_damaged_c_rusty", 
+                "modified by": "ice_c", 
+                "modified on": "25/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.754709005356*0.0*-0.656059026718*0.0|0.0*1.0*0.0*0.0|0.656059026718*0.0*0.754709005356*0.0|526.225402832*171.999801636*-125.215103149*1.0", 
+            "path": "models/misc/furniture/food/can_damaged_c_rusty.model"
+        }
+    }, 
+    "spawn_transform": "-0.996194005013*0.0*-0.0871559977531*0.0|0.0*1.0*0.0*0.0|0.0871559977531*0.0*-0.996194005013*0.0|525.836730957*171.999801636*-123.37940979*1.0"
+}

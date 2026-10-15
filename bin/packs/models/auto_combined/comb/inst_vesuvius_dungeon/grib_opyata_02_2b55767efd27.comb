@@ -1,0 +1,53 @@
+{
+    "models": {
+        "447040A3.4CB70BEA.8FB815A4.3653FA28": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "f48d75bei@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "06/06/2024", 
+                "description": "grib_opyata_02", 
+                "modified by": "ice_c", 
+                "modified on": "06/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.944095015526*-0.101511001587*0.313652992249*0.0|0.0912790000439*0.994706988335*0.0471780002117*0.0|-0.316781997681*-0.0159109998494*0.948364019394*0.0|271.197937012*175.626556396*-114.13860321*1.0", 
+            "path": "models/entities/flora/grib_opyata_02.model"
+        }, 
+        "6D728D60.4DC0E198.C5751B8F.CAC5F977": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "f48d75bei@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "grib_opyata_02", 
+                "modified by": "ice_c", 
+                "modified on": "06/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.885770976543*0.274708986282*0.285432994366*0.0|0.259232014418*0.930598020554*-0.0911709964275*0.0|-0.299558997154*-0.00697100022808*-0.922899007797*0.0|271.498046875*175.573013306*-116.900405884*1.0", 
+            "path": "models/entities/flora/grib_opyata_02.model"
+        }, 
+        "74F0C115.4CFBBA9A.ACA99987.F184F6E2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "f48d75bei@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "grib_opyata_02", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.207911998034*0.0*0.978146970272*0.0|0.0*1.0*0.0*0.0|-0.978146970272*0.0*-0.207911998034*0.0|273.595703125*175.046051025*-115.754737854*1.0", 
+            "path": "models/entities/flora/grib_opyata_02.model"
+        }
+    }, 
+    "spawn_transform": "0.944095015526*-0.101511001587*0.313652992249*0.0|0.0912790000439*0.994706988335*0.0471780002117*0.0|-0.316781997681*-0.0159109998494*0.948364019394*0.0|271.197937012*175.626556396*-114.13860321*1.0"
+}

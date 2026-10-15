@@ -1,0 +1,106 @@
+{
+    "firstguid": "04239FCA.40FCF406.9D6B20B9.AF5A5E5A", 
+    "models": {
+        "04239FCA.40FCF406.9D6B20B9.AF5A5E5A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "11/07/2024", 
+                "description": "wall_cut", 
+                "modified by": "ice_c", 
+                "modified on": "22/07/2024"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "-1.9049539566*0.0*0.0*0.0|0.0*1.57999300957*0.0*0.0|0.0*0.0*-1.63299095631*0.0|44.7817687988*1.00576996803*36.5610046387*1.0", 
+            "path": "models/city/props/filtration_station/wall_cut.model"
+        }, 
+        "2D2C3267.4E825499.FC82EE82.D6B53692": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "wall_short", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "-1.78208804131*0.0*0.0*0.0|0.0*1.57999300957*0.0*0.0|0.0*0.0*-1.63299000263*0.0|50.1259918213*1.00577104092*36.5609855652*1.0", 
+            "path": "models/city/props/filtration_station/wall_short.model"
+        }, 
+        "6691C735.42EA09B3.89AF40B2.20865F75": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "wall_long", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "-1.63299095631*0.0*0.0*0.0|0.0*1.57955300808*0.0*0.0|0.0*0.0*-1.63299095631*0.0|59.9176368713*1.00578200817*36.5609855652*1.0", 
+            "path": "models/city/props/filtration_station/wall_long.model"
+        }, 
+        "C450C30F.4BA691B0.83E3979D.872E9279": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "wall_long", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "0.0*0.0*-1.39035999775*0.0|0.0*1.57954895496*0.0*0.0|21.226234436*0.0*-9.99999997475e-07*0.0|54.8273239136*1.00000202656*40.0194625854*1.0", 
+            "path": "models/city/props/filtration_station/wall_long.model"
+        }, 
+        "FD0DE233.46BF10EE.29B814BD.B35FD264": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "17/07/2020", 
+                "description": "wall_short", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "-1.17315495014*0.000410000007832*0.0*0.0|0.000546000024769*1.59823405743*0.0*0.0|0.0*0.0*-1.6329870224*0.0|58.9327926636*1.00000298023*40.2848052979*1.0", 
+            "path": "models/city/props/filtration_station/wall_short.model"
+        }
+    }, 
+    "spawn_transform": "-1.9049539566*0.0*0.0*0.0|0.0*1.57999300957*0.0*0.0|0.0*0.0*-1.63299095631*0.0|44.7817687988*1.00576996803*36.5610046387*1.0"
+}

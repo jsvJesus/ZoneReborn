@@ -1,0 +1,43 @@
+{
+    "models": {
+        "45DFCCE0.474A4448.0082F3BE.D0E063AA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "bd65fbcai@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "wooden_box_cap", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {
+                "wood_box": "default"
+            }, 
+            "matrix": "-0.990266978741*0.0*0.139173001051*0.0|0.0*0.999998986721*0.0*0.0|-0.139173001051*0.0*-0.990266978741*0.0|274.299743652*213.117965698*-18.8704490662*1.0", 
+            "path": "models/props/warehouse/wooden_box_cap.model"
+        }, 
+        "72E44D13.40F2686B.332B83A9.8FD0BAF2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "bd65fbcai@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "wooden_box_cap", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {
+                "wood_box": "default"
+            }, 
+            "matrix": "-0.207911998034*0.0*-0.978146970272*0.0|0.0*1.0*0.0*0.0|0.978146970272*0.0*-0.207911998034*0.0|274.240142822*213.118347168*-19.3962478638*1.0", 
+            "path": "models/props/warehouse/wooden_box_cap.model"
+        }
+    }, 
+    "spawn_transform": "-0.207911998034*0.0*-0.978146970272*0.0|0.0*1.0*0.0*0.0|0.978146970272*0.0*-0.207911998034*0.0|274.240142822*213.118347168*-19.3962478638*1.0"
+}

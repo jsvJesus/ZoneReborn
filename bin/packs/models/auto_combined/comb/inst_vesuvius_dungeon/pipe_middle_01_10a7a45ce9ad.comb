@@ -1,0 +1,41 @@
+{
+    "models": {
+        "444F5AA0.44F9F1B8.6CF22589.ADC2D8C6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "pipe_middle_01", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.11947703362*-0.461894005537*-0.348957002163*0.0|-0.458537012339*1.17123997211*-0.0792889967561*0.0|0.353358000517*0.0565319992602*-1.20842301846*0.0|327.586273193*178.910583496*-124.670074463*1.0", 
+            "path": "models/props/water_and_sewer/sewer/pipe_middle_01.model"
+        }, 
+        "BAAB641D.4AF5F2BA.FCBC74A8.60C7F51F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "31/05/2024", 
+                "description": "pipe_middle_01", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.23300302029*-0.249897003174*-0.0748599991202*0.0|-0.249438002706*1.23527300358*-0.0151439998299*0.0|0.0763769969344*0.0*-1.25797998905*0.0|339.945831299*181.14956665*-125.292388916*1.0", 
+            "path": "models/props/water_and_sewer/sewer/pipe_middle_01.model"
+        }
+    }, 
+    "spawn_transform": "-1.11947703362*-0.461894005537*-0.348957002163*0.0|-0.458537012339*1.17123997211*-0.0792889967561*0.0|0.353358000517*0.0565319992602*-1.20842301846*0.0|327.586273193*178.910583496*-124.670074463*1.0"
+}

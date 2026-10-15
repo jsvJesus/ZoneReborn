@@ -1,0 +1,39 @@
+{
+    "models": {
+        "E81E1793.46098EA0.827831B6.22A31642": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "hood01", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|281.237304688*216.191894531*-27.4926643372*1.0", 
+            "path": "models/misc/furniture/kitchen/hood01.model"
+        }, 
+        "EFF0AF04.4E96C978.DB664691.EF7B08EA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "hood01", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|281.23739624*216.191955566*-29.2295513153*1.0", 
+            "path": "models/misc/furniture/kitchen/hood01.model"
+        }
+    }, 
+    "spawn_transform": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|281.237304688*216.191894531*-27.4926643372*1.0"
+}

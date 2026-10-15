@@ -1,0 +1,41 @@
+{
+    "models": {
+        "3091C0DB.42FFBBA6.94A1FE81.01EB4740": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "792fbb03i@inst_vesuvius_dungeon@0x000001F197883D60", 
+                "created by": "ice_c", 
+                "created on": "27/04/2024", 
+                "description": "mushrooms_5", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.949639976025*0.426795005798*0.0*0.0|0.0*0.0*1.04113900661*0.0|0.426795005798*-0.949639976025*0.0*0.0|480.707305908*174.423110962*-126.869857788*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_5/mushrooms_5.model"
+        }, 
+        "C32D791B.4A1776E4.BAFCA6BC.23374D01": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "792fbb03i@inst_vesuvius_dungeon@0x000001F197883D60", 
+                "created by": "ice_c", 
+                "created on": "27/04/2024", 
+                "description": "mushrooms_5", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.484540998936*0.0*-0.950964987278*0.0|0.0*1.06729197502*0.0*0.0|0.950964987278*0.0*0.484540998936*0.0|489.515777588*168.999694824*-125.809608459*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_5/mushrooms_5.model"
+        }
+    }, 
+    "spawn_transform": "0.949639976025*0.426795005798*0.0*0.0|0.0*0.0*1.04113900661*0.0|0.426795005798*-0.949639976025*0.0*0.0|480.707305908*174.423110962*-126.869857788*1.0"
+}

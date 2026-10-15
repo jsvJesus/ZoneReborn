@@ -1,0 +1,38 @@
+{
+    "firstguid": "1B6FEA9D.4D9FB811.DD8D99A6.0C62AEE7", 
+    "models": {
+        "1B6FEA9D.4D9FB811.DD8D99A6.0C62AEE7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "49c0d282i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "17/11/2025", 
+                "description": "kettlebell_02", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.19920790195*-0.00183707452379*1.74716114998e-06*0.0|0.00183663528878*1.19920802116*-9.46846048464e-05*0.0|-1.55717134476e-06*9.45499996305e-05*1.19921004772*0.0|-1418.56555176*1.04508697987*589.910461426*1.0", 
+            "path": "models/misc/furniture/sport/kettlebell_02.model"
+        }, 
+        "88D02998.4CE14E17.73A446AB.D0E91267": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "49c0d282i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "17/11/2025", 
+                "description": "kettlebell_02", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.971776485443*-0.00147053180262*0.235897123814*0.0|0.00153198477346*0.99999922514*-7.86163654993e-05*0.0|-0.23589655757*0.000437370443251*0.971778213978*0.0|-1418.52062988*1.04503262043*590.096008301*1.0", 
+            "path": "models/misc/furniture/sport/kettlebell_02.model"
+        }
+    }, 
+    "spawn_transform": "1.19920790195*-0.00183707452379*1.74716114998e-06*0.0|0.00183663528878*1.19920802116*-9.46846048464e-05*0.0|-1.55717134476e-06*9.45499996305e-05*1.19921004772*0.0|-1418.56555176*1.04508697987*589.910461426*1.0"
+}

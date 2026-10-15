@@ -1,0 +1,63 @@
+{
+    "firstguid": "7143C2DA.4069F02E.DB85548E.B894777C", 
+    "models": {
+        "3A27CA07.4D47CAE9.EC858B8A.C809628A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "DEFI", 
+                "created on": "13/07/2020", 
+                "description": "gok_wall_3x3", 
+                "modified by": "DEFI", 
+                "modified on": "13/07/2020"
+            }, 
+            "dyes": {
+                "default": "ceiling"
+            }, 
+            "matrix": "0.0*0.0*-1.99998795986*0.0|-1.61357200146*0.0*0.0*0.0|0.0*0.038842998445*0.0*0.0|33.6775779724*17.4147605896*63.5499687195*1.0", 
+            "path": "models/props/industrial/gok_wall_3x3.model"
+        }, 
+        "7143C2DA.4069F02E.DB85548E.B894777C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "DEFI", 
+                "created on": "13/07/2020", 
+                "description": "gok_wall_3x3", 
+                "modified by": "DEFI", 
+                "modified on": "13/07/2020"
+            }, 
+            "dyes": {
+                "default": "ceiling"
+            }, 
+            "matrix": "0.0*0.0*-2.56298398972*0.0|-1.6135699749*0.0*0.0*0.0|0.0*0.038842998445*0.0*0.0|33.6775856018*17.4147453308*57.4539718628*1.0", 
+            "path": "models/props/industrial/gok_wall_3x3.model"
+        }, 
+        "EF3A0C95.42429724.F10D028A.4AF988B4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "DEFI", 
+                "created on": "13/07/2020", 
+                "description": "gok_wall_3x3", 
+                "modified by": "DEFI", 
+                "modified on": "13/07/2020"
+            }, 
+            "dyes": {
+                "default": "ceiling"
+            }, 
+            "matrix": "0.0*0.0*-1.99998795986*0.0|-1.61357200146*0.0*0.0*0.0|0.0*0.038842998445*0.0*0.0|33.6775665283*17.4147644043*69.6458587646*1.0", 
+            "path": "models/props/industrial/gok_wall_3x3.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-2.56298398972*0.0|-1.6135699749*0.0*0.0*0.0|0.0*0.038842998445*0.0*0.0|33.6775856018*17.4147453308*57.4539718628*1.0"
+}

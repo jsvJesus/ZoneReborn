@@ -1,0 +1,74 @@
+{
+    "firstguid": "F921A81D.4BC27BB3.4F97EAA9.C66BF682", 
+    "models": {
+        "36432F76.4FB70443.A6C1E19A.16D7D17A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "tin_big", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.000487999990582*0.0|0.0*-0.000487999990582*0.999998986721*0.0|37.5816764832*1.00000095367*63.7964744568*1.0", 
+            "path": "models/misc/furniture/village/tin_big.model"
+        }, 
+        "3DAACAE0.4538CDBC.6D777DB3.A6A49127": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "tin_large", 
+                "modified by": "anna_beyzler", 
+                "modified on": "17/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|35.9017410278*1.00578594208*65.2675476074*1.0", 
+            "path": "models/misc/furniture/village/tin_large.model"
+        }, 
+        "9268C39F.4559CFB9.AE96ED95.068E75DE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "tin_large", 
+                "modified by": "anna_beyzler", 
+                "modified on": "17/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|36.6454429626*1.00578594208*59.6102981567*1.0", 
+            "path": "models/misc/furniture/village/tin_large.model"
+        }, 
+        "F921A81D.4BC27BB3.4F97EAA9.C66BF682": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "tin_large", 
+                "modified by": "anna_beyzler", 
+                "modified on": "17/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|36.2946662903*1.00578594208*59.3052978516*1.0", 
+            "path": "models/misc/furniture/village/tin_large.model"
+        }
+    }, 
+    "spawn_transform": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|36.2946662903*1.00578594208*59.3052978516*1.0"
+}

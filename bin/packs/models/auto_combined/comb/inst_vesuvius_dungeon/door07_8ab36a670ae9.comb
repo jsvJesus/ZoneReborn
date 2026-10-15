@@ -1,0 +1,56 @@
+{
+    "models": {
+        "80D70F53.4405A75C.2FF5E6AB.7B3C0D20": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "door07", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.39266499877*-0.0794660001993*-0.916253983974*0.0|-0.0457260012627*1.00621700287*-0.106865003705*0.0|1.02933204174*0.0927710011601*0.433079004288*0.0|285.109344482*212.966323853*-21.6155052185*1.0", 
+            "path": "models/buildings/doors/door07.model"
+        }, 
+        "A74F0E2C.429004A6.F89E00BA.75C97759": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "door07", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.707116007805*0.0*-0.707116007805*0.0|0.0*1.01291000843*0.0*0.0|0.792366981506*0.0*-0.792367994785*0.0|284.570770264*212.999801636*-24.1887321472*1.0", 
+            "path": "models/buildings/doors/door07.model"
+        }, 
+        "FC02FC59.4CE52BC5.B930DA83.54025C7C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "door07", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.126305997372*-0.991423010826*-0.0338819995522*0.0|0.969983994961*0.132458001375*-0.259941011667*0.0|0.290066987276*-3.60000012734e-05*1.08238101006*0.0|278.61428833*213.084091187*-25.4392127991*1.0", 
+            "path": "models/buildings/doors/door07.model"
+        }
+    }, 
+    "spawn_transform": "0.39266499877*-0.0794660001993*-0.916253983974*0.0|-0.0457260012627*1.00621700287*-0.106865003705*0.0|1.02933204174*0.0927710011601*0.433079004288*0.0|285.109344482*212.966323853*-21.6155052185*1.0"
+}

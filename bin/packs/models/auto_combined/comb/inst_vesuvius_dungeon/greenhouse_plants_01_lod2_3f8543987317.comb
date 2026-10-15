@@ -1,0 +1,39 @@
+{
+    "models": {
+        "D734DAA1.4FAA8AE3.386D9A98.FE9AC115": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "14/05/2024", 
+                "description": "greenhouse_plants_01_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.573575973511*0.0*-0.819151997566*0.0|0.0*1.0*0.0*0.0|0.819151997566*0.0*0.573575973511*0.0|444.375915527*170.898147583*-98.6024780273*1.0", 
+            "path": "models/misc/furniture/greenhouse/greenhouse_plants_01_lod2.model"
+        }, 
+        "E58561D3.4351C536.B57C17AF.7F28390B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "14/05/2024", 
+                "description": "greenhouse_plants_01_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.791613996029*-1.99999999495e-06*-0.611020028591*0.0|-1.99999999495e-06*0.999998986721*-9.99999997475e-07*0.0|0.611020028591*0.0*-0.791613996029*0.0|422.665710449*170.898147583*-107.34752655*1.0", 
+            "path": "models/misc/furniture/greenhouse/greenhouse_plants_01_lod2.model"
+        }
+    }, 
+    "spawn_transform": "-0.791613996029*-1.99999999495e-06*-0.611020028591*0.0|-1.99999999495e-06*0.999998986721*-9.99999997475e-07*0.0|0.611020028591*0.0*-0.791613996029*0.0|422.665710449*170.898147583*-107.34752655*1.0"
+}

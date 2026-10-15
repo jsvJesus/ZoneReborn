@@ -1,0 +1,39 @@
+{
+    "models": {
+        "664CD248.4F7EBE77.D06382AC.1C859CAB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "22/04/2024", 
+                "description": "barrier_stakes_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.481135994196*0.0830610021949*-0.872700989246*0.0|0.0629639998078*0.996203005314*0.0601020008326*0.0|0.874379992485*-0.0260320007801*-0.484539985657*0.0|508.532958984*178.102416992*-49.03150177*1.0", 
+            "path": "models/props/blockpost/barrier_stakes_lod1.model"
+        }, 
+        "B15A7EDB.4C40D002.B1F7BDAA.5DDF3268": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "22/04/2024", 
+                "description": "barrier_stakes_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.104708001018*-0.00242500007153*-0.99449801445*0.0|0.0205569993705*0.999786973*-0.000273999990895*0.0|0.994288980961*-0.0204160008579*0.104736000299*0.0|509.489044189*178.03427124*-44.4236373901*1.0", 
+            "path": "models/props/blockpost/barrier_stakes_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-0.481135994196*0.0830610021949*-0.872700989246*0.0|0.0629639998078*0.996203005314*0.0601020008326*0.0|0.874379992485*-0.0260320007801*-0.484539985657*0.0|508.532958984*178.102416992*-49.03150177*1.0"
+}

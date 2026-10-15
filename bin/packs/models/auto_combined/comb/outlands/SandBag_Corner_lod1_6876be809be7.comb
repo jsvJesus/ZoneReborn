@@ -1,0 +1,46 @@
+{
+    "firstguid": "8FBDCD78.43565546.B3390EBB.DB6E69EE", 
+    "models": {
+        "2B584F3D.46CAD50A.03F8CBB8.D71FD009": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fffx001x/sep/fffe0010o@outlands@0x000002862CA9F180", 
+                "created by": "evgeny_yashkin", 
+                "created on": "30/07/2021", 
+                "description": "SandBag_Corner_lod1", 
+                "modified by": "evgeny_yashkin", 
+                "modified on": "19/08/2021"
+            }, 
+            "dyes": {
+                "Sandbag_1": "default", 
+                "Sandbag_2": "default", 
+                "Sandbag_3": "default"
+            }, 
+            "matrix": "-0.898509025574*0.0098550003022*-0.868956029415*0.0|0.0638609975576*1.2472859621*-0.0518870018423*0.0|0.693328022957*-0.0653520002961*-0.717648983002*0.0|-191.059310913*-7.29247093201*1644.79064941*1.0", 
+            "path": "models/props/blockpost/SandBag_Corner_lod1.model"
+        }, 
+        "8FBDCD78.43565546.B3390EBB.DB6E69EE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fffx001x/sep/fffe0010o@outlands@0x000002862CA9F180", 
+                "created by": "evgeny_yashkin", 
+                "created on": "30/07/2021", 
+                "description": "SandBag_Corner_lod1", 
+                "modified by": "evgeny_yashkin", 
+                "modified on": "19/08/2021"
+            }, 
+            "dyes": {
+                "Sandbag_1": "default", 
+                "Sandbag_2": "default", 
+                "Sandbag_3": "default"
+            }, 
+            "matrix": "0.869184017181*-0.167184993625*-0.882649004459*0.0|0.20896500349*1.23209905624*-0.0275989994407*0.0|0.698960006237*-0.10269100219*0.707747995853*0.0|-195.47769165*-7.05125904083*1639.8984375*1.0", 
+            "path": "models/props/blockpost/SandBag_Corner_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.869184017181*-0.167184993625*-0.882649004459*0.0|0.20896500349*1.23209905624*-0.0275989994407*0.0|0.698960006237*-0.10269100219*0.707747995853*0.0|-195.47769165*-7.05125904083*1639.8984375*1.0"
+}

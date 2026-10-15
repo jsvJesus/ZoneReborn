@@ -1,0 +1,43 @@
+{
+    "models": {
+        "75930EF4.454035CC.70C96486.8F1B8BE4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "02/02/2024", 
+                "description": "lamp03", 
+                "modified by": "ice_c", 
+                "modified on": "02/02/2024"
+            }, 
+            "dyes": {
+                "lamp_material": "default", 
+                "pasted__pasted__okna": "default"
+            }, 
+            "matrix": "1.42402398586*1.3830820322*-0.243382006884*0.0|1.23708105087*-1.39949595928*-0.714869022369*0.0|-0.664667010307*0.358453989029*-1.85195100307*0.0|128.981216431*214.522735596*-79.9637908936*1.0", 
+            "path": "models/misc/furniture/lamp03.model"
+        }, 
+        "EE32C318.491B4CAE.7D8B8D8F.FB745FF8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "02/02/2024", 
+                "description": "lamp03", 
+                "modified by": "ice_c", 
+                "modified on": "02/02/2024"
+            }, 
+            "dyes": {
+                "lamp_material": "default", 
+                "pasted__pasted__okna": "default"
+            }, 
+            "matrix": "1.33638298512*1.40473496914*-0.490707993507*0.0|1.17078101635*-1.39974403381*-0.818525016308*0.0|-0.918339014053*0.259676009417*-1.75761604309*0.0|130.663970947*213.479736328*-75.4516525269*1.0", 
+            "path": "models/misc/furniture/lamp03.model"
+        }
+    }, 
+    "spawn_transform": "1.42402398586*1.3830820322*-0.243382006884*0.0|1.23708105087*-1.39949595928*-0.714869022369*0.0|-0.664667010307*0.358453989029*-1.85195100307*0.0|128.981216431*214.522735596*-79.9637908936*1.0"
+}

@@ -1,0 +1,39 @@
+{
+    "models": {
+        "5518AFBF.4EEED136.679D0AB0.2299A3D2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "19/02/2024", 
+                "description": "garbage_ground_ugol_01_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "19/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.766044020653*0.0*-0.642786979675*0.0|0.0*1.0*0.0*0.0|0.642786979675*0.0*0.766044020653*0.0|241.696151733*199.99987793*-29.1797904968*1.0", 
+            "path": "models/misc/garbage/garbage_ground_ugol_01_lod1.model"
+        }, 
+        "A3028644.4328E0E6.6F96258C.DBF7C02F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "06/03/2024", 
+                "description": "garbage_ground_ugol_01_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "06/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.819149971008*0.0*-0.573575019836*0.0|0.0*0.999998986721*0.0*0.0|0.573575019836*0.0*-0.819149971008*0.0|244.530471802*200.009170532*-44.0415000916*1.0", 
+            "path": "models/misc/garbage/garbage_ground_ugol_01_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.766044020653*0.0*-0.642786979675*0.0|0.0*1.0*0.0*0.0|0.642786979675*0.0*0.766044020653*0.0|241.696151733*199.99987793*-29.1797904968*1.0"
+}

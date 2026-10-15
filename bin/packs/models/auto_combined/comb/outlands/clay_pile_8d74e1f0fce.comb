@@ -1,0 +1,54 @@
+{
+    "firstguid": "CC99EB0B.4D185F4A.3C3F6CB1.553C3423", 
+    "models": {
+        "ACD292F8.419D2D42.8EF94A8A.E1C576A5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00120005o@outlands@0x000001649BEE0050", 
+                "created by": "sergey_busygin", 
+                "created on": "13:39:49", 
+                "description": "clay_pile", 
+                "modified by": "sergey_busygin", 
+                "modified on": "13:39:49"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.54475104809*-0.0611450001597*1.02835297585*0.0|0.00951300002635*1.18008804321*0.0165669992566*0.0|-0.594354987144*-0.00975299999118*-0.895323991776*0.0|1834.09338379*-9.33253765106*542.704223633*1.0", 
+            "path": "models/flora/ground/clay_pile/clay_pile.model"
+        }, 
+        "CC99EB0B.4D185F4A.3C3F6CB1.553C3423": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00120005o@outlands@0x000001649BEE0050", 
+                "created by": "sergey_busygin", 
+                "created on": "13:39:49", 
+                "description": "clay_pile", 
+                "modified by": "sergey_busygin", 
+                "modified on": "13:39:49"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.758741021156*0.0254890006036*0.51003998518*0.0|0.0325729995966*1.03568601608*-0.0626059994102*0.0|-0.557489991188*-0.0578170008957*-0.828221023083*0.0|1806.68505859*-5.18426084518*572.944396973*1.0", 
+            "path": "models/flora/ground/clay_pile/clay_pile.model"
+        }, 
+        "DE608D52.4E4F8E2B.7156EEAF.CE7256AA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00120005o@outlands@0x000001649BEE0050", 
+                "created by": "sergey_busygin", 
+                "created on": "13:39:49", 
+                "description": "clay_pile", 
+                "modified by": "sergey_busygin", 
+                "modified on": "13:39:49"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.76969003677*-0.218156993389*1.01566302776*0.0|0.114808999002*1.60906803608*0.0417030006647*0.0|-0.73429697752*-0.017766000703*1.2726739645*0.0|1835.35559082*-11.2118597031*511.582824707*1.0", 
+            "path": "models/flora/ground/clay_pile/clay_pile.model"
+        }
+    }, 
+    "spawn_transform": "-0.758741021156*0.0254890006036*0.51003998518*0.0|0.0325729995966*1.03568601608*-0.0626059994102*0.0|-0.557489991188*-0.0578170008957*-0.828221023083*0.0|1806.68505859*-5.18426084518*572.944396973*1.0"
+}

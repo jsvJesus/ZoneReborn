@@ -1,0 +1,54 @@
+{
+    "firstguid": "407FB0DA.4D096FF1.C9C76EB7.06E11AD6", 
+    "models": {
+        "407FB0DA.4D096FF1.C9C76EB7.06E11AD6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "e6b51235i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "shtora_15_small_room_glow", 
+                "modified by": "sergey_busygin", 
+                "modified on": "25/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000436000002082*1.26340603828*0.0|0.0*2.59497404099*-0.00089600001229*0.0|-1.31629300117*0.0*0.0*0.0|6.7532491684*5.03990888596*24.9318809509*1.0", 
+            "path": "models/misc/furniture/shtora_15_small_room_glow.model"
+        }, 
+        "44A1451D.4C595003.F69473AD.75739427": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "e6b51235i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "shtora_15_small_room_glow", 
+                "modified by": "sergey_busygin", 
+                "modified on": "25/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000436000002082*1.26340603828*0.0|0.0*2.59497499466*-0.00089600001229*0.0|-1.31629395485*0.0*0.0*0.0|6.75324821472*5.03853607178*20.9495544434*1.0", 
+            "path": "models/misc/furniture/shtora_15_small_room_glow.model"
+        }, 
+        "83B796C3.442A2216.F01073B4.B0FF088C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "e6b51235i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "shtora_15_small_room_glow", 
+                "modified by": "sergey_busygin", 
+                "modified on": "25/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000436000002082*1.2634049654*0.0|0.0*2.59497189522*-0.00089600001229*0.0|-1.31629300117*0.0*0.0*0.0|6.7532491684*5.04268121719*37.0402374268*1.0", 
+            "path": "models/misc/furniture/shtora_15_small_room_glow.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.000436000002082*1.26340603828*0.0|0.0*2.59497404099*-0.00089600001229*0.0|-1.31629300117*0.0*0.0*0.0|6.7532491684*5.03990888596*24.9318809509*1.0"
+}

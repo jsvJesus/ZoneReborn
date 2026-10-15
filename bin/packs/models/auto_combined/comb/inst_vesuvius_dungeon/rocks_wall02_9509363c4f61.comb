@@ -1,0 +1,63 @@
+{
+    "firstguid": "D60A88C5.41600AFB.04CAF38A.CB8ED78D", 
+    "models": {
+        "17B87A96.4D0906C7.BAEA2B95.B4A159C3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "582ec61bi@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "20/06/2024", 
+                "description": "rocks_wall02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "04/07/2024"
+            }, 
+            "dyes": {
+                "rocks": "mushroom"
+            }, 
+            "matrix": "2.15484809875*-0.82325899601*0.800284028053*0.0|0.856806993484*2.28593111038*0.0445110015571*0.0|-0.764258027077*0.241549998522*2.30632710457*0.0|359.568084717*165.461364746*130.480224609*1.0", 
+            "path": "models/flora/stones/rocks_wall02.model"
+        }, 
+        "D60A88C5.41600AFB.04CAF38A.CB8ED78D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "582ec61bi@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "20/06/2024", 
+                "description": "rocks_wall02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "04/07/2024"
+            }, 
+            "dyes": {
+                "rocks": "mushroom"
+            }, 
+            "matrix": "2.26681303978*-2.1476380825*-0.250030010939*0.0|2.06821894646*2.25940608978*-0.656392991543*0.0|0.630339980125*0.309902995825*3.05285811424*0.0|358.192687988*169.27734375*137.099945068*1.0", 
+            "path": "models/flora/stones/rocks_wall02.model"
+        }, 
+        "EB32079D.4D95A5A7.87E4B8B6.7320EB6E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "582ec61bi@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "20/06/2024", 
+                "description": "rocks_wall02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "04/07/2024"
+            }, 
+            "dyes": {
+                "rocks": "mushroom"
+            }, 
+            "matrix": "0.158947005868*-1.27386903763*1.00790798664*0.0|0.198430001736*1.0203640461*1.25831997395*0.0|-1.61221802235*-4.99999987369e-06*0.254240989685*0.0|355.860900879*160.816467285*128.618621826*1.0", 
+            "path": "models/flora/stones/rocks_wall02.model"
+        }
+    }, 
+    "spawn_transform": "2.26681303978*-2.1476380825*-0.250030010939*0.0|2.06821894646*2.25940608978*-0.656392991543*0.0|0.630339980125*0.309902995825*3.05285811424*0.0|358.192687988*169.27734375*137.099945068*1.0"
+}

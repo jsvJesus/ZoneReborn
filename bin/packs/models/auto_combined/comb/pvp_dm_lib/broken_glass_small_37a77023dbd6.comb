@@ -1,0 +1,38 @@
+{
+    "firstguid": "75AEEA54.40206E66.EEB5408D.323DAEBD", 
+    "models": {
+        "75AEEA54.40206E66.EEB5408D.323DAEBD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "e6b51235i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "broken_glass_small", 
+                "modified by": "ice_c", 
+                "modified on": "16/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.882946014404*0.0*0.469469994307*0.0|0.0*0.999998986721*0.0*0.0|-0.469469994307*0.0*0.882946014404*0.0|7.49093437195*5.03498697281*41.2304420471*1.0", 
+            "path": "models/misc/garbage/broken_glass_small.model"
+        }, 
+        "EBFE4DE4.4B8C9FC7.01DFA18C.5C14757D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "e6b51235i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "broken_glass_small", 
+                "modified by": "ice_c", 
+                "modified on": "16/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.529919028282*0.0*0.848046004772*0.0|0.0*0.999998986721*0.0*0.0|-0.848046004772*0.0*0.529919028282*0.0|7.53540897369*5.03498697281*42.9385452271*1.0", 
+            "path": "models/misc/garbage/broken_glass_small.model"
+        }
+    }, 
+    "spawn_transform": "0.882946014404*0.0*0.469469994307*0.0|0.0*0.999998986721*0.0*0.0|-0.469469994307*0.0*0.882946014404*0.0|7.49093437195*5.03498697281*41.2304420471*1.0"
+}

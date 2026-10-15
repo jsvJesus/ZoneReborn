@@ -1,0 +1,96 @@
+{
+    "firstguid": "1BD3E8C5.4752CDF0.14225A94.B3644A1D", 
+    "models": {
+        "1BD3E8C5.4752CDF0.14225A94.B3644A1D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000f0009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "01/09/2021", 
+                "description": "zil131_military_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {
+                "lambert4": "default"
+            }, 
+            "matrix": "0.999315977097*-9.99999997475e-07*-0.0369089990854*0.0|9.99999997475e-07*0.999997019768*-9.99999997475e-07*0.0|0.0369089990854*0.0*0.999315977097*0.0|1590.06347656*18.7499961853*935.00378418*1.0", 
+            "path": "models/transport/heavy/zil131_military_lod1.model"
+        }, 
+        "28EF8005.44185246.14A6CA8B.08ED3686": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000f0009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "01/09/2021", 
+                "description": "zil131_military_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {
+                "lambert4": "default"
+            }, 
+            "matrix": "-0.999390006065*1.99999999495e-06*0.0348890013993*0.0|1.99999999495e-06*0.999998986721*-9.99999997475e-07*0.0|-0.0348890013993*-9.99999997475e-07*-0.999390006065*0.0|1595.39587402*18.75*925.786682129*1.0", 
+            "path": "models/transport/heavy/zil131_military_lod1.model"
+        }, 
+        "3AE297E6.46015F32.CC28A397.ED91D702": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000f0009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "01/09/2021", 
+                "description": "zil131_military_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18/11/2021"
+            }, 
+            "dyes": {
+                "lambert4": "default"
+            }, 
+            "matrix": "0.999319970608*0.0*-0.0367980003357*0.0|0.0*0.999997973442*0.0*0.0|0.0367980003357*0.0*0.999320983887*0.0|1587.18688965*18.7499961853*942.37286377*1.0", 
+            "path": "models/transport/heavy/zil131_military_lod1.model"
+        }, 
+        "9F43027D.4592DA3E.BC4E73BA.D037377C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000f0009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "01/09/2021", 
+                "description": "zil131_military_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {
+                "lambert4": "default"
+            }, 
+            "matrix": "0.999329984188*-9.99999997475e-07*-0.0365189984441*0.0|0.0*0.999998986721*0.0*0.0|0.0365189984441*9.99999997475e-07*0.999330997467*0.0|1595.44543457*18.749994278*944.422973633*1.0", 
+            "path": "models/transport/heavy/zil131_military_lod1.model"
+        }, 
+        "F28CF296.4C1AA4A3.69D17DA4.143C27B7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000f0009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "01/09/2021", 
+                "description": "zil131_military_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {
+                "lambert4": "default"
+            }, 
+            "matrix": "-0.987761974335*9.99999997475e-07*0.155948996544*0.0|9.99999997475e-07*0.999997973442*0.0*0.0|-0.155949994922*0.0*-0.987762987614*0.0|1599.65661621*18.7499961853*933.309997559*1.0", 
+            "path": "models/transport/heavy/zil131_military_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.999315977097*-9.99999997475e-07*-0.0369089990854*0.0|9.99999997475e-07*0.999997019768*-9.99999997475e-07*0.0|0.0369089990854*0.0*0.999315977097*0.0|1590.06347656*18.7499961853*935.00378418*1.0"
+}

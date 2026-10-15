@@ -1,0 +1,40 @@
+{
+    "firstguid": "10E8AE0B.47F6752D.33042C93.9BC85657", 
+    "models": {
+        "10E8AE0B.47F6752D.33042C93.9BC85657": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "fa4a41e6i@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "28/02/2024", 
+                "description": "flowerpot_palm_library", 
+                "modified by": "ice_c", 
+                "modified on": "28/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.422636985779*0.000239000000875*0.906297028065*0.0|0.903243005276*0.0819140002131*-0.421234995127*0.0|-0.0743390023708*0.996638000011*0.0344039984047*0.0|292.759918213*213.320526123*-47.4892234802*1.0", 
+            "path": "models/misc/furniture/library/flowerpot_palm_library.model"
+        }, 
+        "E1A17ABE.4B2C6D11.5D79429D.B9FFC925": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "fa4a41e6i@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "28/02/2024", 
+                "description": "flowerpot_palm_library", 
+                "modified by": "ice_c", 
+                "modified on": "28/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.939692974091*0.0*-0.342020004988*0.0|0.0*1.0*0.0*0.0|0.342020004988*0.0*-0.939692974091*0.0|303.65133667*212.99987793*-56.3950767517*1.0", 
+            "path": "models/misc/furniture/library/flowerpot_palm_library.model"
+        }
+    }, 
+    "spawn_transform": "0.422636985779*0.000239000000875*0.906297028065*0.0|0.903243005276*0.0819140002131*-0.421234995127*0.0|-0.0743390023708*0.996638000011*0.0344039984047*0.0|292.759918213*213.320526123*-47.4892234802*1.0"
+}

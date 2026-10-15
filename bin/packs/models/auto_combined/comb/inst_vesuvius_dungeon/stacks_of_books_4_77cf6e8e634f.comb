@@ -1,0 +1,90 @@
+{
+    "models": {
+        "4628DC99.40E4704F.CAA6B99E.9E85DE66": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "stacks_of_books_4", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.898792982101*0.0490429997444*-0.435615986586*0.0|-9.99999997475e-07*0.993719995022*0.111873999238*0.0|0.43836799264*-0.100552000105*0.893150985241*0.0|402.791900635*212.642852783*-79.4743804932*1.0", 
+            "path": "models/misc/furniture/library/stacks_of_books_4.model"
+        }, 
+        "5895295F.4A238FFE.3408289A.ECD0AFDC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "stacks_of_books_4", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.204628005624*-0.114160999656*0.972158014774*0.0|0.0293489992619*0.993443012238*0.110482998192*0.0|-0.978398025036*0.00592399993911*0.206636995077*0.0|408.02166748*211.73866272*-73.664855957*1.0", 
+            "path": "models/misc/furniture/library/stacks_of_books_4.model"
+        }, 
+        "5A808593.4585001D.C12D7C8F.5C508080": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "stacks_of_books_4", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.984806001186*-0.0206129997969*0.172416999936*0.0|-1.99999999495e-06*0.992928981781*0.118693999946*0.0|-0.17364500463*0.116890996695*-0.977845013142*0.0|407.966918945*213.32572937*-69.264289856*1.0", 
+            "path": "models/misc/furniture/library/stacks_of_books_4.model"
+        }, 
+        "67757335.44723AD4.0A4B40B4.26A79BEB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/03/2024", 
+                "description": "stacks_of_books_4", 
+                "modified by": "ice_c", 
+                "modified on": "27/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.978146970272*0.0*-0.207911998034*0.0|0.0*1.0*0.0*0.0|0.207911998034*0.0*0.978146970272*0.0|398.333679199*213.092453003*-81.3957214355*1.0", 
+            "path": "models/misc/furniture/library/stacks_of_books_4.model"
+        }, 
+        "C0981BF7.41903C7E.FA1137AD.D249B18C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "stacks_of_books_4", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.934341013432*-0.0120080001652*0.356171995401*0.0|0.0293489992619*0.993441998959*0.110482998192*0.0|-0.355163991451*0.113682001829*-0.927864015102*0.0|407.669036865*212.751739502*-75.4590454102*1.0", 
+            "path": "models/misc/furniture/library/stacks_of_books_4.model"
+        }
+    }, 
+    "spawn_transform": "0.898792982101*0.0490429997444*-0.435615986586*0.0|-9.99999997475e-07*0.993719995022*0.111873999238*0.0|0.43836799264*-0.100552000105*0.893150985241*0.0|402.791900635*212.642852783*-79.4743804932*1.0"
+}

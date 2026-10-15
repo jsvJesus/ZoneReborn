@@ -1,0 +1,40 @@
+{
+    "firstguid": "7CCE24E1.44786AA8.CC81F3AF.5D92FDB2", 
+    "models": {
+        "5F759660.48D524BF.9A4E17A8.0087818C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anna_beyzler", 
+                "created on": "17/07/2020", 
+                "description": "box_wood_big_double_01_lod1", 
+                "modified by": "danil_lepeshkov", 
+                "modified on": "12/01/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0386370010674*0.0*-0.999251008034*0.0|0.0*0.999998986721*0.0*0.0|0.999251008034*0.0*-0.0386370010674*0.0|33.2999382019*19.2400093079*49.8699645996*1.0", 
+            "path": "models/props/warehouse/box_wood_big_double_01_lod1.model"
+        }, 
+        "7CCE24E1.44786AA8.CC81F3AF.5D92FDB2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "danil_lepeshkov", 
+                "created on": "12/01/2024", 
+                "description": "box_wood_big_double_01_lod1", 
+                "modified by": "danil_lepeshkov", 
+                "modified on": "12/01/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999849975109*0.0*-0.0172029994428*0.0|0.0*0.999998986721*0.0*0.0|0.0172029994428*0.0*-0.999849975109*0.0|34.7599411011*19.2500095367*49.8499603271*1.0", 
+            "path": "models/props/warehouse/box_wood_big_double_01_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-0.999849975109*0.0*-0.0172029994428*0.0|0.0*0.999998986721*0.0*0.0|0.0172029994428*0.0*-0.999849975109*0.0|34.7599411011*19.2500095367*49.8499603271*1.0"
+}

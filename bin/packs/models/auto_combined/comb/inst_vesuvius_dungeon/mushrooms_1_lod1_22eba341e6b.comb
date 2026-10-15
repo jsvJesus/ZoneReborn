@@ -1,0 +1,45 @@
+{
+    "models": {
+        "92966429.48BE57BA.C5D8B9BC.732D715F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "22/04/2024", 
+                "description": "mushrooms_1_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {
+                "mushrooms_1": "default"
+            }, 
+            "matrix": "0.754842996597*-0.110065996647*0.942010998726*0.0|0.174897000194*1.19945704937*0.0*0.0|-0.932152986526*0.135920003057*0.762825012207*0.0|432.186920166*188.48916626*-45.161277771*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_1_lod1.model"
+        }, 
+        "FE40126A.4C843D15.0FF605B5.62CBC07F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "22/04/2024", 
+                "description": "mushrooms_1_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {
+                "mushrooms_1": "default"
+            }, 
+            "matrix": "-0.167398005724*0.0244089998305*1.06808805466*0.0|0.15603299439*1.07008600235*0.0*0.0|-1.05691194534*0.154111996293*-0.169168993831*0.0|431.641937256*188.568634033*-44.4780044556*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_1_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.754842996597*-0.110065996647*0.942010998726*0.0|0.174897000194*1.19945704937*0.0*0.0|-0.932152986526*0.135920003057*0.762825012207*0.0|432.186920166*188.48916626*-45.161277771*1.0"
+}

@@ -1,0 +1,39 @@
+{
+    "models": {
+        "2DD8908B.469CAE7D.7838339A.45BD08A9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "bed_01", 
+                "modified by": "ice_c", 
+                "modified on": "05/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.123465999961*1.99999999495e-06*-0.99234598875*0.0|3.00000010611e-06*0.999997973442*1.99999999495e-06*0.0|0.99234598875*-3.00000010611e-06*-0.123465999961*0.0|395.312072754*212.999343872*-101.268264771*1.0", 
+            "path": "models/props/room_character/models_objects/bed_01.model"
+        }, 
+        "56A0E70B.47C0AF6B.5276AF91.9346732D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "bed_01", 
+                "modified by": "ice_c", 
+                "modified on": "05/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.888139009476*0.0*0.459567993879*0.0|0.0*0.999997019768*0.0*0.0|-0.459567993879*0.0*-0.888139009476*0.0|392.55581665*212.999359131*-100.753868103*1.0", 
+            "path": "models/props/room_character/models_objects/bed_01.model"
+        }
+    }, 
+    "spawn_transform": "-0.888139009476*0.0*0.459567993879*0.0|0.0*0.999997019768*0.0*0.0|-0.459567993879*0.0*-0.888139009476*0.0|392.55581665*212.999359131*-100.753868103*1.0"
+}

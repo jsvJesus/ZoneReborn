@@ -1,0 +1,54 @@
+{
+    "firstguid": "4E3F2491.4A97612F.4D2C50A4.C7EC0376", 
+    "models": {
+        "4E3F2491.4A97612F.4D2C50A4.C7EC0376": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20005o@black_forest@0x000002430D0AC120", 
+                "created by": "sergey_busygin", 
+                "created on": "18:54:55", 
+                "description": "PipesCloth", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18:54:55"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.998768985271*0.0*0.0495939999819*0.0|0.0*1.0*0.0*0.0|-0.0604970008135*0.0*-1.21833705902*0.0|-1369.65844727*1.52322995663*589.73614502*1.0", 
+            "path": "models/city/props/heating_main/pipes/PipesCloth.model"
+        }, 
+        "55AF63F8.420EF948.27AC1EB3.8ED91241": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20005o@black_forest@0x000002430D0AC120", 
+                "created by": "sergey_busygin", 
+                "created on": "18:54:55", 
+                "description": "PipesCloth_half", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18:54:55"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.998768985271*0.0*0.0495939999819*0.0|0.0*1.0*0.0*0.0|-0.0604970008135*0.0*-1.21833705902*0.0|-1370.4263916*1.52322995663*574.625*1.0", 
+            "path": "models/city/props/heating_main/pipes/PipesCloth_half.model"
+        }, 
+        "F3DB9DC2.4D499644.C53E82AB.AFD2BE1C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20005o@black_forest@0x000002430D0AC120", 
+                "created by": "sergey_busygin", 
+                "created on": "18:54:55", 
+                "description": "PipesCloth_half", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18:54:55"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.998768985271*0.0*0.0495939999819*0.0|0.0*1.0*0.0*0.0|-0.0604970008135*0.0*-1.21833705902*0.0|-1370.20898438*1.52322995663*579.002807617*1.0", 
+            "path": "models/city/props/heating_main/pipes/PipesCloth_half.model"
+        }
+    }, 
+    "spawn_transform": "-0.998768985271*0.0*0.0495939999819*0.0|0.0*1.0*0.0*0.0|-0.0604970008135*0.0*-1.21833705902*0.0|-1369.65844727*1.52322995663*589.73614502*1.0"
+}

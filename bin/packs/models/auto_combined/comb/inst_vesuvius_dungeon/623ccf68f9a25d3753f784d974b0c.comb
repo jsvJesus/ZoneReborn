@@ -1,0 +1,41 @@
+{
+    "models": {
+        "52E0352F.4548A980.D81C7393.8C29E284": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "metal_shelving_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.997897982597*0.0*0.0647900030017*0.0|0.0*0.999998986721*-9.99999997475e-07*0.0|-0.0647900030017*9.99999997475e-07*0.997897982597*0.0|409.92086792*170.499664307*-113.549827576*1.0", 
+            "path": "models/misc/furniture/greenhouse/metal_shelving_01_lod2.model"
+        }, 
+        "9AD91C21.485DE09D.AF141E87.4A543866": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "metal_shelving_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.915323019028*3.00000010611e-06*0.40272000432*0.0|-9.99999997475e-07*0.999998986721*-3.9999999899e-06*0.0|-0.40272000432*3.00000010611e-06*0.915323019028*0.0|414.967132568*170.499679565*-113.183692932*1.0", 
+            "path": "models/misc/furniture/greenhouse/metal_shelving_01_lod2.model"
+        }
+    }, 
+    "spawn_transform": "0.997897982597*0.0*0.0647900030017*0.0|0.0*0.999998986721*-9.99999997475e-07*0.0|-0.0647900030017*9.99999997475e-07*0.997897982597*0.0|409.92086792*170.499664307*-113.549827576*1.0"
+}

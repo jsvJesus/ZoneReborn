@@ -1,0 +1,91 @@
+{
+    "firstguid": "2D2B3752.41C4F8CB.51BEE1AB.BB0FD0EC", 
+    "models": {
+        "2D2B3752.41C4F8CB.51BEE1AB.BB0FD0EC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "column_4m", 
+                "modified by": "sergey_busygin", 
+                "modified on": "24/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.390729993582*0.0*-0.920503973961*0.0|0.0*1.02999997139*0.0*0.0|0.920503973961*0.0*-0.390731006861*0.0|82.5419845581*4.99999904633*9.49891757965*1.0", 
+            "path": "models/buildings/unique/library/column_4m.model"
+        }, 
+        "73CC3BB1.4F4B5186.18C7A2B4.D8BA3ED4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "column_4m", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.994521021843*0.0*0.104529000819*0.0|0.0*1.07999897003*0.0*0.0|-0.104529000819*0.0*0.994521021843*0.0|75.5*0.0*9.40000247955*1.0", 
+            "path": "models/buildings/unique/library/column_4m.model"
+        }, 
+        "857CC003.4C6895C3.9F977698.F0C17821": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "column_4m", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.601814985275*0.0*-0.798635005951*0.0|0.0*1.08000004292*0.0*0.0|0.798635005951*0.0*0.601814985275*0.0|82.4999847412*0.0*9.39999485016*1.0", 
+            "path": "models/buildings/unique/library/column_4m.model"
+        }, 
+        "94267407.4DE27417.0602CDBD.5C4A8D0B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "column_4m", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.601814985275*0.0*-0.798635005951*0.0|0.0*1.08000004292*0.0*0.0|0.798635005951*0.0*0.601814985275*0.0|89.5*0.0*15.5000038147*1.0", 
+            "path": "models/buildings/unique/library/column_4m.model"
+        }, 
+        "CE443BAA.472E9DE5.4DB822A2.54858A18": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "column_4m", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.615661025047*0.0*-0.788010001183*0.0|0.0*1.07999897003*0.0*0.0|0.788010001183*0.0*-0.615661025047*0.0|75.5*0.0*15.5000019073*1.0", 
+            "path": "models/buildings/unique/library/column_4m.model"
+        }
+    }, 
+    "spawn_transform": "-0.390729993582*0.0*-0.920503973961*0.0|0.0*1.02999997139*0.0*0.0|0.920503973961*0.0*-0.390731006861*0.0|82.5419845581*4.99999904633*9.49891757965*1.0"
+}

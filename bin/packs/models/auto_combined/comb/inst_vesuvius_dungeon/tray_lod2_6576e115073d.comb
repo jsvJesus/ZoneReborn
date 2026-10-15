@@ -1,0 +1,54 @@
+{
+    "models": {
+        "03DEBE16.4B31D170.32EEE6A8.25218421": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "01/03/2024", 
+                "description": "tray_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "29/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999836981297*0.0*-0.0180680006742*0.0|0.0*1.0*0.0*0.0|0.0180680006742*0.0*0.999836981297*0.0|210.429321289*200.019790649*-69.8114013672*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }, 
+        "09417900.4D26E38D.6EA81BBD.9A20B7E9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "01/03/2024", 
+                "description": "tray_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "01/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-1.0*0.0|0.940567970276*0.339605987072*0.0*0.0|0.339605987072*-0.940567970276*0.0*0.0|209.714920044*201.188049316*-69.4455871582*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }, 
+        "90E6FACB.4DF63561.3A9F96BC.E52FBEDB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "01/03/2024", 
+                "description": "tray_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "01/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.993930995464*0.0394169986248*-0.102705001831*0.0|-0.109825998545*0.301678001881*-0.947063028812*0.0|-0.00634700013325*0.952594995499*0.304176002741*0.0|203.148117065*200.959091187*-73.1203536987*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }
+    }, 
+    "spawn_transform": "0.993930995464*0.0394169986248*-0.102705001831*0.0|-0.109825998545*0.301678001881*-0.947063028812*0.0|-0.00634700013325*0.952594995499*0.304176002741*0.0|203.148117065*200.959091187*-73.1203536987*1.0"
+}

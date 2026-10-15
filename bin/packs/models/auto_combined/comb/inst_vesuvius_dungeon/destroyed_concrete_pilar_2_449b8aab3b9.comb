@@ -1,0 +1,39 @@
+{
+    "models": {
+        "1E717C14.466C9314.73B08CAF.EC304691": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "25/03/2024", 
+                "description": "destroyed_concrete_pilar_2", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.19277000427*-0.000372999988031*0.000159999995958*0.0|0.000406000006478*1.08150696754*-0.503032982349*0.0|1.20000004245e-05*0.503032982349*1.08150696754*0.0|379.860015869*193.417358398*-44.6716117859*1.0", 
+            "path": "models/buildings/destroyed_building_parts/destroyed_concrete/destroyed_concrete_pilar_2.model"
+        }, 
+        "DDBE7245.4F265DDA.D16D71AF.ADC2AAAD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "27/03/2024", 
+                "description": "destroyed_concrete_pilar_2", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.163835003972*-0.211049005389*1.34115600586*0.0|0.34718298912*1.3124819994*0.16412499547*0.0|-1.31251895428*0.320829004049*0.210822999477*0.0|376.854949951*192.99987793*-43.2961540222*1.0", 
+            "path": "models/buildings/destroyed_building_parts/destroyed_concrete/destroyed_concrete_pilar_2.model"
+        }
+    }, 
+    "spawn_transform": "1.19277000427*-0.000372999988031*0.000159999995958*0.0|0.000406000006478*1.08150696754*-0.503032982349*0.0|1.20000004245e-05*0.503032982349*1.08150696754*0.0|379.860015869*193.417358398*-44.6716117859*1.0"
+}

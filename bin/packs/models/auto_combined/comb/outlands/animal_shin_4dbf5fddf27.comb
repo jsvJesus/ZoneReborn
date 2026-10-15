@@ -1,0 +1,822 @@
+{
+    "firstguid": "875B95B3.4F598BD8.21C45BA8.767C6112", 
+    "models": {
+        "008FE653.47EB1B93.D91E2384.19250C4F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "sergey_busygin", 
+                "created on": "20/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.379781007767*-0.391092002392*0.457138001919*0.0|-0.163876995444*0.587414979935*0.36640098691*0.0|-0.57885402441*0.0902910009027*-0.403654009104*0.0|-1429.71643066*2.98253488541*1509.18005371*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "0274DBDF.4D1F6102.F40A0D81.3E21D4EC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.706993997097*-0.383581012487*0.594159007072*0.0|-0.631062984467*0.721414983273*-0.28517100215*0.0|-0.319247990847*-0.576563000679*-0.752099990845*0.0|-1433.7902832*1.03428304195*1512.3515625*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "0BD41CF2.4ECFA9FB.A5DB55A8.1162BF23": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.602994978428*-0.181196004152*-0.776893973351*0.0|-0.00353499990888*0.974461019039*-0.22453199327*0.0|0.797738015652*-0.132644996047*-0.58823299408*0.0|-1433.41040039*1.28055405617*1513.50939941*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "0C0E23A3.4DACE28E.E16211A6.14322E6F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.538482010365*-0.290277987719*-0.791059970856*0.0|0.801658987999*-0.112714998424*0.587058007717*0.0|-0.259575992823*-0.9502800107*0.17201000452*0.0|-1436.96679688*1.67443799973*1509.47961426*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "0F3DB1E3.4C9E9CA2.00D08B8C.175CDDAD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "sergey_busygin", 
+                "created on": "20/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.850006997585*-0.15747000277*0.502685010433*0.0|-0.13809299469*0.987514019012*0.0758410021663*0.0|-0.50834697485*-0.00494900019839*-0.861138999462*0.0|-1424.21179199*5.46938419342*1511.76867676*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "17EB940A.41A8F1D2.A34E2680.6B361825": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.295417010784*-0.181196004152*-0.938027977943*0.0|0.182580992579*0.974461019039*-0.130732998252*0.0|0.937758028507*-0.132644996047*0.320957988501*0.0|-1432.84814453*1.19850695133*1513.00708008*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "1837D28B.402276DB.863E1B85.8FDE9195": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "17/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.630210995674*0.107619002461*-0.768930017948*0.0|0.0455240011215*0.983521997929*0.174962997437*0.0|0.775088012218*-0.145267993212*0.614926993847*0.0|-1436.47998047*1.36074697971*1514.17199707*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "195D8E03.41FD2A33.5FB4B5A9.020FE029": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.625229001045*-0.0841400027275*-0.775892972946*0.0|0.133373007178*0.991065979004*0.0*0.0|0.768961012363*-0.103482998908*0.630864977837*0.0|-1435.00024414*1.10025000572*1512.52001953*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "19CAA36D.4D03590B.85FCFC88.F88C7B6A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0732109993696*-0.29505199194*-0.9526720047*0.0|0.994459986687*0.0506419986486*-0.0921069979668*0.0|0.0754209980369*-0.954137980938*0.289710998535*0.0|-1438.53686523*1.5667719841*1512.42321777*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "1CB62E8F.4D0509FA.375154A0.BEFF1BD8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.18304400146*0.145939007401*-0.972212016582*0.0|-0.051169000566*0.988994002342*0.138824000955*0.0|0.981772005558*0.0243360009044*0.188498005271*0.0|-1437.20410156*1.64632201195*1510.3482666*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "247E41E5.4A9A6E85.8CB54EAA.707291BE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.531560003757*-0.218018993735*0.81848102808*0.0|0.728699028492*-0.610305011272*0.310683995485*0.0|0.431787997484*0.761574983597*0.483283996582*0.0|-1438.86694336*1.4610530138*1511.19006348*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "25C7086B.4289BF8B.13D766BC.FB395F40": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.879902005196*0.227959007025*-0.416900008917*0.0|0.0954440012574*0.774720013142*0.625059008598*0.0|0.465469002724*-0.589781999588*0.659920990467*0.0|-1435.58239746*1.33468604088*1510.44470215*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "30FA8479.45C4DA97.4CD8E58A.53DEEF29": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.11495000124*0.138998001814*-0.983597993851*0.0|0.652872025967*0.735705018044*0.18026599288*0.0|0.748695015907*-0.662886023521*-0.00617800001055*0.0|-1439.28393555*1.48229694366*1510.78308105*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "425E3B66.4DA1A2BC.5CD569BE.D26A2CF0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.383529007435*0.481204986572*-0.788254976273*0.0|0.84259802103*0.531732976437*-0.0853630006313*0.0|0.378064990044*-0.696923017502*-0.609396994114*0.0|-1435.34887695*1.84533703327*1508.6998291*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "4345EC07.44F50B13.A2A14FBF.79D8FA68": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.625229001045*-4.99999987369e-06*-0.780441999435*0.0|0.133373007178*0.985289990902*0.106840997934*0.0|0.768961012363*-0.170890003443*0.616032004356*0.0|-1440.83105469*1.53820800781*1511.1114502*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "450E0946.4A4D33E3.EB8B1BB3.837C04B7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "17/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.963078022003*0.269221007824*0.0*0.0|-0.269221007824*0.963078022003*0.0*0.0|0.0*0.0*1.0*0.0|-1437.19726562*0.866016983986*1515.37695312*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "538912E8.4D0F449D.3112C5B7.7EF73674": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0804110020399*0.908743023872*0.409538000822*0.0|-0.951581001282*-0.192285001278*0.239834994078*0.0|0.296696007252*-0.370424002409*0.880203008652*0.0|-1432.53637695*1.39669501781*1511.04943848*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "5A9BE747.4B67E8C1.E89CD1B1.03F5BD98": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.119388997555*-0.604655981064*-0.787487983704*0.0|0.98028999567*0.197538003325*-0.00305699999444*0.0|0.157406002283*-0.771601974964*0.616322994232*0.0|-1439.42944336*1.57409703732*1512.09851074*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "5F8096A0.46D0F0CB.2BA43184.50B3E788": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.284222990274*0.512279987335*-0.810423016548*0.0|0.225088998675*0.857312977314*0.462978005409*0.0|0.931962013245*-0.050829000771*-0.358976006508*0.0|-1436.91210938*2.96260905266*1507.44482422*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "61FE6BC7.4AA35890.5B50CFA2.3A4B03D8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "sergey_busygin", 
+                "created on": "20/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.834773004055*0.189583003521*0.51692700386*0.0|0.224218994379*0.974529981613*0.00467800023034*0.0|-0.502870023251*0.11981099844*-0.856019020081*0.0|-1430.52380371*5.29085016251*1502.30505371*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "624048AB.4DA587D4.F29014A5.A21BC2AE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.18304400146*0.269221007824*-0.945523023605*0.0|-0.051169000566*0.963078022003*0.264313995838*0.0|0.981772005558*0.0*0.190062001348*0.0|-1437.45153809*1.26108694077*1513.75476074*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "6E0CBF77.44E8BF55.9AADC682.09607238": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.81608402729*0.29599198699*-0.496383011341*0.0|0.569055974483*0.261577993631*-0.779585003853*0.0|-0.100906997919*-0.918676018715*-0.381904989481*0.0|-1436.91577148*1.61682105064*1510.46484375*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "6F2B49CE.43103A15.6D12E994.5F54969D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.411965996027*0.170292004943*0.895144999027*0.0|0.193373993039*0.976343989372*-0.0967449992895*0.0|-0.89044302702*0.133241996169*-0.435151994228*0.0|-1436.35021973*1.3513790369*1512.13647461*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "6F5088A3.4910D5EC.30BD5D96.792A49FC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.585906982422*0.0546410009265*0.808534026146*0.0|-0.112760998309*0.993516027927*0.0145699996501*0.0|-0.802496016026*-0.0997079983354*0.588267028332*0.0|-1433.29174805*1.07813704014*1512.14685059*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "78D73249.456786E0.8C22F681.E565119F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.625229001045*-0.0841400027275*-0.775892972946*0.0|0.133373007178*0.991065979004*0.0*0.0|0.768961012363*-0.103482998908*0.630864977837*0.0|-1433.40856934*1.35662198067*1509.93103027*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "860BDD56.48D42D20.43F47398.FE8B5295": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.585906982422*0.0546410009265*0.808534026146*0.0|-0.112760998309*0.993516027927*0.0145699996501*0.0|-0.802496016026*-0.0997079983354*0.588267028332*0.0|-1434.09899902*1.22291600704*1510.24377441*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "864A69DF.4965DCAE.9A2AE891.B0E089A4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.847384989262*-0.181196004152*0.499105006456*0.0|0.0862490013242*0.974461019039*0.20733499527*0.0|-0.523928999901*-0.132644996047*0.841369986534*0.0|-1431.96069336*1.16610705853*1512.03515625*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "875B95B3.4F598BD8.21C45BA8.767C6112": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "17/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.11302100122*-0.0889620035887*0.989602029324*0.0|-0.951399981976*0.277469992638*0.133599996567*0.0|-0.286469995975*-0.95660597086*-0.0532790012658*0.0|-1436.51147461*1.02467501163*1515.13378906*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "89A33215.490C8F38.3B8CCB84.958FCFFD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.290291011333*0.393162995577*0.872440993786*0.0|-0.829571008682*0.351072996855*-0.434235990047*0.0|-0.477014988661*-0.849807977676*0.224242001772*0.0|-1432.54699707*1.11206102371*1512.31225586*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "8A13F69C.46091302.40027FB3.987BD1A3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.73825097084*0.562229990959*-0.372669994831*0.0|0.670072972775*0.674659013748*-0.309574991465*0.0|0.077373996377*-0.478262007236*-0.874803006649*0.0|-1436.58752441*1.73736596107*1509.18762207*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "8B129A77.4B1DD116.E5525DB5.24207C48": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.657114982605*0.49413600564*0.569235980511*0.0|-0.471913993359*-0.858542025089*0.200507000089*0.0|0.587791025639*-0.136875003576*0.797349989414*0.0|-1431.60144043*1.8126219511*1510.57421875*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "8B4EBA5F.4E51A20C.B448C193.BBF13A0C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.947090983391*0.319068998098*-0.0348379984498*0.0|-0.0120000001043*-0.0732640028*-0.997241020203*0.0|-0.32074201107*0.944895029068*-0.0655599981546*0.0|-1430.52929688*2.26391601562*1510.29675293*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "8CADAA87.4C423DEF.E04C6093.D81B7CA9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.340925008059*0.195482000709*0.919542014599*0.0|0.163977995515*0.95078098774*-0.262917995453*0.0|-0.925679028034*0.240419998765*0.292091012001*0.0|-1437.76306152*1.70745801926*1509.66186523*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "95AC3CFB.4068AF61.A8DDAC9D.F182FF44": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.858160972595*0.512279987335*0.0336030013859*0.0|0.50867497921*0.857312977314*-0.0791480019689*0.0|-0.0693529993296*-0.050829000771*-0.99629598856*0.0|-1434.03161621*1.85733997822*1508.7833252*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "97B5DFF8.47085526.2776E1A3.DED2BD26": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.10578700155*-0.419571995735*-0.901535987854*0.0|0.165674999356*0.886515021324*-0.432022988796*0.0|0.980490028858*-0.195062994957*-0.0242669992149*0.0|-1432.82067871*1.36172497272*1513.70629883*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "A0354196.4948BA34.885441A2.74F196E1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.18304400146*0.145939007401*-0.972212016582*0.0|-0.051169000566*0.988994002342*0.138824000955*0.0|0.981772005558*0.0243360009044*0.188498005271*0.0|-1437.82678223*1.49176001549*1512.09289551*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "A1676313.44D4E3E5.01298AA1.85F73582": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.127537995577*0.564866006374*-0.815266013145*0.0|0.80334597826*0.42324501276*0.418924987316*0.0|0.58169400692*-0.708370983601*-0.399803012609*0.0|-1434.66296387*1.3768620491*1509.23413086*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "A65C67C8.4E808EEF.E44EC6BB.21CFF311": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.454430997372*0.812651991844*-0.364814996719*0.0|-0.802621006966*0.195898994803*-0.563403010368*0.0|-0.386384010315*0.548834979534*0.741275012493*0.0|-1431.31188965*1.8995360136*1510.6427002*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "AE8BDD13.430A5D36.5C5BAABE.01FA3036": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.833602011204*0.420076996088*-0.358667999506*0.0|0.510603010654*0.833707988262*-0.210274994373*0.0|0.210694000125*-0.358424007893*-0.909473001957*0.0|-1436.01733398*2.33346605301*1508.13574219*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "B596488A.44F26150.747C2885.B085D059": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "sergey_busygin", 
+                "created on": "20/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.763668000698*0.531467020512*0.144629001617*0.0|-0.474018990993*0.760069012642*-0.290111988783*0.0|-0.28050199151*0.162486001849*0.884014010429*0.0|-1430.67504883*2.41513609886*1514.80126953*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "BDE2E0D2.446DF3B2.B2807F80.B7D631F2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.575955986977*0.812651991844*-0.0887250006199*0.0|0.126607999206*0.195898994803*0.972416996956*0.0|0.807618021965*0.548834979534*-0.215718001127*0.0|-1431.20703125*1.82149600983*1510.92749023*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "C4CD8F10.4B30AAFB.DBDFE3B0.1599694B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.718065023422*0.362432986498*0.594159007072*0.0|0.609377980232*-0.739822983742*-0.28517100215*0.0|0.336216002703*0.566835999489*-0.752099990845*0.0|-1433.92956543*1.08544898033*1511.45983887*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "CBC7D763.4C80DB63.AE1A38A6.E2569457": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.625229001045*0.610186994076*-0.486580997705*0.0|0.133373007178*0.530758976936*0.836962997913*0.0|0.768961012363*-0.588190019131*0.250463008881*0.0|-1437.66101074*2.13732910156*1508.79736328*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "D369628A.4BEAB7A0.1BAFE3A1.F74F0EB7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.847495019436*-0.170916005969*0.502533972263*0.0|-0.525716006756*0.40103700757*-0.750194013119*0.0|-0.073312997818*-0.899976015091*-0.429731011391*0.0|-1436.50561523*2.02239990234*1508.73803711*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "D7B8A1C7.49844163.D07BB8AC.C6DE06A1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "sergey_busygin", 
+                "created on": "20/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.753796994686*0.32884401083*0.568904995918*0.0|0.40832400322*0.912739992142*0.0134359998628*0.0|-0.514840006828*0.242424994707*-0.82229501009*0.0|-1442.05065918*1.81729996204*1508.72937012*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "DA44F107.43617522.DCC5B4AF.B38FDB95": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "17/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.783109009266*-0.250135987997*0.56936198473*0.0|-0.347050994635*0.935495972633*-0.0663539990783*0.0|-0.516036987305*-0.249559998512*-0.819405019283*0.0|-1437.0447998*1.01315295696*1514.76098633*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "DDBD2BCC.423ECA9B.870D988B.B44C6207": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "sergey_busygin", 
+                "created on": "20/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.832608997822*-0.441174000502*0.334856987*0.0|-0.230396002531*0.82567602396*0.514957010746*0.0|-0.503665983677*0.351610004902*-0.789107978344*0.0|-1430.82080078*2.6803290844*1509.17041016*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "E8064AE6.4B0E62CA.8CDFE692.36EE2F55": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.18304400146*0.512279987335*-0.839084982872*0.0|-0.051169000566*0.857312977314*0.512246012688*0.0|0.981772005558*-0.050829000771*0.18313999474*0.0|-1430.89428711*1.87828302383*1510.97717285*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "F6C6B23C.4FB68361.C3458E9A.417AAED6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.12464299798*-0.0627340003848*-0.990216016769*0.0|0.863588988781*0.498259991407*0.0771379992366*0.0|0.488546013832*-0.864754974842*0.116282001138*0.0|-1436.44750977*1.56581902504*1509.94592285*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "FCA82E4F.460B5DBF.46C452AC.AA4982D7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.549799978733*0.130144000053*-0.825096011162*0.0|-0.405741006136*0.905035018921*-0.127611994743*0.0|0.730132997036*0.404936999083*0.550392985344*0.0|-1437.4296875*1.70159900188*1510.19189453*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }, 
+        "FE035BBD.4F890406.F75F25A2.B428CE1F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_shin", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.890133976936*0.454973995686*0.0256929993629*0.0|0.0488269999623*-0.0391670018435*-0.998040020466*0.0|-0.453076988459*0.889642000198*-0.057080000639*0.0|-1434.40734863*1.1893620491*1509.58654785*1.0", 
+            "path": "models/props/corpse/animal_shin.model"
+        }
+    }, 
+    "spawn_transform": "0.11302100122*-0.0889620035887*0.989602029324*0.0|-0.951399981976*0.277469992638*0.133599996567*0.0|-0.286469995975*-0.95660597086*-0.0532790012658*0.0|-1436.51147461*1.02467501163*1515.13378906*1.0"
+}

@@ -1,0 +1,41 @@
+{
+    "models": {
+        "5BD7AEF6.42FBD8D9.B60EA591.44156FE7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0b53aa98i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "concrete_scarp_1_LOD_NEAR", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0245830006897*0.000661999976728*1.2106180191*0.0|-0.113043002784*1.20557701588*-0.00295499991626*0.0|-1.20532894135*-0.113077998161*-0.0244149994105*0.0|225.228866577*167.577880859*-125.111305237*1.0", 
+            "path": "models/misc/garbage/concrete_scarp/concrete_scarp_1_LOD_NEAR.model"
+        }, 
+        "E4EA8716.4DCF9C6B.876BEBA2.E66606FC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0b53aa98i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "concrete_scarp_1_LOD_NEAR", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.08075201511*-0.486422002316*0.0574669986963*0.0|-0.236900001764*0.640956997871*0.970045983791*0.0|-0.428705990314*0.872067987919*-0.680914998055*0.0|221.830352783*167.805252075*-126.414299011*1.0", 
+            "path": "models/misc/garbage/concrete_scarp/concrete_scarp_1_LOD_NEAR.model"
+        }
+    }, 
+    "spawn_transform": "-0.0245830006897*0.000661999976728*1.2106180191*0.0|-0.113043002784*1.20557701588*-0.00295499991626*0.0|-1.20532894135*-0.113077998161*-0.0244149994105*0.0|225.228866577*167.577880859*-125.111305237*1.0"
+}

@@ -1,0 +1,40 @@
+{
+    "firstguid": "58A851A4.46A24583.7567A3B2.92B454E5", 
+    "models": {
+        "58A851A4.46A24583.7567A3B2.92B454E5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "conveyor_10m", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999996006489*0.0*0.0*0.0|0.0*0.999996006489*0.0*0.0|0.0*0.0*-0.999996006489*0.0|54.8744163513*20.0629997253*47.9176979065*1.0", 
+            "path": "models/props/industrial/conveyor_10m.model"
+        }, 
+        "F16F5BC4.4D1A647C.C2EFEB95.B282D995": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "conveyor_10m", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999993979931*0.0|0.0*0.999993979931*0.0*0.0|0.986247003078*0.0*0.0*0.0|58.3070602417*20.0629463196*43.4814872742*1.0", 
+            "path": "models/props/industrial/conveyor_10m.model"
+        }
+    }, 
+    "spawn_transform": "-0.999996006489*0.0*0.0*0.0|0.0*0.999996006489*0.0*0.0|0.0*0.0*-0.999996006489*0.0|54.8744163513*20.0629997253*47.9176979065*1.0"
+}

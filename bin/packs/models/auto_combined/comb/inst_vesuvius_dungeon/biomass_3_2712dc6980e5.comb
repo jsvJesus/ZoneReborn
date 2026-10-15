@@ -1,0 +1,39 @@
+{
+    "models": {
+        "42EF8EDA.435F2523.34F06FB7.32FBE90C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "02/04/2024", 
+                "description": "biomass_3", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.895267009735*0.130594998598*-0.0337040014565*0.0|0.130697995424*0.89588701725*-0.000334999989718*0.0|0.0333020016551*-0.00519700022414*-0.904742002487*0.0|468.940246582*183.330047607*-50.797416687*1.0", 
+            "path": "models/flora/biomass/biomass_3/biomass_3.model"
+        }, 
+        "C4CDFEF8.4A7F9C3D.BE272F96.DD16FC09": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "02/04/2024", 
+                "description": "biomass_3", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.26788604259*0.18487200141*-0.0144560001791*0.0|0.184882998466*1.2679669857*0.0*0.0|0.0143050001934*-0.00208600005135*-1.28129303455*0.0|475.623474121*182.355499268*-50.921081543*1.0", 
+            "path": "models/flora/biomass/biomass_3/biomass_3.model"
+        }
+    }, 
+    "spawn_transform": "-0.895267009735*0.130594998598*-0.0337040014565*0.0|0.130697995424*0.89588701725*-0.000334999989718*0.0|0.0333020016551*-0.00519700022414*-0.904742002487*0.0|468.940246582*183.330047607*-50.797416687*1.0"
+}

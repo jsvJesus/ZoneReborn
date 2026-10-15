@@ -1,0 +1,37 @@
+{
+    "models": {
+        "32F2EEDE.416A78BC.598C0A90.A780F846": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "building_debris_2m", 
+                "modified by": "ice_c", 
+                "modified on": "03/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.731353998184*0.039700999856*0.680841982365*0.0|-4.80000016978e-05*0.998301029205*-0.0582639984787*0.0|-0.68199801445*-0.0426440015435*-0.730108976364*0.0|365.257629395*187.135910034*-104.549179077*1.0", 
+            "path": "models/misc/garbage/building_debris/building_debris_2m.model"
+        }, 
+        "5BF5B58B.415E19FB.945C4FAF.FC6985B8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "building_debris_2m", 
+                "modified by": "ice_c", 
+                "modified on": "03/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.707105994225*0.09837000072*0.700230002403*0.0|0.0*0.990275979042*-0.139116004109*0.0|-0.707105994225*0.09837000072*0.700230002403*0.0|364.575775146*187.722763062*-98.3193359375*1.0", 
+            "path": "models/misc/garbage/building_debris/building_debris_2m.model"
+        }
+    }, 
+    "spawn_transform": "-0.731353998184*0.039700999856*0.680841982365*0.0|-4.80000016978e-05*0.998301029205*-0.0582639984787*0.0|-0.68199801445*-0.0426440015435*-0.730108976364*0.0|365.257629395*187.135910034*-104.549179077*1.0"
+}

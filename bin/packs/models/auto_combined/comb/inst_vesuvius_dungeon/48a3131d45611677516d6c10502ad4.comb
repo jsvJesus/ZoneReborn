@@ -1,0 +1,56 @@
+{
+    "models": {
+        "BF40836A.48B979C0.557891AB.3FF67142": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "sergey_busygin", 
+                "created on": "31/05/2024", 
+                "description": "sewer_roots", 
+                "modified by": "sergey_busygin", 
+                "modified on": "31/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.2742190361*-0.90767198801*4.30412101746*0.0|0.470652014017*4.76731395721*1.25403702259*0.0|-4.37353610992*0.985014021397*-2.10317397118*0.0|429.143035889*188.041702271*-115.271606445*1.0", 
+            "path": "models/props/water_and_sewer/sewer/sewer_roots.model"
+        }, 
+        "D1088420.42C120A6.1C0301A4.C683E4C8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "sergey_busygin", 
+                "created on": "31/05/2024", 
+                "description": "sewer_roots", 
+                "modified by": "sergey_busygin", 
+                "modified on": "31/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.74968695641*-0.341740012169*-3.21627998352*0.0|-1.4905500412*4.55270576477*1.25400996208*0.0|2.8704559803*1.91767799854*-3.55026698112*0.0|437.433929443*187.797790527*-115.174736023*1.0", 
+            "path": "models/props/water_and_sewer/sewer/sewer_roots.model"
+        }, 
+        "E320704D.4D38FD46.EC7DC6A0.6558C23D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "sergey_busygin", 
+                "created on": "31/05/2024", 
+                "description": "sewer_roots", 
+                "modified by": "sergey_busygin", 
+                "modified on": "31/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-4.32452583313*0.0177059993148*-2.41237711906*0.0|0.932771980762*4.57892990112*-1.63851904869*0.0|2.22481799126*-1.88533699512*-4.00213623047*0.0|434.747406006*187.885162354*-107.338737488*1.0", 
+            "path": "models/props/water_and_sewer/sewer/sewer_roots.model"
+        }
+    }, 
+    "spawn_transform": "-2.2742190361*-0.90767198801*4.30412101746*0.0|0.470652014017*4.76731395721*1.25403702259*0.0|-4.37353610992*0.985014021397*-2.10317397118*0.0|429.143035889*188.041702271*-115.271606445*1.0"
+}

@@ -1,0 +1,90 @@
+{
+    "models": {
+        "07666C7D.4B504660.D9728491.474F0779": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "f795d547i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/03/2024", 
+                "description": "bookcase_broken_1", 
+                "modified by": "ice_c", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.814383983612*1.10000000859e-05*0.58032399416*0.0|0.441565990448*0.648886024952*0.619648993015*0.0|-0.37655800581*0.76088398695*-0.528447985649*0.0|378.438079834*213.382217407*-109.301132202*1.0", 
+            "path": "models/misc/furniture/library/bookcase_broken_1.model"
+        }, 
+        "0A2219B4.4C2340C2.5E46049B.B6D9C00F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "f795d547i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/03/2024", 
+                "description": "bookcase_broken_1", 
+                "modified by": "ice_c", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.165516003966*-6.00000021223e-06*-0.98620402813*0.0|-0.412169009447*0.908474028111*-0.0691810026765*0.0|0.895942986012*0.417934000492*0.150364995003*0.0|378.435424805*213.071105957*-109.945831299*1.0", 
+            "path": "models/misc/furniture/library/bookcase_broken_1.model"
+        }, 
+        "1E5F0613.4E80FA8D.E494BEBC.31C99C60": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "f795d547i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/03/2024", 
+                "description": "bookcase_broken_1", 
+                "modified by": "ice_c", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.771327018738*3.00000010611e-06*0.636434972286*0.0|0.57418102026*0.43134701252*-0.695881009102*0.0|-0.274527996778*0.902182996273*0.332709014416*0.0|377.798522949*213.195556641*-115.023712158*1.0", 
+            "path": "models/misc/furniture/library/bookcase_broken_1.model"
+        }, 
+        "3390BBF3.46BC4B14.262C1E94.C11F45AC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "f795d547i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/03/2024", 
+                "description": "bookcase_broken_1", 
+                "modified by": "ice_c", 
+                "modified on": "04/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.454569995403*-0.0497890003026*0.889313995838*0.0|0.612223029137*0.742657005787*-0.271358013153*0.0|-0.646947026253*0.667811989784*0.368072986603*0.0|377.712097168*213.115936279*-106.509941101*1.0", 
+            "path": "models/misc/furniture/library/bookcase_broken_1.model"
+        }, 
+        "92B56858.46BFD89D.E9B402B2.775E74DE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "f795d547i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "04/03/2024", 
+                "description": "bookcase_broken_1", 
+                "modified by": "ice_c", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.853291988373*0.0*-0.521431982517*0.0|0.0*1.0*0.0*0.0|0.521431982517*0.0*-0.853291988373*0.0|380.61807251*212.999603271*-106.793739319*1.0", 
+            "path": "models/misc/furniture/library/bookcase_broken_1.model"
+        }
+    }, 
+    "spawn_transform": "0.771327018738*3.00000010611e-06*0.636434972286*0.0|0.57418102026*0.43134701252*-0.695881009102*0.0|-0.274527996778*0.902182996273*0.332709014416*0.0|377.798522949*213.195556641*-115.023712158*1.0"
+}

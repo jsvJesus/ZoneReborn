@@ -1,0 +1,41 @@
+{
+    "models": {
+        "6DAD0BD1.4EB71939.29418B95.18149319": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "1d97c450i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "mushrooms_4_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.566868007183*0.907178997993*0.0*0.0|0.0*0.0*-1.0697259903*0.0|-0.907178997993*0.566868007183*0.0*0.0|256.89654541*207.122116089*-15.869972229*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_4/mushrooms_4_lod2.model"
+        }, 
+        "B49827CA.457E0BC1.F1C92CA4.6DDA8557": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "1d97c450i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "mushrooms_4_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.371755987406*0.0*1.07965803146*0.0|0.0*-1.14186799526*0.0*0.0|1.07965803146*0.0*0.371755987406*0.0|258.137878418*210.499847412*-21.117931366*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_4/mushrooms_4_lod2.model"
+        }
+    }, 
+    "spawn_transform": "-0.371755987406*0.0*1.07965803146*0.0|0.0*-1.14186799526*0.0*0.0|1.07965803146*0.0*0.371755987406*0.0|258.137878418*210.499847412*-21.117931366*1.0"
+}

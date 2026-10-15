@@ -1,0 +1,54 @@
+{
+    "firstguid": "C62DEE0F.47CEF9CD.D64E049B.5FA3C07B", 
+    "models": {
+        "175AAA69.401E2A53.BF431DBB.E96A4740": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "3884357ci@inst_vesuvius_dungeon@0x000002615C50F690", 
+                "created by": "sergey_busygin", 
+                "created on": "20:36:42", 
+                "description": "withered_creeper_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20:36:42"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.435773998499*0.0*0.75478297472*0.0|0.0*0.871547996998*0.0*0.0|-0.75478297472*0.0*0.435773998499*0.0|260.96081543*160.357849121*-21.1309623718*1.0", 
+            "path": "models/flora/grass/creepers/withered_creeper_lod1.model"
+        }, 
+        "9E510F5D.46E4E4EB.C04E8483.FF4F0D11": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "3884357ci@inst_vesuvius_dungeon@0x000002615C50F690", 
+                "created by": "sergey_busygin", 
+                "created on": "20:36:42", 
+                "description": "withered_creeper_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20:36:42"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.273719996214*0.0*-1.28775203228*0.0|0.0*1.31652104855*0.0*0.0|1.28775203228*0.0*-0.273719996214*0.0|258.936706543*158.937408447*-22.9461936951*1.0", 
+            "path": "models/flora/grass/creepers/withered_creeper_lod1.model"
+        }, 
+        "C62DEE0F.47CEF9CD.D64E049B.5FA3C07B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "3884357ci@inst_vesuvius_dungeon@0x000002615C50F690", 
+                "created by": "sergey_busygin", 
+                "created on": "20:36:42", 
+                "description": "withered_creeper_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20:36:42"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.17269396782*0.0*0.546836018562*0.0|0.0*1.29392397404*0.0*0.0|-0.546836018562*0.0*1.17269396782*0.0|256.528198242*159.288604736*-22.4091491699*1.0", 
+            "path": "models/flora/grass/creepers/withered_creeper_lod1.model"
+        }
+    }, 
+    "spawn_transform": "1.17269396782*0.0*0.546836018562*0.0|0.0*1.29392397404*0.0*0.0|-0.546836018562*0.0*1.17269396782*0.0|256.528198242*159.288604736*-22.4091491699*1.0"
+}

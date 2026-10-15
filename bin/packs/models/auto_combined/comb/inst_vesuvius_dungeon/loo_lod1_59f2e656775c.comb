@@ -1,0 +1,39 @@
+{
+    "models": {
+        "087E5D68.47BEBE1C.E92E6BB7.A8542F43": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "loo_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*-0.999998986721*0.0|351.930053711*212.999679565*-81.7837371826*1.0", 
+            "path": "models/misc/furniture/wc/loo_lod1.model"
+        }, 
+        "3CAB76B5.453C82FF.7820D891.8B7CBF08": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "loo_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*-0.999998986721*0.0|346.737182617*212.999832153*-81.8219528198*1.0", 
+            "path": "models/misc/furniture/wc/loo_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*-0.999998986721*0.0|346.737182617*212.999832153*-81.8219528198*1.0"
+}

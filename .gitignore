@@ -13,7 +13,6 @@ __pycache__/
 # Full client resources intentionally do not belong in this source archive.
 /src/.build/
 bin/packs/audio/
-bin/packs/models/
 bin/packs/textures/
 
 !/src/x64/

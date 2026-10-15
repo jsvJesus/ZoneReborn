@@ -1,0 +1,43 @@
+{
+    "models": {
+        "CFF183DC.4DF3FE4F.6EFCDEA5.3A66DB24": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "doska_01", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {
+                "boards_stack1": "dark"
+            }, 
+            "matrix": "0.478711992502*0.0*-0.0167169999331*0.0|0.0*0.478998988867*0.0*0.0|0.0108129996806*0.0*0.309644013643*0.0|408.042877197*171.051040649*-111.210510254*1.0", 
+            "path": "models/props/villageobjects/doska_01.model"
+        }, 
+        "DE4B6762.45861CEF.DB152BB6.AA922D22": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "doska_01", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {
+                "boards_stack1": "dark"
+            }, 
+            "matrix": "0.478711992502*0.0*-0.0167169999331*0.0|0.0*0.478998988867*0.0*0.0|0.0108129996806*0.0*0.309644013643*0.0|407.763366699*171.051132202*-111.213127136*1.0", 
+            "path": "models/props/villageobjects/doska_01.model"
+        }
+    }, 
+    "spawn_transform": "0.478711992502*0.0*-0.0167169999331*0.0|0.0*0.478998988867*0.0*0.0|0.0108129996806*0.0*0.309644013643*0.0|407.763366699*171.051132202*-111.213127136*1.0"
+}

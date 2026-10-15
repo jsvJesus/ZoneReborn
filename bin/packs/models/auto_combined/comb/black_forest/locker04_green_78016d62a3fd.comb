@@ -1,0 +1,44 @@
+{
+    "firstguid": "F72653C8.4C7A44A7.8B474BAC.EF9B99FC", 
+    "models": {
+        "ACAC93E7.4BEA9E09.03CF10B2.E7442898": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "5f45e125i@black_forest@0x000002430D0AC120", 
+                "created by": "Home", 
+                "created on": "15/11/2025", 
+                "description": "locker04_green", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {
+                "door": "default", 
+                "door_open": "off"
+            }, 
+            "matrix": "-0.998172521591*0.000511532416567*0.0604087375104*0.0|0.000510481884703*0.999999940395*-2.3201595468e-05*0.0|-0.060408808291*7.3980918387e-06*-0.998173594475*0.0|-1420.39111328*0.866534471512*593.779296875*1.0", 
+            "path": "models/misc/containers/locker04_green.model"
+        }, 
+        "F72653C8.4C7A44A7.8B474BAC.EF9B99FC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "5f45e125i@black_forest@0x000002430D0AC120", 
+                "created by": "Home", 
+                "created on": "15/11/2025", 
+                "description": "locker04_green", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {
+                "door": "default", 
+                "door_open": "off"
+            }, 
+            "matrix": "-0.998172521591*0.000511532416567*0.0604087375104*0.0|0.000510480254889*0.999998927116*-2.32015518122e-05*0.0|-0.060408808291*7.3980918387e-06*-0.998173594475*0.0|-1419.93151855*0.866278350353*593.749511719*1.0", 
+            "path": "models/misc/containers/locker04_green.model"
+        }
+    }, 
+    "spawn_transform": "-0.998172521591*0.000511532416567*0.0604087375104*0.0|0.000510480254889*0.999998927116*-2.32015518122e-05*0.0|-0.060408808291*7.3980918387e-06*-0.998173594475*0.0|-1419.93151855*0.866278350353*593.749511719*1.0"
+}

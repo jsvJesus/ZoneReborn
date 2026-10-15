@@ -1,0 +1,56 @@
+{
+    "models": {
+        "17E973FB.4C6B658A.43671893.ED8C5BFE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "05/02/2024", 
+                "description": "electric_box01", 
+                "modified by": "ice_c", 
+                "modified on": "05/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.751470029354*0.0*-0.659754991531*0.0|0.857719004154*1.70000002981e-05*-0.976953983307*0.0|9.00000031834e-06*-1.00000596046*-9.99999974738e-06*0.0|145.050643921*207.286758423*-54.973072052*1.0", 
+            "path": "models/props/electric/electric_box01.model"
+        }, 
+        "2FC026DA.465BF970.47DCE5BE.5765B45F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "05/02/2024", 
+                "description": "electric_box01", 
+                "modified by": "ice_c", 
+                "modified on": "05/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.676391005516*0.0*-0.736545979977*0.0|0.870422005653*4.99999987369e-06*-0.79933398962*0.0|3.00000010611e-06*-1.00000596046*-3.00000010611e-06*0.0|140.380477905*208.331237793*-59.5775794983*1.0", 
+            "path": "models/props/electric/electric_box01.model"
+        }, 
+        "502BB395.43309A46.BF5770A6.70D5EE99": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "05/02/2024", 
+                "description": "electric_box01", 
+                "modified by": "ice_c", 
+                "modified on": "05/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.592599987984*0.0*-0.805492997169*0.0|0.93243598938*1.59999999596e-05*-0.685990989208*0.0|1.10000000859e-05*-0.99999499321*-7.9999999798e-06*0.0|136.583175659*209.474609375*-64.2984848022*1.0", 
+            "path": "models/props/electric/electric_box01.model"
+        }
+    }, 
+    "spawn_transform": "-0.676391005516*0.0*-0.736545979977*0.0|0.870422005653*4.99999987369e-06*-0.79933398962*0.0|3.00000010611e-06*-1.00000596046*-3.00000010611e-06*0.0|140.380477905*208.331237793*-59.5775794983*1.0"
+}

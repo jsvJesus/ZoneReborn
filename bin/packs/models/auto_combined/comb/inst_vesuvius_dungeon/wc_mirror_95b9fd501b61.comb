@@ -1,0 +1,56 @@
+{
+    "models": {
+        "10B1B686.4641A4AF.F6231F96.DC0CA46E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "wc_mirror", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-1.0*0.0|1.0*0.0*0.0*0.0|0.0*-1.0*0.0*0.0|345.859741211*214.664825439*-72.924987793*1.0", 
+            "path": "models/misc/furniture/mebel_80x/wc_mirror.model"
+        }, 
+        "794D5F3D.4533C348.7A1E6CA9.2E8BC00D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "wc_mirror", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*-0.0993349999189*-0.995052993298*0.0|0.999998986721*0.0*0.0*0.0|0.0*-0.995052993298*0.0993349999189*0.0|345.859680176*214.583984375*-71.5549545288*1.0", 
+            "path": "models/misc/furniture/mebel_80x/wc_mirror.model"
+        }, 
+        "7C785FE4.4076827E.421C5EA9.B827F32A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "wc_mirror", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-1.0*0.0|1.0*0.0*0.0*0.0|0.0*-1.0*0.0*0.0|345.859802246*214.643798828*-70.1892471313*1.0", 
+            "path": "models/misc/furniture/mebel_80x/wc_mirror.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-1.0*0.0|1.0*0.0*0.0*0.0|0.0*-1.0*0.0*0.0|345.859802246*214.643798828*-70.1892471313*1.0"
+}

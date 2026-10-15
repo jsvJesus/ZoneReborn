@@ -1,0 +1,59 @@
+{
+    "models": {
+        "05A589E5.447C2403.A3C799A5.75BCB445": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "15:38:50", 
+                "description": "rack_01", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:38:51"
+            }, 
+            "dyes": {
+                "lines": "default"
+            }, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|0.999997973442*0.0*0.0*0.0|207.494537354*205.719894409*-52.8799781799*1.0", 
+            "path": "models/props/warehouse/rack_01.model"
+        }, 
+        "19FE23D2.4AF36A8D.E77B6992.7DDB4E23": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "15:38:50", 
+                "description": "rack_01", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:38:50"
+            }, 
+            "dyes": {
+                "lines": "default"
+            }, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|207.494537354*202.859893799*-52.879989624*1.0", 
+            "path": "models/props/warehouse/rack_01.model"
+        }, 
+        "475DDB9A.48CF26EE.FBF1F3B9.1FCB5360": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "15:38:50", 
+                "description": "rack_01", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:38:50"
+            }, 
+            "dyes": {
+                "lines": "default"
+            }, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|207.494552612*199.999893188*-52.8799972534*1.0", 
+            "path": "models/props/warehouse/rack_01.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|0.999997973442*0.0*0.0*0.0|207.494537354*205.719894409*-52.8799781799*1.0"
+}

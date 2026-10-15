@@ -1,0 +1,41 @@
+{
+    "models": {
+        "7402150A.4B802749.A0A546A4.8C0CAF26": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "concrete_scarp_1_LOD_NEAR", 
+                "modified by": "ice_c", 
+                "modified on": "03/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.08075201511*-0.486422002316*0.0574669986963*0.0|-0.236900001764*0.640956997871*0.970045983791*0.0|-0.428705990314*0.872067987919*-0.680914998055*0.0|326.037628174*179.563140869*-126.738639832*1.0", 
+            "path": "models/misc/garbage/concrete_scarp/concrete_scarp_1_LOD_NEAR.model"
+        }, 
+        "DA6F0319.4610C9D3.8B483692.13F8230C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "concrete_scarp_1_LOD_NEAR", 
+                "modified by": "ice_c", 
+                "modified on": "03/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.602005004883*-0.368854999542*0.98373901844*0.0|-0.564767003059*1.06965899467*0.0554569996893*0.0|-0.885909020901*-0.431257009506*-0.70383900404*0.0|327.063110352*178.205780029*-124.641029358*1.0", 
+            "path": "models/misc/garbage/concrete_scarp/concrete_scarp_1_LOD_NEAR.model"
+        }
+    }, 
+    "spawn_transform": "-1.08075201511*-0.486422002316*0.0574669986963*0.0|-0.236900001764*0.640956997871*0.970045983791*0.0|-0.428705990314*0.872067987919*-0.680914998055*0.0|326.037628174*179.563140869*-126.738639832*1.0"
+}

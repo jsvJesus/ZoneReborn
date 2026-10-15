@@ -1,0 +1,60 @@
+{
+    "firstguid": "3325F44B.4C2B3FE8.43EA7C80.815EC913", 
+    "models": {
+        "3325F44B.4C2B3FE8.43EA7C80.815EC913": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000f000co@outlands@0x000002862CA9F180", 
+                "created by": "yulia.kochurova", 
+                "created on": "09/04/2021", 
+                "description": "tank_01", 
+                "modified by": "yulia.kochurova", 
+                "modified on": "09/04/2021"
+            }, 
+            "dyes": {
+                "FuelTank": "default"
+            }, 
+            "matrix": "0.211852997541*0.0*-0.977301001549*0.0|0.0*0.999998986721*0.0*0.0|0.977301001549*0.0*0.211852997541*0.0|1515.89660645*-2.28808498383*1207.61914062*1.0", 
+            "path": "models/props/industrial/tank_01/tank_01.model"
+        }, 
+        "6D26D144.4EDBE5D9.E104A5B9.57548C02": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000f000bo@outlands@0x000002862CA9F180", 
+                "created by": "yulia.kochurova", 
+                "created on": "09/04/2021", 
+                "description": "tank_01", 
+                "modified by": "yulia.kochurova", 
+                "modified on": "09/04/2021"
+            }, 
+            "dyes": {
+                "FuelTank": "default"
+            }, 
+            "matrix": "0.211852997541*0.0*-0.97729998827*0.0|0.0*0.999998986721*0.0*0.0|0.97729998827*0.0*0.211852997541*0.0|1517.671875*-2.28515601158*1199.42871094*1.0", 
+            "path": "models/props/industrial/tank_01/tank_01.model"
+        }, 
+        "8BC973C3.48498CE1.2F664CBF.B9A7FB49": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000f000co@outlands@0x000002862CA9F180", 
+                "created by": "yulia.kochurova", 
+                "created on": "09/04/2021", 
+                "description": "tank_01", 
+                "modified by": "yulia.kochurova", 
+                "modified on": "09/04/2021"
+            }, 
+            "dyes": {
+                "FuelTank": "default"
+            }, 
+            "matrix": "0.211852997541*0.0*-0.97729998827*0.0|0.0*0.999998986721*0.0*0.0|0.97729998827*0.0*0.211852997541*0.0|1516.77624512*-2.2900390625*1203.56091309*1.0", 
+            "path": "models/props/industrial/tank_01/tank_01.model"
+        }
+    }, 
+    "spawn_transform": "0.211852997541*0.0*-0.977301001549*0.0|0.0*0.999998986721*0.0*0.0|0.977301001549*0.0*0.211852997541*0.0|1515.89660645*-2.28808498383*1207.61914062*1.0"
+}

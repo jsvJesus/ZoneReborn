@@ -1,0 +1,85 @@
+{
+    "models": {
+        "10C608D6.4DC39D67.4B456F8C.B12274D4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "23/04/2024", 
+                "description": "building_debris_2m", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.838670015335*1.20000004245e-05*-0.544637978077*0.0|-1.49999996211e-05*1.0*0.0*0.0|0.544637978077*7.9999999798e-06*0.838670015335*0.0|512.3671875*178.00831604*-44.0124092102*1.0", 
+            "path": "models/misc/garbage/building_debris/building_debris_2m.model"
+        }, 
+        "656A39A4.460F36D6.283B8CAC.57F42A7A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "DEFI", 
+                "created on": "29/04/2024", 
+                "description": "building_debris_2m", 
+                "modified by": "DEFI", 
+                "modified on": "29/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.04711699486*-0.0202300008386*-0.201851993799*0.0|-0.0201350003481*2.05704402924*-0.00197799992748*0.0|0.201860994101*6.00000021223e-06*-2.04721593857*0.0|516.924438477*178.020202637*-45.5110206604*1.0", 
+            "path": "models/misc/garbage/building_debris/building_debris_2m.model"
+        }, 
+        "B7EC8FB6.4EC8953A.D5C2EFB2.2736C434": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "DEFI", 
+                "created on": "29/04/2024", 
+                "description": "building_debris_2m", 
+                "modified by": "DEFI", 
+                "modified on": "29/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.04494404793*0.060883000493*0.215324997902*0.0|0.0612180009484*2.05623793602*0.0*0.0|-0.215230002999*0.00640599988401*-2.04585003853*0.0|508.53012085*178.075302124*-43.4178009033*1.0", 
+            "path": "models/misc/garbage/building_debris/building_debris_2m.model"
+        }, 
+        "B9F89EB8.4C11E37B.0D98C0A2.828940E0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "23/04/2024", 
+                "description": "building_debris_2m", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.453891992569*0.00942900031805*0.891005992889*0.0|0.0207700002939*0.999783992767*0.0*0.0|-0.890814006329*0.0185059998184*-0.453990012407*0.0|509.877258301*178.038009644*-44.5997276306*1.0", 
+            "path": "models/misc/garbage/building_debris/building_debris_2m.model"
+        }, 
+        "BEB43B7A.4FFD4684.F044C795.FE58125D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "DEFI", 
+                "created on": "29/04/2024", 
+                "description": "building_debris_2m", 
+                "modified by": "DEFI", 
+                "modified on": "29/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.04407501221*0.113309003413*-0.201919004321*0.0|0.114070996642*2.05398011208*-0.0021720000077*0.0|0.201488003135*-0.0133570004255*-2.04721188545*0.0|504.811065674*178.274108887*-42.0299186707*1.0", 
+            "path": "models/misc/garbage/building_debris/building_debris_2m.model"
+        }
+    }, 
+    "spawn_transform": "0.838670015335*1.20000004245e-05*-0.544637978077*0.0|-1.49999996211e-05*1.0*0.0*0.0|0.544637978077*7.9999999798e-06*0.838670015335*0.0|512.3671875*178.00831604*-44.0124092102*1.0"
+}

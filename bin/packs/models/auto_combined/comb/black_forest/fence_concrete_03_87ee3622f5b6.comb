@@ -1,0 +1,86 @@
+{
+    "firstguid": "542DF4DF.45F524C1.26A5DB82.37C55A2D", 
+    "models": {
+        "12935EFC.403B22ED.7A947C9C.9FEDC1EB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20006o@black_forest@0x00000212B9754950", 
+                "created by": "MSI", 
+                "created on": "19:02:36", 
+                "description": "fence_concrete_03", 
+                "modified by": "MSI", 
+                "modified on": "19:02:36"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.998779892921*1.9999995402e-06*-0.0492629930377*0.0|-3.99999908041e-06*0.99999588728*-4.09999920521e-05*0.0|0.0492629930377*4.19999923906e-05*0.998779892921*0.0|-1384.95996094*0.431566953659*643.03503418*0.999999880791", 
+            "path": "models/props/fences/fence_concrete/fence_concrete_03.model"
+        }, 
+        "542DF4DF.45F524C1.26A5DB82.37C55A2D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20006o@black_forest@0x00000212B9754950", 
+                "created by": "MSI", 
+                "created on": "19:02:36", 
+                "description": "fence_concrete_03", 
+                "modified by": "MSI", 
+                "modified on": "19:02:36"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.9987809062*1.9999995402e-06*-0.0492629930377*0.0|-3.99999908041e-06*0.99999588728*-4.09999920521e-05*0.0|0.0492629930377*4.19999923906e-05*0.9987809062*0.0|-1359.52026367*0.431611955166*641.780395508*0.999999880791", 
+            "path": "models/props/fences/fence_concrete/fence_concrete_03.model"
+        }, 
+        "75E5C233.4A988B9E.48B281AF.03DC3980": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20006o@black_forest@0x00000212B9754950", 
+                "created by": "MSI", 
+                "created on": "19:02:36", 
+                "description": "fence_concrete_03", 
+                "modified by": "MSI", 
+                "modified on": "19:02:36"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.998779892921*1.9999995402e-06*-0.0492629930377*0.0|-3.99999908041e-06*0.99999588728*-4.09999920521e-05*0.0|0.0492629930377*4.19999923906e-05*0.998779892921*0.0|-1372.29089355*0.43158993125*642.410095215*0.999999880791", 
+            "path": "models/props/fences/fence_concrete/fence_concrete_03.model"
+        }, 
+        "9D9389E4.45DC0EFB.9C2985A3.BAB38BFF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20006o@black_forest@0x00000212B9754950", 
+                "created by": "MSI", 
+                "created on": "19:02:36", 
+                "description": "fence_concrete_03", 
+                "modified by": "MSI", 
+                "modified on": "19:02:42"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.998780250549*-1.80443703357e-06*-0.0492726899683*0.0|0.00605738442391*0.99241489172*0.12274915725*0.0|0.0488989464939*-0.122897580266*0.991208791733*0.0|-1346.81237793*0.455280840397*640.962219238*0.999999940395", 
+            "path": "models/props/fences/fence_concrete/fence_concrete_03.model"
+        }, 
+        "EC7DB47F.41991FD7.5B574D85.0EF9A245": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20006o@black_forest@0x00000212B9754950", 
+                "created by": "MSI", 
+                "created on": "19:02:36", 
+                "description": "fence_concrete_03", 
+                "modified by": "MSI", 
+                "modified on": "19:03:16"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.998780369759*1.77463471118e-06*-0.04926937446*0.0|0.00289834034629*0.998261809349*0.0587900690734*0.0|0.0491840541363*-0.0588606745005*0.997048676014*0.0|-1334.06628418*0.439649164677*640.388977051*0.999999940395", 
+            "path": "models/props/fences/fence_concrete/fence_concrete_03.model"
+        }
+    }, 
+    "spawn_transform": "0.9987809062*1.9999995402e-06*-0.0492629930377*0.0|-3.99999908041e-06*0.99999588728*-4.09999920521e-05*0.0|0.0492629930377*4.19999923906e-05*0.9987809062*0.0|-1359.52026367*0.431611955166*641.780395508*0.999999880791"
+}

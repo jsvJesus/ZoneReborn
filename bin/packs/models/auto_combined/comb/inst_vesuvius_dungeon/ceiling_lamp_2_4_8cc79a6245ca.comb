@@ -1,0 +1,95 @@
+{
+    "models": {
+        "0BA1B6E3.4204C154.E7A01DA0.C6047D03": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "06/02/2024", 
+                "description": "ceiling_lamp_2_4", 
+                "modified by": "ice_c", 
+                "modified on": "06/02/2024"
+            }, 
+            "dyes": {
+                "Lamp_2": "default"
+            }, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|0.999997973442*0.0*0.0*0.0|207.871795654*216.701156616*-35.4121246338*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_2_4.model"
+        }, 
+        "2F296EDF.443A66B6.9B293A95.C0BFEB6F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "07/02/2024", 
+                "description": "ceiling_lamp_2_4", 
+                "modified by": "ice_c", 
+                "modified on": "07/02/2024"
+            }, 
+            "dyes": {
+                "Lamp_2": "default"
+            }, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|0.999997973442*0.0*0.0*0.0|227.871749878*216.701141357*-27.3649024963*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_2_4.model"
+        }, 
+        "63D68C01.4A8D6CA8.D081CCBC.3506344A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "06/02/2024", 
+                "description": "ceiling_lamp_2_4", 
+                "modified by": "ice_c", 
+                "modified on": "06/02/2024"
+            }, 
+            "dyes": {
+                "Lamp_2": "default"
+            }, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|207.871810913*216.701156616*-41.4121322632*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_2_4.model"
+        }, 
+        "72203B95.4BFC346E.5B7FB19A.69FA8735": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "07/02/2024", 
+                "description": "ceiling_lamp_2_4", 
+                "modified by": "ice_c", 
+                "modified on": "07/02/2024"
+            }, 
+            "dyes": {
+                "Lamp_2": "default"
+            }, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|0.999997973442*0.0*0.0*0.0|227.871749878*216.701141357*-15.3649101257*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_2_4.model"
+        }, 
+        "EB8B5C40.4247B294.E1A0E69B.ABA2811F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "07/02/2024", 
+                "description": "ceiling_lamp_2_4", 
+                "modified by": "ice_c", 
+                "modified on": "07/02/2024"
+            }, 
+            "dyes": {
+                "Lamp_2": "default"
+            }, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|0.999997973442*0.0*0.0*0.0|227.871765137*216.701141357*-21.364906311*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_2_4.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|0.999997973442*0.0*0.0*0.0|227.871749878*216.701141357*-15.3649101257*1.0"
+}

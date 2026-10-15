@@ -1,0 +1,294 @@
+{
+    "firstguid": "70EC0A7F.4C0ED4D8.59E0DC90.9E2C916E", 
+    "models": {
+        "13126DE6.404496EE.4240EAB9.C8252C78": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "18/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "18/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.708522975445*0.202110007405*-0.676126003265*0.0|-0.640335977077*0.218547001481*0.736347019672*0.0|0.296588987112*0.95466697216*-0.0254270005971*0.0|-1425.50683594*5.02703905106*1510.37683105*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "23AEE0DE.43E3D385.9AEC85BF.8AA0ED22": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.301573008299*0.262796998024*-0.916510999203*0.0|0.275741994381*-0.944225013256*-0.18001100421*0.0|-0.912701010704*-0.198434993625*-0.357214987278*0.0|-1433.7565918*2.04498291016*1508.55407715*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "34EA0609.43A59010.C0C5AEB2.C532DE39": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.658415973186*0.239620000124*-0.713491022587*0.0|0.731795012951*0.0178169999272*0.681291997433*0.0|0.175963997841*-0.970703005791*-0.163623005152*0.0|-1433.05126953*1.18792700768*1510.72265625*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "391A75E1.49EF2268.E850F9BA.31CBD66E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.708522975445*0.202110007405*-0.676126003265*0.0|-0.640335977077*0.218547001481*0.736347019672*0.0|0.296588987112*0.95466697216*-0.0254270005971*0.0|-1429.46923828*2.74459791183*1509.83642578*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "43ED3B7C.4E41E394.D74059A3.CFCD644F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.965511977673*0.0264769997448*-0.259005010128*0.0|0.260334014893*0.0854550004005*-0.961728990078*0.0|-0.00332999997772*-0.995989978313*-0.0894000008702*0.0|-1436.9519043*2.37091088295*1508.39196777*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "490E40B6.46CB1DE5.3CF023B7.3EF13C7F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.613066017628*0.462343990803*-0.640615999699*0.0|0.0837929993868*-0.844352006912*-0.529195010662*0.0|-0.785576999187*0.27075201273*-0.556384027004*0.0|-1438.05969238*1.51654100418*1513.16589355*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "4DADF832.4513D808.793E6C90.8A3FD14E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "18/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "18/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0156089998782*0.263911992311*-0.96442002058*0.0|-0.642551004887*0.741653978825*0.192552998662*0.0|0.766084015369*0.616684019566*0.181152999401*0.0|-1437.66894531*4.12566280365*1505.35827637*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "6C0B426C.41717C45.4BBDDEA8.A9EC0F59": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0847349986434*-0.141163006425*-0.986353993416*0.0|0.785382986069*-0.59972602129*0.153301000595*0.0|-0.613183021545*-0.787656009197*0.0600510016084*0.0|-1439.89978027*1.40032994747*1510.98327637*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "70EC0A7F.4C0ED4D8.59E0DC90.9E2C916E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "17/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.734399020672*0.369397997856*-0.569387018681*0.0|0.658313989639*-0.183539003134*0.730023980141*0.0|0.165165007114*-0.910965979099*-0.377970993519*0.0|-1433.91479492*1.23805999756*1514.3125*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "9733C56A.4BB5211B.A3C269BD.99DBC475": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.383567988873*0.665197014809*-0.640615999699*0.0|0.407169014215*-0.744422972202*-0.529195010662*0.0|-0.828908979893*-0.0578569993377*-0.556384027004*0.0|-1434.03015137*1.36077904701*1509.33251953*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "9CC6AA07.41FE075A.8CA9C082.5199023B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.635434985161*0.772153973579*0.0*0.0|-0.324523001909*0.267062991858*-0.907392978668*0.0|-0.700646996498*0.576590001583*0.42028298974*0.0|-1439.73266602*1.34252905846*1510.10998535*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "A2D06BCB.4D78612B.50C6EDAB.FA4363B6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "17/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.540410995483*0.467209011316*-0.699765026569*0.0|0.823315024376*0.122116997838*-0.554292023182*0.0|-0.173517003655*-0.875672996044*-0.450654000044*0.0|-1435.85400391*1.25179803371*1513.29516602*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "AAF2477D.42C8F019.BC718C8F.45850E45": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "17/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*0.42028298974*-0.907392978668*0.0|0.0*0.907392978668*0.42028298974*0.0|-1436.95581055*1.39569401741*1513.33837891*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "BB3ABB51.4E821E22.A084C089.A50BC4C0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.00445799995214*0.214679002762*-0.97667402029*0.0|0.963468015194*-0.260623008013*-0.0616840012372*0.0|-0.267785996199*-0.941269993782*-0.205675005913*0.0|-1434.44604492*1.13920402527*1513.09765625*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "C4B56810.41BAD0B4.AB6791B3.B0846812": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "18/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0156089998782*0.263911992311*-0.96442002058*0.0|-0.642551004887*0.741653978825*0.192552998662*0.0|0.766084015369*0.616684019566*0.181152999401*0.0|-1442.72827148*1.4487169981*1513.92822266*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "D281C923.45E0025E.6E0BE6BA.A85D4AE8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0575960017741*0.934925973415*-0.350138008595*0.0|0.0507039986551*-0.347528010607*-0.936298012733*0.0|-0.997052013874*-0.0716810002923*-0.0273880008608*0.0|-1437.45910645*1.45080602169*1512.54577637*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "E1CE5E3E.41BEECCE.C8D11FA6.5D1B11BF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.658415973186*0.239620000124*-0.713491022587*0.0|0.731795012951*0.0178169999272*0.681291997433*0.0|0.175963997841*-0.970703005791*-0.163623005152*0.0|-1437.85314941*1.52224898338*1510.62780762*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }, 
+        "FA36B966.4C0F8B22.B9B2489C.5797CE24": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_pelvis", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.119051001966*-0.00179000000935*-0.992886006832*0.0|0.894514977932*-0.433786004782*0.108038000762*0.0|-0.430893987417*-0.901013970375*-0.0500410012901*0.0|-1434.78930664*1.15234398842*1511.11352539*1.0", 
+            "path": "models/props/corpse/animal_pelvis.model"
+        }
+    }, 
+    "spawn_transform": "0.734399020672*0.369397997856*-0.569387018681*0.0|0.658313989639*-0.183539003134*0.730023980141*0.0|0.165165007114*-0.910965979099*-0.377970993519*0.0|-1433.91479492*1.23805999756*1514.3125*1.0"
+}

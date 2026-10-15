@@ -1,0 +1,56 @@
+{
+    "models": {
+        "11F53F3E.4A55450A.89E93A9F.8D0B16F0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "6203b0aei@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "chair", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0181799996644*-0.997528016567*-0.0678500011563*0.0|-0.258179008961*0.0702430009842*-0.963539004326*0.0|0.965924024582*0.0*-0.258819013834*0.0|359.603607178*213.209762573*-42.2196998596*1.0", 
+            "path": "models/props/room_character/models_objects/chair.model"
+        }, 
+        "445E2979.4760D001.024F35A1.29732156": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "6203b0aei@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "chair", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.945518016815*0.0*0.325567990541*0.0|0.0*1.0*0.0*0.0|-0.325567990541*0.0*0.945518016815*0.0|360.5050354*213.308502197*-39.5263290405*1.0", 
+            "path": "models/props/room_character/models_objects/chair.model"
+        }, 
+        "793DA23E.48080D99.4A5BDFA0.A1C01276": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "6203b0aei@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "chair", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.284860998392*0.71322697401*-0.640434980392*0.0|0.290158987045*-0.700929999352*-0.651538014412*0.0|-0.913596987724*-0.000230999998166*-0.406617999077*0.0|362.217163086*213.849197388*-40.5700645447*1.0", 
+            "path": "models/props/room_character/models_objects/chair.model"
+        }
+    }, 
+    "spawn_transform": "0.945518016815*0.0*0.325567990541*0.0|0.0*1.0*0.0*0.0|-0.325567990541*0.0*0.945518016815*0.0|360.5050354*213.308502197*-39.5263290405*1.0"
+}

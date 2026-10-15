@@ -1,0 +1,77 @@
+{
+    "models": {
+        "3301BDB3.4FAF9BC3.C37DDE82.8D90308A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "mushrooms_4_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.621152997017*-0.333748012781*0.14515799284*0.0|0.350778996944*0.472456008196*-0.414765000343*0.0|0.0970190018415*0.42858800292*0.570254027843*0.0|422.867462158*171.289016724*-99.7430725098*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_4/mushrooms_4_lod2.model"
+        }, 
+        "732CF328.4DA64084.97787897.47994D49": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "mushrooms_4_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.361339002848*-0.455172985792*-0.663798987865*0.0|-0.484360009432*0.70409399271*-0.219142004848*0.0|0.642811000347*0.274673998356*-0.538260996342*0.0|413.428375244*170.727310181*-100.3723526*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_4/mushrooms_4_lod2.model"
+        }, 
+        "AF5E683C.4AF768E5.3F235F86.AC2591B8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "mushrooms_4_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.345762014389*-0.307714998722*-0.678613007069*0.0|-0.731908023357*0.0*0.372916996479*0.0|-0.139697000384*0.761622011662*-0.274177014828*0.0|414.590759277*172.063980103*-99.8589096069*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_4/mushrooms_4_lod2.model"
+        }, 
+        "B299D474.4FA9E3C4.71E89490.CFE1203E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "mushrooms_4_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0784939974546*-0.889496028423*0.154055997729*0.0|-0.80738401413*0.0*0.411372989416*0.0|-0.403815001249*-0.172900006175*-0.79255002737*0.0|415.400787354*171.983337402*-98.3270721436*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_4/mushrooms_4_lod2.model"
+        }
+    }, 
+    "spawn_transform": "-0.345762014389*-0.307714998722*-0.678613007069*0.0|-0.731908023357*0.0*0.372916996479*0.0|-0.139697000384*0.761622011662*-0.274177014828*0.0|414.590759277*172.063980103*-99.8589096069*1.0"
+}

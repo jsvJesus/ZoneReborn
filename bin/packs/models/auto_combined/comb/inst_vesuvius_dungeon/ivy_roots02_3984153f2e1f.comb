@@ -1,0 +1,85 @@
+{
+    "models": {
+        "42324BF5.4F72D8CA.004BD19C.95D199EA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.978146970272*0.207911998034*0.0|1.0*0.0*0.0*0.0|0.0*0.207911998034*-0.978146970272*0.0|125.886726379*214.283172607*-104.61075592*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "5680C10F.4A9BC454.0690ED87.DB486806": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.987688004971*-0.156433999538*0.0|1.0*0.0*0.0*0.0|0.0*-0.156433999538*-0.987688004971*0.0|125.886726379*216.857192993*-107.187789917*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "6B76E4B1.438AE2CC.C0090EAF.D89FAFB3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999390006065*0.0*0.0348990000784*0.0|0.0*1.0*0.0*0.0|-0.0348990000784*0.0*-0.999391019344*0.0|126.736625671*213.007461548*-102.719429016*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "81739171.44CA6FF6.0AF372AC.67125E48": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.997564017773*-0.0697569996119*0.0|1.0*0.0*0.0*0.0|0.0*-0.0697569996119*-0.997564017773*0.0|125.886734009*217.320144653*-104.69568634*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "BA76B8D4.4119F152.FEE1FB9B.6F983E39": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "20/05/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*1.74584794044*0.371091991663*0.0|0.325259000063*0.0*0.0*0.0|0.0*0.371091991663*-1.74584794044*0.0|125.890991211*216.304672241*-107.748603821*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }
+    }, 
+    "spawn_transform": "0.0*1.74584794044*0.371091991663*0.0|0.325259000063*0.0*0.0*0.0|0.0*0.371091991663*-1.74584794044*0.0|125.890991211*216.304672241*-107.748603821*1.0"
+}

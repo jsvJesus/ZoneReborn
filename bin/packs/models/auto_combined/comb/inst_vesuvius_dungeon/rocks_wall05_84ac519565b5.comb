@@ -1,0 +1,44 @@
+{
+    "firstguid": "30C6252F.4BC061F4.D49EB5B9.0F7D465F", 
+    "models": {
+        "30C6252F.4BC061F4.D49EB5B9.0F7D465F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "582ec61bi@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "20/06/2024", 
+                "description": "rocks_wall05", 
+                "modified by": "ice_c", 
+                "modified on": "24/06/2024"
+            }, 
+            "dyes": {
+                "rock": "rock"
+            }, 
+            "matrix": "-0.0939299985766*0.0174160003662*0.443468004465*0.0|-0.0152610000223*0.45289799571*-0.02101900056*0.0|-0.443547993898*-0.0192709993571*-0.0931899994612*0.0|387.25894165*142.699035645*161.413574219*1.0", 
+            "path": "models/flora/stones/rocks_wall05.model"
+        }, 
+        "701B035B.43662007.DADD78AA.0066C972": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "582ec61bi@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "20/06/2024", 
+                "description": "rocks_wall05", 
+                "modified by": "ice_c", 
+                "modified on": "25/06/2024"
+            }, 
+            "dyes": {
+                "rock": "rock"
+            }, 
+            "matrix": "-0.0860539972782*0.0597800016403*1.06884098053*0.0|0.00420599989593*1.10657203197*-0.0615530014038*0.0|-1.07049202919*-0.000722999975551*-0.0861480012536*0.0|403.733337402*137.039474487*157.181137085*1.0", 
+            "path": "models/flora/stones/rocks_wall05.model"
+        }
+    }, 
+    "spawn_transform": "-0.0939299985766*0.0174160003662*0.443468004465*0.0|-0.0152610000223*0.45289799571*-0.02101900056*0.0|-0.443547993898*-0.0192709993571*-0.0931899994612*0.0|387.25894165*142.699035645*161.413574219*1.0"
+}

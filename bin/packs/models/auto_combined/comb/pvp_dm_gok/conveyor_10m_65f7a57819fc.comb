@@ -1,0 +1,40 @@
+{
+    "firstguid": "90C7F5AE.47DFC055.D426FE96.7EF9B695", 
+    "models": {
+        "90C7F5AE.47DFC055.D426FE96.7EF9B695": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "conveyor_10m", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999990999699*0.0*0.0*0.0|0.0*0.942174017429*0.335099995136*0.0|0.0*-0.335099995136*0.94217300415*0.0|41.3813781738*11.4830474854*46.7508239746*1.0", 
+            "path": "models/props/industrial/conveyor_10m.model"
+        }, 
+        "B6E1688D.41344AD4.81475C84.093005C5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "conveyor_10m", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.99998998642*0.0*0.0*0.0|0.0*0.94217300415*0.335099995136*0.0|0.0*-0.257483005524*0.723945021629*0.0|41.3813705444*8.49778747559*55.1442108154*1.0", 
+            "path": "models/props/industrial/conveyor_10m.model"
+        }
+    }, 
+    "spawn_transform": "0.999990999699*0.0*0.0*0.0|0.0*0.942174017429*0.335099995136*0.0|0.0*-0.335099995136*0.94217300415*0.0|41.3813781738*11.4830474854*46.7508239746*1.0"
+}

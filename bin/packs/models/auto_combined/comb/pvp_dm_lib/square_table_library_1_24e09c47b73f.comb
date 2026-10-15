@@ -1,0 +1,44 @@
+{
+    "firstguid": "51049C5C.408D1922.FF820AA8.E6ED8AAE", 
+    "models": {
+        "231B099F.41FF2D06.9EB0FDAA.B619CFE8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "4a19de94i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "square_table_library_1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/07/2025"
+            }, 
+            "dyes": {
+                "lamp_library": "dont_render"
+            }, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*0.999998986721*0.0*0.0|0.999997973442*0.0*0.0*0.0|43.0047607422*9.99998760223*87.2687149048*1.0", 
+            "path": "models/misc/furniture/library/square_table_library_1.model"
+        }, 
+        "51049C5C.408D1922.FF820AA8.E6ED8AAE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "4a19de94i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "square_table_library_1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/07/2025"
+            }, 
+            "dyes": {
+                "lamp_library": "dont_render"
+            }, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|43.0047645569*9.99998855591*88.8608551025*1.0", 
+            "path": "models/misc/furniture/library/square_table_library_1.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|43.0047645569*9.99998855591*88.8608551025*1.0"
+}

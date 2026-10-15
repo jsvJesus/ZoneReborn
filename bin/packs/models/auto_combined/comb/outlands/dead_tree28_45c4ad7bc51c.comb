@@ -1,0 +1,42 @@
+{
+    "firstguid": "B4A547BB.48EF3A3A.D31F788E.25D56C50", 
+    "models": {
+        "88F38312.43FBF4D8.23C754B3.4777589B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000e0002o@outlands@0x000001F05EFE4040", 
+                "created by": "sergey_busygin", 
+                "created on": "18/01/2022", 
+                "description": "dead_tree28", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18/01/2022"
+            }, 
+            "dyes": {
+                "tree": "default"
+            }, 
+            "matrix": "1.86925303936*-0.134149998426*0.263359993696*0.0|0.138840004802*1.88722097874*-0.0241410005838*0.0|-0.2609179914*0.043166000396*1.87390494347*0.0|1424.52429199*-8.90262889862*295.574645996*1.0", 
+            "path": "models/flora/trees/dead_tree28.model"
+        }, 
+        "B4A547BB.48EF3A3A.D31F788E.25D56C50": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000e0002o@outlands@0x000001F05EFE4040", 
+                "created by": "sergey_busygin", 
+                "created on": "18/01/2022", 
+                "description": "dead_tree28", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18/01/2022"
+            }, 
+            "dyes": {
+                "tree": "default"
+            }, 
+            "matrix": "1.27677202225*0.260690003633*1.5884449482*0.0|-0.156500995159*2.03794693947*-0.208667993546*0.0|-1.60206902027*0.00867700017989*1.28629803658*0.0|1462.14147949*-9.15029335022*294.025817871*1.0", 
+            "path": "models/flora/trees/dead_tree28.model"
+        }
+    }, 
+    "spawn_transform": "1.27677202225*0.260690003633*1.5884449482*0.0|-0.156500995159*2.03794693947*-0.208667993546*0.0|-1.60206902027*0.00867700017989*1.28629803658*0.0|1462.14147949*-9.15029335022*294.025817871*1.0"
+}

@@ -1,0 +1,124 @@
+{
+    "models": {
+        "101EABCE.4F0243CE.3319A5A4.4018286E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_01", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*0.999998986721*0.0*0.0|0.999997973442*0.0*0.0*0.0|217.303192139*199.999755859*-23.452255249*1.0", 
+            "path": "models/props/warehouse/green_shelf_01.model"
+        }, 
+        "20179E42.43D96FF0.9E3349A7.8F4B1DEA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "14/02/2024", 
+                "description": "green_shelf_01", 
+                "modified by": "ice_c", 
+                "modified on": "19/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0837000012398*-9.99999997475e-07*-0.996490001678*0.0|-9.99999997475e-07*0.999998986721*-9.99999997475e-07*0.0|0.996490001678*9.99999997475e-07*0.0837000012398*0.0|217.231140137*199.999786377*-17.8695545197*1.0", 
+            "path": "models/props/warehouse/green_shelf_01.model"
+        }, 
+        "28BC7B27.4D982A9D.7D545087.C5BB011A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "14/02/2024", 
+                "description": "green_shelf_01", 
+                "modified by": "ice_c", 
+                "modified on": "19/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*1.0*0.0*0.0|-0.999998986721*0.0*0.0*0.0|218.582260132*199.999740601*-20.7080841064*1.0", 
+            "path": "models/props/warehouse/green_shelf_01.model"
+        }, 
+        "9347EC23.46992200.FCBD5191.806D1411": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_01", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*1.0*0.0*0.0|-0.999998986721*0.0*0.0*0.0|218.373168945*199.999893188*-37.385761261*1.0", 
+            "path": "models/props/warehouse/green_shelf_01.model"
+        }, 
+        "9AB8D2A5.44197BFB.D8E7BB80.D1D50515": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_01", 
+                "modified by": "ice_c", 
+                "modified on": "19/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*0.999998986721*0.0*0.0|0.999997973442*0.0*0.0*0.0|217.117019653*199.999771118*-29.0417022705*1.0", 
+            "path": "models/props/warehouse/green_shelf_01.model"
+        }, 
+        "B9EAF109.4798BFDC.410AAAAD.A45B7AEB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_01", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*1.0*0.0*0.0|-0.999998986721*0.0*0.0*0.0|218.389968872*199.99987793*-31.7844696045*1.0", 
+            "path": "models/props/warehouse/green_shelf_01.model"
+        }, 
+        "EEC1DEC5.4B2D5BC0.FBE9938F.59E7325D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_01", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999997019768*0.0|0.0*0.999997973442*0.0*0.0|-0.999997019768*0.0*0.0*0.0|227.813903809*199.999679565*-29.2184028625*1.0", 
+            "path": "models/props/warehouse/green_shelf_01.model"
+        }
+    }, 
+    "spawn_transform": "0.0837000012398*-9.99999997475e-07*-0.996490001678*0.0|-9.99999997475e-07*0.999998986721*-9.99999997475e-07*0.0|0.996490001678*9.99999997475e-07*0.0837000012398*0.0|217.231140137*199.999786377*-17.8695545197*1.0"
+}

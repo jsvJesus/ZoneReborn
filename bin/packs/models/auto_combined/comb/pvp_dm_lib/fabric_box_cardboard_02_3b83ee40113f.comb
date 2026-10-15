@@ -1,0 +1,38 @@
+{
+    "firstguid": "1BB55192.41156A35.7A724EA5.51E86F5C", 
+    "models": {
+        "1BB55192.41156A35.7A724EA5.51E86F5C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001D6AA9CDF20", 
+                "created by": "sergey_busygin", 
+                "created on": "12:28:19", 
+                "description": "fabric_box_cardboard_02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "12:28:19"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.891005992889*0.0*-0.453990012407*0.0|0.0*1.0*0.0*0.0|0.453990012407*0.0*-0.891005992889*0.0|50.3439903259*2.4980738163*50.0289764404*1.0", 
+            "path": "models/misc/fabric/fabric_box_cardboard_02.model"
+        }, 
+        "331E1AD7.466C51FF.9B1C47A0.A15E1C71": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001D6AA9CDF20", 
+                "created by": "sergey_busygin", 
+                "created on": "12:28:19", 
+                "description": "fabric_box_cardboard_02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "12:28:19"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.669130027294*0.0*0.743143975735*0.0|0.0*1.0*0.0*0.0|-0.743143975735*0.0*-0.669130027294*0.0|43.1349868774*2.45999693871*48.9339752197*1.0", 
+            "path": "models/misc/fabric/fabric_box_cardboard_02.model"
+        }
+    }, 
+    "spawn_transform": "-0.891005992889*0.0*-0.453990012407*0.0|0.0*1.0*0.0*0.0|0.453990012407*0.0*-0.891005992889*0.0|50.3439903259*2.4980738163*50.0289764404*1.0"
+}

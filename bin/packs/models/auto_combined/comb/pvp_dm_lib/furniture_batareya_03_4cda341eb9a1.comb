@@ -1,0 +1,57 @@
+{
+    "firstguid": "BACE2C58.4F115FFB.C05E68A7.5060188F", 
+    "models": {
+        "58CDA083.4C916D47.EDA647BB.E6374675": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "furniture_batareya_03", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|96.3559417725*4.99999809265*48.532913208*1.0", 
+            "path": "models/misc/furniture/furniture_batareya_03.model"
+        }, 
+        "A9ECD4F2.45C343A0.E6933683.2131BD57": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "furniture_batareya_03", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|96.3559265137*4.99999713898*45.5397987366*1.0", 
+            "path": "models/misc/furniture/furniture_batareya_03.model"
+        }, 
+        "BACE2C58.4F115FFB.C05E68A7.5060188F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "furniture_batareya_03", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|96.3559112549*4.99999713898*42.5475196838*1.0", 
+            "path": "models/misc/furniture/furniture_batareya_03.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|96.3559112549*4.99999713898*42.5475196838*1.0"
+}

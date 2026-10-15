@@ -1,0 +1,54 @@
+{
+    "firstguid": "4BDEFCFC.4AED8F7C.410B1E81.410A371B", 
+    "models": {
+        "49D0790E.4F0CA2EB.872CD880.C9F557EE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "792fbb03i@inst_vesuvius_dungeon@0x000002615C50F690", 
+                "created by": "sergey_busygin", 
+                "created on": "20:17:49", 
+                "description": "pipe_1m", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20:17:49"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999997973442*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*-0.999997973442*0.0|474.582702637*175.877716064*-123.953979492*1.0", 
+            "path": "models/props/industrial/pipes/pipe_1m.model"
+        }, 
+        "4BDEFCFC.4AED8F7C.410B1E81.410A371B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "792fbb03i@inst_vesuvius_dungeon@0x000002615C50F690", 
+                "created by": "sergey_busygin", 
+                "created on": "20:31:12", 
+                "description": "pipe_1m", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20:31:12"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*-0.999998986721*0.0|474.758850098*176.380508423*-112.322410583*1.0", 
+            "path": "models/props/industrial/pipes/pipe_1m.model"
+        }, 
+        "D1FC3584.411B28A6.DF98A793.AE6C238A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "792fbb03i@inst_vesuvius_dungeon@0x000002615C50F690", 
+                "created by": "sergey_busygin", 
+                "created on": "20:19:32", 
+                "description": "pipe_1m", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20:19:41"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*-0.999998986721*0.0|474.607513428*176.386657715*-118.064659119*1.0", 
+            "path": "models/props/industrial/pipes/pipe_1m.model"
+        }
+    }, 
+    "spawn_transform": "-0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*-0.999998986721*0.0|474.758850098*176.380508423*-112.322410583*1.0"
+}

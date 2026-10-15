@@ -1,0 +1,63 @@
+{
+    "firstguid": "DF05A543.91D5487D.869D3B8A.D6904910", 
+    "models": {
+        "04030962.9A11417F.AB416EF4.EEB0723B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "casts shadow": true, 
+                "chunk": "ffff000fo@outlands@0x000002862CA9F180", 
+                "created by": "anton_zyryanov", 
+                "created on": "04/03/2016", 
+                "description": "brevno_pack_big_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "04/03/2016"
+            }, 
+            "dyes": {
+                "doski": "default"
+            }, 
+            "matrix": "-0.00730499997735*0.0399029999971*-0.999176979065*0.0|0.0378400012851*0.998498976231*0.0395999997854*0.0|0.999257981777*-0.0375190004706*-0.00880399998277*0.0|-47.42710495*10.1532707214*1566.65795898*1.0", 
+            "path": "models/props/villageobjects/brevno_pack_big_lod1.model"
+        }, 
+        "99CA5383.E2FC4BC7.A7359193.DB099820": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "casts shadow": true, 
+                "chunk": "ffff000fo@outlands@0x000002862CA9F180", 
+                "created by": "anton_zyryanov", 
+                "created on": "04/03/2016", 
+                "description": "brevno_pack_big_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "04/03/2016"
+            }, 
+            "dyes": {
+                "doski": "default"
+            }, 
+            "matrix": "-0.00730499997735*0.0399029999971*-0.999176979065*0.0|0.0378400012851*0.998498976231*0.0395999997854*0.0|0.999257981777*-0.0375190004706*-0.00880399998277*0.0|-47.4566040039*9.88548660278*1570.18688965*1.0", 
+            "path": "models/props/villageobjects/brevno_pack_big_lod1.model"
+        }, 
+        "DF05A543.91D5487D.869D3B8A.D6904910": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "casts shadow": true, 
+                "chunk": "ffff000fo@outlands@0x000002862CA9F180", 
+                "created by": "anton_zyryanov", 
+                "created on": "04/03/2016", 
+                "description": "brevno_pack_big_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "04/03/2016"
+            }, 
+            "dyes": {
+                "doski": "default"
+            }, 
+            "matrix": "-0.00730499997735*0.0399029999971*-0.999176979065*0.0|0.0378400012851*0.998498976231*0.0395999997854*0.0|0.999257981777*-0.0375190004706*-0.00880399998277*0.0|-47.5083084106*9.78197860718*1573.93164062*1.0", 
+            "path": "models/props/villageobjects/brevno_pack_big_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-0.00730499997735*0.0399029999971*-0.999176979065*0.0|0.0378400012851*0.998498976231*0.0395999997854*0.0|0.999257981777*-0.0375190004706*-0.00880399998277*0.0|-47.5083084106*9.78197860718*1573.93164062*1.0"
+}

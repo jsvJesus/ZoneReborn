@@ -1,0 +1,86 @@
+{
+    "firstguid": "D0BC21DD.4B4334B4.D09B4F82.CFECEC4C", 
+    "models": {
+        "21818486.4C774DF9.31E0CFB4.1D1C3577": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "books_mess_2", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.906307995319*0.0*-0.422618001699*0.0|0.0*1.0*0.0*0.0|0.422618001699*0.0*0.906307995319*0.0|82.9024734497*4.99999904633*39.6480522156*1.0", 
+            "path": "models/misc/furniture/library/books_mess_2.model"
+        }, 
+        "9B62DCD3.4630B80E.88E3D98D.C9884DDE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "books_mess_2", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.325567990541*0.0*-0.945518016815*0.0|0.0*1.0*0.0*0.0|0.945518016815*0.0*-0.325567990541*0.0|84.5865249634*5.03499603271*47.3074264526*1.0", 
+            "path": "models/misc/furniture/library/books_mess_2.model"
+        }, 
+        "BA9F3E24.4F8780A4.04FE7097.774EF6E3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "26/05/2023", 
+                "description": "books_mess_2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "26/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.810196995735*0.0*0.586157977581*0.0|0.0*1.0*0.0*0.0|-0.586157977581*0.0*0.810196995735*0.0|91.1029891968*4.99999904633*45.4899330139*1.0", 
+            "path": "models/misc/furniture/library/books_mess_2.model"
+        }, 
+        "D0BC21DD.4B4334B4.D09B4F82.CFECEC4C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "26/05/2023", 
+                "description": "books_mess_2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.810196995735*0.0*0.586157977581*0.0|0.0*1.0*0.0*0.0|-0.586157977581*0.0*0.810196995735*0.0|92.5099945068*4.99999904633*39.2748336792*1.0", 
+            "path": "models/misc/furniture/library/books_mess_2.model"
+        }, 
+        "DC61A053.46660F4F.A6E881AB.7A7E3B6A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/07/2025", 
+                "description": "books_mess_2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.994729995728*0.0*0.102528996766*0.0|0.0*1.0*0.0*0.0|-0.102528996766*0.0*0.994729995728*0.0|89.7549285889*5.59334516525*37.7253875732*1.0", 
+            "path": "models/misc/furniture/library/books_mess_2.model"
+        }
+    }, 
+    "spawn_transform": "0.810196995735*0.0*0.586157977581*0.0|0.0*1.0*0.0*0.0|-0.586157977581*0.0*0.810196995735*0.0|92.5099945068*4.99999904633*39.2748336792*1.0"
+}

@@ -1,0 +1,38 @@
+{
+    "firstguid": "7B3CB56E.40AAE46D.E64DB090.05C550B0", 
+    "models": {
+        "7B3CB56E.40AAE46D.E64DB090.05C550B0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "paper_set_07", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.310568004847*0.0*0.720142006874*0.0|0.0*0.784255027771*0.0*0.0|-0.720142006874*0.0*0.310568004847*0.0|87.4667205811*4.99999427795*47.2058601379*1.0", 
+            "path": "models/props/room_character/paper_set/paper_set_07.model"
+        }, 
+        "916E0690.48A5B5F3.46CD8F87.89C20537": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "paper_set_07", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.110596999526*0.0*-0.698280990124*0.0|0.0*0.706984996796*0.0*0.0|0.698280990124*0.0*-0.110596999526*0.0|80.8874816895*4.99999523163*38.1793251038*1.0", 
+            "path": "models/props/room_character/paper_set/paper_set_07.model"
+        }
+    }, 
+    "spawn_transform": "0.310568004847*0.0*0.720142006874*0.0|0.0*0.784255027771*0.0*0.0|-0.720142006874*0.0*0.310568004847*0.0|87.4667205811*4.99999427795*47.2058601379*1.0"
+}

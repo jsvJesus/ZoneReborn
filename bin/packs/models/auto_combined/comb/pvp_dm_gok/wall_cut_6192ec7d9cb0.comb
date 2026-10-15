@@ -1,0 +1,117 @@
+{
+    "firstguid": "CCF40DCB.40E86935.AD0BD983.2A961790", 
+    "models": {
+        "30E6AB4C.431F6065.7E0C1288.2F98DAEC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "wall_window_bottom", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "2.34562301636*0.0*9.99999997475e-07*0.0|0.0*1.85493397713*0.0*0.0|0.0*0.0*1.63299405575*0.0|35.0004119873*7.0263710022*69.6506195068*1.0", 
+            "path": "models/city/props/filtration_station/wall_window_bottom.model"
+        }, 
+        "B48C92AE.470835D1.A53BD293.2A8E1A3A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "wall_window_top", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "2.34035897255*0.0*0.0*0.0|0.0*1.57976794243*0.0*0.0|0.0*0.0*1.57976603508*0.0|35.0003967285*7.02638626099*69.6506195068*1.0", 
+            "path": "models/city/props/filtration_station/wall_window_top.model"
+        }, 
+        "C331D722.4BDAEB18.5DC2C3AD.40DF3981": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "14:52:52", 
+                "description": "wall_short", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "14:52:52"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "1.36242997646*0.0*0.0*0.0|0.0*1.57999205589*0.0*0.0|0.0*0.0*1.63298797607*0.0|30.9162750244*7.02638101578*69.6504211426*1.0", 
+            "path": "models/city/props/filtration_station/wall_short.model"
+        }, 
+        "CCF40DCB.40E86935.AD0BD983.2A961790": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "wall_cut", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "1.32547700405*0.000457999994978*0.0*0.0|-0.000546000024769*1.57998895645*0.0*0.0|0.0*0.0*1.63298797607*0.0|42.0178489685*7.02637529373*69.6504974365*1.0", 
+            "path": "models/city/props/filtration_station/wall_cut.model"
+        }, 
+        "D45341E1.4062F1AB.99C00991.D16B9BF2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "14:52:52", 
+                "description": "wall_long", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "14:52:52"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "0.0*0.0*1.63298904896*0.0|0.0*1.57955205441*0.0*0.0|-1.63298904896*0.0*0.0*0.0|31.7156677246*7.00577831268*56.1347007751*1.0", 
+            "path": "models/city/props/filtration_station/wall_long.model"
+        }, 
+        "E33F9E5E.425C0A3A.0403C3B7.E54E8AF6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "14:52:52", 
+                "description": "wall_short", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "14:52:52"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "0.0*0.0*1.51501595974*0.0|0.0*1.57955098152*0.0*0.0|-1.63298797607*0.0*-9.99999997475e-07*0.0|31.7156906128*7.00577831268*65.9325561523*1.0", 
+            "path": "models/city/props/filtration_station/wall_short.model"
+        }
+    }, 
+    "spawn_transform": "1.32547700405*0.000457999994978*0.0*0.0|-0.000546000024769*1.57998895645*0.0*0.0|0.0*0.0*1.63298797607*0.0|42.0178489685*7.02637529373*69.6504974365*1.0"
+}

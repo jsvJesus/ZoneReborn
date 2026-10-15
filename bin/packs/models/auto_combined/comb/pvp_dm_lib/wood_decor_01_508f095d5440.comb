@@ -1,0 +1,486 @@
+{
+    "firstguid": "A3CC855D.4693FFC5.3C7757A9.1FF95FD7", 
+    "models": {
+        "11ED68F9.44DDBFCD.ACADB8BE.6C92A62E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "23/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.0*0.0*0.0*0.0|0.0*-2.0*0.0*0.0|0.0*0.0*2.0*0.0|57.741481781*16.3648605347*51.5311927795*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "123F419B.4FC086A6.A052DFA8.7192F8BA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "raylo", 
+                "created on": "27/07/2025", 
+                "description": "wood_decor_quad", 
+                "modified by": "raylo", 
+                "modified on": "27/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.58883404732*0.0*0.0*0.0|0.0*-2.92397093773*0.0*0.0|0.0*0.0*-1.58883404732*0.0|51.4979896545*15.9999961853*65.5609741211*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_quad.model"
+        }, 
+        "2765D5CD.44D33932.28A3C882.E26DF5B7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-2.00943303108*0.0|0.0*-2.0*0.0*0.0|-2.0*0.0*0.0*0.0|45.589099884*16.3648586273*29.3160839081*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "2AC980E3.4B7366D4.28B22483.2CF2FEFD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/07/2025", 
+                "description": "wood_decor_quad", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.58883404732*0.0*0.0*0.0|0.0*-2.92397093773*0.0*0.0|0.0*0.0*-1.58883404732*0.0|32.8647727966*15.999997139*59.1743888855*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_quad.model"
+        }, 
+        "3E5811C5.43C4C4FF.30DFD99B.4F35C49B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/07/2025", 
+                "description": "wood_decor_quad", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.58883404732*0.0*0.0*0.0|0.0*-2.92397093773*0.0*0.0|0.0*0.0*-1.58883404732*0.0|32.8803367615*15.999997139*42.565738678*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_quad.model"
+        }, 
+        "3E6B4770.44CB41E6.40F26B82.9515BB62": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.0*0.0*0.0*0.0|0.0*-2.0*0.0*0.0|0.0*0.0*2.27443790436*0.0|35.5579872131*16.3689975739*34.8349761963*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "4161C7AE.417F71CA.CFB1D4A5.422CEBAF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "24/11/2023", 
+                "description": "wood_decor_corner", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-2.0*0.0|0.0*-2.0*0.0*0.0|-2.0*0.0*0.0*0.0|35.5583534241*16.3648605347*63.712802887*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_corner.model"
+        }, 
+        "43671CB1.48EEEA1F.3C220D83.EBBA3D8D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "24/11/2023", 
+                "description": "wood_decor_quad", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.58883404732*0.0*0.0*0.0|0.0*-2.9239718914*0.0*0.0|0.0*0.0*-1.58883404732*0.0|60.0491256714*15.9999990463*59.2962989807*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_quad.model"
+        }, 
+        "444217FA.4CD76C0D.FEE66F8F.2C119AE3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "24/11/2023", 
+                "description": "wood_decor_corner", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "9.99999997475e-07*0.0*2.00943303108*0.0|0.0*-2.0*0.0*0.0|2.0*0.0*-9.99999997475e-07*0.0|57.74010849*16.3648586273*29.3160820007*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_corner.model"
+        }, 
+        "45D4F5BD.40F478F8.0954D2AB.110932C2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-2.0*0.0|0.0*-2.0*0.0*0.0|-1.5985519886*0.0*0.0*0.0|53.5886459351*16.3648605347*63.712802887*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "4FE58E61.42E5092E.97950CBD.ED022BD1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.0*0.0*0.0*0.0|0.0*-2.0*0.0*0.0|0.0*0.0*1.71215105057*0.0|35.5579872131*16.3689975739*59.3579788208*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "58FC3E6E.46E0B919.FC06CBA9.2C1BDFCB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/07/2025", 
+                "description": "wood_decor_quad", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.58883404732*0.0*0.0*0.0|0.0*-2.92397093773*0.0*0.0|0.0*0.0*-1.58883404732*0.0|60.0404815674*15.999997139*33.2734451294*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_quad.model"
+        }, 
+        "5FA6ACBE.44665CF6.5B9F3DAE.F07DDF82": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.0*0.0*0.0*0.0|0.0*-2.0*0.0*0.0|0.0*0.0*2.0*0.0|35.5579872131*16.3689975739*51.898979187*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "6D06A241.4DF0DC28.F09C7E95.5274267C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.0*0.0*0.0*0.0|0.0*-2.0*0.0*0.0|0.0*0.0*1.78796505928*0.0|57.741481781*16.3648605347*59.1623878479*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "94373A37.420008C4.B0A0EDB9.CCC0F4E6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-2.0*0.0|0.0*-2.0*0.0*0.0|-1.27221703529*0.0*0.0*0.0|39.0789871216*16.3649978638*29.3159770966*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "9988449D.4D380BB2.FFD3F3B7.E5B89A3E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "23/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.0*0.0*0.0*0.0|0.0*-2.0*0.0*0.0|0.0*0.0*2.10742998123*0.0|57.741481781*16.3648605347*43.2878074646*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "9CE94937.43FBBBD7.88404BAC.2FDBE49B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/07/2025", 
+                "description": "wood_decor_quad", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.58883404732*0.0*0.0*0.0|0.0*-2.92397093773*0.0*0.0|0.0*0.0*-1.58883404732*0.0|60.0569877625*15.9999990463*50.4215316772*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_quad.model"
+        }, 
+        "A131F9DB.4E1BEA89.7D4733BE.52B55128": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "24/11/2023", 
+                "description": "wood_decor_corner", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "2.0*0.0*0.0*0.0|0.0*-2.0*0.0*0.0|0.0*0.0*-2.0*0.0|35.5579872131*16.3689975739*29.3189754486*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_corner.model"
+        }, 
+        "A189F2CB.48A0638F.ECB97D99.BDC7CE01": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "24/11/2023", 
+                "description": "wood_decor_corner", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.0*0.0*0.0*0.0|0.0*-2.0*0.0*0.0|0.0*0.0*2.0*0.0|57.741481781*16.3648605347*63.7115325928*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_corner.model"
+        }, 
+        "A3CC855D.4693FFC5.3C7757A9.1FF95FD7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-2.0*0.0|0.0*-2.0*0.0*0.0|-1.58582699299*0.0*0.0*0.0|39.7154388428*16.3648605347*63.712802887*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "A522E3D8.4FD371DA.A01EFFB3.CF1DA14A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.0*0.0*0.0*0.0|0.0*-2.00000095367*0.0*0.0|0.0*0.0*2.18981790543*0.0|57.7414779663*16.364862442*34.614692688*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "ACA370BC.4F00C87D.04F7C7A0.CEF6CCBE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/07/2025", 
+                "description": "wood_decor_quad", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.58883404732*0.0*0.0*0.0|0.0*-2.92397093773*0.0*0.0|0.0*0.0*-1.58883404732*0.0|32.8627204895*15.999997139*33.1644058228*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_quad.model"
+        }, 
+        "B3256D95.41FB871B.FD40B2B4.75A7D5C5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/07/2025", 
+                "description": "wood_decor_quad", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.58883404732*0.0*0.0*0.0|0.0*-2.92397093773*0.0*0.0|0.0*0.0*-1.58883404732*0.0|32.8773651123*15.999997139*50.359249115*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_quad.model"
+        }, 
+        "C36DC964.443BECCF.2C11BF8B.83648FCA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.0*0.0*0.0*0.0|0.0*-2.0*0.0*0.0|0.0*0.0*2.10742998123*0.0|35.5579872131*16.3689975739*43.6549758911*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "C82008C9.4C761C66.2FC5DD91.65C0476B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/07/2025", 
+                "description": "wood_decor_quad", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.58883404732*0.0*0.0*0.0|0.0*-2.92397093773*0.0*0.0|0.0*0.0*-1.58883404732*0.0|41.5721588135*15.999997139*27.4432258606*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_quad.model"
+        }, 
+        "D531B203.4B630A4E.C161D5B8.8B50DE1B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-2.0*0.0|0.0*-2.00000095367*0.0*0.0|-1.78763902187*0.0*0.0*0.0|53.2110366821*16.3648605347*29.3160820007*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "DB85367B.412DE43E.5F3E178A.3A64EF10": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/11/2023", 
+                "description": "wood_decor_01", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "23/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-2.0*0.0|0.0*-2.0*0.0*0.0|-1.86000299454*0.0*0.0*0.0|46.6289405823*16.3648605347*63.712802887*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_01.model"
+        }, 
+        "DD334E55.4B2DC2FD.0DA315A6.3674DE8D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/07/2025", 
+                "description": "wood_decor_quad", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.58883404732*0.0*0.0*0.0|0.0*-2.92397093773*0.0*0.0|0.0*0.0*-1.58883404732*0.0|51.5416069031*15.9999990463*27.4291706085*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_quad.model"
+        }, 
+        "ECEA7D0F.4CBC6CA8.B5909595.69354B3F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "raylo", 
+                "created on": "27/07/2025", 
+                "description": "wood_decor_quad", 
+                "modified by": "raylo", 
+                "modified on": "27/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.58883404732*0.0*0.0*0.0|0.0*-2.92396998405*0.0*0.0|0.0*0.0*-1.58883404732*0.0|41.504989624*15.9999961853*65.5249786377*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_quad.model"
+        }, 
+        "FFA4D70C.425A98A1.19D7EA99.803935B9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/07/2025", 
+                "description": "wood_decor_quad", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.58883404732*0.0*0.0*0.0|0.0*-2.92397093773*0.0*0.0|0.0*0.0*-1.58883404732*0.0|60.0279464722*15.999997139*42.6067085266*1.0", 
+            "path": "models/buildings/unique/library/wood_decor_quad.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-2.0*0.0|0.0*-2.0*0.0*0.0|-1.58582699299*0.0*0.0*0.0|39.7154388428*16.3648605347*63.712802887*1.0"
+}

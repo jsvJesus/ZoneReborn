@@ -1,0 +1,38 @@
+{
+    "firstguid": "BB4B6558.4BD1AE41.B9514FA2.8F76DDA5", 
+    "models": {
+        "8437E69B.49A7C0F8.0092D781.438A2E11": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "000f0008o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "31/08/2021", 
+                "description": "overpass", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999679982662*1.99999999495e-06*0.0252279993147*0.0|1.99999999495e-06*0.999997973442*-9.99999997475e-07*0.0|-0.0252279993147*-9.99999997475e-07*-0.999679982662*0.0|1586.94970703*18.75*899.272033691*1.0", 
+            "path": "models/props/garages/overpass/overpass.model"
+        }, 
+        "BB4B6558.4BD1AE41.B9514FA2.8F76DDA5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00100008o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "31/08/2021", 
+                "description": "overpass", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.99967700243*9.99999997475e-07*0.0253299996257*0.0|9.99999997475e-07*0.999997973442*0.0*0.0|-0.0253309998661*-9.99999997475e-07*-0.99967700243*0.0|1601.71484375*18.749994278*898.435058594*1.0", 
+            "path": "models/props/garages/overpass/overpass.model"
+        }
+    }, 
+    "spawn_transform": "-0.99967700243*9.99999997475e-07*0.0253299996257*0.0|9.99999997475e-07*0.999997973442*0.0*0.0|-0.0253309998661*-9.99999997475e-07*-0.99967700243*0.0|1601.71484375*18.749994278*898.435058594*1.0"
+}

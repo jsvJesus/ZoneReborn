@@ -1,0 +1,56 @@
+{
+    "models": {
+        "35C19064.44A11AC0.8845D092.54B0927D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "papper_stack_02", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.173647999763*0.0*0.984804987907*0.0|0.0*0.999997973442*0.0*0.0|-0.984804987907*0.0*-0.173647999763*0.0|381.894012451*213.226913452*-74.4785614014*1.0", 
+            "path": "models/misc/stuffs/papper/papper_stack_02.model"
+        }, 
+        "748F0DAC.4117CE36.71F60685.1C2AFDFE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "papper_stack_02", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.933579027653*0.0*0.358368009329*0.0|0.0*0.999998986721*0.0*0.0|-0.358368009329*0.0*0.933579027653*0.0|381.84777832*214.448226929*-68.7831878662*1.0", 
+            "path": "models/misc/stuffs/papper/papper_stack_02.model"
+        }, 
+        "E1895FC9.4FA7C61F.79B2459F.7ACEDD90": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "papper_stack_02", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.275637000799*0.0*0.961260020733*0.0|0.0*0.999998986721*0.0*0.0|-0.961260020733*0.0*0.275637000799*0.0|381.796447754*215.204986572*-72.510887146*1.0", 
+            "path": "models/misc/stuffs/papper/papper_stack_02.model"
+        }
+    }, 
+    "spawn_transform": "-0.173647999763*0.0*0.984804987907*0.0|0.0*0.999997973442*0.0*0.0|-0.984804987907*0.0*-0.173647999763*0.0|381.894012451*213.226913452*-74.4785614014*1.0"
+}

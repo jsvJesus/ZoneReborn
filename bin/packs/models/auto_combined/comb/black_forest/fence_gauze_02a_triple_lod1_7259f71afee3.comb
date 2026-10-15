@@ -1,0 +1,78 @@
+{
+    "firstguid": "BCF6F77D.490DDC51.D048CF97.AEA7621A", 
+    "models": {
+        "621CF73C.4689C9BD.E80F8193.170EC88E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff10005o@black_forest@0x0000029BE0286D20", 
+                "created by": "yuri_parfilov", 
+                "created on": "29/10/2025", 
+                "description": "fence_gauze_02a_triple_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "29/10/2025"
+            }, 
+            "dyes": {
+                "Barbwire": "default"
+            }, 
+            "matrix": "-0.998175978661*0.0*0.0603929981589*0.0|3.00000010611e-06*1.0*4.30000000051e-05*0.0|-0.0619640015066*4.40000003437e-05*-1.02412903309*0.0|-1444.85644531*0.874073982239*599.591064453*1.0", 
+            "path": "models/props/fences/fence_gauze_02a_triple_lod1.model"
+        }, 
+        "93A8F615.41010BED.B56297B0.54B4E4CF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff10005o@black_forest@0x0000029BE0286D20", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/10/2025", 
+                "description": "fence_gauze_02a_triple_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "29/10/2025"
+            }, 
+            "dyes": {
+                "Barbwire": "default"
+            }, 
+            "matrix": "-0.996704995632*2.40000008489e-05*0.0811169967055*0.0|2.80000003841e-05*1.0*4.09999993281e-05*0.0|-0.0811169967055*4.30000000051e-05*-0.996704995632*0.0|-1445.78369141*0.687210023403*586.671142578*1.0", 
+            "path": "models/props/fences/fence_gauze_02a_triple_lod1.model"
+        }, 
+        "BCF6F77D.490DDC51.D048CF97.AEA7621A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff10006o@black_forest@0x0000029BE0286D20", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/10/2025", 
+                "description": "fence_gauze_02a_triple_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "28/10/2025"
+            }, 
+            "dyes": {
+                "Barbwire": "default"
+            }, 
+            "matrix": "-0.9991710186*2.40000008489e-05*0.0407470017672*0.0|2.5999999707e-05*1.0*4.19999996666e-05*0.0|-0.041806999594*4.40000003437e-05*-1.02514994144*0.0|-1443.53662109*0.685337007046*628.6328125*1.0", 
+            "path": "models/props/fences/fence_gauze_02a_triple_lod1.model"
+        }, 
+        "FA7A0B3D.4B0AF9A9.4D4537B7.0CE325F7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff10006o@black_forest@0x0000029BE0286D20", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/10/2025", 
+                "description": "fence_gauze_02a_triple_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "28/10/2025"
+            }, 
+            "dyes": {
+                "Barbwire": "default"
+            }, 
+            "matrix": "-0.9991710186*0.0*0.0407470017672*0.0|1.99999999495e-06*1.0*4.30000000051e-05*0.0|-0.041806999594*4.40000003437e-05*-1.02514994144*0.0|-1444.07116699*0.685899972916*615.523620605*1.0", 
+            "path": "models/props/fences/fence_gauze_02a_triple_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-0.9991710186*2.40000008489e-05*0.0407470017672*0.0|2.5999999707e-05*1.0*4.19999996666e-05*0.0|-0.041806999594*4.40000003437e-05*-1.02514994144*0.0|-1443.53662109*0.685337007046*628.6328125*1.0"
+}

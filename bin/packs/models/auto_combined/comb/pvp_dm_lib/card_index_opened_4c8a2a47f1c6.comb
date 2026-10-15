@@ -1,0 +1,134 @@
+{
+    "firstguid": "06F2E044.4FC7193E.CAA4948A.7E927B8E", 
+    "models": {
+        "06F2E044.4FC7193E.CAA4948A.7E927B8E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "17:32:04", 
+                "description": "card_index_opened", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17:32:04"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*0.999997973442*0.0|0.0*0.999997973442*-0.000345000007655*0.0|-0.999997973442*0.0*0.0*0.0|87.1172027588*4.99999713898*44.5324935913*1.0", 
+            "path": "models/misc/furniture/library/card_index_opened.model"
+        }, 
+        "119E0E50.43ED01CB.08E1F6BC.D3CB5C6B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "17:32:04", 
+                "description": "card_index_closed", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17:32:04"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0677710026503*0.000345000007655*0.997698009014*0.0|-2.30000005104e-05*0.999997019768*-0.000344000000041*0.0|-0.997698009014*0.0*0.0677710026503*0.0|87.1174163818*4.99965810776*40.9031600952*1.0", 
+            "path": "models/misc/furniture/library/card_index_closed.model"
+        }, 
+        "36785DEE.4A6287B0.B7055B8F.A282E4D7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "17:32:04", 
+                "description": "card_index_closed", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17:32:04"
+            }, 
+            "dyes": {}, 
+            "matrix": "-4.99999987369e-06*0.000487999990582*-0.999997973442*0.0|-0.0102770002559*0.999945998192*0.000487999990582*0.0|0.999945998192*0.0102770002559*0.0*0.0|86.676651001*5.00021982193*44.5356712341*1.0", 
+            "path": "models/misc/furniture/library/card_index_closed.model"
+        }, 
+        "477CCE78.4B573C0B.47B65A89.B82B8B24": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "17:32:04", 
+                "description": "card_index_closed", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17:32:04"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*-0.999998986721*0.0|0.0*0.999998986721*0.000345000007655*0.0|0.999998986721*0.0*0.0*0.0|86.6198806763*4.99999713898*45.1858711243*1.0", 
+            "path": "models/misc/furniture/library/card_index_closed.model"
+        }, 
+        "636373F5.4389483C.BDDFA2B4.D4CA9718": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "17:32:04", 
+                "description": "card_index_opened", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17:32:04"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*-0.999997973442*0.0|0.0*0.999997973442*0.000345000007655*0.0|0.999997973442*0.0*0.0*0.0|86.6742477417*5.00011014938*41.5770568848*1.0", 
+            "path": "models/misc/furniture/library/card_index_opened.model"
+        }, 
+        "84C862D2.4C398193.93719F91.9E752E57": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "17:32:04", 
+                "description": "card_index_closed", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17:32:04"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000487999990582*-0.999997973442*0.0|0.0*0.999997973442*0.000487999990582*0.0|0.999997973442*0.0*0.0*0.0|86.647315979*5.00033426285*40.8911781311*1.0", 
+            "path": "models/misc/furniture/library/card_index_closed.model"
+        }, 
+        "88E14902.41967F08.AD2DA5BC.5EC332B3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "17:32:04", 
+                "description": "card_index_opened", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17:32:04"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.091384999454*0.000345000007655*0.995813012123*0.0|-3.19999999192e-05*0.999997973442*-0.000344000000041*0.0|-0.995813012123*0.0*0.091384999454*0.0|87.1610565186*5.00021982193*45.2200126648*1.0", 
+            "path": "models/misc/furniture/library/card_index_opened.model"
+        }, 
+        "B6321418.4504F852.9025E1BB.E528C8D7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "17:32:04", 
+                "description": "card_index_opened", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17:32:04"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*0.999997019768*0.0|0.0*0.999997019768*-0.000345000007655*0.0|-0.999997019768*0.0*0.0*0.0|87.1147842407*4.99988412857*41.5738716125*1.0", 
+            "path": "models/misc/furniture/library/card_index_opened.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.000345000007655*0.999997973442*0.0|0.0*0.999997973442*-0.000345000007655*0.0|-0.999997973442*0.0*0.0*0.0|87.1172027588*4.99999713898*44.5324935913*1.0"
+}

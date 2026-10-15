@@ -1,0 +1,40 @@
+{
+    "firstguid": "946B6312.4CF2790B.751A7A9F.92E2DDDA", 
+    "models": {
+        "946B6312.4CF2790B.751A7A9F.92E2DDDA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "4a19de94i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "bookcase_empty_2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.23336803913*0.00074799999129*-0.203180000186*0.0|0.000737999973353*1.24999201298*0.000121999997646*0.0|0.203180000186*0.0*-1.23336803913*0.0|37.7792739868*9.99998760223*90.3450622559*1.0", 
+            "path": "models/misc/furniture/library/bookcase_empty_2.model"
+        }, 
+        "F6323897.469AEDBE.D5E16E93.A778BFDF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "4a19de94i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "bookcase_empty_2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.24999201298*0.00074799999129*0.0*0.0|0.00074799999129*1.24999201298*0.0*0.0|0.0*0.0*-1.24999201298*0.0|38.7839698792*9.99999237061*81.2722549438*1.0", 
+            "path": "models/misc/furniture/library/bookcase_empty_2.model"
+        }
+    }, 
+    "spawn_transform": "-1.23336803913*0.00074799999129*-0.203180000186*0.0|0.000737999973353*1.24999201298*0.000121999997646*0.0|0.203180000186*0.0*-1.23336803913*0.0|37.7792739868*9.99998760223*90.3450622559*1.0"
+}

@@ -1,0 +1,39 @@
+{
+    "models": {
+        "97C18E71.4B4AF2CB.AA2059A4.E76C6E6F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c27a325bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "07/03/2024", 
+                "description": "armchair_sofa_old", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.786570012569*1.20000004245e-05*-0.617496013641*0.0|2.09999998333e-05*0.999997973442*-9.00000031834e-06*0.0|0.617496013641*-1.99999994948e-05*-0.786570012569*0.0|256.866882324*212.999740601*-55.8027839661*1.0", 
+            "path": "models/misc/furniture/armchair_sofa_old.model"
+        }, 
+        "DA613061.46C5B97E.DCA7B692.229B4A6C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c27a325bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "12/03/2024", 
+                "description": "armchair_sofa_old", 
+                "modified by": "ice_c", 
+                "modified on": "12/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.989938020706*1.20000004245e-05*-0.14148299396*0.0|1.4000000192e-05*0.999997973442*-1.80000006367e-05*0.0|0.14148299396*-1.99999994948e-05*-0.989938020706*0.0|266.60836792*212.999801636*-56.2067108154*1.0", 
+            "path": "models/misc/furniture/armchair_sofa_old.model"
+        }
+    }, 
+    "spawn_transform": "-0.989938020706*1.20000004245e-05*-0.14148299396*0.0|1.4000000192e-05*0.999997973442*-1.80000006367e-05*0.0|0.14148299396*-1.99999994948e-05*-0.989938020706*0.0|266.60836792*212.999801636*-56.2067108154*1.0"
+}

@@ -1,0 +1,85 @@
+{
+    "models": {
+        "A0E9F5D1.4B936FA3.7D027B99.E253A830": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x0000026E1ACDF4E0", 
+                "created by": "sergey_busygin", 
+                "created on": "13:48:40", 
+                "description": "ivy", 
+                "modified by": "sergey_busygin", 
+                "modified on": "13:48:40"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.566073000431*0.0*0.0*0.0|0.0*0.566073000431*0.0*0.0|0.0*0.0*0.566073000431*0.0|140.566192627*217.920059204*-104.471664429*1.0", 
+            "path": "models/flora/grass/ivy.model"
+        }, 
+        "AF4E555A.4A22F369.D695AAA6.2EF273B5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x0000026E1ACDF4E0", 
+                "created by": "anton_zyryanov", 
+                "created on": "10/07/2024", 
+                "description": "ivy", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.785140991211*0.0*0.0*0.0|0.0*0.785140991211*0.0*0.0|0.0*0.0*0.785140991211*0.0|137.762313843*217.980926514*-102.343223572*1.0", 
+            "path": "models/flora/grass/ivy.model"
+        }, 
+        "D633BDC9.4AF20AE8.ECF1BEA7.CFFA7E79": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x0000026E1ACDF4E0", 
+                "created by": "sergey_busygin", 
+                "created on": "13:48:40", 
+                "description": "ivy", 
+                "modified by": "sergey_busygin", 
+                "modified on": "13:48:40"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.566073000431*0.0*0.0*0.0|0.0*0.566073000431*0.0*0.0|0.0*0.0*0.566073000431*0.0|141.728378296*217.832931519*-104.472015381*1.0", 
+            "path": "models/flora/grass/ivy.model"
+        }, 
+        "D8CD9314.44C62946.0302169A.50D7570D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x0000026E1ACDF4E0", 
+                "created by": "sergey_busygin", 
+                "created on": "13:48:40", 
+                "description": "ivy", 
+                "modified by": "sergey_busygin", 
+                "modified on": "13:48:40"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.566073000431*0.0|0.0*0.566073000431*0.0*0.0|0.566073000431*0.0*0.0*0.0|142.710220337*217.86151123*-105.665107727*1.0", 
+            "path": "models/flora/grass/ivy.model"
+        }, 
+        "FB3568A0.4DF1CC2D.BAF0A39C.7A51D2F1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x0000026E1ACDF4E0", 
+                "created by": "anton_zyryanov", 
+                "created on": "10/07/2024", 
+                "description": "ivy", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.785140991211*0.0*0.0*0.0|0.0*0.785140991211*0.0*0.0|0.0*0.0*0.785140991211*0.0|140.531906128*217.985580444*-102.344909668*1.0", 
+            "path": "models/flora/grass/ivy.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-0.566073000431*0.0|0.0*0.566073000431*0.0*0.0|0.566073000431*0.0*0.0*0.0|142.710220337*217.86151123*-105.665107727*1.0"
+}

@@ -1,0 +1,93 @@
+{
+    "models": {
+        "57EBAD44.4D5D2933.4BA0689E.D82A77E9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "31/05/2024", 
+                "description": "cement_rubble_S", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.23783707619*0.0*2.48536896706*0.0|0.0*3.34439492226*0.0*0.0|-2.48536896706*0.0*-2.23783707619*0.0|333.025787354*179.198471069*-124.563804626*1.0", 
+            "path": "models/misc/garbage/cement_rubble_S.model"
+        }, 
+        "76EA9EBB.43A1A68F.500BA9B6.08C068F5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "31/05/2024", 
+                "description": "cement_rubble_S", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.30945301056*-0.44988900423*0.173428997397*0.0|-0.463234990835*3.30046796799*-0.277990013361*0.0|-0.133755996823*-0.299106985331*-3.32830309868*0.0|335.872772217*179.322937012*-120.80241394*1.0", 
+            "path": "models/misc/garbage/cement_rubble_S.model"
+        }, 
+        "AFAC7CAB.43877FB7.FDFED8B1.C6FE58FF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "31/05/2024", 
+                "description": "cement_rubble_S", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.439749002457*0.131852000952*-3.31272792816*0.0|-1.45735800266*2.99387693405*0.312617987394*0.0|2.97786092758*1.48466897011*-0.336203992367*0.0|339.750274658*180.606079102*-124.686126709*1.0", 
+            "path": "models/misc/garbage/cement_rubble_S.model"
+        }, 
+        "BB60B480.4FA61B0F.672ED0A0.57B3E07E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "cement_rubble_S", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.51159691811*-1.69861996174*1.41119599342*0.0|-1.67802798748*2.85729503632*0.452755987644*0.0|-1.43561995029*-0.368045002222*-2.99807405472*0.0|342.981689453*184.332077026*-126.201202393*1.0", 
+            "path": "models/misc/garbage/cement_rubble_S.model"
+        }, 
+        "F04E6D44.4462DEE1.2EF3E9B1.08B45856": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "cement_rubble_S", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "2.31063890457*0.533574998379*-2.35820698738*0.0|-0.956050992012*3.1977159977*-0.213241994381*0.0|2.22076702118*0.82146602869*2.36184000969*0.0|338.369476318*179.985244751*-120.87387085*1.0", 
+            "path": "models/misc/garbage/cement_rubble_S.model"
+        }
+    }, 
+    "spawn_transform": "-2.23783707619*0.0*2.48536896706*0.0|0.0*3.34439492226*0.0*0.0|-2.48536896706*0.0*-2.23783707619*0.0|333.025787354*179.198471069*-124.563804626*1.0"
+}

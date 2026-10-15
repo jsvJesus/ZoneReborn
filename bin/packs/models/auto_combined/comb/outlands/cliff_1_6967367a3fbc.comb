@@ -1,0 +1,42 @@
+{
+    "firstguid": "8736E687.4642D843.E2E7BA86.69475811", 
+    "models": {
+        "8736E687.4642D843.E2E7BA86.69475811": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fffcfffbo@outlands@0x000001A827A91FE0", 
+                "created by": "sergey_busygin", 
+                "created on": "14:10:02", 
+                "description": "cliff_1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "14:10:02"
+            }, 
+            "dyes": {
+                "cliff": "default"
+            }, 
+            "matrix": "-0.983125984669*-0.182772994041*-0.00755900004879*0.0|-0.176093995571*0.9567720294*-0.231465995312*0.0|0.0495380014181*-0.226228997111*-0.972813010216*0.0|-380.855712891*8.22018527985*-425.23828125*1.0", 
+            "path": "models/flora/stones/cliff/cliff_1.model"
+        }, 
+        "BC6F32C0.46569D47.A3E1D294.88D5C275": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fffcfffbo@outlands@0x000001A827A91FE0", 
+                "created by": "sergey_busygin", 
+                "created on": "14:10:02", 
+                "description": "cliff_1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "14:10:02"
+            }, 
+            "dyes": {
+                "cliff": "default"
+            }, 
+            "matrix": "-0.920521020889*-0.165451005101*0.156927004457*0.0|-0.228604003787*0.882939994335*-0.41007399559*0.0|-0.0745609998703*-0.435869008303*-0.89691400528*0.0|-372.853179932*1.94991695881*-418.875274658*1.0", 
+            "path": "models/flora/stones/cliff/cliff_1.model"
+        }
+    }, 
+    "spawn_transform": "-0.983125984669*-0.182772994041*-0.00755900004879*0.0|-0.176093995571*0.9567720294*-0.231465995312*0.0|0.0495380014181*-0.226228997111*-0.972813010216*0.0|-380.855712891*8.22018527985*-425.23828125*1.0"
+}

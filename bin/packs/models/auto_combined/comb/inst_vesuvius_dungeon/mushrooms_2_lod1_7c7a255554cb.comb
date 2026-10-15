@@ -1,0 +1,42 @@
+{
+    "firstguid": "4835CBCB.41B2592B.40AAA1B6.F4E05CA7", 
+    "models": {
+        "4835CBCB.41B2592B.40AAA1B6.F4E05CA7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "011a6281i@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "29/06/2024", 
+                "description": "mushrooms_2_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.01728999615*0.63323700428*-0.0895169973373*0.0|0.0597649998963*0.261588990688*1.17127299309*0.0|0.636735022068*0.987150013447*-0.252956986427*0.0|274.627410889*157.145187378*-42.2097473145*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_2/mushrooms_2_lod1.model"
+        }, 
+        "887E9CF0.48348BD7.88A01DAC.55CF69AF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "011a6281i@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "29/06/2024", 
+                "description": "mushrooms_2_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.430754005909*0.602980017662*0.468703985214*0.0|0.759590983391*0.394138991833*0.19103500247*0.0|-0.0793140009046*0.499886989594*-0.715990006924*0.0|274.25302124*156.07723999*-39.0869903564*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_2/mushrooms_2_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-1.01728999615*0.63323700428*-0.0895169973373*0.0|0.0597649998963*0.261588990688*1.17127299309*0.0|0.636735022068*0.987150013447*-0.252956986427*0.0|274.627410889*157.145187378*-42.2097473145*1.0"
+}

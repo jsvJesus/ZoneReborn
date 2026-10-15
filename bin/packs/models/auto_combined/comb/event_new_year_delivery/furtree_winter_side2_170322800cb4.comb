@@ -1,0 +1,678 @@
+{
+    "firstguid": "84B9ED75.4AB2E099.61726BB4.24E9DE2F", 
+    "models": {
+        "07F68C23.49EFDF99.BB7E54A5.2ABC69DB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|62.6450271606*42.2255859375*-420.464263916*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "11D7148C.4E8B8F51.6C0DADAD.8744D094": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|89.911857605*42.0595703125*-432.975463867*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "13EDA048.428A01E8.147D888A.E467D059": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|55.6357650757*36.5234375*-404.98135376*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "16BB0786.4BF030F0.9AA5E18C.D28947D5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|34.5346603394*37.4541015625*-391.739746094*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "1EAE0611.497FFCCF.C2E61EBF.681AC423": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|85.1742706299*27.87109375*-392.376983643*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "276F1072.40FE6726.D7D616A3.1A3D47E9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32870602608*0.0*0.0123370001093*0.0|-9.99999997475e-07*3.32872796059*-9.99999997475e-07*0.0|-0.0123370001093*0.0*-3.32870602608*0.0|89.3435516357*36.9951171875*-416.368041992*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "27E36BE1.44A949AB.602AF8B4.C11FF25E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32870602608*0.0*0.0123370001093*0.0|-9.99999997475e-07*3.32872796059*-9.99999997475e-07*0.0|-0.0123370001093*0.0*-3.32870602608*0.0|74.6175460815*25.7724609375*-381.660644531*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "3A77E8C4.4FE223BC.AB1CA193.3DF39D93": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|64.9068145752*45.509765625*-427.128417969*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "4B0C8E6E.4E93747F.539815AE.EEF10940": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0001fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.28313493729*0.0*-0.549050986767*0.0|0.0*3.32872796059*-9.99999997475e-07*0.0|0.549050986767*-9.99999997475e-07*-3.28313493729*0.0|107.625396729*26.3857421875*-390.843139648*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "4F7E73F3.497BD443.58055290.9439C18E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|69.9483261108*38.6455078125*-404.836517334*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "52376EC8.4DCD999E.D1F10D9F.FC99D438": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|37.6597099304*24.470703125*-366.063842773*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "58199E55.45C63691.8D0B34B0.3D8BD5E4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|56.2753601074*17.861328125*-365.566772461*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "59EC5CD7.4CDDFD2A.03069395.72B44343": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|48.0491867065*22.8154296875*-370.426605225*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "5B144FC6.4A8DE659.D9F2D89C.9BE09107": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|54.3839530945*27.7470703125*-390.278747559*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "60E0C514.4299A50C.A2CE4F84.E583CEEE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|41.4510650635*34.7177734375*-396.1590271*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "6326AE69.44766DEA.996D77A5.06BCA40B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|65.2579421997*16.6689453125*-356.683166504*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "69C2138B.40BEB4B9.E6907E9B.5E479B0E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|59.4072570801*18.134765625*-378.736999512*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "6A14937B.4C16E521.D5810292.C3961F79": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32870602608*0.0*0.0123370001093*0.0|-9.99999997475e-07*3.32872796059*-9.99999997475e-07*0.0|-0.0123370001093*0.0*-3.32870602608*0.0|75.4582061768*41.685546875*-420.354614258*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "77C6A9D6.4B4FB8B7.7A7A609B.434E94E5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|93.8522033691*31.1064453125*-406.568206787*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "797CD76E.4282F987.18F3D29E.0FF4DAD7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.28313493729*0.0*-0.549050986767*0.0|0.0*3.32872796059*-9.99999997475e-07*0.0|0.549050986767*-9.99999997475e-07*-3.28313493729*0.0|99.484664917*17.7138671875*-383.694976807*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "7E6E349F.4B50A311.A9BB16B1.AB9E3287": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|37.6997375488*39.798828125*-419.906982422*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "84B9ED75.4AB2E099.61726BB4.24E9DE2F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|66.0454940796*31.298828125*-391.004882812*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "873CA4B2.49DFC97C.41FF99A8.8247CA7C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|82.9365234375*13.3818359375*-364.398925781*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "8B79CCA1.472946C5.9A8560AE.E19A203E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|56.3880081177*44.4892578125*-424.299530029*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "8C58137B.4DF82544.AF03C1B2.B5C66E95": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|80.6633987427*28.66796875*-392.673828125*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "8D07057D.45791E1E.6F8D00B2.A79A24E0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|48.9284095764*18.486328125*-360.676177979*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "949C5581.409A9137.B16BE0A7.769FF054": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|42.0427093506*16.4375*-362.209960938*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "9832BCFC.4500FE14.607F2C93.EFBCE682": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|76.3119812012*13.05078125*-358.964172363*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "AC857BF5.430FC67D.D5302996.7776A29F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|82.3013153076*21.255859375*-372.605133057*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "B058C9C2.43B090E2.0746E6B4.B9D79E8F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0001fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.28313493729*0.0*-0.549050986767*0.0|0.0*3.32872796059*-9.99999997475e-07*0.0|0.549050986767*-9.99999997475e-07*-3.28313493729*0.0|108.954330444*18.984375*-382.073242188*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "B7602F81.4F644869.06D59580.35C1F130": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.28313493729*0.0*-0.549050986767*0.0|0.0*3.32872796059*-9.99999997475e-07*0.0|0.549050986767*-9.99999997475e-07*-3.28313493729*0.0|98.6616210938*30.1123046875*-395.585021973*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "BA1840A1.404A6280.C484AD9B.75BB35B5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|66.0709609985*26.2392578125*-379.001647949*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "BA2AC9DE.4AAB38F0.195D8B9E.B9632F64": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|89.4552536011*18.6376953125*-376.527984619*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "BACA27CF.4926918C.E0027794.11390D7B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|80.5199127197*42.9306640625*-436.730987549*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "BE6A588E.48A86066.81F2D190.248798E4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|99.5819854736*39.7119140625*-431.524902344*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "C5AF39F4.49B09A63.846060A7.34942F02": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.28313493729*0.0*-0.549050986767*0.0|0.0*3.32872796059*-9.99999997475e-07*0.0|0.549050986767*-9.99999997475e-07*-3.28313493729*0.0|95.7418746948*10.962890625*-368.73651123*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "C5CE288C.45F20C66.F231F8AA.BE5811E8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|81.0222015381*34.9833984375*-405.237670898*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "CC7BD62E.478DFFC7.EDAA16BC.6B113BB8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|43.7395591736*41.728515625*-434.57989502*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "CEF41F50.44D90E57.0A6B74AC.7107153C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|49.274471283*38.0380859375*-419.29296875*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "D59978BC.4FD28F93.7C10EFAE.4A1B4732": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0001fffbo@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32870602608*0.0*0.0123370001093*0.0|-9.99999997475e-07*3.32872796059*-9.99999997475e-07*0.0|-0.0123370001093*0.0*-3.32870602608*0.0|102.879554749*35.685546875*-412.578521729*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "D71E81BC.4796245E.EB6EDD83.B491D383": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|71.6707763672*21.48828125*-366.08505249*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }, 
+        "F4CC9B8B.4CA7E48D.62CC9893.E6C9FAA1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "0000fffco@event_new_year_delivery@0x000001B5C8982F50", 
+                "created by": "anton_zyryanov", 
+                "created on": "11/11/2025", 
+                "description": "furtree_winter_side2", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|45.4099578857*12.4306640625*-357.551940918*1.0", 
+            "path": "models/flora/trees_side/furtree_winter_side2.model"
+        }
+    }, 
+    "spawn_transform": "-3.32872796059*0.0*0.0*0.0|0.0*3.32872796059*0.0*0.0|0.0*0.0*-3.32872796059*0.0|66.0454940796*31.298828125*-391.004882812*1.0"
+}

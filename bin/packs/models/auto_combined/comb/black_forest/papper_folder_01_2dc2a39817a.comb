@@ -1,0 +1,54 @@
+{
+    "firstguid": "23D071C5.4E32CA1B.03060089.3BC34B34", 
+    "models": {
+        "23D071C5.4E32CA1B.03060089.3BC34B34": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "67ffac6ei@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "07/11/2025", 
+                "description": "papper_folder_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "07/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.00000083447*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.00000083447*0.0|-1349.28308105*1.80785393715*575.906921387*1.0", 
+            "path": "models/misc/stuffs/papper/papper_folder_01.model"
+        }, 
+        "6A552DD9.4B6A35C3.FF518084.0A42A7A1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "67ffac6ei@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "07/11/2025", 
+                "description": "papper_folder_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "10/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.30354437232*0.0*0.952818274498*0.0|0.0*1.0*0.0*0.0|-0.952818274498*0.0*0.30354437232*0.0|-1349.32775879*1.80785501003*576.309631348*1.0", 
+            "path": "models/misc/stuffs/papper/papper_folder_01.model"
+        }, 
+        "E9408498.499F126E.5194B09F.83B0AE6A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "67ffac6ei@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "07/11/2025", 
+                "description": "papper_folder_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "10/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.82394951582*0.010766999796*0.566563248634*0.0|-0.00874891411513*-0.999942004681*0.00628007669002*0.0|0.566598057747*0.000218000001041*0.823996543884*0.0|-1349.63500977*1.86454391479*575.920959473*1.0", 
+            "path": "models/misc/stuffs/papper/papper_folder_01.model"
+        }
+    }, 
+    "spawn_transform": "1.00000083447*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.00000083447*0.0|-1349.28308105*1.80785393715*575.906921387*1.0"
+}

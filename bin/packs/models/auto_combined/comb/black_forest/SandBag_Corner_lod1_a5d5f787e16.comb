@@ -1,0 +1,46 @@
+{
+    "firstguid": "62053CB0.4CE995C1.7CF169BD.2C28AFAD", 
+    "models": {
+        "62053CB0.4CE995C1.7CF169BD.2C28AFAD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fff20005o@black_forest@0x000002430D0AC120", 
+                "created by": "yuri_parfilov", 
+                "created on": "30/10/2025", 
+                "description": "SandBag_Corner_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "30/10/2025"
+            }, 
+            "dyes": {
+                "Sandbag_1": "default", 
+                "Sandbag_2": "default", 
+                "Sandbag_3": "default"
+            }, 
+            "matrix": "-0.0371380001307*0.0*-0.999310016632*0.0|0.0*1.0*0.0*0.0|0.999310016632*0.0*-0.0371380001307*0.0|-1364.19067383*7.47766017914*582.475402832*1.0", 
+            "path": "models/props/blockpost/SandBag_Corner_lod1.model"
+        }, 
+        "AA748295.49F0AC01.FF649A87.F1438103": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fff20005o@black_forest@0x000002430D0AC120", 
+                "created by": "yuri_parfilov", 
+                "created on": "30/10/2025", 
+                "description": "SandBag_Corner_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "30/10/2025"
+            }, 
+            "dyes": {
+                "Sandbag_1": "default", 
+                "Sandbag_2": "default", 
+                "Sandbag_3": "default"
+            }, 
+            "matrix": "-0.94509601593*0.0*0.32679399848*0.0|0.0*1.0*0.0*0.0|-0.32679399848*0.0*-0.94509601593*0.0|-1363.15820312*7.47755718231*582.641113281*1.0", 
+            "path": "models/props/blockpost/SandBag_Corner_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-0.0371380001307*0.0*-0.999310016632*0.0|0.0*1.0*0.0*0.0|0.999310016632*0.0*-0.0371380001307*0.0|-1364.19067383*7.47766017914*582.475402832*1.0"
+}

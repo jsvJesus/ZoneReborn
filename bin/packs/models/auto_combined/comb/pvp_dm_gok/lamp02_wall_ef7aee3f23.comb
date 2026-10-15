@@ -1,0 +1,63 @@
+{
+    "firstguid": "AB8B06F7.41A67182.A8F20BB8.F842023D", 
+    "models": {
+        "552D51BA.48E7F928.187D15BD.41B771CD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "lamp02_wall", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {
+                "pasted__pasted__pasted__lambert35": "nolight"
+            }, 
+            "matrix": "0.0*0.000486000004457*0.999997019768*0.0|-4.50000006822e-05*-0.999997019768*0.000486000004457*0.0|0.999997019768*-4.50000006822e-05*0.0*0.0|31.9277648926*17.4472312927*52.9376106262*1.0", 
+            "path": "models/misc/furniture/lamp02_wall.model"
+        }, 
+        "AB8B06F7.41A67182.A8F20BB8.F842023D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "lamp02_wall", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {
+                "pasted__pasted__pasted__lambert35": "nolight"
+            }, 
+            "matrix": "0.0*0.000486000004457*0.999996006489*0.0|-4.50000006822e-05*-0.999996006489*0.000486000004457*0.0|0.999996006489*-4.50000006822e-05*0.0*0.0|31.927772522*17.4540290833*66.9375762939*1.0", 
+            "path": "models/misc/furniture/lamp02_wall.model"
+        }, 
+        "F1CBC581.43C7B6E8.DCE91FBC.E8272865": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "lamp02_wall", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {
+                "pasted__pasted__pasted__lambert35": "nolight"
+            }, 
+            "matrix": "0.0*0.000486000004457*0.999996006489*0.0|-4.50000006822e-05*-0.999996006489*0.000486000004457*0.0|0.999996006489*-4.50000006822e-05*0.0*0.0|31.927772522*17.450630188*59.9376144409*1.0", 
+            "path": "models/misc/furniture/lamp02_wall.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.000486000004457*0.999996006489*0.0|-4.50000006822e-05*-0.999996006489*0.000486000004457*0.0|0.999996006489*-4.50000006822e-05*0.0*0.0|31.927772522*17.4540290833*66.9375762939*1.0"
+}

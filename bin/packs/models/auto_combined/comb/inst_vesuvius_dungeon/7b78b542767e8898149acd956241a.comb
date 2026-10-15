@@ -1,0 +1,69 @@
+{
+    "models": {
+        "281E5522.422607D0.07924A88.9DCB0500": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "sergey_busygin", 
+                "created on": "30/05/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "30/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.45555996895*-0.0655329972506*0.880554020405*0.0|-0.0494670011103*-1.70113801956*-0.0448339991271*0.0|0.881603002548*0.0127469999716*-1.45634496212*0.0|439.573547363*187.467575073*-106.353675842*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "7D75F7EB.44F4D4F8.38E5869B.91EC2D6B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "sergey_busygin", 
+                "created on": "30/05/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "30/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "2.02395892143*0.0908659994602*1.21614205837*0.0|0.0872469991446*-2.36116099358*0.0312179997563*0.0|1.21640598774*0.0181639995426*-2.02575802803*0.0|427.378753662*187.544052124*-114.033615112*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "D91CD1EF.4B799221.2A5AA793.2996D424": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "sergey_busygin", 
+                "created on": "30/05/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "30/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.4574739933*-0.0422349981964*0.878812015057*0.0|-0.0628580003977*-1.70113801956*0.0224920008332*0.0|0.877578020096*-0.0517029985785*-1.45791304111*0.0|440.80770874*187.487136841*-114.237503052*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "DD94CC4E.4E7F3006.B6395CB0.DA99368E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "sergey_busygin", 
+                "created on": "30/05/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "30/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "2.02478194237*0.0092399995774*1.21812999249*0.0|-0.039620000869*-2.36116099358*0.0837669968605*0.0|1.21751904488*-0.0922010019422*-2.02307105064*0.0|436.804748535*187.505706787*-118.356796265*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }
+    }, 
+    "spawn_transform": "1.45555996895*-0.0655329972506*0.880554020405*0.0|-0.0494670011103*-1.70113801956*-0.0448339991271*0.0|0.881603002548*0.0127469999716*-1.45634496212*0.0|439.573547363*187.467575073*-106.353675842*1.0"
+}

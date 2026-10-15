@@ -1,0 +1,74 @@
+{
+    "firstguid": "8DA41FD5.4676D3DC.DE6AE6B3.8E980FB9", 
+    "models": {
+        "00E436B8.4F616D15.EBC301AC.ED54B4EE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "concrete_block02", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.848493993282*0.0*0.0*0.0|0.0*0.392628997564*0.0*0.0|0.0*0.0*0.99999499321*0.0|57.8848571777*7.00574827194*64.7602844238*1.0", 
+            "path": "models/props/poligon/concrete_block02.model"
+        }, 
+        "8DA41FD5.4676D3DC.DE6AE6B3.8E980FB9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "concrete_block02", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*1.13568603992*0.0|0.0*0.392628997564*0.0*0.0|-0.999998986721*0.0*0.0*0.0|57.3525657654*7.00575113297*63.1981506348*1.0", 
+            "path": "models/props/poligon/concrete_block02.model"
+        }, 
+        "CF2943D1.49B7506A.814DB88C.338BF20C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "concrete_block02", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.848495006561*0.0*0.0*0.0|0.0*0.392628997564*0.0*0.0|0.0*0.0*0.99999499321*0.0|59.7048034668*7.00574827194*64.7602844238*1.0", 
+            "path": "models/props/poligon/concrete_block02.model"
+        }, 
+        "D9738678.466456CF.14726A87.38C91C5A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "concrete_block02", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-1.13568603992*0.0|0.0*0.392628997564*0.0*0.0|0.999998986721*0.0*0.0*0.0|60.2495689392*7.00575113297*63.1981391907*1.0", 
+            "path": "models/props/poligon/concrete_block02.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*1.13568603992*0.0|0.0*0.392628997564*0.0*0.0|-0.999998986721*0.0*0.0*0.0|57.3525657654*7.00575113297*63.1981506348*1.0"
+}

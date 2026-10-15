@@ -1,0 +1,38 @@
+{
+    "firstguid": "1E9DBD1F.4E1EEFC3.DB041DB7.755837B3", 
+    "models": {
+        "0D0A421D.4836A4B7.0DB354A2.97419F6A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "14:55:56", 
+                "description": "dam_constr01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "14:55:56"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.99999499321*0.0*0.0*0.0|0.0*0.999996006489*0.0*0.0|0.0*0.0*-0.99999499321*0.0|40.2171897888*7.22711229324*58.6214904785*1.0", 
+            "path": "models/props/industrial/dam_constr01.model"
+        }, 
+        "1E9DBD1F.4E1EEFC3.DB041DB7.755837B3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "14:55:56", 
+                "description": "dam_constr01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "14:55:56"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999996006489*0.0*0.0*0.0|0.0*0.999996006489*0.0*0.0|0.0*0.0*0.999996006489*0.0|42.6782493591*7.22712612152*58.5846138*1.0", 
+            "path": "models/props/industrial/dam_constr01.model"
+        }
+    }, 
+    "spawn_transform": "0.999996006489*0.0*0.0*0.0|0.0*0.999996006489*0.0*0.0|0.0*0.0*0.999996006489*0.0|42.6782493591*7.22712612152*58.5846138*1.0"
+}

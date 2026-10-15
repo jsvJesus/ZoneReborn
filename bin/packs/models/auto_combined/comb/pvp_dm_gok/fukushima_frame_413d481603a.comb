@@ -1,0 +1,38 @@
+{
+    "firstguid": "468627F2.4A5905FD.C61DA6A4.3DB6DA52", 
+    "models": {
+        "468627F2.4A5905FD.C61DA6A4.3DB6DA52": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "14:55:56", 
+                "description": "fukushima_frame", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "14:55:56"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.5885810256*0.0*0.0*0.0|0.0*0.366683989763*0.0*0.0|0.0*0.0*0.420628011227*0.0|42.5056915283*8.66338539124*57.112033844*1.0", 
+            "path": "models/props/industrial/fukushima_frame.model"
+        }, 
+        "A0F56278.4C1DF353.3F0BED87.5E43CB9C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "14:55:56", 
+                "description": "fukushima_frame", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "14:55:56"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.588578999043*0.0|0.0*0.366681993008*0.0*0.0|-0.420626014471*0.0*0.0*0.0|43.3385429382*8.66346931458*59.6976776123*1.0", 
+            "path": "models/props/industrial/fukushima_frame.model"
+        }
+    }, 
+    "spawn_transform": "0.5885810256*0.0*0.0*0.0|0.0*0.366683989763*0.0*0.0|0.0*0.0*0.420628011227*0.0|42.5056915283*8.66338539124*57.112033844*1.0"
+}

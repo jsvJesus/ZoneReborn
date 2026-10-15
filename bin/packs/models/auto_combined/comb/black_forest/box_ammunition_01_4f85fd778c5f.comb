@@ -1,0 +1,54 @@
+{
+    "firstguid": "CA16A70D.4DE4A2E3.F853F4A4.924C0E5A", 
+    "models": {
+        "12B7DA43.462C44C0.7739AE83.AA26E6CE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "box_ammunition_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.944277822971*9.04128683032e-07*0.329149961472*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|-0.329149961472*4.83241819893e-08*-0.944277822971*0.0|-1377.71606445*0.856734097004*626.657287598*1.0", 
+            "path": "models/misc/containers/box_ammunition_01.model"
+        }, 
+        "79F058BA.48756CC9.7D2D2E90.233D14EE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "box_ammunition_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.649506986141*-2.86299837171e-07*0.760355234146*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|-0.760355234146*5.46522642253e-07*0.649506986141*0.0|-1377.65649414*1.03393173218*626.653320312*1.0", 
+            "path": "models/misc/containers/box_ammunition_01.model"
+        }, 
+        "CA16A70D.4DE4A2E3.F853F4A4.924C0E5A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "box_ammunition_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999990582466*-3.45135049429e-08*-0.00429863482714*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|0.00429863482714*2.38249981521e-07*0.999990582466*0.0|-1377.48876953*0.856746315956*626.640808105*1.0", 
+            "path": "models/misc/containers/box_ammunition_01.model"
+        }
+    }, 
+    "spawn_transform": "0.999990582466*-3.45135049429e-08*-0.00429863482714*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|0.00429863482714*2.38249981521e-07*0.999990582466*0.0|-1377.48876953*0.856746315956*626.640808105*1.0"
+}

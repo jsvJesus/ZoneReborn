@@ -1,0 +1,43 @@
+{
+    "models": {
+        "3F13CA5B.4171332E.FA95A78C.9192863C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "raylo", 
+                "created on": "03/07/2024", 
+                "description": "ceiling_lamp_2_2", 
+                "modified by": "raylo", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {
+                "ceiling_lamp": "default"
+            }, 
+            "matrix": "0.0*0.0*-0.999997019768*0.0|0.0*0.999998986721*0.0*0.0|0.999997019768*0.0*0.0*0.0|219.274475098*205.013916016*-20.739238739*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_2_2.model"
+        }, 
+        "5756D547.428DDD89.0A2B5395.5295CA16": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "raylo", 
+                "created on": "03/07/2024", 
+                "description": "ceiling_lamp_2_2", 
+                "modified by": "raylo", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {
+                "ceiling_lamp": "default"
+            }, 
+            "matrix": "0.0*0.0*-0.999997019768*0.0|0.0*0.999998986721*0.0*0.0|0.999997019768*0.0*0.0*0.0|219.302383423*204.999923706*-26.8502349854*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_2_2.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-0.999997019768*0.0|0.0*0.999998986721*0.0*0.0|0.999997019768*0.0*0.0*0.0|219.274475098*205.013916016*-20.739238739*1.0"
+}

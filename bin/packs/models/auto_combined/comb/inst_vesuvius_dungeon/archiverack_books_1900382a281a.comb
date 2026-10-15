@@ -1,0 +1,73 @@
+{
+    "models": {
+        "1058B401.46B94BCF.5776F9AB.AE6AE032": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "archiverack_books", 
+                "modified by": "ice_c", 
+                "modified on": "27/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.711957991123*0.107832998037*-0.693890988827*0.0|-0.699231028557*-0.199928000569*0.686367988586*0.0|-0.0647149980068*0.973856985569*0.217740997672*0.0|407.076568604*208.249771118*-54.9260406494*1.0", 
+            "path": "models/misc/furniture/laboratory/archiverack_books.model"
+        }, 
+        "2CD0E29F.4B287E98.7DC384B2.A48652D4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "archiverack_books", 
+                "modified by": "ice_c", 
+                "modified on": "27/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.455897003412*0.227210000157*-0.86054199934*0.0|-0.0679389983416*0.972929000854*0.22089099884*0.0|0.887435019016*-0.0422389991581*0.458992004395*0.0|407.427032471*207.218658447*-51.1963386536*1.0", 
+            "path": "models/misc/furniture/laboratory/archiverack_books.model"
+        }, 
+        "43B0A7E6.49AFD00E.CD55629D.4A060421": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "archiverack_books", 
+                "modified by": "ice_c", 
+                "modified on": "27/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.641480982304*-0.156294003129*0.751048028469*0.0|-0.14437200129*0.936935007572*0.318287998438*0.0|-0.753430008888*-0.312606006861*0.578462004662*0.0|397.713684082*207.76071167*-46.8269538879*1.0", 
+            "path": "models/misc/furniture/laboratory/archiverack_books.model"
+        }, 
+        "FABDBFAF.4F92EA25.2E72EBA6.85B39465": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "archiverack_books", 
+                "modified by": "ice_c", 
+                "modified on": "27/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0593030005693*0.217071995139*-0.974352002144*0.0|-0.0679399967194*0.972929000854*0.220890000463*0.0|0.995925009251*0.0792969986796*-0.0429500006139*0.0|407.629760742*207.79473877*-53.6714019775*1.0", 
+            "path": "models/misc/furniture/laboratory/archiverack_books.model"
+        }
+    }, 
+    "spawn_transform": "-0.711957991123*0.107832998037*-0.693890988827*0.0|-0.699231028557*-0.199928000569*0.686367988586*0.0|-0.0647149980068*0.973856985569*0.217740997672*0.0|407.076568604*208.249771118*-54.9260406494*1.0"
+}

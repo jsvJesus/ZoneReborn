@@ -1,0 +1,73 @@
+{
+    "models": {
+        "BD60E1FC.4AEAEE91.E7A800A5.6BEDC598": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "b436c22ai@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "03/07/2024", 
+                "description": "couch", 
+                "modified by": "ice_c", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.10195799917*-9.99999997475e-07*0.994785010815*0.0|9.99999997475e-07*0.999997973442*9.99999997475e-07*0.0|-0.994785010815*9.99999997475e-07*-0.10195799917*0.0|361.382385254*212.999710083*-64.8843536377*1.0", 
+            "path": "models/misc/furniture/library/couch.model"
+        }, 
+        "E0EABEE1.4151E02B.C9A9C49F.A57B8109": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "6203b0aei@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "07/03/2024", 
+                "description": "couch", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999543011189*-1.99999999495e-06*-0.0300779994577*0.0|1.99999999495e-06*0.999997019768*-3.00000010611e-06*0.0|0.0300779994577*3.00000010611e-06*0.999543011189*0.0|346.788543701*212.999801636*-55.8299484253*1.0", 
+            "path": "models/misc/furniture/library/couch.model"
+        }, 
+        "EA694C08.4F18226C.574306B1.5E06F29F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "6203b0aei@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "07/03/2024", 
+                "description": "couch", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0360529981554*-0.999293029308*0.0101260002702*0.0|0.962113976479*0.0374480001628*0.270049005747*0.0|-0.270238012075*6.00000021223e-06*0.962787985802*0.0|367.478363037*213.33694458*-57.9295921326*1.0", 
+            "path": "models/misc/furniture/library/couch.model"
+        }, 
+        "FC38E25B.444803C1.70715D84.31FC3733": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "6203b0aei@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "07/03/2024", 
+                "description": "couch", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.880668997765*-1.99999999495e-06*0.473722994328*0.0|3.00000010611e-06*0.999997019768*-1.99999999495e-06*0.0|-0.473722994328*3.00000010611e-06*0.880668997765*0.0|347.28137207*212.999694824*-60.3410339355*1.0", 
+            "path": "models/misc/furniture/library/couch.model"
+        }
+    }, 
+    "spawn_transform": "0.0360529981554*-0.999293029308*0.0101260002702*0.0|0.962113976479*0.0374480001628*0.270049005747*0.0|-0.270238012075*6.00000021223e-06*0.962787985802*0.0|367.478363037*213.33694458*-57.9295921326*1.0"
+}

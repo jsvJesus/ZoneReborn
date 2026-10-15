@@ -1,0 +1,73 @@
+{
+    "models": {
+        "286C5B79.434B4850.557C488B.77F6E40C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026E1ACDF4E0", 
+                "created by": "ice_c", 
+                "created on": "26/04/2024", 
+                "description": "tank_02_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.258819013834*0.0*-0.965924024582*0.0|0.0*0.999998986721*0.0*0.0|0.965924024582*0.0*-0.258819013834*0.0|431.631500244*170.499725342*-113.603111267*1.0", 
+            "path": "models/props/industrial/tank_01/tank_02_lod1.model"
+        }, 
+        "79099FF8.40197AAA.26DBD7A5.07A48F16": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026E1ACDF4E0", 
+                "created by": "ice_c", 
+                "created on": "26/04/2024", 
+                "description": "tank_02_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.707105994225*0.0*0.707105994225*0.0|0.0*0.999998986721*0.0*0.0|-0.707105994225*0.0*0.707105994225*0.0|434.911224365*170.499725342*-113.678230286*1.0", 
+            "path": "models/props/industrial/tank_01/tank_02_lod1.model"
+        }, 
+        "AE57AF47.4B352E46.FB756A90.955A8647": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026E1ACDF4E0", 
+                "created by": "ice_c", 
+                "created on": "26/04/2024", 
+                "description": "tank_02_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.499998986721*0.0*-0.866023004055*0.0|0.0*0.999998986721*0.0*0.0|0.866023004055*0.0*0.499998986721*0.0|431.622375488*170.499679565*-110.221153259*1.0", 
+            "path": "models/props/industrial/tank_01/tank_02_lod1.model"
+        }, 
+        "E94588F0.4B3CFBDC.D533CFB6.0DBBE29F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026E1ACDF4E0", 
+                "created by": "ice_c", 
+                "created on": "26/04/2024", 
+                "description": "tank_02_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|435.040557861*170.499694824*-110.23941803*1.0", 
+            "path": "models/props/industrial/tank_01/tank_02_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|435.040557861*170.499694824*-110.23941803*1.0"
+}

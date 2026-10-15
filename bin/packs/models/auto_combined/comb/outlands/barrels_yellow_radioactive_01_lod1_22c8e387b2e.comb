@@ -1,0 +1,38 @@
+{
+    "firstguid": "5ACF2668.451C3BE5.947AA58F.CB0CCF24", 
+    "models": {
+        "5ACF2668.451C3BE5.947AA58F.CB0CCF24": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00100003o@outlands@0x000001649BEE0050", 
+                "created by": "sergey_busygin", 
+                "created on": "11/05/2021", 
+                "description": "barrels_yellow_radioactive_01_lod1", 
+                "modified by": "yulia_kochurova", 
+                "modified on": "13/05/2021"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.10712800175*-0.136919006705*-1.23846995831*0.0|0.314433991909*1.20578098297*-0.106104001403*0.0|1.20569002628*-0.302289992571*0.137713000178*0.0|1651.73669434*2.22287607193*386.434936523*1.0", 
+            "path": "models/props/warehouse/barrels_yellow_radioactive_01_lod1.model"
+        }, 
+        "D7BCB3BB.43B66302.1B275F91.D5920214": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00100003o@outlands@0x000001649BEE0050", 
+                "created by": "sergey_busygin", 
+                "created on": "11/05/2021", 
+                "description": "barrels_yellow_radioactive_01_lod1", 
+                "modified by": "yulia_kochurova", 
+                "modified on": "13/05/2021"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.922111988068*0.141672000289*0.83287101984*0.0|0.164984002709*1.23936498165*-0.0281579997391*0.0|-0.828568994999*0.0891140028834*-0.932506024837*0.0|1655.39611816*1.39977502823*385.435852051*1.0", 
+            "path": "models/props/warehouse/barrels_yellow_radioactive_01_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.10712800175*-0.136919006705*-1.23846995831*0.0|0.314433991909*1.20578098297*-0.106104001403*0.0|1.20569002628*-0.302289992571*0.137713000178*0.0|1651.73669434*2.22287607193*386.434936523*1.0"
+}

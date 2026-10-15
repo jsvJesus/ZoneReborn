@@ -1,0 +1,44 @@
+{
+    "firstguid": "55389F35.4E811A7C.096191BE.9882FEDE", 
+    "models": {
+        "42780FE9.4BFF6CFB.808D6D84.38AE34D8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "wall_column", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/11/2023"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508402824*0.0*0.0*0.0|0.0*1.90472996235*0.0*0.0|0.0*0.0*1.51508700848*0.0|33.6199378967*12.7060098648*54.2379608154*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "55389F35.4E811A7C.096191BE.9882FEDE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "20/07/2022", 
+                "description": "wall_column", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.04711103439*0.0*0.0*0.0|0.0*1.72676301003*0.0*0.0|0.0*0.0*1.04711294174*0.0|33.6304092407*13.2089338303*49.5134353638*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }
+    }, 
+    "spawn_transform": "1.04711103439*0.0*0.0*0.0|0.0*1.72676301003*0.0*0.0|0.0*0.0*1.04711294174*0.0|33.6304092407*13.2089338303*49.5134353638*1.0"
+}

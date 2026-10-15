@@ -1,0 +1,56 @@
+{
+    "models": {
+        "2551C6DB.49D74E22.93D46B93.63658337": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "23/04/2024", 
+                "description": "zabor_mini02_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.829981029034*0.0*0.0*0.0|0.0*0.829981029034*0.0*0.0|0.0*0.0*-0.829981029034*0.0|537.310913086*175.900695801*-78.7877197266*1.0", 
+            "path": "models/props/volkano/zabor_mini02_lod1.model"
+        }, 
+        "7063F905.4BB7CD97.B8BC4BBB.E7872E23": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "23/04/2024", 
+                "description": "zabor_mini02_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*-0.0272189993411*-0.829532980919*0.0|0.0*0.829532980919*-0.0272189993411*0.0|0.829980015755*0.0*0.0*0.0|535.792358398*175.694732666*-79.9519042969*1.0", 
+            "path": "models/props/volkano/zabor_mini02_lod1.model"
+        }, 
+        "927FD04A.447C0468.51F48A90.BE898BCF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "23/04/2024", 
+                "description": "zabor_mini02_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.829979002476*0.0*0.0*0.0|0.0*0.829979002476*0.0*0.0|0.0*0.0*0.829979002476*0.0|537.225219727*175.779647827*-80.1762084961*1.0", 
+            "path": "models/props/volkano/zabor_mini02_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-0.829981029034*0.0*0.0*0.0|0.0*0.829981029034*0.0*0.0|0.0*0.0*-0.829981029034*0.0|537.310913086*175.900695801*-78.7877197266*1.0"
+}

@@ -1,0 +1,53 @@
+{
+    "models": {
+        "099931D9.40146799.CB406A99.35BB6736": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x000001EE328F85B0", 
+                "created by": "anton_zyryanov", 
+                "created on": "10/07/2024", 
+                "description": "ivy", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.566073000431*0.0|0.0*0.566073000431*0.0*0.0|0.566073000431*0.0*0.0*0.0|142.710968018*217.850082397*-111.310150146*1.0", 
+            "path": "models/flora/grass/ivy.model"
+        }, 
+        "4A5A92FE.4A701482.E018B59E.76E09F5C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x000001EE328F85B0", 
+                "created by": "anton_zyryanov", 
+                "created on": "10/07/2024", 
+                "description": "ivy", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.566073000431*0.0|0.0*0.566073000431*0.0*0.0|0.566073000431*0.0*0.0*0.0|142.710418701*217.951507568*-114.440551758*1.0", 
+            "path": "models/flora/grass/ivy.model"
+        }, 
+        "991B0EC7.49BC18DA.9580499D.93102486": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x000001EE328F85B0", 
+                "created by": "anton_zyryanov", 
+                "created on": "10/07/2024", 
+                "description": "ivy", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.566073000431*0.0|0.0*0.566073000431*0.0*0.0|0.566073000431*0.0*0.0*0.0|142.710922241*217.861190796*-110.211921692*1.0", 
+            "path": "models/flora/grass/ivy.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-0.566073000431*0.0|0.0*0.566073000431*0.0*0.0|0.566073000431*0.0*0.0*0.0|142.710922241*217.861190796*-110.211921692*1.0"
+}

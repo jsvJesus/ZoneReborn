@@ -1,0 +1,40 @@
+{
+    "firstguid": "E3E24066.4E4353C9.86ED9F83.ADF76615", 
+    "models": {
+        "C4738CA8.4DF972F4.A3DC56BD.3CDF31F4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "20/07/2022", 
+                "description": "tray_stack_01_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0128720002249*0.16782400012*0.985728025436*0.0|-0.0705090016127*0.826662003994*-0.139822006226*0.0|-0.996396005154*-0.0804679989815*0.0267110001296*0.0|67.8660049438*13.8238668442*45.7679977417*1.0", 
+            "path": "models/props/warehouse/tray_stack_01_lod1.model"
+        }, 
+        "E3E24066.4E4353C9.86ED9F83.ADF76615": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "20/07/2022", 
+                "description": "tray_stack_01_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.476355999708*0.0*0.879248976707*0.0|0.0*0.779487013817*0.0*0.0|-0.879249989986*0.0*-0.476357012987*0.0|68.1059417725*13.202009201*46.2399597168*1.0", 
+            "path": "models/props/warehouse/tray_stack_01_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-0.476355999708*0.0*0.879248976707*0.0|0.0*0.779487013817*0.0*0.0|-0.879249989986*0.0*-0.476357012987*0.0|68.1059417725*13.202009201*46.2399597168*1.0"
+}

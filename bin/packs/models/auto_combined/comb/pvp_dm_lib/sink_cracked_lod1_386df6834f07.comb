@@ -1,0 +1,91 @@
+{
+    "firstguid": "6DA86EAA.4EFE0237.6BE59785.22311856", 
+    "models": {
+        "25705904.429064E0.AD2FCAA5.70302E15": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "sink_cracked_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|21.6031169891*-3.00000010611e-06*63.8846282959*1.0", 
+            "path": "models/misc/furniture/wc/sink_cracked_lod1.model"
+        }, 
+        "6DA86EAA.4EFE0237.6BE59785.22311856": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "sink_cracked_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|21.6031150818*-3.00000010611e-06*62.3846282959*1.0", 
+            "path": "models/misc/furniture/wc/sink_cracked_lod1.model"
+        }, 
+        "7236BC79.4295BDCA.D7516FB4.C6C6A6F7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "sink_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|21.6031150818*-3.00000010611e-06*65.3846282959*1.0", 
+            "path": "models/misc/furniture/wc/sink_lod1.model"
+        }, 
+        "84784C10.4E885620.08CFC1A5.7849A6BF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "sink_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|21.6031150818*-3.00000010611e-06*66.8846282959*1.0", 
+            "path": "models/misc/furniture/wc/sink_lod1.model"
+        }, 
+        "E6812921.4EF7B4DF.F978A48E.F3439AF5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "sink_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|21.6031112671*-3.00000010611e-06*60.8846359253*1.0", 
+            "path": "models/misc/furniture/wc/sink_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|-0.999998986721*0.0*0.0*0.0|21.6031150818*-3.00000010611e-06*62.3846282959*1.0"
+}

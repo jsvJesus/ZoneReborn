@@ -1,0 +1,56 @@
+{
+    "models": {
+        "B13C8687.40A8BA1E.078B8188.337A5966": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "a8fff5d1i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "28/02/2024", 
+                "description": "sofa_old", 
+                "modified by": "ice_c", 
+                "modified on": "11/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.624777972698*1.99999999495e-06*0.780799984932*0.0|6.00000021223e-06*0.999998986721*-7.00000009601e-06*0.0|-0.780799984932*9.00000031834e-06*0.624777972698*0.0|339.462738037*212.999786377*-56.4658279419*1.0", 
+            "path": "models/misc/furniture/sofa_old.model"
+        }, 
+        "B8CDF213.4E18C4DF.1ED5A3AE.59829F8E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "a8fff5d1i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "sofa_old", 
+                "modified by": "ice_c", 
+                "modified on": "11/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.933579981327*0.0*-0.358368009329*0.0|0.0*0.999998986721*0.0*0.0|0.358368009329*0.0*0.933579981327*0.0|343.515319824*212.999786377*-49.7165374756*1.0", 
+            "path": "models/misc/furniture/sofa_old.model"
+        }, 
+        "EE818A79.43DE2362.25BCDBBE.1D77BF26": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "a8fff5d1i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "sofa_old", 
+                "modified by": "ice_c", 
+                "modified on": "11/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.992545008659*0.0*-0.121868997812*0.0|0.0*0.999998986721*0.0*0.0|0.121868997812*0.0*-0.992545008659*0.0|343.257781982*212.999664307*-63.0515670776*1.0", 
+            "path": "models/misc/furniture/sofa_old.model"
+        }
+    }, 
+    "spawn_transform": "-0.992545008659*0.0*-0.121868997812*0.0|0.0*0.999998986721*0.0*0.0|0.121868997812*0.0*-0.992545008659*0.0|343.257781982*212.999664307*-63.0515670776*1.0"
+}

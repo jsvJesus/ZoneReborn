@@ -1,0 +1,215 @@
+{
+    "firstguid": "0B0DAE8D.47B17FDE.D8394A95.4F66CF7A", 
+    "models": {
+        "0B0DAE8D.47B17FDE.D8394A95.4F66CF7A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "56232720i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/05/2023"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.937731027603*-0.308584004641*0.159481003881*0.0|0.304215013981*0.951196014881*0.051738999784*0.0|-0.167664006352*-9.99999997475e-07*0.985843002796*0.0|31.6409416199*15.0344924927*14.3626794815*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }, 
+        "0FD0DE68.45782D32.5FE4699E.F9DE065E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "56232720i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/05/2023"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|36.1204299927*15.2999897003*14.6822986603*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }, 
+        "1C1599B6.4CE90144.84D94CAC.52B5CC30": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "56232720i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/05/2023"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|31.6204414368*15.299993515*10.3615016937*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }, 
+        "24B5780C.4ADCA56D.539886A7.EA2A1E34": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "56232720i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/05/2023"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|27.1204338074*15.2999916077*14.6822986603*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }, 
+        "351CE0BC.4A5AA974.532EA7B1.2045A802": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "56232720i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/05/2023"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|27.1204338074*15.2999916077*10.6822986603*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }, 
+        "4AE0E21E.445F3B0B.E1A433A9.89914BBF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "56232720i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/05/2023"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.990685999393*0.136160999537*0.0*0.0|-0.136160999537*0.990685999393*0.0*0.0|0.0*0.0*0.999998986721*0.0|36.133014679*15.2083625793*10.3614988327*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }, 
+        "55DCCD54.4C21DB15.B4E2E989.4E1F07FC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "56232720i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/05/2023"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|27.1204414368*15.299993515*10.3615007401*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }, 
+        "609636FA.40469C96.FC3306AA.4D27CEAB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "56232720i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/05/2023"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|36.1204376221*15.2999916077*14.3615007401*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }, 
+        "7970F2AB.4356D935.12C98092.F722FBA9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "56232720i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/05/2023"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|27.1204414368*15.299993515*14.3615007401*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }, 
+        "838234DC.48FD21C4.9ACB8C9E.92E77A18": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "56232720i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/05/2023"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.971931993961*-0.167399004102*0.165297999978*0.0|0.165029004216*0.985888004303*0.0280670002103*0.0|-0.167664006352*0.0*0.985843002796*0.0|31.5935325623*15.1500558853*14.6800231934*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }, 
+        "D2EA893A.4AD4CE64.EA22CAAF.22946E78": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "56232720i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/05/2023"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|31.6204338074*15.2999916077*10.682299614*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }
+    }, 
+    "spawn_transform": "0.937731027603*-0.308584004641*0.159481003881*0.0|0.304215013981*0.951196014881*0.051738999784*0.0|-0.167664006352*-9.99999997475e-07*0.985843002796*0.0|31.6409416199*15.0344924927*14.3626794815*1.0"
+}

@@ -1,0 +1,57 @@
+{
+    "firstguid": "12ED8A4C.47D81756.825E99A3.AB72D701", 
+    "models": {
+        "0951BE8B.4AC27AD0.9972EF8E.1A4D8D8B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "a236919di@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "20/07/2022", 
+                "description": "box_wood_small_02_lod1", 
+                "modified by": "danil_lepeshkov", 
+                "modified on": "12/01/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*1.0*0.0|0.0*1.0*0.0*0.0|-1.0*0.0*0.0*0.0|85.1699523926*10.9999961853*78.6199493408*1.0", 
+            "path": "models/props/warehouse/box_wood_small_02_lod1.model"
+        }, 
+        "12ED8A4C.47D81756.825E99A3.AB72D701": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "a236919di@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "20/07/2022", 
+                "description": "box_wood_small_02_lod1", 
+                "modified by": "danil_lepeshkov", 
+                "modified on": "12/01/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*1.0*0.0|0.0*1.0*0.0*0.0|-1.0*0.0*0.0*0.0|83.359954834*11.0099964142*81.3499450684*1.0", 
+            "path": "models/props/warehouse/box_wood_small_02_lod1.model"
+        }, 
+        "5AB3BCBE.4A06EFE7.85EBD9A2.39CE8034": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "a236919di@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "danil_lepeshkov", 
+                "created on": "12/01/2024", 
+                "description": "box_wood_small_02_lod1", 
+                "modified by": "danil_lepeshkov", 
+                "modified on": "12/01/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|87.7199554443*10.9999961853*81.1599502563*1.0", 
+            "path": "models/props/warehouse/box_wood_small_02_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*1.0*0.0|0.0*1.0*0.0*0.0|-1.0*0.0*0.0*0.0|83.359954834*11.0099964142*81.3499450684*1.0"
+}

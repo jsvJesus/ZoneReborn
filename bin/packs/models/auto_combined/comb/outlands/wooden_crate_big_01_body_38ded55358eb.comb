@@ -1,0 +1,82 @@
+{
+    "firstguid": "358EF1ED.4C9ACFC8.67FFF982.34D4C5C1", 
+    "models": {
+        "1B476DC7.4C9E89A9.2EB30B9A.98BAB1EE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "000cfffco@outlands@0x000001FE228FA120", 
+                "created by": "BladeSlinger", 
+                "created on": "23/12/2015", 
+                "description": "wooden_crate_big_01_body", 
+                "modified by": "sergey_busygin", 
+                "modified on": "08/11/2021"
+            }, 
+            "dyes": {
+                "Wooden_crate_OPEN": "CLOSED"
+            }, 
+            "matrix": "-0.513616979122*-0.066076003015*0.85546797514*0.0|-0.0727529972792*0.996791005135*0.0333109982312*0.0|-0.854925990105*-0.0451290011406*-0.516777992249*0.0|1266.8807373*-3.68882107735*-390.234130859*1.0", 
+            "path": "models/misc/containers/wooden_crate_big_01_body.model"
+        }, 
+        "358EF1ED.4C9ACFC8.67FFF982.34D4C5C1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "000cfffco@outlands@0x000001FE228FA120", 
+                "created by": "BladeSlinger", 
+                "created on": "23/12/2015", 
+                "description": "wooden_crate_big_01_body", 
+                "modified by": "sergey_busygin", 
+                "modified on": "08/11/2021"
+            }, 
+            "dyes": {
+                "Wooden_crate_OPEN": "CLOSED"
+            }, 
+            "matrix": "-0.844186007977*-0.0402350015938*-0.534536004066*0.0|-0.075049996376*0.99622797966*0.0435389988124*0.0|0.530768990517*0.0768719986081*-0.844021975994*0.0|1267.84143066*-0.12832300365*-391.174255371*1.0", 
+            "path": "models/misc/containers/wooden_crate_big_01_body.model"
+        }, 
+        "76D82832.4E736E4C.1D26D995.45FC05E8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "000cfffco@outlands@0x000001FE228FA120", 
+                "created by": "BladeSlinger", 
+                "created on": "23/12/2015", 
+                "description": "wooden_crate_big_01_body", 
+                "modified by": "sergey_busygin", 
+                "modified on": "08/11/2021"
+            }, 
+            "dyes": {
+                "Wooden_crate_OPEN": "CLOSED"
+            }, 
+            "matrix": "0.812924027443*0.0874420031905*0.575766026974*0.0|-0.0742100030184*0.996155977249*-0.0465109981596*0.0|-0.577620983124*-0.00491800019518*0.816289007664*0.0|1267.89538574*-2.76160788536*-390.971160889*1.0", 
+            "path": "models/misc/containers/wooden_crate_big_01_body.model"
+        }, 
+        "E76638DF.4057C42C.D547F8A6.4CB065D5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "000cfffco@outlands@0x000001FE228FA120", 
+                "created by": "BladeSlinger", 
+                "created on": "23/12/2015", 
+                "description": "wooden_crate_big_01_body", 
+                "modified by": "sergey_busygin", 
+                "modified on": "08/11/2021"
+            }, 
+            "dyes": {
+                "Wooden_crate_OPEN": "CLOSED"
+            }, 
+            "matrix": "0.57538497448*0.0699350014329*-0.814882993698*0.0|-0.0722429975867*0.996785998344*0.034536998719*0.0|0.814680993557*0.0389980003238*0.578589975834*0.0|1266.83337402*-3.36645293236*-390.277862549*1.0", 
+            "path": "models/misc/containers/wooden_crate_big_01_body.model"
+        }
+    }, 
+    "spawn_transform": "-0.844186007977*-0.0402350015938*-0.534536004066*0.0|-0.075049996376*0.99622797966*0.0435389988124*0.0|0.530768990517*0.0768719986081*-0.844021975994*0.0|1267.84143066*-0.12832300365*-391.174255371*1.0"
+}

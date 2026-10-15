@@ -1,0 +1,42 @@
+{
+    "firstguid": "DF22439E.4760E2FE.C0B6E7AA.39122A31", 
+    "models": {
+        "B7AF2578.42A31B80.D9CCFCA8.2C4C39F8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000f0009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "01/09/2021", 
+                "description": "zil131_military_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {
+                "lambert4": "default"
+            }, 
+            "matrix": "-0.677848994732*0.000192999999854*0.735195994377*0.0|0.000251999998*0.999997019768*-3.09999995807e-05*0.0|-0.735197007656*0.000165000004927*-0.677848994732*0.0|1572.53320312*18.7499961853*920.667602539*1.0", 
+            "path": "models/transport/heavy/zil131_military_lod1.model"
+        }, 
+        "DF22439E.4760E2FE.C0B6E7AA.39122A31": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000f0009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "01/09/2021", 
+                "description": "zil131_military_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {
+                "lambert4": "default"
+            }, 
+            "matrix": "0.125371992588*9.99999997475e-07*0.992109000683*0.0|1.99999999495e-06*1.0*-9.99999997475e-07*0.0|-0.992109000683*1.99999999495e-06*0.125371992588*0.0|1582.67175293*18.749994278*925.130371094*1.0", 
+            "path": "models/transport/heavy/zil131_military_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.125371992588*9.99999997475e-07*0.992109000683*0.0|1.99999999495e-06*1.0*-9.99999997475e-07*0.0|-0.992109000683*1.99999999495e-06*0.125371992588*0.0|1582.67175293*18.749994278*925.130371094*1.0"
+}

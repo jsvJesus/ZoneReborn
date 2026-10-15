@@ -1,0 +1,56 @@
+{
+    "models": {
+        "C29B1DBC.45620D30.82E951B9.3AF240F6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "shelf_02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:55:19"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.25912094116*0.0*0.0*0.0|0.0*1.25912094116*0.0*0.0|0.0*0.0*1.25912094116*0.0|382.253417969*213.231048584*-67.7043991089*1.0", 
+            "path": "models/misc/furniture/shelf_02.model"
+        }, 
+        "CDC163A9.494D7F48.D3267BAF.B360FEC7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "shelf_02", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.25912296772*0.0*0.0*0.0|0.0*1.25912296772*0.0*0.0|0.0*0.0*1.25912296772*0.0|382.24887085*213.002151489*-74.1895294189*1.0", 
+            "path": "models/misc/furniture/shelf_02.model"
+        }, 
+        "DF04678F.4E8DA43E.519B4AA1.DE8C659D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "shelf_02", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.25912296772*0.0*0.0*0.0|0.0*1.25912296772*0.0*0.0|0.0*0.0*1.25912296772*0.0|382.24887085*213.002151489*-72.6675262451*1.0", 
+            "path": "models/misc/furniture/shelf_02.model"
+        }
+    }, 
+    "spawn_transform": "1.25912094116*0.0*0.0*0.0|0.0*1.25912094116*0.0*0.0|0.0*0.0*1.25912094116*0.0|382.253417969*213.231048584*-67.7043991089*1.0"
+}

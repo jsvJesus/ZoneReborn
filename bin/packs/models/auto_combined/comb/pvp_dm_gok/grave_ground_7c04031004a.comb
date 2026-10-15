@@ -1,0 +1,44 @@
+{
+    "firstguid": "1C0E2A7F.4E873016.8B9D7097.FFEE22C1", 
+    "models": {
+        "1C0E2A7F.4E873016.8B9D7097.FFEE22C1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "anton_zyryanov", 
+                "created on": "14/07/2020", 
+                "description": "grave_ground", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "14/07/2020"
+            }, 
+            "dyes": {
+                "ground": "default"
+            }, 
+            "matrix": "2.2702960968*0.0*0.260697007179*0.0|0.0*2.28521490097*0.0*0.0|-0.199601992965*0.0*1.73824596405*0.0|58.9732894897*2.98893499374*62.2701301575*1.0", 
+            "path": "models/props/cemetery/grave_ground.model"
+        }, 
+        "52C5B0E2.4BE462C2.7154ABB9.1ACFAEB3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "anton_zyryanov", 
+                "created on": "14/07/2020", 
+                "description": "grave_ground", 
+                "modified by": "anna_beyzler", 
+                "modified on": "17/07/2020"
+            }, 
+            "dyes": {
+                "ground": "default"
+            }, 
+            "matrix": "2.60873794556*0.0*0.0*0.0|0.0*2.60873794556*0.0*0.0|9.99999997475e-07*0.0*3.17294001579*0.0|50.8334083557*0.626561999321*64.3750991821*1.0", 
+            "path": "models/props/cemetery/grave_ground.model"
+        }
+    }, 
+    "spawn_transform": "2.2702960968*0.0*0.260697007179*0.0|0.0*2.28521490097*0.0*0.0|-0.199601992965*0.0*1.73824596405*0.0|58.9732894897*2.98893499374*62.2701301575*1.0"
+}

@@ -1,0 +1,141 @@
+{
+    "models": {
+        "1EB3A4EA.4F2BE23E.6DD3EE8C.7BBA1D0D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*-0.999997973442*0.0|0.0*0.999997973442*0.000345000007655*0.0|0.999997973442*0.0*0.0*0.0|246.834594727*199.999771118*-78.2823791504*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }, 
+        "2E79E310.468EB3B6.0C1D1EB3.B7466C2A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*-0.999998986721*0.0|0.0*0.999998986721*0.000345000007655*0.0|0.999998986721*0.0*0.0*0.0|239.274841309*199.999923706*-88.3876342773*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }, 
+        "362766A6.414C4D8A.D1E27C9B.42CA4423": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*1.0*0.0|0.0*1.0*-0.000345000007655*0.0|-1.0*0.0*0.0*0.0|232.933822632*199.999938965*-88.3215026855*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }, 
+        "557ACF02.42104162.5D0EB0BD.DEADB4CC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999998986721*0.000345000007655*0.0*0.0|0.000345000007655*0.999998986721*0.0*0.0|0.0*0.0*-0.999998986721*0.0|231.018295288*199.999694824*-90.3373260498*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }, 
+        "86CC9194.41B3CA59.5976348B.0D892270": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "sergey_busygin", 
+                "modified on": "04/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|0.999997973442*0.0*0.0*0.0|231.868759155*199.999969482*-88.3514251709*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }, 
+        "9E8B831C.4684433E.1594A780.D6487AA2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*-0.999997973442*0.0|0.0*0.999997973442*0.000345000007655*0.0|0.999997973442*0.0*0.0*0.0|246.827590942*199.999816895*-84.3043823242*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }, 
+        "CA681EAE.4085800D.B9C4D1A1.2F5D9AE0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*1.0*0.0|0.0*1.0*-0.000345000007655*0.0|-1.0*0.0*0.0*0.0|232.934753418*199.999786377*-82.8154449463*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }, 
+        "FC08B519.4D5D112D.80861FAD.61B04CD5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999998986721*0.000345000007655*0.0*0.0|0.000345000007655*0.999998986721*0.0*0.0|0.0*0.0*-0.999998986721*0.0|236.524337769*199.999847412*-90.3382568359*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|0.999997973442*0.0*0.0*0.0|231.868759155*199.999969482*-88.3514251709*1.0"
+}

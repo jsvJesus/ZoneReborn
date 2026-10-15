@@ -1,0 +1,39 @@
+{
+    "models": {
+        "317E9A03.462795F7.2225E4BB.4E81C9F2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "792fbb03i@inst_vesuvius_dungeon@0x000001F197883D60", 
+                "created by": "evgeny_yashkin", 
+                "created on": "06/10/2023", 
+                "description": "truck_palette", 
+                "modified by": "ice_c", 
+                "modified on": "27/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.614286005497*0.0*-0.789084017277*0.0|0.0*1.0*0.0*0.0|0.789084017277*0.0*-0.614286005497*0.0|489.438568115*170.499786377*-103.782409668*1.0", 
+            "path": "models/props/warehouse/truck_palette.model"
+        }, 
+        "F89E0B41.437EB85F.EE9906B6.6A76C452": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "792fbb03i@inst_vesuvius_dungeon@0x000001F197883D60", 
+                "created by": "evgeny_yashkin", 
+                "created on": "06/10/2023", 
+                "description": "truck_palette", 
+                "modified by": "ice_c", 
+                "modified on": "27/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.9988899827*0.0*-0.0471060015261*0.0|0.0*1.0*0.0*0.0|0.0471060015261*0.0*-0.9988899827*0.0|489.970397949*170.499786377*-101.863319397*1.0", 
+            "path": "models/props/warehouse/truck_palette.model"
+        }
+    }, 
+    "spawn_transform": "-0.614286005497*0.0*-0.789084017277*0.0|0.0*1.0*0.0*0.0|0.789084017277*0.0*-0.614286005497*0.0|489.438568115*170.499786377*-103.782409668*1.0"
+}

@@ -1,0 +1,39 @@
+{
+    "models": {
+        "287A966E.4908DA19.7879A587.E152BEA6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "29/01/2024", 
+                "description": "door_big_right", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:07:22"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.24351501465*0.000607000023592*0.0*0.0|0.000607000023592*1.24351501465*0.0*0.0|0.0*0.0*-1.24399697781*0.0|189.400619507*200.024749756*-80.8650970459*1.0", 
+            "path": "models/city/prip_outlands/military_laboratory/door_big_right.model"
+        }, 
+        "AA42B429.4775A2DA.BA9BFA9C.BCA40EE4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "29/01/2024", 
+                "description": "door_big_right", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:07:22"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.621756970882*0.000607000023592*-1.07691502571*0.0|-0.000303000007989*1.24351394176*0.000525999988895*0.0|1.07733201981*0.0*0.621998012066*0.0|188.402114868*207.024688721*-82.8684234619*1.0", 
+            "path": "models/city/prip_outlands/military_laboratory/door_big_right.model"
+        }
+    }, 
+    "spawn_transform": "-1.24351501465*0.000607000023592*0.0*0.0|0.000607000023592*1.24351501465*0.0*0.0|0.0*0.0*-1.24399697781*0.0|189.400619507*200.024749756*-80.8650970459*1.0"
+}

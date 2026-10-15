@@ -1,0 +1,96 @@
+{
+    "firstguid": "994A57E8.4A3CE320.5C9B208B.A57B9017", 
+    "models": {
+        "156E9E29.42491CCC.F9BBFE84.D1EA81A8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "001x000x/sep/00100006o@outlands@0x000001F05EFE4040", 
+                "created by": "sergey_busygin", 
+                "created on": "18/01/2022", 
+                "description": "dead_tree28", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18/01/2022"
+            }, 
+            "dyes": {
+                "tree": "default"
+            }, 
+            "matrix": "-1.23626804352*0.347270011902*1.18010795116*0.0|-0.0144769996405*1.66886103153*-0.506260991096*0.0|-1.23005700111*-0.368663996458*-1.18010699749*0.0|1688.47875977*15.1007795334*638.321838379*1.0", 
+            "path": "models/flora/trees/dead_tree28.model"
+        }, 
+        "19036DC3.47A4CB6E.A86E74AF.666C7458": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "001x000x/sep/00100006o@outlands@0x000001F05EFE4040", 
+                "created by": "DEFI", 
+                "created on": "22/10/2021", 
+                "description": "dead_tree28", 
+                "modified by": "DEFI", 
+                "modified on": "22/10/2021"
+            }, 
+            "dyes": {
+                "tree": "default"
+            }, 
+            "matrix": "-1.05710804462*0.159714996815*-0.0915729999542*0.0|0.175385996699*1.03593599796*-0.21782399714*0.0|0.0559849999845*-0.22956199944*-1.0466799736*0.0|1697.35009766*13.1984596252*624.452514648*1.0", 
+            "path": "models/flora/trees/dead_tree28.model"
+        }, 
+        "994A57E8.4A3CE320.5C9B208B.A57B9017": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "001x000x/sep/00100006o@outlands@0x000001F05EFE4040", 
+                "created by": "sergey_busygin", 
+                "created on": "18/01/2022", 
+                "description": "dead_tree28", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18/01/2022"
+            }, 
+            "dyes": {
+                "tree": "default"
+            }, 
+            "matrix": "1.12746405602*0.280490010977*0.970209002495*0.0|-0.455834001303*1.43890094757*0.113728001714*0.0|-0.901219010353*-0.376888006926*1.15625*0.0|1687.10437012*15.6227531433*647.734375*1.0", 
+            "path": "models/flora/trees/dead_tree28.model"
+        }, 
+        "9A8763DA.4BC9E6FB.03BFEABC.7593FF1A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "001x000x/sep/00110006o@outlands@0x000001F05EFE4040", 
+                "created by": "sergey_busygin", 
+                "created on": "18/01/2022", 
+                "description": "dead_tree28", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18/01/2022"
+            }, 
+            "dyes": {
+                "tree": "default"
+            }, 
+            "matrix": "-1.18969595432*0.0905689969659*-1.82941198349*0.0|-0.00346600008197*2.18132090569*0.110244996846*0.0|1.83164894581*0.0629540011287*-1.18803405762*0.0|1707.16125488*14.9668979645*653.136108398*1.0", 
+            "path": "models/flora/trees/dead_tree28.model"
+        }, 
+        "B847DDE1.4935AE36.293BFCBC.A9C97A8A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "001x000x/sep/00100006o@outlands@0x000001F05EFE4040", 
+                "created by": "sergey_busygin", 
+                "created on": "18/01/2022", 
+                "description": "dead_tree28", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18/01/2022"
+            }, 
+            "dyes": {
+                "tree": "default"
+            }, 
+            "matrix": "-1.28844594955*0.202142000198*-1.44324398041*0.0|-0.0994940027595*1.90972697735*0.356301009655*0.0|1.45393204689*0.30981901288*-1.25459301472*0.0|1691.04431152*14.0134086609*664.780578613*1.0", 
+            "path": "models/flora/trees/dead_tree28.model"
+        }
+    }, 
+    "spawn_transform": "1.12746405602*0.280490010977*0.970209002495*0.0|-0.455834001303*1.43890094757*0.113728001714*0.0|-0.901219010353*-0.376888006926*1.15625*0.0|1687.10437012*15.6227531433*647.734375*1.0"
+}

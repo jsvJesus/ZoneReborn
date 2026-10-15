@@ -1,0 +1,58 @@
+{
+    "models": {
+        "1F55D2CD.47E80119.D5F8199F.574080D7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "concrete_block", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "0.548381984234*-0.0899280011654*-0.831377029419*0.0|0.0495020002127*0.995947003365*-0.0750780031085*0.0|0.834760010242*1.70000002981e-05*0.550611019135*0.0|331.857177734*179.622421265*-122.939865112*1.0", 
+            "path": "models/props/poligon/concrete_block.model"
+        }, 
+        "4BD6C08B.4A0EEBC0.27DB58A0.09B498FF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "concrete_block", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0142289996147*-0.156039997935*0.987646996975*0.0|0.00225499994121*0.987749993801*0.15602299571*0.0|-0.999894976616*7.9999999798e-06*0.0144069995731*0.0|332.56439209*179.77331543*-125.343742371*1.0", 
+            "path": "models/props/poligon/concrete_block.model"
+        }, 
+        "E116F862.48CB4295.6D8BE699.94B7113D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "concrete_block", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.654105007648*0.0769890025258*0.752474009991*0.0|0.0505019985139*0.997031986713*-0.0581110008061*0.0|-0.754715025425*-9.00000031834e-06*-0.65605199337*0.0|338.313232422*180.490447998*-118.458061218*1.0", 
+            "path": "models/props/poligon/concrete_block.model"
+        }
+    }, 
+    "spawn_transform": "0.548381984234*-0.0899280011654*-0.831377029419*0.0|0.0495020002127*0.995947003365*-0.0750780031085*0.0|0.834760010242*1.70000002981e-05*0.550611019135*0.0|331.857177734*179.622421265*-122.939865112*1.0"
+}

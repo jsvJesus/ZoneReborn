@@ -1,0 +1,124 @@
+{
+    "models": {
+        "03061C1A.4225D397.80E35098.55424DDF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*0.999998986721*0.0|0.0*0.999998986721*-0.000345000007655*0.0|-0.999998986721*0.0*0.0*0.0|218.329833984*199.999755859*-89.3660736084*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }, 
+        "057D4894.4CEC0016.0735E1B1.EEB402C5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "sergey_busygin", 
+                "modified on": "04/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|-0.999997973442*0.0*0.0*0.0|218.32989502*199.999893188*-83.7865905762*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }, 
+        "5F2ACAF9.48B17269.947C36AE.717927B2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999997973442*0.000345000007655*0.0*0.0|0.000345000007655*0.999997973442*0.0*0.0|0.0*0.0*-0.999997973442*0.0|212.534942627*199.999694824*-90.2824707031*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }, 
+        "659439F5.47DBEA1F.268B7BB8.4D03EDCD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "ice_c", 
+                "modified on": "19/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*-0.999997973442*0.0|0.0*0.999997973442*0.000345000007655*0.0|0.999997973442*0.0*0.0*0.0|217.318359375*199.99987793*-80.0598754883*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }, 
+        "8613A0B6.433E4720.D7DE0AA5.339D0026": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "ice_c", 
+                "modified on": "19/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*0.999998986721*0.0|0.0*0.999998986721*-0.000345000007655*0.0|-0.999998986721*0.0*0.0*0.0|218.34664917*199.999832153*-77.9577178955*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }, 
+        "C8081963.481EB83B.96814F9B.F76474BA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "ice_c", 
+                "modified on": "16/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999997973442*0.000345000007655*0.0*0.0|0.000345000007655*0.999997973442*0.0*0.0|0.0*0.0*-0.999997973442*0.0|205.808120728*199.999694824*-90.2754516602*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }, 
+        "DE6B5FE3.4742CA64.E1C9E1A8.B087C79C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "green_shelf_03", 
+                "modified by": "sergey_busygin", 
+                "modified on": "04/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999997019768*0.0|0.0*0.999997019768*0.0*0.0|0.999997019768*0.0*0.0*0.0|217.318344116*199.999954224*-88.5215301514*1.0", 
+            "path": "models/props/warehouse/green_shelf_03.model"
+        }
+    }, 
+    "spawn_transform": "-0.999997973442*0.000345000007655*0.0*0.0|0.000345000007655*0.999997973442*0.0*0.0|0.0*0.0*-0.999997973442*0.0|205.808120728*199.999694824*-90.2754516602*1.0"
+}

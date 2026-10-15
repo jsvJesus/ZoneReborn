@@ -1,0 +1,37 @@
+{
+    "models": {
+        "3046FF4F.4C397816.89A019B4.8ED8A872": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "b821d3dai@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "mushroom_grass_1", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.07293796539*0.0*1.53231501579*0.0|0.0*1.87061095238*0.0*0.0|-1.53231501579*0.0*-1.07293796539*0.0|264.192626953*176.052978516*-100.145652771*1.0", 
+            "path": "models/flora/mushrooms/mushroom_grass/mushroom_grass_1.model"
+        }, 
+        "442F8279.4594536C.B0F25480.0FA4D1AC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "b821d3dai@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "mushroom_grass_1", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.80090594292*0.0*-0.72761297226*0.0|0.0*1.94234001637*0.0*0.0|0.72761297226*0.0*-1.80090594292*0.0|264.004302979*176.054748535*-99.7777481079*1.0", 
+            "path": "models/flora/mushrooms/mushroom_grass/mushroom_grass_1.model"
+        }
+    }, 
+    "spawn_transform": "-1.07293796539*0.0*1.53231501579*0.0|0.0*1.87061095238*0.0*0.0|-1.53231501579*0.0*-1.07293796539*0.0|264.192626953*176.052978516*-100.145652771*1.0"
+}

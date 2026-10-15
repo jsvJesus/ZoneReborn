@@ -1,0 +1,42 @@
+{
+    "firstguid": "E08F4E22.4207185B.A906F095.23B326CF", 
+    "models": {
+        "E08F4E22.4207185B.A906F095.23B326CF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "17:33:40", 
+                "description": "square_table_library_1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17:33:40"
+            }, 
+            "dyes": {
+                "lamp_library": "dont_render"
+            }, 
+            "matrix": "0.999445021152*0.0*-0.0331909991801*0.0|0.0*0.999997019768*0.0*0.0|0.0331909991801*0.0*0.999445021152*0.0|92.2169799805*4.99999904633*41.4369888306*1.0", 
+            "path": "models/misc/furniture/library/square_table_library_1.model"
+        }, 
+        "FADCDB34.4335D2A5.AD5A6B83.36B3E85B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "17:33:40", 
+                "description": "square_table_library_1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17:33:40"
+            }, 
+            "dyes": {
+                "lamp_library": "dont_render"
+            }, 
+            "matrix": "0.998232007027*0.0*0.0593740008771*0.0|0.0*0.999997019768*0.0*0.0|-0.0593740008771*0.0*0.998232007027*0.0|92.2349777222*4.99999904633*46.3989868164*1.0", 
+            "path": "models/misc/furniture/library/square_table_library_1.model"
+        }
+    }, 
+    "spawn_transform": "0.999445021152*0.0*-0.0331909991801*0.0|0.0*0.999997019768*0.0*0.0|0.0331909991801*0.0*0.999445021152*0.0|92.2169799805*4.99999904633*41.4369888306*1.0"
+}

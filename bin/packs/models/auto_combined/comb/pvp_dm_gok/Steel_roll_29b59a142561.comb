@@ -1,0 +1,108 @@
+{
+    "firstguid": "4015E680.4E6EEE7A.DD9499BC.0C35F175", 
+    "models": {
+        "20A6D398.4A2F7658.A26D309F.4FEE1BCA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "Steel_roll", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.017451999709*0.0*-0.999845981598*0.0|0.0*0.999998986721*0.0*0.0|0.999845981598*0.0*-0.017451999709*0.0|68.5985717773*7.20895910263*47.6215133667*1.0", 
+            "path": "models/props/warehouse/Steel_roll.model"
+        }, 
+        "2514BF74.4633272A.0314FFB4.47C9274F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "Steel_roll", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.017451999709*0.0*-0.999845981598*0.0|0.0*0.999998986721*0.0*0.0|0.999845981598*0.0*-0.017451999709*0.0|68.8474884033*11.5376605988*50.8817100525*1.0", 
+            "path": "models/props/warehouse/Steel_roll.model"
+        }, 
+        "3DBCBA3D.4639109F.D65C819E.4E9F0E73": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "Steel_roll", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.017451999709*0.0*-0.999845981598*0.0|0.0*0.999998986721*0.0*0.0|0.999845981598*0.0*-0.017451999709*0.0|68.8161621094*8.67765903473*53.0790748596*1.0", 
+            "path": "models/props/warehouse/Steel_roll.model"
+        }, 
+        "4015E680.4E6EEE7A.DD9499BC.0C35F175": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "Steel_roll", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.017451999709*0.0*-0.999845981598*0.0|0.0*0.999998986721*0.0*0.0|0.999845981598*0.0*-0.017451999709*0.0|68.7331695557*11.5376567841*49.3738441467*1.0", 
+            "path": "models/props/warehouse/Steel_roll.model"
+        }, 
+        "BA46269E.43502B54.EDA1D2A9.289A60D5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "Steel_roll", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999845981598*0.0*-0.017451999709*0.0|0.0*0.999998986721*0.0*0.0|0.017451999709*0.0*0.999845981598*0.0|68.7568206787*8.67765712738*49.5325508118*1.0", 
+            "path": "models/props/warehouse/Steel_roll.model"
+        }, 
+        "FA3A16B0.464795F4.C5AC73A6.35C29E3F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "Steel_roll", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999845981598*0.0*-0.017451999709*0.0|0.0*0.999998986721*0.0*0.0|0.017451999709*0.0*0.999845981598*0.0|68.7911529541*8.67765712738*47.5594558716*1.0", 
+            "path": "models/props/warehouse/Steel_roll.model"
+        }
+    }, 
+    "spawn_transform": "-0.017451999709*0.0*-0.999845981598*0.0|0.0*0.999998986721*0.0*0.0|0.999845981598*0.0*-0.017451999709*0.0|68.7331695557*11.5376567841*49.3738441467*1.0"
+}

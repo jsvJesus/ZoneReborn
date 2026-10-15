@@ -1,0 +1,38 @@
+{
+    "firstguid": "65734256.412A35AF.4D6224A0.BBF3D1AE", 
+    "models": {
+        "65734256.412A35AF.4D6224A0.BBF3D1AE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff10006o@black_forest@0x00000212B9754950", 
+                "created by": "MSI", 
+                "created on": "19:03:43", 
+                "description": "fence_concrete_section", 
+                "modified by": "MSI", 
+                "modified on": "19:03:43"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.998779892921*1.9999995402e-06*-0.0492629930377*0.0|-3.99999908041e-06*0.99999588728*-4.09999920521e-05*0.0|0.0492629930377*4.19999923906e-05*0.998779892921*0.0|-1444.48242188*0.431460946798*645.97076416*0.999999880791", 
+            "path": "models/props/fences/fence_concrete/fence_concrete_section.model"
+        }, 
+        "A5FF87A0.4649ED94.73D47EB1.C9717A95": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff10006o@black_forest@0x00000212B9754950", 
+                "created by": "MSI", 
+                "created on": "19:03:43", 
+                "description": "fence_concrete_section", 
+                "modified by": "MSI", 
+                "modified on": "19:03:43"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.998779892921*1.9999995402e-06*-0.0492629930377*0.0|-3.99999908041e-06*0.99999588728*-4.09999920521e-05*0.0|0.0492629930377*4.19999923906e-05*0.998779892921*0.0|-1448.75183105*0.431452929974*646.181396484*0.999999880791", 
+            "path": "models/props/fences/fence_concrete/fence_concrete_section.model"
+        }
+    }, 
+    "spawn_transform": "0.998779892921*1.9999995402e-06*-0.0492629930377*0.0|-3.99999908041e-06*0.99999588728*-4.09999920521e-05*0.0|0.0492629930377*4.19999923906e-05*0.998779892921*0.0|-1444.48242188*0.431460946798*645.97076416*0.999999880791"
+}

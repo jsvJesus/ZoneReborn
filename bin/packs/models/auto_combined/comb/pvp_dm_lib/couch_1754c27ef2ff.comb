@@ -1,0 +1,40 @@
+{
+    "firstguid": "E4772CA8.4E2BB5E8.E64D8F89.75C69392", 
+    "models": {
+        "11E22297.478E8F35.69F596AB.B136B031": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e6b51235i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "couch", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "27/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999390006065*0.0*-0.0348990000784*0.0|0.0*1.0*0.0*0.0|0.0348990000784*0.0*-0.999390006065*0.0|6.87335634232*4.99999809265*28.9824142456*1.0", 
+            "path": "models/misc/furniture/library/couch.model"
+        }, 
+        "E4772CA8.4E2BB5E8.E64D8F89.75C69392": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e6b51235i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "couch", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "27/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.978146970272*0.0*-0.207911998034*0.0|0.0*1.0*0.0*0.0|0.207911998034*0.0*0.978146970272*0.0|7.23567914963*5.03499221802*20.4164104462*1.0", 
+            "path": "models/misc/furniture/library/couch.model"
+        }
+    }, 
+    "spawn_transform": "0.978146970272*0.0*-0.207911998034*0.0|0.0*1.0*0.0*0.0|0.207911998034*0.0*0.978146970272*0.0|7.23567914963*5.03499221802*20.4164104462*1.0"
+}

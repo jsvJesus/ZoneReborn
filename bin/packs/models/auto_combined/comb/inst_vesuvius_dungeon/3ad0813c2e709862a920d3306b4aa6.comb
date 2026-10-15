@@ -1,0 +1,39 @@
+{
+    "models": {
+        "2311F8E5.49204830.3D37F3AC.2223F15C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026E1ACDF4E0", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "Carboard_boxes_stack_LOD1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.121868997812*0.0*0.992546021938*0.0|0.0*1.0*0.0*0.0|-0.992546021938*0.0*-0.121868997812*0.0|426.919647217*170.499725342*-81.3362045288*1.0", 
+            "path": "models/props/warehouse/Carboard_boxes_stack_LOD1.model"
+        }, 
+        "479EBD8B.4546756A.7A4F2AAF.905DD635": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026E1ACDF4E0", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "Carboard_boxes_stack_2_LOD1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.819151997566*0.0*-0.573575973511*0.0|0.0*1.0*0.0*0.0|0.573575973511*0.0*0.819151997566*0.0|425.551208496*170.499740601*-81.75806427*1.0", 
+            "path": "models/props/warehouse/Carboard_boxes_stack_2_LOD1.model"
+        }
+    }, 
+    "spawn_transform": "0.819151997566*0.0*-0.573575973511*0.0|0.0*1.0*0.0*0.0|0.573575973511*0.0*0.819151997566*0.0|425.551208496*170.499740601*-81.75806427*1.0"
+}

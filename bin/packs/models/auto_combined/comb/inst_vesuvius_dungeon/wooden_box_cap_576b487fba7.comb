@@ -1,0 +1,100 @@
+{
+    "models": {
+        "473AABAB.421D6F86.E8F6F29A.091683AA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "wooden_box_cap", 
+                "modified by": "ice_c", 
+                "modified on": "24/04/2024"
+            }, 
+            "dyes": {
+                "wood_box": "default"
+            }, 
+            "matrix": "0.618934988976*-0.0027729999274*1.16405296326*0.0|0.00777299981564*1.31834995747*-0.000991999986582*0.0|-1.16403102875*0.0073290001601*0.618939995766*0.0|535.718688965*172.169174194*-107.144699097*1.0", 
+            "path": "models/props/warehouse/wooden_box_cap.model"
+        }, 
+        "632560E1.4ECF138F.795C5B8E.692770D6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "wooden_box_cap", 
+                "modified by": "ice_c", 
+                "modified on": "24/04/2024"
+            }, 
+            "dyes": {
+                "wood_box": "default"
+            }, 
+            "matrix": "-0.483072012663*-0.141926005483*-1.39574503899*0.0|0.0*1.47616899014*-0.150104001164*0.0|1.40294194221*-0.0488689988852*-0.480594009161*0.0|530.383972168*172.533050537*-100.228851318*1.0", 
+            "path": "models/props/warehouse/wooden_box_cap.model"
+        }, 
+        "7E14087D.4BD92702.809D97A2.DE70EDF7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "wooden_box_cap", 
+                "modified by": "ice_c", 
+                "modified on": "24/04/2024"
+            }, 
+            "dyes": {
+                "wood_box": "default"
+            }, 
+            "matrix": "-0.259465008974*-0.186426997185*-1.01107704639*0.0|-0.470275998116*0.948814988136*-0.0542629994452*0.0|0.914260983467*0.435142993927*-0.314853012562*0.0|535.267456055*172.362762451*-103.030349731*1.0", 
+            "path": "models/props/warehouse/wooden_box_cap.model"
+        }, 
+        "B253B669.48470A27.0B8C6CAF.C6439350": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "wooden_box_cap", 
+                "modified by": "ice_c", 
+                "modified on": "24/04/2024"
+            }, 
+            "dyes": {
+                "wood_box": "default"
+            }, 
+            "matrix": "0.241399005055*-0.141298994422*-1.24494099617*0.0|-7.9999999798e-06*1.26783704758*-0.14390000701*0.0|1.25293397903*0.0272320006043*0.239858001471*0.0|530.067749023*172.617904663*-99.4423065186*1.0", 
+            "path": "models/props/warehouse/wooden_box_cap.model"
+        }, 
+        "C6EBA721.4ACF1D77.BF17CF9A.87B5FFF3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "wooden_box_cap", 
+                "modified by": "ice_c", 
+                "modified on": "24/04/2024"
+            }, 
+            "dyes": {
+                "wood_box": "default"
+            }, 
+            "matrix": "0.26388001442*-0.142737999558*-1.3488420248*0.0|-0.00210799998604*1.37408602238*-0.145821005106*0.0|1.35637199879*0.0299050007015*0.262187987566*0.0|530.329467773*172.93347168*-100.314529419*1.0", 
+            "path": "models/props/warehouse/wooden_box_cap.model"
+        }
+    }, 
+    "spawn_transform": "0.618934988976*-0.0027729999274*1.16405296326*0.0|0.00777299981564*1.31834995747*-0.000991999986582*0.0|-1.16403102875*0.0073290001601*0.618939995766*0.0|535.718688965*172.169174194*-107.144699097*1.0"
+}

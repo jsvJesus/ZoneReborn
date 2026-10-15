@@ -1,0 +1,64 @@
+{
+    "firstguid": "5B7A26B6.45A90E86.C0775A83.F3CCE700", 
+    "models": {
+        "34648ECE.489F3E4D.C7E7F0A8.FDD76C55": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000e000co@outlands@0x000002862CA9F180", 
+                "created by": "pavel_nalivkin", 
+                "created on": "16/12/2013", 
+                "description": "rocks_v2_pack02", 
+                "modified by": "Stass", 
+                "modified on": "23/08/2022", 
+                "reflection visible": true
+            }, 
+            "dyes": {
+                "pasted__pasted__lambert2": "default"
+            }, 
+            "matrix": "-0.985436975956*0.164573997259*-0.0427570007741*0.0|0.169137999415*0.974557995796*-0.147066995502*0.0|0.0174649991095*-0.152156993747*-0.988201022148*0.0|1469.46191406*6.71942281723*1288.68701172*1.0", 
+            "path": "models/flora/stones/rocks_v2_pack02.model"
+        }, 
+        "5B7A26B6.45A90E86.C0775A83.F3CCE700": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "000e000co@outlands@0x000002862CA9F180", 
+                "created by": "pavel_nalivkin", 
+                "created on": "16/12/2013", 
+                "description": "rocks_v2_pack02", 
+                "modified by": "Stass", 
+                "modified on": "07/09/2022", 
+                "reflection visible": true
+            }, 
+            "dyes": {
+                "pasted__pasted__lambert2": "default"
+            }, 
+            "matrix": "-0.984363019466*0.0232960004359*0.174603000283*0.0|0.00167699996382*0.992411017418*-0.122956000268*0.0|-0.176142007113*-0.120739996433*-0.976931989193*0.0|1460.79089355*9.8712682724*1289.47937012*1.0", 
+            "path": "models/flora/stones/rocks_v2_pack02.model"
+        }, 
+        "AABB9FC6.496827A8.D815068F.39A2A7BC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000e000co@outlands@0x000002862CA9F180", 
+                "created by": "Stass", 
+                "created on": "07/09/2022", 
+                "description": "rocks_v2_pack02", 
+                "modified by": "Stass", 
+                "modified on": "07/09/2022", 
+                "reflection visible": true
+            }, 
+            "dyes": {
+                "pasted__pasted__lambert2": "default"
+            }, 
+            "matrix": "-0.998439013958*-0.0545900017023*-0.0117539996281*0.0|-0.0525889992714*0.990007996559*-0.130839005113*0.0|0.0187780000269*-0.130016997457*-0.991333007812*0.0|1453.98718262*10.382850647*1289.26611328*1.0", 
+            "path": "models/flora/stones/rocks_v2_pack02.model"
+        }
+    }, 
+    "spawn_transform": "-0.984363019466*0.0232960004359*0.174603000283*0.0|0.00167699996382*0.992411017418*-0.122956000268*0.0|-0.176142007113*-0.120739996433*-0.976931989193*0.0|1460.79089355*9.8712682724*1289.47937012*1.0"
+}

@@ -1,0 +1,117 @@
+{
+    "models": {
+        "14BBF552.423B49D3.8133DC82.877E075C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "15e68756i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.125569999218*0.0517710000277*0.49525898695*0.0|-0.490599006414*0.100345000625*0.113898999989*0.0|-0.0852899998426*-0.500977993011*0.0739940032363*0.0|380.895874023*174.084381104*-129.355407715*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "711BD8ED.4F833FDF.CD01849F.0226FCCB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "15e68756i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0991180017591*-0.644402980804*0.0511189997196*0.0|-0.621864974499*0.0809319987893*-0.185543999076*0.0|0.176499992609*-0.0767299979925*-0.625021994114*0.0|380.943725586*173.966583252*-130.396789551*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "7D51E016.4780811D.812DE6A3.3CD23D5F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "15e68756i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0540269985795*-0.241647005081*-0.480650007725*0.0|-0.53617399931*0.0636690035462*0.0282589998096*0.0|0.0439699999988*0.479467988014*-0.245995000005*0.0|381.005279541*175.224060059*-129.286773682*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "88858742.4EB16E97.4FF42E84.ED891601": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "15e68756i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "03/07/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|378.245117188*173.007339478*-125.847305298*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "A4C1E4A5.4B30675D.8AA40EA4.F5286A3D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "15e68756i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0693110004067*-0.168195992708*0.467525988817*0.0|0.486784994602*0.0715949982405*0.0979230031371*0.0|-0.0995519980788*0.467182010412*0.15331299603*0.0|377.602783203*174.676025391*-127.78074646*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "C3469502.4CABDC0E.5F4D90A7.B5496629": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "15e68756i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.107432000339*-0.205930992961*-0.403979986906*0.0|-0.449191004038*0.105034001172*0.0659129992127*0.0|0.0619280003011*0.404610008001*-0.222720995545*0.0|381.123565674*174.077255249*-128.328048706*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "FFCE3C6D.4C083A47.35DB8F80.5B1FDA4F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "15e68756i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.279803991318*0.0*-0.812609016895*0.0|0.0*0.85943198204*0.0*0.0|0.812609016895*0.0*-0.279803991318*0.0|380.672241211*172.996459961*-130.63381958*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }
+    }, 
+    "spawn_transform": "0.125569999218*0.0517710000277*0.49525898695*0.0|-0.490599006414*0.100345000625*0.113898999989*0.0|-0.0852899998426*-0.500977993011*0.0739940032363*0.0|380.895874023*174.084381104*-129.355407715*1.0"
+}

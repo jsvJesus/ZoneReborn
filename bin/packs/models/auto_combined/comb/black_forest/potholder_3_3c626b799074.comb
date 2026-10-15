@@ -1,0 +1,38 @@
+{
+    "firstguid": "9D415324.4A738541.046D7EB1.22D3B81E", 
+    "models": {
+        "0BA1B0D4.4E37F6DD.DB7AD5B7.2D6F21F8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "49c0d282i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "17/11/2025", 
+                "description": "potholder_2", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.389619827271*-0.0253350120038*-0.920627653599*0.0|0.0647045448422*0.99790430069*-7.86029268056e-05*0.0|0.918699026108*-0.0595389790833*0.390442371368*0.0|-1423.5859375*1.6870290041*590.086425781*1.0", 
+            "path": "models/misc/furniture/kitchen/potholders/potholder_2.model"
+        }, 
+        "9D415324.4A738541.046D7EB1.22D3B81E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "49c0d282i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "17/11/2025", 
+                "description": "potholder_3", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999998450279*-0.00153199990746*1.04680657387e-06*0.0|0.00153198477346*0.99999922514*-7.86163654993e-05*0.0|-8.90344381332e-07*7.89859477663e-05*1.00000023842*0.0|-1423.56530762*1.67782616615*589.940979004*1.0", 
+            "path": "models/misc/furniture/kitchen/potholders/potholder_3.model"
+        }
+    }, 
+    "spawn_transform": "0.999998450279*-0.00153199990746*1.04680657387e-06*0.0|0.00153198477346*0.99999922514*-7.86163654993e-05*0.0|-8.90344381332e-07*7.89859477663e-05*1.00000023842*0.0|-1423.56530762*1.67782616615*589.940979004*1.0"
+}

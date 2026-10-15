@@ -1,0 +1,41 @@
+{
+    "models": {
+        "57DC6DCF.4C11A67E.8C21E480.E44339C6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x0000026E1ACDF4E0", 
+                "created by": "sergey_busygin", 
+                "created on": "13:56:38", 
+                "description": "mushrooms_2_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "13:56:38"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.866410970688*-0.0560639984906*-0.495164990425*0.0|-0.0325080007315*0.997398018837*-0.0560479983687*0.0|0.497267991304*-0.0324809998274*-0.866412997246*0.0|534.302856445*172.214752197*-102.038696289*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_2/mushrooms_2_lod1.model"
+        }, 
+        "A1F0744C.440F6095.B56A4E94.436D3A3B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x0000026E1ACDF4E0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "mushrooms_2_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.866415977478*-0.0557539984584*-0.495191007853*0.0|0.000479000009364*0.993130981922*-0.112654998899*0.0|0.498320013285*-0.097892999649*-0.860868990421*0.0|535.435852051*172.512573242*-99.2816009521*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_2/mushrooms_2_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-0.866410970688*-0.0560639984906*-0.495164990425*0.0|-0.0325080007315*0.997398018837*-0.0560479983687*0.0|0.497267991304*-0.0324809998274*-0.866412997246*0.0|534.302856445*172.214752197*-102.038696289*1.0"
+}

@@ -1,0 +1,55 @@
+{
+    "firstguid": "07F58507.4A3DD889.71524AA5.DEA02F57", 
+    "models": {
+        "07F58507.4A3DD889.71524AA5.DEA02F57": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "28/04/2023", 
+                "description": "couch", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "27/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0871559977531*0.0*-0.996194005013*0.0|0.0*0.999998986721*0.0*0.0|0.996194005013*0.0*-0.0871559977531*0.0|88.1071395874*4.99999284744*7.04325962067*1.0", 
+            "path": "models/misc/furniture/library/couch.model"
+        }, 
+        "1289E8A6.4E1F9898.606CA78D.E01D44A9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "sergey_busygin", 
+                "created on": "19:25:30", 
+                "description": "couch", 
+                "modified by": "sergey_busygin", 
+                "modified on": "19:25:30"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.986563980579*0.0*-0.163366004825*0.0|0.0*0.999998986721*0.0*0.0|0.163366004825*0.0*0.986563980579*0.0|91.8159179688*4.99999189377*15.3587684631*1.0", 
+            "path": "models/misc/furniture/library/couch.model"
+        }, 
+        "CEDE5B94.4A257728.F389369B.84BD6FC3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "sergey_busygin", 
+                "created on": "19:25:30", 
+                "description": "couch", 
+                "modified by": "sergey_busygin", 
+                "modified on": "19:25:30"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.987688004971*0.0*-0.156433999538*0.0|0.0*1.0*0.0*0.0|0.156433999538*0.0*0.987688004971*0.0|91.8900299072*4.99999809265*10.3914365768*1.0", 
+            "path": "models/misc/furniture/library/couch.model"
+        }
+    }, 
+    "spawn_transform": "-0.0871559977531*0.0*-0.996194005013*0.0|0.0*0.999998986721*0.0*0.0|0.996194005013*0.0*-0.0871559977531*0.0|88.1071395874*4.99999284744*7.04325962067*1.0"
+}

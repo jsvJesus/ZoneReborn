@@ -1,0 +1,90 @@
+{
+    "models": {
+        "1F4A1999.41C8D96D.D7007CB4.66D8FBF7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "shelf_01", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.25913000107*0.0*0.0*0.0|0.0*1.25913405418*0.0*0.0|0.0*0.0*1.97147500515*0.0|382.251251221*212.991546631*-87.4027328491*1.0", 
+            "path": "models/misc/furniture/shelf_01.model"
+        }, 
+        "34957ABF.4B664D66.A6F21DA6.EA758F76": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "shelf_01", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*1.25911700726*0.0|0.0*1.25912594795*0.0*0.0|-1.25899505615*0.0*0.0*0.0|392.982299805*212.994613647*-90.9827270508*1.0", 
+            "path": "models/misc/furniture/shelf_01.model"
+        }, 
+        "7ABBC99D.4A6B4CFD.CC258AB6.B10265D5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "shelf_01", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.2591149807*0.0*0.0*0.0|0.0*1.2591240406*0.0*0.0|0.0*0.0*1.25899302959*0.0|382.238647461*213.003158569*-83.6461715698*1.0", 
+            "path": "models/misc/furniture/shelf_01.model"
+        }, 
+        "B869E3BD.4441DF09.3539BEAE.A29FE172": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "shelf_01", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*1.25911605358*0.0|0.0*1.25912594795*0.0*0.0|-1.25899302959*0.0*0.0*0.0|395.001159668*212.99458313*-90.9827270508*1.0", 
+            "path": "models/misc/furniture/shelf_01.model"
+        }, 
+        "C5EBE952.4C014E7A.E5C1A481.671F5656": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "shelf_01", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-1.25911200047*0.0|0.0*1.25912201405*0.0*0.0|1.25898897648*0.0*0.0*0.0|387.087463379*213.002929688*-82.5592269897*1.0", 
+            "path": "models/misc/furniture/shelf_01.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-1.25911200047*0.0|0.0*1.25912201405*0.0*0.0|1.25898897648*0.0*0.0*0.0|387.087463379*213.002929688*-82.5592269897*1.0"
+}

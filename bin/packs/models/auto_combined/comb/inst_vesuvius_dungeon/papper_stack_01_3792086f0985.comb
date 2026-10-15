@@ -1,0 +1,90 @@
+{
+    "models": {
+        "3711DFEE.4A10B676.4645E9AF.2ABECBFD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "papper_stack_01", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.65605700016*0.0*0.754707992077*0.0|0.0*0.999997973442*0.0*0.0|-0.754707992077*0.0*0.65605700016*0.0|382.155578613*214.44821167*-69.0545425415*1.0", 
+            "path": "models/misc/stuffs/papper/papper_stack_01.model"
+        }, 
+        "4454C342.46B4BA94.A8D90391.6076B697": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "papper_stack_01", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.499998986721*0.0*-0.866023004055*0.0|0.0*0.999997973442*0.0*0.0|0.866023004055*0.0*-0.499998986721*0.0|382.155853271*214.495834351*-74.7812423706*1.0", 
+            "path": "models/misc/stuffs/papper/papper_stack_01.model"
+        }, 
+        "90F6FC95.4BF92767.D97517B6.D4084577": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "papper_stack_01", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.438371002674*0.0*-0.898792982101*0.0|0.0*0.999998986721*0.0*0.0|0.898792982101*0.0*0.438371002674*0.0|382.166564941*215.204986572*-72.8748626709*1.0", 
+            "path": "models/misc/stuffs/papper/papper_stack_01.model"
+        }, 
+        "D46B916E.45AEEFA3.B41C679B.58DC0880": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "papper_stack_01", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.374606996775*0.0*0.927182972431*0.0|0.0*0.999998986721*0.0*0.0|-0.927182972431*0.0*-0.374606996775*0.0|381.903320312*213.092102051*-74.4950256348*1.0", 
+            "path": "models/misc/stuffs/papper/papper_stack_01.model"
+        }, 
+        "E9C267E6.4BFB516F.8F37EEBE.95F518AD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "papper_stack_01", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.707104980946*0.0*0.707104980946*0.0|0.0*0.999998986721*0.0*0.0|-0.707104980946*0.0*-0.707104980946*0.0|382.1824646*215.205001831*-72.5161209106*1.0", 
+            "path": "models/misc/stuffs/papper/papper_stack_01.model"
+        }
+    }, 
+    "spawn_transform": "0.65605700016*0.0*0.754707992077*0.0|0.0*0.999997973442*0.0*0.0|-0.754707992077*0.0*0.65605700016*0.0|382.155578613*214.44821167*-69.0545425415*1.0"
+}

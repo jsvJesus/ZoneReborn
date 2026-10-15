@@ -1,0 +1,40 @@
+{
+    "firstguid": "BB24CC81.4E57B505.2DE2DEB8.497CA388", 
+    "models": {
+        "BB24CC81.4E57B505.2DE2DEB8.497CA388": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ca87761fi@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "bed_metal_base_1", 
+                "modified by": "Home", 
+                "modified on": "14/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.998790800571*-5.05679054186e-10*-0.0491753742099*0.0|-3.60178091796e-08*1.0*-2.86550971396e-07*0.0|0.0491753742099*-1.55733005158e-07*0.998790800571*0.0|-1408.85827637*1.12723588943*586.010437012*1.0", 
+            "path": "models/misc/furniture/beds/bed_base_metal/bed_metal_base_1.model"
+        }, 
+        "E6ED353B.44755461.BD927188.CBE89AA4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ca87761fi@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "bed_metal_base_1", 
+                "modified by": "Home", 
+                "modified on": "14/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.998790800571*-5.05679054186e-10*-0.0491753742099*0.0|-3.60178091796e-08*1.0*-2.86550971396e-07*0.0|0.0491753742099*-1.55733005158e-07*0.998790800571*0.0|-1404.82226562*1.12733483315*585.794372559*1.0", 
+            "path": "models/misc/furniture/beds/bed_base_metal/bed_metal_base_1.model"
+        }
+    }, 
+    "spawn_transform": "0.998790800571*-5.05679054186e-10*-0.0491753742099*0.0|-3.60178091796e-08*1.0*-2.86550971396e-07*0.0|0.0491753742099*-1.55733005158e-07*0.998790800571*0.0|-1408.85827637*1.12723588943*586.010437012*1.0"
+}

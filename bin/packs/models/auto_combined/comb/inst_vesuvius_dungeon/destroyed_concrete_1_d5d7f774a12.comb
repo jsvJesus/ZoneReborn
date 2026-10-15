@@ -1,0 +1,39 @@
+{
+    "models": {
+        "2AB78842.43C295D9.30A7ECB5.05D834AE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/03/2024", 
+                "description": "destroyed_concrete_1", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0132699999958*0.532510995865*-0.846316993237*0.0|0.208888992667*0.829192996025*0.518462002277*0.0|0.977849006653*-0.169907003641*-0.122239999473*0.0|404.188751221*197.159362793*-49.9901885986*1.0", 
+            "path": "models/buildings/destroyed_building_parts/destroyed_concrete/destroyed_concrete_1.model"
+        }, 
+        "A7219B06.4CD5FBF7.C9D008A0.FE7F846A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "25/03/2024", 
+                "description": "destroyed_concrete_1", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.00975700002164*-0.0543560013175*-0.998474001884*0.0|0.851502001286*0.523962020874*-0.020204000175*0.0|0.524259984493*-0.850004971027*0.0513960011303*0.0|396.947753906*201.941299438*-45.6705093384*1.0", 
+            "path": "models/buildings/destroyed_building_parts/destroyed_concrete/destroyed_concrete_1.model"
+        }
+    }, 
+    "spawn_transform": "0.00975700002164*-0.0543560013175*-0.998474001884*0.0|0.851502001286*0.523962020874*-0.020204000175*0.0|0.524259984493*-0.850004971027*0.0513960011303*0.0|396.947753906*201.941299438*-45.6705093384*1.0"
+}

@@ -1,0 +1,70 @@
+{
+    "firstguid": "A7A551CF.47DB2CA1.090B42AD.881F2244", 
+    "models": {
+        "1471872F.4AA764E1.A379F28E.F8079381": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "49c0d282i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "17/11/2025", 
+                "description": "FirstAidKit2_04", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999998450279*-0.00153199990746*1.04680657387e-06*0.0|0.00153198477346*0.99999922514*-7.86163654993e-05*0.0|-8.90344381332e-07*7.89859477663e-05*1.00000023842*0.0|-1423.58337402*1.38501417637*590.344543457*1.0", 
+            "path": "models/misc/furniture/hospital/medkit/FirstAidKit2_04.model"
+        }, 
+        "97960E60.442E855F.4A8B48B2.3E7B68D5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "49c0d282i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "17/11/2025", 
+                "description": "FirstAidKit2_04", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.995534181595*-0.00153257057536*-0.0943892598152*0.0|0.00153198477346*0.99999922514*-7.86163654993e-05*0.0|0.0943892449141*-6.64984399918e-05*0.995535969734*0.0|-1423.57458496*1.42630791664*590.402893066*1.0", 
+            "path": "models/misc/furniture/hospital/medkit/FirstAidKit2_04.model"
+        }, 
+        "A7A551CF.47DB2CA1.090B42AD.881F2244": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "49c0d282i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "17/11/2025", 
+                "description": "FirstAidKit2_04", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.203953772783*0.000235950035858*-0.978981137276*0.0|0.00153198477346*0.99999922514*-7.86163654993e-05*0.0|0.978979408741*-0.00151551770978*-0.203953996301*0.0|-1423.5213623*1.38493037224*590.491149902*1.0", 
+            "path": "models/misc/furniture/hospital/medkit/FirstAidKit2_04.model"
+        }, 
+        "EB6BF532.46A05321.FF70B7BE.EF909A87": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "49c0d282i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "17/11/2025", 
+                "description": "FirstAidKit2_04", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.933138072491*-0.00140142114833*0.359517365694*0.0|0.00153198477346*0.99999922514*-7.86163654993e-05*0.0|-0.359516590834*0.000624020700343*0.933139681816*0.0|-1423.37585449*1.38469839096*590.372314453*1.0", 
+            "path": "models/misc/furniture/hospital/medkit/FirstAidKit2_04.model"
+        }
+    }, 
+    "spawn_transform": "-0.203953772783*0.000235950035858*-0.978981137276*0.0|0.00153198477346*0.99999922514*-7.86163654993e-05*0.0|0.978979408741*-0.00151551770978*-0.203953996301*0.0|-1423.5213623*1.38493037224*590.491149902*1.0"
+}

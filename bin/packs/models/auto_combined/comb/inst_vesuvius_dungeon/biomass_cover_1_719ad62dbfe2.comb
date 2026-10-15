@@ -1,0 +1,117 @@
+{
+    "models": {
+        "0EED568A.4328DF50.C0277AAD.F7D09C98": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "biomass_cover_1", 
+                "modified by": "ice_c", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.447201997042*0.241934001446*-0.861091017723*0.0|0.0963929966092*0.970152020454*0.222515001893*0.0|0.889222979546*0.0165059994906*-0.457174003124*0.0|137.859222412*207.961090088*-77.6750946045*1.0", 
+            "path": "models/flora/biomass/biomass_cover_1/biomass_cover_1.model"
+        }, 
+        "A5AEE764.4C41B797.D91030B6.108F4859": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "biomass_cover_1", 
+                "modified by": "ice_c", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.797481000423*0.0700199976563*-0.599263012409*0.0|0.0884519964457*0.968940973282*0.230923995376*0.0|0.596821010113*-0.237163007259*0.766520023346*0.0|138.550231934*208.84866333*-80.8860626221*1.0", 
+            "path": "models/flora/biomass/biomass_cover_1/biomass_cover_1.model"
+        }, 
+        "C6485C47.4F8529B7.A9FC4D98.6E2E3465": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "biomass_cover_1", 
+                "modified by": "ice_c", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.188087001443*-0.819151997566*0.541860997677*0.0|-0.944697976112*1.49999996211e-05*0.327939987183*0.0|-0.268640995026*-0.573575973511*-0.773849010468*0.0|138.567001343*209.758087158*-81.7930526733*1.0", 
+            "path": "models/flora/biomass/biomass_cover_1/biomass_cover_1.model"
+        }, 
+        "D71576A5.41E59A96.4C23EE8D.4F9F0588": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "biomass_cover_1", 
+                "modified by": "ice_c", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.26458799839*-0.731352984905*0.628580987453*0.0|-0.921674013138*4.99999987369e-06*0.387964993715*0.0|-0.28374299407*-0.68199801445*-0.674067974091*0.0|139.652267456*210.277282715*-79.0217132568*1.0", 
+            "path": "models/flora/biomass/biomass_cover_1/biomass_cover_1.model"
+        }, 
+        "E8B8DA1E.4B58D4B4.7940E491.19069B98": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "biomass_cover_1", 
+                "modified by": "ice_c", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.119856998324*0.945518016815*-0.302702993155*0.0|-0.929755985737*1.20000004245e-05*0.368176996708*0.0|0.348122000694*0.325567990541*0.8791000247*0.0|139.077468872*210.374893188*-80.4265441895*1.0", 
+            "path": "models/flora/biomass/biomass_cover_1/biomass_cover_1.model"
+        }, 
+        "E8E62652.4786F196.D6DC50A2.845B237B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "biomass_cover_1", 
+                "modified by": "ice_c", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.151620000601*0.945518016815*-0.288107007742*0.0|-0.884911000729*1.89999991562e-05*0.465759992599*0.0|0.440389990807*0.325567990541*0.836696982384*0.0|141.234802246*208.744369507*-75.7044677734*1.0", 
+            "path": "models/flora/biomass/biomass_cover_1/biomass_cover_1.model"
+        }, 
+        "FC5A16CF.4383D953.E28BE897.B5C39702": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "biomass_cover_1", 
+                "modified by": "ice_c", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.50782597065*0.236489996314*-0.828361988068*0.0|0.0202639997005*0.964592993259*0.262959986925*0.0|0.861220002174*0.116751998663*-0.494637995958*0.0|139.374969482*207.401199341*-75.4646453857*1.0", 
+            "path": "models/flora/biomass/biomass_cover_1/biomass_cover_1.model"
+        }
+    }, 
+    "spawn_transform": "-0.119856998324*0.945518016815*-0.302702993155*0.0|-0.929755985737*1.20000004245e-05*0.368176996708*0.0|0.348122000694*0.325567990541*0.8791000247*0.0|139.077468872*210.374893188*-80.4265441895*1.0"
+}

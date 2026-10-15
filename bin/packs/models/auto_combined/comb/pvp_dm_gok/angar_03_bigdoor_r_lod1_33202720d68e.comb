@@ -1,0 +1,74 @@
+{
+    "firstguid": "51B1C9B6.46147EF8.1FC123BF.66159474", 
+    "models": {
+        "51B1C9B6.46147EF8.1FC123BF.66159474": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "angar_03_bigdoor_r_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "22/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "9.99999997475e-07*0.0*-5.30897378922*0.0|0.0*1.11999297142*0.0*0.0|1.11999297142*0.0*0.0*0.0|48.2546081543*1.00578594208*69.555770874*1.0", 
+            "path": "models/buildings/common/angar_03_bigdoor_r_lod1.model"
+        }, 
+        "7C6B9C70.4FF17237.0CC953AF.40FEF2F1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "angar_03_bigdoor_lf_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "9.99999997475e-07*0.0*-5.66997480392*0.0|0.0*1.1199940443*0.0*0.0|1.11999297142*0.0*0.0*0.0|61.2303886414*1.00578594208*69.5817718506*1.0", 
+            "path": "models/buildings/common/angar_03_bigdoor_lf_lod1.model"
+        }, 
+        "D20DC74A.467D93EA.05ED5E93.D7A4F0BD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "angar_03_bigdoor_r_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "9.99999997475e-07*0.0*-5.66997480392*0.0|0.0*1.11999297142*0.0*0.0|1.11999297142*0.0*0.0*0.0|56.2001266479*1.00578594208*69.5817718506*1.0", 
+            "path": "models/buildings/common/angar_03_bigdoor_r_lod1.model"
+        }, 
+        "FCE60547.49B960CF.13DCBEA4.2CA04E2F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "angar_03_bigdoor_lf_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "9.99999997475e-07*0.0*-5.30897521973*0.0|0.0*1.1199940443*0.0*0.0|1.11999297142*0.0*0.0*0.0|53.2847671509*1.00578594208*69.555770874*1.0", 
+            "path": "models/buildings/common/angar_03_bigdoor_lf_lod1.model"
+        }
+    }, 
+    "spawn_transform": "9.99999997475e-07*0.0*-5.30897378922*0.0|0.0*1.11999297142*0.0*0.0|1.11999297142*0.0*0.0*0.0|48.2546081543*1.00578594208*69.555770874*1.0"
+}

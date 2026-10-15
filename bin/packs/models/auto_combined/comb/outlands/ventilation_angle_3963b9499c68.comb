@@ -1,0 +1,40 @@
+{
+    "firstguid": "606E973C.4B6F2174.40C79BBF.F570B9AC", 
+    "models": {
+        "2AFB1732.4C09BE60.C0E3D691.BA46DBDD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "000x001x/sep/2a0a4177i@outlands@0x0000013E9B0234A0", 
+                "created by": "ice_c", 
+                "created on": "07/10/2021", 
+                "description": "ventilation_angle", 
+                "modified by": "ice_c", 
+                "modified on": "07/10/2021"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999997973442*0.0|0.999997973442*0.0*0.0*0.0|0.0*0.999997973442*0.0*0.0|1352.01904297*17.4251804352*1808.02966309*1.0", 
+            "path": "models/props/ventilation/ventilation_angle.model"
+        }, 
+        "606E973C.4B6F2174.40C79BBF.F570B9AC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "000x001x/sep/2a0a4177i@outlands@0x0000013E9B0234A0", 
+                "created by": "ice_c", 
+                "created on": "07/10/2021", 
+                "description": "ventilation_angle", 
+                "modified by": "ice_c", 
+                "modified on": "07/10/2021"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|-0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|1354.01013184*17.4251937866*1804.04187012*1.0", 
+            "path": "models/props/ventilation/ventilation_angle.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-0.999998986721*0.0|-0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|1354.01013184*17.4251937866*1804.04187012*1.0"
+}

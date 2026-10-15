@@ -1,0 +1,91 @@
+{
+    "firstguid": "3122CA17.45DB5879.8B7D6E94.80927881", 
+    "models": {
+        "250EABD8.4649F8DC.9A2DB9A0.C83C1567": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "nastil_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.52299594879*0.0*0.0*0.0|0.0*1.19999599457*0.0*0.0|0.0*0.0*-1.19999599457*0.0|60.5165710449*22.5057411194*36.5586357117*1.0", 
+            "path": "models/props/construktors/nastil_lod1.model"
+        }, 
+        "3122CA17.45DB5879.8B7D6E94.80927881": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "nastil_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.52299594879*0.0*0.0*0.0|0.0*1.19999599457*0.0*0.0|0.0*0.0*-1.19999599457*0.0|55.9159736633*22.5057373047*36.5586433411*1.0", 
+            "path": "models/props/construktors/nastil_lod1.model"
+        }, 
+        "342333B6.4AFD2612.B09A21B7.AFCF50CF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "nastil_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.52299702168*0.0*0.0*0.0|0.0*1.19999694824*0.0*0.0|0.0*0.0*-1.19999694824*0.0|69.7176742554*22.5057487488*36.5585746765*1.0", 
+            "path": "models/props/construktors/nastil_lod1.model"
+        }, 
+        "B4C24FBA.4B7224A3.82AE03A8.7E097AE9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "nastil_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*1.52299594879*0.0|0.0*1.19999599457*0.0*0.0|-1.19999599457*0.0*0.0*0.0|67.5755386353*22.50573349*38.708732605*1.0", 
+            "path": "models/props/construktors/nastil_lod1.model"
+        }, 
+        "FD1545F6.4DF25DE1.04BF34AD.BD8353D9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "nastil_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.52299702168*0.0*0.0*0.0|0.0*1.19999694824*0.0*0.0|0.0*0.0*-1.19999694824*0.0|65.1171112061*22.5057449341*36.5586280823*1.0", 
+            "path": "models/props/construktors/nastil_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-1.52299594879*0.0*0.0*0.0|0.0*1.19999599457*0.0*0.0|0.0*0.0*-1.19999599457*0.0|55.9159736633*22.5057373047*36.5586433411*1.0"
+}

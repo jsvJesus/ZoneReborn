@@ -1,0 +1,38 @@
+{
+    "firstguid": "D0BFAEED.4BBCD37F.6E9E28BA.66E38632", 
+    "models": {
+        "D0BFAEED.4BBCD37F.6E9E28BA.66E38632": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "000e000co@outlands@0x000002862CA9F180", 
+                "created by": "yulia.kochurova", 
+                "created on": "25/03/2021", 
+                "description": "vagonetka", 
+                "modified by": "ice_c", 
+                "modified on": "16/06/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.957116007805*0.0*0.552591025829*0.0|0.0*1.10518300533*0.0*0.0|-0.552591025829*0.0*0.957116007805*0.0|1437.22192383*5.47999811172*1264.28356934*1.0", 
+            "path": "models/instances/cave/vagonetka.model"
+        }, 
+        "E944C347.4171FB63.0F5E12B3.3E583643": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "000e000co@outlands@0x000002862CA9F180", 
+                "created by": "anton_zyryanov", 
+                "created on": "16/06/2017", 
+                "description": "vagonetka", 
+                "modified by": "ice_c", 
+                "modified on": "16/06/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.10518205166*0.0*0.0*0.0|0.0*1.10518205166*0.0*0.0|0.0*0.0*1.10518205166*0.0|1448.15551758*5.64697122574*1269.13684082*1.0", 
+            "path": "models/instances/cave/vagonetka.model"
+        }
+    }, 
+    "spawn_transform": "0.957116007805*0.0*0.552591025829*0.0|0.0*1.10518300533*0.0*0.0|-0.552591025829*0.0*0.957116007805*0.0|1437.22192383*5.47999811172*1264.28356934*1.0"
+}

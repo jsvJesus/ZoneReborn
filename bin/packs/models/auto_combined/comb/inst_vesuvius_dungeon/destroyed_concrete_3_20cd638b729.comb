@@ -1,0 +1,56 @@
+{
+    "models": {
+        "95189615.46757701.47F0BE8F.476CC896": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "25/03/2024", 
+                "description": "destroyed_concrete_3", 
+                "modified by": "sergey_busygin", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.870814979076*0.0502250008285*-0.489037007093*0.0|-0.067930996418*0.972931027412*0.220884993672*0.0|0.486892998219*0.225572004914*-0.843831002712*0.0|406.395812988*207.295852661*-52.5168266296*1.0", 
+            "path": "models/buildings/destroyed_building_parts/destroyed_concrete/destroyed_concrete_3.model"
+        }, 
+        "D88184D4.46542290.3E58948F.1AD7BC79": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "25/03/2024", 
+                "description": "destroyed_concrete_3", 
+                "modified by": "sergey_busygin", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.342979997396*0.170864999294*-0.923671007156*0.0|0.230929002166*0.968475997448*0.0934040024877*0.0|0.910513997078*-0.181265994906*-0.371625989676*0.0|398.047058105*208.796569824*-54.858253479*1.0", 
+            "path": "models/buildings/destroyed_building_parts/destroyed_concrete/destroyed_concrete_3.model"
+        }, 
+        "F799A629.48E259C6.1DDFD8A0.3B84D181": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "25/03/2024", 
+                "description": "destroyed_concrete_3", 
+                "modified by": "sergey_busygin", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.930544018745*-0.153795003891*-0.332316994667*0.0|0.226028993726*0.955245018005*0.190835997462*0.0|0.288094997406*-0.252692997456*0.923659980297*0.0|398.51965332*214.584259033*-60.9257240295*1.0", 
+            "path": "models/buildings/destroyed_building_parts/destroyed_concrete/destroyed_concrete_3.model"
+        }
+    }, 
+    "spawn_transform": "-0.870814979076*0.0502250008285*-0.489037007093*0.0|-0.067930996418*0.972931027412*0.220884993672*0.0|0.486892998219*0.225572004914*-0.843831002712*0.0|406.395812988*207.295852661*-52.5168266296*1.0"
+}

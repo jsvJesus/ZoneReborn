@@ -1,0 +1,59 @@
+{
+    "models": {
+        "3F4C3830.4B4751DA.5276A8AD.D756B647": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "cable_02", 
+                "modified by": "ice_c", 
+                "modified on": "16/05/2024"
+            }, 
+            "dyes": {
+                "pasted__lambert25": "default"
+            }, 
+            "matrix": "-7.9999999798e-06*-0.75040102005*0.0*0.0|-2.5999999707e-05*0.0*1.24483299255*0.0|-1.24482905865*1.4000000192e-05*-2.5999999707e-05*0.0|407.556243896*176.4012146*-107.328041077*1.0", 
+            "path": "models/props/electric/cable_02.model"
+        }, 
+        "47A6DD3E.4A9988AF.D264B697.7684B454": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "cable_02", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2024"
+            }, 
+            "dyes": {
+                "pasted__lambert25": "default"
+            }, 
+            "matrix": "-7.9999999798e-06*-0.75040102005*0.0*0.0|-2.5999999707e-05*0.0*1.24483299255*0.0|-1.24482905865*1.4000000192e-05*-2.5999999707e-05*0.0|407.559051514*182.553237915*-107.312088013*1.0", 
+            "path": "models/props/electric/cable_02.model"
+        }, 
+        "883C1208.4D280475.01F24C89.7828D756": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "cable_02", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2024"
+            }, 
+            "dyes": {
+                "pasted__lambert25": "default"
+            }, 
+            "matrix": "-7.9999999798e-06*-0.75040102005*0.0*0.0|-2.5999999707e-05*0.0*1.24483299255*0.0|-1.24482905865*1.4000000192e-05*-2.5999999707e-05*0.0|407.556945801*182.53805542*-116.415847778*1.0", 
+            "path": "models/props/electric/cable_02.model"
+        }
+    }, 
+    "spawn_transform": "-7.9999999798e-06*-0.75040102005*0.0*0.0|-2.5999999707e-05*0.0*1.24483299255*0.0|-1.24482905865*1.4000000192e-05*-2.5999999707e-05*0.0|407.556945801*182.53805542*-116.415847778*1.0"
+}

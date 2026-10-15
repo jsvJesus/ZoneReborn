@@ -1,0 +1,85 @@
+{
+    "models": {
+        "010AA74F.46C2E051.5A08979D.5A554D83": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c27a325bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "07/03/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.30632102489*0.0*0.0*0.0|0.0*1.30632102489*0.0*0.0|0.0*0.0*-1.30632102489*0.0|259.29586792*212.999862671*-49.3658218384*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "661F5B6B.43E19824.D90BAB9C.4B6A3515": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c27a325bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "28/02/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "28/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.480877012014*0.0*-0.615494012833*0.0|0.0*0.781072974205*0.0*0.0|0.615494012833*0.0*0.480877012014*0.0|258.905029297*212.999816895*-45.3688278198*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "8D51D354.498934E7.B7DA0ABE.A4E9C562": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c27a325bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "07/03/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.18427705765*0.0*-0.0620650015771*0.0|0.0*1.18590199947*0.0*0.0|0.0620650015771*0.0*1.18427705765*0.0|262.114898682*212.999862671*-49.5704193115*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "E194E760.401E165C.9047E39C.46BBA6A4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c27a325bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "28/02/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "28/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.35942804813*0.0*-0.44170498848*0.0|0.0*1.42938697338*0.0*0.0|0.44170498848*0.0*1.35942804813*0.0|249.714706421*212.999862671*-44.4277610779*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "FAEDDD42.4FD23A93.34A5ACB9.1292FD52": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c27a325bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "28/02/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "28/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.711099028587*0.0*-0.112626999617*0.0|0.0*0.719963014126*0.0*0.0|0.112626999617*0.0*-0.711099028587*0.0|249.703948975*212.999816895*-48.416683197*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }
+    }, 
+    "spawn_transform": "-1.30632102489*0.0*0.0*0.0|0.0*1.30632102489*0.0*0.0|0.0*0.0*-1.30632102489*0.0|259.29586792*212.999862671*-49.3658218384*1.0"
+}

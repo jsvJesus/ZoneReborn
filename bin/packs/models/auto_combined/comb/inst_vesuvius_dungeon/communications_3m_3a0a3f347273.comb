@@ -1,0 +1,56 @@
+{
+    "models": {
+        "33F7F7AC.4C367412.D08C0290.9DE02E47": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0b53aa98i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "communications_3m", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.46428203583*-0.325215995312*0.0*0.0|0.325215995312*-1.46428203583*0.0*0.0|0.0*0.0*1.49996101856*0.0|234.492858887*177.070068359*-116.870353699*1.0", 
+            "path": "models/instances/purgatory_shelter/communications_3m.model"
+        }, 
+        "E24CB765.4E4A7AED.3287A1B0.34AC77F4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0b53aa98i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "communications_3m", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.46428096294*-0.325215011835*0.0*0.0|0.325215011835*-1.46428096294*0.0*0.0|0.0*0.0*1.49995994568*0.0|225.70715332*175.118743896*-116.870376587*1.0", 
+            "path": "models/instances/purgatory_shelter/communications_3m.model"
+        }, 
+        "FD0F7D14.4D3101FA.B225FE87.C7DB608D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0b53aa98i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "communications_3m", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.46428096294*-0.325215011835*0.0*0.0|0.325215011835*-1.46428096294*0.0*0.0|0.0*0.0*1.49995994568*0.0|230.100006104*176.094421387*-116.870353699*1.0", 
+            "path": "models/instances/purgatory_shelter/communications_3m.model"
+        }
+    }, 
+    "spawn_transform": "-1.46428203583*-0.325215995312*0.0*0.0|0.325215995312*-1.46428203583*0.0*0.0|0.0*0.0*1.49996101856*0.0|234.492858887*177.070068359*-116.870353699*1.0"
+}

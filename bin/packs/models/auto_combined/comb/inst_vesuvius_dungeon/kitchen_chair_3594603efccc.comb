@@ -1,0 +1,56 @@
+{
+    "models": {
+        "3F712B27.4B750B66.326351A5.A514C22D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.992545008659*0.0*-0.121868997812*0.0|0.0*0.999998986721*0.0*0.0|0.121868997812*0.0*-0.992545008659*0.0|294.848602295*212.999511719*-26.4970321655*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "64743674.48C16B11.5872EE85.F9720772": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.422618001699*0.0*-0.90630698204*0.0|0.0*1.0*0.0*0.0|0.90630698204*0.0*-0.422618001699*0.0|306.342071533*212.999786377*-26.2427139282*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "BE0BB8CC.441E744D.A23E4094.8875DA49": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0264420006424*-0.999616980553*-0.00810899958014*0.0|0.955936014652*0.0276580005884*-0.292268007994*0.0|0.292380988598*-2.30000005104e-05*0.956300973892*0.0|300.964813232*213.197280884*-31.5894126892*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }
+    }, 
+    "spawn_transform": "-0.422618001699*0.0*-0.90630698204*0.0|0.0*1.0*0.0*0.0|0.90630698204*0.0*-0.422618001699*0.0|306.342071533*212.999786377*-26.2427139282*1.0"
+}

@@ -1,0 +1,193 @@
+{
+    "firstguid": "55A1A00C.4FB0005F.E89AB198.336A439C", 
+    "models": {
+        "1F9B1187.4EE3002C.FACA2E87.9E7E45D0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "raylo", 
+                "created on": "26/07/2025", 
+                "description": "cloakroom_4m", 
+                "modified by": "raylo", 
+                "modified on": "26/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999996006489*0.0*0.0*0.0|0.0*0.999996006489*0.0*0.0|0.0*0.0*-0.999996006489*0.0|69.6149902344*-3.00000010611e-06*40.365978241*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }, 
+        "20118735.452FDEF4.1622BEAF.EC30AC15": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "raylo", 
+                "created on": "26/07/2025", 
+                "description": "cloakroom_4m", 
+                "modified by": "raylo", 
+                "modified on": "26/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|64.9439849854*-3.00000010611e-06*35.507976532*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }, 
+        "20FA4E17.47EFB9D2.65E2CBAF.5B2F548D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "raylo", 
+                "created on": "26/07/2025", 
+                "description": "cloakroom_4m", 
+                "modified by": "raylo", 
+                "modified on": "26/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999997019768*0.0|69.5939941406*-3.00000010611e-06*50.1319770813*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }, 
+        "2F433347.4F9279DB.9CA586A5.CF2E4586": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "anton_zyryanov", 
+                "created on": "29/11/2023", 
+                "description": "cloakroom_4m", 
+                "modified by": "raylo", 
+                "modified on": "26/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|64.9579925537*-3.00000010611e-06*51.5089759827*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }, 
+        "429F9AA4.4841F547.14FCFF9B.B7824A67": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "raylo", 
+                "created on": "26/07/2025", 
+                "description": "cloakroom_4m", 
+                "modified by": "raylo", 
+                "modified on": "26/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999997019768*0.0|69.6239929199*-3.00000010611e-06*39.8899765015*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }, 
+        "55A1A00C.4FB0005F.E89AB198.336A439C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "anton_zyryanov", 
+                "created on": "29/11/2023", 
+                "description": "cloakroom_4m", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "29/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997973442*0.0*0.0*0.0|0.0*0.999997973442*0.0*0.0|0.0*0.0*0.999997973442*0.0|67.4459915161*-3.00000010611e-06*32.8709754944*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }, 
+        "5D704001.49D94F77.4E1EF8BD.C1F7F086": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "raylo", 
+                "created on": "26/07/2025", 
+                "description": "cloakroom_4m", 
+                "modified by": "raylo", 
+                "modified on": "26/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.99999499321*0.0*0.0*0.0|0.0*0.999996006489*0.0*0.0|0.0*0.0*-0.99999499321*0.0|69.5849914551*-3.00000010611e-06*50.6079788208*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }, 
+        "7BB5467E.4D467379.491BF0B9.F376076A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "raylo", 
+                "created on": "26/07/2025", 
+                "description": "cloakroom_4m", 
+                "modified by": "raylo", 
+                "modified on": "26/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|64.9549865723*-3.00000010611e-06*47.5069770813*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }, 
+        "B1C06392.42DDE2FF.B599FC97.0F18D109": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "cloakroom_4m", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|64.9585723877*-2.00000022232e-06*56.4982681274*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }, 
+        "BFC945B4.4F9E789F.C19F8E8C.E5D1419B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "raylo", 
+                "created on": "26/07/2025", 
+                "description": "cloakroom_4m", 
+                "modified by": "raylo", 
+                "modified on": "26/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|64.9439849854*-3.00000010611e-06*39.5099754333*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }, 
+        "EF14FA58.4C143B99.6F5CF993.D4D8D1A8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "raylo", 
+                "created on": "26/07/2025", 
+                "description": "cloakroom_4m", 
+                "modified by": "raylo", 
+                "modified on": "26/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|64.9549865723*-3.00000010611e-06*43.5049781799*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }
+    }, 
+    "spawn_transform": "0.999997973442*0.0*0.0*0.0|0.0*0.999997973442*0.0*0.0|0.0*0.0*0.999997973442*0.0|67.4459915161*-3.00000010611e-06*32.8709754944*1.0"
+}

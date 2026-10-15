@@ -1,0 +1,38 @@
+{
+    "firstguid": "7339B88D.45BEC01B.BF7B8F83.AE2E1894", 
+    "models": {
+        "7339B88D.45BEC01B.BF7B8F83.AE2E1894": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ca87761fi@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "boots_4", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.614019691944*8.48840500112e-08*0.789290130138*0.0|-3.60178091796e-08*1.0*-2.86550971396e-07*0.0|-0.789290130138*8.47758201417e-08*0.614019691944*0.0|-1403.81494141*1.12734615803*590.274047852*1.0", 
+            "path": "models/misc/cloth/boots/boots_4/boots_4.model"
+        }, 
+        "944AF241.45770DB6.4DFBD29A.9E87A625": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ca87761fi@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "boots_4_left", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999513447285*-9.92962668533e-07*0.0311986561865*0.0|-1.03445199784e-06*1.0*-2.30613977692e-07*0.0|-0.0311986561865*5.69479993828e-07*-0.999513447285*0.0|-1403.52929688*1.12733912468*589.944946289*1.0", 
+            "path": "models/misc/cloth/boots/boots_4/boots_4_left.model"
+        }
+    }, 
+    "spawn_transform": "0.614019691944*8.48840500112e-08*0.789290130138*0.0|-3.60178091796e-08*1.0*-2.86550971396e-07*0.0|-0.789290130138*8.47758201417e-08*0.614019691944*0.0|-1403.81494141*1.12734615803*590.274047852*1.0"
+}

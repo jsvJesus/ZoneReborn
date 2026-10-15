@@ -1,0 +1,40 @@
+{
+    "firstguid": "2DB87455.4B5AD2FE.297D34B8.19AFBDBF", 
+    "models": {
+        "006524DD.43030507.1C71EA97.2E5BF60A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ca87761fi@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "mebel_80x_tumba01", 
+                "modified by": "Home", 
+                "modified on": "14/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0484492331743*1.72453994196e-07*-0.998826503754*0.0|-3.60178091796e-08*1.0*-2.86550971396e-07*0.0|0.998826503754*-6.20275386609e-10*-0.0484492331743*0.0|-1409.59960938*1.12721836567*587.894348145*1.0", 
+            "path": "models/misc/furniture/mebel_80x/mebel_80x_tumba01.model"
+        }, 
+        "2DB87455.4B5AD2FE.297D34B8.19AFBDBF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ca87761fi@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "mebel_80x_tumba01", 
+                "modified by": "Home", 
+                "modified on": "14/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0484491735697*1.72453994196e-07*-0.998825490475*0.0|-3.60178091796e-08*1.0*-2.86550971396e-07*0.0|0.998825490475*-6.43922248855e-10*-0.0484491735697*0.0|-1409.63269043*1.12721848488*587.262634277*1.0", 
+            "path": "models/misc/furniture/mebel_80x/mebel_80x_tumba01.model"
+        }
+    }, 
+    "spawn_transform": "-0.0484491735697*1.72453994196e-07*-0.998825490475*0.0|-3.60178091796e-08*1.0*-2.86550971396e-07*0.0|0.998825490475*-6.43922248855e-10*-0.0484491735697*0.0|-1409.63269043*1.12721848488*587.262634277*1.0"
+}

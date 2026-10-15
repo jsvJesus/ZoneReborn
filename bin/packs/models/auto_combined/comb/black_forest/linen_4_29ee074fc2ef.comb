@@ -1,0 +1,118 @@
+{
+    "firstguid": "AF589F70.4D409591.BE19EC96.7798ADA8", 
+    "models": {
+        "17CBAF86.45459179.F6A77BA7.BC5A69DA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "dc8ec2c9i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/11/2025", 
+                "description": "pillow_2", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.997466385365*2.9126999479e-08*-0.0711373910308*0.0|-4.20540011703e-08*1.0*8.85052031663e-10*0.0|0.0711373910308*4.24051904702e-10*0.997466385365*0.0|-1438.1751709*2.98051166534*612.549743652*1.0", 
+            "path": "models/misc/furniture/mattresses_linen/pillows/pillow_2.model"
+        }, 
+        "1873BF32.489E4385.40106590.49389AEF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "dc8ec2c9i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/11/2025", 
+                "description": "pillow_4", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.00000035763*-4.20540011703e-08*-4.47034835815e-08*0.0|-4.20540011703e-08*1.0*8.85052031663e-10*0.0|4.47034835815e-08*8.84028850123e-10*1.00000035763*0.0|-1438.3046875*2.04952096939*612.508850098*1.0", 
+            "path": "models/misc/furniture/mattresses_linen/pillows/pillow_4.model"
+        }, 
+        "1D00C251.489AF027.AEC41996.243203FE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "dc8ec2c9i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/11/2025", 
+                "description": "linen_13", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.995341598988*-5.44710019312e-08*0.0964143872261*0.0|-4.20540011703e-08*1.0*8.85052031663e-10*0.0|-0.0964143872261*-1.48395429278e-09*-0.995341598988*0.0|-1439.0579834*2.37741875648*612.630126953*1.0", 
+            "path": "models/misc/furniture/mattresses_linen/linen/linen_13.model"
+        }, 
+        "74DC5E5B.4C91E800.0E69CC87.725DC768": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "dc8ec2c9i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/11/2025", 
+                "description": "linen_12", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.893482446671*-2.99179987451e-07*0.261837005615*0.0|-4.20540011703e-08*1.0*8.85052031663e-10*0.0|-0.242403492332*4.59349394077e-08*0.965112507343*0.0|-1439.06188965*1.42201900482*612.428222656*1.0", 
+            "path": "models/misc/furniture/mattresses_linen/linen/linen_12.model"
+        }, 
+        "8D8DA72C.4BACAFD3.AD80639B.E8BA7452": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "dc8ec2c9i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/11/2025", 
+                "description": "pillow_5", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.772725343704*-0.428483039141*3.57627868652e-07*0.0|0.428482919931*0.772723972797*3.40864062309e-07*0.0|-2.19792127609e-07*1.17209026484e-07*0.883572340012*0.0|-1442.96679688*2.12178087234*612.691467285*1.0", 
+            "path": "models/misc/furniture/mattresses_linen/pillows/pillow_5.model"
+        }, 
+        "AF589F70.4D409591.BE19EC96.7798ADA8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "dc8ec2c9i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/11/2025", 
+                "description": "linen_4", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999808251858*2.24479990152e-08*0.0196153149009*0.0|-4.20540011703e-08*1.0*8.85052031663e-10*0.0|-0.0196153149009*-2.51020537689e-10*-0.999808251858*0.0|-1442.13293457*2.97518396378*612.652282715*1.0", 
+            "path": "models/misc/furniture/mattresses_linen/linen/linen_4.model"
+        }, 
+        "FABEBD7E.48CA6A17.30D317B8.48CDEA2F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "dc8ec2c9i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/11/2025", 
+                "description": "linen_3", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999830365181*6.04649983416e-08*-0.0184344053268*0.0|-4.20540011703e-08*1.0*8.85052031663e-10*0.0|0.0184344053268*-1.82899384527e-09*-0.999830365181*0.0|-1442.09716797*1.6980727911*612.719848633*1.0", 
+            "path": "models/misc/furniture/mattresses_linen/linen/linen_3.model"
+        }
+    }, 
+    "spawn_transform": "-0.999808251858*2.24479990152e-08*0.0196153149009*0.0|-4.20540011703e-08*1.0*8.85052031663e-10*0.0|-0.0196153149009*-2.51020537689e-10*-0.999808251858*0.0|-1442.13293457*2.97518396378*612.652282715*1.0"
+}

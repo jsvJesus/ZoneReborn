@@ -1,0 +1,45 @@
+{
+    "models": {
+        "5FAC5039.49BE9597.8B5E07B1.4D0238D9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/06/2024", 
+                "description": "mushrooms_1_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {
+                "mushrooms_1": "default"
+            }, 
+            "matrix": "-1.3644169569*0.0141709996387*0.0943519994617*0.0|-0.000468000012916*1.35156702995*-0.209771007299*0.0|-0.0954089984298*-0.209291994572*-1.34827005863*0.0|367.735839844*188.630249023*-92.8440856934*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_1_lod1.model"
+        }, 
+        "6908FBEA.4049060A.82553B91.5B7A3636": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/06/2024", 
+                "description": "mushrooms_1_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {
+                "mushrooms_1": "default"
+            }, 
+            "matrix": "-1.43028497696*-0.0426519997418*-0.274728000164*0.0|0.0*1.43980705738*-0.223529994488*0.0|0.278019011021*-0.219423994422*-1.41335403919*0.0|367.413818359*188.742553711*-92.0085144043*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_1_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-1.3644169569*0.0141709996387*0.0943519994617*0.0|-0.000468000012916*1.35156702995*-0.209771007299*0.0|-0.0954089984298*-0.209291994572*-1.34827005863*0.0|367.735839844*188.630249023*-92.8440856934*1.0"
+}

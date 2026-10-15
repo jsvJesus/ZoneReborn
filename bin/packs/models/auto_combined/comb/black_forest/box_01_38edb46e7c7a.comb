@@ -1,0 +1,38 @@
+{
+    "firstguid": "5CCCF13E.4166A963.C7F6E18D.A03D82DA", 
+    "models": {
+        "5CCCF13E.4166A963.C7F6E18D.A03D82DA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "f4bccf38i@black_forest@0x000001CFCE890D30", 
+                "created by": "yuri_parfilov", 
+                "created on": "07/11/2025", 
+                "description": "box_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "07/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.00000059605*8.23167738417e-08*-5.96046447754e-08*0.0|8.23167738417e-08*1.0*6.34809111943e-08*0.0|5.96046447754e-08*6.34536263533e-08*1.00000059605*0.0|-1366.35925293*1.07141494751*577.91204834*1.0", 
+            "path": "models/misc/stuffs/box_01.model"
+        }, 
+        "B7D3A9CC.4BFEF658.ED1A2397.10D2A962": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "f4bccf38i@black_forest@0x000001CFCE890D30", 
+                "created by": "yuri_parfilov", 
+                "created on": "07/11/2025", 
+                "description": "box_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "07/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.302707821131*-1.52067514136e-09*-0.953085064888*0.0|8.23167738417e-08*1.0*6.34809111943e-08*0.0|0.953085064888*4.12970621255e-07*0.302707821131*0.0|-1366.36853027*1.07141435146*578.382385254*1.0", 
+            "path": "models/misc/stuffs/box_01.model"
+        }
+    }, 
+    "spawn_transform": "1.00000059605*8.23167738417e-08*-5.96046447754e-08*0.0|8.23167738417e-08*1.0*6.34809111943e-08*0.0|5.96046447754e-08*6.34536263533e-08*1.00000059605*0.0|-1366.35925293*1.07141494751*577.91204834*1.0"
+}

@@ -1,0 +1,57 @@
+{
+    "firstguid": "011B9C82.4B5BC946.C1068599.B3AEDA2E", 
+    "models": {
+        "011B9C82.4B5BC946.C1068599.B3AEDA2E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "cloakroom_4m", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999997019768*0.0|0.0*0.999997019768*0.0*0.0|-0.999997019768*0.0*0.0*0.0|28.0287437439*-3.00000010611e-06*56.4960784912*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }, 
+        "3C9A500F.4824DD00.6039AF9A.235EA9D9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "cloakroom_4m", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999997019768*0.0|0.0*0.999997973442*0.0*0.0|-0.999997019768*0.0*0.0*0.0|28.0287189484*-3.00000010611e-06*51.4968719482*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }, 
+        "833BEA11.472A74EA.F19D5CB5.46D36049": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "cloakroom_4m", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|-0.999997973442*0.0*0.0*0.0|28.028711319*-3.00000010611e-06*47.4968719482*1.0", 
+            "path": "models/misc/furniture/library/cloakroom_4m.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*0.999997019768*0.0|0.0*0.999997019768*0.0*0.0|-0.999997019768*0.0*0.0*0.0|28.0287437439*-3.00000010611e-06*56.4960784912*1.0"
+}

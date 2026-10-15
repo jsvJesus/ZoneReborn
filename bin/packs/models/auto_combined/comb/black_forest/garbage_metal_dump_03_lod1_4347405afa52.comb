@@ -1,0 +1,38 @@
+{
+    "firstguid": "C93483C7.4E77CFBE.1583FB96.B3B91822", 
+    "models": {
+        "5B0C6769.4FD4A3EB.A17F6E91.07032355": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20005o@black_forest@0x000002430D0AC120", 
+                "created by": "yuri_parfilov", 
+                "created on": "31/10/2025", 
+                "description": "garbage_metal_dump_03_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "31/10/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.496960997581*0.0*-0.592714011669*0.0|0.0*0.773486971855*0.0*0.0|0.592714011669*0.0*0.496960997581*0.0|-1366.93115234*1.03422498703*569.07824707*1.0", 
+            "path": "models/misc/garbage/metal_scrap/garbage_metal_dump/garbage_metal_dump_03_lod1.model"
+        }, 
+        "C93483C7.4E77CFBE.1583FB96.B3B91822": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20005o@black_forest@0x000002430D0AC120", 
+                "created by": "yuri_parfilov", 
+                "created on": "31/10/2025", 
+                "description": "garbage_metal_dump_03_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "31/10/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.568081021309*0.0*0.822971999645*0.0|0.0*1.0*0.0*0.0|-0.822971999645*0.0*0.568081021309*0.0|-1363.18835449*1.01770997047*567.143554688*1.0", 
+            "path": "models/misc/garbage/metal_scrap/garbage_metal_dump/garbage_metal_dump_03_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.568081021309*0.0*0.822971999645*0.0|0.0*1.0*0.0*0.0|-0.822971999645*0.0*0.568081021309*0.0|-1363.18835449*1.01770997047*567.143554688*1.0"
+}

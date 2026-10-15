@@ -1,0 +1,37 @@
+{
+    "models": {
+        "20914089.445A182F.8552DB89.EFFE2B8D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/06/2024", 
+                "description": "grib_lisichki_02", 
+                "modified by": "ice_c", 
+                "modified on": "05/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.347326010466*-0.326213985682*-0.879173994064*0.0|-0.209866002202*0.940801978111*-0.266171008348*0.0|0.913958013058*0.0920609980822*-0.39522600174*0.0|369.336181641*187.864120483*-98.0053100586*1.0", 
+            "path": "models/entities/flora/grib_lisichki_02.model"
+        }, 
+        "858C83DD.4AC3161B.4EF3049C.F4069C54": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/06/2024", 
+                "description": "grib_lisichki_02", 
+                "modified by": "ice_c", 
+                "modified on": "05/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.80264800787*-0.322281002998*0.50188601017*0.0|-0.35593599081*0.934010982513*0.0305300001055*0.0|-0.478605985641*-0.154134005308*-0.864394009113*0.0|369.715515137*188.516708374*-95.3160400391*1.0", 
+            "path": "models/entities/flora/grib_lisichki_02.model"
+        }
+    }, 
+    "spawn_transform": "-0.80264800787*-0.322281002998*0.50188601017*0.0|-0.35593599081*0.934010982513*0.0305300001055*0.0|-0.478605985641*-0.154134005308*-0.864394009113*0.0|369.715515137*188.516708374*-95.3160400391*1.0"
+}

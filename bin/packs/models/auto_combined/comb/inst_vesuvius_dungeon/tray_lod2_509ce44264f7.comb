@@ -1,0 +1,56 @@
+{
+    "models": {
+        "2D0A5FFF.437BE310.5C41F1BE.0A2C7316": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "DEFI", 
+                "created on": "29/04/2024", 
+                "description": "tray_lod2", 
+                "modified by": "DEFI", 
+                "modified on": "29/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.897071003914*0.0236310008913*0.140176996589*0.0|0.0924220010638*0.777445018291*0.460413992405*0.0|-0.108006998897*0.469006001949*-0.770267009735*0.0|484.586334229*181.295059204*-48.7663726807*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }, 
+        "84D6EE99.4C7BC2F8.DE96E1BA.FB941CD9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "DEFI", 
+                "created on": "29/04/2024", 
+                "description": "tray_lod2", 
+                "modified by": "DEFI", 
+                "modified on": "29/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.894361019135*0.15831400454*-4.99999987369e-06*0.0|0.0447309985757*0.252687007189*-0.871259987354*0.0|-0.151860997081*-0.857922971249*-0.25661700964*0.0|482.499176025*182.002182007*-41.1481056213*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }, 
+        "AFC093BF.46941A31.2B7B3299.AA91203A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "27/04/2024", 
+                "description": "tray_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "27/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.250896006823*-0.843621015549*-0.224279999733*0.0|-0.396106004715*0.317977011204*-0.752952992916*0.0|0.777881026268*-0.110180996358*-0.455751001835*0.0|477.223693848*182.542892456*-41.4743652344*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }
+    }, 
+    "spawn_transform": "-0.897071003914*0.0236310008913*0.140176996589*0.0|0.0924220010638*0.777445018291*0.460413992405*0.0|-0.108006998897*0.469006001949*-0.770267009735*0.0|484.586334229*181.295059204*-48.7663726807*1.0"
+}

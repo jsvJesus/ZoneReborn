@@ -1,0 +1,38 @@
+{
+    "firstguid": "5635E6B1.4EC55B20.99AA8585.DD2EACDA", 
+    "models": {
+        "5635E6B1.4EC55B20.99AA8585.DD2EACDA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20006o@black_forest@0x000002430D0AC120", 
+                "created by": "sergey_busygin", 
+                "created on": "24/10/2025", 
+                "description": "PipesCloth", 
+                "modified by": "sergey_busygin", 
+                "modified on": "24/10/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.998767971992*0.0*0.0495930016041*0.0|0.0*0.999998986721*0.0*0.0|-0.0495939999819*0.0*-0.998767971992*0.0|-1368.6348877*6.91227579117*610.350891113*1.0", 
+            "path": "models/city/props/heating_main/pipes/PipesCloth.model"
+        }, 
+        "CF2AE253.445C7F41.2D5A9693.3855B42D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20006o@black_forest@0x000002430D0AC120", 
+                "created by": "sergey_busygin", 
+                "created on": "24/10/2025", 
+                "description": "PipesCloth", 
+                "modified by": "sergey_busygin", 
+                "modified on": "24/10/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.998768985271*0.000487999990582*0.0495939999819*0.0|0.000487999990582*0.999998986721*-2.40000008489e-05*0.0|-0.0495939999819*0.0*-0.998768985271*0.0|-1368.28796387*6.9122710228*617.338134766*1.0", 
+            "path": "models/city/props/heating_main/pipes/PipesCloth.model"
+        }
+    }, 
+    "spawn_transform": "-0.998767971992*0.0*0.0495930016041*0.0|0.0*0.999998986721*0.0*0.0|-0.0495939999819*0.0*-0.998767971992*0.0|-1368.6348877*6.91227579117*610.350891113*1.0"
+}

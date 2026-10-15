@@ -1,0 +1,124 @@
+{
+    "models": {
+        "3849BF79.4175B855.F841FEA3.8F222BFD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x000001EE328F85B0", 
+                "created by": "ice_c", 
+                "created on": "05/02/2024", 
+                "description": "tray_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0742899999022*-0.180402994156*0.980782985687*0.0|0.0436730012298*0.98196798563*0.183928996325*0.0|-0.996279001236*0.0564979985356*-0.0650720000267*0.0|129.365844727*210.194473267*-82.6018218994*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }, 
+        "39284C61.409B2E64.42C17EA2.92B1F002": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x000001EE328F85B0", 
+                "created by": "ice_c", 
+                "created on": "05/02/2024", 
+                "description": "tray_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "05/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.957131028175*0.10494799912*-0.269973009825*0.0|0.0494100004435*0.977549016476*0.204834997654*0.0|0.285409003496*0.182714000344*-0.940828025341*0.0|128.740112305*210.241363525*-84.9626312256*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }, 
+        "7315F1F4.499188C7.F9B75DB9.66499D14": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x000001EE328F85B0", 
+                "created by": "ice_c", 
+                "created on": "05/02/2024", 
+                "description": "tray_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.689872980118*-0.187094002962*0.699334979057*0.0|0.48667499423*0.835016012192*-0.256696999073*0.0|-0.535929977894*0.51743799448*0.667109012604*0.0|130.329406738*210.464660645*-83.5596237183*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }, 
+        "8125FFA9.4C2371B5.7CF5079E.CE7FAE3C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x000001EE328F85B0", 
+                "created by": "ice_c", 
+                "created on": "05/02/2024", 
+                "description": "tray_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "05/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.878935992718*0.0465239994228*-0.474664002657*0.0|0.0577660016716*0.977519989014*0.202775001526*0.0|0.473428010941*-0.205645993352*0.856490015984*0.0|129.251708984*209.728057861*-82.6529693604*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }, 
+        "81A3BCFD.4BA1FF2B.91069199.8690697D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x000001EE328F85B0", 
+                "created by": "ice_c", 
+                "created on": "05/02/2024", 
+                "description": "tray_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.334527999163*0.187876999378*-0.923467993736*0.0|0.059905000031*0.982182979584*0.178121000528*0.0|0.94047999382*0.00426599988714*-0.339821994305*0.0|129.187835693*210.443191528*-82.5799484253*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }, 
+        "CE46A213.48697D03.DB32D18C.0A1FA9F1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x000001EE328F85B0", 
+                "created by": "ice_c", 
+                "created on": "05/02/2024", 
+                "description": "tray_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "05/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.959601998329*-0.00290600000881*-0.28134599328*0.0|0.0584379993379*0.980198979378*0.189192995429*0.0|0.275225996971*-0.197990998626*0.940770983696*0.0|129.265670776*209.955413818*-82.5772476196*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }, 
+        "EA5138D0.4792D347.BC6987B6.5F2473F2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x000001EE328F85B0", 
+                "created by": "ice_c", 
+                "created on": "05/02/2024", 
+                "description": "tray_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "05/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.997183024883*0.0546710006893*0.0513360016048*0.0|0.0728090032935*0.869831979275*0.48794400692*0.0|-0.0179779995233*0.490307986736*-0.87136298418*0.0|129.748748779*209.658752441*-81.0331802368*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }
+    }, 
+    "spawn_transform": "0.689872980118*-0.187094002962*0.699334979057*0.0|0.48667499423*0.835016012192*-0.256696999073*0.0|-0.535929977894*0.51743799448*0.667109012604*0.0|130.329406738*210.464660645*-83.5596237183*1.0"
+}

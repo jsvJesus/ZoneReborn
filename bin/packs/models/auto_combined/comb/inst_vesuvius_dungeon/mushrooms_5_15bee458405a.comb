@@ -1,0 +1,77 @@
+{
+    "models": {
+        "099C024B.4E969B22.3592D6BA.8644875B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "792fbb03i@inst_vesuvius_dungeon@0x000001F197883D60", 
+                "created by": "ice_c", 
+                "created on": "27/04/2024", 
+                "description": "mushrooms_5", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.680449008942*0.0*0.612679004669*0.0|0.0*0.91563397646*0.0*0.0|-0.612679004669*0.0*-0.680449008942*0.0|478.197570801*168.999649048*-123.556838989*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_5/mushrooms_5.model"
+        }, 
+        "2DED43F4.464BE323.F99429AB.765861AB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "792fbb03i@inst_vesuvius_dungeon@0x000001F197883D60", 
+                "created by": "ice_c", 
+                "created on": "27/04/2024", 
+                "description": "mushrooms_5", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.267426997423*0.0*-0.998052000999*0.0|0.0*1.03325903416*0.0*0.0|0.998052000999*0.0*-0.267426997423*0.0|476.925354004*168.999664307*-119.568984985*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_5/mushrooms_5.model"
+        }, 
+        "AC0F3BAF.4AA952EB.2CD6E5AB.C4CEADC3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "792fbb03i@inst_vesuvius_dungeon@0x000001F197883D60", 
+                "created by": "ice_c", 
+                "created on": "27/04/2024", 
+                "description": "mushrooms_5", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.934014976025*-3.00000010611e-06*-0.873551011086*0.0|-1.99999999495e-06*1.27885699272*-1.99999999495e-06*0.0|0.873551011086*-9.99999997475e-07*-0.934014976025*0.0|470.10824585*168.999740601*-116.887756348*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_5/mushrooms_5.model"
+        }, 
+        "D286D879.4C26C388.748DE5A1.B8126C02": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "792fbb03i@inst_vesuvius_dungeon@0x000001F197883D60", 
+                "created by": "ice_c", 
+                "created on": "27/04/2024", 
+                "description": "mushrooms_5", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.1490060091*9.99999997475e-07*0.0925130024552*0.0|-9.99999997475e-07*1.15272402763*3.00000010611e-06*0.0|-0.0925130024552*-3.00000010611e-06*1.1490060091*0.0|467.774414062*168.999694824*-120.855415344*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_5/mushrooms_5.model"
+        }
+    }, 
+    "spawn_transform": "-0.680449008942*0.0*0.612679004669*0.0|0.0*0.91563397646*0.0*0.0|-0.612679004669*0.0*-0.680449008942*0.0|478.197570801*168.999649048*-123.556838989*1.0"
+}

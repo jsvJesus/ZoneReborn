@@ -1,0 +1,54 @@
+{
+    "firstguid": "3B23A673.48941557.EFB25AAE.2899C1C0", 
+    "models": {
+        "0B3DA413.4CD2D550.9EAC258C.83643238": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "books_mess_3", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.788010001183*0.0*-0.615661025047*0.0|0.0*1.0*0.0*0.0|0.615661025047*0.0*-0.788010001183*0.0|77.5150146484*4.99999809265*44.4395904541*1.0", 
+            "path": "models/misc/furniture/library/books_mess_3.model"
+        }, 
+        "3B23A673.48941557.EFB25AAE.2899C1C0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "books_mess_3", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.694657981396*0.0*-0.7193390131*0.0|0.0*1.0*0.0*0.0|0.7193390131*0.0*-0.694657981396*0.0|83.0868148804*4.99999809265*42.7674217224*1.0", 
+            "path": "models/misc/furniture/library/books_mess_3.model"
+        }, 
+        "4197201B.40A851EF.D073AEBA.7AD9A56C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "books_mess_3", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.933579981327*0.0*-0.358368009329*0.0|0.0*1.0*0.0*0.0|0.358368009329*0.0*0.933579981327*0.0|78.7985687256*4.99999904633*41.1661529541*1.0", 
+            "path": "models/misc/furniture/library/books_mess_3.model"
+        }
+    }, 
+    "spawn_transform": "-0.694657981396*0.0*-0.7193390131*0.0|0.0*1.0*0.0*0.0|0.7193390131*0.0*-0.694657981396*0.0|83.0868148804*4.99999809265*42.7674217224*1.0"
+}

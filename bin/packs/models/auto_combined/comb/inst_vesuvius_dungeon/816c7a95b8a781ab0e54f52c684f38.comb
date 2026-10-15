@@ -1,0 +1,85 @@
+{
+    "models": {
+        "056E6689.4C01A521.8AF344A8.27508CCB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "sergey_busygin", 
+                "created on": "15:30:46", 
+                "description": "metal_shelving_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:30:46"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.99993699789*0.0*-0.0110860001296*0.0|0.0*0.999997973442*0.0*0.0|0.0110860001296*0.0*-0.99993699789*0.0|433.97833252*176.499725342*-119.066810608*1.0", 
+            "path": "models/misc/furniture/greenhouse/metal_shelving_01_lod2.model"
+        }, 
+        "09B0D30C.42ABCB57.9CCF9699.BEA81017": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "sergey_busygin", 
+                "created on": "15:30:43", 
+                "description": "metal_shelving_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:30:43"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.522777974606*0.0*0.852468013763*0.0|0.0*0.999998986721*0.0*0.0|-0.852468013763*0.0*0.522777974606*0.0|443.587127686*176.499710083*-119.62638092*1.0", 
+            "path": "models/misc/furniture/greenhouse/metal_shelving_01_lod2.model"
+        }, 
+        "A8CF7E22.4F915BDB.F0E3C3A9.03F923B1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "sergey_busygin", 
+                "created on": "15:30:43", 
+                "description": "metal_shelving_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:30:43"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.529919028282*0.0*-0.848047018051*0.0|0.0*0.999998986721*0.0*0.0|0.848047018051*0.0*-0.529919028282*0.0|443.115142822*176.499725342*-117.86756897*1.0", 
+            "path": "models/misc/furniture/greenhouse/metal_shelving_01_lod2.model"
+        }, 
+        "C99BD80D.4D0E5DD4.67D3B180.15C32643": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "sergey_busygin", 
+                "created on": "15:30:46", 
+                "description": "metal_shelving_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:30:46"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999575972557*0.0*-0.029083000496*0.0|0.0*0.999998986721*0.0*0.0|0.029083000496*0.0*0.999575972557*0.0|439.05758667*176.499710083*-120.432090759*1.0", 
+            "path": "models/misc/furniture/greenhouse/metal_shelving_01_lod2.model"
+        }, 
+        "D0F8C2D5.4940BCDA.BE27E0A1.B7543C83": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x00000123B6EC8E20", 
+                "created by": "sergey_busygin", 
+                "created on": "15:30:46", 
+                "description": "metal_shelving_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:30:46"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999846994877*0.0*-0.017451999709*0.0|0.0*0.999998986721*0.0*0.0|0.017451999709*0.0*0.999846994877*0.0|433.958129883*176.499725342*-120.489990234*1.0", 
+            "path": "models/misc/furniture/greenhouse/metal_shelving_01_lod2.model"
+        }
+    }, 
+    "spawn_transform": "-0.529919028282*0.0*-0.848047018051*0.0|0.0*0.999998986721*0.0*0.0|0.848047018051*0.0*-0.529919028282*0.0|443.115142822*176.499725342*-117.86756897*1.0"
+}

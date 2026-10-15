@@ -1,0 +1,39 @@
+{
+    "models": {
+        "1BBAFB85.469EC432.EC212CBA.D6169F7D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "22/03/2024", 
+                "description": "set_book_06", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|407.15322876*214.492904663*-91.0536499023*1.0", 
+            "path": "models/misc/furniture/hospital/set_book_06.model"
+        }, 
+        "385D7F2B.473C05F1.D21F3597.3185E6BE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "set_book_06", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997973442*0.0*0.0|0.0*0.0*0.999997019768*0.0|407.837493896*214.493041992*-88.9712905884*1.0", 
+            "path": "models/misc/furniture/hospital/set_book_06.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-0.999998986721*0.0|0.0*0.999998986721*0.0*0.0|0.999998986721*0.0*0.0*0.0|407.15322876*214.492904663*-91.0536499023*1.0"
+}

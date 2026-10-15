@@ -1,0 +1,57 @@
+{
+    "firstguid": "31F26013.442F8128.EB84A681.24AA769B", 
+    "models": {
+        "31F26013.442F8128.EB84A681.24AA769B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000002B005432910", 
+                "created by": "anton_zyryanov", 
+                "created on": "22/11/2023", 
+                "description": "box_cardboard_01_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.669130027294*0.0*-0.743144989014*0.0|0.0*1.0*0.0*0.0|0.743144989014*0.0*0.669130027294*0.0|43.0989875793*-3.00000010611e-06*48.9815940857*1.0", 
+            "path": "models/props/warehouse/box_cardboard_01_lod1.model"
+        }, 
+        "6413C5C6.4ACB60E3.70505785.5FC79B59": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000002B005432910", 
+                "created by": "anton_zyryanov", 
+                "created on": "22/11/2023", 
+                "description": "box_cardboard_01_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "01/10/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.998628973961*0.0*-0.0523359999061*0.0|0.0*1.0*0.0*0.0|0.0523359999061*0.0*0.998628973961*0.0|42.1659889221*1.2059969902*47.1495895386*1.0", 
+            "path": "models/props/warehouse/box_cardboard_01_lod1.model"
+        }, 
+        "C6A6112E.4EB90631.160270BE.50A99562": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000002B005432910", 
+                "created by": "anton_zyryanov", 
+                "created on": "22/11/2023", 
+                "description": "box_cardboard_01_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "01/10/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.998628973961*0.0*-0.0523359999061*0.0|0.0*1.0*0.0*0.0|0.0523359999061*0.0*0.998628973961*0.0|42.1729888916*-3.00000010611e-06*47.1935882568*1.0", 
+            "path": "models/props/warehouse/box_cardboard_01_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.669130027294*0.0*-0.743144989014*0.0|0.0*1.0*0.0*0.0|0.743144989014*0.0*0.669130027294*0.0|43.0989875793*-3.00000010611e-06*48.9815940857*1.0"
+}

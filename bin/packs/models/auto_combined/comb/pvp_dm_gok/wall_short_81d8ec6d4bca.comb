@@ -1,0 +1,46 @@
+{
+    "firstguid": "8F547A26.4818BDC8.1FF1D9B7.AD0EBBDD", 
+    "models": {
+        "4F4B9216.4A77644B.78959081.36CA4BB7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "20/07/2022", 
+                "description": "wall_short", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "1.73211395741*0.000457999994978*0.0*0.0|-0.000708999985363*1.56994497776*0.0*0.0|0.0*0.0*1.16999197006*0.0|64.0470504761*13.0427026749*44.7470397949*1.0", 
+            "path": "models/city/props/filtration_station/wall_short.model"
+        }, 
+        "8F547A26.4818BDC8.1FF1D9B7.AD0EBBDD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "20/07/2022", 
+                "description": "wall_short", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/11/2023"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "0.0*0.000457999994978*1.54748094082*0.0|0.0*1.56994497776*-0.000632999988738*0.0|-2.25294303894*0.0*0.0*0.0|63.983001709*13.236000061*40.1980018616*1.0", 
+            "path": "models/city/props/filtration_station/wall_short.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.000457999994978*1.54748094082*0.0|0.0*1.56994497776*-0.000632999988738*0.0|-2.25294303894*0.0*0.0*0.0|63.983001709*13.236000061*40.1980018616*1.0"
+}

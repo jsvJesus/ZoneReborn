@@ -1,0 +1,312 @@
+{
+    "firstguid": "DCAB1CB2.4A9FB16B.CA9E6593.0D8ADE81", 
+    "models": {
+        "07D8313D.435503DB.E2A564A4.97BE7303": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "sergey_busygin", 
+                "modified on": "24/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.746810972691*0.0|0.0*0.99999499321*0.0*0.0|-0.999997019768*0.0*0.0*0.0|89.5*4.90000009537*29.3999996185*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "3C1EA458.4F4163A7.8CBA8E9B.DE401A7F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999996006489*0.0|0.0*0.999996006489*0.0*0.0|-0.999996006489*0.0*0.0*0.0|75.5*4.89999818802*24.1000003815*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "3E57D0F8.4E31BBB0.08FE3C9A.B62BF310": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "sergey_busygin", 
+                "modified on": "24/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.852801024914*0.0|0.0*0.999997019768*0.0*0.0|-0.999997019768*0.0*0.0*0.0|75.5*4.89999914169*9.86495780945*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "5038C8C5.47CE8806.222A4F90.61315FF2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999996006489*0.0|0.0*0.999996006489*0.0*0.0|-0.999996006489*0.0*0.0*0.0|75.5*4.89999914169*14.1000022888*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "544A6386.40638250.4A836DBC.DB3785FC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.822362005711*0.0|0.0*0.999996006489*0.0*0.0|-0.999996006489*0.0*0.0*0.0|75.5*4.89999914169*34.0999984741*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "56EDF2DC.47650941.9148B3B9.868A4321": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.785624027252*0.0*0.0*0.0|0.0*0.999996006489*0.0*0.0|0.0*0.0*0.999996006489*0.0|90.0999832153*4.90000009537*9.39999485016*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "6D203E90.4687834A.0943F88F.121951FA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999996006489*0.0|0.0*0.999996006489*0.0*0.0|-0.999996006489*0.0*0.0*0.0|89.4999847412*4.90000009537*19.799993515*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "85EBF4C7.45D68024.8AEE13B9.4336715A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "12/08/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999996006489*0.0*0.0*0.0|0.0*0.999996006489*0.0*0.0|0.0*0.0*0.999996006489*0.0|75.8999862671*4.90000009537*33.4919967651*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "99E3A83F.4FB9DA0D.251F2DAE.337EAA71": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999996006489*0.0|0.0*0.999996006489*0.0*0.0|-0.999996006489*0.0*0.0*0.0|89.4999847412*4.90000009537*9.79999542236*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "A27ADC34.40DBBE7D.444C72A8.9D26DDB8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "12/08/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999997019768*0.0|85.0999832153*4.90000009537*9.49799346924*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "B64FA2A3.43E6127D.96A040A9.1968FD4C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "12/08/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999996006489*0.0*0.0*0.0|0.0*0.999996006489*0.0*0.0|0.0*0.0*0.999996006489*0.0|80.8999862671*4.90000009537*33.4919967651*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "C2A5861C.4F5782B2.0A5337A6.C54E249D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.921280026436*0.0|0.0*0.999996006489*0.0*0.0|-0.999996006489*0.0*0.0*0.0|89.4999847412*4.90000009537*24.799993515*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "CA92DEE1.418D8889.2634968B.3C476765": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999996006489*0.0|0.0*0.999996006489*0.0*0.0|-0.999996006489*0.0*0.0*0.0|75.5*4.89999818802*29.0999984741*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "CC9E558D.4D0AF1FD.537B2688.9E295193": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "12/08/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999997019768*0.0|80.0999832153*4.90000009537*9.49999332428*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "DCAB1CB2.4A9FB16B.CA9E6593.0D8ADE81": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "12/08/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999997019768*0.0|75.0999832153*4.90000009537*9.49999332428*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "DD8E42B2.4CD76E39.87D9FDA0.6524FD1E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999996006489*0.0|0.0*0.999996006489*0.0*0.0|-0.999996006489*0.0*0.0*0.0|89.4999847412*4.90000009537*14.7999944687*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "E4A62A63.49649F14.CDF067B4.3D1DDCB5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "ice_c", 
+                "modified on": "28/04/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999996006489*0.0|0.0*0.999996006489*0.0*0.0|-0.999996006489*0.0*0.0*0.0|75.5*4.89999818802*19.1000022888*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }, 
+        "F2CA3238.4A1FEB1E.40D8AC9A.BFE4FA5D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "25/04/2023", 
+                "description": "beam", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "12/08/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.79978197813*0.0*0.0*0.0|0.0*0.999996006489*0.0*0.0|0.0*0.0*0.999997019768*0.0|85.8999862671*4.90000009537*33.4919967651*1.0", 
+            "path": "models/buildings/unique/library/beam.model"
+        }
+    }, 
+    "spawn_transform": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999997019768*0.0|75.0999832153*4.90000009537*9.49999332428*1.0"
+}

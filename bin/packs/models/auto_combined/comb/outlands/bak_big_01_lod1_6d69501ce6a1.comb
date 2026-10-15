@@ -1,0 +1,65 @@
+{
+    "firstguid": "695C3AC0.08E64293.840616C0.4154C7B1", 
+    "models": {
+        "3500AC29.49324784.A4DB7AA4.98E6240D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "000bfff1o@outlands@0x000001A827A91FE0", 
+                "created by": "anton_zyryanov", 
+                "created on": "27/05/2016", 
+                "description": "bak_big_01_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "27/05/2016"
+            }, 
+            "dyes": {
+                "bak_big_01": "default"
+            }, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|1121.95214844*-0.0726810023189*-1487.5222168*1.0", 
+            "path": "models/props/industrial/bak_big_01_lod1.model"
+        }, 
+        "695C3AC0.08E64293.840616C0.4154C7B1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "000afff1o@outlands@0x000001A827A91FE0", 
+                "created by": "anton_zyryanov", 
+                "created on": "27/05/2016", 
+                "description": "bak_big_01_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "27/05/2016", 
+                "reflection visible": true
+            }, 
+            "dyes": {
+                "bak_big_01": "default"
+            }, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|1086.93823242*-0.178912997246*-1487.45751953*1.0", 
+            "path": "models/props/industrial/bak_big_01_lod1.model"
+        }, 
+        "C76B9E78.73A44DC1.B9AA9674.EB33BFC1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "000bfff1o@outlands@0x000001A827A91FE0", 
+                "created by": "anton_zyryanov", 
+                "created on": "27/05/2016", 
+                "description": "bak_big_01_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "27/05/2016", 
+                "reflection visible": true
+            }, 
+            "dyes": {
+                "bak_big_01": "default"
+            }, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|1104.50024414*-0.0245019998401*-1487.71069336*1.0", 
+            "path": "models/props/industrial/bak_big_01_lod1.model"
+        }
+    }, 
+    "spawn_transform": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|1086.93823242*-0.178912997246*-1487.45751953*1.0"
+}

@@ -1,0 +1,235 @@
+{
+    "firstguid": "98FE354C.49A938EF.F6AC3985.CD78E280", 
+    "models": {
+        "02E71D0F.4BCAFED7.50200490.C6BA1979": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "lvz_ferma_03", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.09514904022*0.0*0.0*0.0|0.0*1.0951499939*0.0*0.0|0.0*0.0*1.14467895031*0.0|34.9179382324*24.7030105591*57.9299621582*1.0", 
+            "path": "models/buildings/unique/lvz_construktor/lvz_ferma_03.model"
+        }, 
+        "03C933AF.44F74F13.435ECCB4.9F780DC2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "lvz_ferma_03", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.09514904022*0.0*0.0*0.0|0.0*1.0951499939*0.0*0.0|0.0*0.0*1.29967296124*0.0|47.4859390259*24.698009491*65.7369613647*1.0", 
+            "path": "models/buildings/unique/lvz_construktor/lvz_ferma_03.model"
+        }, 
+        "07E67A69.4BADA2C3.FB66A9B1.697CBD31": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "lvz_ferma_03", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.09514904022*0.0*0.0*0.0|0.0*1.0951499939*0.0*0.0|0.0*0.0*1.29967296124*0.0|56.3059387207*24.698009491*65.7369613647*1.0", 
+            "path": "models/buildings/unique/lvz_construktor/lvz_ferma_03.model"
+        }, 
+        "21384B9E.45617C1A.DB235885.176E1718": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "lvz_ferma_03", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.09514904022*0.0*0.0*0.0|0.0*1.0951499939*0.0*0.0|0.0*0.0*1.14467895031*0.0|47.477935791*24.7550086975*57.8499603271*1.0", 
+            "path": "models/buildings/unique/lvz_construktor/lvz_ferma_03.model"
+        }, 
+        "3EC831F5.4254126B.807A3EB2.480B856F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "wall_column", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508700848*0.0*0.0*0.0|0.0*1.70604002476*0.0*0.0|0.0*0.0*1.51508998871*0.0|56.2926025391*19.2047653198*61.4730796814*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "5F008F26.4B6FC8BB.4F7D289F.5DC31960": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "lvz_ferma_03", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.09514904022*0.0*0.0*0.0|0.0*1.0951499939*0.0*0.0|0.0*0.0*1.14467895031*0.0|56.2879371643*24.7550086975*57.8499603271*1.0", 
+            "path": "models/buildings/unique/lvz_construktor/lvz_ferma_03.model"
+        }, 
+        "73D045E8.4092B1C5.318BE18E.29AA180C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "wall_column", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/11/2023"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508998871*0.0*0.0*0.0|0.0*1.72253203392*0.0*0.0|0.0*0.0*1.51509594917*0.0|34.9239387512*19.1530094147*61.6229629517*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "953353C8.4E59302B.0DCDB1AC.EBB18435": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "wall_column", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/11/2023"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508998871*0.0*0.0*0.0|0.0*1.71010899544*0.0*0.0|0.0*0.0*1.51509201527*0.0|47.4679374695*19.2050094604*61.5689620972*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "98FE354C.49A938EF.F6AC3985.CD78E280": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "lvz_ferma_03", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.09514904022*0.0*0.0*0.0|0.0*1.0951499939*0.0*0.0|0.0*0.0*1.14467895031*0.0|64.8999404907*24.7550086975*58.0159606934*1.0", 
+            "path": "models/buildings/unique/lvz_construktor/lvz_ferma_03.model"
+        }, 
+        "B014499E.43DA0A05.D5D016B6.C2118C8C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "wall_column", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/11/2023"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508998871*0.0*0.0*0.0|0.0*1.72253203392*0.0*0.0|0.0*0.0*1.51509594917*0.0|42.9659385681*19.2050094604*61.5429611206*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "B6A6655B.436572B9.6F7461BD.73F2E869": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "lvz_ferma_03", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.09514904022*0.0*0.0*0.0|0.0*1.0951499939*0.0*0.0|0.0*0.0*1.14467895031*0.0|42.9599380493*24.7550086975*57.8499603271*1.0", 
+            "path": "models/buildings/unique/lvz_construktor/lvz_ferma_03.model"
+        }, 
+        "F68EA673.45F4BC09.E283E198.A810D14F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "lvz_ferma_03", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.09514904022*0.0*0.0*0.0|0.0*1.0951499939*0.0*0.0|0.0*0.0*1.29967296124*0.0|42.9709396362*24.698009491*65.7369613647*1.0", 
+            "path": "models/buildings/unique/lvz_construktor/lvz_ferma_03.model"
+        }, 
+        "FC0B3EF2.4B018CA0.06F9A29E.52033416": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/11/2023", 
+                "description": "lvz_ferma_03", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.09514904022*0.0*0.0*0.0|0.0*1.0951499939*0.0*0.0|0.0*0.0*1.29967296124*0.0|34.9289360046*24.6460113525*65.8169631958*1.0", 
+            "path": "models/buildings/unique/lvz_construktor/lvz_ferma_03.model"
+        }
+    }, 
+    "spawn_transform": "1.09514904022*0.0*0.0*0.0|0.0*1.0951499939*0.0*0.0|0.0*0.0*1.14467895031*0.0|64.8999404907*24.7550086975*58.0159606934*1.0"
+}

@@ -1,0 +1,134 @@
+{
+    "firstguid": "A21FE697.448FD1A9.C600D383.5D7CB3F6", 
+    "models": {
+        "254C6FB8.44E7D785.6F66A384.AA17F7B1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_leg", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.98133200407*-0.192321002483*0.0*0.0|0.192321002483*0.98133200407*0.0*0.0|0.0*0.0*1.0*0.0|-1437.20727539*1.52630603313*1511.80432129*1.0", 
+            "path": "models/props/corpse/animal_leg.model"
+        }, 
+        "3297948E.4D4F35EF.8B228FB9.5153E4F3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_leg", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.591610014439*0.0773679986596*-0.802504003048*0.0|0.113881997764*0.993423998356*0.011819999665*0.0|0.798141002655*-0.0843980014324*-0.596530020237*0.0|-1440.75488281*1.40591394901*1508.68371582*1.0", 
+            "path": "models/props/corpse/animal_leg.model"
+        }, 
+        "A21FE697.448FD1A9.C600D383.5D7CB3F6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_leg", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.444566994905*-0.660499989986*-0.605062007904*0.0|-0.642385005951*0.705847978592*-0.298530012369*0.0|0.624261021614*0.25596600771*-0.738092005253*0.0|-1430.13525391*2.15657997131*1512.53405762*1.0", 
+            "path": "models/props/corpse/animal_leg.model"
+        }, 
+        "B34F7897.456527F9.D8B299A9.308819DE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "18/09/2024", 
+                "description": "animal_leg", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "18/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.347348988056*-0.561217010021*-0.751255989075*0.0|-0.375185996294*0.817393004894*-0.437153995037*0.0|0.859408974648*0.130015999079*-0.494482010603*0.0|-1426.52160645*4.50573682785*1511.79858398*1.0", 
+            "path": "models/props/corpse/animal_leg.model"
+        }, 
+        "C43499F1.41FDB1F3.DDD554AF.E371D72B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_leg", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.48490101099*0.0490759983659*-0.873190999031*0.0|0.168476998806*0.974481999874*0.148326992989*0.0|0.858187973499*-0.219036996365*0.464258998632*0.0|-1434.86865234*1.17202794552*1510.82507324*1.0", 
+            "path": "models/props/corpse/animal_leg.model"
+        }, 
+        "E9354870.402DC453.51DF76BB.A8806744": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "16/09/2024", 
+                "description": "animal_leg", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.485415995121*-0.64231300354*0.593131005764*0.0|-0.306989014149*0.760443985462*0.572260975838*0.0|-0.818614006042*0.0956989973783*-0.566314995289*0.0|-1435.53540039*1.72924804688*1508.93078613*1.0", 
+            "path": "models/props/corpse/animal_leg.model"
+        }, 
+        "E9E0729A.46A3CC61.618E0282.5ED96A3F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_leg", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.813037991524*-0.277990013361*0.511556982994*0.0|-0.398303002119*0.906435012817*-0.140465006232*0.0|-0.424645006657*-0.317959010601*-0.847689986229*0.0|-1436.73803711*1.57010102272*1510.07702637*1.0", 
+            "path": "models/props/corpse/animal_leg.model"
+        }, 
+        "FCB969C0.4EB08B21.7B76DD9A.343C31DC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "yuri_parfilov", 
+                "created on": "13/09/2024", 
+                "description": "animal_leg", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13/09/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|-1432.49755859*1.17101502419*1512.84423828*1.0", 
+            "path": "models/props/corpse/animal_leg.model"
+        }
+    }, 
+    "spawn_transform": "-0.444566994905*-0.660499989986*-0.605062007904*0.0|-0.642385005951*0.705847978592*-0.298530012369*0.0|0.624261021614*0.25596600771*-0.738092005253*0.0|-1430.13525391*2.15657997131*1512.53405762*1.0"
+}

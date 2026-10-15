@@ -1,0 +1,56 @@
+{
+    "models": {
+        "68879735.495E784C.72917091.8D82A13C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "25/03/2024", 
+                "description": "concrete_scarp_1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.934449017048*-0.0732730031013*0.17752699554*0.0|0.074575997889*0.951062977314*9.99999997475e-07*0.0|-0.176984995604*0.0138760004193*0.93731802702*0.0|401.56918335*192.485946655*-41.7431373596*1.0", 
+            "path": "models/misc/garbage/concrete_scarp/concrete_scarp_1.model"
+        }, 
+        "E483C15F.42523085.A9C858AB.99A4A276": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "25/03/2024", 
+                "description": "concrete_scarp_1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.46211898327*0.0561910010874*-0.199375003576*0.0|0.0567089989781*1.47563195229*0.0*0.0|0.199230000377*-0.00765699986368*-1.46319794655*0.0|397.7449646*192.658081055*-41.8719520569*1.0", 
+            "path": "models/misc/garbage/concrete_scarp/concrete_scarp_1.model"
+        }, 
+        "F83B23CE.4543D13B.D0CCC5AB.250B2A04": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/03/2024", 
+                "description": "concrete_scarp_1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.903725981712*0.0561910010874*1.1665469408*0.0|0.0303370002657*1.57882297039*-0.0525459982455*0.0|-1.16754102707*-0.00765699986368*-0.90412902832*0.0|399.728363037*192.653381348*-45.4485473633*1.0", 
+            "path": "models/misc/garbage/concrete_scarp/concrete_scarp_1.model"
+        }
+    }, 
+    "spawn_transform": "-0.903725981712*0.0561910010874*1.1665469408*0.0|0.0303370002657*1.57882297039*-0.0525459982455*0.0|-1.16754102707*-0.00765699986368*-0.90412902832*0.0|399.728363037*192.653381348*-45.4485473633*1.0"
+}

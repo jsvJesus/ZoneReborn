@@ -1,0 +1,96 @@
+{
+    "firstguid": "ECBBB8B2.46BDC4B4.31672A97.22AB8443", 
+    "models": {
+        "37F8F424.4358E3BE.E8ACBC86.49FC54F1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "001x000x/sep/00100008o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "10/11/2021", 
+                "description": "squared_long_4x_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {
+                "Barbwire": "default"
+            }, 
+            "matrix": "9.99999997475e-07*0.000345000007655*-0.999993026257*0.0|0.0*0.999993026257*0.000345000007655*0.0|0.999992012978*0.0*9.99999997475e-07*0.0|1659.72827148*18.7685279846*896.932373047*1.0", 
+            "path": "models/props/fences/concrete/squared_long_4x_lod1.model"
+        }, 
+        "5A5174F9.491F8E1F.7386F692.A3B99A4D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "001x000x/sep/00100009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "10/11/2021", 
+                "description": "squared_long_4x_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {
+                "Barbwire": "default"
+            }, 
+            "matrix": "0.999993979931*0.000345000007655*9.99999997475e-07*0.0|-0.000345000007655*0.999993979931*0.0*0.0|-9.99999997475e-07*0.0*0.999993979931*0.0|1659.84973145*18.7687416077*931.538879395*1.0", 
+            "path": "models/props/fences/concrete/squared_long_4x_lod1.model"
+        }, 
+        "77186CB1.4752EBE6.EF2B83AF.DD5BB2A6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "001x000x/sep/00100009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "10/11/2021", 
+                "description": "squared_long_4x_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {
+                "Barbwire": "default"
+            }, 
+            "matrix": "0.999993979931*0.000345000007655*9.99999997475e-07*0.0|-0.000345000007655*0.999993979931*0.0*0.0|-9.99999997475e-07*0.0*0.999993979931*0.0|1659.84960938*18.7687339783*914.17956543*1.0", 
+            "path": "models/props/fences/concrete/squared_long_4x_lod1.model"
+        }, 
+        "B03A9A75.4963B2A1.B692E5BA.910D16AC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "001x000x/sep/00100008o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "10/11/2021", 
+                "description": "squared_long_4x_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18/11/2021"
+            }, 
+            "dyes": {
+                "Barbwire": "default"
+            }, 
+            "matrix": "9.99999997475e-07*0.000345000007655*-0.999992012978*0.0|0.0*0.999993026257*0.000345000007655*0.0|0.999992012978*0.0*9.99999997475e-07*0.0|1642.27087402*18.7685260773*896.932373047*1.0", 
+            "path": "models/props/fences/concrete/squared_long_4x_lod1.model"
+        }, 
+        "ECBBB8B2.46BDC4B4.31672A97.22AB8443": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "001x000x/sep/00100009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "10/11/2021", 
+                "description": "squared_long_4x_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {
+                "Barbwire": "default"
+            }, 
+            "matrix": "0.99999499321*0.000345000007655*9.99999997475e-07*0.0|-0.000345000007655*0.999993979931*0.0*0.0|-9.99999997475e-07*0.0*0.999993979931*0.0|1659.84985352*18.7687492371*948.880249023*1.0", 
+            "path": "models/props/fences/concrete/squared_long_4x_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.99999499321*0.000345000007655*9.99999997475e-07*0.0|-0.000345000007655*0.999993979931*0.0*0.0|-9.99999997475e-07*0.0*0.999993979931*0.0|1659.84985352*18.7687492371*948.880249023*1.0"
+}

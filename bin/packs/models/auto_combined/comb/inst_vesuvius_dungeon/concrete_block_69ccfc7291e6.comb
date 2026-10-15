@@ -1,0 +1,41 @@
+{
+    "models": {
+        "207E976F.430278B9.6B9815BE.ACD1CB52": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0b53aa98i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "21/06/2024", 
+                "description": "concrete_block", 
+                "modified by": "ice_c", 
+                "modified on": "21/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "0.453081995249*0.0215629991144*0.891203999519*0.0|0.011222999543*0.999486982822*-0.0298900008202*0.0|-0.891394019127*0.0235450007021*0.45260900259*0.0|238.721389771*171.044158936*-119.774940491*1.0", 
+            "path": "models/props/poligon/concrete_block.model"
+        }, 
+        "8B1D3865.46FEDE79.515C78BE.F2BD8C04": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0b53aa98i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "21/06/2024", 
+                "description": "concrete_block", 
+                "modified by": "ice_c", 
+                "modified on": "21/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "0.220920994878*0.0577620007098*0.973577022552*0.0|0.0193770006299*0.997784972191*-0.0635960027575*0.0|-0.97509598732*0.0329149998724*0.219312995672*0.0|238.883178711*170.369613647*-118.815711975*1.0", 
+            "path": "models/props/poligon/concrete_block.model"
+        }
+    }, 
+    "spawn_transform": "0.453081995249*0.0215629991144*0.891203999519*0.0|0.011222999543*0.999486982822*-0.0298900008202*0.0|-0.891394019127*0.0235450007021*0.45260900259*0.0|238.721389771*171.044158936*-119.774940491*1.0"
+}

@@ -1,0 +1,59 @@
+{
+    "models": {
+        "156A4F51.43EFBA6E.1AE0E795.3020FAB8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "lamps_library_ceiling_2", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {
+                "lamp_library_2": "default"
+            }, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|295.871826172*216.999862671*-30.1860466003*1.0", 
+            "path": "models/misc/furniture/library/lamps_library_ceiling_2.model"
+        }, 
+        "3D1B4873.4B7D47C7.4DA87197.9DAFBA1C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "lamps_library_ceiling_2", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {
+                "lamp_library_2": "default"
+            }, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|304.878448486*216.999862671*-27.3927841187*1.0", 
+            "path": "models/misc/furniture/library/lamps_library_ceiling_2.model"
+        }, 
+        "735F49FA.4273B951.9084C5BD.5E35F807": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "lamps_library_ceiling_2", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {
+                "lamp_library_2": "default"
+            }, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|292.906005859*216.999862671*-27.3524856567*1.0", 
+            "path": "models/misc/furniture/library/lamps_library_ceiling_2.model"
+        }
+    }, 
+    "spawn_transform": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|304.878448486*216.999862671*-27.3927841187*1.0"
+}

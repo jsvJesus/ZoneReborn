@@ -1,0 +1,39 @@
+{
+    "models": {
+        "4750D421.4E6435A2.252199A0.E63BCE1A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/03/2024", 
+                "description": "lamp_living_room_destroy_1", 
+                "modified by": "ice_c", 
+                "modified on": "27/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.00217800005339*0.112158000469*-0.993686974049*0.0|0.0453989990056*0.992676019669*0.111945003271*0.0|0.998965978622*-0.0448689982295*-0.00725399982184*0.0|401.406463623*211.967163086*-73.7591247559*1.0", 
+            "path": "models/misc/furniture/lamps/lamp_living_room_destroy_1.model"
+        }, 
+        "E5629C21.402FA23B.B1B8598B.21DDF656": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/03/2024", 
+                "description": "lamp_living_room_destroy_1", 
+                "modified by": "ice_c", 
+                "modified on": "27/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.98689699173*-0.160657003522*-0.0149170001969*0.0|0.160657003522*0.969914019108*0.182907000184*0.0|-0.0149170001969*-0.182907000184*0.983017027378*0.0|394.933837891*212.488464355*-73.3126220703*1.0", 
+            "path": "models/misc/furniture/lamps/lamp_living_room_destroy_1.model"
+        }
+    }, 
+    "spawn_transform": "-0.00217800005339*0.112158000469*-0.993686974049*0.0|0.0453989990056*0.992676019669*0.111945003271*0.0|0.998965978622*-0.0448689982295*-0.00725399982184*0.0|401.406463623*211.967163086*-73.7591247559*1.0"
+}

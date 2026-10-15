@@ -1,0 +1,56 @@
+{
+    "models": {
+        "38BF80A1.4B0EDBEC.87208DA1.CD3A9026": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "barrels_red_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999688982964*0.0*0.0249300003052*0.0|0.0*0.999998986721*0.0*0.0|-0.0249300003052*0.0*-0.999688982964*0.0|200.770004272*207.188735962*-59.1060447693*1.0", 
+            "path": "models/props/warehouse/barrels_red_01_lod2.model"
+        }, 
+        "4F660CB7.4AFF7D7C.BAB468B1.A197FE12": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "barrels_red_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.017451999709*0.0*-0.999845027924*0.0|0.0*0.999997019768*0.0*0.0|0.999845027924*0.0*-0.017451999709*0.0|202.608901978*199.999908447*-52.8812255859*1.0", 
+            "path": "models/props/warehouse/barrels_red_01_lod2.model"
+        }, 
+        "B6DC05EC.4005FE21.44734C80.5CC44AC9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "16/02/2024", 
+                "description": "barrels_red_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "11/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.017451999709*0.0*-0.999845027924*0.0|0.0*0.999997019768*0.0*0.0|0.999845027924*0.0*-0.017451999709*0.0|206.439727783*201.468704224*-52.8816795349*1.0", 
+            "path": "models/props/warehouse/barrels_red_01_lod2.model"
+        }
+    }, 
+    "spawn_transform": "-0.999688982964*0.0*0.0249300003052*0.0|0.0*0.999998986721*0.0*0.0|-0.0249300003052*0.0*-0.999688982964*0.0|200.770004272*207.188735962*-59.1060447693*1.0"
+}

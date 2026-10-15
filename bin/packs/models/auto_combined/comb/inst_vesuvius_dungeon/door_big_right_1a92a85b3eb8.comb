@@ -1,0 +1,40 @@
+{
+    "firstguid": "57FDA0E4.4A45A9BD.D9AB1FB2.C6D8C183", 
+    "models": {
+        "57FDA0E4.4A45A9BD.D9AB1FB2.C6D8C183": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "fa4a41e6i@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "15/02/2024", 
+                "description": "door_big_right", 
+                "modified by": "ice_c", 
+                "modified on": "15/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.23968696594*0.000612000003457*-0.0973559990525*0.0|0.000609999988228*1.24350404739*4.50000006822e-05*0.0|0.0973929986358*-1.99999999495e-06*-1.24016797543*0.0|299.395141602*213.025314331*-56.8650016785*1.0", 
+            "path": "models/city/prip_outlands/military_laboratory/door_big_right.model"
+        }, 
+        "BC642B7F.42D647E5.B7928899.6CAF36EC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "fa4a41e6i@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "15/02/2024", 
+                "description": "door_big_right", 
+                "modified by": "ice_c", 
+                "modified on": "15/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.2434899807*0.000602999993134*-0.00610500015318*0.0|0.000602999993134*1.24350500107*7.00000009601e-06*0.0|0.0061079999432*4.99999987369e-06*-1.24397194386*0.0|303.394744873*213.025405884*-56.864025116*1.0", 
+            "path": "models/city/prip_outlands/military_laboratory/door_big_right.model"
+        }
+    }, 
+    "spawn_transform": "-1.23968696594*0.000612000003457*-0.0973559990525*0.0|0.000609999988228*1.24350404739*4.50000006822e-05*0.0|0.0973929986358*-1.99999999495e-06*-1.24016797543*0.0|299.395141602*213.025314331*-56.8650016785*1.0"
+}

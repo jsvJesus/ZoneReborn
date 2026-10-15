@@ -1,0 +1,40 @@
+{
+    "firstguid": "70AF8148.471F3E5B.F5A51BB7.687E687F", 
+    "models": {
+        "6E5E72E6.4C38F870.83694386.45E1600B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "danil_lepeshkov", 
+                "created on": "12/01/2024", 
+                "description": "box_wood_small_04_double_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|68.7399368286*19.2200088501*39.419960022*1.0", 
+            "path": "models/props/warehouse/box_wood_small_04_double_lod1.model"
+        }, 
+        "70AF8148.471F3E5B.F5A51BB7.687E687F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "20/07/2022", 
+                "description": "box_wood_small_04_double_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*1.0*0.0|0.0*1.0*0.0*0.0|-1.0*0.0*0.0*0.0|61.5199394226*19.2200088501*37.2399635315*1.0", 
+            "path": "models/props/warehouse/box_wood_small_04_double_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*1.0*0.0|0.0*1.0*0.0*0.0|-1.0*0.0*0.0*0.0|61.5199394226*19.2200088501*37.2399635315*1.0"
+}

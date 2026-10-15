@@ -1,0 +1,39 @@
+{
+    "models": {
+        "69FD9CC8.40D80C39.2647EDBF.EA7F8B62": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "shelf_door_01", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.23303496838*0.0*0.212341994047*0.0|0.0236489996314*1.23772597313*0.137327000499*0.0|-0.205559998751*0.136364996433*-1.19365298748*0.0|402.207641602*214.644393921*-78.5105438232*1.0", 
+            "path": "models/misc/furniture/shelf_door_01.model"
+        }, 
+        "F43ED0DD.4694A17F.4A6C7BB4.30E4C2CE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "shelf_door_01", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.24298799038*0.0390149988234*-0.137564003468*0.0|0.0236510001123*1.23772501945*0.137333005667*0.0|0.137361004949*0.130968004465*-1.20401000977*0.0|402.33581543*214.559310913*-77.7660446167*1.0", 
+            "path": "models/misc/furniture/shelf_door_01.model"
+        }
+    }, 
+    "spawn_transform": "-1.23303496838*0.0*0.212341994047*0.0|0.0236489996314*1.23772597313*0.137327000499*0.0|-0.205559998751*0.136364996433*-1.19365298748*0.0|402.207641602*214.644393921*-78.5105438232*1.0"
+}

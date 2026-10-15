@@ -1,0 +1,45 @@
+{
+    "models": {
+        "87B02585.49E169CE.8BB5F88B.6821B6E0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "f48d75bei@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "mushrooms_1_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {
+                "mushrooms_1": "default"
+            }, 
+            "matrix": "-1.12827801704*0.0*0.118587002158*0.0|0.0*1.13449299335*0.0*0.0|-0.118587002158*0.0*-1.12827801704*0.0|259.487060547*175.049316406*-123.524963379*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_1_lod1.model"
+        }, 
+        "9FA48CE9.4B523515.AF9B8CBC.CE3F6373": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "f48d75bei@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "mushrooms_1_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {
+                "mushrooms_1": "default"
+            }, 
+            "matrix": "-1.36060702801*0.0*0.314121007919*0.0|0.0*1.39639604092*0.0*0.0|-0.314121007919*0.0*-1.36060702801*0.0|259.731231689*175.044586182*-124.352149963*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_1_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-1.12827801704*0.0*0.118587002158*0.0|0.0*1.13449299335*0.0*0.0|-0.118587002158*0.0*-1.12827801704*0.0|259.487060547*175.049316406*-123.524963379*1.0"
+}

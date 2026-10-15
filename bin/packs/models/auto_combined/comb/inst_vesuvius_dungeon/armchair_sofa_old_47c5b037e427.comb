@@ -1,0 +1,39 @@
+{
+    "models": {
+        "72B33BE0.401012BA.A420D08A.41108086": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "armchair_sofa_old", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.99690002203*3.00000010611e-06*-0.078653998673*0.0|3.00000010611e-06*0.999997973442*-1.99999999495e-06*0.0|0.078653998673*-1.99999999495e-06*-0.99690002203*0.0|305.285308838*212.999755859*-32.1143493652*1.0", 
+            "path": "models/misc/furniture/armchair_sofa_old.model"
+        }, 
+        "C16377D5.4FF3942D.BC461782.C18B2828": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "armchair_sofa_old", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999900996685*0.0*-0.0139659997076*0.0|0.0*0.999997973442*1.99999999495e-06*0.0|0.0139659997076*-1.99999999495e-06*0.999900996685*0.0|305.860443115*212.999710083*-29.4655303955*1.0", 
+            "path": "models/misc/furniture/armchair_sofa_old.model"
+        }
+    }, 
+    "spawn_transform": "0.999900996685*0.0*-0.0139659997076*0.0|0.0*0.999997973442*1.99999999495e-06*0.0|0.0139659997076*-1.99999999495e-06*0.999900996685*0.0|305.860443115*212.999710083*-29.4655303955*1.0"
+}

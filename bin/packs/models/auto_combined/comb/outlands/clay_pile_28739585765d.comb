@@ -1,0 +1,38 @@
+{
+    "firstguid": "F04B6971.425C5122.1422E9BD.DAD97B71", 
+    "models": {
+        "2145908D.4AFF1D62.7BDDF2AF.8EC34FE8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00120004o@outlands@0x000001649BEE0050", 
+                "created by": "sergey_busygin", 
+                "created on": "13:39:49", 
+                "description": "clay_pile", 
+                "modified by": "sergey_busygin", 
+                "modified on": "13:39:49"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.38825500011*0.0546520017087*0.479182004929*0.0|0.0777620002627*1.50028300285*0.0282460004091*0.0|-0.477124005556*0.0452670007944*-1.3895150423*0.0|1827.3815918*-8.36704730988*406.404571533*1.0", 
+            "path": "models/flora/ground/clay_pile/clay_pile.model"
+        }, 
+        "F04B6971.425C5122.1422E9BD.DAD97B71": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00120003o@outlands@0x000001649BEE0050", 
+                "created by": "sergey_busygin", 
+                "created on": "13:39:49", 
+                "description": "clay_pile", 
+                "modified by": "sergey_busygin", 
+                "modified on": "13:39:49"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.92040801048*0.209285005927*-1.28178799152*0.0|0.0828860029578*1.2619509697*0.081863000989*0.0|0.852292001247*0.0265730004758*-1.27258896828*0.0|1825.57495117*-8.19676208496*367.084716797*1.0", 
+            "path": "models/flora/ground/clay_pile/clay_pile.model"
+        }
+    }, 
+    "spawn_transform": "-1.92040801048*0.209285005927*-1.28178799152*0.0|0.0828860029578*1.2619509697*0.081863000989*0.0|0.852292001247*0.0265730004758*-1.27258896828*0.0|1825.57495117*-8.19676208496*367.084716797*1.0"
+}

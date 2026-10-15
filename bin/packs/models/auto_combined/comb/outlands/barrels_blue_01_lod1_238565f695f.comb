@@ -1,0 +1,60 @@
+{
+    "firstguid": "C6298904.45E33621.AE53D1A7.81058B89", 
+    "models": {
+        "B535D23B.466ECB55.5C6B1783.2D26EFEC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000e000bo@outlands@0x000002862CA9F180", 
+                "created by": "yulia.kochurova", 
+                "created on": "25/03/2021", 
+                "description": "barrels_blue_01_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "22/11/2024"
+            }, 
+            "dyes": {
+                "Barrels": "default"
+            }, 
+            "matrix": "1.12274301052*0.0*0.0*0.0|0.0*1.12274301052*0.0*0.0|0.0*0.0*1.12274301052*0.0|1487.48815918*-2.26757788658*1198.98864746*1.0", 
+            "path": "models/props/warehouse/barrels_blue_01_lod1.model"
+        }, 
+        "BD667A95.4A252139.7E6A4387.C39A4109": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000e000bo@outlands@0x000002862CA9F180", 
+                "created by": "yulia.kochurova", 
+                "created on": "25/03/2021", 
+                "description": "barrels_blue_01_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "22/11/2024"
+            }, 
+            "dyes": {
+                "Barrels": "default"
+            }, 
+            "matrix": "-0.0543200001121*0.0*-1.12142801285*0.0|0.0*1.12274301052*0.0*0.0|1.12142801285*0.0*-0.0543200001121*0.0|1485.6875*-2.25195288658*1198.46008301*1.0", 
+            "path": "models/props/warehouse/barrels_blue_01_lod1.model"
+        }, 
+        "C6298904.45E33621.AE53D1A7.81058B89": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000e000bo@outlands@0x000002862CA9F180", 
+                "created by": "yulia.kochurova", 
+                "created on": "25/03/2021", 
+                "description": "barrels_blue_01_lod1", 
+                "modified by": "yulia.kochurova", 
+                "modified on": "09/04/2021"
+            }, 
+            "dyes": {
+                "Barrels": "default"
+            }, 
+            "matrix": "1.12274301052*0.0*0.0*0.0|0.0*1.12274301052*0.0*0.0|0.0*0.0*1.12274301052*0.0|1485.41503906*-2.06640601158*1190.46875*1.0", 
+            "path": "models/props/warehouse/barrels_blue_01_lod1.model"
+        }
+    }, 
+    "spawn_transform": "1.12274301052*0.0*0.0*0.0|0.0*1.12274301052*0.0*0.0|0.0*0.0*1.12274301052*0.0|1485.41503906*-2.06640601158*1190.46875*1.0"
+}

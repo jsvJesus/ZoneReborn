@@ -1,0 +1,53 @@
+{
+    "models": {
+        "131FFD42.495AC460.A23A47A4.4195C13D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000024ACE390310", 
+                "created by": "sergey_busygin", 
+                "created on": "30/05/2024", 
+                "description": "fallen_foliage_LOD1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "30/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.777145981789*9.99999997475e-07*0.629320025444*0.0|0.0*1.0*0.0*0.0|-0.629320025444*0.0*0.777145981789*0.0|442.545227051*176.499771118*-103.628982544*1.0", 
+            "path": "models/flora/fallen_foliage_LOD1.model"
+        }, 
+        "247A7FCC.41308FB0.694BF8BB.4266057A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000024ACE390310", 
+                "created by": "sergey_busygin", 
+                "created on": "30/05/2024", 
+                "description": "fallen_foliage_LOD1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "30/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.777145981789*9.99999997475e-07*0.629320025444*0.0|0.0*1.0*0.0*0.0|-0.629320025444*0.0*0.777145981789*0.0|435.317108154*176.499771118*-100.851470947*1.0", 
+            "path": "models/flora/fallen_foliage_LOD1.model"
+        }, 
+        "DCA4FAF1.487EFEF8.47DC5EA8.4AB0C139": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000024ACE390310", 
+                "created by": "sergey_busygin", 
+                "created on": "30/05/2024", 
+                "description": "fallen_foliage_LOD1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "30/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.777145981789*1.99999999495e-06*0.629320025444*0.0|0.0*1.0*0.0*0.0|-0.629320025444*0.0*0.777145981789*0.0|438.138427734*176.499771118*-105.665046692*1.0", 
+            "path": "models/flora/fallen_foliage_LOD1.model"
+        }
+    }, 
+    "spawn_transform": "0.777145981789*1.99999999495e-06*0.629320025444*0.0|0.0*1.0*0.0*0.0|-0.629320025444*0.0*0.777145981789*0.0|438.138427734*176.499771118*-105.665046692*1.0"
+}

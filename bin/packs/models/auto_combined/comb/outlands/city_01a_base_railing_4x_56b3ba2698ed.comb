@@ -1,0 +1,70 @@
+{
+    "firstguid": "AF8A0301.457CFBEA.D3401894.CAC57845", 
+    "models": {
+        "0302C53C.21BB411E.A0551DEE.BBC716BF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fffffff8o@outlands@0x000001A827A91FE0", 
+                "created by": "ray", 
+                "created on": "05/07/2012", 
+                "description": "city_01a_base_railing_4x", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "17/07/2015"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.981387972832*0.0*0.192030996084*0.0|0.0*0.999998986721*0.0*0.0|-0.192030996084*0.0*0.981387972832*0.0|-10.0921173096*0.0*-709.845825195*1.0", 
+            "path": "models/props/fences/city_01a_base_railing_4x.model"
+        }, 
+        "6BB386E2.3E0E4D73.A22257A4.62453013": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "0000fff8o@outlands@0x000001A827A91FE0", 
+                "created by": "ray", 
+                "created on": "05/07/2012", 
+                "description": "city_01a_base_railing_4x", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "17/07/2015"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.254271000624*0.0*0.967131018639*0.0|0.0*0.999997973442*0.0*0.0|-0.967131018639*0.0*-0.254271000624*0.0|7.11354923248*0.00292999995872*-720.987243652*1.0", 
+            "path": "models/props/fences/city_01a_base_railing_4x.model"
+        }, 
+        "6CD11ECF.7A1F43A1.81F3C05F.6385EA4B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fffffff8o@outlands@0x000001A827A91FE0", 
+                "created by": "ray", 
+                "created on": "05/07/2012", 
+                "description": "city_01a_base_railing_4x", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "17/07/2015"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.224038004875*0.0*0.974578976631*0.0|0.0*0.999997973442*0.0*0.0|-0.974578976631*0.0*-0.224038004875*0.0|-7.24805450439*0.0*-724.340454102*1.0", 
+            "path": "models/props/fences/city_01a_base_railing_4x.model"
+        }, 
+        "AF8A0301.457CFBEA.D3401894.CAC57845": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fffffff9o@outlands@0x000001A827A91FE0", 
+                "created by": "ray", 
+                "created on": "05/07/2012", 
+                "description": "city_01a_base_railing_4x", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "17/07/2015"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.975102007389*0.0*-0.221754997969*0.0|0.0*1.0*0.0*0.0|0.221754997969*0.0*-0.975102007389*0.0|-11.8454589844*-0.0579009987414*-700.458374023*1.0", 
+            "path": "models/props/fences/city_01a_base_railing_4x.model"
+        }
+    }, 
+    "spawn_transform": "-0.975102007389*0.0*-0.221754997969*0.0|0.0*1.0*0.0*0.0|0.221754997969*0.0*-0.975102007389*0.0|-11.8454589844*-0.0579009987414*-700.458374023*1.0"
+}

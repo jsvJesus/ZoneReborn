@@ -1,0 +1,44 @@
+{
+    "firstguid": "C6BAA828.4F51B3D0.C17A369A.93EB7786", 
+    "models": {
+        "8B7CBD07.472A9B3F.023205A2.8FBAC25B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "001x000x/sep/00100009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "01/09/2021", 
+                "description": "kamaz_base", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {
+                "kamaz_mat": "default", 
+                "tire": "default"
+            }, 
+            "matrix": "-0.0179880000651*-9.99999997475e-07*-0.999836981297*0.0|1.99999999495e-06*0.999998986721*-9.99999997475e-07*0.0|0.999836027622*-3.00000010611e-06*-0.0179869998246*0.0|1608.18225098*18.7499980927*922.478271484*1.0", 
+            "path": "models/transport/heavy/kamaz_base.model"
+        }, 
+        "C6BAA828.4F51B3D0.C17A369A.93EB7786": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000f0009o@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "01/09/2021", 
+                "description": "kamaz_base", 
+                "modified by": "ice_c", 
+                "modified on": "10/11/2021"
+            }, 
+            "dyes": {
+                "kamaz_mat": "default", 
+                "tire": "default"
+            }, 
+            "matrix": "-0.999853014946*3.00000010611e-06*0.0171210002154*0.0|3.00000010611e-06*1.0*-1.99999999495e-06*0.0|-0.0171220004559*-1.99999999495e-06*-0.999853014946*0.0|1599.28833008*18.75*925.497741699*1.0", 
+            "path": "models/transport/heavy/kamaz_base.model"
+        }
+    }, 
+    "spawn_transform": "-0.999853014946*3.00000010611e-06*0.0171210002154*0.0|3.00000010611e-06*1.0*-1.99999999495e-06*0.0|-0.0171220004559*-1.99999999495e-06*-0.999853014946*0.0|1599.28833008*18.75*925.497741699*1.0"
+}

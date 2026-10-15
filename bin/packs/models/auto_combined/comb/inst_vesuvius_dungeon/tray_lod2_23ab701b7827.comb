@@ -1,0 +1,39 @@
+{
+    "models": {
+        "894E145F.4BEC6C16.E82C9395.E440928E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "a86494b5i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "tray_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "24/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.341446012259*-0.815096020699*0.209716007113*0.0|0.694465994835*0.400705993176*0.42673099041*0.0|-0.475481003523*-7.10000022082e-05*0.773864984512*0.0|530.206481934*172.576507568*-115.286705017*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }, 
+        "F53E4A07.449D5245.84397BB9.AC2C4534": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "a86494b5i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "tray_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "24/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.123271003366*-0.842907011509*0.315055012703*0.0|0.577477991581*0.31797799468*0.624786019325*0.0|-0.690124988556*0.115516997874*0.579078018665*0.0|528.917907715*172.758346558*-114.384384155*1.0", 
+            "path": "models/misc/garbage/tray_lod2.model"
+        }
+    }, 
+    "spawn_transform": "0.341446012259*-0.815096020699*0.209716007113*0.0|0.694465994835*0.400705993176*0.42673099041*0.0|-0.475481003523*-7.10000022082e-05*0.773864984512*0.0|530.206481934*172.576507568*-115.286705017*1.0"
+}

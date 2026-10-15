@@ -1,0 +1,118 @@
+{
+    "firstguid": "4AF342EE.47E9BCB1.6ADCB28D.A5EF4FED", 
+    "models": {
+        "17453F25.47F2B23B.A61899A5.54D13BAB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x00000218C42E5380", 
+                "created by": "sergey_busygin", 
+                "created on": "18:04:21", 
+                "description": "Container_wooden_single", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18:04:21"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.8519089818*0.0|0.0*0.8519089818*0.0*0.0|0.8519089818*0.0*0.0*0.0|52.7789878845*-3.00000010611e-06*41.4839782715*1.0", 
+            "path": "models/props/warehouse/Container_wooden_single.model"
+        }, 
+        "216E3607.4A9AD31A.7A551A9B.0E585FD0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x00000218C42E5380", 
+                "created by": "sergey_busygin", 
+                "created on": "18:04:18", 
+                "description": "Container_wooden_single", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18:04:18"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.8519089818*0.0|0.0*0.8519089818*0.0*0.0|-0.8519089818*0.0*0.0*0.0|60.6596107483*-3.00000010611e-06*30.0320720673*1.0", 
+            "path": "models/props/warehouse/Container_wooden_single.model"
+        }, 
+        "4AF342EE.47E9BCB1.6ADCB28D.A5EF4FED": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x00000218C42E5380", 
+                "created by": "sergey_busygin", 
+                "created on": "18:04:18", 
+                "description": "Container_wooden_single", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18:04:18"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.8519089818*0.0|0.0*0.8519089818*0.0*0.0|-0.8519089818*0.0*0.0*0.0|60.6863365173*1.74040496349*30.0384979248*1.0", 
+            "path": "models/props/warehouse/Container_wooden_single.model"
+        }, 
+        "4E9A3F50.4FCF81EA.D329AABC.302DE5C4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x00000218C42E5380", 
+                "created by": "sergey_busygin", 
+                "created on": "18:04:21", 
+                "description": "Container_wooden_single", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18:04:21"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.8519089818*0.0|0.0*0.8519089818*0.0*0.0|-0.8519089818*0.0*0.0*0.0|50.7709884644*0.0129970004782*41.5189781189*1.0", 
+            "path": "models/props/warehouse/Container_wooden_single.model"
+        }, 
+        "8AF03B24.49A92FCE.52BA739F.94099179": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x00000218C42E5380", 
+                "created by": "sergey_busygin", 
+                "created on": "18:04:18", 
+                "description": "Container_wooden_single", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18:04:18"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.8519089818*0.0|0.0*0.8519089818*0.0*0.0|-0.8519089818*0.0*0.0*0.0|57.8997306824*-2.00000022232e-06*32.7130203247*1.0", 
+            "path": "models/props/warehouse/Container_wooden_single.model"
+        }, 
+        "A73FDF35.44BC6FE3.A1536291.87B7CCA8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x00000218C42E5380", 
+                "created by": "sergey_busygin", 
+                "created on": "18:04:18", 
+                "description": "Container_wooden_single", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18:04:18"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.8519089818*0.0*0.0*0.0|0.0*0.8519089818*0.0*0.0|0.0*0.0*-0.8519089818*0.0|60.5290527344*-3.9999999899e-06*31.7873039246*1.0", 
+            "path": "models/props/warehouse/Container_wooden_single.model"
+        }, 
+        "F06726C0.44E91F26.9581C78D.404EE78B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x00000218C42E5380", 
+                "created by": "sergey_busygin", 
+                "created on": "18:04:21", 
+                "description": "Container_wooden_single", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18:04:21"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.8519089818*0.0|0.0*0.8519089818*0.0*0.0|-0.8519089818*0.0*0.0*0.0|50.7969894409*1.75299704075*41.5249786377*1.0", 
+            "path": "models/props/warehouse/Container_wooden_single.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*0.8519089818*0.0|0.0*0.8519089818*0.0*0.0|-0.8519089818*0.0*0.0*0.0|60.6863365173*1.74040496349*30.0384979248*1.0"
+}

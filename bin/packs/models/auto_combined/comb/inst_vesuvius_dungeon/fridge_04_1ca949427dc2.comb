@@ -1,0 +1,56 @@
+{
+    "models": {
+        "89C569BA.4FF23CC9.5A82C58F.6B8C3CDD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "fridge_04", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.334116995335*-1.29999998535e-05*-0.942529976368*0.0|7.00000009601e-06*0.999997973442*-1.10000000859e-05*0.0|0.942529976368*-3.00000010611e-06*0.334116995335*0.0|283.954681396*212.999786377*-18.933506012*1.0", 
+            "path": "models/misc/furniture/kitchen/fridge_04.model"
+        }, 
+        "DF429774.48CDA912.97D062A3.64FD8430": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "fridge_04", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|279.59576416*212.999801636*-16.1448726654*1.0", 
+            "path": "models/misc/furniture/kitchen/fridge_04.model"
+        }, 
+        "F6E78C15.48F7CBBA.A679A983.95097072": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "fridge_04", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.245958000422*-3.9999999899e-06*-0.969278991222*0.0|4.99999987369e-06*0.999998986721*-3.00000010611e-06*0.0|0.969278991222*-3.9999999899e-06*0.245958000422*0.0|284.015197754*212.999816895*-25.0962753296*1.0", 
+            "path": "models/misc/furniture/kitchen/fridge_04.model"
+        }
+    }, 
+    "spawn_transform": "0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|279.59576416*212.999801636*-16.1448726654*1.0"
+}

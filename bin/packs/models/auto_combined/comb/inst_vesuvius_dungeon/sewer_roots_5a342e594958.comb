@@ -1,0 +1,39 @@
+{
+    "models": {
+        "7FE0FDC6.4A913D7F.4D4FC9BF.930DC587": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "sewer_roots", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-2.98701095581*0.467438012362*-1.59940099716*0.0|0.644279003143*3.3516690731*-0.223691001534*0.0|1.53671300411*-0.49662399292*-3.01507806778*0.0|457.90032959*181.315490723*-93.712677002*1.0", 
+            "path": "models/props/water_and_sewer/sewer/sewer_roots.model"
+        }, 
+        "ED25F4AB.41A124D5.BCACC299.41FFE3E5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "sewer_roots", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.17676091194*0.506290018559*3.00257706642*0.0|0.666718006134*4.34951686859*-0.0280140005052*0.0|-2.97107505798*0.434704989195*-3.21673107147*0.0|457.832946777*181.892501831*-96.4567108154*1.0", 
+            "path": "models/props/water_and_sewer/sewer/sewer_roots.model"
+        }
+    }, 
+    "spawn_transform": "-3.17676091194*0.506290018559*3.00257706642*0.0|0.666718006134*4.34951686859*-0.0280140005052*0.0|-2.97107505798*0.434704989195*-3.21673107147*0.0|457.832946777*181.892501831*-96.4567108154*1.0"
+}

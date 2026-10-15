@@ -1,0 +1,42 @@
+{
+    "firstguid": "A09BE854.480B3776.B18699BD.975F9E4F", 
+    "models": {
+        "A09BE854.480B3776.B18699BD.975F9E4F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "011a6281i@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "18/06/2024", 
+                "description": "mushrooms_2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "11/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0818570032716*-0.983075976372*0.163888007402*0.0|0.0689390003681*0.158461004496*0.984953999519*0.0|-0.994256019592*0.0919239968061*0.0548009984195*0.0|275.843292236*155.611663818*-31.0321140289*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_2/mushrooms_2.model"
+        }, 
+        "DBF8B8CE.4771FA40.BF66C9B6.D2EEEE5F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "011a6281i@inst_vesuvius_dungeon@0x0000020585E3F760", 
+                "created by": "ice_c", 
+                "created on": "18/06/2024", 
+                "description": "mushrooms_2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "11/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.771320998669*-0.454181998968*-0.213533997536*0.0|0.485172986984*0.574626028538*0.530308008194*0.0|-0.128397002816*-0.557079970837*0.721104025841*0.0|273.484558105*156.30027771*-29.9615802765*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_2/mushrooms_2.model"
+        }
+    }, 
+    "spawn_transform": "-0.0818570032716*-0.983075976372*0.163888007402*0.0|0.0689390003681*0.158461004496*0.984953999519*0.0|-0.994256019592*0.0919239968061*0.0548009984195*0.0|275.843292236*155.611663818*-31.0321140289*1.0"
+}

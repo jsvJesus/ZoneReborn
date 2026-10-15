@@ -1,0 +1,40 @@
+{
+    "firstguid": "0D1E8D2E.4DE037DA.38EFD0AC.21E4FC32", 
+    "models": {
+        "0D1E8D2E.4DE037DA.38EFD0AC.21E4FC32": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00110004o@outlands@0x000001F05EFE4040", 
+                "created by": "sergey_busygin", 
+                "created on": "29/04/2021", 
+                "description": "river_coast", 
+                "modified by": "sergey_busygin", 
+                "modified on": "29/04/2021", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.27006304264*-0.00118699995801*-0.350306987762*0.0|0.253055989742*1.38424396515*-0.922167003155*0.0|0.343472987413*-0.890377998352*-1.24227297306*0.0|1716.33605957*-8.42994308472*469.584869385*1.0", 
+            "path": "models/flora/ground/river_coast/river_coast.model"
+        }, 
+        "95227F0F.4B643FE3.4D89BAAD.74CBE37F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/00110004o@outlands@0x000001F05EFE4040", 
+                "created by": "sergey_busygin", 
+                "created on": "29/04/2021", 
+                "description": "river_coast", 
+                "modified by": "sergey_busygin", 
+                "modified on": "29/04/2021", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "1.00495696068*-0.00104000000283*0.851958990097*0.0|-0.38622200489*1.37228703499*0.457782000303*0.0|-0.947016000748*-0.486766993999*1.1163059473*0.0|1730.49841309*-11.3240909576*442.571899414*1.0", 
+            "path": "models/flora/ground/river_coast/river_coast.model"
+        }
+    }, 
+    "spawn_transform": "-1.27006304264*-0.00118699995801*-0.350306987762*0.0|0.253055989742*1.38424396515*-0.922167003155*0.0|0.343472987413*-0.890377998352*-1.24227297306*0.0|1716.33605957*-8.42994308472*469.584869385*1.0"
+}

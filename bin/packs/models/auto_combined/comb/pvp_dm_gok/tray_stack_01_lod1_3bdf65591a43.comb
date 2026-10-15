@@ -1,0 +1,57 @@
+{
+    "firstguid": "FDD594C1.4755513C.4F7C2593.3C32F50D", 
+    "models": {
+        "1D75DE6F.4ECDFFF3.C49F2097.5DCC5493": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "tray_stack_01_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0871559977531*0.0*-0.996192991734*0.0|0.0*0.999997973442*0.0*0.0|0.996192991734*0.0*0.0871559977531*0.0|44.9517784119*17.5376300812*37.476688385*1.0", 
+            "path": "models/props/warehouse/tray_stack_01_lod1.model"
+        }, 
+        "6C288B89.4BD66E64.0D6DA897.63D20C16": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "box_wood_big_01_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.190808996558*0.0*0.981625974178*0.0|0.0*0.999998986721*0.0*0.0|-0.981625974178*0.0*0.190808996558*0.0|41.7256088257*13.2089385986*37.7990570068*1.0", 
+            "path": "models/props/warehouse/box_wood_big_01_lod1.model"
+        }, 
+        "FDD594C1.4755513C.4F7C2593.3C32F50D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "tray_stack_01_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0871559977531*0.0*-0.996192991734*0.0|0.0*0.999997973442*0.0*0.0|0.996192991734*0.0*0.0871559977531*0.0|44.5847473145*14.6776571274*37.4748573303*1.0", 
+            "path": "models/props/warehouse/tray_stack_01_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.0871559977531*0.0*-0.996192991734*0.0|0.0*0.999997973442*0.0*0.0|0.996192991734*0.0*0.0871559977531*0.0|44.5847473145*14.6776571274*37.4748573303*1.0"
+}

@@ -1,0 +1,39 @@
+{
+    "models": {
+        "6D01DCC7.4DBD7B04.CBB6618E.62A489A7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "door_big_left", 
+                "modified by": "ice_c", 
+                "modified on": "06/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.23978495598*0.0*-0.0961619988084*0.0|0.0*1.24351000786*0.0*0.0|0.0961989983916*0.0*-1.24026501179*0.0|395.323120117*213.025772095*-85.9055099487*1.0", 
+            "path": "models/city/prip_outlands/military_laboratory/door_big_left.model"
+        }, 
+        "9479809C.47270C8B.B8C1A4BE.67FFC28A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "door_big_left", 
+                "modified by": "ice_c", 
+                "modified on": "05/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.07691299915*0.0*-0.621756970882*0.0|0.0*1.24351298809*0.0*0.0|0.621995985508*0.0*-1.07732999325*0.0|389.402648926*213.025466919*-81.9154586792*1.0", 
+            "path": "models/city/prip_outlands/military_laboratory/door_big_left.model"
+        }
+    }, 
+    "spawn_transform": "-1.07691299915*0.0*-0.621756970882*0.0|0.0*1.24351298809*0.0*0.0|0.621995985508*0.0*-1.07732999325*0.0|389.402648926*213.025466919*-81.9154586792*1.0"
+}

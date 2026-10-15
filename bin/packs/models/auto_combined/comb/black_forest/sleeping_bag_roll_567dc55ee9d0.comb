@@ -1,0 +1,42 @@
+{
+    "firstguid": "1DD53E83.4924A3EE.3A4B96BB.962CB382", 
+    "models": {
+        "1DD53E83.4924A3EE.3A4B96BB.962CB382": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "f4bccf38i@black_forest@0x000001CFCE890D30", 
+                "created by": "yuri_parfilov", 
+                "created on": "10/11/2025", 
+                "description": "sleeping_bag_roll", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "10/11/2025"
+            }, 
+            "dyes": {
+                "M_SleepingBagFBXASC045RolledUpFBXASC045Brown": "default"
+            }, 
+            "matrix": "-0.884613871574*-1.88465037354e-07*-0.107653722167*0.0|6.29739815849e-08*0.891138017178*-1.00082615972e-07*0.0|0.107653722167*3.9121187001e-07*-0.884613871574*0.0|-1364.55212402*1.10301494598*577.205566406*1.0", 
+            "path": "models/props/survival/sleeping_bag_roll.model"
+        }, 
+        "3ECA754F.4BEBDA26.1217B88A.D2111A09": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "f4bccf38i@black_forest@0x000001CFCE890D30", 
+                "created by": "yuri_parfilov", 
+                "created on": "10/11/2025", 
+                "description": "sleeping_bag_roll", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "10/11/2025"
+            }, 
+            "dyes": {
+                "M_SleepingBagFBXASC045RolledUpFBXASC045Brown": "default"
+            }, 
+            "matrix": "0.891138315201*2.91087872029e-07*-3.27825546265e-07*0.0|6.29739815849e-08*0.891138017178*-1.00082615972e-07*0.0|3.27825546265e-07*2.13547536987e-07*0.891138315201*0.0|-1365.28649902*1.10301470757*577.29473877*1.0", 
+            "path": "models/props/survival/sleeping_bag_roll.model"
+        }
+    }, 
+    "spawn_transform": "-0.884613871574*-1.88465037354e-07*-0.107653722167*0.0|6.29739815849e-08*0.891138017178*-1.00082615972e-07*0.0|0.107653722167*3.9121187001e-07*-0.884613871574*0.0|-1364.55212402*1.10301494598*577.205566406*1.0"
+}

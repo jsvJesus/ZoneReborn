@@ -1,0 +1,53 @@
+{
+    "models": {
+        "1273CAEC.4BA96E37.D60D289F.392FFA09": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "29/05/2024", 
+                "description": "grib_opyata_01", 
+                "modified by": "sergey_busygin", 
+                "modified on": "29/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.239629000425*0.0844789966941*-0.535745978355*0.0|0.0527760013938*0.579294979572*0.114950999618*0.0|0.539792001247*-0.0941400006413*0.226593002677*0.0|132.096923828*207.633255005*-73.0182571411*1.0", 
+            "path": "models/entities/flora/grib_opyata_01.model"
+        }, 
+        "AE50CDEC.4B8DAC41.476D67AA.2FF1AB98": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "20/05/2024", 
+                "description": "grib_opyata_01", 
+                "modified by": "sergey_busygin", 
+                "modified on": "29/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.8626729846*0.078605003655*0.0*0.0|0.0771119967103*0.846297025681*0.167979001999*0.0|0.0152420001104*0.167285993695*-0.849802970886*0.0|132.260498047*207.578094482*-73.2802429199*1.0", 
+            "path": "models/entities/flora/grib_opyata_01.model"
+        }, 
+        "ED57FE0B.448B90A9.8C9993BD.1EDBEC53": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "20/05/2024", 
+                "description": "grib_opyata_01", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.871394991875*1.29999998535e-05*-0.490581989288*0.0|0.190552994609*0.921472012997*0.338494986296*0.0|0.452062010765*-0.38844498992*0.802963018417*0.0|131.893051147*207.846130371*-72.4454116821*1.0", 
+            "path": "models/entities/flora/grib_opyata_01.model"
+        }
+    }, 
+    "spawn_transform": "0.871394991875*1.29999998535e-05*-0.490581989288*0.0|0.190552994609*0.921472012997*0.338494986296*0.0|0.452062010765*-0.38844498992*0.802963018417*0.0|131.893051147*207.846130371*-72.4454116821*1.0"
+}

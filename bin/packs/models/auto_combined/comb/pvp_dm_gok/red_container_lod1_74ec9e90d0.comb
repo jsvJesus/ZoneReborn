@@ -1,0 +1,63 @@
+{
+    "firstguid": "46751754.44F39647.99047A99.6957C1DB", 
+    "models": {
+        "46751754.44F39647.99047A99.6957C1DB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "14/07/2020", 
+                "description": "red_container_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "14/07/2020"
+            }, 
+            "dyes": {
+                "Container": "default"
+            }, 
+            "matrix": "0.99993699789*0.0*0.0110210003331*0.0|0.0*0.999997973442*0.0*0.0|-0.0110210003331*0.0*0.99993699789*0.0|44.6649856567*19.2088775635*52.4724082947*1.0", 
+            "path": "models/misc/containers/red_container_lod1.model"
+        }, 
+        "A60D99BC.4E2BE9B6.210DE39E.AB848631": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "14/07/2020", 
+                "description": "red_container_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "14/07/2020"
+            }, 
+            "dyes": {
+                "Container": "default"
+            }, 
+            "matrix": "0.99993699789*0.0*0.0110210003331*0.0|0.0*0.999997973442*0.0*0.0|-0.0110210003331*0.0*0.99993699789*0.0|44.7367210388*19.2088775635*44.5913391113*1.0", 
+            "path": "models/misc/containers/red_container_lod1.model"
+        }, 
+        "BE4CB4B0.492D11A6.61FA50B3.47FD31B1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "red_container_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "14/07/2020"
+            }, 
+            "dyes": {
+                "Container": "default"
+            }, 
+            "matrix": "0.99993699789*0.0*0.0110210003331*0.0|0.0*0.999997973442*0.0*0.0|-0.0110210003331*0.0*0.99993699789*0.0|36.5477180481*19.2088623047*40.0660362244*1.0", 
+            "path": "models/misc/containers/red_container_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.99993699789*0.0*0.0110210003331*0.0|0.0*0.999997973442*0.0*0.0|-0.0110210003331*0.0*0.99993699789*0.0|44.6649856567*19.2088775635*52.4724082947*1.0"
+}

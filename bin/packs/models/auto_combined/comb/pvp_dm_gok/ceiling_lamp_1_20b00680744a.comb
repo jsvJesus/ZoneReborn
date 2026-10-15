@@ -1,0 +1,42 @@
+{
+    "firstguid": "EC478F5F.439B4C3B.B4441798.2DD6E5D0", 
+    "models": {
+        "D2FEDB8C.4E3983E7.91668FBB.2DB26E0C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "ceiling_lamp_1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {
+                "lamp_1": "default"
+            }, 
+            "matrix": "0.0*0.0*1.0*0.0|0.0*1.0*0.0*0.0|-1.0*0.0*0.0*0.0|44.7219200134*25.0199394226*48.2543907166*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_1.model"
+        }, 
+        "EC478F5F.439B4C3B.B4441798.2DD6E5D0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "ceiling_lamp_1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {
+                "lamp_1": "default"
+            }, 
+            "matrix": "0.0*0.0*1.0*0.0|0.0*1.0*0.0*0.0|-1.0*0.0*0.0*0.0|48.8625450134*25.0199394226*48.2597618103*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_1.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*1.0*0.0|0.0*1.0*0.0*0.0|-1.0*0.0*0.0*0.0|48.8625450134*25.0199394226*48.2597618103*1.0"
+}

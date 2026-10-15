@@ -1,0 +1,59 @@
+{
+    "models": {
+        "1A2F7BEF.43B60C77.539B0788.F6F676AD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000001983C0461F0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "metal_shelving_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.997950017452*0.0*-0.0639820024371*0.0|0.0*0.999998986721*0.0*0.0|0.0639820024371*9.99999997475e-07*-0.997950017452*0.0|456.790679932*176.499694824*-99.699836731*1.0", 
+            "path": "models/misc/furniture/greenhouse/metal_shelving_01_lod2.model"
+        }, 
+        "3F89C2B4.4C08B86E.67A8629D.52B6FDA7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000001983C0461F0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "metal_shelving_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.991681993008*0.0*-0.128702998161*0.0|0.0*0.999998986721*0.0*0.0|0.128702998161*0.0*-0.991681993008*0.0|450.105072021*176.499710083*-100.315513611*1.0", 
+            "path": "models/misc/furniture/greenhouse/metal_shelving_01_lod2.model"
+        }, 
+        "DF649478.4709A666.48EA2F94.252A26F0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000001983C0461F0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "metal_shelving_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.994113028049*9.99999997475e-07*0.108336001635*0.0|-9.99999997475e-07*0.999998986721*0.0*0.0|-0.108336001635*0.0*0.994113028049*0.0|452.932250977*176.499694824*-101.321479797*1.0", 
+            "path": "models/misc/furniture/greenhouse/metal_shelving_01_lod2.model"
+        }
+    }, 
+    "spawn_transform": "-0.997950017452*0.0*-0.0639820024371*0.0|0.0*0.999998986721*0.0*0.0|0.0639820024371*9.99999997475e-07*-0.997950017452*0.0|456.790679932*176.499694824*-99.699836731*1.0"
+}

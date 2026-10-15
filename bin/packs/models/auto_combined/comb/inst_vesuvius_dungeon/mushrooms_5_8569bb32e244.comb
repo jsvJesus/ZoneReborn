@@ -1,0 +1,41 @@
+{
+    "models": {
+        "0D4EB8CF.4C975035.982A638F.B21330D5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "mushrooms_5", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*-0.844747006893*0.0517770014703*0.0|0.846332013607*0.0*0.0*0.0|0.0*0.0517770014703*0.844747006893*0.0|360.359802246*187.328094482*-101.624542236*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_5/mushrooms_5.model"
+        }, 
+        "2652D6B2.4F5443E2.5CE60BB1.460E15F0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "3758f582i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/06/2024", 
+                "description": "mushrooms_5", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*-0.606868028641*0.585071980953*0.0|-0.842970013618*0.0*0.0*0.0|0.0*-0.585071980953*-0.606868028641*0.0|370.359802246*189.292755127*-97.065612793*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_5/mushrooms_5.model"
+        }
+    }, 
+    "spawn_transform": "0.0*-0.844747006893*0.0517770014703*0.0|0.846332013607*0.0*0.0*0.0|0.0*0.0517770014703*0.844747006893*0.0|360.359802246*187.328094482*-101.624542236*1.0"
+}

@@ -1,0 +1,37 @@
+{
+    "models": {
+        "31418E81.46EC43D5.58237883.CF735B52": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "22/04/2024", 
+                "description": "building_debris_4m", 
+                "modified by": "ice_c", 
+                "modified on": "22/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.501995027065*0.0728370025754*-0.954001009464*0.0|0.155815005302*1.06917905807*-0.000358999997843*0.0|0.944005012512*-0.137742996216*-0.507251024246*0.0|469.788299561*183.006561279*-44.7324485779*1.0", 
+            "path": "models/misc/garbage/building_debris/building_debris_4m.model"
+        }, 
+        "BC34669A.4BC144FE.C1ECF792.081A20B9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "23/04/2024", 
+                "description": "building_debris_4m", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.979955017567*0.142544001341*0.139173001051*0.0|0.143946006894*0.989584982395*4.99999987369e-06*0.0|-0.137722998857*0.0200379993767*-0.99026799202*0.0|485.158233643*180.765167236*-48.4987640381*1.0", 
+            "path": "models/misc/garbage/building_debris/building_debris_4m.model"
+        }
+    }, 
+    "spawn_transform": "-0.979955017567*0.142544001341*0.139173001051*0.0|0.143946006894*0.989584982395*4.99999987369e-06*0.0|-0.137722998857*0.0200379993767*-0.99026799202*0.0|485.158233643*180.765167236*-48.4987640381*1.0"
+}

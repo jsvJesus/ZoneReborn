@@ -1,0 +1,39 @@
+{
+    "models": {
+        "13B4096D.45054DA4.4A5076A9.897522C0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "paper_set_08", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.996604025364*0.0373010002077*0.0733899995685*0.0|0.0453969985247*0.992676019669*0.111945003271*0.0|-0.0686770007014*0.114896997809*-0.990999996662*0.0|403.733703613*211.841186523*-73.5857391357*1.0", 
+            "path": "models/props/room_character/paper_set/paper_set_08.model"
+        }, 
+        "97DADE19.4CFA774E.E3A78585.BD0C6534": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "paper_set_08", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.731352984905*0.0*-0.68199801445*0.0|0.0*1.0*0.0*0.0|0.68199801445*0.0*0.731352984905*0.0|393.795684814*212.999679565*-79.4847488403*1.0", 
+            "path": "models/props/room_character/paper_set/paper_set_08.model"
+        }
+    }, 
+    "spawn_transform": "-0.996604025364*0.0373010002077*0.0733899995685*0.0|0.0453969985247*0.992676019669*0.111945003271*0.0|-0.0686770007014*0.114896997809*-0.990999996662*0.0|403.733703613*211.841186523*-73.5857391357*1.0"
+}

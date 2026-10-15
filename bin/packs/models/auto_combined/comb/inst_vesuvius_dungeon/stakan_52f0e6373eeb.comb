@@ -1,0 +1,37 @@
+{
+    "models": {
+        "1077C216.4A505BB0.ED0749A3.58BE7D3A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "stakan", 
+                "modified by": "ice_c", 
+                "modified on": "16/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.5*0.0*0.866024971008*0.0|0.0*1.0*0.0*0.0|-0.866024971008*0.0*0.5*0.0|442.176818848*171.414505005*-129.702453613*1.0", 
+            "path": "models/props/room_character/models_objects/stakan.model"
+        }, 
+        "C310F417.4A548131.B4C72DBC.61B2ECE4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "stakan", 
+                "modified by": "ice_c", 
+                "modified on": "16/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999391019344*0.0*0.0348990000784*0.0|0.0*1.0*0.0*0.0|-0.0348990000784*0.0*0.999391019344*0.0|441.993408203*171.414505005*-129.701568604*1.0", 
+            "path": "models/props/room_character/models_objects/stakan.model"
+        }
+    }, 
+    "spawn_transform": "0.5*0.0*0.866024971008*0.0|0.0*1.0*0.0*0.0|-0.866024971008*0.0*0.5*0.0|442.176818848*171.414505005*-129.702453613*1.0"
+}

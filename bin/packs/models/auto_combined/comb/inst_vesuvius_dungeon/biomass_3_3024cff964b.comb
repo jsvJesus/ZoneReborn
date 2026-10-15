@@ -1,0 +1,56 @@
+{
+    "models": {
+        "20852D6F.454DEA20.A80557B5.1F7CD713": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "biomass_3", 
+                "modified by": "ice_c", 
+                "modified on": "24/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.156078994274*0.922393023968*0.0|0.0*0.922393023968*-0.156078994274*0.0|-0.935504972935*0.0*0.0*0.0|529.375305176*177.104812622*-72.8116912842*1.0", 
+            "path": "models/flora/biomass/biomass_3/biomass_3.model"
+        }, 
+        "50195EAE.47491F4E.D31944A9.78B2607C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "biomass_3", 
+                "modified by": "ice_c", 
+                "modified on": "24/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*-0.109430000186*-0.816794991493*0.0|0.0*0.816793978214*-0.109429001808*0.0|0.8240929842*0.0*0.0*0.0|539.358093262*177.647094727*-67.6843261719*1.0", 
+            "path": "models/flora/biomass/biomass_3/biomass_3.model"
+        }, 
+        "70D2ECED.4D181E89.66F2449A.F1B93F35": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "biomass_3", 
+                "modified by": "ice_c", 
+                "modified on": "24/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0998380035162*0.818024992943*0.0|0.0*0.818023979664*-0.0998380035162*0.0|-0.824093997478*0.0*0.0*0.0|529.360473633*177.562530518*-69.9002227783*1.0", 
+            "path": "models/flora/biomass/biomass_3/biomass_3.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.156078994274*0.922393023968*0.0|0.0*0.922393023968*-0.156078994274*0.0|-0.935504972935*0.0*0.0*0.0|529.375305176*177.104812622*-72.8116912842*1.0"
+}

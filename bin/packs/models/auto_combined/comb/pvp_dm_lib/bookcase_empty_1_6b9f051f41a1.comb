@@ -1,0 +1,57 @@
+{
+    "firstguid": "E2AFA973.48F7A4B3.9DD05AAB.7BAA30EC", 
+    "models": {
+        "B161DF7C.4CEC3D64.28B27E8D.B6EDFE21": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "17/05/2023", 
+                "description": "bookcase_empty_1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.2499910593*0.000432000000728*0.0*0.0|0.000432000000728*1.2499910593*0.0*0.0|0.0*0.0*-1.2499910593*0.0|58.6266021729*9.99980258942*22.6848640442*1.0", 
+            "path": "models/misc/furniture/library/bookcase_empty_1.model"
+        }, 
+        "B7D116F1.4F491ABA.8B20E4A1.EABCBC0F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "bookcase_empty_1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.24998903275*0.000432000000728*0.0*0.0|0.000432000000728*1.24998903275*0.0*0.0|0.0*0.0*-1.24998903275*0.0|47.1220397949*10.0000476837*22.7026939392*1.0", 
+            "path": "models/misc/furniture/library/bookcase_empty_1.model"
+        }, 
+        "E2AFA973.48F7A4B3.9DD05AAB.7BAA30EC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "17/05/2023", 
+                "description": "bookcase_empty_1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.24998903275*0.000432000000728*0.0*0.0|0.000432000000728*1.24998903275*0.0*0.0|0.0*0.0*-1.24998903275*0.0|57.6257896423*10.0001487732*22.6848678589*1.0", 
+            "path": "models/misc/furniture/library/bookcase_empty_1.model"
+        }
+    }, 
+    "spawn_transform": "-1.24998903275*0.000432000000728*0.0*0.0|0.000432000000728*1.24998903275*0.0*0.0|0.0*0.0*-1.24998903275*0.0|57.6257896423*10.0001487732*22.6848678589*1.0"
+}

@@ -1,0 +1,90 @@
+{
+    "models": {
+        "006AEFFD.44070ED3.B4B7E491.21AEBF96": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "perila_bol", 
+                "modified by": "evgeny_yashkin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999992012978*0.0|194.169906616*205.199905396*-13.6899757385*1.0", 
+            "path": "models/props/construktors/perila_bol.model"
+        }, 
+        "1D75C659.4D8ACFB4.77069DAA.B2FFE63C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "perila_bol", 
+                "modified by": "evgeny_yashkin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999992012978*0.0|199.139907837*205.199905396*-13.6999759674*1.0", 
+            "path": "models/props/construktors/perila_bol.model"
+        }, 
+        "3F3C62F2.4CF4CCCA.57BADF92.B8896A63": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "perila_bol", 
+                "modified by": "ice_c", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999992012978*0.0|213.356719971*205.199905396*-13.6948394775*1.0", 
+            "path": "models/props/construktors/perila_bol.model"
+        }, 
+        "86E57AE2.4961A558.317C849D.61C6FCE6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "evgeny_yashkin", 
+                "created on": "05/07/2024", 
+                "description": "perila_bol", 
+                "modified by": "evgeny_yashkin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999992012978*0.0|190.729904175*205.199905396*-13.6799755096*1.0", 
+            "path": "models/props/construktors/perila_bol.model"
+        }, 
+        "DFDC9A5A.42F1D553.E855B19B.7614C8DF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "08/02/2024", 
+                "description": "perila_bol", 
+                "modified by": "evgeny_yashkin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999992012978*0.0|202.219909668*205.199905396*-13.6899757385*1.0", 
+            "path": "models/props/construktors/perila_bol.model"
+        }
+    }, 
+    "spawn_transform": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999992012978*0.0|213.356719971*205.199905396*-13.6948394775*1.0"
+}

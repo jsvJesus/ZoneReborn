@@ -1,0 +1,120 @@
+{
+    "firstguid": "8713E28D.4F5EAFC6.CB19CDA0.D1D35E4B", 
+    "models": {
+        "3A0A5F7C.4F99AC32.4DD7FCA7.8C42A169": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "grave_ground", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {
+                "ground": "default"
+            }, 
+            "matrix": "-1.5495300293*0.00853800028563*-0.0297710001469*0.0|9.99999997475e-07*1.01335000992*0.290571004152*0.0|0.0337160006166*0.464958012104*-1.6215120554*0.0|58.8338165283*7.93803119659*59.6837844849*1.0", 
+            "path": "models/props/cemetery/grave_ground.model"
+        }, 
+        "5E3921D0.4A511CF6.35B7A4B9.24BE6B98": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "grave_ground", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {
+                "ground": "default"
+            }, 
+            "matrix": "0.0*0.0*1.54984104633*0.0|0.0*1.05418801308*0.0*0.0|-2.28303194046*0.0*0.0*0.0|49.4661636353*8.71874237061*58.5328598022*1.0", 
+            "path": "models/props/cemetery/grave_ground.model"
+        }, 
+        "5E783BDE.4B4E1E97.773D2097.8E1D6626": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "grave_ground", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {
+                "ground": "default"
+            }, 
+            "matrix": "1.78191196918*0.0*0.0*0.0|0.0*1.78191196918*0.0*0.0|9.99999997475e-07*0.0*2.16729092598*0.0|50.8012733459*8.07628917694*54.7937393188*1.0", 
+            "path": "models/props/cemetery/grave_ground.model"
+        }, 
+        "70A5BC3B.409113AB.918B8B94.764608C3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anna_beyzler", 
+                "created on": "08/07/2020", 
+                "description": "grave_ground", 
+                "modified by": "anna_beyzler", 
+                "modified on": "08/07/2020"
+            }, 
+            "dyes": {
+                "ground": "default"
+            }, 
+            "matrix": "0.0*0.0*1.54984200001*0.0|0.0*1.05418896675*0.0*0.0|-1.57534503937*0.0*0.0*0.0|46.2696495056*8.75288200378*58.561794281*1.0", 
+            "path": "models/props/cemetery/grave_ground.model"
+        }, 
+        "8713E28D.4F5EAFC6.CB19CDA0.D1D35E4B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "grave_ground", 
+                "modified by": "anna_beyzler", 
+                "modified on": "17/07/2020"
+            }, 
+            "dyes": {
+                "ground": "default"
+            }, 
+            "matrix": "1.78191196918*0.0*0.0*0.0|0.0*1.78191196918*0.0*0.0|9.99999997475e-07*0.0*2.16729211807*0.0|50.7653999329*8.04098987579*51.383518219*1.0", 
+            "path": "models/props/cemetery/grave_ground.model"
+        }, 
+        "98CC57D8.41D3871C.BF77B7B2.0633E609": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "grave_ground", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "15/07/2020"
+            }, 
+            "dyes": {
+                "ground": "default"
+            }, 
+            "matrix": "0.0*0.0*1.54984104633*0.0|0.0*1.05418801308*0.0*0.0|-2.28303098679*0.0*0.0*0.0|54.0190162659*8.7187461853*58.5663337708*1.0", 
+            "path": "models/props/cemetery/grave_ground.model"
+        }
+    }, 
+    "spawn_transform": "1.78191196918*0.0*0.0*0.0|0.0*1.78191196918*0.0*0.0|9.99999997475e-07*0.0*2.16729211807*0.0|50.7653999329*8.04098987579*51.383518219*1.0"
+}

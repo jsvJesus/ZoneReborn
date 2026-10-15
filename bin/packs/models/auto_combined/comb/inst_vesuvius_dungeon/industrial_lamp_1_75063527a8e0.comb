@@ -1,0 +1,59 @@
+{
+    "models": {
+        "515F80A7.4CA00B20.C6272592.810E2FCF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "industrial_lamp_1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2024"
+            }, 
+            "dyes": {
+                "lighth": "default"
+            }, 
+            "matrix": "0.766041994095*0.000852000026498*0.642781019211*0.0|0.642781019211*0.0*-0.766041994095*0.0|-0.000652000016998*0.999997019768*-0.000547999981791*0.0|416.522796631*180.018051147*-91.7959518433*1.0", 
+            "path": "models/props/electric/lamps/industrial_lamps/industrial_lamp_1.model"
+        }, 
+        "8D5BD075.494C1DB4.721961B5.72F36D45": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "industrial_lamp_1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2024"
+            }, 
+            "dyes": {
+                "lighth": "default"
+            }, 
+            "matrix": "0.499998003244*0.000852000026498*0.866020023823*0.0|0.866020023823*0.0*-0.499998003244*0.0|-0.000425000005635*0.999997019768*-0.000737999973353*0.0|410.67010498*180.062271118*-98.7691497803*1.0", 
+            "path": "models/props/electric/lamps/industrial_lamps/industrial_lamp_1.model"
+        }, 
+        "9178895E.47CBB021.3043EBA2.1F44C54D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "industrial_lamp_1", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2024"
+            }, 
+            "dyes": {
+                "lighth": "default"
+            }, 
+            "matrix": "0.939687013626*0.000852000026498*0.342016011477*0.0|0.342016011477*0.0*-0.939687013626*0.0|-0.00079999997979*0.999997019768*-0.000292000011541*0.0|424.397003174*180.019561768*-87.2505264282*1.0", 
+            "path": "models/props/electric/lamps/industrial_lamps/industrial_lamp_1.model"
+        }
+    }, 
+    "spawn_transform": "0.499998003244*0.000852000026498*0.866020023823*0.0|0.866020023823*0.0*-0.499998003244*0.0|-0.000425000005635*0.999997019768*-0.000737999973353*0.0|410.67010498*180.062271118*-98.7691497803*1.0"
+}

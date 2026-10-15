@@ -1,0 +1,39 @@
+{
+    "models": {
+        "0D30BE38.4E78D7EE.A66BAD95.06E4A4C5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "23/04/2024", 
+                "description": "ventilation_4m", 
+                "modified by": "ice_c", 
+                "modified on": "24/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.29999998535e-05*-0.103468000889*-0.994611978531*0.0|9.99999997475e-07*0.99461299181*-0.103468000889*0.0|0.999979019165*9.99999997475e-07*1.29999998535e-05*0.0|530.886230469*180.904083252*-77.9866943359*1.0", 
+            "path": "models/props/ventilation/ventilation_4m.model"
+        }, 
+        "10CD2BAC.4A0F0479.A79A54AC.66C71B10": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "23/04/2024", 
+                "description": "ventilation_4m", 
+                "modified by": "ice_c", 
+                "modified on": "24/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.29999998535e-05*-0.172188997269*-0.985042989254*0.0|9.99999997475e-07*0.985042989254*-0.172188997269*0.0|0.999978005886*1.99999999495e-06*1.29999998535e-05*0.0|530.886413574*180.406799316*-81.9525299072*1.0", 
+            "path": "models/props/ventilation/ventilation_4m.model"
+        }
+    }, 
+    "spawn_transform": "1.29999998535e-05*-0.103468000889*-0.994611978531*0.0|9.99999997475e-07*0.99461299181*-0.103468000889*0.0|0.999979019165*9.99999997475e-07*1.29999998535e-05*0.0|530.886230469*180.904083252*-77.9866943359*1.0"
+}

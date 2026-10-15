@@ -1,0 +1,57 @@
+{
+    "firstguid": "6B633C2B.49859A4A.6A07EFA0.5D25F512", 
+    "models": {
+        "6B633C2B.49859A4A.6A07EFA0.5D25F512": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "raylo", 
+                "created on": "26/07/2025", 
+                "description": "box_cardboard_01_lod1", 
+                "modified by": "raylo", 
+                "modified on": "26/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0523359999061*0.0*0.998628020287*0.0|0.0*0.999998986721*0.0*0.0|-0.998628020287*0.0*0.0523359999061*0.0|81.1899871826*1.20599997044*32.6069946289*1.0", 
+            "path": "models/props/warehouse/box_cardboard_01_lod1.model"
+        }, 
+        "7C22C043.4672775F.861B9DA9.9E3BF061": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "raylo", 
+                "created on": "26/07/2025", 
+                "description": "box_cardboard_01_lod1", 
+                "modified by": "raylo", 
+                "modified on": "26/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0523359999061*0.0*0.998628020287*0.0|0.0*0.999998986721*0.0*0.0|-0.998628020287*0.0*0.0523359999061*0.0|81.1849822998*0.0*32.5389938354*1.0", 
+            "path": "models/props/warehouse/box_cardboard_01_lod1.model"
+        }, 
+        "C637C5B9.4078ECED.621A288F.32DB4C16": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "41a26083i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "raylo", 
+                "created on": "26/07/2025", 
+                "description": "box_cardboard_01_lod1", 
+                "modified by": "raylo", 
+                "modified on": "26/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0523359999061*0.0*0.998628020287*0.0|0.0*0.999998986721*0.0*0.0|-0.998628020287*0.0*0.0523359999061*0.0|82.9869842529*0.0*32.3719940186*1.0", 
+            "path": "models/props/warehouse/box_cardboard_01_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.0523359999061*0.0*0.998628020287*0.0|0.0*0.999998986721*0.0*0.0|-0.998628020287*0.0*0.0523359999061*0.0|81.1899871826*1.20599997044*32.6069946289*1.0"
+}

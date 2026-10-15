@@ -1,0 +1,57 @@
+{
+    "firstguid": "6844FF4A.40E0DF7C.B315D2A3.4EB32440", 
+    "models": {
+        "2A7A2452.40E492BE.DB462AB5.F2740F11": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "safe_03", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*1.0*0.0*0.0|-0.999998986721*0.0*0.0*0.0|43.0967903137*1.00000405312*51.2546844482*1.0", 
+            "path": "models/misc/containers/safe_03.model"
+        }, 
+        "39DF281C.4F2B8D5A.58484D8A.7D2C44DE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "safe_03", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999998986721*0.0|0.0*1.0*0.0*0.0|-0.999998986721*0.0*0.0*0.0|43.0830535889*1.00000298023*48.7441291809*1.0", 
+            "path": "models/misc/containers/safe_03.model"
+        }, 
+        "6844FF4A.40E0DF7C.B315D2A3.4EB32440": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "safe_03", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*1.0*0.0|0.0*1.0*0.0*0.0|-1.0*0.0*0.0*0.0|43.0404281616*1.00000202656*57.1910591125*1.0", 
+            "path": "models/misc/containers/safe_03.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*1.0*0.0|0.0*1.0*0.0*0.0|-1.0*0.0*0.0*0.0|43.0404281616*1.00000202656*57.1910591125*1.0"
+}

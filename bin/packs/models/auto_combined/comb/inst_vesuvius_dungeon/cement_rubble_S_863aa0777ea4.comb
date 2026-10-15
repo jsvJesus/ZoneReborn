@@ -1,0 +1,41 @@
+{
+    "models": {
+        "0BBE886E.4D44A3E0.5243F589.C9CF8112": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "cement_rubble_S", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.04968810081*0.121340997517*-0.39818200469*0.0|0.0827239975333*3.06223297119*0.299587011337*0.0|0.407958000898*0.286134004593*-3.0373609066*0.0|298.895324707*173.71194458*-119.446891785*1.0", 
+            "path": "models/misc/garbage/cement_rubble_S.model"
+        }, 
+        "88684608.43ED035B.10E773A4.80ECB8CF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "cement_rubble_S", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "1.27551305294*0.131878003478*-3.08878397942*0.0|-0.422039985657*3.31748700142*-0.0326390005648*0.0|3.06265497208*0.402233988047*1.28189694881*0.0|303.529754639*173.828079224*-119.274147034*1.0", 
+            "path": "models/misc/garbage/cement_rubble_S.model"
+        }
+    }, 
+    "spawn_transform": "-3.04968810081*0.121340997517*-0.39818200469*0.0|0.0827239975333*3.06223297119*0.299587011337*0.0|0.407958000898*0.286134004593*-3.0373609066*0.0|298.895324707*173.71194458*-119.446891785*1.0"
+}

@@ -1,0 +1,39 @@
+{
+    "models": {
+        "87AE5E6F.4A4A1026.0932ECAA.A719766F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "dropper", 
+                "modified by": "ice_c", 
+                "modified on": "05/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.331400990486*0.923888981342*-0.191314995289*0.0|-0.800117015839*0.382658988237*0.461932986975*0.0|0.499983996153*-9.99999974738e-06*0.86603397131*0.0|390.122314453*213.18069458*-93.2905731201*1.0", 
+            "path": "models/misc/furniture/laboratory/dropper.model"
+        }, 
+        "D1DC4A7B.4857F26B.79E519B3.9001B4E7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "dropper", 
+                "modified by": "ice_c", 
+                "modified on": "05/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|395.96661377*212.999679565*-100.551551819*1.0", 
+            "path": "models/misc/furniture/laboratory/dropper.model"
+        }
+    }, 
+    "spawn_transform": "0.331400990486*0.923888981342*-0.191314995289*0.0|-0.800117015839*0.382658988237*0.461932986975*0.0|0.499983996153*-9.99999974738e-06*0.86603397131*0.0|390.122314453*213.18069458*-93.2905731201*1.0"
+}

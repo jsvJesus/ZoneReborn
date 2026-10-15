@@ -1,0 +1,74 @@
+{
+    "firstguid": "BD76776A.4697BB25.BFCFC7AF.87E3D0E7", 
+    "models": {
+        "15F17DE9.4C6B6D4B.C230B5AB.D2D314DA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "7b59f504i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "27/04/2023", 
+                "description": "door19_right", 
+                "modified by": "ice_c", 
+                "modified on": "16/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999997019768*0.0|0.0*0.999997019768*0.0*0.0|-0.999997019768*0.0*0.0*0.0|91.2858810425*5.01999902725*55.9796409607*1.0", 
+            "path": "models/buildings/doors/door19_right.model"
+        }, 
+        "BD76776A.4697BB25.BFCFC7AF.87E3D0E7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "7b59f504i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "27/04/2023", 
+                "description": "door19_left", 
+                "modified by": "ice_c", 
+                "modified on": "16/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*0.999996006489*0.0|0.0*0.999997019768*-0.000345000007655*0.0|-0.999996006489*0.0*0.0*0.0|91.2878189087*5.01999807358*61.0182685852*1.0", 
+            "path": "models/buildings/doors/door19_left.model"
+        }, 
+        "DB36F441.4872B799.F7BD40A4.EB45439F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "7b59f504i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "27/04/2023", 
+                "description": "door19_left", 
+                "modified by": "ice_c", 
+                "modified on": "16/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*0.999996006489*0.0|0.0*0.999997019768*-0.000345000007655*0.0|-0.999996006489*0.0*0.0*0.0|91.2858963013*5.01999902725*54.0215873718*1.0", 
+            "path": "models/buildings/doors/door19_left.model"
+        }, 
+        "F90320BD.45312AC6.17299CA6.1B987E00": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "7b59f504i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "27/04/2023", 
+                "description": "door19_right", 
+                "modified by": "ice_c", 
+                "modified on": "16/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999997019768*0.0|0.0*0.999997019768*0.0*0.0|-0.999997019768*0.0*0.0*0.0|91.2878036499*5.0199971199*62.9763221741*1.0", 
+            "path": "models/buildings/doors/door19_right.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.000345000007655*0.999996006489*0.0|0.0*0.999997019768*-0.000345000007655*0.0|-0.999996006489*0.0*0.0*0.0|91.2878189087*5.01999807358*61.0182685852*1.0"
+}

@@ -1,0 +1,54 @@
+{
+    "firstguid": "5753913A.488AEB12.61CF9DB7.D26995C8", 
+    "models": {
+        "0A87B382.48056827.FBE330AF.1834B7DC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20005o@black_forest@0x000002430D0AC120", 
+                "created by": "sergey_busygin", 
+                "created on": "18:54:55", 
+                "description": "PipesClothAngled", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18:54:55"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999688982964*0.0*0.0249480009079*0.0|0.0*-1.0*0.0*0.0|0.0249480009079*0.0*0.999688982964*0.0|-1370.40026855*1.53516101837*574.604309082*1.0", 
+            "path": "models/city/props/heating_main/pipes/PipesClothAngled.model"
+        }, 
+        "5753913A.488AEB12.61CF9DB7.D26995C8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20005o@black_forest@0x000002430D0AC120", 
+                "created by": "sergey_busygin", 
+                "created on": "18:54:50", 
+                "description": "PipesClothAngled", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18:54:50"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*1.0*0.0*0.0|-0.99955201149*0.0*0.0299340002239*0.0|0.0299340002239*0.0*0.99955201149*0.0|-1370.53137207*1.7868629694*570.788146973*1.0", 
+            "path": "models/city/props/heating_main/pipes/PipesClothAngled.model"
+        }, 
+        "9747F5B5.4A23EABC.8D995283.A901E15F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "fff20005o@black_forest@0x000002430D0AC120", 
+                "created by": "sergey_busygin", 
+                "created on": "18:54:50", 
+                "description": "PipesClothAngled", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18:54:50"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999037027359*0.0*-0.0438739992678*0.0|0.0*-1.0*0.0*0.0|-0.0438739992678*0.0*-0.999037027359*0.0|-1370.5324707*1.80658495426*570.806152344*1.0", 
+            "path": "models/city/props/heating_main/pipes/PipesClothAngled.model"
+        }
+    }, 
+    "spawn_transform": "0.0*1.0*0.0*0.0|-0.99955201149*0.0*0.0299340002239*0.0|0.0299340002239*0.0*0.99955201149*0.0|-1370.53137207*1.7868629694*570.788146973*1.0"
+}

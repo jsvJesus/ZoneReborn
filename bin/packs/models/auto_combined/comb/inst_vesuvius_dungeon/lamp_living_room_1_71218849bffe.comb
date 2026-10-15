@@ -1,0 +1,42 @@
+{
+    "models": {
+        "07341F89.41F1C6CB.EC4101B9.BF31A26B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "14/03/2024", 
+                "description": "lamp_living_room_1", 
+                "modified by": "ice_c", 
+                "modified on": "14/03/2024"
+            }, 
+            "dyes": {
+                "_1": "default"
+            }, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|405.677215576*216.999679565*-86.6886367798*1.0", 
+            "path": "models/misc/furniture/lamps/lamp_living_room_1.model"
+        }, 
+        "A6D78C6E.4E061F76.60C61DA7.378A959D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "14/03/2024", 
+                "description": "lamp_living_room_1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "04/07/2024"
+            }, 
+            "dyes": {
+                "_1": "default"
+            }, 
+            "matrix": "1.0*0.000345000007655*0.0*0.0|-0.000345000007655*1.0*0.0*0.0|0.0*0.0*1.0*0.0|399.844238281*216.999664307*-86.6886291504*1.0", 
+            "path": "models/misc/furniture/lamps/lamp_living_room_1.model"
+        }
+    }, 
+    "spawn_transform": "1.0*0.000345000007655*0.0*0.0|-0.000345000007655*1.0*0.0*0.0|0.0*0.0*1.0*0.0|399.844238281*216.999664307*-86.6886291504*1.0"
+}

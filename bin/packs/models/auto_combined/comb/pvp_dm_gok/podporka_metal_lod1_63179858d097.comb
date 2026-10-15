@@ -1,0 +1,71 @@
+{
+    "firstguid": "E7277796.4C9DA617.B976FF80.63358505", 
+    "models": {
+        "1FE34C8F.471631CA.6847E29C.7B2383FB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "14:50:42", 
+                "description": "podporka_metal_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "14:50:42"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.06697404385*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*1.0*0.0|31.7156715393*10.5005626678*62.6753501892*1.0", 
+            "path": "models/props/construktors/podporka_metal_lod1.model"
+        }, 
+        "57295326.49E1A0C0.791688A6.FB123166": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "14:50:42", 
+                "description": "podporka_metal_lod1", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "14:50:42"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-1.27703201771*0.0|0.0*1.0*0.0*0.0|1.0*0.0*0.0*0.0|33.9020805359*10.5183296204*69.4904327393*1.0", 
+            "path": "models/props/construktors/podporka_metal_lod1.model"
+        }, 
+        "A8F1FBAF.480B7578.EAAF8382.93733034": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "14:50:42", 
+                "description": "metalcolumn_x2", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "14:50:42"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999993979931*0.0|0.0*0.888656973839*0.0*0.0|-0.999993979931*0.0*0.0*0.0|31.8255615234*7.20895719528*56.7311325073*1.0", 
+            "path": "models/city/props/filtration_station/metalcolumn_x2.model"
+        }, 
+        "E7277796.4C9DA617.B976FF80.63358505": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "20/07/2022", 
+                "description": "podporka_metal_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "28/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-1.12074995041*0.0|0.0*1.0*0.0*0.0|1.0*0.0*0.0*0.0|42.9736175537*10.5056648254*69.1859741211*1.0", 
+            "path": "models/props/construktors/podporka_metal_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-1.12074995041*0.0|0.0*1.0*0.0*0.0|1.0*0.0*0.0*0.0|42.9736175537*10.5056648254*69.1859741211*1.0"
+}

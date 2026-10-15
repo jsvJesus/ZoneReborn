@@ -1,0 +1,70 @@
+{
+    "firstguid": "C1B7A0B3.4AF5D216.E206DABF.B9E788A8", 
+    "models": {
+        "0824EB47.4E9FA3CB.EBE71496.92E92095": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/262848bfi@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "31/08/2021", 
+                "description": "mebel_50x_taburet", 
+                "modified by": "Home", 
+                "modified on": "05/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.783322989941*0.0*-0.0136730000377*0.0|0.0*0.783442020416*0.0*0.0|0.0136730000377*0.0*-0.783322989941*0.0|1642.06933594*18.9560146332*937.480102539*1.0", 
+            "path": "models/misc/furniture/mebel_50x/mebel_50x_taburet.model"
+        }, 
+        "65CF2219.4ECA7B17.48E31A89.8F2E7069": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/262848bfi@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "31/08/2021", 
+                "description": "mebel_50x_taburet", 
+                "modified by": "Home", 
+                "modified on": "05/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.671540021896*0.0*-0.403503000736*0.0|0.0*0.783441007137*0.0*0.0|0.403503000736*0.0*-0.671540021896*0.0|1642.29516602*18.9560146332*938.826293945*1.0", 
+            "path": "models/misc/furniture/mebel_50x/mebel_50x_taburet.model"
+        }, 
+        "C1B7A0B3.4AF5D216.E206DABF.B9E788A8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/262848bfi@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "31/08/2021", 
+                "description": "mebel_50x_taburet", 
+                "modified by": "Home", 
+                "modified on": "05/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.563561975956*0.0*0.544224977493*0.0|0.0*0.783442974091*0.0*0.0|-0.544224977493*0.0*-0.563561975956*0.0|1641.23327637*18.9560184479*937.197875977*1.0", 
+            "path": "models/misc/furniture/mebel_50x/mebel_50x_taburet.model"
+        }, 
+        "D9AA2998.454554CD.9DD53A9A.E91A52A0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "001x000x/sep/262848bfi@outlands@0x000002862CA9F180", 
+                "created by": "ice_c", 
+                "created on": "31/08/2021", 
+                "description": "mebel_50x_taburet", 
+                "modified by": "Home", 
+                "modified on": "05/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.783322989941*0.0*-0.0136730000377*0.0|0.0*0.783442020416*0.0*0.0|0.0136730000377*0.0*-0.783322989941*0.0|1641.6072998*18.956029892*938.739257812*1.0", 
+            "path": "models/misc/furniture/mebel_50x/mebel_50x_taburet.model"
+        }
+    }, 
+    "spawn_transform": "-0.563561975956*0.0*0.544224977493*0.0|0.0*0.783442974091*0.0*0.0|-0.544224977493*0.0*-0.563561975956*0.0|1641.23327637*18.9560184479*937.197875977*1.0"
+}

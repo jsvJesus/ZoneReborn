@@ -1,0 +1,78 @@
+{
+    "firstguid": "5BA3E519.4C2E34B3.B3A5DB83.08BADD8B", 
+    "models": {
+        "1644A703.4A572E15.BE970E8B.46B64EB9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "lamps_library_ceiling_5", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {
+                "lamps_library_ceiling_5": "default"
+            }, 
+            "matrix": "0.999998986721*0.000345000007655*0.0*0.0|-0.000345000007655*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|91.5025024414*9.35566997528*42.4482116699*1.0", 
+            "path": "models/misc/furniture/library/lamps_library_ceiling_5.model"
+        }, 
+        "339B15A1.4BA9A404.C220188B.BE4DD8B0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "lamps_library_ceiling_5", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {
+                "lamps_library_ceiling_5": "default"
+            }, 
+            "matrix": "0.999998986721*0.000345000007655*0.0*0.0|-0.000345000007655*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|77.3025054932*9.35076713562*48.4482078552*1.0", 
+            "path": "models/misc/furniture/library/lamps_library_ceiling_5.model"
+        }, 
+        "5BA3E519.4C2E34B3.B3A5DB83.08BADD8B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "lamps_library_ceiling_5", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {
+                "lamps_library_ceiling_5": "default"
+            }, 
+            "matrix": "0.999998986721*0.000345000007655*0.0*0.0|-0.000345000007655*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|91.5025024414*9.35566997528*48.4482116699*1.0", 
+            "path": "models/misc/furniture/library/lamps_library_ceiling_5.model"
+        }, 
+        "8A02052C.4B6A4C34.29C1259F.72FEFCAC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "lamps_library_ceiling_5", 
+                "modified by": "ice_c", 
+                "modified on": "15/05/2023"
+            }, 
+            "dyes": {
+                "lamps_library_ceiling_5": "default"
+            }, 
+            "matrix": "0.999998986721*0.000345000007655*0.0*0.0|-0.000345000007655*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|77.3025054932*9.35076713562*42.4482116699*1.0", 
+            "path": "models/misc/furniture/library/lamps_library_ceiling_5.model"
+        }
+    }, 
+    "spawn_transform": "0.999998986721*0.000345000007655*0.0*0.0|-0.000345000007655*0.999998986721*0.0*0.0|0.0*0.0*0.999998986721*0.0|91.5025024414*9.35566997528*48.4482116699*1.0"
+}

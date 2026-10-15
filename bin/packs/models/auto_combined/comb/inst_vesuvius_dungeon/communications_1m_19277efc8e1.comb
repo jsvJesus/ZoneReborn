@@ -1,0 +1,39 @@
+{
+    "models": {
+        "D22B5F9F.4F4C88CF.CEB1F7A1.41840971": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0b53aa98i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "communications_1m", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.49735999107*-0.0884210020304*-0.00745199993253*0.0|0.0884210020304*-1.49734902382*-0.000228000004427*0.0|-0.00742499995977*-0.000666000007186*1.49994301796*0.0|252.125839233*180.4246521*-116.908424377*1.0", 
+            "path": "models/instances/purgatory_shelter/communications_1m.model"
+        }, 
+        "E0828BA5.490187F0.0A926CAD.A68484AE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0b53aa98i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "communications_1m", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.48693597317*-0.197291001678*-0.00744900014251*0.0|0.197288006544*-1.48692595959*0.000312999996822*0.0|-0.00742600020021*-0.000668999971822*1.49994194508*0.0|249.887557983*180.293029785*-116.919540405*1.0", 
+            "path": "models/instances/purgatory_shelter/communications_1m.model"
+        }
+    }, 
+    "spawn_transform": "-1.49735999107*-0.0884210020304*-0.00745199993253*0.0|0.0884210020304*-1.49734902382*-0.000228000004427*0.0|-0.00742499995977*-0.000666000007186*1.49994301796*0.0|252.125839233*180.4246521*-116.908424377*1.0"
+}

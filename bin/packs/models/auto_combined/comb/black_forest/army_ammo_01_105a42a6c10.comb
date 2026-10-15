@@ -1,0 +1,38 @@
+{
+    "firstguid": "D4A7AAF5.4A15944E.9E6C508A.53178D67", 
+    "models": {
+        "6D91643B.4DF1188D.2047FE8E.819CE843": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "army_ammo_05", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999999344349*-4.25243342761e-08*4.09781932831e-08*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|-4.09781932831e-08*4.497496775e-08*0.999999344349*0.0|-1377.42041016*1.74905741215*626.613220215*1.0", 
+            "path": "models/misc/containers/army_ammo_05.model"
+        }, 
+        "D4A7AAF5.4A15944E.9E6C508A.53178D67": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "army_ammo_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999999344349*-4.25243342761e-08*4.09781932831e-08*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|-4.09781932831e-08*4.497496775e-08*0.999999344349*0.0|-1378.19311523*1.7490568161*626.598876953*1.0", 
+            "path": "models/misc/containers/army_ammo_01.model"
+        }
+    }, 
+    "spawn_transform": "0.999999344349*-4.25243342761e-08*4.09781932831e-08*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|-4.09781932831e-08*4.497496775e-08*0.999999344349*0.0|-1378.19311523*1.7490568161*626.598876953*1.0"
+}

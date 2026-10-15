@@ -1,0 +1,56 @@
+{
+    "models": {
+        "2D820564.472A9A7B.5DB2D084.84A3AF77": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "a86494b5i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "25/04/2024", 
+                "description": "can_damaged_a_rusty", 
+                "modified by": "ice_c", 
+                "modified on": "25/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.866024971008*0.0*-0.5*0.0|0.0*1.0*0.0*0.0|0.5*0.0*-0.866024971008*0.0|526.44152832*171.999816895*-125.279319763*1.0", 
+            "path": "models/misc/furniture/food/can_damaged_a_rusty.model"
+        }, 
+        "5374A444.440510B0.A76E8895.E8BBCA1F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "a86494b5i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "25/04/2024", 
+                "description": "can_damaged_a_rusty", 
+                "modified by": "ice_c", 
+                "modified on": "25/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.92718398571*0.0*-0.374606013298*0.0|0.0*1.0*0.0*0.0|0.374606013298*0.0*-0.92718398571*0.0|526.303833008*171.999816895*-123.98601532*1.0", 
+            "path": "models/misc/furniture/food/can_damaged_a_rusty.model"
+        }, 
+        "AE6DF7F8.4A81811E.12FBCB96.C0394A85": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "a86494b5i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "25/04/2024", 
+                "description": "can_damaged_a_rusty", 
+                "modified by": "ice_c", 
+                "modified on": "25/04/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.961261987686*0.0*0.275637000799*0.0|0.0*1.0*0.0*0.0|-0.275637000799*0.0*-0.961261987686*0.0|526.31262207*171.999816895*-125.435829163*1.0", 
+            "path": "models/misc/furniture/food/can_damaged_a_rusty.model"
+        }
+    }, 
+    "spawn_transform": "-0.866024971008*0.0*-0.5*0.0|0.0*1.0*0.0*0.0|0.5*0.0*-0.866024971008*0.0|526.44152832*171.999816895*-125.279319763*1.0"
+}

@@ -1,0 +1,66 @@
+{
+    "firstguid": "7D67EB28.47B9B70C.EE563FA8.AE4B4BBE", 
+    "models": {
+        "1FE440A7.4155A8EA.EC95B8A9.6C5AF4E2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000bfff1o@outlands@0x000001A827A91FE0", 
+                "created by": "evgeny_yashkin", 
+                "created on": "06/09/2021", 
+                "description": "SandBag_Corner_lod1", 
+                "modified by": "evgeny_yashkin", 
+                "modified on": "06/09/2021"
+            }, 
+            "dyes": {
+                "Sandbag_1": "default", 
+                "Sandbag_2": "default", 
+                "Sandbag_3": "default"
+            }, 
+            "matrix": "-0.10981400311*-0.00446399999782*1.2451570034*0.0|-0.0552779994905*1.24877500534*-0.00039800000377*0.0|-1.24393701553*-0.0550980009139*-0.109904997051*0.0|1108.73083496*-0.263990998268*-1407.95581055*1.0", 
+            "path": "models/props/blockpost/SandBag_Corner_lod1.model"
+        }, 
+        "7D67EB28.47B9B70C.EE563FA8.AE4B4BBE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000bfff1o@outlands@0x000001A827A91FE0", 
+                "created by": "evgeny_yashkin", 
+                "created on": "06/09/2021", 
+                "description": "SandBag_Corner_lod1", 
+                "modified by": "evgeny_yashkin", 
+                "modified on": "06/09/2021"
+            }, 
+            "dyes": {
+                "Sandbag_1": "default", 
+                "Sandbag_2": "default", 
+                "Sandbag_3": "default"
+            }, 
+            "matrix": "1.21984899044*0.0539040006697*-0.26750099659*0.0|-0.0551149994135*1.24878299236*0.000307999987854*0.0|0.267253994942*0.0114930002019*1.22103905678*0.0|1105.59350586*-0.401780992746*-1404.13745117*1.0", 
+            "path": "models/props/blockpost/SandBag_Corner_lod1.model"
+        }, 
+        "BBCDFF85.42CA3A0A.FE2CC5AF.B9396025": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "000bfff1o@outlands@0x000001A827A91FE0", 
+                "created by": "evgeny_yashkin", 
+                "created on": "06/09/2021", 
+                "description": "SandBag_Corner_lod1", 
+                "modified by": "evgeny_yashkin", 
+                "modified on": "06/09/2021"
+            }, 
+            "dyes": {
+                "Sandbag_1": "default", 
+                "Sandbag_2": "default", 
+                "Sandbag_3": "default"
+            }, 
+            "matrix": "-0.950537025928*-0.0421510003507*0.810679018497*0.0|-0.0554430000484*1.24876904488*-7.7999997302e-05*0.0|-0.809877991676*-0.0360170006752*-0.951470971107*0.0|1107.74951172*-0.305817008018*-1403.58410645*1.0", 
+            "path": "models/props/blockpost/SandBag_Corner_lod1.model"
+        }
+    }, 
+    "spawn_transform": "1.21984899044*0.0539040006697*-0.26750099659*0.0|-0.0551149994135*1.24878299236*0.000307999987854*0.0|0.267253994942*0.0114930002019*1.22103905678*0.0|1105.59350586*-0.401780992746*-1404.13745117*1.0"
+}

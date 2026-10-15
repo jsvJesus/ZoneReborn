@@ -1,0 +1,37 @@
+{
+    "models": {
+        "093564F0.4A783838.AF44488F.2CB50AAE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "bottle", 
+                "modified by": "ice_c", 
+                "modified on": "16/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.6533960104*0.0*-0.634679019451*0.0|0.0*1.77102696896*0.0*0.0|0.634679019451*0.0*-1.6533960104*0.0|410.469512939*171.725799561*-113.623390198*1.0", 
+            "path": "models/misc/stuffs/dishes/bottle.model"
+        }, 
+        "7CC0139D.42D859CC.813BED9B.31E6C906": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "bottle", 
+                "modified by": "ice_c", 
+                "modified on": "16/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.694657981396*0.0*0.719340026379*0.0|0.0*1.0*0.0*0.0|-0.719340026379*0.0*0.694657981396*0.0|411.586700439*172.559967041*-113.472229004*1.0", 
+            "path": "models/misc/stuffs/dishes/bottle.model"
+        }
+    }, 
+    "spawn_transform": "0.694657981396*0.0*0.719340026379*0.0|0.0*1.0*0.0*0.0|-0.719340026379*0.0*0.694657981396*0.0|411.586700439*172.559967041*-113.472229004*1.0"
+}

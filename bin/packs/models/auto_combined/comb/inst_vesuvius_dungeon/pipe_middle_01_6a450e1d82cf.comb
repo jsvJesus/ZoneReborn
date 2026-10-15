@@ -1,0 +1,59 @@
+{
+    "models": {
+        "A6D2D719.43162935.3E725B93.923823CF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "pipe_middle_01", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.02384305*-0.0848620012403*-0.241331994534*0.0|-0.0907690003514*1.05129396915*0.0154050001875*0.0|0.23917299509*0.0357020013034*-1.02723801136*0.0|326.823638916*177.586883545*-117.822525024*1.0", 
+            "path": "models/props/water_and_sewer/sewer/pipe_middle_01.model"
+        }, 
+        "BBC2FF29.42FE7A71.6E2638A8.066E70A7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "pipe_middle_01", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.2516900301*-0.140324994922*0.0438899993896*0.0|-0.141053006053*1.25223302841*-0.0190329998732*0.0|-0.0414890013635*-0.0238160006702*-1.2593870163*0.0|317.36618042*176.53578186*-126.47618103*1.0", 
+            "path": "models/props/water_and_sewer/sewer/pipe_middle_01.model"
+        }, 
+        "F7A68446.4C7F3C8C.0D7FA899.480332E7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "pipe_middle_01", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.754482984543*0.163582995534*-0.450114011765*0.0|0.168443992734*1.23770201206*0.167463004589*0.0|0.654061973095*0.0565420016646*-1.07579100132*0.0|322.094268799*178.350921631*-123.473579407*1.0", 
+            "path": "models/props/water_and_sewer/sewer/pipe_middle_01.model"
+        }
+    }, 
+    "spawn_transform": "-1.02384305*-0.0848620012403*-0.241331994534*0.0|-0.0907690003514*1.05129396915*0.0154050001875*0.0|0.23917299509*0.0357020013034*-1.02723801136*0.0|326.823638916*177.586883545*-117.822525024*1.0"
+}

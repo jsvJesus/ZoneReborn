@@ -1,0 +1,43 @@
+{
+    "models": {
+        "12F62F20.4EE28E67.C77D8BAE.C77B6A4A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "zanaves_02", 
+                "modified by": "ice_c", 
+                "modified on": "05/03/2024"
+            }, 
+            "dyes": {
+                "zanaves_2": "default"
+            }, 
+            "matrix": "0.178203999996*-9.99999997475e-07*0.983991980553*0.0|3.00000010611e-06*1.0*9.99999997475e-07*0.0|-0.983991980553*1.99999999495e-06*0.178203999996*0.0|393.322479248*212.999572754*-100.742698669*1.0", 
+            "path": "models/misc/furniture/hospital/zanaves_02.model"
+        }, 
+        "97634EB0.4C558694.68881196.AF341329": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "zanaves_02", 
+                "modified by": "ice_c", 
+                "modified on": "05/03/2024"
+            }, 
+            "dyes": {
+                "zanaves_2": "default"
+            }, 
+            "matrix": "0.0846889987588*-7.00000009601e-06*0.996406018734*0.0|-0.0520410016179*0.998633980751*0.00443099997938*0.0|-0.995046019554*-0.0522289983928*0.0845730006695*0.0|390.327209473*212.999557495*-92.9150848389*1.0", 
+            "path": "models/misc/furniture/hospital/zanaves_02.model"
+        }
+    }, 
+    "spawn_transform": "0.0846889987588*-7.00000009601e-06*0.996406018734*0.0|-0.0520410016179*0.998633980751*0.00443099997938*0.0|-0.995046019554*-0.0522289983928*0.0845730006695*0.0|390.327209473*212.999557495*-92.9150848389*1.0"
+}

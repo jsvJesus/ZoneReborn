@@ -1,0 +1,97 @@
+{
+    "firstguid": "86524C20.4B2CF085.FB30899F.6326F03E", 
+    "models": {
+        "29A4AF22.4034FF6E.B10014AA.DE05FEBF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "15:04:28", 
+                "description": "wall_column", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "15:04:28"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51507902145*0.0*0.0*0.0|0.0*1.83843100071*0.0*0.0|0.0*0.0*1.51508498192*0.0|69.8674316406*12.9942464828*54.2813301086*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "86524C20.4B2CF085.FB30899F.6326F03E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "anton_zyryanov", 
+                "created on": "15/07/2020", 
+                "description": "wall_column", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "21/07/2022"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51508498192*0.0*0.0*0.0|0.0*1.18180501461*0.0*0.0|0.0*0.0*1.51508700848*0.0|69.9406661987*21.0034790039*61.5050468445*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "96FB2A3E.4B2CFAF5.08595EA8.E28E479D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "15:04:28", 
+                "description": "wall_column", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "15:04:28"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51507794857*0.0*0.0*0.0|0.0*1.83843004704*0.0*0.0|0.0*0.0*1.51508402824*0.0|69.4241027832*12.8767852783*44.8540496826*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "AD6BF433.4AC09EFA.DE4782A0.FFD388F2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "15:04:28", 
+                "description": "wall_column", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "15:04:28"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51507794857*0.0*0.0*0.0|0.0*1.83843004704*0.0*0.0|0.0*0.0*1.51508402824*0.0|69.9239349365*12.9232788086*58.09948349*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }, 
+        "E7BFDD60.4700D949.A57914AE.74B076F9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "15:04:28", 
+                "description": "wall_column", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "15:04:28"
+            }, 
+            "dyes": {
+                "walls": "default"
+            }, 
+            "matrix": "1.51507997513*0.0*0.0*0.0|0.0*1.16241896152*0.0*0.0|0.0*0.0*1.5150860548*0.0|69.9275054932*17.0896453857*61.5028991699*1.0", 
+            "path": "models/misc/furniture/postal/wall_column.model"
+        }
+    }, 
+    "spawn_transform": "1.51508498192*0.0*0.0*0.0|0.0*1.18180501461*0.0*0.0|0.0*0.0*1.51508700848*0.0|69.9406661987*21.0034790039*61.5050468445*1.0"
+}

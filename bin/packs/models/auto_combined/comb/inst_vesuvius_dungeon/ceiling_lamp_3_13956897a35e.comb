@@ -1,0 +1,41 @@
+{
+    "models": {
+        "B5971991.49B3DA02.CAA4CB95.C82EE3A9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "14/05/2024", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "ice_c", 
+                "modified on": "14/05/2024"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.309015005827*0.0*-0.951052010059*0.0|1.49999996211e-05*0.999996006489*4.99999987369e-06*0.0|0.951052010059*-1.59999999596e-05*0.309015005827*0.0|418.486968994*175.899734497*-116.706138611*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }, 
+        "BFA53081.4950FD83.E32EE4AA.B927888F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "14/05/2024", 
+                "description": "ceiling_lamp_3", 
+                "modified by": "ice_c", 
+                "modified on": "14/05/2024"
+            }, 
+            "dyes": {
+                "Lamp_3": "default"
+            }, 
+            "matrix": "0.994521021843*-0.000345000007655*0.104528002441*0.0|0.000342999992426*0.999998986721*3.70000016119e-05*0.0|-0.104528002441*-9.99999997475e-07*0.994521021843*0.0|412.845367432*175.899734497*-111.566986084*1.0", 
+            "path": "models/props/electric/lamps/ceiling_lamps/ceiling_lamp_3.model"
+        }
+    }, 
+    "spawn_transform": "0.994521021843*-0.000345000007655*0.104528002441*0.0|0.000342999992426*0.999998986721*3.70000016119e-05*0.0|-0.104528002441*-9.99999997475e-07*0.994521021843*0.0|412.845367432*175.899734497*-111.566986084*1.0"
+}

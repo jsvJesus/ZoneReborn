@@ -1,0 +1,56 @@
+{
+    "models": {
+        "46EA757F.43A6503B.A4E1148B.3AA396EF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "garbage_construction_01_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.544638991356*0.0*0.838670015335*0.0|0.0*1.0*0.0*0.0|-0.838670015335*0.0*-0.544638991356*0.0|458.464141846*176.512359619*-102.296287537*1.0", 
+            "path": "models/misc/garbage/garbage_construction_01_lod1.model"
+        }, 
+        "88700225.417EFCD9.FB16178D.0F9831EB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "garbage_construction_01_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.422618001699*0.0*0.90630698204*0.0|0.0*1.0*0.0*0.0|-0.90630698204*0.0*0.422618001699*0.0|457.642120361*176.527282715*-106.679000854*1.0", 
+            "path": "models/misc/garbage/garbage_construction_01_lod1.model"
+        }, 
+        "8924CC55.4FEFBC2E.B1AFB393.DF1946F9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "garbage_construction_01_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*1.0*0.0|0.0*1.0*0.0*0.0|-1.0*0.0*0.0*0.0|456.845214844*176.534011841*-104.456169128*1.0", 
+            "path": "models/misc/garbage/garbage_construction_01_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-0.544638991356*0.0*0.838670015335*0.0|0.0*1.0*0.0*0.0|-0.838670015335*0.0*-0.544638991356*0.0|458.464141846*176.512359619*-102.296287537*1.0"
+}

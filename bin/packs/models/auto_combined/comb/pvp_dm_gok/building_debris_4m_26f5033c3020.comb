@@ -1,0 +1,54 @@
+{
+    "firstguid": "4BD3B094.46F43678.B824E19C.59A8EAAF", 
+    "models": {
+        "4BD3B094.46F43678.B824E19C.59A8EAAF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "20f879abi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "22/07/2024", 
+                "description": "building_debris_4m", 
+                "modified by": "ice_c", 
+                "modified on": "22/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.39635896683*0.0*-0.806187987328*0.0|0.0*1.61237597466*0.0*0.0|0.806187987328*0.0*1.39635896683*0.0|48.5463485718*13.2089328766*57.1486549377*1.0", 
+            "path": "models/misc/garbage/building_debris/building_debris_4m.model"
+        }, 
+        "57C4FC50.4A494D7D.9A33F89E.A23316C5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "20f879abi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "yuri_parfilov", 
+                "created on": "15:51:26", 
+                "description": "building_debris_2m", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "15:51:26"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.61675798893*0.0*1.45299005508*0.0|0.0*1.57847094536*0.0*0.0|-1.45299005508*0.0*-0.61675798893*0.0|41.1815872192*13.2089347839*51.8990631104*1.0", 
+            "path": "models/misc/garbage/building_debris/building_debris_2m.model"
+        }, 
+        "9781752A.4573C8B7.3820988A.3689CCB0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "20f879abi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "yuri_parfilov", 
+                "created on": "15:51:26", 
+                "description": "building_debris_4m", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "15:51:26"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.56339895725*0.0*0.569029986858*0.0|0.0*1.6637339592*0.0*0.0|-0.569029986858*0.0*-1.56339895725*0.0|38.7971038818*13.2089319229*56.1083488464*1.0", 
+            "path": "models/misc/garbage/building_debris/building_debris_4m.model"
+        }
+    }, 
+    "spawn_transform": "1.39635896683*0.0*-0.806187987328*0.0|0.0*1.61237597466*0.0*0.0|0.806187987328*0.0*1.39635896683*0.0|48.5463485718*13.2089328766*57.1486549377*1.0"
+}

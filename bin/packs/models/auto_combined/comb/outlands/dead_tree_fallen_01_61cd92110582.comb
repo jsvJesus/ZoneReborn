@@ -1,0 +1,42 @@
+{
+    "firstguid": "1D3CF3AA.4C771DFC.1604A8BE.D01529B1", 
+    "models": {
+        "1D3CF3AA.4C771DFC.1604A8BE.D01529B1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "sergey_busygin", 
+                "created on": "15/02/2022", 
+                "description": "dead_tree_fallen_01", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15/02/2022"
+            }, 
+            "dyes": {
+                "old_tree": "default"
+            }, 
+            "matrix": "0.0633009970188*-0.687314987183*-0.72359597683*0.0|0.0599000006914*0.726360023022*-0.684700012207*0.0|0.996195018291*-9.99999997475e-07*0.0871500000358*0.0|-1410.31604004*3.30455207825*1539.64331055*1.0", 
+            "path": "models/flora/trees/dead_tree_fallen/dead_tree_fallen_01.model"
+        }, 
+        "D374EB85.4633C592.039D1680.A8653276": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fff1000fo@outlands@0x000002862CA9F180", 
+                "created by": "sergey_busygin", 
+                "created on": "15/02/2022", 
+                "description": "dead_tree_fallen_01", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "18/09/2024"
+            }, 
+            "dyes": {
+                "old_tree": "default"
+            }, 
+            "matrix": "0.970429003239*0.041425999254*0.237808004022*0.0|0.0*0.985163986683*-0.171614006162*0.0|-0.241389006376*0.166538998485*0.95603197813*0.0|-1390.03320312*7.38491821289*1531.73583984*1.0", 
+            "path": "models/flora/trees/dead_tree_fallen/dead_tree_fallen_01.model"
+        }
+    }, 
+    "spawn_transform": "0.0633009970188*-0.687314987183*-0.72359597683*0.0|0.0599000006914*0.726360023022*-0.684700012207*0.0|0.996195018291*-9.99999997475e-07*0.0871500000358*0.0|-1410.31604004*3.30455207825*1539.64331055*1.0"
+}

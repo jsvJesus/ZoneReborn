@@ -1,0 +1,45 @@
+{
+    "models": {
+        "452DFF8B.4065F00A.6082A295.EDB9CDA8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "a63d1f42i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "lamp03", 
+                "modified by": "ice_c", 
+                "modified on": "25/04/2024"
+            }, 
+            "dyes": {
+                "lamp_material": "default", 
+                "pasted__pasted__okna": "default"
+            }, 
+            "matrix": "-0.156874999404*1.39770698547*1.42181801796*0.0|0.216407001019*-1.40585696697*1.40588998795*0.0|1.9820189476*0.26412498951*-0.0409680008888*0.0|499.673339844*174.659835815*-126.568946838*1.0", 
+            "path": "models/misc/furniture/lamp03.model"
+        }, 
+        "5C1808CD.483779B2.8CB11796.0823C463": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "a63d1f42i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "lamp03", 
+                "modified by": "ice_c", 
+                "modified on": "25/04/2024"
+            }, 
+            "dyes": {
+                "lamp_material": "default", 
+                "pasted__pasted__okna": "default"
+            }, 
+            "matrix": "-0.156748995185*1.39691495895*1.42261195183*0.0|0.230155006051*-1.40479195118*1.40477204323*0.0|1.98048102856*0.273813009262*-0.0506570003927*0.0|502.889190674*175.210098267*-126.539093018*1.0", 
+            "path": "models/misc/furniture/lamp03.model"
+        }
+    }, 
+    "spawn_transform": "-0.156874999404*1.39770698547*1.42181801796*0.0|0.216407001019*-1.40585696697*1.40588998795*0.0|1.9820189476*0.26412498951*-0.0409680008888*0.0|499.673339844*174.659835815*-126.568946838*1.0"
+}

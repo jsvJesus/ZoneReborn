@@ -1,0 +1,42 @@
+{
+    "firstguid": "84B40AD4.47914A56.356524A1.46DF5E76", 
+    "models": {
+        "27ECAF14.487E1187.FAAE7D9D.81821D8F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "001x000x/sep/00120003o@outlands@0x000001649BEE0050", 
+                "created by": "sergey_busygin", 
+                "created on": "11/05/2021", 
+                "description": "tank_01", 
+                "modified by": "Stass", 
+                "modified on": "27/12/2021"
+            }, 
+            "dyes": {
+                "FuelTank": "default"
+            }, 
+            "matrix": "0.57411801815*-0.818771004677*0.0*0.0|0.817891001701*0.573500990868*0.0463699996471*0.0|-0.0379660017788*-0.0266219992191*0.998924016953*0.0|1814.04394531*-5.97680711746*350.924957275*1.0", 
+            "path": "models/props/industrial/tank_01/tank_01.model"
+        }, 
+        "84B40AD4.47914A56.356524A1.46DF5E76": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "001x000x/sep/00120003o@outlands@0x000001649BEE0050", 
+                "created by": "sergey_busygin", 
+                "created on": "11/05/2021", 
+                "description": "tank_01", 
+                "modified by": "Stass", 
+                "modified on": "27/12/2021"
+            }, 
+            "dyes": {
+                "FuelTank": "default"
+            }, 
+            "matrix": "0.465925991535*0.884823977947*0.0*0.0|-0.877912998199*0.462287008762*-0.124734997749*0.0|-0.110367998481*0.0581169985235*0.992190003395*0.0|1822.49853516*-5.60131788254*351.127441406*1.0", 
+            "path": "models/props/industrial/tank_01/tank_01.model"
+        }
+    }, 
+    "spawn_transform": "0.465925991535*0.884823977947*0.0*0.0|-0.877912998199*0.462287008762*-0.124734997749*0.0|-0.110367998481*0.0581169985235*0.992190003395*0.0|1822.49853516*-5.60131788254*351.127441406*1.0"
+}

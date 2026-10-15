@@ -1,0 +1,107 @@
+{
+    "models": {
+        "35C02548.4D83C97C.7666168B.81F7D91B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "07/03/2024", 
+                "description": "plates", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.5*0.0*0.866024017334*0.0|0.0*0.999997973442*0.0*0.0|-0.866024017334*0.0*0.5*0.0|282.963897705*214.806335449*-16.2586269379*1.0", 
+            "path": "models/misc/furniture/dom_vokzal/plates.model"
+        }, 
+        "5B792C2D.40007254.A4879ABC.235514CD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "07/03/2024", 
+                "description": "plates", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.499998003244*0.0*0.866020023823*0.0|0.0*0.731549978256*0.0*0.0|-0.866023004055*0.0*0.5*0.0|283.269348145*215.256347656*-16.2589378357*1.0", 
+            "path": "models/misc/furniture/dom_vokzal/plates.model"
+        }, 
+        "5F5D1AB4.4E235895.7AD480A9.1193748E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "07/03/2024", 
+                "description": "plates", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.5*0.0*0.866024017334*0.0|0.0*0.999997973442*0.0*0.0|-0.866024017334*0.0*0.5*0.0|283.312011719*214.806335449*-16.2153434753*1.0", 
+            "path": "models/misc/furniture/dom_vokzal/plates.model"
+        }, 
+        "642B1297.4F4947F2.6863F9A8.FFC66EFC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "plates", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.866024971008*0.0*-0.5*0.0|0.0*0.999998986721*0.0*0.0|0.5*0.0*0.866024971008*0.0|284.222381592*213.872375488*-21.2612285614*1.0", 
+            "path": "models/misc/furniture/dom_vokzal/plates.model"
+        }, 
+        "D5F96365.430484F5.E0A89B94.FF0B994A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "07/03/2024", 
+                "description": "plates", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.499998003244*0.0*0.866020023823*0.0|0.0*0.731549978256*0.0*0.0|-0.866023004055*0.0*0.5*0.0|282.066955566*215.255844116*-16.1915931702*1.0", 
+            "path": "models/misc/furniture/dom_vokzal/plates.model"
+        }, 
+        "FF746AD6.4B1F064D.9863A2B9.ADE292FE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "07/03/2024", 
+                "description": "plates", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.5*0.0*0.866024017334*0.0|0.0*0.999997973442*0.0*0.0|-0.866024017334*0.0*0.5*0.0|282.085876465*214.811279297*-16.1785335541*1.0", 
+            "path": "models/misc/furniture/dom_vokzal/plates.model"
+        }
+    }, 
+    "spawn_transform": "0.5*0.0*0.866024017334*0.0|0.0*0.999997973442*0.0*0.0|-0.866024017334*0.0*0.5*0.0|283.312011719*214.806335449*-16.2153434753*1.0"
+}

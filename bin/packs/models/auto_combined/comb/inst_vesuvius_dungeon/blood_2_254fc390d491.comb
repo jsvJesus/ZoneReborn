@@ -1,0 +1,37 @@
+{
+    "models": {
+        "29C12C8A.4098FCED.B7CCDFBF.DFE7E965": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "6203b0aei@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "blood_2", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.78912901878*0.0*0.513023972511*0.0|0.0*1.86123001575*0.0*0.0|-0.513023972511*0.0*1.78912901878*0.0|355.874725342*213.013519287*-43.1505126953*1.0", 
+            "path": "models/misc/blood/blood_2.model"
+        }, 
+        "3B330034.420A1734.AD44F4BE.FFB28D9F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "6203b0aei@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "blood_2", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.05497801304*0.0*-1.50666499138*0.0|0.0*1.83929800987*0.0*0.0|1.50666499138*0.0*-1.05497801304*0.0|348.885681152*213.021453857*-49.5997695923*1.0", 
+            "path": "models/misc/blood/blood_2.model"
+        }
+    }, 
+    "spawn_transform": "1.78912901878*0.0*0.513023972511*0.0|0.0*1.86123001575*0.0*0.0|-0.513023972511*0.0*1.78912901878*0.0|355.874725342*213.013519287*-43.1505126953*1.0"
+}

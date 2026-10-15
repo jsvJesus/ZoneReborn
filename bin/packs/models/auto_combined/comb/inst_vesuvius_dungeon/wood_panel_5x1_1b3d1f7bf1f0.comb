@@ -1,0 +1,73 @@
+{
+    "models": {
+        "260303DA.48B7D88F.0B26AAA5.4A88C715": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "14/03/2024", 
+                "description": "wood_panel_5x1", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999998986721*0.0*0.0*0.0|0.0*1.10151994228*0.0*0.0|0.0*0.0*0.999998986721*0.0|399.878387451*214.509185791*-91.6697616577*1.0", 
+            "path": "models/misc/furniture/library/wood_panel_5x1.model"
+        }, 
+        "926BB536.4D25BEF0.81A0E289.2C6D2244": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "14/03/2024", 
+                "description": "wood_panel_5x1", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997973442*0.0*0.0*0.0|0.0*1.10151994228*0.0*0.0|0.0*0.0*0.999997973442*0.0|405.906646729*214.509170532*-91.6697540283*1.0", 
+            "path": "models/misc/furniture/library/wood_panel_5x1.model"
+        }, 
+        "99DC1171.43B76C2F.D3DF92B4.DD36C9B5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "05/03/2024", 
+                "description": "wood_panel_5x1", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997973442*0.0*0.0*0.0|0.0*1.10151994228*0.0*0.0|0.0*0.0*0.999997973442*0.0|393.858062744*214.509140015*-91.6697540283*1.0", 
+            "path": "models/misc/furniture/library/wood_panel_5x1.model"
+        }, 
+        "E49FE85D.4D725BBE.B759AEBD.501D7FB4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "ce8bff8bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "14/03/2024", 
+                "description": "wood_panel_5x1", 
+                "modified by": "ice_c", 
+                "modified on": "25/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*1.06727600098*0.0|0.0*1.10151803493*-0.000406000006478*0.0|-0.999997019768*0.0*0.0*0.0|408.359741211*214.508972168*-88.7238464355*1.0", 
+            "path": "models/misc/furniture/library/wood_panel_5x1.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.000345000007655*1.06727600098*0.0|0.0*1.10151803493*-0.000406000006478*0.0|-0.999997019768*0.0*0.0*0.0|408.359741211*214.508972168*-88.7238464355*1.0"
+}

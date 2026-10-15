@@ -1,0 +1,53 @@
+{
+    "models": {
+        "1A2DB6DD.4ABE198C.2CD99F82.5162B832": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x000001EE328F85B0", 
+                "created by": "sergey_busygin", 
+                "created on": "20:53:33", 
+                "description": "cardboard_box", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20:53:33"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.765649020672*0.057987999171*0.357562988997*0.0|0.0851960033178*0.841463983059*0.0459670014679*0.0|-0.352073013783*0.0775159969926*-0.766465008259*0.0|156.186340332*201.507797241*-50.240852356*1.0", 
+            "path": "models/entities/cardboard_box/cardboard_box.model"
+        }, 
+        "7670139C.4F22B8FE.E8A72D85.5993F522": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x000001EE328F85B0", 
+                "created by": "sergey_busygin", 
+                "created on": "20:53:33", 
+                "description": "cardboard_box", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20:53:33"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.479330003262*0.00738199986517*0.698297977448*0.0|0.0986360013485*0.839191019535*0.0588349997997*0.0|-0.691335976124*0.114612996578*-0.475762993097*0.0|154.637283325*202.354522705*-51.2449989319*1.0", 
+            "path": "models/entities/cardboard_box/cardboard_box.model"
+        }, 
+        "C53C8031.47690A0F.E721408C.0480CD3E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x000001EE328F85B0", 
+                "created by": "sergey_busygin", 
+                "created on": "20:53:33", 
+                "description": "cardboard_box", 
+                "modified by": "sergey_busygin", 
+                "modified on": "20:53:33"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.759113013744*0.0632579997182*0.370375990868*0.0|0.0986360013485*0.839191019535*0.0588340014219*0.0|-0.362560987473*0.0958589985967*-0.759468972683*0.0|154.745834351*201.740921021*-51.2954063416*1.0", 
+            "path": "models/entities/cardboard_box/cardboard_box.model"
+        }
+    }, 
+    "spawn_transform": "-0.759113013744*0.0632579997182*0.370375990868*0.0|0.0986360013485*0.839191019535*0.0588340014219*0.0|-0.362560987473*0.0958589985967*-0.759468972683*0.0|154.745834351*201.740921021*-51.2954063416*1.0"
+}

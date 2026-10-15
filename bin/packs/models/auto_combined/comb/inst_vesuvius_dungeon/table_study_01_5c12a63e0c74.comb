@@ -1,0 +1,56 @@
+{
+    "models": {
+        "675022D2.445583F2.12B8B99C.5A8B7A3F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "19/02/2024", 
+                "description": "table_study_01", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:07:22"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0465800017118*-9.99999997475e-07*-0.998912990093*0.0|9.99999997475e-07*0.999997973442*-9.99999997475e-07*0.0|0.998912990093*-9.99999997475e-07*0.0465800017118*0.0|194.464202881*206.999832153*-83.9022521973*1.0", 
+            "path": "models/misc/furniture/table_study_01.model"
+        }, 
+        "CE4146C1.4FCEBD60.EA18B58C.87028FEC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "19/02/2024", 
+                "description": "table_study_01", 
+                "modified by": "sergey_busygin", 
+                "modified on": "15:07:22"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0149480002001*-0.999849975109*-0.00863000005484*0.0|-0.865894973278*0.0172600001097*-0.499924987555*0.0|0.499998986721*0.0*-0.866024017334*0.0|190.615234375*207.115646362*-88.2655792236*1.0", 
+            "path": "models/misc/furniture/table_study_01.model"
+        }, 
+        "DB0257C2.4B4EF0A8.8B23C58C.61CCF050": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "19/02/2024", 
+                "description": "table_study_01", 
+                "modified by": "sergey_busygin", 
+                "modified on": "21/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0491049997509*0.0*-0.998793005943*0.0|0.0*0.999998986721*0.0*0.0|0.998793005943*0.0*-0.0491049997509*0.0|192.82611084*206.999664307*-83.845489502*1.0", 
+            "path": "models/misc/furniture/table_study_01.model"
+        }
+    }, 
+    "spawn_transform": "-0.0149480002001*-0.999849975109*-0.00863000005484*0.0|-0.865894973278*0.0172600001097*-0.499924987555*0.0|0.499998986721*0.0*-0.866024017334*0.0|190.615234375*207.115646362*-88.2655792236*1.0"
+}

@@ -1,0 +1,54 @@
+{
+    "firstguid": "39DC1D55.45ED0DF6.54887D91.046A6543", 
+    "models": {
+        "39DC1D55.45ED0DF6.54887D91.046A6543": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "9ca2443bi@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "sergey_busygin", 
+                "created on": "19/05/2023", 
+                "description": "moss", 
+                "modified by": "sergey_busygin", 
+                "modified on": "19/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.14568400383*-0.289382010698*0.0*0.0|0.0*0.0*0.323983997107*0.0|-0.289382010698*0.14568400383*0.0*0.0|7.11754369736*14.3834438324*73.9999771118*1.0", 
+            "path": "models/props/roads/moss.model"
+        }, 
+        "7EB60D7A.4CB4F3B9.00D04A90.29A91E6A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "9ca2443bi@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "sergey_busygin", 
+                "created on": "19/05/2023", 
+                "description": "moss", 
+                "modified by": "sergey_busygin", 
+                "modified on": "19/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.99999999495e-06*-0.145685002208*-0.289380997419*0.0|0.323983997107*9.99999997475e-07*1.99999999495e-06*0.0|0.0*-0.289380997419*0.145685002208*0.0|6.49999380112*14.5891246796*74.8555526733*1.0", 
+            "path": "models/props/roads/moss.model"
+        }, 
+        "A9EB1123.44A01FBA.3A855FA7.29F7DCAB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "9ca2443bi@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "sergey_busygin", 
+                "created on": "19/05/2023", 
+                "description": "moss", 
+                "modified by": "sergey_busygin", 
+                "modified on": "19/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.14568400383*0.0*-0.289382010698*0.0|0.0*-0.323983997107*0.0*0.0|-0.289382010698*0.0*0.14568400383*0.0|7.31868267059*14.9999961853*74.6585388184*1.0", 
+            "path": "models/props/roads/moss.model"
+        }
+    }, 
+    "spawn_transform": "-0.14568400383*-0.289382010698*0.0*0.0|0.0*0.0*0.323983997107*0.0|-0.289382010698*0.14568400383*0.0*0.0|7.11754369736*14.3834438324*73.9999771118*1.0"
+}

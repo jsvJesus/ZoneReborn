@@ -1,0 +1,57 @@
+{
+    "firstguid": "691E284A.4EB14BFA.CD7014AA.0837B872", 
+    "models": {
+        "57520CC6.4D204351.80313FB0.56751D07": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "4f24f4f3i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "25/06/2020", 
+                "description": "concrete_stairs_1m", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.97111606598*0.0*-1.99999999495e-06*0.0|0.0*2.23044800758*0.0*0.0|0.0*0.0*-2.35531497002*0.0|87.9977493286*3.54844522476*56.9377937317*1.0", 
+            "path": "models/city/props/war_cemetery/concrete_stairs_1m.model"
+        }, 
+        "691E284A.4EB14BFA.CD7014AA.0837B872": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "4f24f4f3i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "25/06/2020", 
+                "description": "concrete_stairs_1m", 
+                "modified by": "evgenij-neznanov", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.971118927*0.0*-1.99999999495e-06*0.0|0.0*2.23045110703*0.0*0.0|0.0*0.0*-2.23046398163*0.0|87.9977798462*3.00163698196*58.0211143494*1.0", 
+            "path": "models/city/props/war_cemetery/concrete_stairs_1m.model"
+        }, 
+        "864E8F99.453A7AC3.BEC6B4B8.793BEC9C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "4f24f4f3i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "25/06/2020", 
+                "description": "concrete_stairs_1m", 
+                "modified by": "evgenij-neznanov", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-3.97110795975*0.0*-1.99999999495e-06*0.0|0.0*2.23043990135*0.0*0.0|0.0*0.0*-2.23045301437*0.0|87.9976959229*4.27823400497*55.4956092834*1.0", 
+            "path": "models/city/props/war_cemetery/concrete_stairs_1m.model"
+        }
+    }, 
+    "spawn_transform": "-3.971118927*0.0*-1.99999999495e-06*0.0|0.0*2.23045110703*0.0*0.0|0.0*0.0*-2.23046398163*0.0|87.9977798462*3.00163698196*58.0211143494*1.0"
+}

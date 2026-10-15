@@ -1,0 +1,77 @@
+{
+    "models": {
+        "2D932D62.4EB5B33B.C086999B.AF0DDFD5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "mushrooms_2_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.21805298328*0.0425329990685*0.277974009514*0.0|0.0*-1.23571097851*0.189079001546*0.0|0.281208992004*0.184232994914*1.20404005051*0.0|532.22845459*183.040298462*-71.5090942383*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_2/mushrooms_2_lod1.model"
+        }, 
+        "628CF9FB.40E171F1.081AF5BD.45DFF627": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "mushrooms_2_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.764365017414*-0.491106987*-0.240979999304*0.0|0.484582990408*0.79999101162*-0.0932969972491*0.0|0.253843009472*-0.0483659990132*0.903734982014*0.0|529.755737305*178.020797729*-71.2898101807*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_2/mushrooms_2_lod1.model"
+        }, 
+        "719033BF.4D51D7DB.54ABA8AB.CBEC7FF9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "mushrooms_2_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.532414019108*-0.856068015099*0.674237012863*0.0|1.06873500347*-0.556707978249*0.137088000774*0.0|0.212725996971*0.654321014881*0.998760998249*0.0|530.177490234*182.191238403*-71.718963623*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_2/mushrooms_2_lod1.model"
+        }, 
+        "EF24A1F6.4FA8521E.E50E0AA4.C6154A39": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "cd229462i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "24/04/2024", 
+                "description": "mushrooms_2_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.11137604713*-0.498145014048*0.138545006514*0.0|-0.516178011894*1.0880190134*-0.228636994958*0.0|-0.0300590004772*-0.265643000603*-1.19625604153*0.0|538.65435791*178.490631104*-64.9318847656*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_2/mushrooms_2_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-1.21805298328*0.0425329990685*0.277974009514*0.0|0.0*-1.23571097851*0.189079001546*0.0|0.281208992004*0.184232994914*1.20404005051*0.0|532.22845459*183.040298462*-71.5090942383*1.0"
+}

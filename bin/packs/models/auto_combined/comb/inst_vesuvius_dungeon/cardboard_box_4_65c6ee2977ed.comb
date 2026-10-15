@@ -1,0 +1,56 @@
+{
+    "models": {
+        "70FF4756.406A6B13.58F17BA1.D3BDD33F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "1d97c450i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "cardboard_box_4", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.698273003101*-4.99999987369e-06*-0.278373986483*0.0|-4.99999987369e-06*0.751717984676*-9.99999997475e-07*0.0|0.278373986483*9.99999997475e-07*-0.698273003101*0.0|254.489303589*201.499847412*-17.299238205*1.0", 
+            "path": "models/entities/cardboard_box/cardboard_box_4.model"
+        }, 
+        "D1EAE080.435DA854.0953A799.D759B866": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "1d97c450i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "cardboard_box_4", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.278373986483*-4.99999987369e-06*0.698273003101*0.0|-9.99999997475e-07*0.751717984676*4.99999987369e-06*0.0|-0.698273003101*9.99999997475e-07*-0.278373986483*0.0|258.731384277*201.499847412*-25.935382843*1.0", 
+            "path": "models/entities/cardboard_box/cardboard_box_4.model"
+        }, 
+        "E762CCEE.48EA26EF.EABA75A8.0924FBDF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "1d97c450i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "cardboard_box_4", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.690594017506*-4.99999987369e-06*0.29691401124*0.0|-3.9999999899e-06*0.751717984676*3.00000010611e-06*0.0|-0.29691401124*9.99999997475e-07*-0.690594017506*0.0|252.701629639*201.499893188*-21.4320678711*1.0", 
+            "path": "models/entities/cardboard_box/cardboard_box_4.model"
+        }
+    }, 
+    "spawn_transform": "-0.698273003101*-4.99999987369e-06*-0.278373986483*0.0|-4.99999987369e-06*0.751717984676*-9.99999997475e-07*0.0|0.278373986483*9.99999997475e-07*-0.698273003101*0.0|254.489303589*201.499847412*-17.299238205*1.0"
+}

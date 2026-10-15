@@ -1,0 +1,396 @@
+{
+    "models": {
+        "01392504.45926B64.0701A38C.202DDB40": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0234420001507*-0.999616026878*0.0146759999916*0.0|-0.847718000412*0.0276580005884*0.529722988605*0.0|-0.529926002026*-2.30000005104e-05*-0.848040997982*0.0|298.268096924*213.19909668*-23.5443515778*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "16E0E209.4948A00B.89F1B293.70033C51": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.996194005013*0.0*-0.0871559977531*0.0|0.0*0.999998986721*0.0*0.0|0.0871559977531*0.0*0.996194005013*0.0|300.369598389*212.999740601*-19.7896461487*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "51ABE7AE.4F312F22.C6D4EEBF.91386A81": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.173647999763*0.0*0.984807014465*0.0|0.0*0.999998986721*0.0*0.0|-0.984807014465*0.0*-0.173647999763*0.0|306.162384033*212.999755859*-22.2068023682*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "5263FF4B.41BEED0E.57DDD39B.8508272E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.819171011448*0.000163999997312*0.573548018932*0.0|0.573502004147*0.012853000313*0.819101989269*0.0|-0.00723800016567*0.99991697073*-0.0106229996309*0.0|298.424346924*213.245071411*-16.9975757599*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "5E10FC8C.4DB60F08.F3A9BC82.6AC67D0E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.990266978741*0.0*-0.139173001051*0.0|0.0*0.999998986721*0.0*0.0|0.139173001051*0.0*0.990266978741*0.0|296.390258789*212.999740601*-17.2297496796*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "5FA36979.440E55E8.6E6A3F9A.F16C70DB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.390731006861*0.0*0.920503973961*0.0|0.0*1.0*0.0*0.0|-0.920503973961*0.0*0.390731006861*0.0|306.644012451*212.999786377*-24.0404434204*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "6281CD93.46C7ECC2.28AA289A.45A2BA48": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999998986721*0.0*0.0*0.0|0.0*0.999998986721*0.0*0.0|0.0*0.0*-0.999998986721*0.0|299.627166748*212.999740601*-22.4653091431*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "6C10320C.439FC618.665AAE8C.3FC93493": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.978146970272*0.0*-0.207910999656*0.0|0.0*1.0*0.0*0.0|0.207910999656*0.0*-0.978146970272*0.0|294.914550781*212.999771118*-20.4966888428*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "807E5025.437B290F.F274309B.682FEF83": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.766019999981*0.000167999998666*-0.642813026905*0.0|-0.640935003757*-0.0765750035644*0.763761997223*0.0|-0.0490950010717*0.997062027454*0.058765001595*0.0|299.075317383*213.404403687*-24.9048728943*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "82121B29.41C60095.86D157BF.DD93B664": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.121868997812*0.0*0.992546021938*0.0|0.0*1.0*0.0*0.0|-0.992546021938*0.0*0.121868997812*0.0|306.835601807*212.999801636*-22.1884994507*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "8277317D.4C1462B8.10098A9E.A9A21458": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.978146970272*0.0*-0.207910999656*0.0|0.0*0.999998986721*0.0*0.0|0.207910999656*0.0*0.978146970272*0.0|297.304168701*212.999740601*-19.150598526*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "8743C2A6.459CD932.92199CB2.87422CF8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.997563004494*0.0*0.0697569996119*0.0|0.0*0.999998986721*0.0*0.0|-0.0697569996119*0.0*0.997563004494*0.0|296.31741333*212.999725342*-16.492433548*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "88903199.453E5071.4F25BF96.38C7463E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.891005992889*0.0*-0.453990012407*0.0|0.0*1.0*0.0*0.0|0.453990012407*0.0*0.891005992889*0.0|300.1456604*212.999816895*-17.1604309082*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "8FE4B023.4AC68647.C9379789.600D8DA6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.994521021843*0.0*0.104528002441*0.0|0.0*0.999998986721*0.0*0.0|-0.104528002441*0.0*0.994521021843*0.0|297.562469482*212.999725342*-19.8373832703*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "97B9076E.4DB65282.1130FF8D.8B03771F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.990266978741*0.0*0.139173001051*0.0|0.0*0.999998986721*0.0*0.0|-0.139173001051*0.0*-0.990266978741*0.0|299.375396729*212.999710083*-19.7819023132*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "B4A02804.459C3BD8.C46E6BBC.8C50774E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.933579981327*0.0*-0.358368009329*0.0|0.0*1.0*0.0*0.0|0.358368009329*0.0*-0.933579981327*0.0|299.348602295*212.999771118*-21.5187683105*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "C9476CF8.4CC2F716.D0DEF596.B7AF4A2C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.956304013729*0.0*0.292371988297*0.0|0.0*1.0*0.0*0.0|-0.292371988297*0.0*-0.956304013729*0.0|294.785858154*212.999771118*-25.760848999*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "D34A0B16.4D2861C9.948D7891.79DD143A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999846994877*0.0*-0.017451999709*0.0|0.0*1.0*0.0*0.0|0.017451999709*0.0*-0.999846994877*0.0|295.38659668*212.999816895*-16.4266548157*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "E7C7E989.40D49A09.C236A8B2.2E810167": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.994520008564*0.0*-0.104529000819*0.0|0.0*0.999997973442*0.0*0.0|0.104529000819*0.0*0.994520008564*0.0|302.796905518*212.999572754*-22.8057060242*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "E8ECBF43.4631C3B5.A39F9F8C.8CF3B437": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "07/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.998628020287*0.0*-0.0523359999061*0.0|0.0*0.999998986721*0.0*0.0|0.0523359999061*0.0*-0.998628020287*0.0|295.102416992*212.999664307*-22.2002487183*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "ED847819.42DF0A29.CD1295AC.58F6A9EF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0234420001507*-0.999616026878*0.0146759999916*0.0|-0.847718000412*0.0276580005884*0.529722988605*0.0|-0.529927015305*-2.30000005104e-05*-0.848040997982*0.0|302.341125488*213.196304321*-16.9333667755*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "F7F3D8DB.4ABBD024.E2E64AB0.7B0E84A9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.994521021843*0.0*0.104528002441*0.0|0.0*0.999998986721*0.0*0.0|-0.104528002441*0.0*-0.994521021843*0.0|297.392089844*212.999633789*-17.1218528748*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }, 
+        "FA7940AB.463A6428.0A739A8E.45A7D884": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "40512ec5i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "27/02/2024", 
+                "description": "kitchen_chair", 
+                "modified by": "ice_c", 
+                "modified on": "27/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999846994877*0.0*0.017451999709*0.0|0.0*0.999998986721*0.0*0.0|-0.017451999709*0.0*-0.999846994877*0.0|299.433502197*212.999633789*-20.4942836761*1.0", 
+            "path": "models/misc/furniture/kitchen/kitchen_chair.model"
+        }
+    }, 
+    "spawn_transform": "-0.999846994877*0.0*-0.017451999709*0.0|0.0*1.0*0.0*0.0|0.017451999709*0.0*-0.999846994877*0.0|295.38659668*212.999816895*-16.4266548157*1.0"
+}

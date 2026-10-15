@@ -1,0 +1,45 @@
+{
+    "models": {
+        "75836F7D.4069A2D6.099C94BF.DF372F99": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "c27a325bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "28/02/2024", 
+                "description": "mushrooms_1_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {
+                "mushrooms_1": "default"
+            }, 
+            "matrix": "1.23979401588*0.0*0.744943022728*0.0|0.0*1.44638502598*0.0*0.0|-0.744943022728*0.0*1.23979401588*0.0|259.287261963*212.999862671*-45.3849754333*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_1_lod1.model"
+        }, 
+        "ABDE9D96.46D4A6CD.59856F8F.6A06F5A2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "casts shadow": true, 
+                "chunk": "c27a325bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "28/02/2024", 
+                "description": "mushrooms_1_lod1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {
+                "mushrooms_1": "default"
+            }, 
+            "matrix": "-1.40251994133*0.0*0.19711099565*0.0|0.0*1.4163030386*0.0*0.0|-0.19711099565*0.0*-1.40251994133*0.0|249.255065918*212.999862671*-48.3974685669*1.0", 
+            "path": "models/flora/mushrooms/mushrooms_1_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-1.40251994133*0.0*0.19711099565*0.0|0.0*1.4163030386*0.0*0.0|-0.19711099565*0.0*-1.40251994133*0.0|249.255065918*212.999862671*-48.3974685669*1.0"
+}

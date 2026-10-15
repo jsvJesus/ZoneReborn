@@ -1,0 +1,38 @@
+{
+    "firstguid": "104DB545.4921D10D.06D320BC.473B3143", 
+    "models": {
+        "104DB545.4921D10D.06D320BC.473B3143": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "49c0d282i@black_forest@0x0000029BE0286D20", 
+                "created by": "yuri_parfilov", 
+                "created on": "17/11/2025", 
+                "description": "shovel", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0678677707911*0.0031520712655*0.997689545155*0.0|-0.117952257395*0.993006408215*0.00488582672551*0.0|-0.990697860718*-0.118011578918*0.0677649304271*0.0|-1423.30200195*0.855023980141*592.00769043*1.0", 
+            "path": "models/misc/stuffs/willage_stuff/shovel/shovel.model"
+        }, 
+        "BA7BF7B7.4E60823E.8CA3D7A9.6F16BDF1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "49c0d282i@black_forest@0x0000029BE0286D20", 
+                "created by": "yuri_parfilov", 
+                "created on": "17/11/2025", 
+                "description": "shovel", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999998807907*-0.00153227325063*1.39325857162e-06*0.0|0.0015283790417*0.997331917286*0.0729834660888*0.0|-0.000113606452942*-0.0729830265045*0.997333109379*0.0|-1423.45251465*0.85528588295*592.322570801*1.0", 
+            "path": "models/misc/stuffs/willage_stuff/shovel/shovel.model"
+        }
+    }, 
+    "spawn_transform": "0.0678677707911*0.0031520712655*0.997689545155*0.0|-0.117952257395*0.993006408215*0.00488582672551*0.0|-0.990697860718*-0.118011578918*0.0677649304271*0.0|-1423.30200195*0.855023980141*592.00769043*1.0"
+}

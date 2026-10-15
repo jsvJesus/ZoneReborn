@@ -1,0 +1,39 @@
+{
+    "models": {
+        "1C345F0C.4E757E00.CAD5A49E.7E1A80DE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "bottle_big", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.207911998034*0.0*-0.978146970272*0.0|0.0*1.0*0.0*0.0|0.978146970272*0.0*0.207911998034*0.0|409.625976562*170.499755859*-112.7237854*1.0", 
+            "path": "models/misc/furniture/village/bottle_big.model"
+        }, 
+        "B48D5CE5.4CB4E685.8AF860AC.3899B59E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "bottle_big", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.104529000819*0.0*-0.994521975517*0.0|0.0*1.0*0.0*0.0|0.994521975517*0.0*-0.104529000819*0.0|410.447174072*170.499740601*-110.426208496*1.0", 
+            "path": "models/misc/furniture/village/bottle_big.model"
+        }
+    }, 
+    "spawn_transform": "-0.104529000819*0.0*-0.994521975517*0.0|0.0*1.0*0.0*0.0|0.994521975517*0.0*-0.104529000819*0.0|410.447174072*170.499740601*-110.426208496*1.0"
+}

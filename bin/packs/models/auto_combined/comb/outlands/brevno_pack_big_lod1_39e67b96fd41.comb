@@ -1,0 +1,44 @@
+{
+    "firstguid": "EBDB1541.03424417.8B92E464.B9D87BCB", 
+    "models": {
+        "9E95D0FA.8AC9407D.9045D4E7.3C762293": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "casts shadow": true, 
+                "chunk": "ffff000fo@outlands@0x000002862CA9F180", 
+                "created by": "anton_zyryanov", 
+                "created on": "04/03/2016", 
+                "description": "brevno_pack_big_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "04/03/2016"
+            }, 
+            "dyes": {
+                "doski": "doski"
+            }, 
+            "matrix": "-0.00523199979216*0.0406109988689*-0.999162018299*0.0|0.0888210013509*0.995244979858*0.0399870015681*0.0|0.996034026146*-0.0885370001197*-0.0088149998337*0.0|-47.6046142578*9.68377399445*1577.49047852*1.0", 
+            "path": "models/props/villageobjects/brevno_pack_big_lod1.model"
+        }, 
+        "EBDB1541.03424417.8B92E464.B9D87BCB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "casts shadow": true, 
+                "chunk": "ffff000fo@outlands@0x000002862CA9F180", 
+                "created by": "anton_zyryanov", 
+                "created on": "04/03/2016", 
+                "description": "brevno_pack_big_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "04/03/2016"
+            }, 
+            "dyes": {
+                "doski": "doski"
+            }, 
+            "matrix": "-0.00730499997735*0.0399029999971*-0.999176979065*0.0|0.0378400012851*0.998498976231*0.0395999997854*0.0|0.999257981777*-0.0375190004706*-0.00880399998277*0.0|-47.3745918274*10.1611766815*1562.97143555*1.0", 
+            "path": "models/props/villageobjects/brevno_pack_big_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-0.00730499997735*0.0399029999971*-0.999176979065*0.0|0.0378400012851*0.998498976231*0.0395999997854*0.0|0.999257981777*-0.0375190004706*-0.00880399998277*0.0|-47.3745918274*10.1611766815*1562.97143555*1.0"
+}

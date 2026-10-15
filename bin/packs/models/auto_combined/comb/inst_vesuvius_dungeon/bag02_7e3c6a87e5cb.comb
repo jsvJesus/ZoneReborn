@@ -1,0 +1,56 @@
+{
+    "models": {
+        "08CC4A8F.46BE65D5.BFEE17A8.44D66EA3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "bag02", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.21067798138*2.20000001718e-05*0.213479995728*0.0|-0.0590550005436*1.18141496181*0.334791988134*0.0|-0.205148994923*-0.339960992336*1.1634670496*0.0|425.731018066*176.499664307*-109.530387878*1.0", 
+            "path": "models/misc/furniture/village/bag02.model"
+        }, 
+        "9087EB4F.4E39A32D.1208D2AB.8A59BFDB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "bag02", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.722598016262*0.0*-0.994570016861*0.0|0.0*1.22935605049*0.0*0.0|0.994570016861*0.0*-0.722598016262*0.0|426.017242432*176.499664307*-108.858085632*1.0", 
+            "path": "models/misc/furniture/village/bag02.model"
+        }, 
+        "F464E86C.45BB7ADC.5968A0A1.09398326": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "bag02", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.941734015942*-1.80000006367e-05*-0.790220975876*0.0|-0.219797000289*1.18084895611*0.261911988258*0.0|0.759037971497*0.341919004917*-0.904579997063*0.0|426.734741211*176.539871216*-109.020446777*1.0", 
+            "path": "models/misc/furniture/village/bag02.model"
+        }
+    }, 
+    "spawn_transform": "1.21067798138*2.20000001718e-05*0.213479995728*0.0|-0.0590550005436*1.18141496181*0.334791988134*0.0|-0.205148994923*-0.339960992336*1.1634670496*0.0|425.731018066*176.499664307*-109.530387878*1.0"
+}

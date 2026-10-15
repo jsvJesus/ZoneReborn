@@ -1,0 +1,96 @@
+{
+    "firstguid": "13A04B02.4B3B23DB.4F4A0EB0.E2D4F21C", 
+    "models": {
+        "13A04B02.4B3B23DB.4F4A0EB0.E2D4F21C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fffcfffbo@outlands@0x000001A827A91FE0", 
+                "created by": "sergey_busygin", 
+                "created on": "17/03/2020", 
+                "description": "cliff_1", 
+                "modified by": "ice_c", 
+                "modified on": "06/09/2022"
+            }, 
+            "dyes": {
+                "cliff": "default"
+            }, 
+            "matrix": "0.415062993765*-0.389845997095*-0.822039008141*0.0|0.268729001284*-0.81070202589*0.520155012608*0.0|-1.32309794426*-0.664897978306*-0.35273501277*0.0|-351.885803223*11.625831604*-450.750671387*1.0", 
+            "path": "models/flora/stones/cliff/cliff_1.model"
+        }, 
+        "66954CE0.4D85D680.4EC87A85.352C0394": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fffcfffbo@outlands@0x000001A827A91FE0", 
+                "created by": "sergey_busygin", 
+                "created on": "17/03/2020", 
+                "description": "cliff_1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17/03/2020"
+            }, 
+            "dyes": {
+                "cliff": "default"
+            }, 
+            "matrix": "-0.196833997965*-0.114437997341*0.973734974861*0.0|-0.686293005943*0.72535598278*-0.0534829981625*0.0|-0.700183987617*-0.678794980049*-0.221312999725*0.0|-338.301605225*-2.08232593536*-466.939208984*1.0", 
+            "path": "models/flora/stones/cliff/cliff_1.model"
+        }, 
+        "CADC2AB1.4C4EEA87.873AFA84.9C1F33C9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fffcfffbo@outlands@0x000001A827A91FE0", 
+                "created by": "sergey_busygin", 
+                "created on": "17/03/2020", 
+                "description": "cliff_1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18/03/2020"
+            }, 
+            "dyes": {
+                "cliff": "default"
+            }, 
+            "matrix": "-0.48567700386*0.189485996962*0.853353977203*0.0|-0.546509027481*0.696088016033*-0.465604990721*0.0|-0.682236015797*-0.692498981953*-0.234518006444*0.0|-343.480194092*-0.952701985836*-438.514892578*1.0", 
+            "path": "models/flora/stones/cliff/cliff_1.model"
+        }, 
+        "D81167D6.4DF4C0B0.856D3E92.D7616467": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fffcfffbo@outlands@0x000001A827A91FE0", 
+                "created by": "sergey_busygin", 
+                "created on": "17/03/2020", 
+                "description": "cliff_1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18/03/2020"
+            }, 
+            "dyes": {
+                "cliff": "default"
+            }, 
+            "matrix": "-0.231156006455*0.170477002859*0.957863986492*0.0|-0.430462986231*0.865000009537*-0.257831007242*0.0|-0.872506022453*-0.471924990416*-0.126567006111*0.0|-349.946136475*8.40229225159*-452.736694336*1.0", 
+            "path": "models/flora/stones/cliff/cliff_1.model"
+        }, 
+        "FC669714.452B9471.0CA161BE.4700AD69": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "fffcfffbo@outlands@0x000001A827A91FE0", 
+                "created by": "sergey_busygin", 
+                "created on": "17/03/2020", 
+                "description": "cliff_1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18/03/2020"
+            }, 
+            "dyes": {
+                "cliff": "default"
+            }, 
+            "matrix": "-0.195550993085*0.0399830006063*0.979876995087*0.0|-0.220053002238*0.971899986267*-0.0835729986429*0.0|-0.955685019493*-0.231968000531*-0.181259006262*0.0|-355.533660889*16.2108039856*-453.83190918*1.0", 
+            "path": "models/flora/stones/cliff/cliff_1.model"
+        }
+    }, 
+    "spawn_transform": "0.415062993765*-0.389845997095*-0.822039008141*0.0|0.268729001284*-0.81070202589*0.520155012608*0.0|-1.32309794426*-0.664897978306*-0.35273501277*0.0|-351.885803223*11.625831604*-450.750671387*1.0"
+}

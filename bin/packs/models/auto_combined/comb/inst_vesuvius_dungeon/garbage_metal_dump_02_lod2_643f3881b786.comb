@@ -1,0 +1,40 @@
+{
+    "models": {
+        "4F26723F.446B8EA0.D594919F.B0C24C37": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "03/06/2024", 
+                "description": "garbage_metal_dump_02_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.406735986471*0.0*0.913545012474*0.0|0.0*0.999998986721*0.0*0.0|-0.913545012474*0.0*0.406735986471*0.0|323.745422363*176.605514526*-125.079040527*1.0", 
+            "path": "models/misc/garbage/metal_scrap/garbage_metal_dump/garbage_metal_dump_02_lod2.model"
+        }, 
+        "A4DE05EE.447B4838.32A71799.0014A655": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "aa13a128i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "31/05/2024", 
+                "description": "garbage_metal_dump_02_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "04/06/2024", 
+                "reflection visible": true
+            }, 
+            "dyes": {}, 
+            "matrix": "0.987598001957*0.0916140004992*0.127496004105*0.0|-0.0745920017362*0.98838198185*-0.132421001792*0.0|-0.13814599812*0.121269002557*0.982958972454*0.0|334.240692139*179.258361816*-118.314476013*1.0", 
+            "path": "models/misc/garbage/metal_scrap/garbage_metal_dump/garbage_metal_dump_02_lod2.model"
+        }
+    }, 
+    "spawn_transform": "0.406735986471*0.0*0.913545012474*0.0|0.0*0.999998986721*0.0*0.0|-0.913545012474*0.0*0.406735986471*0.0|323.745422363*176.605514526*-125.079040527*1.0"
+}

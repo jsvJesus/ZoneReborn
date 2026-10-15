@@ -1,0 +1,39 @@
+{
+    "models": {
+        "63E034BA.40DDD426.3C9FD8A3.1AD83416": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0b53aa98i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "ventilation_4m", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.976405024529*0.215829998255*-9.99999997475e-07*0.0|-0.215829998255*0.976405024529*9.99999997475e-07*0.0|9.99999997475e-07*-9.99999997475e-07*0.999974012375*0.0|245.177825928*179.009017944*-118.517723083*1.0", 
+            "path": "models/props/ventilation/ventilation_4m.model"
+        }, 
+        "A1E768E5.47C34EA7.AF7BB99E.6A2ADB8D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0b53aa98i@inst_vesuvius_dungeon@0x0000014DE6A95200", 
+                "created by": "ice_c", 
+                "created on": "04/06/2024", 
+                "description": "ventilation_4m", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.976405024529*0.215829998255*-9.99999997475e-07*0.0|-0.215829998255*0.976405024529*9.99999997475e-07*0.0|9.99999997475e-07*-9.99999997475e-07*0.999974012375*0.0|241.275039673*178.146316528*-118.517715454*1.0", 
+            "path": "models/props/ventilation/ventilation_4m.model"
+        }
+    }, 
+    "spawn_transform": "0.976405024529*0.215829998255*-9.99999997475e-07*0.0|-0.215829998255*0.976405024529*9.99999997475e-07*0.0|9.99999997475e-07*-9.99999997475e-07*0.999974012375*0.0|245.177825928*179.009017944*-118.517723083*1.0"
+}

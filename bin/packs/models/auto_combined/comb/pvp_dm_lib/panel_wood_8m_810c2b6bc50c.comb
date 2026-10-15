@@ -1,0 +1,38 @@
+{
+    "firstguid": "7D250D38.4EC336E7.886FA69B.1F032ECB", 
+    "models": {
+        "7D250D38.4EC336E7.886FA69B.1F032ECB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/07/2025", 
+                "description": "panel_wood_8m", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-1.2528270483*0.0|1.17368495464*0.0*0.0*0.0|0.0*-1.04312098026*0.0*0.0|28.4999885559*4.49540424347*38.5044822693*1.0", 
+            "path": "models/buildings/unique/library/panel_wood_8m.model"
+        }, 
+        "ECB781D1.4E742D90.E34479AF.2462993C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "anton_zyryanov", 
+                "created on": "28/07/2025", 
+                "description": "panel_wood_8m", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-1.13099694252*0.0|1.17368495464*0.0*0.0*0.0|0.0*-1.04312098026*0.0*0.0|28.4999885559*4.51264095306*53.9851303101*1.0", 
+            "path": "models/buildings/unique/library/panel_wood_8m.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-1.2528270483*0.0|1.17368495464*0.0*0.0*0.0|0.0*-1.04312098026*0.0*0.0|28.4999885559*4.49540424347*38.5044822693*1.0"
+}

@@ -1,0 +1,43 @@
+{
+    "models": {
+        "4DFA474C.4E692ADF.F9A52F88.9C17722D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "evgeny_yashkin", 
+                "created on": "20/09/2023", 
+                "description": "red_container_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "08/02/2024"
+            }, 
+            "dyes": {
+                "Container": "default"
+            }, 
+            "matrix": "0.0460509993136*9.99999997475e-07*-0.998938977718*0.0|0.0*1.0*9.99999997475e-07*0.0|0.998938977718*0.0*0.0460509993136*0.0|192.954269409*199.999832153*-12.6674785614*1.0", 
+            "path": "models/misc/containers/red_container_lod1.model"
+        }, 
+        "FEE8B9C9.414C2778.1B793391.EF71C02D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "evgeny_yashkin", 
+                "created on": "20/09/2023", 
+                "description": "red_container_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "29/01/2024"
+            }, 
+            "dyes": {
+                "Container": "default"
+            }, 
+            "matrix": "-0.69566899538*0.0*-0.718361973763*0.0|0.0*1.0*0.0*0.0|0.718361973763*0.0*-0.69566899538*0.0|194.59286499*199.999908447*-18.6534996033*1.0", 
+            "path": "models/misc/containers/red_container_lod1.model"
+        }
+    }, 
+    "spawn_transform": "0.0460509993136*9.99999997475e-07*-0.998938977718*0.0|0.0*1.0*9.99999997475e-07*0.0|0.998938977718*0.0*0.0460509993136*0.0|192.954269409*199.999832153*-12.6674785614*1.0"
+}

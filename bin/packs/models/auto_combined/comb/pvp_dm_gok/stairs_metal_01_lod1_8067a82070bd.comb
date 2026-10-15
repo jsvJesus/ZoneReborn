@@ -1,0 +1,40 @@
+{
+    "firstguid": "9636CE2A.4559EA56.384FFEA1.70A9EB83", 
+    "models": {
+        "6F2B55D5.4D00769B.56A291BA.76385228": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "stairs_metal_03_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "19/07/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.14497101307*0.0*0.0*0.0|0.0*0.999993026257*0.0*0.0|0.0*0.0*0.999993026257*0.0|67.6315841675*17.0144462585*61.9228858948*1.0", 
+            "path": "models/props/construktors/stairs_metal_03_lod1.model"
+        }, 
+        "9636CE2A.4559EA56.384FFEA1.70A9EB83": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "stairs_metal_01_lod1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "19/07/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.1409330368*0.0*0.0*0.0|0.0*0.967953026295*0.0*0.0|0.0*0.0*-0.912994027138*0.0|67.7001571655*15.8424320221*58.8386077881*1.0", 
+            "path": "models/props/construktors/stairs_metal_01_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-1.1409330368*0.0*0.0*0.0|0.0*0.967953026295*0.0*0.0|0.0*0.0*-0.912994027138*0.0|67.7001571655*15.8424320221*58.8386077881*1.0"
+}

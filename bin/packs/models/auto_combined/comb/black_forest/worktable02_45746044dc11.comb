@@ -1,0 +1,38 @@
+{
+    "firstguid": "06DB24FA.49F13672.A7EA20AA.323C44BB", 
+    "models": {
+        "06DB24FA.49F13672.A7EA20AA.323C44BB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "worktable02", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0661003738642*-2.09599875234e-08*-0.997812509537*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|0.997812509537*-1.16124283522e-08*-0.0661003738642*0.0|-1371.58911133*0.85699737072*631.86138916*1.0", 
+            "path": "models/misc/furniture/worktable02.model"
+        }, 
+        "06EFEABB.42445E32.5D7B18B3.98D301A0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "worktable02", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.997242689133*2.13731254917e-08*0.0742112696171*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|-0.0742112696171*6.1328000811e-07*-0.997242689133*0.0|-1373.29455566*0.856920897961*630.718505859*1.0", 
+            "path": "models/misc/furniture/worktable02.model"
+        }
+    }, 
+    "spawn_transform": "-0.0661003738642*-2.09599875234e-08*-0.997812509537*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|0.997812509537*-1.16124283522e-08*-0.0661003738642*0.0|-1371.58911133*0.85699737072*631.86138916*1.0"
+}

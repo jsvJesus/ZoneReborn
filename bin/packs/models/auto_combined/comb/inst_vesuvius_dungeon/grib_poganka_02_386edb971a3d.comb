@@ -1,0 +1,85 @@
+{
+    "models": {
+        "7025C8C7.44B15504.27621AA1.73400505": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "30/05/2024", 
+                "description": "grib_poganka_02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "30/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.562062978745*0.0535879991949*0.0*0.0|0.0526910014451*0.552655994892*0.102862000465*0.0|0.00976299960166*0.102398000658*-0.555163025856*0.0|421.250946045*176.547851562*-127.48412323*1.0", 
+            "path": "models/entities/flora/grib_poganka_02.model"
+        }, 
+        "8E0C95CA.41D38D5D.0DD7DFAA.AC2DB58F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "30/05/2024", 
+                "description": "grib_poganka_02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "30/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.609260976315*0.0580880008638*0.0*0.0|0.0571160018444*0.599065005779*0.111500002444*0.0|0.0105830002576*0.110996998847*-0.601782023907*0.0|422.243133545*176.692672729*-129.512557983*1.0", 
+            "path": "models/entities/flora/grib_poganka_02.model"
+        }, 
+        "A2D49A57.453D80D8.83535182.60B080A9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "30/05/2024", 
+                "description": "grib_poganka_02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "30/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.876017987728*0.0834750011563*-2.70000000455e-05*0.0|0.0832749977708*0.873935997486*0.0606480017304*0.0|0.00577999977395*0.0603719986975*-0.877893984318*0.0|420.670318604*176.829376221*-128.413314819*1.0", 
+            "path": "models/entities/flora/grib_poganka_02.model"
+        }, 
+        "F60D45D1.49F170AA.3EED75BD.FAA84AB0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "30/05/2024", 
+                "description": "grib_poganka_02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "30/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.609264016151*0.0580560006201*-1.89999991562e-05*0.0|0.0579169988632*0.607815980911*0.0421800017357*0.0|0.00401999987662*0.0419880002737*-0.610569000244*0.0|421.452819824*176.532653809*-128.338592529*1.0", 
+            "path": "models/entities/flora/grib_poganka_02.model"
+        }, 
+        "FFB59FDD.4DCF5A93.B9481282.FCF90182": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "sergey_busygin", 
+                "created on": "30/05/2024", 
+                "description": "grib_poganka_02", 
+                "modified by": "sergey_busygin", 
+                "modified on": "30/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.562062978745*0.0535879991949*0.0*0.0|0.0526910014451*0.552655994892*0.102862000465*0.0|0.00976299960166*0.102398000658*-0.555163025856*0.0|420.147338867*176.839538574*-128.787246704*1.0", 
+            "path": "models/entities/flora/grib_poganka_02.model"
+        }
+    }, 
+    "spawn_transform": "-0.562062978745*0.0535879991949*0.0*0.0|0.0526910014451*0.552655994892*0.102862000465*0.0|0.00976299960166*0.102398000658*-0.555163025856*0.0|420.147338867*176.839538574*-128.787246704*1.0"
+}

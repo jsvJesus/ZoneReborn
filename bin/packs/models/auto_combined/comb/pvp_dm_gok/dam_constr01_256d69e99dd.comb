@@ -1,0 +1,74 @@
+{
+    "firstguid": "558F32AE.499D1C1D.0752BC82.17E4DDBA", 
+    "models": {
+        "2A5B95B0.42A5ECA1.2F87D980.E124F35D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "fukushima_frame", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.5885810256*0.0*0.0*0.0|0.0*0.366683006287*0.0*0.0|0.0*0.0*0.420626997948*0.0|55.9657783508*20.6451358795*61.4048690796*1.0", 
+            "path": "models/props/industrial/fukushima_frame.model"
+        }, 
+        "558F32AE.499D1C1D.0752BC82.17E4DDBA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "dam_constr01", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.999997019768*0.0|0.0*0.999997019768*0.0*0.0|0.999997019768*0.0*0.0*0.0|54.8230056763*19.2088356018*62.0894393921*1.0", 
+            "path": "models/props/industrial/dam_constr01.model"
+        }, 
+        "E49BADA8.443940DF.9320EE98.BAC78196": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "dam_constr01", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|-0.999997973442*0.0*0.0*0.0|54.8598823547*19.2088489532*64.5504760742*1.0", 
+            "path": "models/props/industrial/dam_constr01.model"
+        }, 
+        "FED9284E.4A75C1C1.B99EBF91.B1D3E3E1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "fukushima_frame", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-0.588581979275*0.0|0.0*0.366683989763*0.0*0.0|0.420628011227*0.0*0.0*0.0|53.3795928955*20.6451911926*62.1982955933*1.0", 
+            "path": "models/props/industrial/fukushima_frame.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-0.999997019768*0.0|0.0*0.999997019768*0.0*0.0|0.999997019768*0.0*0.0*0.0|54.8230056763*19.2088356018*62.0894393921*1.0"
+}

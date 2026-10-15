@@ -1,0 +1,56 @@
+{
+    "models": {
+        "00B6F387.4538D02F.8FC6D4B9.792C8FCE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "wc_wall_center", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*0.999998986721*0.0|0.0*0.999998986721*-0.000345000007655*0.0|-0.999998986721*0.0*0.0*0.0|349.364257812*212.99961853*-81.3902511597*1.0", 
+            "path": "models/misc/furniture/wc/wc_wall_center.model"
+        }, 
+        "0207EFE7.4232639D.145983A7.B3057C22": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "wc_wall_center", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*0.999998986721*0.0|0.0*0.999998986721*-0.000345000007655*0.0|-0.999998986721*0.0*0.0*0.0|351.063995361*212.999664307*-81.3902740479*1.0", 
+            "path": "models/misc/furniture/wc/wc_wall_center.model"
+        }, 
+        "1D4F923E.42B0FC74.59DCD7BE.C3399EC5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e324613di@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "26/02/2024", 
+                "description": "wc_wall_center", 
+                "modified by": "ice_c", 
+                "modified on": "26/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000345000007655*0.999997973442*0.0|0.0*0.999998986721*-0.000345000007655*0.0|-0.999997973442*0.0*0.0*0.0|347.665740967*212.999603271*-81.3902435303*1.0", 
+            "path": "models/misc/furniture/wc/wc_wall_center.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.000345000007655*0.999997973442*0.0|0.0*0.999998986721*-0.000345000007655*0.0|-0.999997973442*0.0*0.0*0.0|347.665740967*212.999603271*-81.3902435303*1.0"
+}

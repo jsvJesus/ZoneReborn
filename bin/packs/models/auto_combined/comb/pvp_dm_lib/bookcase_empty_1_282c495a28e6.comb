@@ -1,0 +1,74 @@
+{
+    "firstguid": "E18782C5.45328E8C.F73A1692.1DD37659", 
+    "models": {
+        "02648FBE.45C84C10.4EECC1BC.85989C67": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e6b51235i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "bookcase_empty_1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000432000000728*1.24998605251*0.0|0.0*1.24998605251*-0.000432000000728*0.0|-1.24998605251*0.0*0.0*0.0|15.6812181473*4.99965190887*8.0066318512*1.0", 
+            "path": "models/misc/furniture/library/bookcase_empty_1.model"
+        }, 
+        "A81C9FF0.448E2B84.8AE836B7.9459EE0C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e6b51235i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "bookcase_empty_1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000432000000728*1.24998605251*0.0|0.0*1.24998605251*-0.000432000000728*0.0|-1.24998605251*0.0*0.0*0.0|15.6812200546*5.00034284592*10.0042333603*1.0", 
+            "path": "models/misc/furniture/library/bookcase_empty_1.model"
+        }, 
+        "D305F3B7.426C1304.D0EB84AE.556D6C56": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e6b51235i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "bookcase_empty_1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.000609999988228*1.24998497963*0.0|0.0*1.24998605251*-0.000609999988228*0.0|-1.24998605251*0.0*0.0*0.0|15.7195606232*4.99999713898*9.00543022156*1.0", 
+            "path": "models/misc/furniture/library/bookcase_empty_1.model"
+        }, 
+        "E18782C5.45328E8C.F73A1692.1DD37659": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e6b51235i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "bookcase_empty_1", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/07/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.24999296665*0.00074799999129*0.0*0.0|0.00074799999129*1.24999296665*0.0*0.0|0.0*0.0*-1.24999296665*0.0|17.0626411438*5.00059700012*7.66113901138*1.0", 
+            "path": "models/misc/furniture/library/bookcase_empty_1.model"
+        }
+    }, 
+    "spawn_transform": "-1.24999296665*0.00074799999129*0.0*0.0|0.00074799999129*1.24999296665*0.0*0.0|0.0*0.0*-1.24999296665*0.0|17.0626411438*5.00059700012*7.66113901138*1.0"
+}

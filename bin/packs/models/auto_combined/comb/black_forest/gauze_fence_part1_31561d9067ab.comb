@@ -1,0 +1,70 @@
+{
+    "firstguid": "19491818.48A16060.F8B22CB0.C98A2A32", 
+    "models": {
+        "19491818.48A16060.F8B22CB0.C98A2A32": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff10006o@black_forest@0x0000029BE0286D20", 
+                "created by": "sergey_busygin", 
+                "created on": "24/10/2025", 
+                "description": "gauze_fence_part1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "24/10/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.939871013165*3.8999998651e-05*0.00737900007516*0.0|-3.70000016119e-05*1.0*-3.09999995807e-05*0.0|-0.013140999712*2.99999992421e-05*0.999808013439*0.0|-1440.87780762*0.799998998642*638.27130127*1.0", 
+            "path": "models/buildings/unique/radiocenter/radiotower_unfinished/gauze_fence_part1.model"
+        }, 
+        "7B5978A6.4220D7CF.263F539D.25D7FD26": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff10006o@black_forest@0x0000029BE0286D20", 
+                "created by": "sergey_busygin", 
+                "created on": "24/10/2025", 
+                "description": "gauze_fence_part1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "24/10/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.042621999979*3.8999998651e-05*-0.93893301487*0.0|-2.90000007226e-05*1.0*3.8999998651e-05*0.0|0.999091982841*2.99999992421e-05*-0.040056001395*0.0|-1443.20751953*0.8000010252*637.647338867*1.0", 
+            "path": "models/buildings/unique/radiocenter/radiotower_unfinished/gauze_fence_part1.model"
+        }, 
+        "89987350.49F5F716.23DCDF9A.C51A35CF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff10006o@black_forest@0x0000029BE0286D20", 
+                "created by": "sergey_busygin", 
+                "created on": "24/10/2025", 
+                "description": "gauze_fence_part1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "24/10/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.042621999979*3.8999998651e-05*-0.93893301487*0.0|-2.90000007226e-05*1.0*3.79999983124e-05*0.0|0.999091982841*2.99999992421e-05*-0.040056001395*0.0|-1443.21569824*0.800000011921*636.119140625*1.0", 
+            "path": "models/buildings/unique/radiocenter/radiotower_unfinished/gauze_fence_part1.model"
+        }, 
+        "900E5F52.4511B681.6F5D179A.55353A69": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff10006o@black_forest@0x0000029BE0286D20", 
+                "created by": "sergey_busygin", 
+                "created on": "24/10/2025", 
+                "description": "gauze_fence_part1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "24/10/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.933275997639*3.8999998651e-05*-0.111386999488*0.0|-4.09999993281e-05*1.0*-2.5999999707e-05*0.0|0.113241001964*2.99999992421e-05*0.99346101284*0.0|-1442.45495605*0.8000010252*638.370666504*1.0", 
+            "path": "models/buildings/unique/radiocenter/radiotower_unfinished/gauze_fence_part1.model"
+        }
+    }, 
+    "spawn_transform": "0.939871013165*3.8999998651e-05*0.00737900007516*0.0|-3.70000016119e-05*1.0*-3.09999995807e-05*0.0|-0.013140999712*2.99999992421e-05*0.999808013439*0.0|-1440.87780762*0.799998998642*638.27130127*1.0"
+}

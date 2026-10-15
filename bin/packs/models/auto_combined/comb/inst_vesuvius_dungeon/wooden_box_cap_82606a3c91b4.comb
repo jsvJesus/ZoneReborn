@@ -1,0 +1,81 @@
+{
+    "models": {
+        "10AD47C4.437F82FD.6485B49B.F0E8D576": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "04/04/2024", 
+                "description": "wooden_box_cap", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {
+                "wood_box": "default"
+            }, 
+            "matrix": "-1.15327894688*0.037090998143*0.396656006575*0.0|0.0517829991877*1.21850001812*0.0366180017591*0.0|-0.395007014275*0.0514449998736*-1.15329396725*0.0|456.417541504*185.263092041*-45.3640022278*1.0", 
+            "path": "models/props/warehouse/wooden_box_cap.model"
+        }, 
+        "2001EF2E.49C43611.1813E296.323E1324": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "04/04/2024", 
+                "description": "wooden_box_cap", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {
+                "wood_box": "default"
+            }, 
+            "matrix": "0.572699010372*-0.0829769968987*0.82643699646*0.0|0.148852005601*0.997848987579*-0.00296299997717*0.0|-0.817146003246*0.123613998294*0.578670978546*0.0|466.149383545*183.876617432*-43.4002151489*1.0", 
+            "path": "models/props/warehouse/wooden_box_cap.model"
+        }, 
+        "722237E2.44343606.41A04FA4.61F297CB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "04/04/2024", 
+                "description": "wooden_box_cap", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {
+                "wood_box": "default"
+            }, 
+            "matrix": "-0.96919298172*0.141320005059*-0.796627998352*0.0|0.182162001729*1.24929499626*-9.99999997475e-07*0.0|0.788291990757*-0.114942997694*-0.979442000389*0.0|456.840759277*184.894332886*-45.6066322327*1.0", 
+            "path": "models/props/warehouse/wooden_box_cap.model"
+        }, 
+        "C1F015C4.4BC3A1C2.865D11AD.297E991D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "07c57f86i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "04/04/2024", 
+                "description": "wooden_box_cap", 
+                "modified by": "ice_c", 
+                "modified on": "23/04/2024"
+            }, 
+            "dyes": {
+                "wood_box": "default"
+            }, 
+            "matrix": "0.449928998947*-0.0655980035663*-1.04190695286*0.0|0.164024993777*1.12490105629*7.9999999798e-06*0.0|1.03100395203*-0.150335997343*0.454685986042*0.0|457.200531006*185.522003174*-46.2179107666*1.0", 
+            "path": "models/props/warehouse/wooden_box_cap.model"
+        }
+    }, 
+    "spawn_transform": "-1.15327894688*0.037090998143*0.396656006575*0.0|0.0517829991877*1.21850001812*0.0366180017591*0.0|-0.395007014275*0.0514449998736*-1.15329396725*0.0|456.417541504*185.263092041*-45.3640022278*1.0"
+}

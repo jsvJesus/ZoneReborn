@@ -1,0 +1,56 @@
+{
+    "models": {
+        "9D69750E.43B9D157.1FDA6B88.2073FBFC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalbeam_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.53955197334*0.0*0.0*0.0|0.0*1.53955197334*0.0*0.0|0.0*0.0*-1.53955197334*0.0|204.617279053*215.422302246*-48.0333862305*1.0", 
+            "path": "models/city/props/filtration_station/metalbeam_x3.model"
+        }, 
+        "C5EDDF54.4F2CFACB.84BB1E86.0FDC4488": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalbeam_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.53955197334*0.0*0.0*0.0|0.0*1.53955197334*0.0*0.0|0.0*0.0*-1.53955197334*0.0|211.05305481*215.551147461*-48.0333938599*1.0", 
+            "path": "models/city/props/filtration_station/metalbeam_x3.model"
+        }, 
+        "DD8E78E5.42A59979.71118484.13157756": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "20/02/2024", 
+                "description": "metalbeam_x3", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.53955197334*0.0*0.0*0.0|0.0*1.53955304623*0.0*0.0|0.0*0.0*-1.53955197334*0.0|197.702972412*215.55116272*-48.0334091187*1.0", 
+            "path": "models/city/props/filtration_station/metalbeam_x3.model"
+        }
+    }, 
+    "spawn_transform": "-1.53955197334*0.0*0.0*0.0|0.0*1.53955304623*0.0*0.0|0.0*0.0*-1.53955197334*0.0|197.702972412*215.55116272*-48.0334091187*1.0"
+}

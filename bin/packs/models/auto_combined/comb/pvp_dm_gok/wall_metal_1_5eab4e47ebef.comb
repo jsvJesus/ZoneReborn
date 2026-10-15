@@ -1,0 +1,57 @@
+{
+    "firstguid": "504F144E.48BA28E3.DF120B9D.1D56C58F", 
+    "models": {
+        "504F144E.48BA28E3.DF120B9D.1D56C58F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "wall_metal_1", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.49247896671*0.0*0.0*0.0|0.0*1.60915601254*0.0*0.0|0.0*0.0*-1.43998599052*0.0|37.9380111694*7.00577831268*42.6972961426*1.0", 
+            "path": "models/misc/furniture/postal/wall_metal_1.model"
+        }, 
+        "BFE8D051.4B312A4D.3A0599BA.B17636EE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "wall_metal_1", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-1.43999195099*0.0|0.0*1.609161973*0.0*0.0|1.43999397755*0.0*0.0*0.0|33.8116950989*7.00577831268*42.5464706421*1.0", 
+            "path": "models/misc/furniture/postal/wall_metal_1.model"
+        }, 
+        "E77D18BC.417186DE.E29A88A5.59E9D1ED": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "95a43a89i@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "wall_metal_1", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.43999099731*0.0*0.0*0.0|0.0*1.60915899277*0.0*0.0|0.0*0.0*1.43998897076*0.0|33.9525642395*7.00577831268*38.5594825745*1.0", 
+            "path": "models/misc/furniture/postal/wall_metal_1.model"
+        }
+    }, 
+    "spawn_transform": "-1.49247896671*0.0*0.0*0.0|0.0*1.60915601254*0.0*0.0|0.0*0.0*-1.43998599052*0.0|37.9380111694*7.00577831268*42.6972961426*1.0"
+}

@@ -1,0 +1,73 @@
+{
+    "models": {
+        "05B65F2A.475021CB.E862C382.D2F03CA1": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "19/02/2024", 
+                "description": "Steel_roll_LOD1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999997019768*0.0|238.79586792*207.188751221*-52.8868560791*1.0", 
+            "path": "models/props/warehouse/Steel_roll_LOD1.model"
+        }, 
+        "28140C70.43D0BD20.B1390F81.2BC596EF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "19/02/2024", 
+                "description": "Steel_roll_LOD1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999997019768*0.0|241.628311157*207.188751221*-52.9111328125*1.0", 
+            "path": "models/props/warehouse/Steel_roll_LOD1.model"
+        }, 
+        "9F986764.4AE47524.578BF992.E7BACB3A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "19/02/2024", 
+                "description": "Steel_roll_LOD1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999997019768*0.0|240.298217773*207.188659668*-52.9099578857*1.0", 
+            "path": "models/props/warehouse/Steel_roll_LOD1.model"
+        }, 
+        "D90C5789.475E3117.BA630EBB.FFA75BEB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "19/02/2024", 
+                "description": "Steel_roll_LOD1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "03/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999997973442*0.0|0.0*0.999997973442*0.0*0.0|-0.999997973442*0.0*0.0*0.0|246.050003052*201.468765259*-52.9183540344*1.0", 
+            "path": "models/props/warehouse/Steel_roll_LOD1.model"
+        }
+    }, 
+    "spawn_transform": "0.999997019768*0.0*0.0*0.0|0.0*0.999997019768*0.0*0.0|0.0*0.0*0.999997019768*0.0|238.79586792*207.188751221*-52.8868560791*1.0"
+}

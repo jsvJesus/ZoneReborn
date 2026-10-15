@@ -1,0 +1,56 @@
+{
+    "models": {
+        "3D837956.4A554050.1137E1A4.4F2D4E60": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "06/03/2024", 
+                "description": "bottle_big", 
+                "modified by": "ice_c", 
+                "modified on": "06/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.544638991356*0.0*-0.838670015335*0.0|0.0*1.0*0.0*0.0|0.838670015335*0.0*0.544638991356*0.0|403.375061035*212.999649048*-92.5900115967*1.0", 
+            "path": "models/misc/furniture/village/bottle_big.model"
+        }, 
+        "CB7AF90C.442F82D6.2FF42DA5.5AD02984": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "06/03/2024", 
+                "description": "bottle_big", 
+                "modified by": "ice_c", 
+                "modified on": "06/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.642786979675*0.0*0.766044020653*0.0|0.0*1.0*0.0*0.0|-0.766044020653*0.0*-0.642786979675*0.0|403.765930176*212.999649048*-92.2708358765*1.0", 
+            "path": "models/misc/furniture/village/bottle_big.model"
+        }, 
+        "F3BF521C.4C1B632A.8C41638D.911BFC93": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "3865ca0bi@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "06/03/2024", 
+                "description": "bottle_big", 
+                "modified by": "ice_c", 
+                "modified on": "06/03/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.857167005539*0.0*-0.515038013458*0.0|0.0*1.0*0.0*0.0|0.515038013458*0.0*0.857167005539*0.0|394.823486328*212.999649048*-94.8777923584*1.0", 
+            "path": "models/misc/furniture/village/bottle_big.model"
+        }
+    }, 
+    "spawn_transform": "-0.642786979675*0.0*0.766044020653*0.0|0.0*1.0*0.0*0.0|-0.766044020653*0.0*-0.642786979675*0.0|403.765930176*212.999649048*-92.2708358765*1.0"
+}

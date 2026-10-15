@@ -1,0 +1,56 @@
+{
+    "models": {
+        "3585F5B0.454F56FE.1FD36A82.DCF4C1D0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "anton_zyryanov", 
+                "created on": "10/07/2024", 
+                "description": "ventilation_4m", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*-1.0*0.0|140.707000732*217.80116272*-104.121162415*1.0", 
+            "path": "models/props/ventilation/ventilation_4m.model"
+        }, 
+        "8C2CFAF1.46E5D4A2.2A3D00A2.D1A13559": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "anton_zyryanov", 
+                "created on": "10/07/2024", 
+                "description": "ventilation_4m", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*1.0*0.0|0.0*1.0*0.0*0.0|-1.0*0.0*0.0*0.0|143.061294556*217.812011719*-105.257583618*1.0", 
+            "path": "models/props/ventilation/ventilation_4m.model"
+        }, 
+        "B66F5690.4F7365F0.113DF2AF.4BF020B0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "fb094155i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "anton_zyryanov", 
+                "created on": "10/07/2024", 
+                "description": "ventilation_4m", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*-1.0*0.0|136.70930481*217.81262207*-104.121162415*1.0", 
+            "path": "models/props/ventilation/ventilation_4m.model"
+        }
+    }, 
+    "spawn_transform": "-1.0*0.0*0.0*0.0|0.0*1.0*0.0*0.0|0.0*0.0*-1.0*0.0|136.70930481*217.81262207*-104.121162415*1.0"
+}

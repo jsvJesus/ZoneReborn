@@ -1,0 +1,39 @@
+{
+    "models": {
+        "4B5BEEE4.4197875D.E1BD9FAB.AFC9E7B4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "25/03/2024", 
+                "description": "concrete_scarp_1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.707587003708*0.0574200004339*-0.97459000349*0.0|0.419254988432*1.06913900375*0.367383986712*0.0|0.881672978401*-0.55448102951*0.607459008694*0.0|398.144287109*209.676834106*-66.2775268555*1.0", 
+            "path": "models/misc/garbage/concrete_scarp/concrete_scarp_1.model"
+        }, 
+        "F8B81F1A.43706C09.399C3C96.5F7D4879": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cde707e4i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "sergey_busygin", 
+                "created on": "25/03/2024", 
+                "description": "concrete_scarp_1", 
+                "modified by": "sergey_busygin", 
+                "modified on": "10/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.475733011961*0.180983006954*-1.2593729496*0.0|0.357441991568*1.27137100697*0.317732989788*0.0|1.22106897831*-0.442680001259*0.397648990154*0.0|392.893554688*211.807907104*-70.4196243286*1.0", 
+            "path": "models/misc/garbage/concrete_scarp/concrete_scarp_1.model"
+        }
+    }, 
+    "spawn_transform": "0.707587003708*0.0574200004339*-0.97459000349*0.0|0.419254988432*1.06913900375*0.367383986712*0.0|0.881672978401*-0.55448102951*0.607459008694*0.0|398.144287109*209.676834106*-66.2775268555*1.0"
+}

@@ -1,0 +1,70 @@
+{
+    "firstguid": "A0519ADF.483A0EFE.3784F587.66964F0A", 
+    "models": {
+        "A0519ADF.483A0EFE.3784F587.66964F0A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "4a19de94i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "sergey_busygin", 
+                "created on": "19/05/2023", 
+                "description": "moss", 
+                "modified by": "sergey_busygin", 
+                "modified on": "19/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0600429996848*0.0*0.680853009224*0.0|0.0*0.683495998383*0.0*0.0|-0.680853009224*0.0*0.0600429996848*0.0|26.8841667175*9.99999809265*93.5525131226*1.0", 
+            "path": "models/props/roads/moss.model"
+        }, 
+        "B2AE0FF1.4467C01F.03E4BDB3.C36E6331": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "4a19de94i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "sergey_busygin", 
+                "created on": "19/05/2023", 
+                "description": "moss", 
+                "modified by": "sergey_busygin", 
+                "modified on": "19/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*-0.149716004729*-0.520959019661*0.0|0.542044997215*0.0*0.0*0.0|0.0*-0.520959019661*0.149716004729*0.0|25.4999923706*10.8254117966*87.2025756836*1.0", 
+            "path": "models/props/roads/moss.model"
+        }, 
+        "C7DD4280.4A529A55.E1F84C95.FAB93623": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "4a19de94i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "sergey_busygin", 
+                "created on": "19/05/2023", 
+                "description": "moss", 
+                "modified by": "sergey_busygin", 
+                "modified on": "19/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*-0.463809996843*0.280523985624*0.0|0.542044997215*0.0*0.0*0.0|0.0*0.280523985624*0.463809996843*0.0|25.4999923706*12.6445655823*90.9845275879*1.0", 
+            "path": "models/props/roads/moss.model"
+        }, 
+        "F773B3D0.41D1C76D.211D0FA1.0EE545CA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "4a19de94i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "sergey_busygin", 
+                "created on": "19/05/2023", 
+                "description": "moss", 
+                "modified by": "sergey_busygin", 
+                "modified on": "19/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0425999984145*0.483061999083*0.0*0.0|0.0*0.0*-0.484937012196*0.0|-0.483061999083*0.0425999984145*0.0*0.0|27.1540184021*11.4294700623*95.4999847412*1.0", 
+            "path": "models/props/roads/moss.model"
+        }
+    }, 
+    "spawn_transform": "0.0600429996848*0.0*0.680853009224*0.0|0.0*0.683495998383*0.0*0.0|-0.680853009224*0.0*0.0600429996848*0.0|26.8841667175*9.99999809265*93.5525131226*1.0"
+}

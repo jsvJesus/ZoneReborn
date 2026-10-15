@@ -1,0 +1,54 @@
+{
+    "firstguid": "2EEEF9D7.40BAC3D0.7867CF82.98813D68", 
+    "models": {
+        "2CB33E57.41517D5A.E903929E.AAB5AB4D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "49c0d282i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "17/11/2025", 
+                "description": "radiostation_prc2080", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.990410149097*-0.00150598224718*0.138143882155*0.0|0.00153198477346*0.99999922514*-7.86163654993e-05*0.0|-0.138143479824*0.000289239280391*0.990411937237*0.0|-1423.61413574*1.67788076401*589.682983398*1.0", 
+            "path": "models/misc/furniture/radiostation/radiostation_prc2080/radiostation_prc2080.model"
+        }, 
+        "2EEEF9D7.40BAC3D0.7867CF82.98813D68": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "49c0d282i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "17/11/2025", 
+                "description": "radiostation_prc2080", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.995891869068*0.00151822157204*-0.0905334353447*0.0|0.00153198477346*0.99999922514*-7.86163654993e-05*0.0|0.0905331298709*-0.000216632208321*-0.995893597603*0.0|-1423.47143555*1.67766320705*589.698181152*1.0", 
+            "path": "models/misc/furniture/radiostation/radiostation_prc2080/radiostation_prc2080.model"
+        }, 
+        "5C9AD581.4FC7A061.CB4CD8A9.1C5C6429": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "49c0d282i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "17/11/2025", 
+                "description": "radiostation_prc2080", 
+                "modified by": "Home", 
+                "modified on": "24/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.345231294632*-0.000602295389399*-0.938517689705*0.0|0.00153198477346*0.99999922514*-7.86163654993e-05*0.0|0.938516080379*-0.00141105416697*0.34523203969*0.0|-1423.56115723*1.73271036148*589.709899902*1.0", 
+            "path": "models/misc/furniture/radiostation/radiostation_prc2080/radiostation_prc2080.model"
+        }
+    }, 
+    "spawn_transform": "-0.995891869068*0.00151822157204*-0.0905334353447*0.0|0.00153198477346*0.99999922514*-7.86163654993e-05*0.0|0.0905331298709*-0.000216632208321*-0.995893597603*0.0|-1423.47143555*1.67766320705*589.698181152*1.0"
+}

@@ -1,0 +1,42 @@
+{
+    "firstguid": "0DC37274.4A562C96.EF11899C.4F1A7084", 
+    "models": {
+        "0DC37274.4A562C96.EF11899C.4F1A7084": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fffcfffco@outlands@0x000001A827A91FE0", 
+                "created by": "sergey_busygin", 
+                "created on": "21/10/2019", 
+                "description": "rock17", 
+                "modified by": "sergey_busygin", 
+                "modified on": "21/10/2019"
+            }, 
+            "dyes": {
+                "lambert2": "grass"
+            }, 
+            "matrix": "0.98883998394*-0.108211003244*1.01795601845*0.0|-0.0761530026793*1.06079900265*0.186739996076*0.0|-1.01875805855*-0.24279999733*0.963809013367*0.0|-398.550354004*13.9596567154*-310.629760742*1.0", 
+            "path": "models/flora/stones/smooth_erosion_rocks/rock17.model"
+        }, 
+        "8961849D.4FDA8459.2B6B6D9B.86A4625A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fffbfffco@outlands@0x000001A827A91FE0", 
+                "created by": "sergey_busygin", 
+                "created on": "18/03/2020", 
+                "description": "rock17", 
+                "modified by": "sergey_busygin", 
+                "modified on": "18/03/2020"
+            }, 
+            "dyes": {
+                "lambert2": "grass"
+            }, 
+            "matrix": "-0.0660940036178*-0.251089990139*1.39939403534*0.0|-0.0945789963007*1.31747996807*0.231925994158*0.0|-1.41820299625*-0.0872609987855*-0.0826390013099*0.0|-426.073455811*18.3635025024*-305.871490479*1.0", 
+            "path": "models/flora/stones/smooth_erosion_rocks/rock17.model"
+        }
+    }, 
+    "spawn_transform": "0.98883998394*-0.108211003244*1.01795601845*0.0|-0.0761530026793*1.06079900265*0.186739996076*0.0|-1.01875805855*-0.24279999733*0.963809013367*0.0|-398.550354004*13.9596567154*-310.629760742*1.0"
+}

@@ -1,0 +1,38 @@
+{
+    "firstguid": "442202F2.442EA837.8FC5699D.75FC4091", 
+    "models": {
+        "442202F2.442EA837.8FC5699D.75FC4091": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "box_ammunition_02", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0938511937857*-3.12450538331e-07*-0.751005530357*0.0|-9.02582542039e-08*0.756847977638*3.65658934243e-08*0.0|0.751005530357*-4.20146534452e-07*0.0938511937857*0.0|-1375.46606445*2.67475390434*633.501831055*1.0", 
+            "path": "models/misc/containers/box_ammunition_02.model"
+        }, 
+        "88AE13BE.4C12D48B.49230CA7.2E9C860B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "box_ammunition_02", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.000303082168102*-5.06719970872e-07*-0.756846904755*0.0|-9.02582542039e-08*0.756847977638*3.65658934243e-08*0.0|0.756846904755*2.53567122854e-08*0.000303082168102*0.0|-1375.45654297*2.82612538338*633.509094238*1.0", 
+            "path": "models/misc/containers/box_ammunition_02.model"
+        }
+    }, 
+    "spawn_transform": "0.0938511937857*-3.12450538331e-07*-0.751005530357*0.0|-9.02582542039e-08*0.756847977638*3.65658934243e-08*0.0|0.751005530357*-4.20146534452e-07*0.0938511937857*0.0|-1375.46606445*2.67475390434*633.501831055*1.0"
+}

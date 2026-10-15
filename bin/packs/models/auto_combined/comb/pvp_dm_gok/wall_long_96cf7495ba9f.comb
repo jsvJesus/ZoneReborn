@@ -1,0 +1,46 @@
+{
+    "firstguid": "3256DEF5.4FC96FFA.46D84B85.6513B61E", 
+    "models": {
+        "3256DEF5.4FC96FFA.46D84B85.6513B61E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "wall_long", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "9.99999997475e-07*0.0*-1.63298404217*0.0|0.0*1.63298499584*0.0*0.0|1.63298404217*0.0*9.99999997475e-07*0.0|69.7153549194*1.00578594208*50.0589447021*1.0", 
+            "path": "models/city/props/filtration_station/wall_long.model"
+        }, 
+        "C7C293D2.4CF730FC.7ABAB79F.D6016FBE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "wall_long", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "-1.45688199997*0.0*0.0*0.0|0.0*1.63298797607*0.0*0.0|0.0*0.0*-1.6329870224*0.0|69.7410125732*1.00578594208*40.2405929565*1.0", 
+            "path": "models/city/props/filtration_station/wall_long.model"
+        }
+    }, 
+    "spawn_transform": "9.99999997475e-07*0.0*-1.63298404217*0.0|0.0*1.63298499584*0.0*0.0|1.63298404217*0.0*9.99999997475e-07*0.0|69.7153549194*1.00578594208*50.0589447021*1.0"
+}

@@ -1,0 +1,38 @@
+{
+    "firstguid": "8D2EE91A.47707067.DA51CE8B.BB561452", 
+    "models": {
+        "88F2DE4E.43EC78A5.C47F9E95.8597F6C7": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "weight_plate_10", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.00000035763*-4.24806785304e-08*0.0*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|0.0*4.497496775e-08*1.00000035763*0.0|-1377.15539551*1.36698412895*620.09979248*1.0", 
+            "path": "models/misc/furniture/sport/weight_plate_10.model"
+        }, 
+        "8D2EE91A.47707067.DA51CE8B.BB561452": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "d1305856i@black_forest@0x0000016869906AA0", 
+                "created by": "yuri_parfilov", 
+                "created on": "11/11/2025", 
+                "description": "barbell", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "11/11/2025"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.999999344349*-4.25243342761e-08*4.09781932831e-08*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|-4.09781932831e-08*4.497496775e-08*0.999999344349*0.0|-1378.296875*1.63707685471*620.063415527*1.0", 
+            "path": "models/misc/furniture/sport/barbell.model"
+        }
+    }, 
+    "spawn_transform": "0.999999344349*-4.25243342761e-08*4.09781932831e-08*0.0|-4.24806785304e-08*1.0*4.497496775e-08*0.0|-4.09781932831e-08*4.497496775e-08*0.999999344349*0.0|-1378.296875*1.63707685471*620.063415527*1.0"
+}

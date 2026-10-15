@@ -1,0 +1,71 @@
+{
+    "firstguid": "F2BAA635.4367B74B.10671ABD.420B921A", 
+    "models": {
+        "BBF29526.46D9660D.E0494782.7CD8E7CB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "17:34:02", 
+                "description": "chair_80x_01", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17:34:02"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0274459999055*-0.00896700005978*0.999579012394*0.0|-0.00172399997246*-0.999953985214*-0.00901800021529*0.0|0.999619007111*-0.00197000009939*0.0274289995432*0.0|92.3779754639*6.34899902344*47.0009880066*1.0", 
+            "path": "models/misc/furniture/mebel_80x/chair_80x_01.model"
+        }, 
+        "C9810840.4D70E851.DDEB4099.FD7C8276": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "17:34:02", 
+                "description": "chair_80x_01", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17:34:02"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0157430004328*0.0*0.99987500906*0.0|0.0*0.999998986721*0.0*0.0|-0.99987500906*0.0*0.0157430004328*0.0|92.1539764404*4.99999904633*42.0319900513*1.0", 
+            "path": "models/misc/furniture/mebel_80x/chair_80x_01.model"
+        }, 
+        "E500F518.4E0B105B.7E8FB6A7.878F4B02": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "sergey_busygin", 
+                "created on": "17:34:02", 
+                "description": "chair_80x_01", 
+                "modified by": "sergey_busygin", 
+                "modified on": "17:34:02"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.235075995326*0.0*-0.971975982189*0.0|0.0*0.999998986721*0.0*0.0|0.971975982189*0.0*-0.235075995326*0.0|92.2899780273*4.99999904633*45.7459869385*1.0", 
+            "path": "models/misc/furniture/mebel_80x/chair_80x_01.model"
+        }, 
+        "F2BAA635.4367B74B.10671ABD.420B921A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "22b37cf7i@pvp_dm_lib@0x0000021555E01DD0", 
+                "created by": "ice_c", 
+                "created on": "15/05/2023", 
+                "description": "chair_80x_01", 
+                "modified by": "danil_lepeshkov", 
+                "modified on": "19/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0319509990513*-0.00896700005978*0.999446988106*0.0|-0.00225599994883*-0.999954998493*-0.00889999978244*0.0|0.999485015869*-0.00197000009939*-0.0319700017571*0.0|89.3505172729*6.42269611359*49.4717674255*1.0", 
+            "path": "models/misc/furniture/mebel_80x/chair_80x_01.model"
+        }
+    }, 
+    "spawn_transform": "0.0319509990513*-0.00896700005978*0.999446988106*0.0|-0.00225599994883*-0.999954998493*-0.00889999978244*0.0|0.999485015869*-0.00197000009939*-0.0319700017571*0.0|89.3505172729*6.42269611359*49.4717674255*1.0"
+}

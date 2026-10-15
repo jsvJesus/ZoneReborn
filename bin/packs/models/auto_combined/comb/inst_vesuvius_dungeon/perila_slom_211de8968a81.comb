@@ -1,0 +1,39 @@
+{
+    "models": {
+        "41CEB172.47065FF3.EEFEC38B.F1B7D2D4": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "evgeny_yashkin", 
+                "created on": "05/07/2024", 
+                "description": "perila_slom", 
+                "modified by": "evgeny_yashkin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0104719996452*0.0*-0.999944984913*0.0|0.0*1.0*0.0*0.0|0.999944984913*0.0*0.0104719996452*0.0|244.539916992*205.199905396*-72.179977417*1.0", 
+            "path": "models/props/construktors/perila_slom.model"
+        }, 
+        "7B78F19F.416C8973.F9A4E388.D8F90DF9": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "0bf3cc4bi@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "29/01/2024", 
+                "description": "perila_slom", 
+                "modified by": "ice_c", 
+                "modified on": "29/01/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*0.999997019768*0.0|0.0*0.999997973442*0.0*0.0|-0.999997019768*0.0*0.0*0.0|244.37802124*205.199859619*-77.2373657227*1.0", 
+            "path": "models/props/construktors/perila_slom.model"
+        }
+    }, 
+    "spawn_transform": "0.0104719996452*0.0*-0.999944984913*0.0|0.0*1.0*0.0*0.0|0.999944984913*0.0*0.0104719996452*0.0|244.539916992*205.199905396*-72.179977417*1.0"
+}

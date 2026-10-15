@@ -1,0 +1,55 @@
+{
+    "firstguid": "2CE57758.49CAB180.91C11382.3EE7609D", 
+    "models": {
+        "2CE57758.49CAB180.91C11382.3EE7609D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "Container_wooden", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.998628020287*0.0*-0.0523359999061*0.0|0.0*0.999997973442*0.0*0.0|0.0523359999061*0.0*-0.998628020287*0.0|41.5819396973*1.03286194801*46.2761535645*1.0", 
+            "path": "models/props/warehouse/Container_wooden.model"
+        }, 
+        "3A3377C7.47F155FA.6EC664A2.03EC42CE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "yuri_parfilov", 
+                "created on": "16:06:02", 
+                "description": "Container_wooden", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16:06:02"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0263180006295*0.0*0.999651014805*0.0|0.0*0.999997019768*0.0*0.0|-0.999651014805*0.0*-0.0263180006295*0.0|45.9133720398*1.00000298023*37.531211853*1.0", 
+            "path": "models/props/warehouse/Container_wooden.model"
+        }, 
+        "D5A59CF0.4EEC0ED5.C6FD3FAF.7E33B402": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "yuri_parfilov", 
+                "created on": "16:06:02", 
+                "description": "Container_wooden", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "16:06:02"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0263180006295*0.0*0.999651014805*0.0|0.0*0.999997973442*0.0*0.0|-0.999651014805*0.0*-0.0263180006295*0.0|39.2063331604*1.0328630209*40.3095779419*1.0", 
+            "path": "models/props/warehouse/Container_wooden.model"
+        }
+    }, 
+    "spawn_transform": "-0.998628020287*0.0*-0.0523359999061*0.0|0.0*0.999997973442*0.0*0.0|0.0523359999061*0.0*-0.998628020287*0.0|41.5819396973*1.03286194801*46.2761535645*1.0"
+}

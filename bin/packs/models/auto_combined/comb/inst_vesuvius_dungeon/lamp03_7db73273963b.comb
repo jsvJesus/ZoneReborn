@@ -1,0 +1,45 @@
+{
+    "models": {
+        "03063A01.4563951C.9FA19385.E93487ED": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "02/02/2024", 
+                "description": "lamp03", 
+                "modified by": "ice_c", 
+                "modified on": "11/06/2024"
+            }, 
+            "dyes": {
+                "lamp_material": "default", 
+                "pasted__pasted__okna": "on"
+            }, 
+            "matrix": "1.31294500828*1.39881801605*-0.565223991871*0.0|1.10073697567*-1.40057301521*-0.909268975258*0.0|-1.03177201748*0.28582701087*-1.68930399418*0.0|132.893707275*212.351837158*-70.748878479*1.0", 
+            "path": "models/misc/furniture/lamp03.model"
+        }, 
+        "38408008.48A2EE19.EFF70B96.81A3DABC": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "bloom enable": true, 
+                "chunk": "c0a6a7e9i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "02/02/2024", 
+                "description": "lamp03", 
+                "modified by": "ice_c", 
+                "modified on": "11/06/2024"
+            }, 
+            "dyes": {
+                "lamp_material": "default", 
+                "pasted__pasted__okna": "on"
+            }, 
+            "matrix": "1.39740204811*1.40618896484*-0.264371007681*0.0|1.2951079607*-1.4001660347*-0.601849019527*0.0|-0.608240008354*0.249316006899*-1.88888299465*0.0|127.568367004*215.604690552*-84.9853286743*1.0", 
+            "path": "models/misc/furniture/lamp03.model"
+        }
+    }, 
+    "spawn_transform": "1.31294500828*1.39881801605*-0.565223991871*0.0|1.10073697567*-1.40057301521*-0.909268975258*0.0|-1.03177201748*0.28582701087*-1.68930399418*0.0|132.893707275*212.351837158*-70.748878479*1.0"
+}

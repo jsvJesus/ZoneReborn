@@ -1,0 +1,46 @@
+{
+    "firstguid": "E7053C23.44D612CA.ABCCD1A1.73880D1C", 
+    "models": {
+        "E7053C23.44D612CA.ABCCD1A1.73880D1C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "22/07/2024", 
+                "description": "wall_door_medium", 
+                "modified by": "ice_c", 
+                "modified on": "22/07/2024"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "1.28044402599*0.0*0.0*0.0|0.0*1.1696280241*0.0*0.0|0.0*0.0*1.1696280241*0.0|43.2466316223*1.0057849884*61.3945159912*1.0", 
+            "path": "models/city/props/filtration_station/wall_door_medium.model"
+        }, 
+        "E94A664C.4FF9B797.2C638898.363C60CA": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "14efd86fi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "wall_door_medium", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "20/07/2022"
+            }, 
+            "dyes": {
+                "side1": "default", 
+                "side2": "default"
+            }, 
+            "matrix": "1.28044497967*0.0*0.0*0.0|0.0*1.16962897778*0.0*0.0|0.0*0.0*1.16962897778*0.0|43.1692276001*1.00578594208*44.6484069824*1.0", 
+            "path": "models/city/props/filtration_station/wall_door_medium.model"
+        }
+    }, 
+    "spawn_transform": "1.28044402599*0.0*0.0*0.0|0.0*1.1696280241*0.0*0.0|0.0*0.0*1.1696280241*0.0|43.2466316223*1.0057849884*61.3945159912*1.0"
+}

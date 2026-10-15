@@ -1,0 +1,40 @@
+{
+    "firstguid": "69180153.47040C1F.226BBFAF.CB04C17F", 
+    "models": {
+        "2A5C103C.4C93F0E1.FE70E89A.1C47B90A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e6b51235i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "bar_table_02_cloth", 
+                "modified by": "danil_lepeshkov", 
+                "modified on": "19/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.258819013834*0.000345000007655*-0.965924978256*0.0|-8.90000010259e-05*0.999998986721*0.000334000011208*0.0|0.965924978256*0.0*0.258819013834*0.0|7.93880319595*4.96500205994*15.1916189194*1.0", 
+            "path": "models/misc/furniture/bar/bar_table_02_cloth.model"
+        }, 
+        "69180153.47040C1F.226BBFAF.CB04C17F": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "e6b51235i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "ice_c", 
+                "created on": "16/05/2023", 
+                "description": "bar_table_02_cloth", 
+                "modified by": "danil_lepeshkov", 
+                "modified on": "19/05/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.707105994225*0.0*0.707105994225*0.0|0.0*0.999998986721*0.0*0.0|-0.707105994225*0.0*0.707105994225*0.0|7.91409921646*4.99999809265*12.2789325714*1.0", 
+            "path": "models/misc/furniture/bar/bar_table_02_cloth.model"
+        }
+    }, 
+    "spawn_transform": "0.707105994225*0.0*0.707105994225*0.0|0.0*0.999998986721*0.0*0.0|-0.707105994225*0.0*0.707105994225*0.0|7.91409921646*4.99999809265*12.2789325714*1.0"
+}

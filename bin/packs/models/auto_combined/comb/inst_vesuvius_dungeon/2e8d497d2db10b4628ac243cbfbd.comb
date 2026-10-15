@@ -1,0 +1,53 @@
+{
+    "models": {
+        "A3BD6667.424D23BE.084684BD.B111A16E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000001983C0461F0", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.0231589991599*0.0*1.32675898075*0.0|0.0*1.3269610405*0.0*0.0|-1.32675898075*0.0*-0.0231589991599*0.0|436.277954102*176.499725342*-137.881652832*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "A9A2E18F.4CD14E4E.D85002A6.E1F76F4E": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000001983C0461F0", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "1.42841994762*0.0*-0.329777002335*0.0|0.0*1.46599304676*0.0*0.0|0.329777002335*0.0*1.42841994762*0.0|433.787994385*176.499755859*-136.282653809*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }, 
+        "E13D9598.4E3C9305.8677CBB7.F51BEA04": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000001983C0461F0", 
+                "created by": "ice_c", 
+                "created on": "17/05/2024", 
+                "description": "ivy_roots02", 
+                "modified by": "ice_c", 
+                "modified on": "17/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-1.04416501522*0.0*-0.400817990303*0.0|0.0*1.11845302582*0.0*0.0|0.400817990303*0.0*-1.04416501522*0.0|438.625976562*176.499755859*-136.055114746*1.0", 
+            "path": "models/flora/grass/ivy_roots02.model"
+        }
+    }, 
+    "spawn_transform": "1.42841994762*0.0*-0.329777002335*0.0|0.0*1.46599304676*0.0*0.0|0.329777002335*0.0*1.42841994762*0.0|433.787994385*176.499755859*-136.282653809*1.0"
+}

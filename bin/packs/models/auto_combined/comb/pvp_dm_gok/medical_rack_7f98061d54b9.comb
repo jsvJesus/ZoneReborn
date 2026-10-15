@@ -1,0 +1,55 @@
+{
+    "firstguid": "026900C7.41E0D49A.BC132489.18CE61C6", 
+    "models": {
+        "026900C7.41E0D49A.BC132489.18CE61C6": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "medical_rack", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.999997019768*0.000487999990582*-0.000852999975905*0.0|0.000488999998197*0.999996006489*0.0*0.0|0.000852999975905*0.0*-0.999997019768*0.0|60.4410896301*13.1913442612*57.6723480225*1.0", 
+            "path": "models/props/shops/medical_rack.model"
+        }, 
+        "027BBB93.433C4467.E11B2F8C.37EA0BE0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "13:56:30", 
+                "description": "medical_rack", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13:56:30"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.000852999975905*-0.000110000000859*-0.999997019768*0.0|9.99999997475e-07*0.999997019768*-0.000110000000859*0.0|0.999997019768*0.0*0.000852999975905*0.0|65.5027160645*13.1908836365*66.0427856445*1.0", 
+            "path": "models/props/shops/medical_rack.model"
+        }, 
+        "223C58B6.4825B0C5.254AECAC.DD12A34B": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "yuri_parfilov", 
+                "created on": "13:56:30", 
+                "description": "medical_rack", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "13:56:30"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.995432019234*0.000486000004457*0.0954390019178*0.0|-0.000487999990582*0.999996006489*0.0*0.0|-0.0954390019178*-4.60000010207e-05*0.995432019234*0.0|61.8680534363*13.1914825439*69.3402404785*1.0", 
+            "path": "models/props/shops/medical_rack.model"
+        }
+    }, 
+    "spawn_transform": "-0.999997019768*0.000487999990582*-0.000852999975905*0.0|0.000488999998197*0.999996006489*0.0*0.0|0.000852999975905*0.0*-0.999997019768*0.0|60.4410896301*13.1913442612*57.6723480225*1.0"
+}

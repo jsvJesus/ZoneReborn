@@ -1,0 +1,62 @@
+{
+    "models": {
+        "7EB63404.47E88575.67B5548F.EE793A01": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "1d97c450i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "14/02/2024", 
+                "description": "rack_01", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {
+                "lines": "default"
+            }, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*1.09999895096*0.0*0.0|0.932204008102*0.0*0.0*0.0|253.952590942*207.791748047*-38.9075317383*1.0", 
+            "path": "models/props/warehouse/rack_01.model"
+        }, 
+        "D993C7FD.4D79B92A.1D16AFAD.BC7548EE": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "1d97c450i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "14/02/2024", 
+                "description": "rack_01", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {
+                "lines": "default"
+            }, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*1.10000002384*0.0*0.0|0.932205021381*0.0*0.0*0.0|253.952590942*204.645751953*-38.9075317383*1.0", 
+            "path": "models/props/warehouse/rack_01.model"
+        }, 
+        "FC4B672D.4F4AED7A.C8D53FBB.6A422F14": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "casts shadow": true, 
+                "chunk": "1d97c450i@inst_vesuvius_dungeon@0x0000026A536D6A40", 
+                "created by": "ice_c", 
+                "created on": "14/02/2024", 
+                "description": "rack_01", 
+                "modified by": "ice_c", 
+                "modified on": "20/02/2024"
+            }, 
+            "dyes": {
+                "lines": "default"
+            }, 
+            "matrix": "0.0*0.0*-0.999997973442*0.0|0.0*1.10000002384*0.0*0.0|0.932205021381*0.0*0.0*0.0|253.952590942*201.499755859*-38.9075317383*1.0", 
+            "path": "models/props/warehouse/rack_01.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-0.999997973442*0.0|0.0*1.09999895096*0.0*0.0|0.932204008102*0.0*0.0*0.0|253.952590942*207.791748047*-38.9075317383*1.0"
+}

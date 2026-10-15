@@ -1,0 +1,42 @@
+{
+    "firstguid": "ABA4406C.474BE551.C2BAEAA0.7339C2EF", 
+    "models": {
+        "10410A8B.474599AA.4FB71A9C.17D213BD": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/05/2023", 
+                "description": "industrial_lamp_3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {
+                "lighth": "default"
+            }, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*-0.880671024323*0.473729014397*0.0|0.0*-0.473729014397*-0.880671024323*0.0|54.2239532471*8.89999771118*65.918510437*1.0", 
+            "path": "models/props/electric/lamps/industrial_lamps/industrial_lamp_3.model"
+        }, 
+        "ABA4406C.474BE551.C2BAEAA0.7339C2EF": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "No batching", 
+                "chunk": "ad54b277i@pvp_dm_lib@0x000001FA6A6EC480", 
+                "created by": "anton_zyryanov", 
+                "created on": "23/05/2023", 
+                "description": "industrial_lamp_3", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "24/11/2023"
+            }, 
+            "dyes": {
+                "lighth": "default"
+            }, 
+            "matrix": "1.0*0.0*0.0*0.0|0.0*-0.880671024323*0.473729014397*0.0|0.0*-0.473729014397*-0.880671024323*0.0|57.4974403381*8.89999771118*65.9627838135*1.0", 
+            "path": "models/props/electric/lamps/industrial_lamps/industrial_lamp_3.model"
+        }
+    }, 
+    "spawn_transform": "1.0*0.0*0.0*0.0|0.0*-0.880671024323*0.473729014397*0.0|0.0*-0.473729014397*-0.880671024323*0.0|57.4974403381*8.89999771118*65.9627838135*1.0"
+}

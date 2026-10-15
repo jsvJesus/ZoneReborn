@@ -1,0 +1,54 @@
+{
+    "firstguid": "6D2FC1A8.4D414A48.7B2C4CAC.14CF5F9A", 
+    "models": {
+        "4E9D4A73.4F41E5C2.962ACD8E.E90B0D3D": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "20f879abi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "17/07/2020", 
+                "description": "placard02", 
+                "modified by": "ice_c", 
+                "modified on": "17/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-1.91027104855*0.0|1.91027104855*-0.000209999998333*0.0*0.0|-0.000209999998333*-1.91027104855*0.0*0.0|35.3885116577*15.4508056641*41.5366897583*1.0", 
+            "path": "models/misc/posters/placard02.model"
+        }, 
+        "6D2FC1A8.4D414A48.7B2C4CAC.14CF5F9A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "20f879abi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "17/07/2020", 
+                "description": "placard16", 
+                "modified by": "ice_c", 
+                "modified on": "17/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-3.64350199699*0.0|3.64350199699*-0.00052100000903*0.0*0.0|-0.00052100000903*-3.64350199699*0.0*0.0|35.3885574341*15.1341190338*42.7214126587*1.0", 
+            "path": "models/misc/posters/placard16.model"
+        }, 
+        "FF36D975.40F8EBE3.AB6F6893.AA2A813A": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "chunk": "20f879abi@pvp_dm_gok@0x000002925D2E8860", 
+                "created by": "ice_c", 
+                "created on": "17/07/2020", 
+                "description": "placard08", 
+                "modified by": "ice_c", 
+                "modified on": "17/07/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.0*0.0*-2.67826890945*0.0|2.67826890945*0.0*0.0*0.0|0.0*-2.67826890945*0.0*0.0|35.3885116577*14.7455005646*41.5407867432*1.0", 
+            "path": "models/misc/posters/placard08.model"
+        }
+    }, 
+    "spawn_transform": "0.0*0.0*-3.64350199699*0.0|3.64350199699*-0.00052100000903*0.0*0.0|-0.00052100000903*-3.64350199699*0.0*0.0|35.3885574341*15.1341190338*42.7214126587*1.0"
+}

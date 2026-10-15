@@ -1,0 +1,42 @@
+{
+    "firstguid": "AE3B80D7.47B51EFB.58D5B5B1.5911FB45", 
+    "models": {
+        "7F050427.415B4706.3B878189.4AF837B0": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff10006o@black_forest@0x000002430D0AC120", 
+                "created by": "yuri_parfilov", 
+                "created on": "29/10/2025", 
+                "description": "bench-simple_metal_lod2", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "29/10/2025"
+            }, 
+            "dyes": {
+                "wood": "brown"
+            }, 
+            "matrix": "0.999405026436*0.0*-0.0344940014184*0.0|0.0*1.0*0.0*0.0|0.0344940014184*0.0*0.999405026436*0.0|-1420.59399414*0.780000984669*617.75592041*1.0", 
+            "path": "models/props/benchs/bench-simple_metal_lod2.model"
+        }, 
+        "AE3B80D7.47B51EFB.58D5B5B1.5911FB45": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Compound", 
+                "chunk": "fff10006o@black_forest@0x000002430D0AC120", 
+                "created by": "yuri_parfilov", 
+                "created on": "29/10/2025", 
+                "description": "bench-simple_metal_lod2", 
+                "modified by": "yuri_parfilov", 
+                "modified on": "29/10/2025"
+            }, 
+            "dyes": {
+                "wood": "brown"
+            }, 
+            "matrix": "0.0322199985385*0.0*0.999481022358*0.0|0.0*1.0*0.0*0.0|-0.999481022358*0.0*0.0322199985385*0.0|-1417.66906738*0.780000984669*618.787658691*1.0", 
+            "path": "models/props/benchs/bench-simple_metal_lod2.model"
+        }
+    }, 
+    "spawn_transform": "0.0322199985385*0.0*0.999481022358*0.0|0.0*1.0*0.0*0.0|-0.999481022358*0.0*0.0322199985385*0.0|-1417.66906738*0.780000984669*618.787658691*1.0"
+}

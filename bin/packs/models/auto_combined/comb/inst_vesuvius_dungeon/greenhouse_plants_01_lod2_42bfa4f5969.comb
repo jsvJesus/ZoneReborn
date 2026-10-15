@@ -1,0 +1,90 @@
+{
+    "models": {
+        "548F3855.4247EA6F.7C4A1B8D.646E5F61": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "sergey_busygin", 
+                "created on": "30/05/2024", 
+                "description": "greenhouse_plants_01_lod2", 
+                "modified by": "sergey_busygin", 
+                "modified on": "30/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.995333015919*-1.99999999495e-06*-0.0964889973402*0.0|3.00000010611e-06*0.999998986721*9.99999997475e-07*0.0|0.0964889973402*-9.99999997475e-07*0.995333015919*0.0|416.046569824*179.380706787*-107.768920898*1.0", 
+            "path": "models/misc/furniture/greenhouse/greenhouse_plants_01_lod2.model"
+        }, 
+        "9418EA85.4F749879.32B1B980.820474B8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "greenhouse_plants_01_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.995333015919*-1.99999999495e-06*-0.0964889973402*0.0|3.00000010611e-06*0.999998986721*9.99999997475e-07*0.0|0.0964889973402*-9.99999997475e-07*0.995333015919*0.0|417.330444336*177.725875854*-107.629669189*1.0", 
+            "path": "models/misc/furniture/greenhouse/greenhouse_plants_01_lod2.model"
+        }, 
+        "C22BE64D.418875DD.868E4D90.DC581B49": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "greenhouse_plants_01_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.515038013458*0.0*-0.857167005539*0.0|0.0*1.0*0.0*0.0|0.857167005539*0.0*-0.515038013458*0.0|424.885803223*177.725891113*-108.681846619*1.0", 
+            "path": "models/misc/furniture/greenhouse/greenhouse_plants_01_lod2.model"
+        }, 
+        "F41E49BC.49EE3EFB.FE9BC887.511D7108": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "greenhouse_plants_01_lod2", 
+                "modified by": "evgeny_yashkin", 
+                "modified on": "05/07/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.997606992722*-1.99999999495e-06*-0.0691109970212*0.0|-3.00000010611e-06*0.999997973442*-9.99999997475e-07*0.0|0.0691109970212*-9.99999997475e-07*-0.997606992722*0.0|415.09954834*178.569763184*-107.459899902*1.0", 
+            "path": "models/misc/furniture/greenhouse/greenhouse_plants_01_lod2.model"
+        }, 
+        "FB38F9EA.4F67E61C.A6DE0ABA.B613DC94": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "cb7a8333i@inst_vesuvius_dungeon@0x000002948839A8A0", 
+                "created by": "ice_c", 
+                "created on": "16/05/2024", 
+                "description": "greenhouse_plants_01_lod2", 
+                "modified by": "ice_c", 
+                "modified on": "20/05/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.481335014105*-1.99999999495e-06*0.876536011696*0.0|9.99999997475e-07*0.999998986721*1.99999999495e-06*0.0|-0.876536011696*0.0*0.481335014105*0.0|421.691009521*177.725830078*-88.5006866455*1.0", 
+            "path": "models/misc/furniture/greenhouse/greenhouse_plants_01_lod2.model"
+        }
+    }, 
+    "spawn_transform": "0.995333015919*-1.99999999495e-06*-0.0964889973402*0.0|3.00000010611e-06*0.999998986721*9.99999997475e-07*0.0|0.0964889973402*-9.99999997475e-07*0.995333015919*0.0|416.046569824*179.380706787*-107.768920898*1.0"
+}

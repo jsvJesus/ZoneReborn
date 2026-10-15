@@ -1,0 +1,107 @@
+{
+    "models": {
+        "2D5EDC35.48892808.E54661B5.5B37A4A2": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "15e68756i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "withered_creeper_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.167025998235*0.0*-0.485080003738*0.0|0.0*0.513031005859*0.0*0.0|0.485080003738*0.0*-0.167025998235*0.0|377.876678467*174.347366333*-132.709655762*1.0", 
+            "path": "models/flora/grass/creepers/withered_creeper_lod1.model"
+        }, 
+        "445097E2.4044CBE6.051312AA.A5F5BF62": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "15e68756i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "withered_creeper_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.248345002532*0.0*-0.354674011469*0.0|0.0*0.432976990938*0.0*0.0|0.354674011469*0.0*0.248345002532*0.0|377.858123779*174.657913208*-132.706542969*1.0", 
+            "path": "models/flora/grass/creepers/withered_creeper_lod1.model"
+        }, 
+        "9F73A03F.466F2D62.39CF8281.F583FE31": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "15e68756i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "withered_creeper_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "0.306861013174*0.0*0.378942012787*0.0|0.0*0.487607002258*0.0*0.0|-0.378942012787*0.0*0.306861013174*0.0|379.839782715*175.130966187*-136.546478271*1.0", 
+            "path": "models/flora/grass/creepers/withered_creeper_lod1.model"
+        }, 
+        "AA2A9161.46385A44.2A3C58BC.262789A3": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "15e68756i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "withered_creeper_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.458451986313*0.0*0.631004989147*0.0|0.0*0.779965996742*0.0*0.0|-0.631004989147*0.0*-0.458451986313*0.0|377.814544678*174.442184448*-136.230316162*1.0", 
+            "path": "models/flora/grass/creepers/withered_creeper_lod1.model"
+        }, 
+        "AD2A4807.47D56C3E.809FFF96.1E00AAD8": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "15e68756i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "withered_creeper_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.712042987347*0.0*0.287683993578*0.0|0.0*0.767962992191*0.0*0.0|-0.287683993578*0.0*-0.712042987347*0.0|380.116149902*174.375778198*-137.097717285*1.0", 
+            "path": "models/flora/grass/creepers/withered_creeper_lod1.model"
+        }, 
+        "D81A18FA.4DEE97DE.A96F8E89.7B31704C": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "15e68756i@inst_vesuvius_dungeon@0x0000022ED3827220", 
+                "created by": "ice_c", 
+                "created on": "12/06/2024", 
+                "description": "withered_creeper_lod1", 
+                "modified by": "ice_c", 
+                "modified on": "12/06/2024"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.362679004669*0.0*0.326557993889*0.0|0.0*0.488032996655*0.0*0.0|-0.326557993889*0.0*-0.362679004669*0.0|378.877716064*174.83102417*-136.399078369*1.0", 
+            "path": "models/flora/grass/creepers/withered_creeper_lod1.model"
+        }
+    }, 
+    "spawn_transform": "-0.458451986313*0.0*0.631004989147*0.0|0.0*0.779965996742*0.0*0.0|-0.631004989147*0.0*-0.458451986313*0.0|377.814544678*174.442184448*-136.230316162*1.0"
+}

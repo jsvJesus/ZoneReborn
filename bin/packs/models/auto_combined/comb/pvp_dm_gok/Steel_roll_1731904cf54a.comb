@@ -1,0 +1,57 @@
+{
+    "firstguid": "2F6E8CD1.4D6BE8D7.C0198A8E.4EB08EF5", 
+    "models": {
+        "2F6E8CD1.4D6BE8D7.C0198A8E.4EB08EF5": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "Steel_roll", 
+                "modified by": "ice_c", 
+                "modified on": "30/06/2020"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.017451999709*0.0*-0.999845981598*0.0|0.0*0.999998986721*0.0*0.0|0.999845981598*0.0*-0.017451999709*0.0|46.5930328369*14.6776571274*37.5127906799*1.0", 
+            "path": "models/props/warehouse/Steel_roll.model"
+        }, 
+        "6F90E351.4CC320D2.D7FE54B8.81133B46": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "Steel_roll", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.017451999709*0.0*-0.999845981598*0.0|0.0*0.999998986721*0.0*0.0|0.999845981598*0.0*-0.017451999709*0.0|41.3569374084*17.5380096436*37.5739593506*1.0", 
+            "path": "models/props/warehouse/Steel_roll.model"
+        }, 
+        "B1C461A0.41727A79.A474DEBB.9652AEEB": {
+            "CustomData": "<customData>\t</customData>\n", 
+            "attr": {
+                "animation speed": 1.0, 
+                "batching": "Sorted", 
+                "casts shadow": true, 
+                "chunk": "20f879abi@pvp_dm_gok@0x0000029226703C40", 
+                "created by": "ice_c", 
+                "created on": "30/06/2020", 
+                "description": "Steel_roll", 
+                "modified by": "anton_zyryanov", 
+                "modified on": "28/11/2023"
+            }, 
+            "dyes": {}, 
+            "matrix": "-0.017451999709*0.0*-0.999845981598*0.0|0.0*0.999998986721*0.0*0.0|0.999845981598*0.0*-0.017451999709*0.0|38.5499382019*17.5380096436*37.5789604187*1.0", 
+            "path": "models/props/warehouse/Steel_roll.model"
+        }
+    }, 
+    "spawn_transform": "-0.017451999709*0.0*-0.999845981598*0.0|0.0*0.999998986721*0.0*0.0|0.999845981598*0.0*-0.017451999709*0.0|46.5930328369*14.6776571274*37.5127906799*1.0"
+}
