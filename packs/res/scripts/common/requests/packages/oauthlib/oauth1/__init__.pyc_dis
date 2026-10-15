@@ -1,3 +1,0 @@
-# Embedded file name: ./common/requests/packages/oauthlib/oauth1/__init__.py
-from __future__ import absolute_import
-from .rfc5849 import Client, Server

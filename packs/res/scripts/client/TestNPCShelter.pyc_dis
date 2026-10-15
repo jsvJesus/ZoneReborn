@@ -1,8 +1,0 @@
-# Embedded file name: ./client/TestNPCShelter.py
-import BigWorld
-
-class TestNPCShelter(BigWorld.UserDataObject):
-
-    def __init__(self):
-        BigWorld.UserDataObject.__init__(self)
-        self.model = BigWorld.Model('helpers/models/hemisphere.model')

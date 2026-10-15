@@ -1,5 +1,0 @@
-# Embedded file name: ./client/eos_bw_client/eos_avatar.py
-from eos_bw_client.eos_account import EOSAccount
-
-class EOSAvatar(EOSAccount):
-    pass
