@@ -16,10 +16,6 @@ bin/packs/audio/
 bin/packs/textures/
 bin/packs/models/
 
-bin/packs/characters/
-bin/packs/sfx/
-bin/packs/system/
-
 !/src/x64/
 /src/x64/*
 !/src/.idea/
