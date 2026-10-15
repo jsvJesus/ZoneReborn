@@ -16,6 +16,15 @@ bin/packs/audio/
 bin/packs/textures/
 bin/packs/models/
 
+bin/packs/characters/
+bin/packs/materials/
+bin/packs/particles/
+bin/packs/scaleformUI/
+bin/packs/soGUI/
+bin/packs/extendedGUI/
+bin/packs/sfx/
+bin/packs/system/
+
 !/src/x64/
 /src/x64/*
 !/src/.idea/
