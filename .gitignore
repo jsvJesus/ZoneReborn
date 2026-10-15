@@ -11,7 +11,9 @@ __pycache__/
 !.env.example
 
 # Full client resources intentionally do not belong in this source archive.
-/src/.build/
+bin/Release/
+bin/Debug/
+/build/
 bin/packs/audio/
 bin/packs/textures/
 bin/packs/models/
