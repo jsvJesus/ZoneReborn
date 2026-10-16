@@ -1,4 +1,4 @@
-#include "Engine/Core/Engine.hpp"
+#include "Engine/Core/Engine.h"
 
 int main() {
     engine::initialize();

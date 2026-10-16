@@ -4,6 +4,24 @@ __pycache__/
 *.tlog
 .vscode/
 .idea/
+.vs/
+**/.vs/
+*.ipch
+*.pch
+*.VC.db
+*.VC.opendb
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build artifacts
+*.obj
+*.pdb
+*.ilk
+*.idb
+*.tlog
+*.lastbuildstate
 
 # Local credentials and environment files.
 .env
@@ -11,17 +29,37 @@ __pycache__/
 !.env.example
 
 # Full client resources intentionally do not belong in this source archive.
+src/.vs/
+src/.idea/
 bin/Release/
 bin/Debug/
-/build/
+build/
 bin/packs/audio/
 bin/packs/textures/
 bin/packs/models/
+bin/packs/models/auto_combined/
+bin/packs/models/bolvan/
+bin/packs/models/buildings/
+bin/packs/models/cables/
+bin/packs/models/cables_segments/
+bin/packs/models/city/
+bin/packs/models/entities/
+bin/packs/models/events/
+bin/packs/models/fauna/
+bin/packs/models/instances/
+bin/packs/models/misc/
+bin/packs/models/props/
+bin/packs/models/roads/
+bin/packs/models/roads_segments/
+bin/packs/models/transport/
+bin/packs/models/village/
 
 !/src/x64/
 /src/x64/*
 !/src/.idea/
 /src/.idea/*
+!/src/.vs/
+/src/.vs/*
 !/src/Engine/x64/
 /src/Engine/x64/*
 !/src/WorldEditor/x64/
