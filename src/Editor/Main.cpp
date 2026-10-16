@@ -7,6 +7,7 @@
 #include "WorldEditor/Terrain/TerrainExporter.h"
 
 #include "Editor/Viewport/TerrainViewport.h"
+#include "Editor/WorldGenerator/WorldStoragePanel.h"
 
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -17,6 +18,7 @@
 #include <exception>
 #include <filesystem>
 #include <stdexcept>
+#include <utility>
 
 extern "C++" IMGUI_IMPL_API LRESULT
 ImGui_ImplWin32_WndProcHandler(
@@ -207,11 +209,12 @@ int main() {
             graphics.context()
         );
 
-        world_editor::terrain::Settings settings;
+        editor::world_generator::WorldStoragePanel storagePanel;
 
-        auto terrain = world_editor::terrain::generate(
-            settings
-        );
+        world_editor::terrain::Settings settings;
+        world_editor::terrain::Settings activeSettings = settings;
+
+        auto terrain = world_editor::terrain::generate(settings);
 
         viewport.set_terrain(terrain);
         window.show();
@@ -305,11 +308,12 @@ int main() {
             ImGui::Separator();
 
             if (ImGui::Button("Generate Terrain")) {
-                terrain = world_editor::terrain::generate(
-                    settings
-                );
+                auto generated = world_editor::terrain::generate(settings);
 
-                viewport.set_terrain(terrain);
+                viewport.set_terrain(generated);
+
+                terrain = std::move(generated);
+                activeSettings = settings;
             }
 
             if (ImGui::Button("Export OBJ / PGM")) {
@@ -344,6 +348,13 @@ int main() {
             ImGui::Text(
                 "Spacing: %.1f m",
                 terrain.spacingMeters
+            );
+
+            storagePanel.draw(
+                terrain,
+                settings,
+                activeSettings,
+                viewport
             );
 
             ImGui::End();

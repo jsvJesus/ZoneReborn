@@ -84,6 +84,7 @@
 
     <ClCompile Include="..\Externals\DearImGui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="..\Externals\DearImGui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="WorldGenerator\WorldStoragePanel.cpp" />
   </ItemGroup>
 
   <ItemGroup>
@@ -97,6 +98,7 @@
 
   <ItemGroup>
     <ClInclude Include="Viewport\TerrainViewport.h" />
+    <ClInclude Include="WorldGenerator\WorldStoragePanel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

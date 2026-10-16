@@ -82,6 +82,7 @@
     <ClCompile Include="Terrain\TerrainData.cpp" />
     <ClCompile Include="Terrain\TerrainExporter.cpp" />
     <ClCompile Include="Terrain\TerrainGenerator.cpp" />
+    <ClCompile Include="Terrain\TerrainWorldStorage.cpp" />
     <ClCompile Include="WorldEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +90,7 @@
     <ClInclude Include="Terrain\TerrainData.h" />
     <ClInclude Include="Terrain\TerrainExporter.h" />
     <ClInclude Include="Terrain\TerrainGenerator.h" />
+    <ClInclude Include="Terrain\TerrainWorldStorage.h" />
     <ClInclude Include="WorldEditor.h" />
   </ItemGroup>
   <ItemGroup>
