@@ -294,8 +294,8 @@ void TerrainRenderer::set_mesh(
             const auto x0 = x == 0 ? x : x - 1;
             const auto z0 = z == 0 ? z : z - 1;
 
-            const auto x1 = std::min(x + 1, data.samplesX - 1);
-            const auto z1 = std::min(z + 1, data.samplesZ - 1);
+            const auto x1 = (std::min)(x + 1, data.samplesX - 1);
+            const auto z1 = (std::min)(z + 1, data.samplesZ - 1);
 
             const float dx =
                 (height(x1, z) - height(x0, z)) /
