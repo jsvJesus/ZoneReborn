@@ -76,6 +76,9 @@ namespace editor::viewport {
         ImGui::Checkbox("Wireframe", &wireframe_);
 
         ImGui::SameLine();
+        ImGui::Checkbox("Frustum Culling", &frustumCulling_);
+
+        ImGui::SameLine();
 
         if (ImGui::Button("Reset Camera")) {
             reset_camera();
@@ -109,6 +112,7 @@ namespace editor::viewport {
         }
 
         renderer_.set_wireframe(wireframe_);
+        renderer_.set_frustum_culling(frustumCulling_);
         renderer_.set_auto_lod(automaticLod_);
 
         renderer_.set_fixed_lod(
@@ -118,6 +122,13 @@ namespace editor::viewport {
         renderer_.set_lod_distance(lodDistance_);
 
         const auto& stats = renderer_.stats();
+
+        ImGui::Text(
+            "Visible: %u | Culled: %u | Total: %u",
+            stats.visibleChunks,
+            stats.culledChunks,
+            stats.chunks
+        );
 
         ImGui::Text(
             "Chunks: %u | Draw calls: %u | Triangles: %llu",

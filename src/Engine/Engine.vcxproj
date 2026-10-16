@@ -81,6 +81,7 @@
     <ClCompile Include="Assets\ResourceIndex.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
     <ClCompile Include="Renderer\Device.cpp" />
+    <ClCompile Include="Renderer\Frustum.cpp" />
     <ClCompile Include="Renderer\TerrainChunkMesh.cpp" />
     <ClCompile Include="Renderer\TerrainRenderer.cpp" />
   </ItemGroup>
@@ -88,6 +89,7 @@
     <ClInclude Include="Assets\ResourceIndex.h" />
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Renderer\Device.h" />
+    <ClInclude Include="Renderer\Frustum.h" />
     <ClInclude Include="Renderer\TerrainChunkMesh.h" />
     <ClInclude Include="Renderer\TerrainRenderer.h" />
   </ItemGroup>

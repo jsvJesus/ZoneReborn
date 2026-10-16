@@ -14,126 +14,130 @@
 
 #pragma comment(lib, "d3dcompiler.lib")
 
-namespace engine::renderer {
-
-namespace {
-
-    using Microsoft::WRL::ComPtr;
-
-    struct Constants {
-        DirectX::XMFLOAT4X4 viewProjection;
-    };
-
-    constexpr char shaderSource[] = R"(
-
-    cbuffer CameraConstants : register(b0)
+namespace engine::renderer
+{
+    namespace
     {
-        float4x4 viewProjection;
-    };
 
-    struct VertexInput
-    {
-        float3 position : POSITION;
-        float3 normal : NORMAL;
-    };
+        using Microsoft::WRL::ComPtr;
 
-    struct PixelInput
-    {
-        float4 position : SV_POSITION;
-        float3 normal : NORMAL;
-    };
+        struct Constants {
+            DirectX::XMFLOAT4X4 viewProjection;
+        };
 
-    PixelInput VSMain(VertexInput input)
-    {
-        PixelInput output;
-        output.position = mul(
-            float4(input.position, 1.0),
-            viewProjection
-        );
-        output.normal = input.normal;
-        return output;
-    }
+        constexpr char shaderSource[] = R"(
 
-    float4 PSMain(PixelInput input) : SV_TARGET
-    {
-        float3 normal = normalize(input.normal);
+        cbuffer CameraConstants : register(b0)
+        {
+            float4x4 viewProjection;
+        };
 
-        float3 lightDirection = normalize(
-            float3(-0.45, 0.85, 0.35)
-        );
+        struct VertexInput
+        {
+            float3 position : POSITION;
+            float3 normal : NORMAL;
+        };
 
-        float lighting = 0.35 +
-            saturate(dot(normal, lightDirection)) * 0.65;
+        struct PixelInput
+        {
+            float4 position : SV_POSITION;
+            float3 normal : NORMAL;
+        };
 
-        float slope = 1.0 - saturate(normal.y);
-
-        float3 grass = float3(0.25, 0.36, 0.20);
-        float3 soil = float3(0.42, 0.37, 0.29);
-
-        float3 color = lerp(
-            grass,
-            soil,
-            saturate(slope * 3.5)
-        );
-
-        return float4(color * lighting, 1.0);
-    }
-
-    )";
-
-    void check(HRESULT result, const char* message) {
-        if (FAILED(result)) {
-            throw std::runtime_error(message);
+        PixelInput VSMain(VertexInput input)
+        {
+            PixelInput output;
+            output.position = mul(
+                float4(input.position, 1.0),
+                viewProjection
+            );
+            output.normal = input.normal;
+            return output;
         }
-    }
 
-    ComPtr<ID3DBlob> compile_shader(
-        const char* entry,
-        const char* target
-    ) {
-        ComPtr<ID3DBlob> bytecode;
-        ComPtr<ID3DBlob> errors;
+        float4 PSMain(PixelInput input) : SV_TARGET
+        {
+            float3 normal = normalize(input.normal);
 
-        const HRESULT result = D3DCompile(
-            shaderSource,
-            sizeof(shaderSource) - 1,
-            nullptr,
-            nullptr,
-            nullptr,
-            entry,
-            target,
-            D3DCOMPILE_ENABLE_STRICTNESS,
-            0,
-            bytecode.GetAddressOf(),
-            errors.GetAddressOf()
-        );
+            float3 lightDirection = normalize(
+                float3(-0.45, 0.85, 0.35)
+            );
 
-        if (FAILED(result)) {
-            if (errors) {
+            float lighting = 0.35 +
+                saturate(dot(normal, lightDirection)) * 0.65;
+
+            float slope = 1.0 - saturate(normal.y);
+
+            float3 grass = float3(0.25, 0.36, 0.20);
+            float3 soil = float3(0.42, 0.37, 0.29);
+
+            float3 color = lerp(
+                grass,
+                soil,
+                saturate(slope * 3.5)
+            );
+
+            return float4(color * lighting, 1.0);
+        }
+
+        )";
+
+        void check(HRESULT result, const char* message)
+        {
+            if (FAILED(result)) {
+                throw std::runtime_error(message);
+            }
+        }
+
+        ComPtr<ID3DBlob> compile_shader(
+            const char* entry,
+            const char* target
+        )
+        {
+            ComPtr<ID3DBlob> bytecode;
+            ComPtr<ID3DBlob> errors;
+
+            const HRESULT result = D3DCompile(
+                shaderSource,
+                sizeof(shaderSource) - 1,
+                nullptr,
+                nullptr,
+                nullptr,
+                entry,
+                target,
+                D3DCOMPILE_ENABLE_STRICTNESS,
+                0,
+                bytecode.GetAddressOf(),
+                errors.GetAddressOf()
+            );
+
+            if (FAILED(result)) {
+                if (errors) {
+                    throw std::runtime_error(
+                        std::string(
+                            static_cast<const char*>(
+                                errors->GetBufferPointer()
+                            ),
+                            errors->GetBufferSize()
+                        )
+                    );
+                }
+
                 throw std::runtime_error(
-                    std::string(
-                        static_cast<const char*>(
-                            errors->GetBufferPointer()
-                        ),
-                        errors->GetBufferSize()
-                    )
+                    "Failed to compile terrain shader"
                 );
             }
 
-            throw std::runtime_error(
-                "Failed to compile terrain shader"
-            );
+            return bytecode;
         }
-
-        return bytecode;
-    }
 
     }
 
     TerrainRenderer::TerrainRenderer(
         ID3D11Device* device,
         ID3D11DeviceContext* context
-    ) : device_(device), context_(context) {
+    ) : device_(device), context_(context)
+    {
         if (!device_ || !context_) {
             throw std::invalid_argument(
                 "Invalid DirectX device or context"
@@ -143,7 +147,8 @@ namespace {
         create_pipeline();
     }
 
-    void TerrainRenderer::create_pipeline() {
+    void TerrainRenderer::create_pipeline()
+    {
         const auto vs = compile_shader("VSMain", "vs_5_0");
         const auto ps = compile_shader("PSMain", "ps_5_0");
 
@@ -245,9 +250,9 @@ namespace {
         );
     }
 
-    void TerrainRenderer::set_mesh(
-        const TerrainMeshData& data
-    ) {
+    
+    void TerrainRenderer::set_mesh(const TerrainMeshData& data)
+    {
         if (
             data.samplesX < 2 ||
             data.samplesZ < 2 ||
@@ -258,15 +263,10 @@ namespace {
             !std::isfinite(data.spacingMeters) ||
             data.spacingMeters <= 0.0f ||
             data.heights.size() !=
-                static_cast<std::size_t>(data.samplesX) *
-                data.samplesZ
+                static_cast<std::size_t>(data.samplesX) * data.samplesZ
         ) {
-            throw std::invalid_argument(
-                "Invalid terrain mesh data"
-            );
+            throw std::invalid_argument("Invalid terrain mesh data");
         }
-
-        std::vector<Chunk> newChunks;
 
         const std::uint32_t chunkCountX =
             (data.samplesX - 2) / TerrainChunkCells + 1;
@@ -274,47 +274,83 @@ namespace {
         const std::uint32_t chunkCountZ =
             (data.samplesZ - 2) / TerrainChunkCells + 1;
 
+        std::vector<Chunk> newChunks;
         newChunks.reserve(
-            static_cast<std::size_t>(chunkCountX) *
-            chunkCountZ
+            static_cast<std::size_t>(chunkCountX) * chunkCountZ
         );
 
         constexpr float skirtDepth = 64.0f;
 
-        for (std::uint32_t z = 0;
-             z + 1 < data.samplesZ;
-             z += TerrainChunkCells) {
+        const auto height_at = [&](std::uint32_t x, std::uint32_t z) {
+            return data.heights[
+                static_cast<std::size_t>(z) * data.samplesX + x
+            ];
+        };
 
-            for (std::uint32_t x = 0;
-                 x + 1 < data.samplesX;
-                 x += TerrainChunkCells) {
+        for (std::uint32_t z = 0; z + 1 < data.samplesZ; z += TerrainChunkCells) {
+            for (std::uint32_t x = 0; x + 1 < data.samplesX; x += TerrainChunkCells) {
+                const std::uint32_t endX = (std::min)(
+                    x + TerrainChunkCells,
+                    data.samplesX - 1
+                );
+
+                const std::uint32_t endZ = (std::min)(
+                    z + TerrainChunkCells,
+                    data.samplesZ - 1
+                );
 
                 Chunk chunk;
 
-                for (std::uint32_t level = 0;
-                     level < TerrainLodCount;
-                     ++level) {
+                float minimumHeight = height_at(x, z);
+                float maximumHeight = minimumHeight;
 
-                    const std::uint32_t step = 1u << level;
+                for (std::uint32_t sampleZ = z; sampleZ <= endZ; ++sampleZ) {
+                    for (std::uint32_t sampleX = x; sampleX <= endX; ++sampleX) {
+                        const float height = height_at(sampleX, sampleZ);
 
-                    const auto mesh = build_chunk_geometry(
-                        data, x, z, step, skirtDepth
+                        if (!std::isfinite(height)) {
+                            throw std::invalid_argument(
+                                "Terrain contains invalid height values"
+                            );
+                        }
+
+                        minimumHeight = (std::min)(minimumHeight, height);
+                        maximumHeight = (std::max)(maximumHeight, height);
+                    }
+                }
+
+                chunk.bounds.minimum = {
+                    data.originX + static_cast<float>(x) * data.spacingMeters,
+                    minimumHeight - skirtDepth,
+                    data.originZ + static_cast<float>(z) * data.spacingMeters
+                };
+
+                chunk.bounds.maximum = {
+                    data.originX + static_cast<float>(endX) * data.spacingMeters,
+                    maximumHeight,
+                    data.originZ + static_cast<float>(endZ) * data.spacingMeters
+                };
+
+                for (std::uint32_t level = 0; level < TerrainLodCount; ++level) {
+                    const std::uint32_t stride = 1u << level;
+
+                    const TerrainChunkGeometry mesh = build_chunk_geometry(
+                        data,
+                        x,
+                        z,
+                        stride,
+                        skirtDepth
                     );
 
-                    chunk.centerX = mesh.centerX;
-                    chunk.centerZ = mesh.centerZ;
-
-                    auto& gpu = chunk.levels[level];
+                    ChunkLevel& gpu = chunk.levels[level];
 
                     D3D11_BUFFER_DESC vertexDesc{};
                     vertexDesc.ByteWidth = static_cast<UINT>(
-                        mesh.vertices.size() *
-                        sizeof(TerrainVertex)
+                        mesh.vertices.size() * sizeof(TerrainVertex)
                     );
 
                     vertexDesc.Usage = D3D11_USAGE_DEFAULT;
-                    vertexDesc.BindFlags =
-                        D3D11_BIND_VERTEX_BUFFER;
+                    vertexDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
                     D3D11_SUBRESOURCE_DATA vertexData{};
                     vertexData.pSysMem = mesh.vertices.data();
@@ -325,18 +361,16 @@ namespace {
                             &vertexData,
                             gpu.vertices.GetAddressOf()
                         ),
-                        "Failed to create chunk vertex buffer"
+                        "Failed to create terrain chunk vertex buffer"
                     );
 
                     D3D11_BUFFER_DESC indexDesc{};
                     indexDesc.ByteWidth = static_cast<UINT>(
-                        mesh.indices.size() *
-                        sizeof(std::uint32_t)
+                        mesh.indices.size() * sizeof(std::uint32_t)
                     );
 
                     indexDesc.Usage = D3D11_USAGE_DEFAULT;
-                    indexDesc.BindFlags =
-                        D3D11_BIND_INDEX_BUFFER;
+                    indexDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
                     D3D11_SUBRESOURCE_DATA indexData{};
                     indexData.pSysMem = mesh.indices.data();
@@ -347,12 +381,10 @@ namespace {
                             &indexData,
                             gpu.indices.GetAddressOf()
                         ),
-                        "Failed to create chunk index buffer"
+                        "Failed to create terrain chunk index buffer"
                     );
 
-                    gpu.indexCount = static_cast<UINT>(
-                        mesh.indices.size()
-                    );
+                    gpu.indexCount = static_cast<UINT>(mesh.indices.size());
                 }
 
                 newChunks.push_back(std::move(chunk));
@@ -360,34 +392,51 @@ namespace {
         }
 
         chunks_ = std::move(newChunks);
-
-        chunkWorldSize_ =
-            TerrainChunkCells * data.spacingMeters;
+        chunkWorldSize_ = TerrainChunkCells * data.spacingMeters;
 
         stats_ = {};
-        stats_.chunks = static_cast<std::uint32_t>(
-            chunks_.size()
-        );
+        stats_.chunks = static_cast<std::uint32_t>(chunks_.size());
     }
 
+    
     std::uint32_t TerrainRenderer::select_lod(
         const Chunk& chunk,
         const DirectX::XMFLOAT3& cameraPosition
-    ) const noexcept {
+    ) const noexcept
+    {
         if (!autoLod_) {
             return fixedLod_;
         }
 
-        const float dx =
-            cameraPosition.x - chunk.centerX;
+        const Bounds3& bounds = chunk.bounds;
 
-        const float dz =
-            cameraPosition.z - chunk.centerZ;
+        const float closestX = std::clamp(
+            cameraPosition.x,
+            bounds.minimum.x,
+            bounds.maximum.x
+        );
 
-        const float distance = std::hypot(dx, dz);
+        const float closestY = std::clamp(
+            cameraPosition.y,
+            bounds.minimum.y,
+            bounds.maximum.y
+        );
 
-        const float threshold =
-            chunkWorldSize_ * lodDistanceScale_;
+        const float closestZ = std::clamp(
+            cameraPosition.z,
+            bounds.minimum.z,
+            bounds.maximum.z
+        );
+
+        const float dx = cameraPosition.x - closestX;
+        const float dy = cameraPosition.y - closestY;
+        const float dz = cameraPosition.z - closestZ;
+
+        const float distance = std::sqrt(
+            dx * dx + dy * dy + dz * dz
+        );
+
+        const float threshold = chunkWorldSize_ * lodDistanceScale_;
 
         if (distance < threshold * 2.0f) {
             return 0;
@@ -404,7 +453,8 @@ namespace {
         return 3;
     }
 
-    void TerrainRenderer::resize(UINT width, UINT height) {
+    void TerrainRenderer::resize(UINT width, UINT height)
+    {
         if (width == 0 || height == 0) {
             return;
         }
@@ -496,7 +546,10 @@ namespace {
     void TerrainRenderer::render(
         const DirectX::XMMATRIX& viewProjection,
         const DirectX::XMFLOAT3& cameraPosition
-    ) {
+    )
+    {
+        const Frustum frustum(viewProjection);
+    
         stats_ = {};
         stats_.chunks = static_cast<std::uint32_t>(
             chunks_.size()
@@ -599,6 +652,11 @@ namespace {
         constexpr UINT offset = 0;
 
         for (const Chunk& chunk : chunks_) {
+            if (frustumCulling_ && !frustum.intersects(chunk.bounds)) {
+                ++stats_.culledChunks;
+                continue;
+            }
+            
             const std::uint32_t level = select_lod(
                 chunk,
                 cameraPosition
@@ -635,6 +693,7 @@ namespace {
                 0
             );
 
+            ++stats_.visibleChunks;
             ++stats_.drawCalls;
             ++stats_.lodCounts[level];
 

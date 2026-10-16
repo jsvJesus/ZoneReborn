@@ -42,6 +42,8 @@ namespace editor::viewport {
 
         bool automaticLod_ = true;
         bool wireframe_ = false;
+
+        bool frustumCulling_ = true;
     };
 
 }
