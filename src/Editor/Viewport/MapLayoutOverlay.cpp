@@ -117,8 +117,10 @@ namespace editor::viewport {
         ImDrawList* drawList,
         const ImVec2& imagePosition,
         const ImVec2& imageSize,
-        DirectX::FXMMATRIX viewProjection
-    ) {
+        DirectX::FXMMATRIX viewProjection,
+        const ViewportLayers& layers
+    )
+    {
         if (!drawList) {
             return;
         }
@@ -132,176 +134,188 @@ namespace editor::viewport {
             true
         );
 
-        for (const auto& edge : layout.roads.edges) {
-            if (edge.from >= layout.roads.nodes.size() ||
-                edge.to >= layout.roads.nodes.size()) {
-                continue;
-            }
+        if (layers.roads)
+        {
+            for (const auto& edge : layout.roads.edges) {
+                if (edge.from >= layout.roads.nodes.size() ||
+                    edge.to >= layout.roads.nodes.size()) {
+                    continue;
+                    }
 
-            const auto& from = layout.roads.nodes[edge.from];
-            const auto& to = layout.roads.nodes[edge.to];
+                const auto& from = layout.roads.nodes[edge.from];
+                const auto& to = layout.roads.nodes[edge.to];
 
-            ImVec2 a;
-            ImVec2 b;
+                ImVec2 a;
+                ImVec2 b;
 
-            if (!project(
-                viewProjection,
-                from.x,
-                node_height(layout, from) + 3.0f,
-                from.z,
-                imagePosition,
-                imageSize,
-                a
-            ) || !project(
-                viewProjection,
-                to.x,
-                node_height(layout, to) + 3.0f,
-                to.z,
-                imagePosition,
-                imageSize,
-                b
-            )) {
-                continue;
-            }
-
-            drawList->AddLine(
-                a,
-                b,
-                shadowColor,
-                5.0f
-            );
-
-            drawList->AddLine(
-                a,
-                b,
-                roadColor,
-                2.5f
-            );
-        }
-
-        for (const auto& poi : layout.pois) {
-            const float halfWidth = poi.widthMeters * 0.5f;
-            const float halfDepth = poi.depthMeters * 0.5f;
-
-            const float corners[4][2] = {
-                {poi.centerX - halfWidth, poi.centerZ - halfDepth},
-                {poi.centerX + halfWidth, poi.centerZ - halfDepth},
-                {poi.centerX + halfWidth, poi.centerZ + halfDepth},
-                {poi.centerX - halfWidth, poi.centerZ + halfDepth}
-            };
-
-            ImVec2 projected[4];
-            bool visible = true;
-
-            for (int i = 0; i < 4; ++i) {
                 if (!project(
                     viewProjection,
-                    corners[i][0],
-                    poi.centerY + 3.0f,
-                    corners[i][1],
+                    from.x,
+                    node_height(layout, from) + 3.0f,
+                    from.z,
                     imagePosition,
                     imageSize,
-                    projected[i]
+                    a
+                ) || !project(
+                    viewProjection,
+                    to.x,
+                    node_height(layout, to) + 3.0f,
+                    to.z,
+                    imagePosition,
+                    imageSize,
+                    b
                 )) {
-                    visible = false;
-                    break;
+                    continue;
                 }
-            }
 
-            if (visible) {
+                drawList->AddLine(
+                    a,
+                    b,
+                    shadowColor,
+                    5.0f
+                );
+
+                drawList->AddLine(
+                    a,
+                    b,
+                    roadColor,
+                    2.5f
+                );
+            }
+        }
+
+        if (layers.poi)
+        {
+            for (const auto& poi : layout.pois) {
+                const float halfWidth = poi.widthMeters * 0.5f;
+                const float halfDepth = poi.depthMeters * 0.5f;
+
+                const float corners[4][2] = {
+                    {poi.centerX - halfWidth, poi.centerZ - halfDepth},
+                    {poi.centerX + halfWidth, poi.centerZ - halfDepth},
+                    {poi.centerX + halfWidth, poi.centerZ + halfDepth},
+                    {poi.centerX - halfWidth, poi.centerZ + halfDepth}
+                };
+
+                ImVec2 projected[4];
+                bool visible = true;
+
                 for (int i = 0; i < 4; ++i) {
-                    drawList->AddLine(
-                        projected[i],
-                        projected[(i + 1) % 4],
-                        shadowColor,
-                        4.0f
-                    );
+                    if (!project(
+                        viewProjection,
+                        corners[i][0],
+                        poi.centerY + 3.0f,
+                        corners[i][1],
+                        imagePosition,
+                        imageSize,
+                        projected[i]
+                    )) {
+                        visible = false;
+                        break;
+                    }
+                }
 
-                    drawList->AddLine(
-                        projected[i],
-                        projected[(i + 1) % 4],
-                        poiColor,
-                        2.0f
-                    );
+                if (visible) {
+                    for (int i = 0; i < 4; ++i) {
+                        drawList->AddLine(
+                            projected[i],
+                            projected[(i + 1) % 4],
+                            shadowColor,
+                            4.0f
+                        );
+
+                        drawList->AddLine(
+                            projected[i],
+                            projected[(i + 1) % 4],
+                            poiColor,
+                            2.0f
+                        );
+                    }
+                }
+
+                ImVec2 center;
+
+                if (!project(
+                    viewProjection,
+                    poi.centerX,
+                    poi.centerY + 4.0f,
+                    poi.centerZ,
+                    imagePosition,
+                    imageSize,
+                    center
+                )) {
+                    continue;
+                }
+
+                drawList->AddCircleFilled(
+                    center,
+                    6.0f,
+                    shadowColor
+                );
+
+                drawList->AddCircleFilled(
+                    center,
+                    4.0f,
+                    poiColor
+                );
+
+                char label[32]{};
+
+                std::snprintf(
+                    label,
+                    sizeof(label),
+                    "POI %u",
+                    poi.id + 1
+                );
+
+                if (layers.labels) {
+                    draw_label(drawList, center, label, poiColor);
+                }
+            }
+        }
+
+        if (layers.exits)
+        {
+            for (const auto& exit : layout.exits) {
+                ImVec2 center;
+
+                if (!project(
+                    viewProjection,
+                    exit.x,
+                    exit.y + 4.0f,
+                    exit.z,
+                    imagePosition,
+                    imageSize,
+                    center
+                )) {
+                    continue;
+                }
+
+                const float radius = 9.0f;
+
+                drawList->AddQuadFilled(
+                    ImVec2(center.x, center.y - radius),
+                    ImVec2(center.x + radius, center.y),
+                    ImVec2(center.x, center.y + radius),
+                    ImVec2(center.x - radius, center.y),
+                    exitColor
+                );
+
+                char label[32]{};
+
+                std::snprintf(
+                    label,
+                    sizeof(label),
+                    "EXIT %u",
+                    exit.id + 1
+                );
+
+                if (layers.labels) {
+                    draw_label(drawList, center, label, exitColor);
                 }
             }
 
-            ImVec2 center;
-
-            if (!project(
-                viewProjection,
-                poi.centerX,
-                poi.centerY + 4.0f,
-                poi.centerZ,
-                imagePosition,
-                imageSize,
-                center
-            )) {
-                continue;
-            }
-
-            drawList->AddCircleFilled(
-                center,
-                6.0f,
-                shadowColor
-            );
-
-            drawList->AddCircleFilled(
-                center,
-                4.0f,
-                poiColor
-            );
-
-            char label[32]{};
-
-            std::snprintf(
-                label,
-                sizeof(label),
-                "POI %u",
-                poi.id + 1
-            );
-
-            draw_label(drawList, center, label, poiColor);
+            drawList->PopClipRect();
         }
-
-        for (const auto& exit : layout.exits) {
-            ImVec2 center;
-
-            if (!project(
-                viewProjection,
-                exit.x,
-                exit.y + 4.0f,
-                exit.z,
-                imagePosition,
-                imageSize,
-                center
-            )) {
-                continue;
-            }
-
-            const float radius = 9.0f;
-
-            drawList->AddQuadFilled(
-                ImVec2(center.x, center.y - radius),
-                ImVec2(center.x + radius, center.y),
-                ImVec2(center.x, center.y + radius),
-                ImVec2(center.x - radius, center.y),
-                exitColor
-            );
-
-            char label[32]{};
-
-            std::snprintf(
-                label,
-                sizeof(label),
-                "EXIT %u",
-                exit.id + 1
-            );
-
-            draw_label(drawList, center, label, exitColor);
-        }
-
-        drawList->PopClipRect();
     }
-
 }

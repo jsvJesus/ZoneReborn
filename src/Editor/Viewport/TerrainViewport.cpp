@@ -1,16 +1,19 @@
-
 #include "Editor/Viewport/TerrainViewport.h"
+
+#include "Editor/Viewport/CameraNavigation.h"
 #include "Editor/Viewport/MapLayoutOverlay.h"
 #include "Editor/Viewport/MapLayoutPicking.h"
+#include "Editor/Viewport/ViewportStatusBar.h"
+#include "Editor/Viewport/ViewportToolbar.h"
 
 #include "imgui.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <memory>
 #include <span>
 #include <stdexcept>
-#include <memory>
 #include <utility>
 
 namespace editor::viewport {
@@ -77,9 +80,9 @@ namespace editor::viewport {
 
     void TerrainViewport::open_streamed_world(
         const std::filesystem::path& directory
-    )
-    {
-        auto newStreamer = std::make_unique<TerrainWorldStreamer>(directory);
+    ) {
+        auto newStreamer =
+            std::make_unique<TerrainWorldStreamer>(directory);
 
         const auto& settings = newStreamer->settings();
 
@@ -105,10 +108,11 @@ namespace editor::viewport {
     }
 
     const world_editor::terrain::Settings&
-        TerrainViewport::streaming_settings() const
-    {
+        TerrainViewport::streaming_settings() const {
         if (!streamer_) {
-            throw std::logic_error("Streaming world is not active");
+            throw std::logic_error(
+                "Streaming world is not active"
+            );
         }
 
         return streamer_->settings();
@@ -116,8 +120,7 @@ namespace editor::viewport {
 
     void TerrainViewport::set_map_layout(
         const world_editor::world_generator::MapLayout* layout
-    )
-    {
+    ) {
         if (layout) {
             mapLayout_ = *layout;
         } else {
@@ -129,8 +132,7 @@ namespace editor::viewport {
 
     void TerrainViewport::select(
         const ui::MapSelection selection
-    ) noexcept
-    {
+    ) noexcept {
         if (!mapLayout_ || !selection.valid()) {
             selection_ = {};
             return;
@@ -156,11 +158,12 @@ namespace editor::viewport {
             );
         }
 
-        selection_ = exists ? selection : ui::MapSelection{};
+        selection_ = exists
+            ? selection
+            : ui::MapSelection{};
     }
 
-    void TerrainViewport::focus_selection()
-    {
+    void TerrainViewport::focus_selection() {
         if (!mapLayout_ || !selection_.valid()) {
             return;
         }
@@ -209,129 +212,66 @@ namespace editor::viewport {
         }
     }
 
-    void TerrainViewport::draw()
-    {
-        ImGui::Begin("Terrain Viewport");
+    void TerrainViewport::draw() {
+        if (!ImGui::Begin("Terrain Viewport")) {
+            ImGui::End();
+            return;
+        }
 
-        ImGui::TextDisabled(
-            "RMB: Orbit | MMB: Pan | Wheel: Zoom"
-        );
+        const ViewportToolbarActions actions =
+            draw_viewport_toolbar(
+                toolbar_,
+                selection_.valid(),
+                streamer_.get()
+            );
 
-        ImGui::Checkbox("Wireframe", &wireframe_);
-
-        ImGui::SameLine();
-        ImGui::Checkbox("Frustum Culling", &frustumCulling_);
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Reset Camera")) {
+        if (actions.resetCamera) {
             reset_camera();
         }
 
-        ImGui::SameLine();
-
-        ImGui::Checkbox(
-            "Map Layout Overlay",
-            &showMapLayout_
-        );
-
-        ImGui::Checkbox("Automatic LOD", &automaticLod_);
-
-        if (automaticLod_) {
-            ImGui::SameLine();
-
-            ImGui::SetNextItemWidth(160.0f);
-
-            ImGui::SliderFloat(
-                "LOD Distance",
-                &lodDistance_,
-                0.5f,
-                3.0f,
-                "%.2f"
-            );
-        } else {
-            ImGui::SameLine();
-
-            ImGui::SetNextItemWidth(160.0f);
-
-            ImGui::SliderInt(
-                "Fixed LOD",
-                &fixedLod_,
-                0,
-                3
-            );
+        if (actions.focusSelection) {
+            focus_selection();
         }
 
-        renderer_.set_wireframe(wireframe_);
-        renderer_.set_frustum_culling(frustumCulling_);
-        renderer_.set_auto_lod(automaticLod_);
+        if (actions.topView) {
+            pitch_ = 1.48f;
+            yaw_ = 0.0f;
+        }
+
+        renderer_.set_wireframe(toolbar_.wireframe);
+        renderer_.set_frustum_culling(
+            toolbar_.frustumCulling
+        );
+
+        renderer_.set_auto_lod(toolbar_.automaticLod);
 
         renderer_.set_fixed_lod(
-            static_cast<std::uint32_t>(fixedLod_)
+            static_cast<std::uint32_t>(toolbar_.fixedLod)
         );
 
-        renderer_.set_lod_distance(lodDistance_);
-
-        if (streamer_)
-        {
-            ImGui::Separator();
-            ImGui::TextUnformatted("Terrain Streaming");
-
-            int radius = streamer_->radius();
-
-            if (ImGui::SliderInt("Stream Radius", &radius, 1, 4)) {
-                streamer_->set_radius(radius);
-            }
-
-            ImGui::Text(
-                "Resident: %llu / %u | Loaded: %llu | Unloaded: %llu",
-                static_cast<unsigned long long>(streamer_->loaded_count()),
-                streamer_->total_count(),
-                static_cast<unsigned long long>(streamer_->total_loads()),
-                static_cast<unsigned long long>(streamer_->total_unloads())
-            );
-
-            if (streamer_->paused()) {
-                ImGui::TextWrapped(
-                    "Streaming stopped: %s",
-                    streamer_->error().c_str()
-                );
-            }
-        }
-
-        const auto& stats = renderer_.stats();
-
-        ImGui::Text(
-            "Visible: %u | Culled: %u | Total: %u",
-            stats.visibleChunks,
-            stats.culledChunks,
-            stats.chunks
+        renderer_.set_lod_distance(
+            toolbar_.lodDistance
         );
 
-        ImGui::Text(
-            "Chunks: %u | Draw calls: %u | Triangles: %llu",
-            stats.chunks,
-            stats.drawCalls,
-            static_cast<unsigned long long>(stats.triangles)
+        ImVec2 available = ImGui::GetContentRegionAvail();
+
+        const float statusHeight =
+            ImGui::GetFrameHeightWithSpacing() + 6.0f;
+
+        available.y = (std::max)(
+            0.0f,
+            available.y - statusHeight
         );
 
-        ImGui::Text(
-            "LOD0: %u | LOD1: %u | LOD2: %u | LOD3: %u",
-            stats.lodCounts[0],
-            stats.lodCounts[1],
-            stats.lodCounts[2],
-            stats.lodCounts[3]
-        );
+        if (available.x >= 16.0f &&
+            available.y >= 16.0f) {
 
-        const ImVec2 size = ImGui::GetContentRegionAvail();
-
-        if (size.x >= 16.0f && size.y >= 16.0f) {
             const UINT width = static_cast<UINT>(
-                (std::min)(size.x, 8192.0f)
+                (std::min)(available.x, 8192.0f)
             );
 
             const UINT height = static_cast<UINT>(
-                (std::min)(size.y, 8192.0f)
+                (std::min)(available.y, 8192.0f)
             );
 
             renderer_.resize(width, height);
@@ -353,15 +293,24 @@ namespace editor::viewport {
                 targetZ_ + std::cos(yaw_) * horizontal;
 
             const auto eye = DirectX::XMVectorSet(
-                eyeX, eyeY, eyeZ, 1.0f
+                eyeX,
+                eyeY,
+                eyeZ,
+                1.0f
             );
 
             const auto target = DirectX::XMVectorSet(
-                targetX_, targetY_, targetZ_, 1.0f
+                targetX_,
+                targetY_,
+                targetZ_,
+                1.0f
             );
 
             const auto up = DirectX::XMVectorSet(
-                0.0f, 1.0f, 0.0f, 0.0f
+                0.0f,
+                1.0f,
+                0.0f,
+                0.0f
             );
 
             const auto view = DirectX::XMMatrixLookAtLH(
@@ -378,8 +327,7 @@ namespace editor::viewport {
                     30000.0f
                 );
 
-            if (streamer_)
-            {
+            if (streamer_) {
                 streamer_->update(
                     targetX_,
                     targetZ_,
@@ -389,95 +337,108 @@ namespace editor::viewport {
 
             renderer_.render(
                 view * projection,
-                DirectX::XMFLOAT3(eyeX, eyeY, eyeZ)
+                DirectX::XMFLOAT3(
+                    eyeX,
+                    eyeY,
+                    eyeZ
+                )
             );
 
             ImGui::Image(
                 reinterpret_cast<ImTextureID>(
                     renderer_.texture()
                 ),
-                size
+                ImVec2(
+                    static_cast<float>(width),
+                    static_cast<float>(height)
+                )
             );
 
-            if (showMapLayout_ && mapLayout_) {
-                const ImVec2 imagePosition = ImGui::GetItemRectMin();
-                const ImVec2 imageSize = ImGui::GetItemRectSize();
+            const bool imageHovered = ImGui::IsItemHovered();
+            const ImVec2 imagePosition = ImGui::GetItemRectMin();
+            const ImVec2 imageSize = ImGui::GetItemRectSize();
 
-                if (ImGui::IsItemHovered() &&
-                    ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+            if (toolbar_.showLayout && mapLayout_) {
+                if (imageHovered &&
+                    ImGui::IsMouseClicked(
+                        ImGuiMouseButton_Left
+                    )) {
                     select(pick_map_layout(
                         *mapLayout_,
                         ImGui::GetMousePos(),
                         imagePosition,
                         imageSize,
-                        view * projection
+                        view * projection,
+                        toolbar_.layers
                     ));
-                    }
+                }
 
                 draw_map_layout_overlay(
                     *mapLayout_,
                     ImGui::GetWindowDrawList(),
                     imagePosition,
                     imageSize,
-                    view * projection
+                    view * projection,
+                    toolbar_.layers
                 );
 
-                draw_map_selection(
-                    *mapLayout_,
-                    selection_,
-                    ImGui::GetWindowDrawList(),
-                    imagePosition,
-                    imageSize,
-                    view * projection
-                );
+                const bool selectionVisible =
+                    (selection_.kind ==
+                        ui::MapSelectionKind::POI &&
+                        toolbar_.layers.poi) ||
+                    (selection_.kind ==
+                        ui::MapSelectionKind::Exit &&
+                        toolbar_.layers.exits);
+
+                if (selectionVisible) {
+                    draw_map_selection(
+                        *mapLayout_,
+                        selection_,
+                        ImGui::GetWindowDrawList(),
+                        imagePosition,
+                        imageSize,
+                        view * projection
+                    );
+                }
             }
 
-            if (ImGui::IsItemHovered()) {
+            if (imageHovered) {
                 ImGuiIO& io = ImGui::GetIO();
 
-                if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
-                    yaw_ += io.MouseDelta.x * 0.005f;
+                if (!io.WantTextInput) {
+                    if (ImGui::IsKeyPressed(ImGuiKey_Home)) {
+                        reset_camera();
+                    }
 
-                    pitch_ = std::clamp(
-                        pitch_ - io.MouseDelta.y * 0.005f,
-                        0.1f,
-                        1.48f
-                    );
+                    if (ImGui::IsKeyPressed(ImGuiKey_F)) {
+                        focus_selection();
+                    }
                 }
 
-                if (ImGui::IsMouseDown(ImGuiMouseButton_Middle)) {
-                    const float speed =
-                        distance_ * 0.0015f;
-
-                    const float rightX = -std::cos(yaw_);
-                    const float rightZ = std::sin(yaw_);
-
-                    const float upX = -std::sin(yaw_);
-                    const float upZ = -std::cos(yaw_);
-
-                    targetX_ -=
-                        io.MouseDelta.x * rightX * speed;
-
-                    targetZ_ -=
-                        io.MouseDelta.x * rightZ * speed;
-
-                    targetX_ -=
-                        io.MouseDelta.y * upX * speed;
-
-                    targetZ_ -=
-                        io.MouseDelta.y * upZ * speed;
-                }
-
-                if (io.MouseWheel != 0.0f) {
-                    distance_ = std::clamp(
-                        distance_ *
-                            std::pow(0.87f, io.MouseWheel),
-                        25.0f,
-                        30000.0f
-                    );
-                }
+                update_camera_navigation(
+                    {
+                        targetX_,
+                        targetY_,
+                        targetZ_,
+                        yaw_,
+                        pitch_,
+                        distance_
+                    },
+                    {
+                        toolbar_.orbitSpeed,
+                        toolbar_.panSpeed,
+                        toolbar_.zoomSpeed
+                    },
+                    io
+                );
             }
         }
+
+        draw_viewport_status_bar(
+            renderer_.stats(),
+            streamer_.get(),
+            distance_
+        );
 
         ImGui::End();
     }

@@ -139,13 +139,18 @@ namespace editor::viewport {
         const ImVec2& mousePosition,
         const ImVec2& imagePosition,
         const ImVec2& imageSize,
-        DirectX::FXMMATRIX viewProjection
+        DirectX::FXMMATRIX viewProjection,
+        const ViewportLayers& layers
     ) {
         ui::MapSelection nearest;
         float nearestDistance = 16.0f * 16.0f;
-
+        
         for (const auto& poi : layout.pois) {
             ImVec2 center{};
+
+            if (!layers.poi) {
+                continue;
+            }
 
             if (!project(
                 viewProjection,
@@ -176,6 +181,10 @@ namespace editor::viewport {
 
         for (const auto& exit : layout.exits) {
             ImVec2 center{};
+
+            if (!layers.exits) {
+                continue;
+            }
 
             if (!project(
                 viewProjection,

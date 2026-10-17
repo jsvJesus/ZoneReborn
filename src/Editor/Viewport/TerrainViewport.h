@@ -7,6 +7,7 @@
 
 #include "Editor/UI/MapSelection.h"
 #include "Editor/Viewport/TerrainWorldStreamer.h"
+#include "Editor/Viewport/ViewportToolbar.h"
 
 #include <filesystem>
 #include <memory>
@@ -74,20 +75,13 @@ namespace editor::viewport {
         float distance_ = 1600.0f;
         float homeDistance_ = 1600.0f;
 
-        float lodDistance_ = 1.0f;
-        int fixedLod_ = 0;
-
-        bool automaticLod_ = true;
-        bool wireframe_ = false;
-        bool frustumCulling_ = true;
+        ViewportToolbarState toolbar_;
 
         std::unique_ptr<TerrainWorldStreamer> streamer_;
 
         std::optional<world_editor::world_generator::MapLayout> mapLayout_;
 
         ui::MapSelection selection_;
-
-        bool showMapLayout_ = true;
     };
 
 }

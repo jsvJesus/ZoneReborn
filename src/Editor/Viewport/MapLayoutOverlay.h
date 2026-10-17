@@ -1,6 +1,7 @@
 #pragma once
 
 #include "WorldEditor/WorldGenerator/MapLayout.h"
+#include "Editor/Viewport/ViewportLayers.h"
 
 #include "imgui.h"
 
@@ -13,7 +14,8 @@ namespace editor::viewport {
         ImDrawList* drawList,
         const ImVec2& imagePosition,
         const ImVec2& imageSize,
-        DirectX::FXMMATRIX viewProjection
+        DirectX::FXMMATRIX viewProjection,
+        const ViewportLayers& layers
     );
 
 }

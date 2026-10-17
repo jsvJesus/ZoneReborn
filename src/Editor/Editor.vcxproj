@@ -163,6 +163,7 @@
     <ClCompile Include="UI\EditorWorkspace.cpp" />
     <ClCompile Include="UI\MapInspectorPanel.cpp" />
     <ClCompile Include="UI\WorldOutlinerPanel.cpp" />
+    <ClCompile Include="Viewport\CameraNavigation.cpp" />
     <ClCompile Include="Viewport\MapLayoutOverlay.cpp" />
     <ClCompile Include="Viewport\MapLayoutPicking.cpp" />
     <ClCompile Include="Viewport\TerrainViewport.cpp" />
@@ -175,6 +176,8 @@
     <ClCompile Include="..\Externals\DearImGui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="..\Externals\DearImGui\backends\imgui_impl_dx11.cpp" />
     <ClCompile Include="Viewport\TerrainWorldStreamer.cpp" />
+    <ClCompile Include="Viewport\ViewportStatusBar.cpp" />
+    <ClCompile Include="Viewport\ViewportToolbar.cpp" />
     <ClCompile Include="WorldGenerator\MapLayoutPanel.cpp">
       <AssemblerOutput>NoListing</AssemblerOutput>
       <AssemblerListingLocation>Z:\SOnline\src\..\build\obj\WorldEditor\Release\</AssemblerListingLocation>
@@ -271,10 +274,14 @@
     <ClInclude Include="UI\MapInspectorPanel.h" />
     <ClInclude Include="UI\MapSelection.h" />
     <ClInclude Include="UI\WorldOutlinerPanel.h" />
+    <ClInclude Include="Viewport\CameraNavigation.h" />
     <ClInclude Include="Viewport\MapLayoutOverlay.h" />
     <ClInclude Include="Viewport\MapLayoutPicking.h" />
     <ClInclude Include="Viewport\TerrainViewport.h" />
     <ClInclude Include="Viewport\TerrainWorldStreamer.h" />
+    <ClInclude Include="Viewport\ViewportLayers.h" />
+    <ClInclude Include="Viewport\ViewportStatusBar.h" />
+    <ClInclude Include="Viewport\ViewportToolbar.h" />
     <ClInclude Include="WorldGenerator\MapLayoutPanel.h" />
     <ClInclude Include="WorldGenerator\WorldStoragePanel.h" />
   </ItemGroup>

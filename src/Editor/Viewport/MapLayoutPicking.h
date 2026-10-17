@@ -3,6 +3,7 @@
 #include "Editor/UI/MapSelection.h"
 
 #include "WorldEditor/WorldGenerator/MapLayout.h"
+#include "Editor/Viewport/ViewportLayers.h"
 
 #include "imgui.h"
 
@@ -15,7 +16,8 @@ namespace editor::viewport {
         const ImVec2& mousePosition,
         const ImVec2& imagePosition,
         const ImVec2& imageSize,
-        DirectX::FXMMATRIX viewProjection
+        DirectX::FXMMATRIX viewProjection,
+        const ViewportLayers& layers
     );
 
     void draw_map_selection(
