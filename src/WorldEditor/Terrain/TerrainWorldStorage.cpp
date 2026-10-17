@@ -579,4 +579,120 @@ namespace world_editor::terrain {
         return world;
     }
 
+     Settings read_world_settings(
+        const std::filesystem::path& directory
+    )
+    {
+        return read_manifest(directory / "world.meta");
+    }
+
+    WorldChunk read_world_chunk(
+        const std::filesystem::path& directory,
+        const Settings& settings,
+        std::uint32_t chunkX,
+        std::uint32_t chunkZ
+    ) {
+        validate_settings(settings);
+
+        const std::uint32_t countX =
+            (settings.samplesX - 2) / chunkCells + 1;
+
+        const std::uint32_t countZ =
+            (settings.samplesZ - 2) / chunkCells + 1;
+
+        if (chunkX >= countX || chunkZ >= countZ) {
+            throw std::out_of_range("World chunk is out of range");
+        }
+
+        const std::uint32_t startX = chunkX * chunkCells;
+        const std::uint32_t startZ = chunkZ * chunkCells;
+
+        const std::uint32_t columns = (std::min)(
+            chunkCells,
+            settings.samplesX - 1 - startX
+        ) + 1;
+
+        const std::uint32_t rows = (std::min)(
+            chunkCells,
+            settings.samplesZ - 1 - startZ
+        ) + 1;
+
+        std::ifstream input(
+            chunk_path(directory, startX, startZ),
+            std::ios::binary
+        );
+
+        if (!input) {
+            throw std::runtime_error("Unable to open world chunk");
+        }
+
+        check_magic(input, chunkMagic);
+
+        const std::uint32_t version = read_u32(input);
+        const std::uint32_t storedX = read_u32(input);
+        const std::uint32_t storedZ = read_u32(input);
+        const std::uint32_t storedColumns = read_u32(input);
+        const std::uint32_t storedRows = read_u32(input);
+        const std::uint32_t storedChecksum = read_u32(input);
+
+        if (version != formatVersion ||
+            storedX != startX ||
+            storedZ != startZ ||
+            storedColumns != columns ||
+            storedRows != rows) {
+            throw std::runtime_error(
+                "World chunk header does not match metadata"
+            );
+        }
+
+        std::vector<std::uint8_t> payload(
+            static_cast<std::size_t>(columns) * rows * sizeof(float)
+        );
+
+        read_bytes(
+            input,
+            reinterpret_cast<char*>(payload.data()),
+            static_cast<std::streamsize>(payload.size())
+        );
+
+        check_end(input);
+
+        if (checksum(payload) != storedChecksum) {
+            throw std::runtime_error("World chunk checksum mismatch");
+        }
+
+        WorldChunk result;
+
+        result.startX = startX;
+        result.startZ = startZ;
+        result.samplesX = columns;
+        result.samplesZ = rows;
+
+        result.originX =
+            settings.originX + static_cast<float>(startX) * settings.spacingMeters;
+
+        result.originZ =
+            settings.originZ + static_cast<float>(startZ) * settings.spacingMeters;
+
+        result.spacingMeters = settings.spacingMeters;
+        result.heights.resize(static_cast<std::size_t>(columns) * rows);
+
+        for (std::size_t i = 0; i < result.heights.size(); ++i) {
+            const float height = unpack_float(
+                payload,
+                i * sizeof(float)
+            );
+
+            if (!std::isfinite(height)) {
+                throw std::runtime_error(
+                    "World chunk contains invalid heights"
+                );
+            }
+
+            result.heights[i] = height;
+        }
+
+        return result;
+    }
+
 }

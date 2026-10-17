@@ -398,6 +398,129 @@ namespace engine::renderer
         stats_.chunks = static_cast<std::uint32_t>(chunks_.size());
     }
 
+    void TerrainRenderer::clear_chunks() noexcept {
+        chunks_.clear();
+        stats_ = {};
+    }
+
+    void TerrainRenderer::remove_stream_chunk(
+        std::uint32_t chunkX,
+        std::uint32_t chunkZ
+    )
+    {
+        std::erase_if(chunks_, [&](const Chunk& chunk) {
+            return chunk.gridX == chunkX && chunk.gridZ == chunkZ;
+        });
+    }
+
+    void TerrainRenderer::add_stream_chunk(
+        std::uint32_t chunkX,
+        std::uint32_t chunkZ,
+        const TerrainMeshData& data
+    )
+    {
+        if (data.samplesX < 2 || data.samplesX > TerrainChunkCells + 1 ||
+            data.samplesZ < 2 || data.samplesZ > TerrainChunkCells + 1 ||
+            !std::isfinite(data.originX) ||
+            !std::isfinite(data.originZ) ||
+            !std::isfinite(data.spacingMeters) ||
+            data.spacingMeters <= 0.0f ||
+            data.heights.size() !=
+                static_cast<std::size_t>(data.samplesX) * data.samplesZ) {
+            throw std::invalid_argument("Invalid streaming chunk");
+        }
+
+        constexpr float skirtDepth = 64.0f;
+
+        const auto [minIt, maxIt] = std::minmax_element(
+            data.heights.begin(),
+            data.heights.end()
+        );
+
+        for (float height : data.heights) {
+            if (!std::isfinite(height)) {
+                throw std::invalid_argument(
+                    "Streaming chunk contains invalid height"
+                );
+            }
+        }
+
+        Chunk chunk;
+
+        chunk.gridX = chunkX;
+        chunk.gridZ = chunkZ;
+
+        chunk.bounds.minimum = {
+            data.originX,
+            *minIt - skirtDepth,
+            data.originZ
+        };
+
+        chunk.bounds.maximum = {
+            data.originX + (data.samplesX - 1) * data.spacingMeters,
+            *maxIt,
+            data.originZ + (data.samplesZ - 1) * data.spacingMeters
+        };
+
+        for (std::uint32_t level = 0; level < TerrainLodCount; ++level) {
+            const TerrainChunkGeometry mesh = build_chunk_geometry(
+                data,
+                0,
+                0,
+                1u << level,
+                skirtDepth,
+                true
+            );
+
+            ChunkLevel& gpu = chunk.levels[level];
+
+            D3D11_BUFFER_DESC vertexDesc{};
+            vertexDesc.ByteWidth = static_cast<UINT>(
+                mesh.vertices.size() * sizeof(TerrainVertex)
+            );
+            vertexDesc.Usage = D3D11_USAGE_DEFAULT;
+            vertexDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+            D3D11_SUBRESOURCE_DATA vertexData{};
+            vertexData.pSysMem = mesh.vertices.data();
+
+            check(
+                device_->CreateBuffer(
+                    &vertexDesc,
+                    &vertexData,
+                    gpu.vertices.GetAddressOf()
+                ),
+                "Failed to create streaming vertex buffer"
+            );
+
+            D3D11_BUFFER_DESC indexDesc{};
+            indexDesc.ByteWidth = static_cast<UINT>(
+                mesh.indices.size() * sizeof(std::uint32_t)
+            );
+            indexDesc.Usage = D3D11_USAGE_DEFAULT;
+            indexDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+
+            D3D11_SUBRESOURCE_DATA indexData{};
+            indexData.pSysMem = mesh.indices.data();
+
+            check(
+                device_->CreateBuffer(
+                    &indexDesc,
+                    &indexData,
+                    gpu.indices.GetAddressOf()
+                ),
+                "Failed to create streaming index buffer"
+            );
+
+            gpu.indexCount = static_cast<UINT>(mesh.indices.size());
+        }
+
+        chunks_.reserve(chunks_.size() + 1);
+        remove_stream_chunk(chunkX, chunkZ);
+        chunks_.push_back(std::move(chunk));
+
+        chunkWorldSize_ = TerrainChunkCells * data.spacingMeters;
+    }
     
     std::uint32_t TerrainRenderer::select_lod(
         const Chunk& chunk,

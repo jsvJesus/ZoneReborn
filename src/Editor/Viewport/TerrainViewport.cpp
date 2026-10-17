@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <span>
 #include <stdexcept>
+#include <memory>
+#include <utility>
 
 namespace editor::viewport {
 
@@ -45,6 +47,8 @@ namespace editor::viewport {
             std::span<const float>(terrain.heights)
         });
 
+        streamer_.reset();
+
         const auto [minHeight, maxHeight] =
             std::minmax_element(
                 terrain.heights.begin(),
@@ -64,6 +68,42 @@ namespace editor::viewport {
         homeDistance_ = (std::max)(width, depth) * 1.1f;
 
         reset_camera();
+    }
+
+    void TerrainViewport::open_streamed_world(
+        const std::filesystem::path& directory
+    )
+    {
+        auto newStreamer = std::make_unique<TerrainWorldStreamer>(directory);
+
+        const auto& settings = newStreamer->settings();
+
+        const float width =
+            (settings.samplesX - 1) * settings.spacingMeters;
+
+        const float depth =
+            (settings.samplesZ - 1) * settings.spacingMeters;
+
+        renderer_.clear_chunks();
+        streamer_ = std::move(newStreamer);
+
+        homeX_ = settings.originX + width * 0.5f;
+        homeY_ = settings.baseHeightMeters;
+        homeZ_ = settings.originZ + depth * 0.5f;
+
+        homeDistance_ = (std::max)(width, depth) * 0.5f;
+
+        reset_camera();
+    }
+
+    const world_editor::terrain::Settings&
+        TerrainViewport::streaming_settings() const
+    {
+        if (!streamer_) {
+            throw std::logic_error("Streaming world is not active");
+        }
+
+        return streamer_->settings();
     }
 
     void TerrainViewport::draw() {
@@ -120,6 +160,33 @@ namespace editor::viewport {
         );
 
         renderer_.set_lod_distance(lodDistance_);
+
+        if (streamer_)
+        {
+            ImGui::Separator();
+            ImGui::TextUnformatted("Terrain Streaming");
+
+            int radius = streamer_->radius();
+
+            if (ImGui::SliderInt("Stream Radius", &radius, 1, 4)) {
+                streamer_->set_radius(radius);
+            }
+
+            ImGui::Text(
+                "Resident: %llu / %u | Loaded: %llu | Unloaded: %llu",
+                static_cast<unsigned long long>(streamer_->loaded_count()),
+                streamer_->total_count(),
+                static_cast<unsigned long long>(streamer_->total_loads()),
+                static_cast<unsigned long long>(streamer_->total_unloads())
+            );
+
+            if (streamer_->paused()) {
+                ImGui::TextWrapped(
+                    "Streaming stopped: %s",
+                    streamer_->error().c_str()
+                );
+            }
+        }
 
         const auto& stats = renderer_.stats();
 
@@ -199,6 +266,15 @@ namespace editor::viewport {
                     0.5f,
                     30000.0f
                 );
+
+            if (streamer_)
+            {
+                streamer_->update(
+                    targetX_,
+                    targetZ_,
+                    renderer_
+                );
+            }
 
             renderer_.render(
                 view * projection,

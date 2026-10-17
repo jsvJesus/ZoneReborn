@@ -316,6 +316,8 @@ int main() {
                 activeSettings = settings;
             }
 
+            ImGui::BeginDisabled(viewport.is_streaming());
+
             if (ImGui::Button("Export OBJ / PGM")) {
                 const auto outputDir =
                     std::filesystem::current_path() /
@@ -337,18 +339,38 @@ int main() {
                 );
             }
 
+            ImGui::EndDisabled();
+
             ImGui::Separator();
 
-            ImGui::Text(
-                "Samples: %u x %u",
-                terrain.samplesX,
-                terrain.samplesZ
-            );
+            if (viewport.is_streaming())
+            {
+                const auto& world = viewport.streaming_settings();
 
-            ImGui::Text(
-                "Spacing: %.1f m",
-                terrain.spacingMeters
-            );
+                ImGui::Text(
+                    "Samples: %u x %u",
+                    world.samplesX,
+                    world.samplesZ
+                );
+
+                ImGui::Text(
+                    "Spacing: %.1f m",
+                    world.spacingMeters
+                );
+            }
+            else
+            {
+                ImGui::Text(
+                    "Samples: %u x %u",
+                    terrain.samplesX,
+                    terrain.samplesZ
+                );
+
+                ImGui::Text(
+                    "Spacing: %.1f m",
+                    terrain.spacingMeters
+                );
+            }
 
             storagePanel.draw(
                 terrain,

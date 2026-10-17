@@ -36,6 +36,19 @@ namespace engine::renderer {
         TerrainRenderer& operator=(const TerrainRenderer&) = delete;
 
         void set_mesh(const TerrainMeshData& data);
+        void clear_chunks() noexcept;
+
+        void add_stream_chunk(
+            std::uint32_t chunkX,
+            std::uint32_t chunkZ,
+            const TerrainMeshData& data
+        );
+
+        void remove_stream_chunk(
+            std::uint32_t chunkX,
+            std::uint32_t chunkZ
+        );
+        
         void resize(UINT width, UINT height);
 
         void render(
@@ -82,8 +95,10 @@ namespace engine::renderer {
         };
 
         struct Chunk {
-            Bounds3 bounds{};
+            std::uint32_t gridX = 0;
+            std::uint32_t gridZ = 0;
 
+            Bounds3 bounds{};
             std::array<ChunkLevel, TerrainLodCount> levels;
         };
 

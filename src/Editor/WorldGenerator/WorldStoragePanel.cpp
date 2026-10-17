@@ -63,6 +63,8 @@ namespace editor::world_generator {
             sizeof(worldName_)
         );
 
+        ImGui::BeginDisabled(viewport.is_streaming());
+
         if (ImGui::Button("Save World")) {
             try {
                 const auto directory = world_directory(worldName_);
@@ -81,6 +83,7 @@ namespace editor::world_generator {
             }
         }
 
+        ImGui::EndDisabled();
         ImGui::SameLine();
 
         if (ImGui::Button("Load World")) {
@@ -100,6 +103,31 @@ namespace editor::world_generator {
                 status_ = error.what();
                 hasError_ = true;
             }
+        }
+        
+        if (ImGui::Button("Stream World")) {
+            try {
+                const auto directory = world_directory(worldName_);
+
+                viewport.open_streamed_world(directory);
+
+                settings = viewport.streaming_settings();
+                activeSettings = settings;
+
+                terrain = {};
+
+                status_ = "Streaming world: " + std::string(worldName_);
+                hasError_ = false;
+            } catch (const std::exception& error) {
+                status_ = error.what();
+                hasError_ = true;
+            }
+        }
+
+        if (viewport.is_streaming()) {
+            ImGui::TextDisabled(
+                "Streaming mode: Save World is disabled."
+            );
         }
 
         if (!status_.empty()) {

@@ -3,6 +3,10 @@
 
 #include "Engine/Renderer/TerrainRenderer.h"
 #include "WorldEditor/Terrain/TerrainData.h"
+#include "Editor/Viewport/TerrainWorldStreamer.h"
+
+#include <filesystem>
+#include <memory>
 
 namespace editor::viewport {
 
@@ -18,6 +22,17 @@ namespace editor::viewport {
         );
 
         void draw();
+
+        void open_streamed_world(
+            const std::filesystem::path& directory
+        );
+
+        [[nodiscard]] bool is_streaming() const noexcept {
+            return streamer_ != nullptr;
+        }
+
+        [[nodiscard]] const world_editor::terrain::Settings&
+        streaming_settings() const;
 
     private:
         void reset_camera();
@@ -44,6 +59,8 @@ namespace editor::viewport {
         bool wireframe_ = false;
 
         bool frustumCulling_ = true;
+
+        std::unique_ptr<TerrainWorldStreamer> streamer_;
     };
 
 }
