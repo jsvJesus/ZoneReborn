@@ -3,11 +3,13 @@
 
 #include "Engine/Renderer/Frustum.h"
 #include "Engine/Renderer/TerrainChunkMesh.h"
+#include "Engine/Renderer/TerrainMaterials.h"
 
 #include <DirectXMath.h>
 #include <d3d11.h>
 #include <wrl/client.h>
 
+#include <filesystem>
 #include <array>
 #include <cstdint>
 #include <vector>
@@ -86,6 +88,21 @@ namespace engine::renderer {
             return shaderResource_.Get();
         }
 
+        void set_terrain_materials(
+            const TerrainMaterialMask& mask,
+            const std::array<std::filesystem::path, 5>& paths
+        ) {
+            materials_.load(mask, paths);
+        }
+
+        void clear_terrain_materials() noexcept {
+            materials_.clear();
+        }
+
+        [[nodiscard]] bool has_terrain_materials() const noexcept {
+            return materials_.ready();
+        }
+
     private:
         struct ChunkLevel {
             Microsoft::WRL::ComPtr<ID3D11Buffer> vertices;
@@ -143,6 +160,8 @@ namespace engine::renderer {
 
         UINT width_ = 0;
         UINT height_ = 0;
+
+        TerrainMaterials materials_;
     };
 
 }

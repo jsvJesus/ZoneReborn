@@ -90,6 +90,7 @@
     <ClCompile Include="Renderer\Device.cpp" />
     <ClCompile Include="Renderer\Frustum.cpp" />
     <ClCompile Include="Renderer\TerrainChunkMesh.cpp" />
+    <ClCompile Include="Renderer\TerrainMaterials.cpp" />
     <ClCompile Include="Renderer\TerrainRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -98,6 +99,7 @@
     <ClInclude Include="Renderer\Device.h" />
     <ClInclude Include="Renderer\Frustum.h" />
     <ClInclude Include="Renderer\TerrainChunkMesh.h" />
+    <ClInclude Include="Renderer\TerrainMaterials.h" />
     <ClInclude Include="Renderer\TerrainRenderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

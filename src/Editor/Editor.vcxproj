@@ -179,6 +179,7 @@
     <ClCompile Include="Viewport\TerrainWorldStreamer.cpp" />
     <ClCompile Include="Viewport\ViewportStatusBar.cpp" />
     <ClCompile Include="Viewport\ViewportToolbar.cpp" />
+    <ClCompile Include="WorldGenerator\BiomeMaterialsPanel.cpp" />
     <ClCompile Include="WorldGenerator\MapLayoutPanel.cpp">
       <AssemblerOutput>NoListing</AssemblerOutput>
       <AssemblerListingLocation>Z:\SOnline\src\..\build\obj\WorldEditor\Release\</AssemblerListingLocation>
@@ -285,6 +286,7 @@
     <ClInclude Include="Viewport\ViewportLayers.h" />
     <ClInclude Include="Viewport\ViewportStatusBar.h" />
     <ClInclude Include="Viewport\ViewportToolbar.h" />
+    <ClInclude Include="WorldGenerator\BiomeMaterialsPanel.h" />
     <ClInclude Include="WorldGenerator\MapLayoutPanel.h" />
     <ClInclude Include="WorldGenerator\TerrainReliefPanel.h" />
     <ClInclude Include="WorldGenerator\WorldStoragePanel.h" />

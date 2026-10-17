@@ -204,6 +204,11 @@ namespace editor::ui {
         );
 
         ImGui::DockBuilderDockWindow(
+            "Biome Materials",
+            left
+        );
+
+        ImGui::DockBuilderDockWindow(
             "World Outliner",
             right
         );

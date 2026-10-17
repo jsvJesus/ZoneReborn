@@ -1,5 +1,5 @@
 #include "Editor/WorldGenerator/WorldStoragePanel.h"
-
+#include "Editor/WorldGenerator/BiomeMaterialsPanel.h"
 #include "Editor/WorldGenerator/MapLayoutPanel.h"
 #include "Editor/WorldGenerator/TerrainReliefPanel.h"
 #include "Editor/Viewport/TerrainViewport.h"
@@ -61,7 +61,8 @@ namespace editor::world_generator {
         world_editor::terrain::Settings& activeSettings,
         viewport::TerrainViewport& viewport,
         MapLayoutPanel& mapPanel,
-        TerrainReliefPanel& reliefPanel
+        TerrainReliefPanel& reliefPanel,
+        BiomeMaterialsPanel& biomePanel
     ) {
         ImGui::Begin("World Storage");
 
@@ -109,6 +110,13 @@ namespace editor::world_generator {
                     directory
                 );
 
+                biomePanel.save_for_world(
+                    terrain,
+                    activeSettings,
+                    viewport.hydrology(),
+                    directory
+                );
+
                 status_ = "World saved";
                 hasError_ = false;
             } catch (const std::exception& error) {
@@ -146,10 +154,23 @@ namespace editor::world_generator {
                     viewport,
                     directory
                 );
+                
+                const bool biomesRestored = biomePanel.restore_from_world(
+                    activeSettings,
+                    viewport,
+                    directory,
+                    &terrain
+                );
 
-                status_ = waterRestored
-                    ? "World and Hydrology loaded"
-                    : "World loaded (no Hydrology file)";
+                status_ = "World loaded";
+
+                if (waterRestored) {
+                    status_ += " + Hydrology";
+                }
+
+                if (biomesRestored) {
+                    status_ += " + Biomes";
+                }
                 
                 hasError_ = false;
             } catch (const std::exception& error) {
@@ -206,9 +227,21 @@ namespace editor::world_generator {
                     reliefPanel.reset_to_original();
                 }
 
-                status_ = waterRestored
-                    ? "World Streaming and Hydrology enabled"
-                    : "World Streaming enabled";
+                const bool biomesRestored = biomePanel.restore_from_world(
+                    activeSettings,
+                    viewport,
+                    directory
+                );
+
+                status_ = "World Streaming enabled";
+
+                if (waterRestored) {
+                    status_ += " + Hydrology";
+                }
+
+                if (biomesRestored) {
+                    status_ += " + Biomes";
+                }
                 
                 hasError_ = false;
             } catch (const std::exception& error) {

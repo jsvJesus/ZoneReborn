@@ -14,6 +14,7 @@ namespace editor::world_generator {
 
     class MapLayoutPanel;
     class TerrainReliefPanel;
+    class BiomeMaterialsPanel;
 
     class WorldStoragePanel final {
     public:
@@ -23,7 +24,8 @@ namespace editor::world_generator {
             world_editor::terrain::Settings& activeSettings,
             viewport::TerrainViewport& viewport,
             MapLayoutPanel& mapPanel,
-            TerrainReliefPanel& reliefPanel
+            TerrainReliefPanel& reliefPanel,
+            BiomeMaterialsPanel& biomePanel
         );
 
         [[nodiscard]] std::filesystem::path world_directory() const;

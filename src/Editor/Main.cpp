@@ -10,6 +10,7 @@
 #include "Editor/WorldGenerator/MapLayoutPanel.h"
 #include "Editor/WorldGenerator/WorldStoragePanel.h"
 #include "Editor/WorldGenerator/TerrainReliefPanel.h"
+#include "Editor/WorldGenerator/BiomeMaterialsPanel.h"
 
 #include "Editor/UI/EditorWorkspace.h"
 #include "Editor/UI/MapInspectorPanel.h"
@@ -441,6 +442,8 @@ int main() {
         editor::world_generator::MapLayoutPanel mapPanel;
         editor::world_generator::WorldStoragePanel storagePanel;
         editor::world_generator::TerrainReliefPanel reliefPanel;
+        editor::world_generator::BiomeMaterialsPanel biomePanel;
+        
         editor::ui::WorldOutlinerPanel outlinerPanel;
         editor::ui::MapInspectorPanel inspectorPanel;
 
@@ -533,6 +536,8 @@ int main() {
                 reliefPanel
             );
 
+            biomePanel.draw(terrain, viewport);
+
             outlinerPanel.draw(viewport);
             inspectorPanel.draw(viewport);
 
@@ -542,7 +547,8 @@ int main() {
                 activeSettings,
                 viewport,
                 mapPanel,
-                reliefPanel
+                reliefPanel,
+                biomePanel
             );
 
             viewport.draw();

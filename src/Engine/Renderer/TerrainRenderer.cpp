@@ -136,7 +136,9 @@ namespace engine::renderer
     TerrainRenderer::TerrainRenderer(
         ID3D11Device* device,
         ID3D11DeviceContext* context
-    ) : device_(device), context_(context)
+    ) : device_(device),
+        context_(context),
+        materials_(device, context)
     {
         if (!device_ || !context_) {
             throw std::invalid_argument(
@@ -396,11 +398,13 @@ namespace engine::renderer
 
         stats_ = {};
         stats_.chunks = static_cast<std::uint32_t>(chunks_.size());
+        materials_.clear();
     }
 
     void TerrainRenderer::clear_chunks() noexcept {
         chunks_.clear();
         stats_ = {};
+        materials_.clear();
     }
 
     void TerrainRenderer::remove_stream_chunk(
@@ -753,6 +757,10 @@ namespace engine::renderer
             0
         );
 
+        if (materials_.ready()) {
+            materials_.bind();
+        }
+
         context_->GSSetShader(nullptr, nullptr, 0);
         context_->HSSetShader(nullptr, nullptr, 0);
         context_->DSSetShader(nullptr, nullptr, 0);
@@ -821,6 +829,10 @@ namespace engine::renderer
             ++stats_.lodCounts[level];
 
             stats_.triangles += mesh.indexCount / 3;
+        }
+
+        if (materials_.ready()) {
+            materials_.unbind();
         }
 
         context_->OMSetRenderTargets(

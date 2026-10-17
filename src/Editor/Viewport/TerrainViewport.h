@@ -5,6 +5,7 @@
 #include "WorldEditor/Terrain/TerrainData.h"
 #include "WorldEditor/WorldGenerator/MapLayout.h"
 #include "WorldEditor/Biome/Hydrology.h"
+#include "WorldEditor/Biome/BiomeGenerator.h"
 
 #include "Editor/UI/MapSelection.h"
 #include "Editor/Viewport/TerrainWorldStreamer.h"
@@ -61,6 +62,16 @@ namespace editor::viewport {
         void set_hydrology(
             const world_editor::biome::HydrologyLayer* water
         );
+
+        void set_biomes(
+            const world_editor::biome::BiomeLayer& layer
+        );
+
+        [[nodiscard]]
+            const world_editor::biome::HydrologyLayer*hydrology() const noexcept
+        {
+            return hydrology_ ? &*hydrology_ : nullptr;
+        }
 
     private:
         void reset_camera();

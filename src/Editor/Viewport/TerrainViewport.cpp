@@ -7,8 +7,11 @@
 #include "Editor/Viewport/ViewportToolbar.h"
 #include "Editor/Viewport/HydrologyOverlay.h"
 
+#include "Editor/Core/Paths.h"
+
 #include "imgui.h"
 
+#include <array>
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
@@ -140,7 +143,52 @@ namespace editor::viewport {
             hydrology_ = *water;
         } else {
             hydrology_.reset();
+            renderer_.clear_terrain_materials();
         }
+    }
+
+    void TerrainViewport::set_biomes(
+        const world_editor::biome::BiomeLayer& layer
+    ) {
+        if (!layer.valid()) {
+            throw std::invalid_argument(
+                "Invalid Biome Layer"
+            );
+        }
+
+        const auto directory =
+            editor::paths::packs_directory() /
+            "terrain_materials";
+
+        const std::array<std::filesystem::path, 5> textures = {
+            directory / "grass.png",
+            directory / "soil.png",
+            directory / "sand.png",
+            directory / "rock.png",
+            directory / "marsh.png"
+        };
+
+        engine::renderer::TerrainMaterialMask mask;
+
+        mask.samplesX = layer.samplesX;
+        mask.samplesZ = layer.samplesZ;
+
+        mask.originX = layer.originX;
+        mask.originZ = layer.originZ;
+
+        mask.spacingMeters = layer.spacingMeters;
+
+        mask.textureScaleMeters =
+            layer.settings.textureScaleMeters;
+
+        mask.weights = std::span<const std::uint8_t>(
+            layer.materialWeights
+        );
+
+        renderer_.set_terrain_materials(
+            mask,
+            textures
+        );
     }
 
     void TerrainViewport::select(
