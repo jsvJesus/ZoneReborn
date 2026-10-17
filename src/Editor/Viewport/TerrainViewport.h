@@ -3,10 +3,12 @@
 
 #include "Engine/Renderer/TerrainRenderer.h"
 #include "WorldEditor/Terrain/TerrainData.h"
+#include "WorldEditor/WorldGenerator/MapLayout.h"
 #include "Editor/Viewport/TerrainWorldStreamer.h"
 
 #include <filesystem>
 #include <memory>
+#include <optional>
 
 namespace editor::viewport {
 
@@ -33,6 +35,10 @@ namespace editor::viewport {
 
         [[nodiscard]] const world_editor::terrain::Settings&
         streaming_settings() const;
+
+        void set_map_layout(
+            const world_editor::world_generator::MapLayout* layout
+        );
 
     private:
         void reset_camera();
@@ -61,6 +67,9 @@ namespace editor::viewport {
         bool frustumCulling_ = true;
 
         std::unique_ptr<TerrainWorldStreamer> streamer_;
+
+        std::optional<world_editor::world_generator::MapLayout> mapLayout_;
+        bool showMapLayout_ = true;
     };
 
 }

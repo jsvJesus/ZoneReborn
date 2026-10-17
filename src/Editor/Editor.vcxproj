@@ -160,6 +160,8 @@
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="UI\EditorWorkspace.cpp" />
+    <ClCompile Include="Viewport\MapLayoutOverlay.cpp" />
     <ClCompile Include="Viewport\TerrainViewport.cpp" />
 
     <ClCompile Include="..\Externals\DearImGui\imgui.cpp" />
@@ -170,6 +172,84 @@
     <ClCompile Include="..\Externals\DearImGui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="..\Externals\DearImGui\backends\imgui_impl_dx11.cpp" />
     <ClCompile Include="Viewport\TerrainWorldStreamer.cpp" />
+    <ClCompile Include="WorldGenerator\MapLayoutPanel.cpp">
+      <AssemblerOutput>NoListing</AssemblerOutput>
+      <AssemblerListingLocation>Z:\SOnline\src\..\build\obj\WorldEditor\Release\</AssemblerListingLocation>
+      <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
+      <BrowseInformation>false</BrowseInformation>
+      <BrowseInformationFile>Z:\SOnline\src\..\build\obj\WorldEditor\Release\</BrowseInformationFile>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <CompileAs>Default</CompileAs>
+      <UseDynamicDebugging>false</UseDynamicDebugging>
+      <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Column</DiagnosticsFormat>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <ErrorReporting>Prompt</ErrorReporting>
+      <ExpandAttributedSource>false</ExpandAttributedSource>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableASAN>false</EnableASAN>
+      <EnableFuzzer>false</EnableFuzzer>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <EnableVectorLength>NotSet</EnableVectorLength>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <GenerateModuleDependencies>false</GenerateModuleDependencies>
+      <GenerateSourceDependencies>false</GenerateSourceDependencies>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ModuleDependenciesFile>Z:\SOnline\src\..\build\obj\WorldEditor\Release\</ModuleDependenciesFile>
+      <ModuleOutputFile>Z:\SOnline\src\..\build\obj\WorldEditor\Release\</ModuleOutputFile>
+      <OmitDefaultLibName>false</OmitDefaultLibName>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <Optimization>MaxSpeed</Optimization>
+      <ObjectFileName>Z:\SOnline\src\..\build\obj\WorldEditor\Release\</ObjectFileName>
+      <CallingConvention>Cdecl</CallingConvention>
+      <ProgramDataBaseFileName>Z:\SOnline\src\..\bin\Editor\WorldEditor.pdb</ProgramDataBaseFileName>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>Z:\SOnline\src\..\build\obj\WorldEditor\Release\WorldEditor.pch</PrecompiledHeaderOutputFile>
+      <PreprocessToFile>false</PreprocessToFile>
+      <PreprocessKeepComments>false</PreprocessKeepComments>
+      <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <RuntimeLibrary>MultiThreadedDll</RuntimeLibrary>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+      <ShowIncludes>false</ShowIncludes>
+      <SourceDependenciesFile>Z:\SOnline\src\..\build\obj\WorldEditor\Release\</SourceDependenciesFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <SpectreMitigation>false</SpectreMitigation>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <SupportJustMyCode>false</SupportJustMyCode>
+      <TrackerLogDirectory>Z:\SOnline\src\..\build\obj\WorldEditor\Release\WorldEditor.tlog\</TrackerLogDirectory>
+      <TranslateIncludes>false</TranslateIncludes>
+      <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>true</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <XMLDocumentationFileName>Z:\SOnline\src\..\build\obj\WorldEditor\Release\</XMLDocumentationFileName>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <IntelJCCErratum>false</IntelJCCErratum>
+      <BuildStlModules>false</BuildStlModules>
+      <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>InheritWarningLevel</ExternalWarningLevel>
+      <TreatExternalTemplatesAsInternal>true</TreatExternalTemplatesAsInternal>
+      <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
+      <PreprocessorDefinitions>NDEBUG;_UNICODE;UNICODE;</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <AdditionalIncludeDirectories>Z:\SOnline\src\;</AdditionalIncludeDirectories>
+      <LibCompiled>true</LibCompiled>
+    </ClCompile>
     <ClCompile Include="WorldGenerator\WorldStoragePanel.cpp" />
   </ItemGroup>
 
@@ -184,8 +264,11 @@
 
   <ItemGroup>
     <ClInclude Include="Core\Paths.h" />
+    <ClInclude Include="UI\EditorWorkspace.h" />
+    <ClInclude Include="Viewport\MapLayoutOverlay.h" />
     <ClInclude Include="Viewport\TerrainViewport.h" />
     <ClInclude Include="Viewport\TerrainWorldStreamer.h" />
+    <ClInclude Include="WorldGenerator\MapLayoutPanel.h" />
     <ClInclude Include="WorldGenerator\WorldStoragePanel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

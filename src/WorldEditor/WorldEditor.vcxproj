@@ -95,6 +95,7 @@
     <ClCompile Include="Terrain\TerrainWorldStorage.cpp" />
     <ClCompile Include="WorldEditor.cpp" />
     <ClCompile Include="WorldGenerator\MapLayoutGenerator.cpp" />
+    <ClCompile Include="WorldGenerator\MapLayoutStorage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Road\RoadGraph.h" />
@@ -110,6 +111,7 @@
     <ClInclude Include="WorldGenerator\MapGenerationSettings.h" />
     <ClInclude Include="WorldGenerator\MapLayout.h" />
     <ClInclude Include="WorldGenerator\MapLayoutGenerator.h" />
+    <ClInclude Include="WorldGenerator\MapLayoutStorage.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.vcxproj">

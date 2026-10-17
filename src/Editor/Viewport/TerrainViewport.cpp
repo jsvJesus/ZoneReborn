@@ -1,5 +1,6 @@
 
 #include "Editor/Viewport/TerrainViewport.h"
+#include "Editor/Viewport/MapLayoutOverlay.h"
 
 #include "imgui.h"
 
@@ -106,6 +107,16 @@ namespace editor::viewport {
         return streamer_->settings();
     }
 
+    void TerrainViewport::set_map_layout(
+        const world_editor::world_generator::MapLayout* layout
+    ) {
+        if (layout) {
+            mapLayout_ = *layout;
+        } else {
+            mapLayout_.reset();
+        }
+    }
+
     void TerrainViewport::draw() {
         ImGui::Begin("Terrain Viewport");
 
@@ -123,6 +134,13 @@ namespace editor::viewport {
         if (ImGui::Button("Reset Camera")) {
             reset_camera();
         }
+
+        ImGui::SameLine();
+
+        ImGui::Checkbox(
+            "Map Layout Overlay",
+            &showMapLayout_
+        );
 
         ImGui::Checkbox("Automatic LOD", &automaticLod_);
 
@@ -287,6 +305,16 @@ namespace editor::viewport {
                 ),
                 size
             );
+
+            if (showMapLayout_ && mapLayout_) {
+                draw_map_layout_overlay(
+                    *mapLayout_,
+                    ImGui::GetWindowDrawList(),
+                    ImGui::GetItemRectMin(),
+                    ImGui::GetItemRectSize(),
+                    view * projection
+                );
+            }
 
             if (ImGui::IsItemHovered()) {
                 ImGuiIO& io = ImGui::GetIO();
