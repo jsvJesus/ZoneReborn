@@ -401,7 +401,7 @@ namespace engine::assets {
                 : header.mipMapCount;
 
         std::uint32_t maximumDimension =
-            std::max(header.width, header.height);
+            (std::max)(header.width, header.height);
 
         std::uint32_t maximumMips = 0;
 
@@ -436,14 +436,8 @@ namespace engine::assets {
             std::uint64_t rowCount = 0;
 
             if (compressedBlockBytes != 0) {
-                rowPitch = static_cast<std::uint64_t>(
-                    std::max(1u, (mipWidth + 3u) / 4u)
-                ) * compressedBlockBytes;
-
-                rowCount = std::max(
-                    1u,
-                    (mipHeight + 3u) / 4u
-                );
+                rowPitch = static_cast<std::uint64_t>((std::max)(1u, (mipWidth + 3u) / 4u)) * compressedBlockBytes;
+                rowCount = (std::max)(1u, (mipHeight + 3u) / 4u);
             } else {
                 rowPitch =
                     static_cast<std::uint64_t>(mipWidth) *
@@ -455,8 +449,7 @@ namespace engine::assets {
             const std::uint64_t dataSize =
                 rowPitch * rowCount;
 
-            if (rowPitch >
-                    std::numeric_limits<UINT>::max() ||
+            if (rowPitch > (std::numeric_limits<UINT>::max)() ||
                 dataOffset > bytes.size() ||
                 dataSize > bytes.size() - dataOffset) {
                 throw std::runtime_error(
@@ -481,8 +474,8 @@ namespace engine::assets {
                 dataSize
             );
 
-            mipWidth = std::max(1u, mipWidth / 2u);
-            mipHeight = std::max(1u, mipHeight / 2u);
+            mipWidth = (std::max)(1u, mipWidth / 2u);
+            mipHeight = (std::max)(1u, mipHeight / 2u);
         }
 
         D3D11_TEXTURE2D_DESC description{};
