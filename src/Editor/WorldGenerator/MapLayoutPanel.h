@@ -5,6 +5,7 @@
 
 #include <optional>
 #include <string>
+#include <filesystem>
 
 namespace editor::viewport {
     class TerrainViewport;
@@ -30,6 +31,19 @@ namespace editor::world_generator {
 
         void clear(viewport::TerrainViewport& viewport);
 
+        void save_hydrology_for_world(
+            const world_editor::terrain::Heightfield& heightfield,
+            const world_editor::terrain::Settings& settings,
+            const std::filesystem::path& directory
+        ) const;
+
+        [[nodiscard]] bool restore_hydrology(
+            const world_editor::terrain::Heightfield& heightfield,
+            const world_editor::terrain::Settings& settings,
+            viewport::TerrainViewport& viewport,
+            const std::filesystem::path& directory
+        );
+
     private:
         world_editor::world_generator::MapGenerationSettings settings_;
         std::optional<world_editor::world_generator::MapLayout> layout_;
@@ -41,6 +55,7 @@ namespace editor::world_generator {
 
         world_editor::biome::HydrologySettings hydrologySettings_;
         std::optional<world_editor::biome::HydrologyLayer> hydrology_;
+        std::optional<world_editor::terrain::Settings> sourceHydrologyTerrain_;
     };
 
 }

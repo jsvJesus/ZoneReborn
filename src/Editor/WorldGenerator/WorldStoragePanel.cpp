@@ -96,6 +96,12 @@ namespace editor::world_generator {
                     directory
                 );
 
+                mapPanel.save_hydrology_for_world(
+                    terrain,
+                    activeSettings,
+                    directory
+                );
+
                 status_ = "World saved";
                 hasError_ = false;
             } catch (const std::exception& error) {
@@ -122,7 +128,17 @@ namespace editor::world_generator {
                 activeSettings = loaded.settings;
                 settings = loaded.settings;
 
-                status_ = "World loaded";
+                const bool waterRestored = mapPanel.restore_hydrology(
+                    terrain,
+                    activeSettings,
+                    viewport,
+                    directory
+                );
+
+                status_ = waterRestored
+                    ? "World and Hydrology loaded"
+                    : "World loaded (no Hydrology file)";
+                
                 hasError_ = false;
             } catch (const std::exception& error) {
                 status_ = error.what();
@@ -144,7 +160,29 @@ namespace editor::world_generator {
                 activeSettings = settings;
                 terrain = {};
 
-                status_ = "World Streaming enabled";
+                std::filesystem::path waterPath = directory;
+                waterPath += L".zhydro";
+
+                bool waterRestored = false;
+
+                if (std::filesystem::exists(waterPath)) {
+                    // Temporary CPU reconstruction for Hydrology v1.
+                    // The GPU terrain continues to use chunk streaming.
+                    auto source =
+                        world_editor::terrain::load_world(directory);
+
+                    waterRestored = mapPanel.restore_hydrology(
+                        source.terrain,
+                        source.settings,
+                        viewport,
+                        directory
+                    );
+                }
+
+                status_ = waterRestored
+                    ? "World Streaming and Hydrology enabled"
+                    : "World Streaming enabled";
+                
                 hasError_ = false;
             } catch (const std::exception& error) {
                 status_ = error.what();

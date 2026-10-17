@@ -7,6 +7,7 @@
 #include "WorldEditor/Terrain/TerrainWorldStorage.h"
 #include "WorldEditor/WorldGenerator/MapLayoutStorage.h"
 #include "WorldEditor/Biome/Hydrology.h"
+#include "WorldEditor/Biome/HydrologyStorage.h"
 
 #include "../src/Externals/DearImGui/imgui.h"
 
@@ -27,6 +28,14 @@ namespace editor::world_generator {
         ) {
             std::filesystem::path path = directory;
             path += L".zlayout";
+            return path;
+        }
+
+        [[nodiscard]] std::filesystem::path hydrology_path(
+            const std::filesystem::path& directory
+        ) {
+            std::filesystem::path path = directory;
+            path += L".zhydro";
             return path;
         }
 
@@ -120,6 +129,60 @@ namespace editor::world_generator {
 
     MapLayoutPanel::MapLayoutPanel() {
         settings_.mapSize = wg::MapSize::Large;
+    }
+
+    void MapLayoutPanel::save_hydrology_for_world(
+        const terrain::Heightfield& heightfield,
+        const terrain::Settings& settings,
+        const std::filesystem::path& directory
+    ) const {
+        if (!hydrology_) {
+            std::filesystem::remove(hydrology_path(directory));
+            return;
+        }
+
+        if (!sourceHydrologyTerrain_ ||
+            !same_terrain(*sourceHydrologyTerrain_, settings)) {
+            throw std::runtime_error(
+                "Hydrology Terrain settings mismatch"
+            );
+            }
+
+        world_editor::biome::save_hydrology(
+            *hydrology_,
+            heightfield,
+            settings,
+            hydrology_path(directory)
+        );
+    }
+
+    bool MapLayoutPanel::restore_hydrology(
+        const terrain::Heightfield& heightfield,
+        const terrain::Settings& settings,
+        viewport::TerrainViewport& viewport,
+        const std::filesystem::path& directory
+    ) {
+        const auto path = hydrology_path(directory);
+
+        if (!std::filesystem::exists(path)) {
+            return false;
+        }
+
+        auto restored = world_editor::biome::load_hydrology(
+            heightfield,
+            settings,
+            path
+        );
+
+        viewport.set_hydrology(&restored);
+
+        hydrologySettings_ = restored.settings;
+        settings_.seeds.water = restored.settings.seed;
+
+        hydrology_ = std::move(restored);
+        sourceHydrologyTerrain_ = settings;
+
+        return true;
     }
 
     void MapLayoutPanel::clear(
@@ -350,6 +413,32 @@ namespace editor::world_generator {
                 &hydrologySettings_.riverEnabled
             );
 
+            constexpr const char* riverShapes[] = {
+                "Auto",
+                "Straight",
+                "L Shape",
+                "U Shape",
+                "X Shape"
+            };
+
+            int selectedShape = static_cast<int>(
+                hydrologySettings_.riverShape
+            );
+
+            ImGui::SetNextItemWidth(-1.0f);
+
+            if (ImGui::Combo(
+                "River Shape",
+                &selectedShape,
+                riverShapes,
+                IM_ARRAYSIZE(riverShapes)
+            )) {
+                hydrologySettings_.riverShape =
+                    static_cast<world_editor::biome::RiverShape>(
+                        selectedShape
+                    );
+            }
+
             ImGui::SetNextItemWidth(160.0f);
 
             int lakeCount = static_cast<int>(
@@ -382,6 +471,14 @@ namespace editor::world_generator {
                 "%.0f m"
             );
 
+            ImGui::SliderFloat(
+                "Lake Separation",
+                &hydrologySettings_.lakeSeparationMeters,
+                100.0f,
+                800.0f,
+                "%.0f m"
+            );
+
             ImGui::BeginDisabled(
                 viewport.is_streaming() || !matchingTerrain
             );
@@ -403,6 +500,7 @@ namespace editor::world_generator {
                     clear(viewport);
 
                     hydrology_ = std::move(generated);
+                    sourceHydrologyTerrain_ = activeSettings;
 
                     viewport.set_hydrology(&*hydrology_);
 
@@ -464,7 +562,13 @@ namespace editor::world_generator {
                         active.riverWidthMeters !=
                             hydrologySettings_.riverWidthMeters ||
                         active.marshWidthMeters !=
-                            hydrologySettings_.marshWidthMeters) {
+                            hydrologySettings_.marshWidthMeters ||
+                        active.riverShape !=
+                            hydrologySettings_.riverShape ||
+                        active.lakeSeparationMeters !=
+                            hydrologySettings_.lakeSeparationMeters
+                    )
+                        {
                         throw std::runtime_error(
                             "Hydrology settings changed. "
                             "Regenerate Hydrology before Map Layout."
@@ -516,13 +620,19 @@ namespace editor::world_generator {
                     );
                 }
 
+                save_hydrology_for_world(
+                    heightfield,
+                    activeSettings,
+                    directory
+                );
+
                 wg::save_map_layout(
                     *layout_,
                     *sourceTerrain_,
                     layout_path(directory)
                 );
 
-                status_ = "Map Layout saved";
+                status_ = "Map Layout and Hydrology saved";
                 hasError_ = false;
             } catch (const std::exception& error) {
                 status_ = error.what();

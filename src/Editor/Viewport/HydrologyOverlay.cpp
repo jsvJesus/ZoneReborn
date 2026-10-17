@@ -86,39 +86,47 @@ namespace editor::viewport {
         );
 
         // River centerline.
-        for (std::size_t i = 1; i < water.river.size(); ++i) {
-            ImVec2 start{};
-            ImVec2 end{};
+        const auto draw_channel = [&](const std::vector<world_editor::biome::WaterPoint>& channel) {
+            for (std::size_t i = 1; i < channel.size(); ++i) {
+                ImVec2 start{};
+                ImVec2 end{};
 
-            if (!project(
-                viewProjection,
-                water.river[i - 1],
-                imagePosition,
-                imageSize,
-                start
-            ) || !project(
-                viewProjection,
-                water.river[i],
-                imagePosition,
-                imageSize,
-                end
-            )) {
-                continue;
+                if (!project(
+                    viewProjection,
+                    channel[i - 1],
+                    imagePosition,
+                    imageSize,
+                    start
+                ) || !project(
+                    viewProjection,
+                    channel[i],
+                    imagePosition,
+                    imageSize,
+                    end
+                )) {
+                    continue;
+                }
+
+                drawList->AddLine(
+                    start,
+                    end,
+                    IM_COL32(15, 40, 65, 230),
+                    7.0f
+                );
+
+                drawList->AddLine(
+                    start,
+                    end,
+                    riverColor,
+                    4.0f
+                );
             }
+        };
 
-            drawList->AddLine(
-                start,
-                end,
-                IM_COL32(15, 40, 65, 230),
-                7.0f
-            );
+        draw_channel(water.river);
 
-            drawList->AddLine(
-                start,
-                end,
-                riverColor,
-                4.0f
-            );
+        for (const auto& branch : water.tributaries) {
+            draw_channel(branch);
         }
 
         // Schematic lake areas.

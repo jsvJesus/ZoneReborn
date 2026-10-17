@@ -6,15 +6,30 @@
 #include <cmath>
 #include <cstddef>
 #include <limits>
+#include <numbers>
 #include <stdexcept>
+#include <vector>
 
 namespace world_editor::biome {
 
     namespace {
 
-        constexpr float riverStepMeters = 16.0f;
+        using Random = world_generator::DeterministicRandom;
 
-        [[nodiscard]] std::size_t index_of(
+        constexpr float riverStep = 12.0f;
+        constexpr float pi = std::numbers::pi_v<float>;
+
+        struct Point2 {
+            float x = 0.0f;
+            float z = 0.0f;
+        };
+
+        struct RiverPreset {
+            std::vector<Point2> main;
+            std::vector<Point2> branch;
+        };
+
+        [[nodiscard]] std::size_t cell_index(
             const HydrologyLayer& layer,
             const std::uint32_t x,
             const std::uint32_t z
@@ -23,40 +38,155 @@ namespace world_editor::biome {
                 layer.samplesX + x;
         }
 
+        [[nodiscard]] float random01(Random& random) {
+            return static_cast<float>(random.next()) /
+                4294967296.0f;
+        }
+
+        [[nodiscard]] float random_range(
+            Random& random,
+            const float minimum,
+            const float maximum
+        ) {
+            return std::lerp(
+                minimum,
+                maximum,
+                random01(random)
+            );
+        }
+
+        [[nodiscard]] Point2 transform_point(
+            Point2 p,
+            const std::uint32_t rotation,
+            const bool mirror
+        ) {
+            if (mirror) {
+                p.x = 1.0f - p.x;
+            }
+
+            for (std::uint32_t i = 0; i < rotation; ++i) {
+                p = {1.0f - p.z, p.x};
+            }
+
+            return p;
+        }
+
+        [[nodiscard]] RiverPreset river_preset(
+            const RiverShape shape
+        ) {
+            switch (shape) {
+            case RiverShape::Straight:
+                return {{
+                    {0.0f, 0.44f},
+                    {0.28f, 0.40f},
+                    {0.65f, 0.54f},
+                    {1.0f, 0.48f}
+                }, {}};
+
+            case RiverShape::LShape:
+                return {{
+                    {0.0f, 0.22f},
+                    {0.38f, 0.23f},
+                    {0.54f, 0.36f},
+                    {0.57f, 0.70f},
+                    {0.56f, 1.0f}
+                }, {}};
+
+            case RiverShape::UShape:
+                return {{
+                    {0.19f, 0.0f},
+                    {0.20f, 0.43f},
+                    {0.35f, 0.73f},
+                    {0.63f, 0.74f},
+                    {0.80f, 0.49f},
+                    {0.79f, 0.0f}
+                }, {}};
+
+            case RiverShape::XShape:
+                return {{
+                    {0.0f, 0.44f},
+                    {0.34f, 0.47f},
+                    {0.50f, 0.50f},
+                    {0.72f, 0.53f},
+                    {1.0f, 0.55f}
+                }, {
+                    {0.45f, 0.0f},
+                    {0.48f, 0.29f},
+                    {0.50f, 0.50f},
+                    {0.52f, 0.72f},
+                    {0.55f, 1.0f}
+                }};
+
+            default:
+                return river_preset(RiverShape::Straight);
+            }
+        }
+
+        [[nodiscard]] Point2 catmull_rom(
+            const Point2 p0,
+            const Point2 p1,
+            const Point2 p2,
+            const Point2 p3,
+            const float t
+        ) {
+            const float t2 = t * t;
+            const float t3 = t2 * t;
+
+            const float h00 = 2.0f * t3 - 3.0f * t2 + 1.0f;
+            const float h10 = t3 - 2.0f * t2 + t;
+            const float h01 = -2.0f * t3 + 3.0f * t2;
+            const float h11 = t3 - t2;
+
+            const Point2 m1{
+                (p2.x - p0.x) * 0.5f,
+                (p2.z - p0.z) * 0.5f
+            };
+
+            const Point2 m2{
+                (p3.x - p1.x) * 0.5f,
+                (p3.z - p1.z) * 0.5f
+            };
+
+            return {
+                h00 * p1.x + h10 * m1.x +
+                    h01 * p2.x + h11 * m2.x,
+
+                h00 * p1.z + h10 * m1.z +
+                    h01 * p2.z + h11 * m2.z
+            };
+        }
+
         void paint_circle(
             HydrologyLayer& layer,
-            const float worldX,
-            const float worldZ,
+            const float cx,
+            const float cz,
             const float radius,
             const WaterKind kind
         ) {
             const float gx =
-                (worldX - layer.originX) / layer.spacingMeters;
+                (cx - layer.originX) / layer.spacingMeters;
 
             const float gz =
-                (worldZ - layer.originZ) / layer.spacingMeters;
+                (cz - layer.originZ) / layer.spacingMeters;
 
-            const float gridRadius =
-                radius / layer.spacingMeters;
+            const float r = radius / layer.spacingMeters;
 
             const int minX = (std::max)(
-                0,
-                static_cast<int>(std::floor(gx - gridRadius))
+                0, static_cast<int>(std::floor(gx - r))
             );
 
             const int minZ = (std::max)(
-                0,
-                static_cast<int>(std::floor(gz - gridRadius))
+                0, static_cast<int>(std::floor(gz - r))
             );
 
             const int maxX = (std::min)(
                 static_cast<int>(layer.samplesX) - 1,
-                static_cast<int>(std::ceil(gx + gridRadius))
+                static_cast<int>(std::ceil(gx + r))
             );
 
             const int maxZ = (std::min)(
                 static_cast<int>(layer.samplesZ) - 1,
-                static_cast<int>(std::ceil(gz + gridRadius))
+                static_cast<int>(std::ceil(gz + r))
             );
 
             for (int z = minZ; z <= maxZ; ++z) {
@@ -73,7 +203,7 @@ namespace world_editor::biome {
                         continue;
                     }
 
-                    WaterKind& cell = layer.cells[index_of(
+                    WaterKind& cell = layer.cells[cell_index(
                         layer,
                         static_cast<std::uint32_t>(x),
                         static_cast<std::uint32_t>(z)
@@ -87,16 +217,447 @@ namespace world_editor::biome {
             }
         }
 
-        [[nodiscard]] float coordinate(
-            world_generator::DeterministicRandom& random,
-            const float limit,
-            const float margin
+        [[nodiscard]] std::vector<WaterPoint> build_channel(
+            HydrologyLayer& layer,
+            const terrain::Heightfield& heightfield,
+            const std::vector<Point2>& control,
+            Random& random,
+            const std::uint32_t rotation,
+            const bool mirror
         ) {
-            const float range = limit - 2.0f * margin;
+            std::vector<WaterPoint> result;
 
-            return margin + range *
-                static_cast<float>(random.next()) /
-                4294967296.0f;
+            if (control.size() < 2) {
+                return result;
+            }
+
+            const float width =
+                static_cast<float>(layer.samplesX - 1) *
+                layer.spacingMeters;
+
+            const float depth =
+                static_cast<float>(layer.samplesZ - 1) *
+                layer.spacingMeters;
+
+            std::vector<Point2> points;
+            points.reserve(control.size());
+
+            for (const Point2 p : control) {
+                const Point2 transformed = transform_point(
+                    p, rotation, mirror
+                );
+
+                points.push_back({
+                    layer.originX + transformed.x * width,
+                    layer.originZ + transformed.z * depth
+                });
+            }
+
+            const float phase = random_range(
+                random, 0.0f, 2.0f * pi
+            );
+
+            const float amplitude = (std::min)(
+                20.0f,
+                (std::min)(width, depth) * 0.018f
+            );
+
+            const std::size_t segments = points.size() - 1;
+
+            for (std::size_t i = 0; i < segments; ++i) {
+                const Point2 p0 =
+                    points[i == 0 ? i : i - 1];
+
+                const Point2 p1 = points[i];
+                const Point2 p2 = points[i + 1];
+
+                const Point2 p3 =
+                    points[(std::min)(i + 2, segments)];
+
+                const float dx = p2.x - p1.x;
+                const float dz = p2.z - p1.z;
+
+                const float length = std::hypot(dx, dz);
+
+                const auto steps = (std::max)(
+                    1,
+                    static_cast<int>(
+                        std::ceil(length / riverStep)
+                    )
+                );
+
+                for (int step = 0; step <= steps; ++step) {
+                    if (i != 0 && step == 0) {
+                        continue;
+                    }
+
+                    const float t =
+                        static_cast<float>(step) /
+                        static_cast<float>(steps);
+
+                    Point2 p = catmull_rom(
+                        p0, p1, p2, p3, t
+                    );
+
+                    const float progress = (
+                        static_cast<float>(i) + t
+                    ) / static_cast<float>(segments);
+
+                    const float wave =
+                        std::sin(t * pi) *
+                        std::sin(
+                            progress * 7.0f * pi + phase
+                        ) * amplitude;
+
+                    if (length > 0.001f) {
+                        p.x += (-dz / length) * wave;
+                        p.z += (dx / length) * wave;
+                    }
+
+                    p.x = std::clamp(
+                        p.x,
+                        layer.originX,
+                        layer.originX + width
+                    );
+
+                    p.z = std::clamp(
+                        p.z,
+                        layer.originZ,
+                        layer.originZ + depth
+                    );
+
+                    result.push_back({
+                        p.x,
+                        heightfield.sample_height(p.x, p.z),
+                        p.z
+                    });
+                }
+            }
+
+            const float riverRadius =
+                layer.settings.riverWidthMeters * 0.5f;
+
+            for (std::size_t i = 0; i < result.size(); ++i) {
+                if (i == 0) {
+                    paint_circle(
+                        layer,
+                        result[i].x,
+                        result[i].z,
+                        riverRadius,
+                        WaterKind::River
+                    );
+                    continue;
+                }
+
+                const WaterPoint& a = result[i - 1];
+                const WaterPoint& b = result[i];
+
+                const float distance =
+                    std::hypot(b.x - a.x, b.z - a.z);
+
+                const int subdivisions = (std::max)(
+                    1,
+                    static_cast<int>(std::ceil(
+                        distance /
+                        (layer.spacingMeters * 0.5f)
+                    ))
+                );
+
+                for (int s = 0; s <= subdivisions; ++s) {
+                    const float f =
+                        static_cast<float>(s) /
+                        static_cast<float>(subdivisions);
+
+                    paint_circle(
+                        layer,
+                        std::lerp(a.x, b.x, f),
+                        std::lerp(a.z, b.z, f),
+                        riverRadius,
+                        WaterKind::River
+                    );
+                }
+            }
+
+            return result;
+        }
+
+        [[nodiscard]] bool far_from_rivers(
+            const HydrologyLayer& layer,
+            const float x,
+            const float z,
+            const float radius
+        ) {
+            const float minimum =
+                radius +
+                layer.settings.riverWidthMeters * 0.5f +
+                layer.settings.marshWidthMeters + 24.0f;
+
+            const float distanceSquared = minimum * minimum;
+
+            const auto clear_channel =
+                [x, z, distanceSquared](
+                    const std::vector<WaterPoint>& channel
+                ) {
+                    for (const auto& point : channel) {
+                        const float dx = x - point.x;
+                        const float dz = z - point.z;
+
+                        if (dx * dx + dz * dz <
+                            distanceSquared) {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                };
+
+            if (!clear_channel(layer.river)) {
+                return false;
+            }
+
+            for (const auto& branch : layer.tributaries) {
+                if (!clear_channel(branch)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        void generate_lakes(
+            HydrologyLayer& layer,
+            const terrain::Heightfield& heightfield,
+            Random& random
+        ) {
+            const float width =
+                static_cast<float>(layer.samplesX - 1) *
+                layer.spacingMeters;
+
+            const float depth =
+                static_cast<float>(layer.samplesZ - 1) *
+                layer.spacingMeters;
+
+            const float minimumSide = (std::min)(width, depth);
+
+            const float separation = (std::max)(
+                layer.settings.lakeSeparationMeters,
+                minimumSide * 0.20f
+            );
+
+            for (std::uint32_t i = 0;
+                 i < layer.settings.lakeCount;
+                 ++i) {
+                bool found = false;
+
+                LakeArea best{};
+                float bestScore =
+                    std::numeric_limits<float>::infinity();
+
+                for (int attempt = 0; attempt < 256; ++attempt) {
+                    const float radius = (std::min)(
+                        random_range(random, 38.0f, 88.0f),
+                        minimumSide * 0.11f
+                    );
+
+                    const float margin =
+                        radius +
+                        layer.settings.marshWidthMeters +
+                        16.0f;
+
+                    if (margin * 2.0f >= minimumSide) {
+                        continue;
+                    }
+
+                    const float x = layer.originX +
+                        random_range(
+                            random, margin, width - margin
+                        );
+
+                    const float z = layer.originZ +
+                        random_range(
+                            random, margin, depth - margin
+                        );
+
+                    bool available = true;
+
+                    for (const auto& other : layer.lakes) {
+                        const float dx =
+                            x - other.center.x;
+
+                        const float dz =
+                            z - other.center.z;
+
+                        const float required = (std::max)(
+                            separation,
+                            radius +
+                            other.radiusMeters +
+                            layer.settings.marshWidthMeters +
+                            24.0f
+                        );
+
+                        if (dx * dx + dz * dz <
+                            required * required) {
+                            available = false;
+                            break;
+                        }
+                    }
+
+                    if (!available ||
+                        !far_from_rivers(
+                            layer, x, z, radius
+                        )) {
+                        continue;
+                    }
+
+                    const float height =
+                        heightfield.sample_height(x, z);
+
+                    // Elevation matters, but does not force
+                    // every lake into the same lowest basin.
+                    const float score =
+                        height +
+                        random_range(random, 0.0f, 12.0f);
+
+                    if (score < bestScore) {
+                        bestScore = score;
+                        best.center = {x, height, z};
+                        best.radiusMeters = radius;
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    throw std::runtime_error(
+                        "Cannot place all lakes. "
+                        "Reduce lake count, river width "
+                        "or minimum lake separation."
+                    );
+                }
+
+                layer.lakes.push_back(best);
+
+                paint_circle(
+                    layer,
+                    best.center.x,
+                    best.center.z,
+                    best.radiusMeters,
+                    WaterKind::Lake
+                );
+            }
+        }
+
+        void generate_marshes(
+            HydrologyLayer& layer,
+            const terrain::Heightfield& heightfield
+        ) {
+            if (layer.settings.marshWidthMeters <= 0.0f) {
+                return;
+            }
+
+            const std::vector<WaterKind> core = layer.cells;
+
+            const int radius = static_cast<int>(std::ceil(
+                layer.settings.marshWidthMeters /
+                layer.spacingMeters
+            ));
+
+            const float maxDistanceSquared =
+                layer.settings.marshWidthMeters *
+                layer.settings.marshWidthMeters;
+
+            for (std::uint32_t z = 0;
+                 z < layer.samplesZ;
+                 ++z) {
+                for (std::uint32_t x = 0;
+                     x < layer.samplesX;
+                     ++x) {
+                    if (core[cell_index(layer, x, z)] ==
+                        WaterKind::Dry) {
+                        continue;
+                    }
+
+                    for (int dz = -radius; dz <= radius; ++dz) {
+                        for (int dx = -radius; dx <= radius; ++dx) {
+                            const int tx =
+                                static_cast<int>(x) + dx;
+
+                            const int tz =
+                                static_cast<int>(z) + dz;
+
+                            if (tx < 0 || tz < 0 ||
+                                tx >= static_cast<int>(
+                                    layer.samplesX
+                                ) ||
+                                tz >= static_cast<int>(
+                                    layer.samplesZ
+                                )) {
+                                continue;
+                            }
+
+                            const float distanceSquared =
+                                static_cast<float>(dx * dx + dz * dz) *
+                                layer.spacingMeters *
+                                layer.spacingMeters;
+
+                            if (distanceSquared >
+                                maxDistanceSquared) {
+                                continue;
+                            }
+
+                            const auto index = cell_index(
+                                layer,
+                                static_cast<std::uint32_t>(tx),
+                                static_cast<std::uint32_t>(tz)
+                            );
+
+                            if (layer.cells[index] !=
+                                WaterKind::Dry) {
+                                continue;
+                            }
+
+                            const float worldX =
+                                layer.originX +
+                                static_cast<float>(tx) *
+                                layer.spacingMeters;
+
+                            const float worldZ =
+                                layer.originZ +
+                                static_cast<float>(tz) *
+                                layer.spacingMeters;
+
+                            if (heightfield.slope_degrees(
+                                worldX, worldZ
+                            ) <= 7.0f) {
+                                layer.cells[index] =
+                                    WaterKind::Marsh;
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (std::uint32_t z = 0;
+                 z < layer.samplesZ;
+                 z += 4) {
+                for (std::uint32_t x = 0;
+                     x < layer.samplesX;
+                     x += 4) {
+                    if (layer.cells[cell_index(layer, x, z)] !=
+                        WaterKind::Marsh) {
+                        continue;
+                    }
+
+                    layer.marshMarkers.push_back({
+                        layer.originX +
+                            static_cast<float>(x) *
+                            layer.spacingMeters,
+                        heightfield.height_at(x, z),
+                        layer.originZ +
+                            static_cast<float>(z) *
+                            layer.spacingMeters
+                    });
+                }
+            }
         }
 
     }
@@ -143,7 +704,7 @@ namespace world_editor::biome {
             std::round(gz)
         );
 
-        return cells[index_of(*this, ix, iz)];
+        return cells[cell_index(*this, ix, iz)];
     }
 
     bool HydrologyLayer::blocks_poi(
@@ -156,7 +717,6 @@ namespace world_editor::biome {
             return false;
         }
 
-        // Conservative one-cell margin around wet areas.
         for (int dz = -1; dz <= 1; ++dz) {
             for (int dx = -1; dx <= 1; ++dx) {
                 if (at_world(
@@ -179,14 +739,20 @@ namespace world_editor::biome {
     ) {
         if (!heightfield.valid() ||
             settings.lakeCount > 12 ||
+            static_cast<std::uint32_t>(
+                settings.riverShape
+            ) > 4 ||
             !std::isfinite(settings.riverWidthMeters) ||
             !std::isfinite(settings.marshWidthMeters) ||
+            !std::isfinite(settings.lakeSeparationMeters) ||
             settings.riverWidthMeters < 16.0f ||
             settings.riverWidthMeters > 128.0f ||
             settings.marshWidthMeters < 0.0f ||
-            settings.marshWidthMeters > 128.0f) {
+            settings.marshWidthMeters > 128.0f ||
+            settings.lakeSeparationMeters < 0.0f ||
+            settings.lakeSeparationMeters > 2048.0f) {
             throw std::invalid_argument(
-                "Invalid hydrology settings or terrain"
+                "Invalid Hydrology configuration"
             );
         }
 
@@ -199,357 +765,50 @@ namespace world_editor::biome {
         layer.spacingMeters = heightfield.spacingMeters;
         layer.settings = settings;
 
-        layer.cells.resize(
+        layer.cells.assign(
             heightfield.heights.size(),
             WaterKind::Dry
         );
 
-        world_generator::DeterministicRandom random(
-            settings.seed
-        );
+        Random random(settings.seed);
 
-        const float width =
-            static_cast<float>(layer.samplesX - 1) *
-            layer.spacingMeters;
-
-        const float depth =
-            static_cast<float>(layer.samplesZ - 1) *
-            layer.spacingMeters;
-
-        const bool alongZ = random.bounded(2) == 0;
-
-        const float length = alongZ ? depth : width;
-        const float crossLength = alongZ ? width : depth;
-
-        // Generate a continuous river corridor.
         if (settings.riverEnabled) {
-            const float middle = coordinate(
-                random,
-                crossLength,
-                crossLength * 0.3f
-            );
+            RiverShape shape = settings.riverShape;
 
-            const auto anchorCount =
-                static_cast<std::uint32_t>(
-                    std::ceil(length / 160.0f)
-                ) + 1;
-
-            std::vector<float> anchors(anchorCount);
-
-            for (auto& anchor : anchors) {
-                const float variation = (
-                    static_cast<float>(random.next()) /
-                    4294967296.0f - 0.5f
-                ) * (std::min)(
-                    crossLength * 0.24f,
-                    160.0f
-                );
-
-                anchor = std::clamp(
-                    middle + variation,
-                    48.0f,
-                    crossLength - 48.0f
+            if (shape == RiverShape::Auto) {
+                shape = static_cast<RiverShape>(
+                    1u + random.bounded(4)
                 );
             }
 
-            const auto pointCount =
-                static_cast<std::uint32_t>(
-                    std::ceil(length / riverStepMeters)
-                );
+            RiverPreset preset = river_preset(shape);
 
-            layer.river.reserve(pointCount + 1);
+            const auto rotation = random.bounded(4);
+            const bool mirror = random.bounded(2) == 0;
 
-            for (std::uint32_t i = 0;
-                 i <= pointCount;
-                 ++i) {
-                const float along =
-                    length * static_cast<float>(i) /
-                    static_cast<float>(pointCount);
-
-                const float t =
-                    along / length *
-                    static_cast<float>(anchorCount - 1);
-
-                const auto a = (std::min)(
-                    static_cast<std::uint32_t>(t),
-                    anchorCount - 2
-                );
-
-                const float f = t - static_cast<float>(a);
-                const float smooth =
-                    f * f * (3.0f - 2.0f * f);
-
-                const float desired = std::lerp(
-                    anchors[a],
-                    anchors[a + 1],
-                    smooth
-                );
-
-                float bestCross = desired;
-                float bestScore =
-                    std::numeric_limits<float>::infinity();
-
-                // Prefer locally lower terrain.
-                for (int shift = -3; shift <= 3; ++shift) {
-                    const float cross = std::clamp(
-                        desired +
-                            static_cast<float>(shift) * 16.0f,
-                        24.0f,
-                        crossLength - 24.0f
-                    );
-
-                    const float x = layer.originX +
-                        (alongZ ? cross : along);
-
-                    const float z = layer.originZ +
-                        (alongZ ? along : cross);
-
-                    const float score =
-                        heightfield.sample_height(x, z) +
-                        std::abs(cross - desired) * 0.10f;
-
-                    if (score < bestScore) {
-                        bestScore = score;
-                        bestCross = cross;
-                    }
-                }
-
-                const float worldX = layer.originX +
-                    (alongZ ? bestCross : along);
-
-                const float worldZ = layer.originZ +
-                    (alongZ ? along : bestCross);
-
-                layer.river.push_back({
-                    worldX,
-                    heightfield.sample_height(
-                        worldX,
-                        worldZ
-                    ),
-                    worldZ
-                });
-
-                // Sweep disks along each segment. This avoids
-                // gaps when successive points are far apart.
-                if (layer.river.size() > 1) {
-                    const WaterPoint& previous =
-                        layer.river[layer.river.size() - 2];
-
-                    const float dx = worldX - previous.x;
-                    const float dz = worldZ - previous.z;
-
-                    const int steps = (std::max)(
-                        1,
-                        static_cast<int>(std::ceil(
-                            std::hypot(dx, dz) /
-                            (layer.spacingMeters * 0.5f)
-                        ))
-                    );
-
-                    for (int step = 0;
-                         step <= steps;
-                         ++step) {
-                        const float fraction =
-                            static_cast<float>(step) /
-                            static_cast<float>(steps);
-
-                        paint_circle(
-                            layer,
-                            std::lerp(
-                                previous.x,
-                                worldX,
-                                fraction
-                            ),
-                            std::lerp(
-                                previous.z,
-                                worldZ,
-                                fraction
-                            ),
-                            settings.riverWidthMeters * 0.5f,
-                            WaterKind::River
-                        );
-                    }
-                } else {
-                    paint_circle(
-                        layer,
-                        worldX,
-                        worldZ,
-                        settings.riverWidthMeters * 0.5f,
-                        WaterKind::River
-                    );
-                }
-            }
-        }
-
-        // Place lakes using low-terrain candidates.
-        for (std::uint32_t i = 0;
-             i < settings.lakeCount;
-             ++i) {
-            const float margin =
-                (std::min)(width, depth) * 0.12f;
-
-            float bestX =
-                layer.originX + width * 0.5f;
-
-            float bestZ =
-                layer.originZ + depth * 0.5f;
-
-            float bestHeight =
-                std::numeric_limits<float>::infinity();
-
-            for (int trial = 0; trial < 24; ++trial) {
-                const float x = layer.originX +
-                    coordinate(random, width, margin);
-
-                const float z = layer.originZ +
-                    coordinate(random, depth, margin);
-
-                const float height =
-                    heightfield.sample_height(x, z);
-
-                if (height < bestHeight) {
-                    bestHeight = height;
-                    bestX = x;
-                    bestZ = z;
-                }
-            }
-
-            const float radius = (std::min)(
-                36.0f +
-                    static_cast<float>(random.bounded(5)) *
-                    12.0f,
-                (std::min)(width, depth) * 0.11f
-            );
-
-            layer.lakes.push_back({
-                {bestX, bestHeight, bestZ},
-                radius
-            });
-
-            paint_circle(
+            layer.river = build_channel(
                 layer,
-                bestX,
-                bestZ,
-                radius,
-                WaterKind::Lake
-            );
-        }
-
-        // Generate marshes around existing water.
-        if (settings.marshWidthMeters > 0.0f) {
-            const std::vector<WaterKind> core = layer.cells;
-
-            const int radius = static_cast<int>(
-                std::ceil(
-                    settings.marshWidthMeters /
-                    layer.spacingMeters
-                )
+                heightfield,
+                preset.main,
+                random,
+                rotation,
+                mirror
             );
 
-            const float squaredRange =
-                settings.marshWidthMeters *
-                settings.marshWidthMeters;
-
-            for (std::uint32_t z = 0;
-                 z < layer.samplesZ;
-                 ++z) {
-                for (std::uint32_t x = 0;
-                     x < layer.samplesX;
-                     ++x) {
-                    if (core[index_of(layer, x, z)] ==
-                        WaterKind::Dry) {
-                        continue;
-                    }
-
-                    const int x0 = (std::max)(
-                        0, static_cast<int>(x) - radius
-                    );
-
-                    const int x1 = (std::min)(
-                        static_cast<int>(layer.samplesX) - 1,
-                        static_cast<int>(x) + radius
-                    );
-
-                    const int z0 = (std::max)(
-                        0, static_cast<int>(z) - radius
-                    );
-
-                    const int z1 = (std::min)(
-                        static_cast<int>(layer.samplesZ) - 1,
-                        static_cast<int>(z) + radius
-                    );
-
-                    for (int iz = z0; iz <= z1; ++iz) {
-                        for (int ix = x0; ix <= x1; ++ix) {
-                            const float dx =
-                                static_cast<float>(
-                                    ix - static_cast<int>(x)
-                                ) * layer.spacingMeters;
-
-                            const float dz =
-                                static_cast<float>(
-                                    iz - static_cast<int>(z)
-                                ) * layer.spacingMeters;
-
-                            if (dx * dx + dz * dz >
-                                squaredRange) {
-                                continue;
-                            }
-
-                            const auto targetIndex = index_of(
-                                layer,
-                                static_cast<std::uint32_t>(ix),
-                                static_cast<std::uint32_t>(iz)
-                            );
-
-                            if (layer.cells[targetIndex] !=
-                                WaterKind::Dry) {
-                                continue;
-                            }
-
-                            const float wx = layer.originX +
-                                static_cast<float>(ix) *
-                                layer.spacingMeters;
-
-                            const float wz = layer.originZ +
-                                static_cast<float>(iz) *
-                                layer.spacingMeters;
-
-                            if (heightfield.slope_degrees(
-                                wx, wz
-                            ) <= 7.0f) {
-                                layer.cells[targetIndex] =
-                                    WaterKind::Marsh;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Sparse markers for inexpensive editor preview.
-            for (std::uint32_t z = 0;
-                 z < layer.samplesZ;
-                 z += 4) {
-                for (std::uint32_t x = 0;
-                     x < layer.samplesX;
-                     x += 4) {
-                    if (layer.cells[index_of(layer, x, z)] !=
-                        WaterKind::Marsh) {
-                        continue;
-                    }
-
-                    layer.marshMarkers.push_back({
-                        layer.originX +
-                            static_cast<float>(x) *
-                            layer.spacingMeters,
-                        heightfield.height_at(x, z),
-                        layer.originZ +
-                            static_cast<float>(z) *
-                            layer.spacingMeters
-                    });
-                }
+            if (!preset.branch.empty()) {
+                layer.tributaries.push_back(build_channel(
+                    layer,
+                    heightfield,
+                    preset.branch,
+                    random,
+                    rotation,
+                    mirror
+                ));
             }
         }
+
+        generate_lakes(layer, heightfield, random);
+        generate_marshes(layer, heightfield);
 
         return layer;
     }
