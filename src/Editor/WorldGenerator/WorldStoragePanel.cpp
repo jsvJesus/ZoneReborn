@@ -4,6 +4,8 @@
 #include "Editor/Viewport/TerrainViewport.h"
 #include "WorldEditor/Terrain/TerrainWorldStorage.h"
 
+#include "Editor/Core/Paths.h"
+
 #include "imgui.h"
 
 #include <filesystem>
@@ -43,7 +45,7 @@ namespace editor::world_generator {
                 );
             }
 
-            return std::filesystem::current_path() / "worlds" / name;
+            return editor::paths::worlds_directory() / name;
         }
 
     }

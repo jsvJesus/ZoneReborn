@@ -39,14 +39,6 @@ namespace engine::renderer {
         std::uint32_t startX,
         std::uint32_t startZ,
         std::uint32_t stride,
-        float skirtDepth
-    );
-
-    [[nodiscard]] TerrainChunkGeometry build_chunk_geometry(
-        const TerrainMeshData& data,
-        std::uint32_t startX,
-        std::uint32_t startZ,
-        std::uint32_t stride,
         float skirtDepth,
         bool allBorders = false
    );

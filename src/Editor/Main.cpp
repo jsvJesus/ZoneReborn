@@ -9,6 +9,8 @@
 #include "Editor/Viewport/TerrainViewport.h"
 #include "Editor/WorldGenerator/WorldStoragePanel.h"
 
+#include "Editor/Core/Paths.h"
+
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
@@ -19,6 +21,7 @@
 #include <filesystem>
 #include <stdexcept>
 #include <utility>
+#include <string>
 
 extern "C++" IMGUI_IMPL_API LRESULT
 ImGui_ImplWin32_WndProcHandler(
@@ -145,12 +148,15 @@ private:
 class ImGuiSession final {
 public:
     ImGuiSession(
-        HWND window,
-        ID3D11Device* device,
-        ID3D11DeviceContext* context
-    ) {
+            HWND window,
+            ID3D11Device* device,
+            ID3D11DeviceContext* context
+        ) : iniPath_(editor::paths::imgui_settings_path().string())
+    {
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
+
+        ImGui::GetIO().IniFilename = iniPath_.c_str();
 
         ImGui::GetIO().ConfigFlags |=
             ImGuiConfigFlags_DockingEnable;
@@ -183,6 +189,9 @@ public:
 
     ImGuiSession(const ImGuiSession&) = delete;
     ImGuiSession& operator=(const ImGuiSession&) = delete;
+
+private:
+    std::string iniPath_;
 };
 
 }
@@ -320,9 +329,7 @@ int main() {
 
             if (ImGui::Button("Export OBJ / PGM")) {
                 const auto outputDir =
-                    std::filesystem::current_path() /
-                    "generated" /
-                    "terrain";
+                    editor::paths::generated_directory() / "terrain";
 
                 std::filesystem::create_directories(
                     outputDir
