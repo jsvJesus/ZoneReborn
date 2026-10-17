@@ -159,7 +159,7 @@ namespace editor::ui {
         ImGuiID right = 0;
         ImGuiID bottom = 0;
 
-        ImGui::DockBuilderSplitNode(
+        ImGui::DockBuilderSplitNode( // #1
             center,
             ImGuiDir_Left,
             0.24f,
@@ -167,7 +167,7 @@ namespace editor::ui {
             &center
         );
 
-        ImGui::DockBuilderSplitNode(
+        ImGui::DockBuilderSplitNode( // #2
             center,
             ImGuiDir_Right,
             0.25f,
@@ -175,12 +175,22 @@ namespace editor::ui {
             &center
         );
 
-        ImGui::DockBuilderSplitNode(
+        ImGui::DockBuilderSplitNode( // #3
             center,
             ImGuiDir_Down,
             0.22f,
             &bottom,
             &center
+        );
+
+        ImGuiID inspector = 0;
+
+        ImGui::DockBuilderSplitNode( // #4
+            right,
+            ImGuiDir_Down,
+            0.50f,
+            &inspector,
+            &right
         );
 
         ImGui::DockBuilderDockWindow(
@@ -194,8 +204,13 @@ namespace editor::ui {
         );
 
         ImGui::DockBuilderDockWindow(
-            "Map Inspector",
+            "World Outliner",
             right
+        );
+
+        ImGui::DockBuilderDockWindow(
+            "Map Inspector",
+            inspector
         );
 
         ImGui::DockBuilderDockWindow(

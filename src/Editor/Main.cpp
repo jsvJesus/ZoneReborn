@@ -6,10 +6,13 @@
 #include "WorldEditor/Terrain/TerrainExporter.h"
 
 #include "Editor/Core/Paths.h"
-#include "Editor/UI/EditorWorkspace.h"
 #include "Editor/Viewport/TerrainViewport.h"
 #include "Editor/WorldGenerator/MapLayoutPanel.h"
 #include "Editor/WorldGenerator/WorldStoragePanel.h"
+
+#include "Editor/UI/EditorWorkspace.h"
+#include "Editor/UI/MapInspectorPanel.h"
+#include "Editor/UI/WorldOutlinerPanel.h"
 
 #include "imgui.h"
 #include "imgui_impl_win32.h"
@@ -232,6 +235,10 @@ namespace {
                 ImGui::SetWindowFocus("World Storage");
             }
 
+            if (ImGui::MenuItem("World Outliner")) {
+                ImGui::SetWindowFocus("World Outliner");
+            }
+
             ImGui::EndMenu();
         }
 
@@ -430,6 +437,8 @@ int main() {
 
         editor::world_generator::MapLayoutPanel mapPanel;
         editor::world_generator::WorldStoragePanel storagePanel;
+        editor::ui::WorldOutlinerPanel outlinerPanel;
+        editor::ui::MapInspectorPanel inspectorPanel;
 
         world_editor::terrain::Settings settings;
         world_editor::terrain::Settings activeSettings = settings;
@@ -518,7 +527,8 @@ int main() {
                 storagePanel
             );
 
-            mapPanel.draw_inspector();
+            outlinerPanel.draw(viewport);
+            inspectorPanel.draw(viewport);
 
             storagePanel.draw(
                 terrain,

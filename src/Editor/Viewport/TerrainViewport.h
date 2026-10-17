@@ -1,9 +1,11 @@
-
 #pragma once
 
 #include "Engine/Renderer/TerrainRenderer.h"
+
 #include "WorldEditor/Terrain/TerrainData.h"
 #include "WorldEditor/WorldGenerator/MapLayout.h"
+
+#include "Editor/UI/MapSelection.h"
 #include "Editor/Viewport/TerrainWorldStreamer.h"
 
 #include <filesystem>
@@ -40,6 +42,20 @@ namespace editor::viewport {
             const world_editor::world_generator::MapLayout* layout
         );
 
+        [[nodiscard]]
+        const world_editor::world_generator::MapLayout*
+        map_layout() const noexcept {
+            return mapLayout_ ? &*mapLayout_ : nullptr;
+        }
+
+        [[nodiscard]] ui::MapSelection selection() const noexcept {
+            return selection_;
+        }
+
+        void select(ui::MapSelection selection) noexcept;
+
+        void focus_selection();
+
     private:
         void reset_camera();
 
@@ -63,12 +79,14 @@ namespace editor::viewport {
 
         bool automaticLod_ = true;
         bool wireframe_ = false;
-
         bool frustumCulling_ = true;
 
         std::unique_ptr<TerrainWorldStreamer> streamer_;
 
         std::optional<world_editor::world_generator::MapLayout> mapLayout_;
+
+        ui::MapSelection selection_;
+
         bool showMapLayout_ = true;
     };
 

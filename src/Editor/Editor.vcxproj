@@ -161,7 +161,10 @@
     </ClCompile>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="UI\EditorWorkspace.cpp" />
+    <ClCompile Include="UI\MapInspectorPanel.cpp" />
+    <ClCompile Include="UI\WorldOutlinerPanel.cpp" />
     <ClCompile Include="Viewport\MapLayoutOverlay.cpp" />
+    <ClCompile Include="Viewport\MapLayoutPicking.cpp" />
     <ClCompile Include="Viewport\TerrainViewport.cpp" />
 
     <ClCompile Include="..\Externals\DearImGui\imgui.cpp" />
@@ -265,7 +268,11 @@
   <ItemGroup>
     <ClInclude Include="Core\Paths.h" />
     <ClInclude Include="UI\EditorWorkspace.h" />
+    <ClInclude Include="UI\MapInspectorPanel.h" />
+    <ClInclude Include="UI\MapSelection.h" />
+    <ClInclude Include="UI\WorldOutlinerPanel.h" />
     <ClInclude Include="Viewport\MapLayoutOverlay.h" />
+    <ClInclude Include="Viewport\MapLayoutPicking.h" />
     <ClInclude Include="Viewport\TerrainViewport.h" />
     <ClInclude Include="Viewport\TerrainWorldStreamer.h" />
     <ClInclude Include="WorldGenerator\MapLayoutPanel.h" />

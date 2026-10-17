@@ -1,6 +1,7 @@
 
 #include "Editor/Viewport/TerrainViewport.h"
 #include "Editor/Viewport/MapLayoutOverlay.h"
+#include "Editor/Viewport/MapLayoutPicking.h"
 
 #include "imgui.h"
 
@@ -68,6 +69,9 @@ namespace editor::viewport {
 
         homeDistance_ = (std::max)(width, depth) * 1.1f;
 
+        mapLayout_.reset();
+        selection_ = {};
+
         reset_camera();
     }
 
@@ -94,6 +98,9 @@ namespace editor::viewport {
 
         homeDistance_ = (std::max)(width, depth) * 0.5f;
 
+        mapLayout_.reset();
+        selection_ = {};
+
         reset_camera();
     }
 
@@ -109,15 +116,101 @@ namespace editor::viewport {
 
     void TerrainViewport::set_map_layout(
         const world_editor::world_generator::MapLayout* layout
-    ) {
+    )
+    {
         if (layout) {
             mapLayout_ = *layout;
         } else {
             mapLayout_.reset();
         }
+
+        selection_ = {};
     }
 
-    void TerrainViewport::draw() {
+    void TerrainViewport::select(
+        const ui::MapSelection selection
+    ) noexcept
+    {
+        if (!mapLayout_ || !selection.valid()) {
+            selection_ = {};
+            return;
+        }
+
+        bool exists = false;
+
+        if (selection.kind == ui::MapSelectionKind::POI) {
+            exists = std::any_of(
+                mapLayout_->pois.begin(),
+                mapLayout_->pois.end(),
+                [selection](const auto& poi) {
+                    return poi.id == selection.id;
+                }
+            );
+        } else if (selection.kind == ui::MapSelectionKind::Exit) {
+            exists = std::any_of(
+                mapLayout_->exits.begin(),
+                mapLayout_->exits.end(),
+                [selection](const auto& exit) {
+                    return exit.id == selection.id;
+                }
+            );
+        }
+
+        selection_ = exists ? selection : ui::MapSelection{};
+    }
+
+    void TerrainViewport::focus_selection()
+    {
+        if (!mapLayout_ || !selection_.valid()) {
+            return;
+        }
+
+        if (selection_.kind == ui::MapSelectionKind::POI) {
+            for (const auto& poi : mapLayout_->pois) {
+                if (poi.id != selection_.id) {
+                    continue;
+                }
+
+                targetX_ = poi.centerX;
+                targetY_ = poi.centerY;
+                targetZ_ = poi.centerZ;
+
+                distance_ = std::clamp(
+                    (std::max)(
+                        poi.widthMeters,
+                        poi.depthMeters
+                    ) * 2.5f,
+                    120.0f,
+                    30000.0f
+                );
+
+                return;
+            }
+        }
+
+        if (selection_.kind == ui::MapSelectionKind::Exit) {
+            for (const auto& exit : mapLayout_->exits) {
+                if (exit.id != selection_.id) {
+                    continue;
+                }
+
+                targetX_ = exit.x;
+                targetY_ = exit.y;
+                targetZ_ = exit.z;
+
+                distance_ = std::clamp(
+                    homeDistance_ * 0.22f,
+                    250.0f,
+                    30000.0f
+                );
+
+                return;
+            }
+        }
+    }
+
+    void TerrainViewport::draw()
+    {
         ImGui::Begin("Terrain Viewport");
 
         ImGui::TextDisabled(
@@ -307,11 +400,34 @@ namespace editor::viewport {
             );
 
             if (showMapLayout_ && mapLayout_) {
+                const ImVec2 imagePosition = ImGui::GetItemRectMin();
+                const ImVec2 imageSize = ImGui::GetItemRectSize();
+
+                if (ImGui::IsItemHovered() &&
+                    ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+                    select(pick_map_layout(
+                        *mapLayout_,
+                        ImGui::GetMousePos(),
+                        imagePosition,
+                        imageSize,
+                        view * projection
+                    ));
+                    }
+
                 draw_map_layout_overlay(
                     *mapLayout_,
                     ImGui::GetWindowDrawList(),
-                    ImGui::GetItemRectMin(),
-                    ImGui::GetItemRectSize(),
+                    imagePosition,
+                    imageSize,
+                    view * projection
+                );
+
+                draw_map_selection(
+                    *mapLayout_,
+                    selection_,
+                    ImGui::GetWindowDrawList(),
+                    imagePosition,
+                    imageSize,
                     view * projection
                 );
             }
