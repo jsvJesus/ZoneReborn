@@ -217,6 +217,174 @@ namespace world_editor::biome {
             }
         }
 
+        [[nodiscard]] Point2 choose_low_terrain_point(
+            const terrain::Heightfield& heightfield,
+            const float minX,
+            const float maxX,
+            const float minZ,
+            const float maxZ,
+            const Point2& previous,
+            const Point2& desired,
+            const Point2& forward,
+            const float searchRadius,
+            const float step
+        ) {
+            Point2 best = desired;
+            float bestScore =
+                std::numeric_limits<float>::infinity();
+
+            const float length = std::hypot(
+                forward.x,
+                forward.z
+            );
+
+            Point2 dir = forward;
+
+            if (length > 0.001f) {
+                dir.x /= length;
+                dir.z /= length;
+            } else {
+                dir = {1.0f, 0.0f};
+            }
+
+            const Point2 normal{
+                -dir.z,
+                dir.x
+            };
+
+            for (int forwardOffset = -2;
+                 forwardOffset <= 2;
+                 ++forwardOffset) {
+                for (int lateral = -8;
+                     lateral <= 8;
+                     ++lateral) {
+                    Point2 candidate{
+                        desired.x +
+                            dir.x * (
+                                static_cast<float>(
+                                    forwardOffset
+                                ) * step * 0.75f
+                            ) +
+                            normal.x * (
+                                static_cast<float>(
+                                    lateral
+                                ) * step
+                            ),
+
+                        desired.z +
+                            dir.z * (
+                                static_cast<float>(
+                                    forwardOffset
+                                ) * step * 0.75f
+                            ) +
+                            normal.z * (
+                                static_cast<float>(
+                                    lateral
+                                ) * step
+                            )
+                    };
+
+                    candidate.x = std::clamp(
+                        candidate.x,
+                        minX,
+                        maxX
+                    );
+
+                    candidate.z = std::clamp(
+                        candidate.z,
+                        minZ,
+                        maxZ
+                    );
+
+                    const float dxDesired =
+                        candidate.x - desired.x;
+
+                    const float dzDesired =
+                        candidate.z - desired.z;
+
+                    if (dxDesired * dxDesired +
+                        dzDesired * dzDesired >
+                        searchRadius * searchRadius) {
+                        continue;
+                    }
+
+                    const float dxPrev =
+                        candidate.x - previous.x;
+
+                    const float dzPrev =
+                        candidate.z - previous.z;
+
+                    const float progress =
+                        dxPrev * dir.x + dzPrev * dir.z;
+
+                    if (progress < step * 0.15f) {
+                        continue;
+                    }
+
+                    const float height =
+                        heightfield.sample_height(
+                            candidate.x,
+                            candidate.z
+                        );
+
+                    const float slope =
+                        heightfield.slope_degrees(
+                            candidate.x,
+                            candidate.z
+                        );
+
+                    const float distanceToDesired =
+                        std::hypot(dxDesired, dzDesired);
+
+                    const float score =
+                        height +
+                        slope * 14.0f +
+                        distanceToDesired * 0.22f;
+
+                    if (score < bestScore) {
+                        bestScore = score;
+                        best = candidate;
+                    }
+                }
+            }
+
+            return best;
+        }
+
+        void smooth_channel(
+            std::vector<WaterPoint>& channel
+        ) {
+            if (channel.size() < 3) {
+                return;
+            }
+
+            for (int pass = 0; pass < 2; ++pass) {
+                std::vector<WaterPoint> copy = channel;
+
+                for (std::size_t i = 1;
+                     i + 1 < channel.size();
+                     ++i) {
+                    channel[i].x = (
+                        copy[i - 1].x +
+                        copy[i].x * 2.0f +
+                        copy[i + 1].x
+                    ) * 0.25f;
+
+                    channel[i].z = (
+                        copy[i - 1].z +
+                        copy[i].z * 2.0f +
+                        copy[i + 1].z
+                    ) * 0.25f;
+
+                    channel[i].y = (
+                        copy[i - 1].y +
+                        copy[i].y * 2.0f +
+                        copy[i + 1].y
+                    ) * 0.25f;
+                }
+            }
+        }
+
         [[nodiscard]] std::vector<WaterPoint> build_channel(
             HydrologyLayer& layer,
             const terrain::Heightfield& heightfield,
@@ -258,8 +426,28 @@ namespace world_editor::biome {
             );
 
             const float amplitude = (std::min)(
-                20.0f,
-                (std::min)(width, depth) * 0.018f
+                10.0f,
+                (std::min)(width, depth) * 0.010f
+            );
+
+            const float mapMinX = layer.originX + 6.0f;
+            const float mapMaxX =
+                layer.originX + width - 6.0f;
+
+            const float mapMinZ = layer.originZ + 6.0f;
+            const float mapMaxZ =
+                layer.originZ + depth - 6.0f;
+
+            const float searchRadius = std::clamp(
+                (std::min)(width, depth) * 0.10f,
+                72.0f,
+                240.0f
+            );
+
+            const float step = std::clamp(
+                layer.spacingMeters * 2.0f,
+                12.0f,
+                24.0f
             );
 
             const std::size_t segments = points.size() - 1;
@@ -286,16 +474,18 @@ namespace world_editor::biome {
                     )
                 );
 
-                for (int step = 0; step <= steps; ++step) {
-                    if (i != 0 && step == 0) {
+                for (int sample = 0;
+                     sample <= steps;
+                     ++sample) {
+                    if (i != 0 && sample == 0) {
                         continue;
                     }
 
                     const float t =
-                        static_cast<float>(step) /
+                        static_cast<float>(sample) /
                         static_cast<float>(steps);
 
-                    Point2 p = catmull_rom(
+                    Point2 raw = catmull_rom(
                         p0, p1, p2, p3, t
                     );
 
@@ -306,33 +496,65 @@ namespace world_editor::biome {
                     const float wave =
                         std::sin(t * pi) *
                         std::sin(
-                            progress * 7.0f * pi + phase
+                            progress * 6.0f * pi + phase
                         ) * amplitude;
 
                     if (length > 0.001f) {
-                        p.x += (-dz / length) * wave;
-                        p.z += (dx / length) * wave;
+                        raw.x += (-dz / length) * wave;
+                        raw.z += (dx / length) * wave;
                     }
 
-                    p.x = std::clamp(
-                        p.x,
-                        layer.originX,
-                        layer.originX + width
+                    raw.x = std::clamp(
+                        raw.x,
+                        mapMinX,
+                        mapMaxX
                     );
 
-                    p.z = std::clamp(
-                        p.z,
-                        layer.originZ,
-                        layer.originZ + depth
+                    raw.z = std::clamp(
+                        raw.z,
+                        mapMinZ,
+                        mapMaxZ
                     );
+
+                    Point2 finalPoint = raw;
+
+                    if (!result.empty()) {
+                        Point2 previous{
+                            result.back().x,
+                            result.back().z
+                        };
+
+                        Point2 forward{
+                            raw.x - previous.x,
+                            raw.z - previous.z
+                        };
+
+                        finalPoint = choose_low_terrain_point(
+                            heightfield,
+                            mapMinX,
+                            mapMaxX,
+                            mapMinZ,
+                            mapMaxZ,
+                            previous,
+                            raw,
+                            forward,
+                            searchRadius,
+                            step
+                        );
+                    }
 
                     result.push_back({
-                        p.x,
-                        heightfield.sample_height(p.x, p.z),
-                        p.z
+                        finalPoint.x,
+                        heightfield.sample_height(
+                            finalPoint.x,
+                            finalPoint.z
+                        ),
+                        finalPoint.z
                     });
                 }
             }
+
+            smooth_channel(result);
 
             const float riverRadius =
                 layer.settings.riverWidthMeters * 0.5f;
@@ -441,7 +663,7 @@ namespace world_editor::biome {
 
             const float separation = (std::max)(
                 layer.settings.lakeSeparationMeters,
-                minimumSide * 0.20f
+                60.0f
             );
 
             for (std::uint32_t i = 0;
@@ -455,8 +677,8 @@ namespace world_editor::biome {
 
                 for (int attempt = 0; attempt < 256; ++attempt) {
                     const float radius = (std::min)(
-                        random_range(random, 38.0f, 88.0f),
-                        minimumSide * 0.11f
+                        random_range(random, 28.0f, 72.0f),
+                        minimumSide * 0.09f
                     );
 
                     const float margin =
@@ -478,6 +700,13 @@ namespace world_editor::biome {
                             random, margin, depth - margin
                         );
 
+                    const float slope =
+                        heightfield.slope_degrees(x, z);
+
+                    if (slope > 8.0f) {
+                        continue;
+                    }
+
                     bool available = true;
 
                     for (const auto& other : layer.lakes) {
@@ -492,7 +721,7 @@ namespace world_editor::biome {
                             radius +
                             other.radiusMeters +
                             layer.settings.marshWidthMeters +
-                            24.0f
+                            20.0f
                         );
 
                         if (dx * dx + dz * dz <
@@ -512,11 +741,9 @@ namespace world_editor::biome {
                     const float height =
                         heightfield.sample_height(x, z);
 
-                    // Elevation matters, but does not force
-                    // every lake into the same lowest basin.
                     const float score =
                         height +
-                        random_range(random, 0.0f, 12.0f);
+                        random_range(random, 0.0f, 18.0f);
 
                     if (score < bestScore) {
                         bestScore = score;

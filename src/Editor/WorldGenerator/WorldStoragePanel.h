@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "WorldEditor/Terrain/TerrainData.h"
@@ -11,8 +12,8 @@ namespace editor::viewport {
 
 namespace editor::world_generator {
 
-    class TerrainReliefPanel;
     class MapLayoutPanel;
+    class TerrainReliefPanel;
 
     class WorldStoragePanel final {
     public:
@@ -21,7 +22,8 @@ namespace editor::world_generator {
             world_editor::terrain::Settings& settings,
             world_editor::terrain::Settings& activeSettings,
             viewport::TerrainViewport& viewport,
-            MapLayoutPanel& mapPanel
+            MapLayoutPanel& mapPanel,
+            TerrainReliefPanel& reliefPanel
         );
 
         [[nodiscard]] std::filesystem::path world_directory() const;

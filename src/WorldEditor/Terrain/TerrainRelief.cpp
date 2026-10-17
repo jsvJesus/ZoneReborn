@@ -37,8 +37,8 @@ namespace world_editor::terrain {
 
         [[nodiscard]] double random_range(
             Random& random,
-            double minimum,
-            double maximum
+            const double minimum,
+            const double maximum
         ) {
             return minimum +
                 (maximum - minimum) * random01(random);
@@ -51,7 +51,9 @@ namespace world_editor::terrain {
             return x * x * (3.0 - 2.0 * x);
         }
 
-        void validate_profile(const ReliefProfile& profile) {
+        void validate_profile(
+            const ReliefProfile& profile
+        ) {
             if (static_cast<std::uint32_t>(profile.preset) > 4 ||
                 !std::isfinite(profile.hillHeightMeters) ||
                 !std::isfinite(profile.mountainHeightMeters) ||
@@ -95,11 +97,11 @@ namespace world_editor::terrain {
 
             const int count = std::clamp(
                 static_cast<int>(std::round(
-                    area / 900000.0 *
-                    profile.mountainCoverage + 0.5
+                    area / 1300000.0 *
+                    (0.65 + profile.mountainCoverage)
                 )),
                 1,
-                18
+                12
             );
 
             Random random(
@@ -109,24 +111,92 @@ namespace world_editor::terrain {
 
             result.reserve(count);
 
+            const double innerMargin = side * 0.08;
+            const double edgeBandMin = side * 0.04;
+            const double edgeBandMax = side * 0.18;
+
             for (int i = 0; i < count; ++i) {
-                const double x = settings.originX +
-                    random_range(
+                const bool edgeBiased =
+                    random.bounded(100) < 70;
+
+                double x = 0.0;
+                double z = 0.0;
+
+                if (edgeBiased) {
+                    switch (random.bounded(4)) {
+                    case 0: // North
+                        x = settings.originX + random_range(
+                            random,
+                            innerMargin,
+                            width - innerMargin
+                        );
+
+                        z = settings.originZ + random_range(
+                            random,
+                            edgeBandMin,
+                            edgeBandMax
+                        );
+                        break;
+
+                    case 1: // East
+                        x = settings.originX + random_range(
+                            random,
+                            width - edgeBandMax,
+                            width - edgeBandMin
+                        );
+
+                        z = settings.originZ + random_range(
+                            random,
+                            innerMargin,
+                            depth - innerMargin
+                        );
+                        break;
+
+                    case 2: // South
+                        x = settings.originX + random_range(
+                            random,
+                            innerMargin,
+                            width - innerMargin
+                        );
+
+                        z = settings.originZ + random_range(
+                            random,
+                            depth - edgeBandMax,
+                            depth - edgeBandMin
+                        );
+                        break;
+
+                    default: // West
+                        x = settings.originX + random_range(
+                            random,
+                            edgeBandMin,
+                            edgeBandMax
+                        );
+
+                        z = settings.originZ + random_range(
+                            random,
+                            innerMargin,
+                            depth - innerMargin
+                        );
+                        break;
+                    }
+                } else {
+                    x = settings.originX + random_range(
                         random,
-                        width * 0.16,
-                        width * 0.84
+                        width * 0.15,
+                        width * 0.85
                     );
 
-                const double z = settings.originZ +
-                    random_range(
+                    z = settings.originZ + random_range(
                         random,
-                        depth * 0.16,
-                        depth * 0.84
+                        depth * 0.15,
+                        depth * 0.85
                     );
+                }
 
                 const double radiusBase = side * (
-                    0.10 +
-                    profile.mountainCoverage * 0.16
+                    0.045 +
+                    profile.mountainCoverage * 0.065
                 );
 
                 const double angle =
@@ -138,16 +208,16 @@ namespace world_editor::terrain {
                 massif.z = z;
 
                 massif.radiusX = radiusBase *
-                    random_range(random, 0.85, 1.55);
+                    random_range(random, 0.75, 1.25);
 
                 massif.radiusZ = radiusBase *
-                    random_range(random, 0.85, 1.55);
+                    random_range(random, 0.75, 1.25);
 
                 massif.cosine = std::cos(angle);
                 massif.sine = std::sin(angle);
 
                 massif.strength =
-                    random_range(random, 0.75, 1.0);
+                    random_range(random, 0.72, 1.0);
 
                 result.push_back(massif);
             }
@@ -208,25 +278,25 @@ namespace world_editor::terrain {
         case ReliefPreset::RollingHills:
             return {
                 ReliefPreset::RollingHills,
-                55.0f, 0.0f, 0.0f, 1.5f
+                42.0f, 0.0f, 0.0f, 1.5f
             };
 
         case ReliefPreset::Highlands:
             return {
                 ReliefPreset::Highlands,
-                90.0f, 130.0f, 0.40f, 1.8f
+                62.0f, 95.0f, 0.28f, 1.8f
             };
 
         case ReliefPreset::Mountains:
             return {
                 ReliefPreset::Mountains,
-                70.0f, 480.0f, 0.55f, 2.4f
+                48.0f, 220.0f, 0.34f, 2.2f
             };
 
         case ReliefPreset::Mixed:
             return {
                 ReliefPreset::Mixed,
-                45.0f, 260.0f, 0.30f, 2.0f
+                36.0f, 145.0f, 0.22f, 1.9f
             };
         }
 
@@ -239,7 +309,6 @@ namespace world_editor::terrain {
     ) {
         validate_profile(profile);
 
-        // Preserve the exact legacy Terrain generator.
         Heightfield result = generate(settings);
 
         if (profile.preset == ReliefPreset::Original) {
@@ -269,28 +338,25 @@ namespace world_editor::terrain {
                     static_cast<double>(z) *
                     result.spacingMeters;
 
-                // Broad rolling terrain.
                 const double broad = noise::fractal(
-                    worldX / 540.0,
-                    worldZ / 540.0,
+                    worldX / 560.0,
+                    worldZ / 560.0,
                     seed ^ 0x732A86B1u,
                     4
                 );
 
                 const double local = noise::fractal(
-                    worldX / 190.0,
-                    worldZ / 190.0,
+                    worldX / 210.0,
+                    worldZ / 210.0,
                     seed ^ 0xAC794C5Du,
                     3
                 );
 
                 const double hills = (
-                    broad * 0.75 +
-                    local * 0.25
+                    broad * 0.72 +
+                    local * 0.28
                 ) * profile.hillHeightMeters;
 
-                // Separate mountain regions leave valleys
-                // available for POI and road planning.
                 const double envelope = mountain_envelope(
                     massifs,
                     worldX,
@@ -298,8 +364,8 @@ namespace world_editor::terrain {
                 );
 
                 const double ridgeNoise = noise::fractal(
-                    worldX / 125.0,
-                    worldZ / 125.0,
+                    worldX / 145.0,
+                    worldZ / 145.0,
                     seed ^ 0x59D8F0A3u,
                     5
                 );
@@ -312,12 +378,12 @@ namespace world_editor::terrain {
                     ),
                     static_cast<double>(
                         profile.ridgeSharpness
-                    ) * 2.0
+                    ) * 1.8
                 );
 
                 const double detail = noise::fractal(
-                    worldX / 58.0,
-                    worldZ / 58.0,
+                    worldX / 72.0,
+                    worldZ / 72.0,
                     seed ^ 0xE8BA137Du,
                     3
                 );
@@ -325,8 +391,8 @@ namespace world_editor::terrain {
                 const double mountainHeight =
                     profile.mountainHeightMeters *
                     envelope *
-                    (0.30 + 0.70 * ridge) *
-                    (1.0 + detail * 0.12);
+                    (0.34 + 0.66 * ridge) *
+                    (1.0 + detail * 0.10);
 
                 const std::size_t index =
                     static_cast<std::size_t>(z) *
