@@ -29,8 +29,8 @@ __pycache__/
 !.env.example
 
 # Generated local terrain worlds
-bin/worlds/
-bin/generated/
+bin/Editor/worlds/
+bin/Editor/generated/
 
 # Full client resources intentionally do not belong in this source archive.
 src/.vs/
