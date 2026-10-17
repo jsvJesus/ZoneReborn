@@ -94,6 +94,8 @@
     <ClCompile Include="Terrain\TerrainData.cpp" />
     <ClCompile Include="Terrain\TerrainExporter.cpp" />
     <ClCompile Include="Terrain\TerrainGenerator.cpp" />
+    <ClCompile Include="Terrain\TerrainRelief.cpp" />
+    <ClCompile Include="Terrain\TerrainReliefStorage.cpp" />
     <ClCompile Include="Terrain\TerrainWorldStorage.cpp" />
     <ClCompile Include="WorldEditor.cpp" />
     <ClCompile Include="WorldGenerator\MapLayoutGenerator.cpp" />
@@ -109,6 +111,8 @@
     <ClInclude Include="Terrain\TerrainData.h" />
     <ClInclude Include="Terrain\TerrainExporter.h" />
     <ClInclude Include="Terrain\TerrainGenerator.h" />
+    <ClInclude Include="Terrain\TerrainRelief.h" />
+    <ClInclude Include="Terrain\TerrainReliefStorage.h" />
     <ClInclude Include="Terrain\TerrainWorldStorage.h" />
     <ClInclude Include="WorldEditor.h" />
     <ClInclude Include="WorldGenerator\DeterministicRandom.h" />

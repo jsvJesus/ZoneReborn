@@ -9,6 +9,7 @@
 #include "Editor/Viewport/TerrainViewport.h"
 #include "Editor/WorldGenerator/MapLayoutPanel.h"
 #include "Editor/WorldGenerator/WorldStoragePanel.h"
+#include "Editor/WorldGenerator/TerrainReliefPanel.h"
 
 #include "Editor/UI/EditorWorkspace.h"
 #include "Editor/UI/MapInspectorPanel.h"
@@ -250,7 +251,8 @@ namespace {
         world_editor::terrain::Settings& settings,
         world_editor::terrain::Settings& activeSettings,
         editor::viewport::TerrainViewport& viewport,
-        editor::world_generator::MapLayoutPanel& mapPanel
+        editor::world_generator::MapLayoutPanel& mapPanel,
+        editor::world_generator::TerrainReliefPanel& reliefPanel
     ) {
         static std::string status;
         static bool hasError = false;
@@ -303,6 +305,8 @@ namespace {
             );
         }
 
+        reliefPanel.draw();
+
         ImGui::Separator();
 
         if (ImGui::Button(
@@ -310,8 +314,7 @@ namespace {
             ImVec2(-1.0f, 40.0f)
         )) {
             try {
-                auto generated =
-                    world_editor::terrain::generate(settings);
+                auto generated = reliefPanel.generate(settings);
 
                 viewport.set_terrain(generated);
 
@@ -437,6 +440,7 @@ int main() {
 
         editor::world_generator::MapLayoutPanel mapPanel;
         editor::world_generator::WorldStoragePanel storagePanel;
+        editor::world_generator::TerrainReliefPanel reliefPanel;
         editor::ui::WorldOutlinerPanel outlinerPanel;
         editor::ui::MapInspectorPanel inspectorPanel;
 
@@ -516,7 +520,8 @@ int main() {
                 settings,
                 activeSettings,
                 viewport,
-                mapPanel
+                mapPanel,
+                reliefPanel
             );
 
             mapPanel.draw(
@@ -524,7 +529,8 @@ int main() {
                 settings,
                 activeSettings,
                 viewport,
-                storagePanel
+                storagePanel,
+                reliefPanel
             );
 
             outlinerPanel.draw(viewport);
@@ -535,7 +541,8 @@ int main() {
                 settings,
                 activeSettings,
                 viewport,
-                mapPanel
+                mapPanel,
+                reliefPanel
             );
 
             viewport.draw();

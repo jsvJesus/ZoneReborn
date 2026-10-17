@@ -257,6 +257,7 @@
       <AdditionalIncludeDirectories>Z:\SOnline\src\;</AdditionalIncludeDirectories>
       <LibCompiled>true</LibCompiled>
     </ClCompile>
+    <ClCompile Include="WorldGenerator\TerrainReliefPanel.cpp" />
     <ClCompile Include="WorldGenerator\WorldStoragePanel.cpp" />
   </ItemGroup>
 
@@ -285,6 +286,7 @@
     <ClInclude Include="Viewport\ViewportStatusBar.h" />
     <ClInclude Include="Viewport\ViewportToolbar.h" />
     <ClInclude Include="WorldGenerator\MapLayoutPanel.h" />
+    <ClInclude Include="WorldGenerator\TerrainReliefPanel.h" />
     <ClInclude Include="WorldGenerator\WorldStoragePanel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

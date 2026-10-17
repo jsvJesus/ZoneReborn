@@ -13,6 +13,7 @@ namespace editor::viewport {
 
 namespace editor::world_generator {
 
+    class TerrainReliefPanel;
     class WorldStoragePanel;
 
     class MapLayoutPanel final {
@@ -24,7 +25,8 @@ namespace editor::world_generator {
             world_editor::terrain::Settings& settings,
             world_editor::terrain::Settings& activeSettings,
             viewport::TerrainViewport& viewport,
-            const WorldStoragePanel& storage
+            const WorldStoragePanel& storage,
+            TerrainReliefPanel& reliefPanel
         );
 
         void draw_inspector() const;

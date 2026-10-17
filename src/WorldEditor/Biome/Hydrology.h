@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <cmath>
 
 namespace world_editor::biome {
 

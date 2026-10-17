@@ -2,6 +2,7 @@
 
 #include "Editor/WorldGenerator/WorldStoragePanel.h"
 #include "Editor/Viewport/TerrainViewport.h"
+#include "Editor/WorldGenerator/TerrainReliefPanel.h"
 
 #include "WorldEditor/Terrain/TerrainGenerator.h"
 #include "WorldEditor/Terrain/TerrainWorldStorage.h"
@@ -200,7 +201,8 @@ namespace editor::world_generator {
         terrain::Settings& terrainSettings,
         terrain::Settings& activeSettings,
         viewport::TerrainViewport& viewport,
-        const WorldStoragePanel& storage
+        const WorldStoragePanel& storage,
+        TerrainReliefPanel& reliefPanel
     ) {
         ImGui::Begin("Map Layout");
 
@@ -376,7 +378,7 @@ namespace editor::world_generator {
                     next.spacingMeters = 8.0f;
                     next.seed = settings_.seeds.terrain;
 
-                    auto generated = terrain::generate(next);
+                    auto generated = reliefPanel.generate(next);
 
                     viewport.set_terrain(generated);
 

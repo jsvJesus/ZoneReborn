@@ -11,6 +11,7 @@ namespace editor::viewport {
 
 namespace editor::world_generator {
 
+    class TerrainReliefPanel;
     class MapLayoutPanel;
 
     class WorldStoragePanel final {

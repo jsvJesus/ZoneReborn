@@ -1,6 +1,7 @@
 #include "Editor/WorldGenerator/WorldStoragePanel.h"
 
 #include "Editor/WorldGenerator/MapLayoutPanel.h"
+#include "Editor/WorldGenerator/TerrainReliefPanel.h"
 #include "Editor/Viewport/TerrainViewport.h"
 #include "Editor/Core/Paths.h"
 
@@ -59,7 +60,8 @@ namespace editor::world_generator {
         world_editor::terrain::Settings& settings,
         world_editor::terrain::Settings& activeSettings,
         viewport::TerrainViewport& viewport,
-        MapLayoutPanel& mapPanel
+        MapLayoutPanel& mapPanel,
+        TerrainReliefPanel& reliefPanel
     ) {
         ImGui::Begin("World Storage");
 
@@ -102,6 +104,11 @@ namespace editor::world_generator {
                     directory
                 );
 
+                reliefPanel.save_for_world(
+                    terrain,
+                    directory
+                );
+
                 status_ = "World saved";
                 hasError_ = false;
             } catch (const std::exception& error) {
@@ -119,6 +126,11 @@ namespace editor::world_generator {
 
                 auto loaded =
                     world_editor::terrain::load_world(directory);
+
+                reliefPanel.restore_from_world(
+                    loaded.terrain,
+                    directory
+                );
 
                 viewport.set_terrain(loaded.terrain);
 
@@ -163,20 +175,35 @@ namespace editor::world_generator {
                 std::filesystem::path waterPath = directory;
                 waterPath += L".zhydro";
 
+                const bool hasWater =
+                    std::filesystem::exists(waterPath);
+
+                const bool hasRelief =
+                    TerrainReliefPanel::has_saved_profile(directory);
+
                 bool waterRestored = false;
 
-                if (std::filesystem::exists(waterPath)) {
-                    // Temporary CPU reconstruction for Hydrology v1.
-                    // The GPU terrain continues to use chunk streaming.
+                if (hasWater || hasRelief) {
+                    // One CPU reconstruction for both metadata layers.
+                    // GPU chunk streaming remains unchanged.
                     auto source =
                         world_editor::terrain::load_world(directory);
 
-                    waterRestored = mapPanel.restore_hydrology(
+                    reliefPanel.restore_from_world(
                         source.terrain,
-                        source.settings,
-                        viewport,
                         directory
                     );
+
+                    if (hasWater) {
+                        waterRestored = mapPanel.restore_hydrology(
+                            source.terrain,
+                            source.settings,
+                            viewport,
+                            directory
+                        );
+                    }
+                } else {
+                    reliefPanel.reset_to_original();
                 }
 
                 status_ = waterRestored
