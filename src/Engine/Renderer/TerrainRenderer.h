@@ -90,7 +90,7 @@ namespace engine::renderer {
 
         void set_terrain_materials(
             const TerrainMaterialMask& mask,
-            const std::array<std::filesystem::path, 5>& paths
+            const std::array<TerrainMaterialPaths, 5>& paths
         ) {
             materials_.load(mask, paths);
         }

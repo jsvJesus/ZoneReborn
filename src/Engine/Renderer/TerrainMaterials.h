@@ -16,10 +16,16 @@ namespace engine::renderer {
 
         float originX = 0.0f;
         float originZ = 0.0f;
+
         float spacingMeters = 0.0f;
         float textureScaleMeters = 6.0f;
 
         std::span<const std::uint8_t> weights;
+    };
+
+    struct TerrainMaterialPaths {
+        std::filesystem::path diffuse;
+        std::filesystem::path normal;
     };
 
     class TerrainMaterials final {
@@ -31,7 +37,7 @@ namespace engine::renderer {
 
         void load(
             const TerrainMaterialMask& mask,
-            const std::array<std::filesystem::path, 5>& paths
+            const std::array<TerrainMaterialPaths, 5>& paths
         );
 
         void clear() noexcept;
@@ -44,27 +50,36 @@ namespace engine::renderer {
     private:
         void create_pipeline();
 
-        [[nodiscard]]
-        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
-        load_texture(const std::filesystem::path& path) const;
-
         ID3D11Device* device_ = nullptr;
         ID3D11DeviceContext* context_ = nullptr;
 
-        Microsoft::WRL::ComPtr<ID3D11VertexShader> vertexShader_;
-        Microsoft::WRL::ComPtr<ID3D11PixelShader> pixelShader_;
+        Microsoft::WRL::ComPtr<ID3D11VertexShader>
+            vertexShader_;
 
-        Microsoft::WRL::ComPtr<ID3D11Buffer> constants_;
+        Microsoft::WRL::ComPtr<ID3D11PixelShader>
+            pixelShader_;
 
-        Microsoft::WRL::ComPtr<ID3D11SamplerState> tileSampler_;
-        Microsoft::WRL::ComPtr<ID3D11SamplerState> maskSampler_;
+        Microsoft::WRL::ComPtr<ID3D11Buffer>
+            constants_;
 
-        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mask_;
+        Microsoft::WRL::ComPtr<ID3D11SamplerState>
+            tileSampler_;
+
+        Microsoft::WRL::ComPtr<ID3D11SamplerState>
+            maskSampler_;
+
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
+            mask_;
 
         std::array<
             Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>,
             5
-        > textures_;
+        > diffuse_;
+
+        std::array<
+            Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>,
+            5
+        > normals_;
     };
 
 }

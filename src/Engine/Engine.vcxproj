@@ -85,6 +85,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Assets\DDSTextureLoader.cpp" />
     <ClCompile Include="Assets\ResourceIndex.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
     <ClCompile Include="Renderer\Device.cpp" />
@@ -94,6 +95,7 @@
     <ClCompile Include="Renderer\TerrainRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Assets\DDSTextureLoader.h" />
     <ClInclude Include="Assets\ResourceIndex.h" />
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Renderer\Device.h" />

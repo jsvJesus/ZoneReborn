@@ -156,17 +156,50 @@ namespace editor::viewport {
             );
         }
 
-        const auto directory =
+        const std::filesystem::path textures =
             editor::paths::packs_directory() /
-            "terrain_materials";
+            "textures";
 
-        const std::array<std::filesystem::path, 5> textures = {
-            directory / "grass.png",
-            directory / "soil.png",
-            directory / "sand.png",
-            directory / "rock.png",
-            directory / "marsh.png"
-        };
+        const std::array<
+            engine::renderer::TerrainMaterialPaths,
+            5
+        > materials = {{
+            {
+                textures /
+                    "landscape/forest/grass_03a.dds",
+
+                textures /
+                    "landscape/forest/grass_03a_norm.dds"
+            },
+            {
+                textures /
+                    "landscape/field/soil_dirt.dds",
+
+                textures /
+                    "landscape/field/soil_dirt_norm.dds"
+            },
+            {
+                textures /
+                    "landscape/water/sand_river01.dds",
+
+                textures /
+                    "landscape/water/sand_river01_norm.dds"
+            },
+            {
+                textures /
+                    "materials/stone/rocks.dds",
+
+                textures /
+                    "materials/stone/rocks_norm.dds"
+            },
+            {
+                textures /
+                    "landscape/water/swamp_grassy.dds",
+
+                textures /
+                    "landscape/water/swamp_grassy_norm.dds"
+            }
+        }};
 
         engine::renderer::TerrainMaterialMask mask;
 
@@ -182,12 +215,13 @@ namespace editor::viewport {
             layer.settings.textureScaleMeters;
 
         mask.weights = std::span<const std::uint8_t>(
-            layer.materialWeights
+            layer.materialWeights.data(),
+            layer.materialWeights.size()
         );
 
         renderer_.set_terrain_materials(
             mask,
-            textures
+            materials
         );
     }
 
