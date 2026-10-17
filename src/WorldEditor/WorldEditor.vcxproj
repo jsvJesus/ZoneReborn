@@ -85,6 +85,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Biome\Hydrology.cpp" />
     <ClCompile Include="Road\RoadGraph.cpp" />
     <ClCompile Include="Settlement\POIPlacement.cpp" />
     <ClCompile Include="Settlement\POIPlanner.cpp" />
@@ -98,6 +99,7 @@
     <ClCompile Include="WorldGenerator\MapLayoutStorage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Biome\Hydrology.h" />
     <ClInclude Include="Road\RoadGraph.h" />
     <ClInclude Include="Settlement\POIPlacement.h" />
     <ClInclude Include="Settlement\POIPlanner.h" />

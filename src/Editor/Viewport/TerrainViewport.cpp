@@ -5,6 +5,7 @@
 #include "Editor/Viewport/MapLayoutPicking.h"
 #include "Editor/Viewport/ViewportStatusBar.h"
 #include "Editor/Viewport/ViewportToolbar.h"
+#include "Editor/Viewport/HydrologyOverlay.h"
 
 #include "imgui.h"
 
@@ -73,6 +74,7 @@ namespace editor::viewport {
         homeDistance_ = (std::max)(width, depth) * 1.1f;
 
         mapLayout_.reset();
+        hydrology_.reset();
         selection_ = {};
 
         reset_camera();
@@ -102,6 +104,7 @@ namespace editor::viewport {
         homeDistance_ = (std::max)(width, depth) * 0.5f;
 
         mapLayout_.reset();
+        hydrology_.reset();
         selection_ = {};
 
         reset_camera();
@@ -128,6 +131,16 @@ namespace editor::viewport {
         }
 
         selection_ = {};
+    }
+
+    void TerrainViewport::set_hydrology(
+        const world_editor::biome::HydrologyLayer* water
+    ) {
+        if (water) {
+            hydrology_ = *water;
+        } else {
+            hydrology_.reset();
+        }
     }
 
     void TerrainViewport::select(
@@ -357,6 +370,16 @@ namespace editor::viewport {
             const bool imageHovered = ImGui::IsItemHovered();
             const ImVec2 imagePosition = ImGui::GetItemRectMin();
             const ImVec2 imageSize = ImGui::GetItemRectSize();
+
+            if (hydrology_ && toolbar_.layers.water) {
+                draw_hydrology_overlay(
+                    *hydrology_,
+                    ImGui::GetWindowDrawList(),
+                    imagePosition,
+                    imageSize,
+                    view * projection
+                );
+            }
 
             if (toolbar_.showLayout && mapLayout_) {
                 if (imageHovered &&

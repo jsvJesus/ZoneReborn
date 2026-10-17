@@ -164,6 +164,7 @@
     <ClCompile Include="UI\MapInspectorPanel.cpp" />
     <ClCompile Include="UI\WorldOutlinerPanel.cpp" />
     <ClCompile Include="Viewport\CameraNavigation.cpp" />
+    <ClCompile Include="Viewport\HydrologyOverlay.cpp" />
     <ClCompile Include="Viewport\MapLayoutOverlay.cpp" />
     <ClCompile Include="Viewport\MapLayoutPicking.cpp" />
     <ClCompile Include="Viewport\TerrainViewport.cpp" />
@@ -275,6 +276,7 @@
     <ClInclude Include="UI\MapSelection.h" />
     <ClInclude Include="UI\WorldOutlinerPanel.h" />
     <ClInclude Include="Viewport\CameraNavigation.h" />
+    <ClInclude Include="Viewport\HydrologyOverlay.h" />
     <ClInclude Include="Viewport\MapLayoutOverlay.h" />
     <ClInclude Include="Viewport\MapLayoutPicking.h" />
     <ClInclude Include="Viewport\TerrainViewport.h" />

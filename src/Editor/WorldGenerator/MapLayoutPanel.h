@@ -1,6 +1,7 @@
 #pragma once
 
 #include "WorldEditor/WorldGenerator/MapLayoutGenerator.h"
+#include "WorldEditor/Biome/Hydrology.h"
 
 #include <optional>
 #include <string>
@@ -37,6 +38,9 @@ namespace editor::world_generator {
         int poiPreset_ = 0;
         std::string status_;
         bool hasError_ = false;
+
+        world_editor::biome::HydrologySettings hydrologySettings_;
+        std::optional<world_editor::biome::HydrologyLayer> hydrology_;
     };
 
 }

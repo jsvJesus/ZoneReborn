@@ -6,6 +6,7 @@
 #include "WorldEditor/Terrain/TerrainGenerator.h"
 #include "WorldEditor/Terrain/TerrainWorldStorage.h"
 #include "WorldEditor/WorldGenerator/MapLayoutStorage.h"
+#include "WorldEditor/Biome/Hydrology.h"
 
 #include "../src/Externals/DearImGui/imgui.h"
 
@@ -126,6 +127,8 @@ namespace editor::world_generator {
     ) {
         layout_.reset();
         sourceTerrain_.reset();
+        hydrology_.reset();
+        viewport.set_hydrology(nullptr);
         viewport.set_map_layout(nullptr);
     }
 
@@ -334,6 +337,113 @@ namespace editor::world_generator {
             !matchingTerrain
         );
 
+        if (ImGui::CollapsingHeader(
+            "04  Hydrology",
+            ImGuiTreeNodeFlags_DefaultOpen
+        )) {
+            ImGui::TextDisabled(
+                "Water masks / River / Lakes / Marshes"
+            );
+
+            ImGui::Checkbox(
+                "Generate River",
+                &hydrologySettings_.riverEnabled
+            );
+
+            ImGui::SetNextItemWidth(160.0f);
+
+            int lakeCount = static_cast<int>(
+                hydrologySettings_.lakeCount
+            );
+
+            if (ImGui::SliderInt(
+                "Lake Count",
+                &lakeCount,
+                0,
+                8
+            )) {
+                hydrologySettings_.lakeCount =
+                    static_cast<std::uint32_t>(lakeCount);
+            }
+
+            ImGui::SliderFloat(
+                "River Width",
+                &hydrologySettings_.riverWidthMeters,
+                16.0f,
+                96.0f,
+                "%.0f m"
+            );
+
+            ImGui::SliderFloat(
+                "Marsh Width",
+                &hydrologySettings_.marshWidthMeters,
+                0.0f,
+                96.0f,
+                "%.0f m"
+            );
+
+            ImGui::BeginDisabled(
+                viewport.is_streaming() || !matchingTerrain
+            );
+
+            if (ImGui::Button(
+                "Generate Hydrology",
+                ImVec2(-1.0f, 38.0f)
+            )) {
+                try {
+                    hydrologySettings_.seed =
+                        settings_.seeds.water;
+
+                    auto generated =
+                        world_editor::biome::generate_hydrology(
+                            heightfield,
+                            hydrologySettings_
+                        );
+
+                    clear(viewport);
+
+                    hydrology_ = std::move(generated);
+
+                    viewport.set_hydrology(&*hydrology_);
+
+                    status_ = "Hydrology generated";
+                    hasError_ = false;
+                } catch (const std::exception& error) {
+                    status_ = error.what();
+                    hasError_ = true;
+                }
+            }
+
+            ImGui::EndDisabled();
+
+            if (hydrology_) {
+                ImGui::Text(
+                    "River points: %u",
+                    static_cast<unsigned>(
+                        hydrology_->river.size()
+                    )
+                );
+
+                ImGui::Text(
+                    "Lakes: %u",
+                    static_cast<unsigned>(
+                        hydrology_->lakes.size()
+                    )
+                );
+
+                ImGui::Text(
+                    "Marsh markers: %u",
+                    static_cast<unsigned>(
+                        hydrology_->marshMarkers.size()
+                    )
+                );
+            } else {
+                ImGui::TextDisabled(
+                    "No water mask generated yet"
+                );
+            }
+        }
+
         if (ImGui::Button(
             "Generate Map Layout",
             ImVec2(-1.0f, 42.0f)
@@ -341,9 +451,33 @@ namespace editor::world_generator {
             try {
                 settings_.seeds.terrain = activeSettings.seed;
 
+                const world_editor::biome::HydrologyLayer* water = hydrology_ ? &*hydrology_ : nullptr;
+
+                if (water) {
+                    const auto& active = water->settings;
+
+                    if (active.seed != settings_.seeds.water ||
+                        active.riverEnabled !=
+                            hydrologySettings_.riverEnabled ||
+                        active.lakeCount !=
+                            hydrologySettings_.lakeCount ||
+                        active.riverWidthMeters !=
+                            hydrologySettings_.riverWidthMeters ||
+                        active.marshWidthMeters !=
+                            hydrologySettings_.marshWidthMeters) {
+                        throw std::runtime_error(
+                            "Hydrology settings changed. "
+                            "Regenerate Hydrology before Map Layout."
+                        );
+                            }
+                }
+
                 auto generated = wg::generate_layout(
                     settings_,
-                    heightfield
+                    heightfield,
+                    [water](const float x, const float z) {
+                        return water && water->blocks_poi(x, z);
+                    }
                 );
 
                 viewport.set_map_layout(&generated);
@@ -364,7 +498,7 @@ namespace editor::world_generator {
         ImGui::Spacing();
         ImGui::Separator();
 
-        ImGui::TextDisabled("04  Layout Storage");
+        ImGui::TextDisabled("05 Layout Storage");
 
         ImGui::BeginDisabled(!layout_.has_value());
 

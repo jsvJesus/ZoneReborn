@@ -7,6 +7,7 @@ namespace editor::viewport {
         bool roads = true;
         bool exits = true;
         bool labels = true;
+        bool water = true;
     };
 
 }

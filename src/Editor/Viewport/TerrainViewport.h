@@ -4,6 +4,7 @@
 
 #include "WorldEditor/Terrain/TerrainData.h"
 #include "WorldEditor/WorldGenerator/MapLayout.h"
+#include "WorldEditor/Biome/Hydrology.h"
 
 #include "Editor/UI/MapSelection.h"
 #include "Editor/Viewport/TerrainWorldStreamer.h"
@@ -57,6 +58,10 @@ namespace editor::viewport {
 
         void focus_selection();
 
+        void set_hydrology(
+            const world_editor::biome::HydrologyLayer* water
+        );
+
     private:
         void reset_camera();
 
@@ -80,6 +85,7 @@ namespace editor::viewport {
         std::unique_ptr<TerrainWorldStreamer> streamer_;
 
         std::optional<world_editor::world_generator::MapLayout> mapLayout_;
+        std::optional<world_editor::biome::HydrologyLayer> hydrology_;
 
         ui::MapSelection selection_;
     };

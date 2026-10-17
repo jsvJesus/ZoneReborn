@@ -47,6 +47,13 @@ namespace editor::viewport {
 
             ImGui::EndDisabled();
 
+            ImGui::SeparatorText("Hydrology");
+
+            ImGui::Checkbox(
+                "Water / Marshes",
+                &state.layers.water
+            );
+
             ImGui::EndPopup();
         }
 
