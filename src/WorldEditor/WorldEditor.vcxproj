@@ -99,6 +99,7 @@
     <ClCompile Include="Terrain\TerrainRelief.cpp" />
     <ClCompile Include="Terrain\TerrainReliefStorage.cpp" />
     <ClCompile Include="Terrain\TerrainWorldStorage.cpp" />
+    <ClCompile Include="Vegetation\VegetationAssetCatalog.cpp" />
     <ClCompile Include="Vegetation\VegetationGenerator.cpp" />
     <ClCompile Include="WorldEditor.cpp" />
     <ClCompile Include="WorldGenerator\MapLayoutGenerator.cpp" />
@@ -119,6 +120,7 @@
     <ClInclude Include="Terrain\TerrainRelief.h" />
     <ClInclude Include="Terrain\TerrainReliefStorage.h" />
     <ClInclude Include="Terrain\TerrainWorldStorage.h" />
+    <ClInclude Include="Vegetation\VegetationAssetCatalog.h" />
     <ClInclude Include="Vegetation\VegetationGenerator.h" />
     <ClInclude Include="WorldEditor.h" />
     <ClInclude Include="WorldGenerator\DeterministicRandom.h" />

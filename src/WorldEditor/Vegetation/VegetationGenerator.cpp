@@ -1,4 +1,5 @@
 #include "WorldEditor/Vegetation/VegetationGenerator.h"
+#include "WorldEditor/Vegetation/VegetationAssetCatalog.h"
 
 #include "WorldEditor/Terrain/Noise.h"
 
@@ -8,6 +9,8 @@
 #include <cstddef>
 #include <numbers>
 #include <stdexcept>
+#include <limits>
+#include <vector>
 
 namespace world_editor::vegetation {
 
@@ -215,39 +218,135 @@ namespace world_editor::vegetation {
             return {};
         }
 
-        [[nodiscard]] VegetationAsset choose_asset(
-            VegetationKind kind,
-            biome::BiomeKind biomeKind,
-            float variation
+        struct WeightedAsset {
+            std::uint32_t index = 0;
+            float cumulativeWeight = 0.0f;
+        };
+
+        struct WeightedAssetPool {
+            std::vector<WeightedAsset> assets;
+            float totalWeight = 0.0f;
+
+            [[nodiscard]] bool empty() const noexcept {
+                return assets.empty();
+            }
+
+            void add(
+                std::uint32_t index,
+                float weight
+            ) {
+                totalWeight += weight;
+
+                assets.push_back({
+                    index,
+                    totalWeight
+                });
+            }
+
+            [[nodiscard]] std::uint32_t pick(
+                float randomValue
+            ) const {
+                if (assets.empty()) {
+                    throw std::logic_error(
+                        "Vegetation asset pool is empty"
+                    );
+                }
+
+                const float target =
+                    randomValue * totalWeight;
+
+                const auto found = std::lower_bound(
+                    assets.begin(),
+                    assets.end(),
+                    target,
+                    [](const WeightedAsset& asset,
+                       float value) {
+                        return asset.cumulativeWeight <= value;
+                    }
+                );
+
+                return found == assets.end()
+                    ? assets.back().index
+                    : found->index;
+            }
+        };
+
+        using AssetPools = std::array<std::array<WeightedAssetPool, 5>, 3>;
+
+        [[nodiscard]] bool matches_habitat(
+            VegetationHabitat habitat,
+            biome::BiomeKind biomeKind
         ) noexcept {
-            if (kind == VegetationKind::Grass) {
-                if (biomeKind == biome::BiomeKind::Wetland) {
-                    return VegetationAsset::SwampGrass;
-                }
-
-                if (biomeKind == biome::BiomeKind::Sandy ||
-                    variation > 0.80f) {
-                    return VegetationAsset::DryGrass;
-                }
-
-                return VegetationAsset::FieldGrass;
+            if (habitat == VegetationHabitat::Any) {
+                return true;
             }
 
-            if (kind == VegetationKind::Bush) {
-                if (biomeKind == biome::BiomeKind::Wetland) {
-                    return VegetationAsset::MarshReeds;
-                }
+            switch (biomeKind) {
+            case biome::BiomeKind::Grassland:
+                return habitat == VegetationHabitat::Grassland;
 
-                return VegetationAsset::GreenBush;
+            case biome::BiomeKind::Forest:
+                return habitat == VegetationHabitat::Forest;
+
+            case biome::BiomeKind::Sandy:
+                return habitat == VegetationHabitat::Sandy;
+
+            case biome::BiomeKind::Rocky:
+                return habitat == VegetationHabitat::Rocky;
+
+            case biome::BiomeKind::Wetland:
+                return habitat == VegetationHabitat::Wetland;
             }
 
-            if (biomeKind == biome::BiomeKind::Wetland) {
-                return VegetationAsset::SwampTree;
+            return false;
+        }
+
+        [[nodiscard]] AssetPools build_asset_pools(
+            const VegetationAssetCatalog& catalog
+        )
+        {
+            AssetPools pools{};
+
+            for (std::size_t kind = 0; kind < 3; ++kind) {
+                for (std::size_t biomeIndex = 0;
+                     biomeIndex < 5;
+                     ++biomeIndex) {
+                    auto& pool = pools[kind][biomeIndex];
+
+                    const auto biomeKind =
+                        static_cast<biome::BiomeKind>(
+                            biomeIndex
+                        );
+
+                    for (std::size_t assetIndex = 0;
+                         assetIndex < catalog.entries.size();
+                         ++assetIndex) {
+                        const auto& entry =
+                            catalog.entries[assetIndex];
+
+                        if (!entry.enabled ||
+                            static_cast<std::size_t>(entry.kind) !=
+                                kind ||
+                            !std::isfinite(entry.weight) ||
+                            entry.weight <= 0.0f ||
+                            !matches_habitat(
+                                entry.habitat,
+                                biomeKind
+                            )) {
+                            continue;
+                            }
+
+                        pool.add(
+                            static_cast<std::uint32_t>(
+                                assetIndex
+                            ),
+                            entry.weight
+                        );
+                         }
+                     }
             }
 
-            return variation < 0.55f
-                ? VegetationAsset::FirTree
-                : VegetationAsset::PineTree;
+            return pools;
         }
 
         [[nodiscard]] bool allows_slope(
@@ -295,63 +394,34 @@ namespace world_editor::vegetation {
 
     }
 
-    std::string_view asset_relative_path(
-        VegetationAsset asset
-    ) noexcept {
-        switch (asset) {
-        case VegetationAsset::FieldGrass:
-            return "models/flora/grass/field_grass/"
-                "field_grass_1.primitives";
-
-        case VegetationAsset::DryGrass:
-            return "models/flora/grass/"
-                "field_grass_long_yellow.primitives";
-
-        case VegetationAsset::SwampGrass:
-            return "models/flora/grass/swamp_grass/"
-                "swamp_grass_1.primitives";
-
-        case VegetationAsset::GreenBush:
-            return "models/flora/grass/"
-                "bush_01a_green.primitives";
-
-        case VegetationAsset::MarshReeds:
-            return "models/flora/grass/"
-                "swamp_kamysh_01.primitives";
-
-        case VegetationAsset::FirTree:
-            return "models/flora/trees/"
-                "furtree_01c.primitives";
-
-        case VegetationAsset::PineTree:
-            return "models/flora/trees/"
-                "pi_tree_01a.primitives";
-
-        case VegetationAsset::SwampTree:
-            return "models/flora/swamp_trees/"
-                "swamp_tree_01.primitives";
-
-        case VegetationAsset::Count:
-            break;
-        }
-
-        return {};
-    }
-
     bool VegetationLayer::valid() const noexcept {
         const std::size_t count =
             static_cast<std::size_t>(samplesX) * samplesZ;
 
-        return samplesX >= 2 &&
-            samplesZ >= 2 &&
-            std::isfinite(originX) &&
-            std::isfinite(originZ) &&
-            std::isfinite(spacingMeters) &&
-            spacingMeters > 0.0f &&
-            grassMask.size() == count &&
-            bushMask.size() == count &&
-            treeMask.size() == count &&
-            instances.size() <= settings.maxInstances;
+        if (samplesX < 2 ||
+            samplesZ < 2 ||
+            !std::isfinite(originX) ||
+            !std::isfinite(originZ) ||
+            !std::isfinite(spacingMeters) ||
+            spacingMeters <= 0.0f ||
+            grassMask.size() != count ||
+            bushMask.size() != count ||
+            treeMask.size() != count ||
+            instances.size() > settings.maxInstances) {
+            return false;
+            }
+
+        for (const auto& instance : instances) {
+            if (instance.assetIndex >= assetPaths.size()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    const std::string& VegetationLayer::asset_path(const VegetationInstance& instance) const {
+        return assetPaths.at(instance.assetIndex);
     }
 
     VegetationLayer generate_vegetation(
@@ -359,7 +429,8 @@ namespace world_editor::vegetation {
         const biome::BiomeLayer& biomes,
         const biome::HydrologyLayer* hydrology,
         const world_generator::MapLayout* layout,
-        const VegetationSettings& settings
+        const VegetationSettings& settings,
+        const VegetationAssetCatalog& catalog
     ) {
         if (!terrain.valid() ||
             !biomes.valid() ||
@@ -399,6 +470,33 @@ namespace world_editor::vegetation {
             );
         }
 
+        if (catalog.entries.empty() || catalog.entries.size() >
+        (std::numeric_limits<std::uint32_t>::max)()) {
+            throw std::invalid_argument(
+                "Vegetation asset catalog is empty or too large"
+            );
+        }
+
+        const AssetPools assetPools =
+            build_asset_pools(catalog);
+
+        bool hasAnyAssets = false;
+
+        for (const auto& kindPools : assetPools) {
+            for (const auto& pool : kindPools) {
+                if (!pool.empty()) {
+                    hasAnyAssets = true;
+                    break;
+                }
+            }
+        }
+
+        if (!hasAnyAssets) {
+            throw std::invalid_argument(
+                "No enabled vegetation assets for generation"
+            );
+        }
+
         VegetationLayer layer;
 
         layer.samplesX = terrain.samplesX;
@@ -407,6 +505,16 @@ namespace world_editor::vegetation {
         layer.originZ = terrain.originZ;
         layer.spacingMeters = terrain.spacingMeters;
         layer.settings = settings;
+
+        layer.assetPaths.reserve(
+            catalog.entries.size()
+        );
+
+        for (const auto& entry : catalog.entries) {
+            layer.assetPaths.push_back(
+                entry.relativePath
+            );
+        }
 
         const std::size_t sampleCount =
             terrain.heights.size();
@@ -481,6 +589,14 @@ namespace world_editor::vegetation {
 
                 for (std::size_t i = 0; i < kinds.size(); ++i) {
                     if (!allows_slope(kinds[i], slope)) {
+                        densities[i] = 0.0f;
+                    }
+                }
+
+                const std::size_t biomeIndex = static_cast<std::size_t>(biomeKind);
+
+                for (std::size_t i = 0; i < 3; ++i) {
+                    if (assetPools[i][biomeIndex].empty()) {
                         densities[i] = 0.0f;
                     }
                 }
@@ -569,9 +685,11 @@ namespace world_editor::vegetation {
                         ) * 0.44f;
 
                     instance.kind = kind;
-                    instance.asset = choose_asset(
-                        kind, biomeKind, variation
-                    );
+
+                    instance.assetIndex =
+                        assetPools[i][biomeIndex].pick(
+                            variation
+                        );
 
                     if (layer.instances.size() <
                         settings.maxInstances) {

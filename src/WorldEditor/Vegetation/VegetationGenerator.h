@@ -6,27 +6,18 @@
 #include "WorldEditor/WorldGenerator/MapLayout.h"
 
 #include <cstdint>
-#include <string_view>
+#include <string>
 #include <vector>
 
 namespace world_editor::vegetation {
 
+    struct VegetationAssetCatalog;
+
     enum class VegetationKind : std::uint8_t {
         Grass,
         Bush,
-        Tree
-    };
-
-    enum class VegetationAsset : std::uint8_t {
-        FieldGrass,
-        DryGrass,
-        SwampGrass,
-        GreenBush,
-        MarshReeds,
-        FirTree,
-        PineTree,
-        SwampTree,
-        Count
+        Tree,
+        Unclassified
     };
 
     struct VegetationSettings {
@@ -52,7 +43,9 @@ namespace world_editor::vegetation {
         float scale = 1.0f;
 
         VegetationKind kind = VegetationKind::Grass;
-        VegetationAsset asset = VegetationAsset::FieldGrass;
+
+        // Index in VegetationLayer::assetPaths.
+        std::uint32_t assetIndex = 0;
     };
 
     struct VegetationLayer {
@@ -65,26 +58,29 @@ namespace world_editor::vegetation {
 
         VegetationSettings settings;
 
-        // Three independent R8 density maps.
         std::vector<std::uint8_t> grassMask;
         std::vector<std::uint8_t> bushMask;
         std::vector<std::uint8_t> treeMask;
 
+        // Stable relative paths for generated instances.
+        std::vector<std::string> assetPaths;
+
         std::vector<VegetationInstance> instances;
 
         [[nodiscard]] bool valid() const noexcept;
-    };
 
-    [[nodiscard]] std::string_view asset_relative_path(
-        VegetationAsset asset
-    ) noexcept;
+        [[nodiscard]] const std::string& asset_path(
+            const VegetationInstance& instance
+        ) const;
+    };
 
     [[nodiscard]] VegetationLayer generate_vegetation(
         const terrain::Heightfield& terrain,
         const biome::BiomeLayer& biomes,
         const biome::HydrologyLayer* hydrology,
         const world_generator::MapLayout* layout,
-        const VegetationSettings& settings
+        const VegetationSettings& settings,
+        const VegetationAssetCatalog& catalog
     );
 
 }

@@ -1,8 +1,11 @@
 #pragma once
 
+#include "WorldEditor/Vegetation/VegetationAssetCatalog.h"
 #include "WorldEditor/Vegetation/VegetationGenerator.h"
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <optional>
 #include <string>
 
@@ -26,7 +29,17 @@ namespace editor::world_generator {
         );
 
     private:
+        void refresh_catalog(
+            viewport::TerrainViewport& viewport
+        );
+
+        void invalidate(
+            viewport::TerrainViewport& viewport
+        );
+
         world_editor::vegetation::VegetationSettings pending_;
+
+        world_editor::vegetation::VegetationAssetCatalog catalog_;
 
         std::optional<
             world_editor::vegetation::VegetationLayer
@@ -34,8 +47,13 @@ namespace editor::world_generator {
 
         std::array<std::size_t, 3> counts_{};
 
+        std::size_t usedVariants_ = 0;
+
+        bool catalogInitialized_ = false;
         bool useLayoutSeed_ = true;
         bool showPreview_ = true;
+
+        char assetFilter_[128]{};
 
         std::string status_;
         bool hasError_ = false;
