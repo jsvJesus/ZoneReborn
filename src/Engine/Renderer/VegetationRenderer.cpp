@@ -1,16 +1,18 @@
 #include "Engine/Renderer/VegetationRenderer.h"
 
+#include "Engine/Assets/DDSTextureLoader.h"
 #include "Engine/Assets/PrimitivesMeshLoader.h"
+#include "Engine/Assets/VisualMaterialLoader.h"
 
 #include <d3dcompiler.h>
 
 #include <algorithm>
-#include <array>
 #include <cmath>
 #include <cstddef>
-#include <numeric>
+#include <limits>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -36,11 +38,12 @@ namespace engine::renderer {
         };
 
         struct MaterialConstants {
-            DirectX::XMFLOAT4 tint;
+            DirectX::XMFLOAT4 parameters;
         };
 
         static_assert(sizeof(InstanceData) == 20);
         static_assert(sizeof(MaterialConstants) == 16);
+        static_assert(sizeof(assets::PrimitivesVertex) == 20);
 
         constexpr char shaderSource[] = R"(
 
@@ -51,8 +54,11 @@ namespace engine::renderer {
 
             cbuffer MaterialConstants : register(b1)
             {
-                float4 materialTint;
+                float4 materialParameters;
             };
+
+            Texture2D diffuseTexture : register(t0);
+            SamplerState textureSampler : register(s0);
 
             struct VertexInput
             {
@@ -67,6 +73,7 @@ namespace engine::renderer {
             {
                 float4 position : SV_POSITION;
                 float3 worldPosition : TEXCOORD0;
+                float2 uv : TEXCOORD1;
             };
 
             PixelInput VSMain(VertexInput input)
@@ -98,6 +105,7 @@ namespace engine::renderer {
                     input.instancePosition.z;
 
                 output.worldPosition = world;
+                output.uv = input.uv;
 
                 output.position = mul(
                     float4(world, 1.0f),
@@ -109,26 +117,41 @@ namespace engine::renderer {
 
             float4 PSMain(PixelInput input) : SV_TARGET
             {
-                float3 dx = ddx(input.worldPosition);
-                float3 dy = ddy(input.worldPosition);
+                float4 albedo = diffuseTexture.Sample(
+                    textureSampler,
+                    input.uv
+                );
+
+                if (materialParameters.y > 0.5f)
+                {
+                    clip(
+                        albedo.a - materialParameters.x
+                    );
+                }
+
+                float3 derivativeX = ddx(
+                    input.worldPosition
+                );
+
+                float3 derivativeY = ddy(
+                    input.worldPosition
+                );
 
                 float3 normal = normalize(
-                    cross(dx, dy)
+                    cross(derivativeX, derivativeY)
                 );
 
                 float3 lightDirection = normalize(
                     float3(-0.45f, 0.85f, 0.35f)
                 );
 
-                float light = 0.42f +
-                    0.58f * abs(
+                float light = 0.40f +
+                    0.60f * abs(
                         dot(normal, lightDirection)
                     );
 
-                // Diagnostic tint. Actual texture materials
-                // will be resolved from .visual / .mfm.
                 return float4(
-                    materialTint.rgb * light,
+                    albedo.rgb * light,
                     1.0f
                 );
             }
@@ -178,7 +201,7 @@ namespace engine::renderer {
                 }
 
                 throw std::runtime_error(
-                    "Vegetation shader compilation failed"
+                    "Failed to compile vegetation shader"
                 );
             }
 
@@ -187,37 +210,40 @@ namespace engine::renderer {
 
         [[nodiscard]] ComPtr<ID3D11Buffer> create_buffer(
             ID3D11Device* device,
-            UINT byteWidth,
-            UINT binding,
+            std::uint64_t byteWidth,
+            UINT bindFlags,
             const void* data
         ) {
-            if (byteWidth == 0 || !data) {
+            if (!data ||
+                byteWidth == 0 ||
+                byteWidth >
+                    (std::numeric_limits<UINT>::max)()) {
                 throw std::invalid_argument(
                     "Invalid vegetation GPU buffer"
                 );
             }
 
-            D3D11_BUFFER_DESC description{};
+            D3D11_BUFFER_DESC desc{};
 
-            description.ByteWidth = byteWidth;
-            description.Usage = D3D11_USAGE_IMMUTABLE;
-            description.BindFlags = binding;
+            desc.ByteWidth = static_cast<UINT>(byteWidth);
+            desc.Usage = D3D11_USAGE_IMMUTABLE;
+            desc.BindFlags = bindFlags;
 
-            D3D11_SUBRESOURCE_DATA initialData{};
-            initialData.pSysMem = data;
+            D3D11_SUBRESOURCE_DATA initial{};
+            initial.pSysMem = data;
 
-            ComPtr<ID3D11Buffer> result;
+            ComPtr<ID3D11Buffer> buffer;
 
             check(
                 device->CreateBuffer(
-                    &description,
-                    &initialData,
-                    result.GetAddressOf()
+                    &desc,
+                    &initial,
+                    buffer.GetAddressOf()
                 ),
-                "Failed to create vegetation GPU buffer"
+                "Failed to allocate vegetation buffer"
             );
 
-            return result;
+            return buffer;
         }
 
         [[nodiscard]] bool safe_asset_path(
@@ -238,30 +264,9 @@ namespace engine::renderer {
                 }
             }
 
-            const std::string normalized =
-                path.lexically_normal().generic_string();
-
-            return normalized.starts_with(
-                "models/flora/"
-            );
-        }
-
-        [[nodiscard]] DirectX::XMFLOAT4 kind_color(
-            std::uint32_t kind
-        ) noexcept {
-            switch (kind) {
-            case 0:
-                return {0.30f, 0.69f, 0.31f, 1.0f};
-
-            case 1:
-                return {0.32f, 0.51f, 0.19f, 1.0f};
-
-            case 2:
-                return {0.21f, 0.53f, 0.38f, 1.0f};
-
-            default:
-                return {0.65f, 0.65f, 0.65f, 1.0f};
-            }
+            return path.lexically_normal()
+                .generic_string()
+                .starts_with("models/flora/");
         }
 
     }
@@ -273,7 +278,7 @@ namespace engine::renderer {
         context_(context) {
         if (!device_ || !context_) {
             throw std::invalid_argument(
-                "Invalid Vegetation Renderer device"
+                "Invalid vegetation DirectX device"
             );
         }
 
@@ -311,48 +316,36 @@ namespace engine::renderer {
             "Failed to create vegetation pixel shader"
         );
 
-        constexpr D3D11_INPUT_ELEMENT_DESC elements[] = {
+        constexpr D3D11_INPUT_ELEMENT_DESC layout[] = {
             {
-                "POSITION",
-                0,
+                "POSITION", 0,
                 DXGI_FORMAT_R32G32B32_FLOAT,
-                0,
-                0,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0
+                0, 0,
+                D3D11_INPUT_PER_VERTEX_DATA, 0
             },
             {
-                "TEXCOORD",
-                0,
+                "TEXCOORD", 0,
                 DXGI_FORMAT_R32G32_FLOAT,
-                0,
-                12,
-                D3D11_INPUT_PER_VERTEX_DATA,
-                0
+                0, 12,
+                D3D11_INPUT_PER_VERTEX_DATA, 0
             },
             {
-                "INSTANCE_POSITION",
-                0,
+                "INSTANCE_POSITION", 0,
                 DXGI_FORMAT_R32G32B32_FLOAT,
-                1,
-                0,
-                D3D11_INPUT_PER_INSTANCE_DATA,
-                1
+                1, 0,
+                D3D11_INPUT_PER_INSTANCE_DATA, 1
             },
             {
-                "INSTANCE_ROT_SCALE",
-                0,
+                "INSTANCE_ROT_SCALE", 0,
                 DXGI_FORMAT_R32G32_FLOAT,
-                1,
-                12,
-                D3D11_INPUT_PER_INSTANCE_DATA,
-                1
+                1, 12,
+                D3D11_INPUT_PER_INSTANCE_DATA, 1
             }
         };
 
         check(
             device_->CreateInputLayout(
-                elements,
+                layout,
                 4,
                 vertexCode->GetBufferPointer(),
                 vertexCode->GetBufferSize(),
@@ -361,29 +354,74 @@ namespace engine::renderer {
             "Failed to create vegetation input layout"
         );
 
-        D3D11_BUFFER_DESC description{};
-        description.ByteWidth = sizeof(CameraConstants);
-        description.Usage = D3D11_USAGE_DEFAULT;
-        description.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        D3D11_BUFFER_DESC bufferDesc{};
+
+        bufferDesc.ByteWidth = sizeof(CameraConstants);
+        bufferDesc.Usage = D3D11_USAGE_DEFAULT;
+        bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 
         check(
             device_->CreateBuffer(
-                &description,
+                &bufferDesc,
                 nullptr,
                 cameraConstants_.GetAddressOf()
             ),
             "Failed to create vegetation camera buffer"
         );
 
-        description.ByteWidth = sizeof(MaterialConstants);
+        bufferDesc.ByteWidth = sizeof(MaterialConstants);
 
         check(
             device_->CreateBuffer(
-                &description,
+                &bufferDesc,
                 nullptr,
                 materialConstants_.GetAddressOf()
             ),
             "Failed to create vegetation material buffer"
+        );
+
+        D3D11_SAMPLER_DESC samplerDesc{};
+
+        samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+        samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+        samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+        samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+
+        samplerDesc.MaxAnisotropy = 8;
+        samplerDesc.MinLOD = 0.0f;
+        samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+        samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+
+        check(
+            device_->CreateSamplerState(
+                &samplerDesc,
+                textureSampler_.GetAddressOf()
+            ),
+            "Failed to create vegetation sampler"
+        );
+
+        D3D11_RASTERIZER_DESC rasterDesc{};
+
+        rasterDesc.FillMode = D3D11_FILL_SOLID;
+        rasterDesc.CullMode = D3D11_CULL_BACK;
+        rasterDesc.DepthClipEnable = TRUE;
+
+        check(
+            device_->CreateRasterizerState(
+                &rasterDesc,
+                singleSidedState_.GetAddressOf()
+            ),
+            "Failed to create vegetation rasterizer"
+        );
+
+        rasterDesc.CullMode = D3D11_CULL_NONE;
+
+        check(
+            device_->CreateRasterizerState(
+                &rasterDesc,
+                doubleSidedState_.GetAddressOf()
+            ),
+            "Failed to create double-sided rasterizer"
         );
     }
 
@@ -410,19 +448,14 @@ namespace engine::renderer {
             assetPaths.size()
         );
 
-        std::vector<std::uint32_t> kinds(
-            assetPaths.size(),
-            0
-        );
-
         for (const auto& instance : instances) {
             if (instance.assetIndex >= grouped.size() ||
                 instance.kind > 2 ||
                 !std::isfinite(instance.x) ||
                 !std::isfinite(instance.y) ||
                 !std::isfinite(instance.z) ||
-                !std::isfinite(instance.yawRadians) ||
                 !std::isfinite(instance.scale) ||
+                !std::isfinite(instance.yawRadians) ||
                 instance.scale <= 0.0f) {
                 continue;
             }
@@ -434,8 +467,6 @@ namespace engine::renderer {
                 instance.yawRadians,
                 instance.scale
             });
-
-            kinds[instance.assetIndex] = instance.kind;
         }
 
         std::vector<std::uint32_t> order;
@@ -462,16 +493,20 @@ namespace engine::renderer {
 
         VegetationRenderStats newStats{};
 
-        newStats.skippedVariants =
-            static_cast<std::uint32_t>(
-                order.size() > maxVariants
-                    ? order.size() - maxVariants
-                    : 0
-            );
-
         if (order.size() > maxVariants) {
+            newStats.skippedVariants =
+                static_cast<std::uint32_t>(
+                    order.size() - maxVariants
+                );
+
             order.resize(maxVariants);
         }
+
+        // One GPU texture per DDS path, shared by all batches.
+        std::unordered_map<
+            std::string,
+            ComPtr<ID3D11ShaderResourceView>
+        > textureCache;
 
         std::vector<Batch> newBatches;
         newBatches.reserve(order.size());
@@ -479,41 +514,29 @@ namespace engine::renderer {
         for (const std::uint32_t id : order) {
             if (!safe_asset_path(assetPaths[id])) {
                 ++newStats.failedVariants;
+
+                newStats.failedPaths.push_back(
+                    "Invalid asset path: " + assetPaths[id]
+                );
+
                 continue;
             }
 
             try {
-                const auto path =
-                    packsDirectory /
-                    std::filesystem::path(assetPaths[id]);
+                const auto mesh = assets::load_primitives_mesh(
+                    packsDirectory / assetPaths[id]
+                );
 
-                auto geometry =
-                    assets::load_primitives_mesh(path);
+                const auto materialSet =
+                    assets::load_visual_materials(
+                        packsDirectory,
+                        assetPaths[id]
+                    );
 
-                const auto& placements = grouped[id];
-
-                const std::uint64_t vertexBytes =
-                    static_cast<std::uint64_t>(
-                        geometry.vertices.size()
-                    ) * sizeof(assets::PrimitivesVertex);
-
-                const std::uint64_t indexBytes =
-                    static_cast<std::uint64_t>(
-                        geometry.indices.size()
-                    ) * sizeof(std::uint32_t);
-
-                const std::uint64_t instanceBytes =
-                    static_cast<std::uint64_t>(
-                        placements.size()
-                    ) * sizeof(InstanceData);
-
-                if (vertexBytes > UINT_MAX ||
-                    indexBytes > UINT_MAX ||
-                    instanceBytes > UINT_MAX ||
-                    geometry.indices.size() > UINT_MAX ||
-                    placements.size() > UINT_MAX) {
+                if (materialSet.materials.size() !=
+                    mesh.groups.size()) {
                     throw std::runtime_error(
-                        "Vegetation GPU buffer exceeds limits"
+                        "Visual and primitives group counts differ"
                     );
                 }
 
@@ -521,34 +544,101 @@ namespace engine::renderer {
 
                 batch.vertices = create_buffer(
                     device_,
-                    static_cast<UINT>(vertexBytes),
+                    static_cast<std::uint64_t>(
+                        mesh.vertices.size()
+                    ) * sizeof(assets::PrimitivesVertex),
                     D3D11_BIND_VERTEX_BUFFER,
-                    geometry.vertices.data()
+                    mesh.vertices.data()
                 );
 
                 batch.indices = create_buffer(
                     device_,
-                    static_cast<UINT>(indexBytes),
+                    static_cast<std::uint64_t>(
+                        mesh.indices.size()
+                    ) * sizeof(std::uint32_t),
                     D3D11_BIND_INDEX_BUFFER,
-                    geometry.indices.data()
+                    mesh.indices.data()
                 );
+
+                const auto& placements = grouped[id];
 
                 batch.instances = create_buffer(
                     device_,
-                    static_cast<UINT>(instanceBytes),
+                    static_cast<std::uint64_t>(
+                        placements.size()
+                    ) * sizeof(InstanceData),
                     D3D11_BIND_VERTEX_BUFFER,
                     placements.data()
-                );
-
-                batch.indexCount = static_cast<UINT>(
-                    geometry.indices.size()
                 );
 
                 batch.instanceCount = static_cast<UINT>(
                     placements.size()
                 );
 
-                batch.kind = kinds[id];
+                for (const auto& material :
+                     materialSet.materials) {
+                    if (material.primitiveGroup >=
+                        mesh.groups.size()) {
+                        throw std::runtime_error(
+                            "Material group index out of range"
+                        );
+                    }
+
+                    const std::string key =
+                        material.diffusePath.generic_string();
+
+                    auto textureIt = textureCache.find(key);
+
+                    if (textureIt == textureCache.end()) {
+                        const auto fullTexturePath =
+                            packsDirectory /
+                            material.diffusePath;
+
+                        auto texture =
+                            assets::load_dds_texture(
+                                device_,
+                                fullTexturePath
+                            );
+
+                        textureIt = textureCache.emplace(
+                            key,
+                            std::move(texture)
+                        ).first;
+                    }
+
+                    const auto& sourceGroup =
+                        mesh.groups[material.primitiveGroup];
+
+                    MaterialGroup group;
+
+                    group.diffuse = textureIt->second;
+
+                    group.startIndex =
+                        sourceGroup.startIndex;
+
+                    group.indexCount =
+                        sourceGroup.indexCount;
+
+                    group.alphaTest =
+                        material.alphaTest;
+
+                    group.doubleSided =
+                        material.doubleSided;
+
+                    group.alphaReference =
+                        static_cast<float>(
+                            material.alphaReference
+                        ) / 255.0f;
+
+                    batch.materials.push_back(
+                        std::move(group)
+                    );
+                }
+
+                newStats.loadedMaterialGroups +=
+                    static_cast<std::uint32_t>(
+                        batch.materials.size()
+                    );
 
                 newStats.renderedInstances +=
                     batch.instanceCount;
@@ -567,8 +657,13 @@ namespace engine::renderer {
             }
         }
 
+        newStats.loadedTextures =
+            static_cast<std::uint32_t>(
+                textureCache.size()
+            );
+
         batches_ = std::move(newBatches);
-        stats_ = newStats;
+        stats_ = std::move(newStats);
     }
 
     void VegetationRenderer::render(
@@ -604,6 +699,9 @@ namespace engine::renderer {
         ID3D11Buffer* materialBuffer =
             materialConstants_.Get();
 
+        ID3D11SamplerState* sampler =
+            textureSampler_.Get();
+
         context_->IASetInputLayout(
             inputLayout_.Get()
         );
@@ -636,6 +734,12 @@ namespace engine::renderer {
             &materialBuffer
         );
 
+        context_->PSSetSamplers(
+            0,
+            1,
+            &sampler
+        );
+
         constexpr UINT strides[2] = {
             sizeof(assets::PrimitivesVertex),
             sizeof(InstanceData)
@@ -644,19 +748,7 @@ namespace engine::renderer {
         constexpr UINT offsets[2] = {0, 0};
 
         for (const Batch& batch : batches_) {
-            MaterialConstants material{};
-            material.tint = kind_color(batch.kind);
-
-            context_->UpdateSubresource(
-                materialConstants_.Get(),
-                0,
-                nullptr,
-                &material,
-                0,
-                0
-            );
-
-            ID3D11Buffer* vertexBuffers[2] = {
+            ID3D11Buffer* buffers[2] = {
                 batch.vertices.Get(),
                 batch.instances.Get()
             };
@@ -664,7 +756,7 @@ namespace engine::renderer {
             context_->IASetVertexBuffers(
                 0,
                 2,
-                vertexBuffers,
+                buffers,
                 strides,
                 offsets
             );
@@ -675,28 +767,88 @@ namespace engine::renderer {
                 0
             );
 
-            context_->DrawIndexedInstanced(
-                batch.indexCount,
-                batch.instanceCount,
-                0,
-                0,
-                0
-            );
+            for (const MaterialGroup& group :
+                 batch.materials) {
+                MaterialConstants material{};
 
-            ++stats_.drawCalls;
+                material.parameters = {
+                    group.alphaReference,
+                    group.alphaTest ? 1.0f : 0.0f,
+                    0.0f,
+                    0.0f
+                };
+
+                context_->UpdateSubresource(
+                    materialConstants_.Get(),
+                    0,
+                    nullptr,
+                    &material,
+                    0,
+                    0
+                );
+
+                ID3D11ShaderResourceView* texture =
+                    group.diffuse.Get();
+
+                context_->PSSetShaderResources(
+                    0,
+                    1,
+                    &texture
+                );
+
+                context_->RSSetState(
+                    group.doubleSided
+                        ? doubleSidedState_.Get()
+                        : singleSidedState_.Get()
+                );
+
+                context_->DrawIndexedInstanced(
+                    group.indexCount,
+                    batch.instanceCount,
+                    group.startIndex,
+                    0,
+                    0
+                );
+
+                ++stats_.drawCalls;
+            }
         }
 
-        // Clear the instance vertex stream. Other renderers
-        // will install their own input layouts and shaders.
+        ID3D11ShaderResourceView* emptyTexture = nullptr;
+        ID3D11SamplerState* emptySampler = nullptr;
+        ID3D11Buffer* emptyBuffer = nullptr;
+
+        context_->PSSetShaderResources(
+            0,
+            1,
+            &emptyTexture
+        );
+
+        context_->PSSetSamplers(
+            0,
+            1,
+            &emptySampler
+        );
+
+        context_->PSSetConstantBuffers(
+            1,
+            1,
+            &emptyBuffer
+        );
+
         ID3D11Buffer* emptyBuffers[2] = {};
+        constexpr UINT emptyStrides[2] = {0, 0};
+        constexpr UINT emptyOffsets[2] = {0, 0};
 
         context_->IASetVertexBuffers(
             0,
             2,
             emptyBuffers,
-            offsets,
-            offsets
+            emptyStrides,
+            emptyOffsets
         );
+
+        context_->RSSetState(nullptr);
     }
 
 }

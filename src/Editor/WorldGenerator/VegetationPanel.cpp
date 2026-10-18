@@ -640,6 +640,16 @@ namespace editor::world_generator {
         );
 
         ImGui::Text(
+        "Material groups: %u",
+            renderStats.loadedMaterialGroups
+        );
+
+        ImGui::Text(
+            "Unique DDS textures: %u",
+            renderStats.loadedTextures
+        );
+
+        ImGui::Text(
             "Unsupported / failed: %u",
             renderStats.failedVariants
         );

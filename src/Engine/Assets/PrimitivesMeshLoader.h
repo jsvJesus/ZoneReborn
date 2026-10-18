@@ -15,9 +15,17 @@ namespace engine::assets {
         float v = 0.0f;
     };
 
+    struct PrimitivesGroup {
+        std::uint32_t startIndex = 0;
+        std::uint32_t indexCount = 0;
+        std::uint32_t startVertex = 0;
+        std::uint32_t vertexCount = 0;
+    };
+
     struct PrimitivesMesh {
         std::vector<PrimitivesVertex> vertices;
         std::vector<std::uint32_t> indices;
+        std::vector<PrimitivesGroup> groups;
 
         [[nodiscard]] bool valid() const noexcept;
     };

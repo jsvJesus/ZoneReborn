@@ -86,8 +86,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Assets\DDSTextureLoader.cpp" />
+    <ClCompile Include="Assets\PackedSection.cpp" />
     <ClCompile Include="Assets\PrimitivesMeshLoader.cpp" />
     <ClCompile Include="Assets\ResourceIndex.cpp" />
+    <ClCompile Include="Assets\VisualMaterialLoader.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
     <ClCompile Include="Renderer\Device.cpp" />
     <ClCompile Include="Renderer\Frustum.cpp" />
@@ -98,8 +100,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assets\DDSTextureLoader.h" />
+    <ClInclude Include="Assets\PackedSection.h" />
     <ClInclude Include="Assets\PrimitivesMeshLoader.h" />
     <ClInclude Include="Assets\ResourceIndex.h" />
+    <ClInclude Include="Assets\VisualMaterialLoader.h" />
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Renderer\Device.h" />
     <ClInclude Include="Renderer\Frustum.h" />

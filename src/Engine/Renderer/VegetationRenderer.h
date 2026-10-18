@@ -22,7 +22,6 @@ namespace engine::renderer {
         float yawRadians = 0.0f;
         float scale = 1.0f;
 
-        // Grass = 0, Bush = 1, Tree = 2.
         std::uint32_t kind = 0;
     };
 
@@ -31,8 +30,12 @@ namespace engine::renderer {
         std::uint32_t failedVariants = 0;
         std::uint32_t skippedVariants = 0;
 
+        std::uint32_t loadedMaterialGroups = 0;
+        std::uint32_t loadedTextures = 0;
+
         std::uint32_t renderedInstances = 0;
         std::uint32_t drawCalls = 0;
+
         std::vector<std::string> failedPaths;
     };
 
@@ -70,15 +73,27 @@ namespace engine::renderer {
         );
 
     private:
+        struct MaterialGroup {
+            Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>
+                diffuse;
+
+            UINT startIndex = 0;
+            UINT indexCount = 0;
+
+            float alphaReference = 0.0f;
+
+            bool alphaTest = false;
+            bool doubleSided = false;
+        };
+
         struct Batch {
             Microsoft::WRL::ComPtr<ID3D11Buffer> vertices;
             Microsoft::WRL::ComPtr<ID3D11Buffer> indices;
             Microsoft::WRL::ComPtr<ID3D11Buffer> instances;
 
-            UINT indexCount = 0;
-            UINT instanceCount = 0;
+            std::vector<MaterialGroup> materials;
 
-            std::uint32_t kind = 0;
+            UINT instanceCount = 0;
         };
 
         void create_pipeline();
@@ -100,6 +115,15 @@ namespace engine::renderer {
 
         Microsoft::WRL::ComPtr<ID3D11Buffer>
             materialConstants_;
+
+        Microsoft::WRL::ComPtr<ID3D11SamplerState>
+            textureSampler_;
+
+        Microsoft::WRL::ComPtr<ID3D11RasterizerState>
+            singleSidedState_;
+
+        Microsoft::WRL::ComPtr<ID3D11RasterizerState>
+            doubleSidedState_;
 
         std::vector<Batch> batches_;
 

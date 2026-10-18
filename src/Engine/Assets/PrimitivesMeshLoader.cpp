@@ -429,6 +429,7 @@ namespace engine::assets {
                 static_cast<std::size_t>(count) * 2;
 
             mesh.indices.reserve(count);
+            mesh.groups.reserve(groupCount);
 
             for (std::uint32_t i = 0; i < count; ++i) {
                 const std::uint16_t index = read_u16(
@@ -478,6 +479,15 @@ namespace engine::assets {
                         "Invalid primitives material group"
                     );
                 }
+
+                PrimitivesGroup group;
+
+                group.startIndex = startIndex;
+                group.indexCount = triangleCount * 3;
+                group.startVertex = startVertex;
+                group.vertexCount = vertexCount;
+
+                mesh.groups.push_back(group);
 
                 coveredTriangles += triangleCount;
             }
