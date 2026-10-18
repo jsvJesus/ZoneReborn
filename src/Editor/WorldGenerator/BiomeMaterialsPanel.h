@@ -35,6 +35,15 @@ namespace editor::world_generator {
             const world_editor::terrain::Heightfield* terrain = nullptr
         );
 
+        [[nodiscard]] const world_editor::biome::BiomeLayer*
+            active_layer() const noexcept {
+            return active_ ? &*active_ : nullptr;
+        }
+
+        [[nodiscard]] std::uint64_t source_fingerprint() const noexcept {
+            return sourceFingerprint_;
+        }
+
     private:
         world_editor::biome::BiomeSettings pending_;
         std::optional<world_editor::biome::BiomeLayer> active_;

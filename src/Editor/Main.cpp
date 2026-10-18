@@ -11,6 +11,7 @@
 #include "Editor/WorldGenerator/WorldStoragePanel.h"
 #include "Editor/WorldGenerator/TerrainReliefPanel.h"
 #include "Editor/WorldGenerator/BiomeMaterialsPanel.h"
+#include "Editor/WorldGenerator/VegetationPanel.h"
 
 #include "Editor/UI/EditorWorkspace.h"
 #include "Editor/UI/MapInspectorPanel.h"
@@ -209,7 +210,7 @@ namespace {
 
         ImGui::TextColored(
             ImVec4(0.38f, 0.85f, 0.74f, 1.0f),
-            "ZONE / WORLD EDITOR"
+            "WORLD EDITOR"
         );
 
         ImGui::Separator();
@@ -239,6 +240,10 @@ namespace {
 
             if (ImGui::MenuItem("World Outliner")) {
                 ImGui::SetWindowFocus("World Outliner");
+            }
+
+            if (ImGui::MenuItem("Vegetation Generator")) {
+                ImGui::SetWindowFocus("Vegetation Generator");
             }
 
             ImGui::EndMenu();
@@ -443,6 +448,7 @@ int main() {
         editor::world_generator::WorldStoragePanel storagePanel;
         editor::world_generator::TerrainReliefPanel reliefPanel;
         editor::world_generator::BiomeMaterialsPanel biomePanel;
+        editor::world_generator::VegetationPanel vegetationPanel;
         
         editor::ui::WorldOutlinerPanel outlinerPanel;
         editor::ui::MapInspectorPanel inspectorPanel;
@@ -537,6 +543,13 @@ int main() {
             );
 
             biomePanel.draw(terrain, viewport);
+
+            vegetationPanel.draw(
+                terrain,
+                biomePanel.active_layer(),
+                biomePanel.source_fingerprint(),
+                viewport
+            );
 
             outlinerPanel.draw(viewport);
             inspectorPanel.draw(viewport);

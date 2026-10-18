@@ -6,6 +6,7 @@
 #include "WorldEditor/WorldGenerator/MapLayout.h"
 #include "WorldEditor/Biome/Hydrology.h"
 #include "WorldEditor/Biome/BiomeGenerator.h"
+#include "WorldEditor/Vegetation/VegetationGenerator.h"
 
 #include "Editor/UI/MapSelection.h"
 #include "Editor/Viewport/TerrainWorldStreamer.h"
@@ -73,6 +74,18 @@ namespace editor::viewport {
             return hydrology_ ? &*hydrology_ : nullptr;
         }
 
+        void set_vegetation(
+            const world_editor::vegetation::VegetationLayer* layer
+        );
+
+        void set_vegetation_visible(bool visible) noexcept {
+            vegetationVisible_ = visible;
+        }
+
+        [[nodiscard]] bool has_vegetation() const noexcept {
+            return vegetation_.has_value();
+        }
+
     private:
         void reset_camera();
 
@@ -99,6 +112,9 @@ namespace editor::viewport {
         std::optional<world_editor::biome::HydrologyLayer> hydrology_;
 
         ui::MapSelection selection_;
+
+        std::optional<world_editor::vegetation::VegetationLayer> vegetation_;
+        bool vegetationVisible_ = true;
     };
 
 }

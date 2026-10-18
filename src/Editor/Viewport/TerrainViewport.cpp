@@ -6,6 +6,7 @@
 #include "Editor/Viewport/ViewportStatusBar.h"
 #include "Editor/Viewport/ViewportToolbar.h"
 #include "Editor/Viewport/HydrologyOverlay.h"
+#include "Editor/Viewport/VegetationOverlay.h"
 
 #include "Editor/Core/Paths.h"
 
@@ -76,8 +77,10 @@ namespace editor::viewport {
 
         homeDistance_ = (std::max)(width, depth) * 1.1f;
 
+        // reset
         mapLayout_.reset();
         hydrology_.reset();
+        vegetation_.reset();
         selection_ = {};
 
         reset_camera();
@@ -106,8 +109,10 @@ namespace editor::viewport {
 
         homeDistance_ = (std::max)(width, depth) * 0.5f;
 
+        // reset
         mapLayout_.reset();
         hydrology_.reset();
+        vegetation_.reset();
         selection_ = {};
 
         reset_camera();
@@ -130,7 +135,9 @@ namespace editor::viewport {
         if (layout) {
             mapLayout_ = *layout;
         } else {
+            // reset
             mapLayout_.reset();
+            vegetation_.reset();
         }
 
         selection_ = {};
@@ -142,7 +149,9 @@ namespace editor::viewport {
         if (water) {
             hydrology_ = *water;
         } else {
+            // reset
             hydrology_.reset();
+            vegetation_.reset();
             renderer_.clear_terrain_materials();
         }
     }
@@ -223,6 +232,24 @@ namespace editor::viewport {
             mask,
             materials
         );
+        vegetation_.reset();
+    }
+
+    void TerrainViewport::set_vegetation(
+        const world_editor::vegetation::VegetationLayer* layer
+    ) {
+        if (!layer) {
+            vegetation_.reset();
+            return;
+        }
+
+        if (!layer->valid()) {
+            throw std::invalid_argument(
+                "Invalid Vegetation Layer"
+            );
+        }
+
+        vegetation_ = *layer;
     }
 
     void TerrainViewport::select(
@@ -452,6 +479,16 @@ namespace editor::viewport {
             const bool imageHovered = ImGui::IsItemHovered();
             const ImVec2 imagePosition = ImGui::GetItemRectMin();
             const ImVec2 imageSize = ImGui::GetItemRectSize();
+            
+            if (vegetationVisible_ && vegetation_) {
+                draw_vegetation_overlay(
+                    *vegetation_,
+                    ImGui::GetWindowDrawList(),
+                    imagePosition,
+                    imageSize,
+                    view * projection
+                );
+            }
 
             if (hydrology_ && toolbar_.layers.water) {
                 draw_hydrology_overlay(

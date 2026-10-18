@@ -209,6 +209,11 @@ namespace editor::ui {
         );
 
         ImGui::DockBuilderDockWindow(
+            "Vegetation Generator",
+            left
+        );
+
+        ImGui::DockBuilderDockWindow(
             "World Outliner",
             right
         );

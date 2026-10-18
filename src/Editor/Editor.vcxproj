@@ -177,6 +177,7 @@
     <ClCompile Include="..\Externals\DearImGui\backends\imgui_impl_win32.cpp" />
     <ClCompile Include="..\Externals\DearImGui\backends\imgui_impl_dx11.cpp" />
     <ClCompile Include="Viewport\TerrainWorldStreamer.cpp" />
+    <ClCompile Include="Viewport\VegetationOverlay.cpp" />
     <ClCompile Include="Viewport\ViewportStatusBar.cpp" />
     <ClCompile Include="Viewport\ViewportToolbar.cpp" />
     <ClCompile Include="WorldGenerator\BiomeMaterialsPanel.cpp" />
@@ -259,6 +260,7 @@
       <LibCompiled>true</LibCompiled>
     </ClCompile>
     <ClCompile Include="WorldGenerator\TerrainReliefPanel.cpp" />
+    <ClCompile Include="WorldGenerator\VegetationPanel.cpp" />
     <ClCompile Include="WorldGenerator\WorldStoragePanel.cpp" />
   </ItemGroup>
 
@@ -283,12 +285,14 @@
     <ClInclude Include="Viewport\MapLayoutPicking.h" />
     <ClInclude Include="Viewport\TerrainViewport.h" />
     <ClInclude Include="Viewport\TerrainWorldStreamer.h" />
+    <ClInclude Include="Viewport\VegetationOverlay.h" />
     <ClInclude Include="Viewport\ViewportLayers.h" />
     <ClInclude Include="Viewport\ViewportStatusBar.h" />
     <ClInclude Include="Viewport\ViewportToolbar.h" />
     <ClInclude Include="WorldGenerator\BiomeMaterialsPanel.h" />
     <ClInclude Include="WorldGenerator\MapLayoutPanel.h" />
     <ClInclude Include="WorldGenerator\TerrainReliefPanel.h" />
+    <ClInclude Include="WorldGenerator\VegetationPanel.h" />
     <ClInclude Include="WorldGenerator\WorldStoragePanel.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
