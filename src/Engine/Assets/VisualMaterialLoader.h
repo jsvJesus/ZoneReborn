@@ -11,6 +11,8 @@ namespace engine::assets {
         std::uint32_t primitiveGroup = 0;
 
         std::string identifier;
+
+        // Empty for groups that declare no rendering effect or properties.
         std::filesystem::path diffusePath;
 
         bool alphaTest = false;

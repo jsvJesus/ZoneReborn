@@ -333,6 +333,42 @@ namespace engine::assets {
     }
 
     std::string PackedNode::text() const {
+        if (type == 5) {
+            constexpr char alphabet[] =
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                "abcdefghijklmnopqrstuvwxyz"
+                "0123456789+/";
+
+            std::string result;
+            result.reserve(((data.size() + 2) / 3) * 4);
+
+            // Type 5 stores decoded Base64 bytes; encode them to recover text.
+            for (std::size_t i = 0; i < data.size(); i += 3) {
+                const std::size_t remaining = data.size() - i;
+                std::uint32_t value =
+                    static_cast<std::uint32_t>(data[i]) << 16;
+
+                if (remaining > 1) {
+                    value |= static_cast<std::uint32_t>(data[i + 1]) << 8;
+                }
+
+                if (remaining > 2) {
+                    value |= data[i + 2];
+                }
+
+                result.push_back(alphabet[(value >> 18) & 63]);
+                result.push_back(alphabet[(value >> 12) & 63]);
+                result.push_back(
+                    remaining > 1 ? alphabet[(value >> 6) & 63] : '='
+                );
+                result.push_back(
+                    remaining > 2 ? alphabet[value & 63] : '='
+                );
+            }
+
+            return result;
+        }
+
         if (type != 1) {
             throw std::runtime_error(
                 "Packed node is not a string"

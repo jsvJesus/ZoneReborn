@@ -309,6 +309,22 @@ namespace editor::world_generator {
                 }
             }
 
+            bool catalogChanged = false;
+
+            ImGui::SameLine();
+            ImGui::BeginDisabled(catalog_.entries.empty());
+
+            if (ImGui::Button("Uncheck All")) {
+                for (auto& entry : catalog_.entries) {
+                    if (entry.enabled) {
+                        entry.enabled = false;
+                        catalogChanged = true;
+                    }
+                }
+            }
+
+            ImGui::EndDisabled();
+
             std::size_t lodCount = 0;
             std::size_t unclassifiedCount = 0;
 
@@ -353,8 +369,6 @@ namespace editor::world_generator {
 
             const std::string filter =
                 lowercase(assetFilter_);
-
-            bool catalogChanged = false;
 
             ImGui::BeginChild(
                 "##vegetation_asset_list",

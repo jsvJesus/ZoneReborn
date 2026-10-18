@@ -94,6 +94,12 @@ namespace engine::assets {
                 result.identifier = identifier->text();
             }
 
+            if (!material.find("fx") &&
+                !material.find("mfm") &&
+                !material.find("property")) {
+                return result;
+            }
+
             bool hasDiffuse = false;
 
             for (const auto& property : material.children) {

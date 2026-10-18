@@ -676,8 +676,7 @@ namespace engine::renderer
     void TerrainRenderer::render(
         const DirectX::XMMATRIX& viewProjection,
         const DirectX::XMFLOAT3& cameraPosition
-    )
-    {
+    ) {
         const Frustum frustum(viewProjection);
     
         stats_ = {};
@@ -838,13 +837,13 @@ namespace engine::renderer
             materials_.unbind();
         }
 
+        vegetationRenderer_.render(viewProjection);
+
         context_->OMSetRenderTargets(
             0,
             nullptr,
             nullptr
         );
-
-        vegetationRenderer_.render(viewProjection);
 
         context_->OMSetDepthStencilState(
             nullptr,

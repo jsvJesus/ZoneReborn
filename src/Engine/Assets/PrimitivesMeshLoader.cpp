@@ -388,12 +388,21 @@ namespace engine::assets {
             const Section& section,
             PrimitivesMesh& mesh
         ) {
-            if (section.size < 72 ||
-                read_format(bytes, section) != "list") {
+            if (section.size < 72) {
+                throw std::runtime_error(
+                    "Invalid primitives index header"
+                );
+            }
+
+            const std::string format = read_format(bytes, section);
+
+            if (format != "list" && format != "list32") {
                 throw std::runtime_error(
                     "Unsupported primitives index format"
                 );
             }
+
+            const std::uint32_t indexStride = format == "list32" ? 4u : 2u;
 
             const std::uint32_t count =
                 read_u32(bytes, section.offset + 64);
@@ -412,7 +421,7 @@ namespace engine::assets {
 
             const std::uint64_t expectedSize =
                 72ull +
-                static_cast<std::uint64_t>(count) * 2ull +
+                static_cast<std::uint64_t>(count) * indexStride +
                 static_cast<std::uint64_t>(groupCount) * 16ull;
 
             if (expectedSize != section.size) {
@@ -426,17 +435,18 @@ namespace engine::assets {
 
             const std::size_t groupsOffset =
                 indicesOffset +
-                static_cast<std::size_t>(count) * 2;
+                static_cast<std::size_t>(count) * indexStride;
 
             mesh.indices.reserve(count);
             mesh.groups.reserve(groupCount);
 
             for (std::uint32_t i = 0; i < count; ++i) {
-                const std::uint16_t index = read_u16(
-                    bytes,
-                    indicesOffset +
-                        static_cast<std::size_t>(i) * 2
-                );
+                const std::size_t offset = indicesOffset +
+                    static_cast<std::size_t>(i) * indexStride;
+
+                const std::uint32_t index = indexStride == 4
+                    ? read_u32(bytes, offset)
+                    : read_u16(bytes, offset);
 
                 if (index >= mesh.vertices.size()) {
                     throw std::runtime_error(

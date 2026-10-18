@@ -584,6 +584,10 @@ namespace engine::renderer {
                         );
                     }
 
+                    if (material.diffusePath.empty()) {
+                        continue;
+                    }
+
                     const std::string key =
                         material.diffusePath.generic_string();
 
@@ -632,6 +636,12 @@ namespace engine::renderer {
 
                     batch.materials.push_back(
                         std::move(group)
+                    );
+                }
+
+                if (batch.materials.empty()) {
+                    throw std::runtime_error(
+                        "Visual has no renderable material groups"
                     );
                 }
 
