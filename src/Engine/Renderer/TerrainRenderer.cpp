@@ -138,7 +138,8 @@ namespace engine::renderer
         ID3D11DeviceContext* context
     ) : device_(device),
         context_(context),
-        materials_(device, context)
+        materials_(device, context),
+        vegetationRenderer_(device, context)
     {
         if (!device_ || !context_) {
             throw std::invalid_argument(
@@ -399,12 +400,14 @@ namespace engine::renderer
         stats_ = {};
         stats_.chunks = static_cast<std::uint32_t>(chunks_.size());
         materials_.clear();
+        vegetationRenderer_.clear();
     }
 
     void TerrainRenderer::clear_chunks() noexcept {
         chunks_.clear();
         stats_ = {};
         materials_.clear();
+        vegetationRenderer_.clear();
     }
 
     void TerrainRenderer::remove_stream_chunk(
@@ -840,6 +843,8 @@ namespace engine::renderer
             nullptr,
             nullptr
         );
+
+        vegetationRenderer_.render(viewProjection);
 
         context_->OMSetDepthStencilState(
             nullptr,

@@ -4,6 +4,7 @@
 #include "Engine/Renderer/Frustum.h"
 #include "Engine/Renderer/TerrainChunkMesh.h"
 #include "Engine/Renderer/TerrainMaterials.h"
+#include "Engine/Renderer/VegetationRenderer.h"
 
 #include <DirectXMath.h>
 #include <d3d11.h>
@@ -13,6 +14,8 @@
 #include <array>
 #include <cstdint>
 #include <vector>
+#include <span>
+#include <string>
 
 namespace engine::renderer {
 
@@ -103,6 +106,33 @@ namespace engine::renderer {
             return materials_.ready();
         }
 
+        void set_vegetation_scene(
+            const std::filesystem::path& packsDirectory,
+            std::span<const std::string> assetPaths,
+            std::span<const VegetationDrawInstance> instances
+        ) {
+            vegetationRenderer_.set_scene(
+                packsDirectory,
+                assetPaths,
+                instances
+            );
+        }
+
+        void clear_vegetation_scene() noexcept {
+            vegetationRenderer_.clear();
+        }
+
+        void set_vegetation_geometry_visible(
+            bool visible
+        ) noexcept {
+            vegetationRenderer_.set_visible(visible);
+        }
+
+        [[nodiscard]] const VegetationRenderStats&
+        vegetation_render_stats() const noexcept {
+            return vegetationRenderer_.stats();
+        }
+
     private:
         struct ChunkLevel {
             Microsoft::WRL::ComPtr<ID3D11Buffer> vertices;
@@ -162,6 +192,8 @@ namespace engine::renderer {
         UINT height_ = 0;
 
         TerrainMaterials materials_;
+
+        VegetationRenderer vegetationRenderer_;
     };
 
 }

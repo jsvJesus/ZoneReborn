@@ -285,6 +285,15 @@ namespace editor::world_generator {
             showPreview_
         );
 
+        ImGui::Checkbox(
+            "Show 3D Geometry Preview",
+            &showGeometry_
+        );
+
+        viewport.set_vegetation_geometry_visible(
+            showGeometry_
+        );
+
         ImGui::Separator();
 
         if (ImGui::CollapsingHeader(
@@ -614,6 +623,57 @@ namespace editor::world_generator {
                 "Vegetation persistence is a separate step."
             );
         }
+
+        ImGui::Separator();
+
+        ImGui::TextColored(
+        ImVec4(0.38f, 0.85f, 0.74f, 1.0f),
+        "3D GEOMETRY IMPORT"
+        );
+
+        const auto& renderStats =
+            viewport.vegetation_render_stats();
+
+        ImGui::Text(
+            "Imported model variants: %u",
+            renderStats.loadedVariants
+        );
+
+        ImGui::Text(
+            "Unsupported / failed: %u",
+            renderStats.failedVariants
+        );
+
+        if (!renderStats.failedPaths.empty() && ImGui::TreeNode("Import errors"))
+            {
+            for (const auto& error : renderStats.failedPaths) {
+                ImGui::TextWrapped(
+                    "%s",
+                    error.c_str()
+                );
+            }
+
+            ImGui::TreePop();
+        }
+
+        ImGui::Text(
+            "Deferred by preview budget: %u",
+            renderStats.skippedVariants
+        );
+
+        ImGui::Text(
+            "GPU instances: %u",
+            renderStats.renderedInstances
+        );
+
+        ImGui::Text(
+            "Vegetation draw calls: %u",
+            renderStats.drawCalls
+        );
+
+        ImGui::TextDisabled(
+            "Real .primitives geometry, diagnostic materials"
+        );
 
         if (!status_.empty()) {
             ImGui::TextColored(

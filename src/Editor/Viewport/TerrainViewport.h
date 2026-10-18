@@ -86,6 +86,18 @@ namespace editor::viewport {
             return vegetation_.has_value();
         }
 
+        void set_vegetation_geometry_visible(bool visible) noexcept {
+            renderer_.set_vegetation_geometry_visible(
+                visible
+            );
+        }
+
+        [[nodiscard]]
+        const engine::renderer::VegetationRenderStats&
+        vegetation_render_stats() const noexcept {
+            return renderer_.vegetation_render_stats();
+        }
+
     private:
         void reset_camera();
 

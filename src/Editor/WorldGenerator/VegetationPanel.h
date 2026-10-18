@@ -52,6 +52,7 @@ namespace editor::world_generator {
         bool catalogInitialized_ = false;
         bool useLayoutSeed_ = true;
         bool showPreview_ = true;
+        bool showGeometry_ = false;
 
         char assetFilter_[128]{};
 

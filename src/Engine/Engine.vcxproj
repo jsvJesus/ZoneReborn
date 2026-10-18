@@ -86,6 +86,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Assets\DDSTextureLoader.cpp" />
+    <ClCompile Include="Assets\PrimitivesMeshLoader.cpp" />
     <ClCompile Include="Assets\ResourceIndex.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
     <ClCompile Include="Renderer\Device.cpp" />
@@ -93,9 +94,11 @@
     <ClCompile Include="Renderer\TerrainChunkMesh.cpp" />
     <ClCompile Include="Renderer\TerrainMaterials.cpp" />
     <ClCompile Include="Renderer\TerrainRenderer.cpp" />
+    <ClCompile Include="Renderer\VegetationRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Assets\DDSTextureLoader.h" />
+    <ClInclude Include="Assets\PrimitivesMeshLoader.h" />
     <ClInclude Include="Assets\ResourceIndex.h" />
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Renderer\Device.h" />
@@ -103,6 +106,7 @@
     <ClInclude Include="Renderer\TerrainChunkMesh.h" />
     <ClInclude Include="Renderer\TerrainMaterials.h" />
     <ClInclude Include="Renderer\TerrainRenderer.h" />
+    <ClInclude Include="Renderer\VegetationRenderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

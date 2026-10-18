@@ -20,6 +20,7 @@
 #include <span>
 #include <stdexcept>
 #include <utility>
+#include <vector>
 
 namespace editor::viewport {
 
@@ -81,6 +82,7 @@ namespace editor::viewport {
         mapLayout_.reset();
         hydrology_.reset();
         vegetation_.reset();
+        renderer_.clear_vegetation_scene();
         selection_ = {};
 
         reset_camera();
@@ -113,6 +115,7 @@ namespace editor::viewport {
         mapLayout_.reset();
         hydrology_.reset();
         vegetation_.reset();
+        renderer_.clear_vegetation_scene();
         selection_ = {};
 
         reset_camera();
@@ -138,6 +141,7 @@ namespace editor::viewport {
             // reset
             mapLayout_.reset();
             vegetation_.reset();
+            renderer_.clear_vegetation_scene();
         }
 
         selection_ = {};
@@ -152,6 +156,7 @@ namespace editor::viewport {
             // reset
             hydrology_.reset();
             vegetation_.reset();
+            renderer_.clear_vegetation_scene();
             renderer_.clear_terrain_materials();
         }
     }
@@ -248,6 +253,39 @@ namespace editor::viewport {
                 "Invalid Vegetation Layer"
             );
         }
+
+        std::vector<
+            engine::renderer::VegetationDrawInstance
+        > instances;
+
+        instances.reserve(
+            layer->instances.size()
+        );
+
+        for (const auto& source : layer->instances) {
+            engine::renderer::VegetationDrawInstance instance;
+
+            instance.assetIndex = source.assetIndex;
+
+            instance.x = source.x;
+            instance.y = source.y;
+            instance.z = source.z;
+
+            instance.yawRadians = source.yawRadians;
+            instance.scale = source.scale;
+
+            instance.kind = static_cast<std::uint32_t>(
+                source.kind
+            );
+
+            instances.push_back(instance);
+        }
+
+        renderer_.set_vegetation_scene(
+            editor::paths::packs_directory(),
+            layer->assetPaths,
+            instances
+        );
 
         vegetation_ = *layer;
     }
