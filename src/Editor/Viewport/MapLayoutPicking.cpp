@@ -135,7 +135,7 @@ namespace editor::viewport {
     }
 
     ui::MapSelection pick_map_layout(
-        const world_generator::MapLayout& layout,
+        const world_editor::world_generator::MapLayout& layout,
         const ImVec2& mousePosition,
         const ImVec2& imagePosition,
         const ImVec2& imageSize,
@@ -242,7 +242,7 @@ namespace editor::viewport {
     }
 
     void draw_map_selection(
-        const world_generator::MapLayout& layout,
+        const world_editor::world_generator::MapLayout& layout,
         const ui::MapSelection& selection,
         ImDrawList* drawList,
         const ImVec2& imagePosition,

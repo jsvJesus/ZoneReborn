@@ -283,7 +283,7 @@ namespace {
             ImGui::InputScalar(
                 "Terrain Seed",
                 ImGuiDataType_U32,
-                &settings.seed
+                &mapPanel.generation_seeds().terrain
             );
 
             ImGui::SliderFloat(
@@ -311,6 +311,7 @@ namespace {
             );
         }
 
+        settings.seed = mapPanel.generation_seeds().terrain;
         reliefPanel.draw();
 
         ImGui::Separator();
@@ -542,13 +543,19 @@ int main() {
                 reliefPanel
             );
 
-            biomePanel.draw(terrain, viewport);
+            biomePanel.draw(
+                terrain,
+                activeSettings,
+                viewport,
+                mapPanel.generation_seeds()
+            );
 
             vegetationPanel.draw(
                 terrain,
                 biomePanel.active_layer(),
                 biomePanel.source_fingerprint(),
-                viewport
+                viewport,
+                mapPanel.generation_seeds()
             );
 
             outlinerPanel.draw(viewport);
@@ -563,6 +570,10 @@ int main() {
                 reliefPanel,
                 biomePanel
             );
+
+            mapPanel.synchronize(viewport, activeSettings);
+            biomePanel.synchronize(viewport, mapPanel.generation_seeds(), activeSettings);
+            vegetationPanel.synchronize(viewport, mapPanel.generation_seeds());
 
             viewport.draw();
 

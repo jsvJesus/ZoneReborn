@@ -22,6 +22,7 @@ namespace world_editor::vegetation {
 
     struct VegetationSettings {
         std::uint32_t seed = 20261018;
+        std::uint32_t decorationSeed = 20261021;
 
         float grassDensity = 0.75f;
         float bushDensity = 0.40f;
@@ -32,6 +33,8 @@ namespace world_editor::vegetation {
         float exitClearanceMeters = 20.0f;
 
         std::uint32_t maxInstances = 160000;
+
+        [[nodiscard]] bool operator==(const VegetationSettings&) const = default;
     };
 
     struct VegetationInstance {

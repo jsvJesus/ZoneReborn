@@ -3,12 +3,13 @@
 #include "Editor/UI/MapSelection.h"
 #include "Editor/Viewport/TerrainViewport.h"
 
-#include "WorldEditor/Settlement/POIPlacement.h"
 #include "WorldEditor/Road/RoadGraph.h"
+#include "WorldEditor/Settlement/POIPlacement.h"
 
 #include "imgui.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 
 namespace editor::ui {
@@ -36,8 +37,60 @@ namespace editor::ui {
             return "Unknown";
         }
 
+        void draw_height_profile(
+            const road::RoadEdge& edge,
+            bool reverse,
+            float minimum,
+            float maximum
+        ) {
+            const float length = edge.route.back().distanceMeters;
+
+            ImGui::Text("Height profile: 0 - %.0f m", length);
+
+            const ImVec2 size(
+                (std::max)(80.0f, ImGui::GetContentRegionAvail().x),
+                80.0f
+            );
+
+            ImGui::InvisibleButton("##height_profile", size);
+
+            const ImVec2 origin = ImGui::GetItemRectMin();
+            ImDrawList* drawList = ImGui::GetWindowDrawList();
+            const ImVec2 end(origin.x + size.x, origin.y + size.y);
+
+            drawList->AddRectFilled(
+                origin, end,
+                IM_COL32(28, 39, 43, 255)
+            );
+
+            const float range = (std::max)(maximum - minimum, 1.0f);
+
+            const auto position = [&](const road::RoadRoutePoint& point) {
+                const float progress = point.distanceMeters / length;
+
+                return ImVec2(
+                    origin.x + (reverse ? 1.0f - progress : progress) * size.x,
+                    end.y - (point.y - minimum) / range * size.y
+                );
+            };
+
+            for (std::size_t i = 1; i < edge.route.size(); ++i) {
+                drawList->AddLine(
+                    position(edge.route[i - 1]),
+                    position(edge.route[i]),
+                    IM_COL32(231, 184, 104, 255),
+                    2.0f
+                );
+            }
+
+            drawList->AddRect(
+                origin, end,
+                IM_COL32(75, 105, 107, 255)
+            );
+        }
+
         void draw_connections(
-            const world_generator::MapLayout& layout,
+            const world_editor::world_generator::MapLayout& layout,
             const MapSelection selection
         ) {
             const road::RoadNodeKind targetKind =
@@ -85,13 +138,50 @@ namespace editor::ui {
 
                 const auto& node = layout.roads.nodes[neighbor];
 
-                ImGui::BulletText(
-                    "%s %u",
+                if (!ImGui::TreeNode(
+                    static_cast<const void*>(&edge),
+                    "%s %u - %.0f m",
                     node.kind == road::RoadNodeKind::POI
                         ? "POI"
                         : "Exit",
-                    node.referenceId + 1
-                );
+                    node.referenceId + 1,
+                    edge.route.empty()
+                        ? 0.0f
+                        : edge.route.back().distanceMeters
+                )) {
+                    continue;
+                }
+
+                if (edge.route.size() >= 2) {
+                    float minimum = edge.route.front().y;
+                    float maximum = minimum;
+                    float maximumSlope = 0.0f;
+                    std::uint32_t waterPoints = 0;
+
+                    for (const auto& point : edge.route) {
+                        minimum = (std::min)(minimum, point.y);
+                        maximum = (std::max)(maximum, point.y);
+                        maximumSlope = (std::max)(
+                            maximumSlope, point.slopeDegrees
+                        );
+
+                        if (point.water != biome::WaterKind::Dry) {
+                            ++waterPoints;
+                        }
+                    }
+
+                    ImGui::Text("Elevation: %.1f - %.1f m", minimum, maximum);
+                    ImGui::Text("Max slope: %.1f deg", maximumSlope);
+                    ImGui::Text("Water samples: %u", waterPoints);
+                    draw_height_profile(
+                        edge,
+                        edge.to == selectedIndex,
+                        minimum - 1.0f,
+                        maximum + 1.0f
+                    );
+                }
+
+                ImGui::TreePop();
             }
 
             if (connections == 0) {
@@ -130,7 +220,7 @@ namespace editor::ui {
 
         if (!selection.valid()) {
             const auto side =
-                world_generator::map_size_meters(
+                world_editor::world_generator::map_size_meters(
                     layout->settings.mapSize
                 );
 

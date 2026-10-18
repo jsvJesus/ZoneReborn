@@ -16,6 +16,15 @@ namespace world_editor::biome {
         const std::filesystem::path& worldDirectory
     );
 
+    [[nodiscard]] std::uint64_t terrain_source_fingerprint(
+        const terrain::Heightfield& heightfield
+    );
+
+    [[nodiscard]] std::uint64_t biome_source_fingerprint(
+        std::uint64_t terrainFingerprint,
+        const HydrologyLayer* hydrology
+    );
+
     [[nodiscard]] std::uint64_t biome_source_fingerprint(
         const terrain::Heightfield& heightfield,
         const HydrologyLayer* hydrology

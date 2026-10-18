@@ -3,6 +3,7 @@
 #include <Windows.h>
 
 #include <bit>
+#include <cmath>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -17,11 +18,17 @@ namespace world_editor::biome {
         namespace fs = std::filesystem;
 
         constexpr std::uint32_t magic = 0x4459485Au;
-        constexpr std::uint32_t fileVersion = 1;
+        constexpr std::uint32_t fileVersion = 2;
         constexpr std::uint32_t algorithmVersion = 2;
+        constexpr std::uintmax_t maxFileSize = 16u * 1024u * 1024u;
+        constexpr std::uint32_t maxWaterPoints = 500000;
 
         struct Writer {
             std::vector<std::uint8_t> data;
+
+            void u8(const std::uint8_t value) {
+                data.push_back(value);
+            }
 
             void u32(std::uint32_t value) {
                 for (int i = 0; i < 4; ++i) {
@@ -41,12 +48,26 @@ namespace world_editor::biome {
             void f32(float value) {
                 u32(std::bit_cast<std::uint32_t>(value));
             }
+
+            void point(const WaterPoint& value) {
+                f32(value.x);
+                f32(value.y);
+                f32(value.z);
+            }
         };
 
         struct Reader {
             const std::vector<std::uint8_t>& data;
             std::size_t limit;
             std::size_t offset = 0;
+
+            [[nodiscard]] std::uint8_t u8() {
+                if (offset >= limit) {
+                    throw std::runtime_error("Hydrology file is incomplete");
+                }
+
+                return data[offset++];
+            }
 
             [[nodiscard]] std::uint32_t u32() {
                 if (offset > limit ||
@@ -77,7 +98,52 @@ namespace world_editor::biome {
             [[nodiscard]] float f32() {
                 return std::bit_cast<float>(u32());
             }
+
+            [[nodiscard]] WaterPoint point() {
+                const WaterPoint value{f32(), f32(), f32()};
+
+                if (!std::isfinite(value.x) ||
+                    !std::isfinite(value.y) ||
+                    !std::isfinite(value.z)) {
+                    throw std::runtime_error("Invalid Hydrology point");
+                }
+
+                return value;
+            }
         };
+
+        void write_points(
+            Writer& output,
+            const std::vector<WaterPoint>& points
+        ) {
+            if (points.size() > maxWaterPoints) {
+                throw std::invalid_argument("Too many Hydrology points");
+            }
+
+            output.u32(static_cast<std::uint32_t>(points.size()));
+
+            for (const auto& point : points) {
+                output.point(point);
+            }
+        }
+
+        [[nodiscard]] std::vector<WaterPoint> read_points(Reader& input) {
+            const auto count = input.u32();
+
+            if (count > maxWaterPoints ||
+                count > (input.limit - input.offset) / 12u) {
+                throw std::runtime_error("Invalid Hydrology point count");
+            }
+
+            std::vector<WaterPoint> points;
+            points.reserve(count);
+
+            for (std::uint32_t i = 0; i < count; ++i) {
+                points.push_back(input.point());
+            }
+
+            return points;
+        }
 
         [[nodiscard]] std::uint32_t checksum(
             const std::vector<std::uint8_t>& bytes,
@@ -216,6 +282,41 @@ namespace world_editor::biome {
         output.f32(settings.marshWidthMeters);
         output.f32(settings.lakeSeparationMeters);
 
+        output.u32(static_cast<std::uint32_t>(water.cells.size()));
+
+        for (const auto kind : water.cells) {
+            output.u8(static_cast<std::uint8_t>(kind));
+        }
+
+        write_points(output, water.river);
+
+        if (water.tributaries.size() > maxWaterPoints) {
+            throw std::invalid_argument("Too many Hydrology tributaries");
+        }
+
+        output.u32(static_cast<std::uint32_t>(water.tributaries.size()));
+
+        for (const auto& tributary : water.tributaries) {
+            write_points(output, tributary);
+        }
+
+        if (water.lakes.size() > maxWaterPoints) {
+            throw std::invalid_argument("Too many Hydrology lakes");
+        }
+
+        output.u32(static_cast<std::uint32_t>(water.lakes.size()));
+
+        for (const auto& lake : water.lakes) {
+            output.point(lake.center);
+            output.f32(lake.radiusMeters);
+        }
+
+        write_points(output, water.marshMarkers);
+
+        if (output.data.size() + 4u > maxFileSize) {
+            throw std::invalid_argument("Hydrology file is too large");
+        }
+
         output.u32(checksum(
             output.data,
             output.data.size()
@@ -290,7 +391,7 @@ namespace world_editor::biome {
         const fs::path& path
     ) {
         if (!fs::exists(path) ||
-            fs::file_size(path) > 256 ||
+            fs::file_size(path) > maxFileSize ||
             fs::file_size(path) < 64) {
             throw std::runtime_error(
                 "Hydrology file is missing or invalid"
@@ -338,9 +439,13 @@ namespace world_editor::biome {
 
         Reader input{data, payloadSize};
 
-        if (input.u32() != magic ||
-            input.u32() != fileVersion ||
-            input.u32() != algorithmVersion) {
+        const auto savedMagic = input.u32();
+        const auto savedVersion = input.u32();
+        const auto savedAlgorithm = input.u32();
+
+        if (savedMagic != magic ||
+            (savedVersion != 1 && savedVersion != fileVersion) ||
+            savedAlgorithm != algorithmVersion) {
             throw std::runtime_error(
                 "Unsupported Hydrology file version"
             );
@@ -397,13 +502,90 @@ namespace world_editor::biome {
         settings.marshWidthMeters = input.f32();
         settings.lakeSeparationMeters = input.f32();
 
+        if (savedVersion == 1) {
+            if (input.offset != payloadSize) {
+                throw std::runtime_error("Unexpected Hydrology file data");
+            }
+
+            return generate_hydrology(heightfield, settings);
+        }
+
+        HydrologyLayer result;
+        result.samplesX = samplesX;
+        result.samplesZ = samplesZ;
+        result.originX = originX;
+        result.originZ = originZ;
+        result.spacingMeters = spacing;
+        result.settings = settings;
+
+        const auto cellCount = input.u32();
+
+        if (cellCount != static_cast<std::uint64_t>(samplesX) * samplesZ ||
+            cellCount > input.limit - input.offset) {
+            throw std::runtime_error("Invalid Hydrology cell count");
+        }
+
+        result.cells.reserve(cellCount);
+
+        for (std::uint32_t i = 0; i < cellCount; ++i) {
+            const auto kind = input.u8();
+
+            if (kind > static_cast<std::uint8_t>(WaterKind::Marsh)) {
+                throw std::runtime_error("Invalid Hydrology water kind");
+            }
+
+            result.cells.push_back(static_cast<WaterKind>(kind));
+        }
+
+        result.river = read_points(input);
+        const auto tributaryCount = input.u32();
+
+        if (tributaryCount > maxWaterPoints ||
+            tributaryCount > (input.limit - input.offset) / 4u) {
+            throw std::runtime_error("Invalid Hydrology tributary count");
+        }
+
+        result.tributaries.reserve(tributaryCount);
+
+        for (std::uint32_t i = 0; i < tributaryCount; ++i) {
+            result.tributaries.push_back(read_points(input));
+        }
+
+        const auto lakeCount = input.u32();
+
+        if (lakeCount > maxWaterPoints ||
+            lakeCount > (input.limit - input.offset) / 16u) {
+            throw std::runtime_error("Invalid Hydrology lake count");
+        }
+
+        result.lakes.reserve(lakeCount);
+
+        for (std::uint32_t i = 0; i < lakeCount; ++i) {
+            LakeArea lake;
+            lake.center = input.point();
+            lake.radiusMeters = input.f32();
+
+            if (!std::isfinite(lake.radiusMeters) ||
+                lake.radiusMeters < 0.0f) {
+                throw std::runtime_error("Invalid Hydrology lake radius");
+            }
+
+            result.lakes.push_back(lake);
+        }
+
+        result.marshMarkers = read_points(input);
+
         if (input.offset != payloadSize) {
             throw std::runtime_error(
                 "Unexpected Hydrology file data"
             );
         }
 
-        return generate_hydrology(heightfield, settings);
+        if (!result.valid()) {
+            throw std::runtime_error("Invalid Hydrology layer");
+        }
+
+        return result;
     }
 
 }

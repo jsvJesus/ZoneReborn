@@ -96,6 +96,7 @@ namespace editor::world_generator {
         viewport::TerrainViewport& viewport
     ) {
         active_.reset();
+        sourceRevisions_ = {};
         counts_ = {};
         usedVariants_ = 0;
 
@@ -109,6 +110,23 @@ namespace editor::world_generator {
 
         status_.clear();
         hasError_ = false;
+    }
+
+    void VegetationPanel::synchronize(
+        viewport::TerrainViewport& viewport,
+        const world_editor::world_generator::GenerationSeeds& seeds
+    ) {
+        pending_.seed = seeds.vegetation;
+        pending_.decorationSeed = seeds.decoration;
+
+        if (active_ &&
+            (!viewport.has_vegetation() || !viewport.has_biomes() ||
+                sourceRevisions_ != viewport.layer_revisions() ||
+                active_->settings != pending_)) {
+            invalidate(viewport);
+            status_ = "Vegetation dependencies changed. Regenerate Vegetation.";
+            hasError_ = false;
+        }
     }
 
     void VegetationPanel::refresh_catalog(
@@ -162,8 +180,11 @@ namespace editor::world_generator {
         const world_editor::terrain::Heightfield& terrain,
         const world_editor::biome::BiomeLayer* biomes,
         std::uint64_t biomeSourceFingerprint,
-        viewport::TerrainViewport& viewport
+        viewport::TerrainViewport& viewport,
+        const world_editor::world_generator::GenerationSeeds& seeds
     ) {
+        synchronize(viewport, seeds);
+
         if (!catalogInitialized_) {
             catalogInitialized_ = true;
 
@@ -173,15 +194,6 @@ namespace editor::world_generator {
                 status_ = error.what();
                 hasError_ = true;
             }
-        }
-
-        if (active_ && !viewport.has_vegetation()) {
-            active_.reset();
-            counts_ = {};
-            usedVariants_ = 0;
-
-            status_ = "Vegetation invalidated. Regenerate.";
-            hasError_ = false;
         }
 
         ImGui::Begin("Vegetation Generator");
@@ -197,25 +209,11 @@ namespace editor::world_generator {
 
         ImGui::Separator();
 
-        ImGui::Checkbox(
-            "Use Map Layout VegetationSeed",
-            &useLayoutSeed_
-        );
-
         const auto* layout = viewport.map_layout();
 
-        if (useLayoutSeed_ && layout) {
-            ImGui::Text(
-                "Layout VegetationSeed: %u",
-                layout->settings.seeds.vegetation
-            );
-        } else {
-            ImGui::InputScalar(
-                "Vegetation Seed",
-                ImGuiDataType_U32,
-                &pending_.seed
-            );
-        }
+        ImGui::Text("Map VegetationSeed: %u", seeds.vegetation);
+        ImGui::Text("Map DecorationSeed: %u", seeds.decoration);
+        ImGui::TextDisabled("Edit seeds in Map Layout / Generation Seeds.");
 
         ImGui::SliderFloat(
             "Grass Density",
@@ -276,6 +274,8 @@ namespace editor::world_generator {
             &maxInstances
         );
 
+        synchronize(viewport, seeds);
+
         ImGui::Checkbox(
             "Show Placement Preview",
             &showPreview_
@@ -325,8 +325,26 @@ namespace editor::world_generator {
 
             ImGui::EndDisabled();
 
+            ImGui::SameLine();
+            ImGui::BeginDisabled(catalog_.entries.empty());
+
+            if (ImGui::Button("Enable Classified")) {
+                for (auto& entry : catalog_.entries) {
+                    if (!entry.lodVariant &&
+                        entry.kind != vegetation::VegetationKind::Unclassified &&
+                        entry.weight > 0.0f &&
+                        !entry.enabled) {
+                        entry.enabled = true;
+                        catalogChanged = true;
+                    }
+                }
+            }
+
+            ImGui::EndDisabled();
+
             std::size_t lodCount = 0;
             std::size_t unclassifiedCount = 0;
+            std::size_t checkedCount = 0;
 
             for (const auto& entry : catalog_.entries) {
                 if (entry.lodVariant) {
@@ -336,6 +354,10 @@ namespace editor::world_generator {
                 if (entry.kind ==
                     vegetation::VegetationKind::Unclassified) {
                     ++unclassifiedCount;
+                }
+
+                if (entry.enabled) {
+                    ++checkedCount;
                 }
             }
 
@@ -347,6 +369,11 @@ namespace editor::world_generator {
             ImGui::Text(
                 "Enabled variants: %zu",
                 catalog_.enabled_count()
+            );
+
+            ImGui::Text(
+                "Checked models: %zu",
+                checkedCount
             );
 
             ImGui::Text(
@@ -506,6 +533,14 @@ namespace editor::world_generator {
             );
         }
 
+        if (catalog_.enabled_count() == 0) {
+            ImGui::TextWrapped(
+                "No usable Flora selected. Click Enable Classified, "
+                "or set checked models to Grass, Bush or Tree "
+                "with a weight above zero."
+            );
+        }
+
         ImGui::BeginDisabled(
             !terrain.valid() ||
             !biomes ||
@@ -520,11 +555,6 @@ namespace editor::world_generator {
             try {
                 auto settings = pending_;
 
-                if (useLayoutSeed_ && layout) {
-                    settings.seed =
-                        layout->settings.seeds.vegetation;
-                }
-
                 const std::uint64_t currentFingerprint =
                     world_editor::biome::biome_source_fingerprint(
                         terrain,
@@ -533,6 +563,8 @@ namespace editor::world_generator {
 
                 if (currentFingerprint !=
                     biomeSourceFingerprint) {
+                    invalidate(viewport);
+                    viewport.clear_biomes();
                     throw std::runtime_error(
                         "Terrain or Hydrology changed. "
                         "Regenerate Biomes first."
@@ -585,6 +617,7 @@ namespace editor::world_generator {
                 );
 
                 active_ = std::move(generated);
+                sourceRevisions_ = viewport.layer_revisions();
 
                 status_ = "Vegetation generated from catalog";
                 hasError_ = false;
@@ -679,11 +712,6 @@ namespace editor::world_generator {
 
             ImGui::TreePop();
         }
-
-        ImGui::Text(
-            "Deferred by preview budget: %u",
-            renderStats.skippedVariants
-        );
 
         ImGui::Text(
             "GPU instances: %u",

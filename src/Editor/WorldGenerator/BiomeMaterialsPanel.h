@@ -2,6 +2,8 @@
 
 #include "WorldEditor/Biome/BiomeGenerator.h"
 #include "WorldEditor/Terrain/TerrainData.h"
+#include "WorldEditor/WorldGenerator/MapGenerationSettings.h"
+#include "Editor/WorldGenerator/LayerRevisions.h"
 
 #include <cstdint>
 #include <filesystem>
@@ -18,8 +20,23 @@ namespace editor::world_generator {
     public:
         void draw(
             const world_editor::terrain::Heightfield& terrain,
-            viewport::TerrainViewport& viewport
+            const world_editor::terrain::Settings& activeSettings,
+            viewport::TerrainViewport& viewport,
+            const world_editor::world_generator::GenerationSeeds& seeds
         );
+
+        void clear(viewport::TerrainViewport& viewport);
+
+        void synchronize(
+            viewport::TerrainViewport& viewport,
+            const world_editor::world_generator::GenerationSeeds& seeds,
+            const world_editor::terrain::Settings& activeSettings
+        );
+
+        void validate_for_save(
+            const world_editor::terrain::Heightfield& terrain,
+            const world_editor::biome::HydrologyLayer* hydrology
+        ) const;
 
         void save_for_world(
             const world_editor::terrain::Heightfield& terrain,
@@ -32,7 +49,7 @@ namespace editor::world_generator {
             const world_editor::terrain::Settings& settings,
             viewport::TerrainViewport& viewport,
             const std::filesystem::path& directory,
-            const world_editor::terrain::Heightfield* terrain = nullptr
+            const world_editor::terrain::Heightfield& terrain
         );
 
         [[nodiscard]] const world_editor::biome::BiomeLayer*
@@ -45,6 +62,7 @@ namespace editor::world_generator {
         }
 
     private:
+        LayerRevisions sourceRevisions_;
         world_editor::biome::BiomeSettings pending_;
         std::optional<world_editor::biome::BiomeLayer> active_;
 

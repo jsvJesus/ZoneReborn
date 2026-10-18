@@ -15,7 +15,8 @@ namespace world_editor::world_generator {
 
     [[nodiscard]] MapLayout load_map_layout(
         const std::filesystem::path& path,
-        const terrain::Settings& terrainSettings
+        const terrain::Settings& terrainSettings,
+        std::uint64_t sourceFingerprint
     );
 
 }

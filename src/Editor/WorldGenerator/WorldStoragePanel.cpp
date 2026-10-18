@@ -5,6 +5,7 @@
 #include "Editor/Viewport/TerrainViewport.h"
 #include "Editor/Core/Paths.h"
 
+#include "WorldEditor/Biome/BiomeStorage.h"
 #include "WorldEditor/Terrain/TerrainWorldStorage.h"
 
 #include "imgui.h"
@@ -93,6 +94,12 @@ namespace editor::world_generator {
             try {
                 const auto directory = world_directory();
 
+                mapPanel.validate_sources(terrain, activeSettings, viewport);
+                biomePanel.synchronize(
+                    viewport, mapPanel.generation_seeds(), activeSettings
+                );
+                biomePanel.validate_for_save(terrain, viewport.hydrology());
+
                 world_editor::terrain::save_world(
                     terrain,
                     activeSettings,
@@ -147,6 +154,7 @@ namespace editor::world_generator {
                 terrain = std::move(loaded.terrain);
                 activeSettings = loaded.settings;
                 settings = loaded.settings;
+                mapPanel.generation_seeds().terrain = activeSettings.seed;
 
                 const bool waterRestored = mapPanel.restore_hydrology(
                     terrain,
@@ -159,8 +167,13 @@ namespace editor::world_generator {
                     activeSettings,
                     viewport,
                     directory,
-                    &terrain
+                    terrain
                 );
+
+                if (biomesRestored) {
+                    mapPanel.generation_seeds().biome =
+                        biomePanel.active_layer()->settings.seed;
+                }
 
                 status_ = "World loaded";
 
@@ -184,14 +197,16 @@ namespace editor::world_generator {
         if (ImGui::Button("Stream World")) {
             try {
                 const auto directory = world_directory();
+                auto source = world_editor::terrain::load_world(directory);
 
-                viewport.open_streamed_world(directory);
+                viewport.open_streamed_world(directory, source.terrain);
 
                 mapPanel.clear(viewport);
 
                 settings = viewport.streaming_settings();
                 activeSettings = settings;
                 terrain = {};
+                mapPanel.generation_seeds().terrain = activeSettings.seed;
 
                 std::filesystem::path waterPath = directory;
                 waterPath += L".zhydro";
@@ -202,14 +217,14 @@ namespace editor::world_generator {
                 const bool hasRelief =
                     TerrainReliefPanel::has_saved_profile(directory);
 
+                const bool hasBiomes = std::filesystem::exists(
+                    world_editor::biome::biome_file_path(directory)
+                );
+
                 bool waterRestored = false;
+                bool biomesRestored = false;
 
-                if (hasWater || hasRelief) {
-                    // One CPU reconstruction for both metadata layers.
-                    // GPU chunk streaming remains unchanged.
-                    auto source =
-                        world_editor::terrain::load_world(directory);
-
+                if (hasWater || hasRelief || hasBiomes) {
                     reliefPanel.restore_from_world(
                         source.terrain,
                         directory
@@ -223,15 +238,22 @@ namespace editor::world_generator {
                             directory
                         );
                     }
+
+                    biomesRestored = biomePanel.restore_from_world(
+                        source.settings,
+                        viewport,
+                        directory,
+                        source.terrain
+                    );
                 } else {
                     reliefPanel.reset_to_original();
+                    biomePanel.clear(viewport);
                 }
 
-                const bool biomesRestored = biomePanel.restore_from_world(
-                    activeSettings,
-                    viewport,
-                    directory
-                );
+                if (biomesRestored) {
+                    mapPanel.generation_seeds().biome =
+                        biomePanel.active_layer()->settings.seed;
+                }
 
                 status_ = "World Streaming enabled";
 

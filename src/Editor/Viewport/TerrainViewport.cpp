@@ -9,6 +9,8 @@
 #include "Editor/Viewport/VegetationOverlay.h"
 
 #include "Editor/Core/Paths.h"
+#include "WorldEditor/Biome/BiomeStorage.h"
+#include "WorldEditor/WorldGenerator/MapLayoutFingerprint.h"
 
 #include "imgui.h"
 
@@ -49,6 +51,9 @@ namespace editor::viewport {
             );
         }
 
+        const auto fingerprint =
+            world_editor::biome::terrain_source_fingerprint(terrain);
+
         renderer_.set_mesh({
             terrain.samplesX,
             terrain.samplesZ,
@@ -79,22 +84,41 @@ namespace editor::viewport {
         homeDistance_ = (std::max)(width, depth) * 1.1f;
 
         // reset
+        terrainGrid_ = world_generator::layer_grid(terrain);
+        terrainFingerprint_ = fingerprint;
+        sourceFingerprint_ = world_editor::world_generator::layout_source_fingerprint(
+            terrainFingerprint_, nullptr
+        );
+        ++revisions_.terrain;
+        ++revisions_.hydrology;
+        ++revisions_.layout;
         mapLayout_.reset();
         hydrology_.reset();
-        vegetation_.reset();
-        renderer_.clear_vegetation_scene();
+        clear_biomes();
         selection_ = {};
 
         reset_camera();
     }
 
     void TerrainViewport::open_streamed_world(
-        const std::filesystem::path& directory
+        const std::filesystem::path& directory,
+        const world_editor::terrain::Heightfield& source
     ) {
         auto newStreamer =
             std::make_unique<TerrainWorldStreamer>(directory);
 
         const auto& settings = newStreamer->settings();
+
+        if (!source.valid() || source.samplesX != settings.samplesX ||
+            source.samplesZ != settings.samplesZ ||
+            source.originX != settings.originX ||
+            source.originZ != settings.originZ ||
+            source.spacingMeters != settings.spacingMeters) {
+            throw std::invalid_argument("Streaming Terrain source does not match World");
+        }
+
+        const auto fingerprint =
+            world_editor::biome::terrain_source_fingerprint(source);
 
         const float width =
             (settings.samplesX - 1) * settings.spacingMeters;
@@ -112,10 +136,17 @@ namespace editor::viewport {
         homeDistance_ = (std::max)(width, depth) * 0.5f;
 
         // reset
+        terrainGrid_ = world_generator::layer_grid(source);
+        terrainFingerprint_ = fingerprint;
+        sourceFingerprint_ = world_editor::world_generator::layout_source_fingerprint(
+            terrainFingerprint_, nullptr
+        );
+        ++revisions_.terrain;
+        ++revisions_.hydrology;
+        ++revisions_.layout;
         mapLayout_.reset();
         hydrology_.reset();
-        vegetation_.reset();
-        renderer_.clear_vegetation_scene();
+        clear_biomes();
         selection_ = {};
 
         reset_camera();
@@ -135,36 +166,59 @@ namespace editor::viewport {
     void TerrainViewport::set_map_layout(
         const world_editor::world_generator::MapLayout* layout
     ) {
+        if (layout && layout->sourceFingerprint != sourceFingerprint_) {
+            throw std::invalid_argument("Map Layout source does not match Terrain or Hydrology");
+        }
+
         if (layout) {
             mapLayout_ = *layout;
         } else {
             // reset
             mapLayout_.reset();
-            vegetation_.reset();
-            renderer_.clear_vegetation_scene();
         }
 
+        ++revisions_.layout;
+        clear_biomes();
         selection_ = {};
+    }
+
+    void TerrainViewport::update_map_layout_seeds(
+        const world_editor::world_generator::GenerationSeeds& seeds
+    ) {
+        if (mapLayout_) {
+            mapLayout_->settings.seeds.biome = seeds.biome;
+            mapLayout_->settings.seeds.vegetation = seeds.vegetation;
+            mapLayout_->settings.seeds.decoration = seeds.decoration;
+        }
     }
 
     void TerrainViewport::set_hydrology(
         const world_editor::biome::HydrologyLayer* water
     ) {
+        if (water && world_generator::layer_grid(*water) != terrainGrid_) {
+            throw std::invalid_argument("Hydrology grid does not match Terrain");
+        }
+
+        const auto fingerprint = world_editor::world_generator::layout_source_fingerprint(
+            terrainFingerprint_, water
+        );
+
         if (water) {
             hydrology_ = *water;
         } else {
             // reset
             hydrology_.reset();
-            vegetation_.reset();
-            renderer_.clear_vegetation_scene();
-            renderer_.clear_terrain_materials();
         }
+
+        sourceFingerprint_ = fingerprint;
+        ++revisions_.hydrology;
+        set_map_layout(nullptr);
     }
 
     void TerrainViewport::set_biomes(
         const world_editor::biome::BiomeLayer& layer
     ) {
-        if (!layer.valid()) {
+        if (!layer.valid() || world_generator::layer_grid(layer) != terrainGrid_) {
             throw std::invalid_argument(
                 "Invalid Biome Layer"
             );
@@ -237,7 +291,14 @@ namespace editor::viewport {
             mask,
             materials
         );
-        vegetation_.reset();
+        ++revisions_.biomes;
+        set_vegetation(nullptr);
+    }
+
+    void TerrainViewport::clear_biomes() {
+        ++revisions_.biomes;
+        renderer_.clear_terrain_materials();
+        set_vegetation(nullptr);
     }
 
     void TerrainViewport::set_vegetation(
@@ -245,10 +306,12 @@ namespace editor::viewport {
     ) {
         if (!layer) {
             vegetation_.reset();
+            renderer_.clear_vegetation_scene();
             return;
         }
 
-        if (!layer->valid()) {
+        if (!layer->valid() || !has_biomes() ||
+            world_generator::layer_grid(*layer) != terrainGrid_) {
             throw std::invalid_argument(
                 "Invalid Vegetation Layer"
             );

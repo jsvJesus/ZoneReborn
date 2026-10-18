@@ -45,6 +45,8 @@ namespace world_editor::biome {
         float riverWidthMeters = 32.0f;
         float marshWidthMeters = 32.0f;
         float lakeSeparationMeters = 180.0f;
+
+        [[nodiscard]] bool operator==(const HydrologySettings&) const = default;
     };
 
     struct HydrologyLayer {

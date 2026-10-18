@@ -11,6 +11,7 @@
 #include "Editor/UI/MapSelection.h"
 #include "Editor/Viewport/TerrainWorldStreamer.h"
 #include "Editor/Viewport/ViewportToolbar.h"
+#include "Editor/WorldGenerator/LayerRevisions.h"
 
 #include <filesystem>
 #include <memory>
@@ -32,7 +33,28 @@ namespace editor::viewport {
         void draw();
 
         void open_streamed_world(
-            const std::filesystem::path& directory
+            const std::filesystem::path& directory,
+            const world_editor::terrain::Heightfield& source
+        );
+
+        [[nodiscard]] const world_generator::LayerRevisions& layer_revisions() const noexcept {
+            return revisions_;
+        }
+
+        [[nodiscard]] std::uint64_t terrain_fingerprint() const noexcept {
+            return terrainFingerprint_;
+        }
+
+        [[nodiscard]] const world_generator::LayerGrid& terrain_grid() const noexcept {
+            return terrainGrid_;
+        }
+
+        [[nodiscard]] std::uint64_t source_fingerprint() const noexcept {
+            return sourceFingerprint_;
+        }
+
+        void update_map_layout_seeds(
+            const world_editor::world_generator::GenerationSeeds& seeds
         );
 
         [[nodiscard]] bool is_streaming() const noexcept {
@@ -68,6 +90,12 @@ namespace editor::viewport {
             const world_editor::biome::BiomeLayer& layer
         );
 
+        void clear_biomes();
+
+        [[nodiscard]] bool has_biomes() const noexcept {
+            return renderer_.has_terrain_materials();
+        }
+
         [[nodiscard]]
             const world_editor::biome::HydrologyLayer*hydrology() const noexcept
         {
@@ -100,6 +128,11 @@ namespace editor::viewport {
 
     private:
         void reset_camera();
+
+        world_generator::LayerRevisions revisions_;
+        world_generator::LayerGrid terrainGrid_;
+        std::uint64_t terrainFingerprint_ = 0;
+        std::uint64_t sourceFingerprint_ = 0;
 
         engine::renderer::TerrainRenderer renderer_;
 

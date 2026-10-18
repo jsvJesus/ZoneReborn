@@ -1,8 +1,9 @@
 #pragma once
 
-#include "WorldEditor/WorldGenerator/MapLayout.h"
+#include "WorldEditor/Biome/Hydrology.h"
 #include "WorldEditor/Settlement/POIPlanner.h"
 #include "WorldEditor/Terrain/TerrainData.h"
+#include "WorldEditor/WorldGenerator/MapLayout.h"
 
 namespace world_editor::world_generator {
 
@@ -14,7 +15,7 @@ namespace world_editor::world_generator {
     [[nodiscard]] MapLayout generate_layout(
         const MapGenerationSettings& settings,
         const terrain::Heightfield& heightfield,
-        const settlement::WaterPredicate& isWater = {}
+        const biome::HydrologyLayer* water = nullptr
     );
 
 }

@@ -115,11 +115,129 @@ namespace world_editor::vegetation {
             return px * px + pz * pz;
         }
 
+        struct RoadSegment {
+            float ax = 0.0f;
+            float az = 0.0f;
+            float bx = 0.0f;
+            float bz = 0.0f;
+        };
+
+        class RoadIndex final {
+        public:
+            RoadIndex(
+                const terrain::Heightfield& terrain,
+                const world_generator::MapLayout* layout,
+                float clearance
+            ) : originX_(terrain.originX),
+                originZ_(terrain.originZ),
+                clearanceSquared_(clearance * clearance) {
+                if (!layout) {
+                    return;
+                }
+
+                constexpr float bucketSize = 64.0f;
+
+                columns_ = static_cast<std::uint32_t>(
+                    std::ceil(
+                        (terrain.samplesX - 1) * terrain.spacingMeters /
+                        bucketSize
+                    )
+                ) + 1;
+
+                rows_ = static_cast<std::uint32_t>(
+                    std::ceil(
+                        (terrain.samplesZ - 1) * terrain.spacingMeters /
+                        bucketSize
+                    )
+                ) + 1;
+
+                buckets_.resize(
+                    static_cast<std::size_t>(columns_) * rows_
+                );
+
+                for (const auto& edge : layout->roads.edges) {
+                    for (std::size_t i = 1; i < edge.route.size(); ++i) {
+                        const auto& a = edge.route[i - 1];
+                        const auto& b = edge.route[i];
+
+                        const auto firstX = bucket_x(
+                            (std::min)(a.x, b.x) - clearance
+                        );
+                        const auto lastX = bucket_x(
+                            (std::max)(a.x, b.x) + clearance
+                        );
+                        const auto firstZ = bucket_z(
+                            (std::min)(a.z, b.z) - clearance
+                        );
+                        const auto lastZ = bucket_z(
+                            (std::max)(a.z, b.z) + clearance
+                        );
+
+                        for (std::uint32_t z = firstZ; z <= lastZ; ++z) {
+                            for (std::uint32_t x = firstX; x <= lastX; ++x) {
+                                buckets_[
+                                    static_cast<std::size_t>(z) * columns_ + x
+                                ].push_back({a.x, a.z, b.x, b.z});
+                            }
+                        }
+                    }
+                }
+            }
+
+            [[nodiscard]] bool blocks(float x, float z) const noexcept {
+                if (buckets_.empty()) {
+                    return false;
+                }
+
+                const auto& bucket = buckets_[
+                    static_cast<std::size_t>(bucket_z(z)) * columns_ +
+                    bucket_x(x)
+                ];
+
+                for (const auto& segment : bucket) {
+                    if (distance_to_segment_squared(
+                        x, z,
+                        segment.ax, segment.az,
+                        segment.bx, segment.bz
+                    ) <= clearanceSquared_) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+        private:
+            [[nodiscard]] std::uint32_t bucket_x(float x) const noexcept {
+                return static_cast<std::uint32_t>(std::clamp(
+                    (x - originX_) / 64.0f,
+                    0.0f,
+                    static_cast<float>(columns_ - 1)
+                ));
+            }
+
+            [[nodiscard]] std::uint32_t bucket_z(float z) const noexcept {
+                return static_cast<std::uint32_t>(std::clamp(
+                    (z - originZ_) / 64.0f,
+                    0.0f,
+                    static_cast<float>(rows_ - 1)
+                ));
+            }
+
+            float originX_ = 0.0f;
+            float originZ_ = 0.0f;
+            float clearanceSquared_ = 0.0f;
+            std::uint32_t columns_ = 0;
+            std::uint32_t rows_ = 0;
+            std::vector<std::vector<RoadSegment>> buckets_;
+        };
+
         [[nodiscard]] bool blocked_by_layout(
             float x,
             float z,
             const world_generator::MapLayout* layout,
-            const VegetationSettings& settings
+            const VegetationSettings& settings,
+            const RoadIndex& roads
         ) noexcept {
             if (!layout) {
                 return false;
@@ -153,31 +271,7 @@ namespace world_editor::vegetation {
                 }
             }
 
-            const auto& graph = layout->roads;
-
-            const float roadRadiusSquared =
-                settings.roadClearanceMeters *
-                settings.roadClearanceMeters;
-
-            for (const auto& edge : graph.edges) {
-                if (edge.from >= graph.nodes.size() ||
-                    edge.to >= graph.nodes.size()) {
-                    continue;
-                }
-
-                const auto& a = graph.nodes[edge.from];
-                const auto& b = graph.nodes[edge.to];
-
-                if (distance_to_segment_squared(
-                    x, z,
-                    a.x, a.z,
-                    b.x, b.z
-                ) <= roadRadiusSquared) {
-                    return true;
-                }
-            }
-
-            return false;
+            return roads.blocks(x, z);
         }
 
         [[nodiscard]] bool blocked_by_water(
@@ -519,6 +613,12 @@ namespace world_editor::vegetation {
         const std::size_t sampleCount =
             terrain.heights.size();
 
+        const RoadIndex roadIndex(
+            terrain,
+            layout,
+            settings.roadClearanceMeters
+        );
+
         layer.grassMask.resize(sampleCount);
         layer.bushMask.resize(sampleCount);
         layer.treeMask.resize(sampleCount);
@@ -582,7 +682,7 @@ namespace world_editor::vegetation {
                 if (blocked_by_water(
                     worldX, worldZ, hydrology
                 ) || blocked_by_layout(
-                    worldX, worldZ, layout, settings
+                    worldX, worldZ, layout, settings, roadIndex
                 )) {
                     densities = {};
                 }
@@ -653,7 +753,7 @@ namespace world_editor::vegetation {
                     if (blocked_by_water(
                         px, pz, hydrology
                     ) || blocked_by_layout(
-                        px, pz, layout, settings
+                        px, pz, layout, settings, roadIndex
                     )) {
                         continue;
                     }
@@ -666,7 +766,7 @@ namespace world_editor::vegetation {
                     }
 
                     const float variation = random01(
-                        settings.seed, x, z, salt + 4u
+                        settings.decorationSeed, x, z, salt + 4u
                     );
 
                     VegetationInstance instance;
@@ -676,12 +776,12 @@ namespace world_editor::vegetation {
                     instance.z = pz;
 
                     instance.yawRadians = twoPi * random01(
-                        settings.seed, x, z, salt + 5u
+                        settings.decorationSeed, x, z, salt + 5u
                     );
 
                     instance.scale =
                         0.78f + random01(
-                            settings.seed, x, z, salt + 6u
+                            settings.decorationSeed, x, z, salt + 6u
                         ) * 0.44f;
 
                     instance.kind = kind;

@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <limits>
+#include <numbers>
 #include <stdexcept>
 #include <string>
 
@@ -13,7 +15,7 @@ namespace world_editor::settlement {
     namespace {
 
         constexpr float placementStepMeters = 16.0f;
-        constexpr float inspectionStepMeters = 16.0f;
+        constexpr float inspectionStepMeters = 8.0f;
         constexpr std::uint32_t attemptsPerType = 1024;
 
         [[nodiscard]] std::vector<POIType> eligible_types(
@@ -96,6 +98,25 @@ namespace world_editor::settlement {
             const float minZ =
                 candidate.centerZ - spec.depthMeters * 0.5f;
 
+            if (isWater) {
+                constexpr float waterClearance = 40.0f;
+
+                for (float z = minZ - waterClearance;
+                     z <= minZ + spec.depthMeters + waterClearance;
+                     z += inspectionStepMeters * 2.0f) {
+                    for (float x = minX - waterClearance;
+                         x <= minX + spec.widthMeters + waterClearance;
+                         x += inspectionStepMeters * 2.0f) {
+                        if (isWater(x, z)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            float minimumHeight = std::numeric_limits<float>::max();
+            float maximumHeight = std::numeric_limits<float>::lowest();
+
             for (std::uint32_t z = 0; z <= stepsZ; ++z) {
                 const float worldZ = minZ +
                     spec.depthMeters * static_cast<float>(z) /
@@ -110,17 +131,28 @@ namespace world_editor::settlement {
                         return false;
                     }
 
-                    const float slope =
-                        heightfield.slope_degrees(worldX, worldZ);
+                    const float height = heightfield.sample_height(
+                        worldX,
+                        worldZ
+                    );
 
-                    if (!std::isfinite(slope) ||
-                        slope > spec.maxSlopeDegrees) {
+                    if (!std::isfinite(height)) {
                         return false;
                     }
+
+                    minimumHeight = std::min(minimumHeight, height);
+                    maximumHeight = std::max(maximumHeight, height);
                 }
             }
 
-            return true;
+            const float maximumEarthwork = std::max(
+                24.0f,
+                std::min(spec.widthMeters, spec.depthMeters) *
+                    std::tan(spec.maxSlopeDegrees * 2.0f *
+                        std::numbers::pi_v<float> / 180.0f)
+            );
+
+            return maximumHeight - minimumHeight <= maximumEarthwork;
         }
 
         [[nodiscard]] bool try_place(

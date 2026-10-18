@@ -1,5 +1,6 @@
 #include "WorldEditor/WorldGenerator/MapLayoutGenerator.h"
 
+#include "WorldEditor/Road/RoadRouting.h"
 #include "WorldEditor/WorldGenerator/DeterministicRandom.h"
 
 #include <algorithm>
@@ -68,7 +69,9 @@ namespace world_editor::world_generator {
             const terrain::Heightfield& heightfield,
             const settlement::WaterPredicate& isWater
         ) {
-            DeterministicRandom random(settings.seeds.road);
+            DeterministicRandom random(
+                settings.seeds.location ^ 0x6A09E667u
+            );
 
             const float mapSize = static_cast<float>(
                 map_size_meters(settings.mapSize)
@@ -287,9 +290,14 @@ namespace world_editor::world_generator {
     MapLayout generate_layout(
         const MapGenerationSettings& settings,
         const terrain::Heightfield& heightfield,
-        const settlement::WaterPredicate& isWater
+        const biome::HydrologyLayer* water
     ) {
         validate_configuration(settings, heightfield);
+
+        const settlement::WaterPredicate isWater =
+            [water](float x, float z) {
+                return water && water->blocks_poi(x, z);
+            };
 
         MapLayout result;
         result.settings = settings;
@@ -308,7 +316,15 @@ namespace world_editor::world_generator {
 
         result.roads = road::build_graph(
             result.pois,
-            result.exits
+            result.exits,
+            settings.seeds.road
+        );
+
+        road::route_graph(
+            result.roads,
+            heightfield,
+            water,
+            result.pois
         );
 
         if (result.pois.size() != settings.poiCount ||

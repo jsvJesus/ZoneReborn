@@ -28,7 +28,6 @@ namespace engine::renderer {
     struct VegetationRenderStats {
         std::uint32_t loadedVariants = 0;
         std::uint32_t failedVariants = 0;
-        std::uint32_t skippedVariants = 0;
 
         std::uint32_t loadedMaterialGroups = 0;
         std::uint32_t loadedTextures = 0;
@@ -49,8 +48,7 @@ namespace engine::renderer {
         void set_scene(
             const std::filesystem::path& packsDirectory,
             std::span<const std::string> assetPaths,
-            std::span<const VegetationDrawInstance> instances,
-            std::uint32_t maxVariants = 128
+            std::span<const VegetationDrawInstance> instances
         );
 
         void clear() noexcept;

@@ -2,6 +2,8 @@
 
 #include "WorldEditor/Vegetation/VegetationAssetCatalog.h"
 #include "WorldEditor/Vegetation/VegetationGenerator.h"
+#include "WorldEditor/WorldGenerator/MapGenerationSettings.h"
+#include "Editor/WorldGenerator/LayerRevisions.h"
 
 #include <array>
 #include <cstddef>
@@ -21,14 +23,21 @@ namespace editor::world_generator {
             const world_editor::terrain::Heightfield& terrain,
             const world_editor::biome::BiomeLayer* biomes,
             std::uint64_t biomeSourceFingerprint,
-            viewport::TerrainViewport& viewport
+            viewport::TerrainViewport& viewport,
+            const world_editor::world_generator::GenerationSeeds& seeds
         );
 
         void clear(
             viewport::TerrainViewport& viewport
         );
 
+        void synchronize(
+            viewport::TerrainViewport& viewport,
+            const world_editor::world_generator::GenerationSeeds& seeds
+        );
+
     private:
+        LayerRevisions sourceRevisions_;
         void refresh_catalog(
             viewport::TerrainViewport& viewport
         );
@@ -50,7 +59,6 @@ namespace editor::world_generator {
         std::size_t usedVariants_ = 0;
 
         bool catalogInitialized_ = false;
-        bool useLayoutSeed_ = true;
         bool showPreview_ = true;
         bool showGeometry_ = false;
 

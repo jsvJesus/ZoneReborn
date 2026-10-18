@@ -122,19 +122,12 @@ namespace world_editor::biome {
         return path;
     }
 
-    std::uint64_t biome_source_fingerprint(
-        const terrain::Heightfield& heightfield,
-        const HydrologyLayer* hydrology
+    std::uint64_t terrain_source_fingerprint(
+        const terrain::Heightfield& heightfield
     ) {
         if (!heightfield.valid()) {
             throw std::invalid_argument(
                 "Invalid Terrain for Biome fingerprint"
-            );
-        }
-
-        if (hydrology && !hydrology->valid()) {
-            throw std::invalid_argument(
-                "Invalid Hydrology for Biome fingerprint"
             );
         }
 
@@ -150,6 +143,20 @@ namespace world_editor::biome {
             );
         }
 
+        return hash;
+    }
+
+    std::uint64_t biome_source_fingerprint(
+        std::uint64_t terrainFingerprint,
+        const HydrologyLayer* hydrology
+    ) {
+        if (hydrology && !hydrology->valid()) {
+            throw std::invalid_argument(
+                "Invalid Hydrology for Biome fingerprint"
+            );
+        }
+
+        std::uint64_t hash = terrainFingerprint;
         hash_byte(hash, hydrology ? 1 : 0);
 
         if (hydrology) {
@@ -162,6 +169,25 @@ namespace world_editor::biome {
         }
 
         return hash;
+    }
+
+    std::uint64_t biome_source_fingerprint(
+        const terrain::Heightfield& heightfield,
+        const HydrologyLayer* hydrology
+    ) {
+        if (hydrology &&
+            (hydrology->samplesX != heightfield.samplesX ||
+                hydrology->samplesZ != heightfield.samplesZ ||
+                hydrology->originX != heightfield.originX ||
+                hydrology->originZ != heightfield.originZ ||
+                hydrology->spacingMeters != heightfield.spacingMeters)) {
+            throw std::invalid_argument("Hydrology grid does not match Terrain");
+        }
+
+        return biome_source_fingerprint(
+            terrain_source_fingerprint(heightfield),
+            hydrology
+        );
     }
 
     void save_biomes(

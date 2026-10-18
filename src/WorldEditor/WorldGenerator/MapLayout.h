@@ -25,9 +25,10 @@ namespace world_editor::world_generator {
     };
 
     struct MapLayout {
-        static constexpr std::uint32_t currentVersion = 1;
+        static constexpr std::uint32_t currentVersion = 4;
 
         std::uint32_t version = currentVersion;
+        std::uint64_t sourceFingerprint = 0;
         MapGenerationSettings settings;
         std::vector<settlement::POIPlacement> pois;
         std::vector<MapExit> exits;

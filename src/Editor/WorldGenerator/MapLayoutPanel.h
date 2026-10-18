@@ -2,6 +2,7 @@
 
 #include "WorldEditor/WorldGenerator/MapLayoutGenerator.h"
 #include "WorldEditor/Biome/Hydrology.h"
+#include "Editor/WorldGenerator/LayerRevisions.h"
 
 #include <optional>
 #include <string>
@@ -33,6 +34,22 @@ namespace editor::world_generator {
 
         void clear(viewport::TerrainViewport& viewport);
 
+        void synchronize(
+            viewport::TerrainViewport& viewport,
+            const world_editor::terrain::Settings& activeSettings
+        );
+
+        void validate_sources(
+            const world_editor::terrain::Heightfield& terrain,
+            const world_editor::terrain::Settings& settings,
+            viewport::TerrainViewport& viewport
+        );
+
+        [[nodiscard]]
+        world_editor::world_generator::GenerationSeeds& generation_seeds() noexcept {
+            return settings_.seeds;
+        }
+
         void save_hydrology_for_world(
             const world_editor::terrain::Heightfield& heightfield,
             const world_editor::terrain::Settings& settings,
@@ -47,9 +64,17 @@ namespace editor::world_generator {
         );
 
     private:
+        void clear_layout(viewport::TerrainViewport& viewport);
+
+        LayerRevisions layoutSource_;
+        LayerRevisions hydrologySource_;
+        std::uint64_t hydrologyTerrainFingerprint_ = 0;
+
         world_editor::world_generator::MapGenerationSettings settings_;
         std::optional<world_editor::world_generator::MapLayout> layout_;
         std::optional<world_editor::terrain::Settings> sourceTerrain_;
+        std::optional<world_editor::terrain::Heightfield> baseTerrain_;
+        std::uint64_t correctedTerrainRevision_ = 0;
 
         int poiPreset_ = 0;
         std::string status_;

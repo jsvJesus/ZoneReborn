@@ -16,7 +16,8 @@ namespace world_editor::world_generator {
     namespace {
 
         constexpr std::uint32_t fileMagic = 0x594C525Au;
-        constexpr std::size_t maxFileBytes = 1024 * 1024;
+        constexpr std::size_t maxFileBytes = 16 * 1024 * 1024;
+        constexpr std::uint32_t maxRoutePoints = 8192;
 
         class Writer final {
         public:
@@ -212,6 +213,42 @@ namespace world_editor::world_generator {
                     );
                 }
             }
+
+            for (const auto& edge : layout.roads.edges) {
+                if (edge.route.size() < 2 ||
+                    edge.route.size() > maxRoutePoints) {
+                    throw std::runtime_error("Invalid road route point count");
+                }
+
+                const auto& from = layout.roads.nodes[edge.from];
+                const auto& to = layout.roads.nodes[edge.to];
+
+                if (edge.route.front().x != from.x ||
+                    edge.route.front().z != from.z ||
+                    edge.route.back().x != to.x ||
+                    edge.route.back().z != to.z ||
+                    edge.route.front().distanceMeters != 0.0f) {
+                    throw std::runtime_error("Road route endpoints do not match graph");
+                }
+
+                float previousDistance = -1.0f;
+
+                for (const auto& point : edge.route) {
+                    if (!std::isfinite(point.x) ||
+                        !std::isfinite(point.y) ||
+                        !std::isfinite(point.z) ||
+                        !std::isfinite(point.distanceMeters) ||
+                        !std::isfinite(point.slopeDegrees) ||
+                        point.distanceMeters <= previousDistance ||
+                        point.slopeDegrees < 0.0f ||
+                        point.slopeDegrees >= 90.0f ||
+                        static_cast<std::uint32_t>(point.water) > 3) {
+                        throw std::runtime_error("Invalid road height profile");
+                    }
+
+                    previousDistance = point.distanceMeters;
+                }
+            }
         }
 
         [[nodiscard]] std::filesystem::path pending_path(
@@ -241,6 +278,8 @@ namespace world_editor::world_generator {
 
         output.u32(fileMagic);
         output.u32(MapLayout::currentVersion);
+        output.u32(static_cast<std::uint32_t>(layout.sourceFingerprint));
+        output.u32(static_cast<std::uint32_t>(layout.sourceFingerprint >> 32));
 
         write_terrain(output, terrainSettings);
 
@@ -258,6 +297,7 @@ namespace world_editor::world_generator {
         output.u32(seeds.location);
         output.u32(seeds.road);
         output.u32(seeds.decoration);
+        output.u32(seeds.biome);
 
         output.u32(static_cast<std::uint32_t>(
             layout.settings.allowedTypes.size()
@@ -305,6 +345,16 @@ namespace world_editor::world_generator {
         for (const auto& edge : layout.roads.edges) {
             output.u32(edge.from);
             output.u32(edge.to);
+            output.u32(static_cast<std::uint32_t>(edge.route.size()));
+
+            for (const auto& point : edge.route) {
+                output.f32(point.x);
+                output.f32(point.y);
+                output.f32(point.z);
+                output.f32(point.distanceMeters);
+                output.f32(point.slopeDegrees);
+                output.u32(static_cast<std::uint32_t>(point.water));
+            }
         }
 
         output.u32(checksum(
@@ -380,7 +430,8 @@ namespace world_editor::world_generator {
 
     MapLayout load_map_layout(
         const std::filesystem::path& path,
-        const terrain::Settings& terrainSettings
+        const terrain::Settings& terrainSettings,
+        std::uint64_t sourceFingerprint
     ) {
         if (!std::filesystem::exists(path) ||
             std::filesystem::file_size(path) < 8 ||
@@ -442,16 +493,28 @@ namespace world_editor::world_generator {
 
         Reader input(bytes, checksumOffset);
 
-        if (input.u32() != fileMagic ||
-            input.u32() != MapLayout::currentVersion) {
+        const std::uint32_t magic = input.u32();
+        const std::uint32_t version = input.u32();
+
+        if (magic != fileMagic ||
+            (version != 3 && version != MapLayout::currentVersion)) {
             throw std::runtime_error(
-                "Unsupported Map Layout version"
+                "Unsupported Map Layout version. Regenerate and save Map Layout."
             );
+        }
+
+        const std::uint64_t fingerprintLow = input.u32();
+        const std::uint64_t fingerprintHigh = input.u32();
+        const std::uint64_t savedFingerprint = fingerprintLow | (fingerprintHigh << 32);
+
+        if (savedFingerprint != sourceFingerprint) {
+            throw std::runtime_error("Saved Map Layout does not match Terrain or Hydrology.");
         }
 
         read_terrain(input, terrainSettings);
 
         MapLayout layout;
+        layout.sourceFingerprint = savedFingerprint;
 
         layout.settings.mapSize =
             static_cast<MapSize>(input.u32());
@@ -470,6 +533,9 @@ namespace world_editor::world_generator {
         seeds.location = input.u32();
         seeds.road = input.u32();
         seeds.decoration = input.u32();
+
+        // Version 3 used VegetationSeed for both Biomes and Flora.
+        seeds.biome = version >= 4 ? input.u32() : seeds.vegetation;
 
         const std::uint32_t typeCount = input.u32();
 
@@ -551,6 +617,23 @@ namespace world_editor::world_generator {
         for (auto& edge : layout.roads.edges) {
             edge.from = input.u32();
             edge.to = input.u32();
+
+            const std::uint32_t routeCount = input.u32();
+
+            if (routeCount < 2 || routeCount > maxRoutePoints) {
+                throw std::runtime_error("Invalid road route point count");
+            }
+
+            edge.route.resize(routeCount);
+
+            for (auto& point : edge.route) {
+                point.x = input.f32();
+                point.y = input.f32();
+                point.z = input.f32();
+                point.distanceMeters = input.f32();
+                point.slopeDegrees = input.f32();
+                point.water = static_cast<biome::WaterKind>(input.u32());
+            }
         }
 
         if (!input.complete()) {

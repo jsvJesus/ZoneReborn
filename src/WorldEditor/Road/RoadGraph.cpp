@@ -1,6 +1,7 @@
 #include "WorldEditor/Road/RoadGraph.h"
 
 #include "WorldEditor/Settlement/POIPlacement.h"
+#include "WorldEditor/WorldGenerator/DeterministicRandom.h"
 #include "WorldEditor/WorldGenerator/MapLayout.h"
 
 #include <cstddef>
@@ -29,7 +30,8 @@ namespace world_editor::road {
 
     RoadGraph build_graph(
         const std::vector<settlement::POIPlacement>& pois,
-        const std::vector<world_generator::MapExit>& exits
+        const std::vector<world_generator::MapExit>& exits,
+        std::uint32_t seed
     ) {
         RoadGraph graph;
 
@@ -61,6 +63,28 @@ namespace world_editor::road {
             );
         }
 
+        world_generator::DeterministicRandom random(seed);
+        std::vector<std::vector<double>> costs(
+            count,
+            std::vector<double>(count, 0.0)
+        );
+
+        for (std::size_t from = 0; from < count; ++from) {
+            for (std::size_t to = from + 1; to < count; ++to) {
+                // Prefer short connections while varying comparable alternatives.
+                const double preference = 0.85 +
+                    0.30 * static_cast<double>(random.next()) / 4294967296.0;
+
+                const double cost = distance_squared(
+                    graph.nodes[from],
+                    graph.nodes[to]
+                ) * preference;
+
+                costs[from][to] = cost;
+                costs[to][from] = cost;
+            }
+        }
+
         std::vector<bool> visited(count, false);
         visited[0] = true;
 
@@ -90,10 +114,7 @@ namespace world_editor::road {
                         continue;
                     }
 
-                    const double candidate = distance_squared(
-                        graph.nodes[from],
-                        graph.nodes[to]
-                    );
+                    const double candidate = costs[from][to];
 
                     if (candidate < bestDistance) {
                         bestDistance = candidate;

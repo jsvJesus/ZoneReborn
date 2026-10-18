@@ -1,6 +1,7 @@
 #include "Editor/Viewport/MapLayoutOverlay.h"
 
 #include <cmath>
+#include <cstddef>
 #include <cstdio>
 
 namespace editor::viewport {
@@ -12,6 +13,9 @@ namespace editor::viewport {
 
         constexpr ImU32 roadColor =
             IM_COL32(231, 184, 104, 255);
+
+        constexpr ImU32 crossingColor =
+            IM_COL32(255, 115, 96, 255);
 
         constexpr ImU32 exitColor =
             IM_COL32(255, 139, 96, 255);
@@ -62,22 +66,6 @@ namespace editor::viewport {
                 std::isfinite(output.y);
         }
 
-        [[nodiscard]] float node_height(
-            const world_editor::world_generator::MapLayout& layout,
-            const world_editor::road::RoadNode& node
-        ) {
-            if (node.kind ==
-                world_editor::road::RoadNodeKind::POI) {
-                if (node.referenceId < layout.pois.size()) {
-                    return layout.pois[node.referenceId].centerY;
-                }
-            } else if (node.referenceId < layout.exits.size()) {
-                return layout.exits[node.referenceId].y;
-            }
-
-            return 0.0f;
-        }
-
         void draw_label(
             ImDrawList* drawList,
             const ImVec2& position,
@@ -119,8 +107,7 @@ namespace editor::viewport {
         const ImVec2& imageSize,
         DirectX::FXMMATRIX viewProjection,
         const ViewportLayers& layers
-    )
-    {
+    ) {
         if (!drawList) {
             return;
         }
@@ -134,58 +121,48 @@ namespace editor::viewport {
             true
         );
 
-        if (layers.roads)
-        {
+        if (layers.roads) {
             for (const auto& edge : layout.roads.edges) {
-                if (edge.from >= layout.roads.nodes.size() ||
-                    edge.to >= layout.roads.nodes.size()) {
-                    continue;
-                    }
-
-                const auto& from = layout.roads.nodes[edge.from];
-                const auto& to = layout.roads.nodes[edge.to];
-
-                ImVec2 a;
-                ImVec2 b;
-
-                if (!project(
-                    viewProjection,
-                    from.x,
-                    node_height(layout, from) + 3.0f,
-                    from.z,
-                    imagePosition,
-                    imageSize,
-                    a
-                ) || !project(
-                    viewProjection,
-                    to.x,
-                    node_height(layout, to) + 3.0f,
-                    to.z,
-                    imagePosition,
-                    imageSize,
-                    b
-                )) {
+                if (edge.route.size() < 2) {
                     continue;
                 }
 
-                drawList->AddLine(
-                    a,
-                    b,
-                    shadowColor,
-                    5.0f
-                );
+                for (std::size_t i = 1; i < edge.route.size(); ++i) {
+                    const auto& from = edge.route[i - 1];
+                    const auto& to = edge.route[i];
 
-                drawList->AddLine(
-                    a,
-                    b,
-                    roadColor,
-                    2.5f
-                );
+                    ImVec2 a;
+                    ImVec2 b;
+
+                    if (!project(
+                        viewProjection,
+                        from.x, from.y + 3.0f, from.z,
+                        imagePosition, imageSize, a
+                    ) || !project(
+                        viewProjection,
+                        to.x, to.y + 3.0f, to.z,
+                        imagePosition, imageSize, b
+                    )) {
+                        continue;
+                    }
+
+                    drawList->AddLine(a, b, shadowColor, 5.0f);
+                    const bool crossing =
+                        from.water == world_editor::biome::WaterKind::River ||
+                        from.water == world_editor::biome::WaterKind::Lake ||
+                        to.water == world_editor::biome::WaterKind::River ||
+                        to.water == world_editor::biome::WaterKind::Lake;
+
+                    drawList->AddLine(
+                        a, b,
+                        crossing ? crossingColor : roadColor,
+                        2.5f
+                    );
+                }
             }
         }
 
-        if (layers.poi)
-        {
+        if (layers.poi) {
             for (const auto& poi : layout.pois) {
                 const float halfWidth = poi.widthMeters * 0.5f;
                 const float halfDepth = poi.depthMeters * 0.5f;
@@ -274,8 +251,7 @@ namespace editor::viewport {
             }
         }
 
-        if (layers.exits)
-        {
+        if (layers.exits) {
             for (const auto& exit : layout.exits) {
                 ImVec2 center;
 

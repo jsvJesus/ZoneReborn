@@ -90,10 +90,14 @@
     <ClCompile Include="Biome\Hydrology.cpp" />
     <ClCompile Include="Biome\HydrologyStorage.cpp" />
     <ClCompile Include="Road\RoadGraph.cpp" />
+    <ClCompile Include="Road\RoadCrossings.cpp" />
+    <ClCompile Include="Road\RoadRouting.cpp" />
     <ClCompile Include="Settlement\POIPlacement.cpp" />
     <ClCompile Include="Settlement\POIPlanner.cpp" />
     <ClCompile Include="Terrain\Noise.cpp" />
     <ClCompile Include="Terrain\TerrainData.cpp" />
+    <ClCompile Include="Terrain\TerrainCorrection.cpp" />
+    <ClCompile Include="Terrain\TerrainCorrectionStorage.cpp" />
     <ClCompile Include="Terrain\TerrainExporter.cpp" />
     <ClCompile Include="Terrain\TerrainGenerator.cpp" />
     <ClCompile Include="Terrain\TerrainRelief.cpp" />
@@ -103,6 +107,7 @@
     <ClCompile Include="Vegetation\VegetationGenerator.cpp" />
     <ClCompile Include="WorldEditor.cpp" />
     <ClCompile Include="WorldGenerator\MapLayoutGenerator.cpp" />
+    <ClCompile Include="WorldGenerator\MapLayoutFingerprint.cpp" />
     <ClCompile Include="WorldGenerator\MapLayoutStorage.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -111,10 +116,13 @@
     <ClInclude Include="Biome\Hydrology.h" />
     <ClInclude Include="Biome\HydrologyStorage.h" />
     <ClInclude Include="Road\RoadGraph.h" />
+    <ClInclude Include="Road\RoadCrossings.h" />
+    <ClInclude Include="Road\RoadRouting.h" />
     <ClInclude Include="Settlement\POIPlacement.h" />
     <ClInclude Include="Settlement\POIPlanner.h" />
     <ClInclude Include="Terrain\Noise.h" />
     <ClInclude Include="Terrain\TerrainData.h" />
+    <ClInclude Include="Terrain\TerrainCorrection.h" />
     <ClInclude Include="Terrain\TerrainExporter.h" />
     <ClInclude Include="Terrain\TerrainGenerator.h" />
     <ClInclude Include="Terrain\TerrainRelief.h" />
@@ -127,6 +135,7 @@
     <ClInclude Include="WorldGenerator\MapGenerationSettings.h" />
     <ClInclude Include="WorldGenerator\MapLayout.h" />
     <ClInclude Include="WorldGenerator\MapLayoutGenerator.h" />
+    <ClInclude Include="WorldGenerator\MapLayoutFingerprint.h" />
     <ClInclude Include="WorldGenerator\MapLayoutStorage.h" />
   </ItemGroup>
   <ItemGroup>

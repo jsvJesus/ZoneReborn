@@ -23,6 +23,8 @@ namespace world_editor::biome {
         float forestCoverage = 0.55f;
         float rockSlopeDegrees = 22.0f;
         float textureScaleMeters = 6.0f;
+
+        [[nodiscard]] bool operator==(const BiomeSettings&) const = default;
     };
 
     struct BiomeLayer {

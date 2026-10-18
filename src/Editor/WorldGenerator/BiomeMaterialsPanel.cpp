@@ -20,8 +20,12 @@ namespace editor::world_generator {
 
     void BiomeMaterialsPanel::draw(
         const world_editor::terrain::Heightfield& terrain,
-        viewport::TerrainViewport& viewport
+        const world_editor::terrain::Settings& activeSettings,
+        viewport::TerrainViewport& viewport,
+        const world_editor::world_generator::GenerationSeeds& seeds
     ) {
+        synchronize(viewport, seeds, activeSettings);
+
         ImGui::Begin("Biome Materials");
 
         ImGui::TextColored(
@@ -35,11 +39,11 @@ namespace editor::world_generator {
 
         ImGui::Separator();
 
-        ImGui::InputScalar(
-            "Biome / Vegetation Seed",
-            ImGuiDataType_U32,
-            &pending_.seed
+        ImGui::Text(
+            "Map BiomeSeed: %u",
+            seeds.biome
         );
+        ImGui::TextDisabled("Edit seeds in Map Layout / Generation Seeds.");
 
         ImGui::SliderFloat(
             "Moisture",
@@ -75,6 +79,8 @@ namespace editor::world_generator {
 
         ImGui::Spacing();
 
+        synchronize(viewport, seeds, activeSettings);
+
         if (viewport.is_streaming()) {
             ImGui::TextWrapped(
                 "Streaming mode: use saved Biome data. "
@@ -84,6 +90,7 @@ namespace editor::world_generator {
 
         ImGui::BeginDisabled(
             !terrain.valid() ||
+            activeSettings.seed != seeds.terrain ||
             viewport.is_streaming()
         );
 
@@ -92,6 +99,12 @@ namespace editor::world_generator {
             ImVec2(-1.0f, 42.0f)
         )) {
             try {
+                if (biome::terrain_source_fingerprint(terrain) !=
+                    viewport.terrain_fingerprint()) {
+                    clear(viewport);
+                    throw std::runtime_error("Terrain heights changed. Apply Terrain first.");
+                }
+
                 auto generated = biome::generate_biomes(
                     terrain,
                     viewport.hydrology(),
@@ -107,6 +120,7 @@ namespace editor::world_generator {
                     );
 
                 active_ = std::move(generated);
+                sourceRevisions_ = viewport.layer_revisions();
 
                 status_ = "Biome materials applied";
                 hasError_ = false;
@@ -146,6 +160,43 @@ namespace editor::world_generator {
         ImGui::End();
     }
 
+    void BiomeMaterialsPanel::clear(viewport::TerrainViewport& viewport) {
+        active_.reset();
+        sourceRevisions_ = {};
+        sourceFingerprint_ = 0;
+        viewport.clear_biomes();
+        status_.clear();
+        hasError_ = false;
+    }
+
+    void BiomeMaterialsPanel::synchronize(
+        viewport::TerrainViewport& viewport,
+        const world_editor::world_generator::GenerationSeeds& seeds,
+        const world_editor::terrain::Settings& activeSettings
+    ) {
+        pending_.seed = seeds.biome;
+
+        if (active_ &&
+            (!viewport.has_biomes() ||
+                sourceRevisions_ != viewport.layer_revisions() ||
+                active_->settings != pending_ ||
+                activeSettings.seed != seeds.terrain)) {
+            clear(viewport);
+            status_ = "Biome dependencies changed. Regenerate Biomes.";
+        }
+    }
+
+    void BiomeMaterialsPanel::validate_for_save(
+        const world_editor::terrain::Heightfield& terrain,
+        const world_editor::biome::HydrologyLayer* hydrology
+    ) const {
+        if (active_ && biome::biome_source_fingerprint(terrain, hydrology) != sourceFingerprint_) {
+            throw std::runtime_error(
+                "Terrain or Hydrology changed. Regenerate Biomes before saving."
+            );
+        }
+    }
+
     void BiomeMaterialsPanel::save_for_world(
         const world_editor::terrain::Heightfield& terrain,
         const world_editor::terrain::Settings& settings,
@@ -160,18 +211,7 @@ namespace editor::world_generator {
             return;
         }
 
-        const std::uint64_t fingerprint =
-            biome::biome_source_fingerprint(
-                terrain,
-                hydrology
-            );
-
-        if (fingerprint != sourceFingerprint_) {
-            throw std::runtime_error(
-                "Terrain or Hydrology changed. "
-                "Regenerate Biomes before saving."
-            );
-        }
+        validate_for_save(terrain, hydrology);
 
         biome::save_biomes(
             *active_,
@@ -185,10 +225,9 @@ namespace editor::world_generator {
         const world_editor::terrain::Settings& settings,
         viewport::TerrainViewport& viewport,
         const std::filesystem::path& directory,
-        const world_editor::terrain::Heightfield* terrain
+        const world_editor::terrain::Heightfield& terrain
     ) {
-        active_.reset();
-        sourceFingerprint_ = 0;
+        clear(viewport);
 
         if (!std::filesystem::exists(
             biome::biome_file_path(directory)
@@ -203,19 +242,17 @@ namespace editor::world_generator {
             directory
         );
 
-        if (terrain) {
-            const std::uint64_t fingerprint =
-                biome::biome_source_fingerprint(
-                    *terrain,
-                    viewport.hydrology()
-                );
+        const std::uint64_t fingerprint =
+            biome::biome_source_fingerprint(
+                terrain,
+                viewport.hydrology()
+            );
 
-            if (fingerprint != saved.sourceFingerprint) {
-                throw std::runtime_error(
-                    "Saved Biomes do not match "
-                    "Terrain or Hydrology"
-                );
-            }
+        if (fingerprint != saved.sourceFingerprint) {
+            throw std::runtime_error(
+                "Saved Biomes do not match "
+                "Terrain or Hydrology"
+            );
         }
 
         viewport.set_biomes(saved.layer);
@@ -223,6 +260,7 @@ namespace editor::world_generator {
         sourceFingerprint_ = saved.sourceFingerprint;
         pending_ = saved.layer.settings;
         active_ = std::move(saved.layer);
+        sourceRevisions_ = viewport.layer_revisions();
 
         status_ = "Biome materials restored";
         hasError_ = false;

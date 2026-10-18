@@ -17,6 +17,7 @@ namespace world_editor::world_generator {
     struct GenerationSeeds {
         std::uint32_t terrain = 20261016;
         std::uint32_t water = 20261017;
+        std::uint32_t biome = 20261018;
         std::uint32_t vegetation = 20261018;
         std::uint32_t location = 20261019;
         std::uint32_t road = 20261020;

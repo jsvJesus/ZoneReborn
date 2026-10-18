@@ -433,14 +433,11 @@ namespace engine::renderer {
     void VegetationRenderer::set_scene(
         const std::filesystem::path& packsDirectory,
         std::span<const std::string> assetPaths,
-        std::span<const VegetationDrawInstance> instances,
-        std::uint32_t maxVariants
+        std::span<const VegetationDrawInstance> instances
     ) {
-        if (maxVariants == 0 ||
-            maxVariants > 512 ||
-            assetPaths.size() > 100000) {
+        if (assetPaths.size() > 100000) {
             throw std::invalid_argument(
-                "Invalid vegetation rendering budget"
+                "Too many vegetation asset paths"
             );
         }
 
@@ -492,15 +489,6 @@ namespace engine::renderer {
         );
 
         VegetationRenderStats newStats{};
-
-        if (order.size() > maxVariants) {
-            newStats.skippedVariants =
-                static_cast<std::uint32_t>(
-                    order.size() - maxVariants
-                );
-
-            order.resize(maxVariants);
-        }
 
         // One GPU texture per DDS path, shared by all batches.
         std::unordered_map<
