@@ -139,7 +139,15 @@ namespace engine::renderer
     ) : device_(device),
         context_(context),
         materials_(device, context),
-        vegetationRenderer_(device, context)
+        roadSurface_(device, context),
+        openWaterSurface_(device, context),
+        marshSurface_(device, context),
+        vegetationRenderer_(device, context),
+        bridgeRenderer_(
+            device,
+            context,
+            "models/props/bridges/"
+        )
     {
         if (!device_ || !context_) {
             throw std::invalid_argument(
@@ -148,6 +156,7 @@ namespace engine::renderer
         }
 
         create_pipeline();
+        bridgeRenderer_.set_visible(true);
     }
 
     void TerrainRenderer::create_pipeline()
@@ -400,14 +409,20 @@ namespace engine::renderer
         stats_ = {};
         stats_.chunks = static_cast<std::uint32_t>(chunks_.size());
         materials_.clear();
+        roadSurface_.clear();
+        clear_water_surfaces();
         vegetationRenderer_.clear();
+        bridgeRenderer_.clear();
     }
 
     void TerrainRenderer::clear_chunks() noexcept {
         chunks_.clear();
         stats_ = {};
         materials_.clear();
+        roadSurface_.clear();
+        clear_water_surfaces();
         vegetationRenderer_.clear();
+        bridgeRenderer_.clear();
     }
 
     void TerrainRenderer::remove_stream_chunk(
@@ -837,6 +852,11 @@ namespace engine::renderer
             materials_.unbind();
         }
 
+        stats_.drawCalls += openWaterSurface_.render(viewProjection);
+        stats_.drawCalls += marshSurface_.render(viewProjection);
+        stats_.drawCalls += roadSurface_.render(viewProjection);
+        bridgeRenderer_.render(viewProjection);
+        stats_.drawCalls += bridgeRenderer_.stats().drawCalls;
         vegetationRenderer_.render(viewProjection);
 
         context_->OMSetRenderTargets(

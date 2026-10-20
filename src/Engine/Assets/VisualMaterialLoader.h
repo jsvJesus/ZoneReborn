@@ -30,7 +30,8 @@ namespace engine::assets {
 
     [[nodiscard]] VisualMaterialSet load_visual_materials(
         const std::filesystem::path& packsDirectory,
-        const std::filesystem::path& primitivesRelativePath
+        const std::filesystem::path& primitivesRelativePath,
+        const std::string& allowedPrefix = "models/flora/"
     );
 
 }

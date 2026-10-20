@@ -2,6 +2,7 @@
 
 #include "WorldEditor/Vegetation/VegetationAssetCatalog.h"
 #include "WorldEditor/Vegetation/VegetationGenerator.h"
+#include "WorldEditor/Vegetation/SpeedTreeSourceCatalog.h"
 #include "WorldEditor/WorldGenerator/MapGenerationSettings.h"
 #include "Editor/WorldGenerator/LayerRevisions.h"
 
@@ -10,6 +11,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace editor::viewport {
     class TerrainViewport;
@@ -49,6 +51,8 @@ namespace editor::world_generator {
         world_editor::vegetation::VegetationSettings pending_;
 
         world_editor::vegetation::VegetationAssetCatalog catalog_;
+        std::vector<world_editor::vegetation::SpeedTreeSource>
+            speedTreeSources_;
 
         std::optional<
             world_editor::vegetation::VegetationLayer
@@ -59,10 +63,13 @@ namespace editor::world_generator {
         std::size_t usedVariants_ = 0;
 
         bool catalogInitialized_ = false;
+        bool speedTreeScanned_ = false;
         bool showPreview_ = true;
         bool showGeometry_ = false;
 
         char assetFilter_[128]{};
+        int selectedHabitat_ = 0;
+        int selectedKind_ = 0;
 
         std::string status_;
         bool hasError_ = false;

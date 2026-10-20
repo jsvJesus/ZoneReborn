@@ -32,6 +32,28 @@ namespace editor::world_generator {
 
         void draw_inspector() const;
 
+        void generate_hydrology(
+            world_editor::terrain::Heightfield& terrain,
+            const world_editor::terrain::Settings& activeSettings,
+            viewport::TerrainViewport& viewport
+        );
+
+        void generate_layout(
+            world_editor::terrain::Heightfield& terrain,
+            const world_editor::terrain::Settings& activeSettings,
+            viewport::TerrainViewport& viewport
+        );
+
+        [[nodiscard]] world_editor::world_generator::MapGenerationSettings&
+        generation_settings() noexcept {
+            return settings_;
+        }
+
+        [[nodiscard]] world_editor::biome::HydrologySettings&
+        hydrology_settings() noexcept {
+            return hydrologySettings_;
+        }
+
         void clear(viewport::TerrainViewport& viewport);
 
         void synchronize(
@@ -55,6 +77,20 @@ namespace editor::world_generator {
             const world_editor::terrain::Settings& settings,
             const std::filesystem::path& directory
         ) const;
+
+        void save_layout_for_world(
+            const world_editor::terrain::Heightfield& terrain,
+            const world_editor::terrain::Settings& settings,
+            viewport::TerrainViewport& viewport,
+            const std::filesystem::path& directory
+        );
+
+        [[nodiscard]] bool restore_layout_from_world(
+            const world_editor::terrain::Heightfield& terrain,
+            const world_editor::terrain::Settings& settings,
+            viewport::TerrainViewport& viewport,
+            const std::filesystem::path& directory
+        );
 
         [[nodiscard]] bool restore_hydrology(
             const world_editor::terrain::Heightfield& heightfield,

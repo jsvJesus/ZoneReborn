@@ -1,5 +1,8 @@
 #include "WorldEditor/Settlement/POIPlacement.h"
 
+#include <algorithm>
+#include <cmath>
+#include <numbers>
 #include <stdexcept>
 
 namespace world_editor::settlement {
@@ -19,6 +22,17 @@ namespace world_editor::settlement {
         }
 
         throw std::invalid_argument("Unknown POI type");
+    }
+
+    float maximum_earthwork_height(
+        const POISpecification& spec
+    ) noexcept {
+        return std::max(
+            24.0f,
+            std::min(spec.widthMeters, spec.depthMeters) *
+                std::tan(spec.maxSlopeDegrees * 2.0f *
+                    std::numbers::pi_v<float> / 180.0f)
+        );
     }
 
 }

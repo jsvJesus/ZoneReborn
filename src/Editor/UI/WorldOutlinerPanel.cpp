@@ -67,7 +67,7 @@ namespace editor::ui {
     void WorldOutlinerPanel::draw(
         viewport::TerrainViewport& viewport
     ) {
-        if (!ImGui::Begin("World Outliner")) {
+        if (!ImGui::Begin("Outliner")) {
             ImGui::End();
             return;
         }

@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Engine/Renderer/Frustum.h"
+#include "Engine/Renderer/SurfaceRenderer.h"
 #include "Engine/Renderer/TerrainChunkMesh.h"
 #include "Engine/Renderer/TerrainMaterials.h"
 #include "Engine/Renderer/VegetationRenderer.h"
@@ -53,7 +54,7 @@ namespace engine::renderer {
             std::uint32_t chunkX,
             std::uint32_t chunkZ
         );
-        
+
         void resize(UINT width, UINT height);
 
         void render(
@@ -133,6 +134,63 @@ namespace engine::renderer {
             return vegetationRenderer_.stats();
         }
 
+        void set_bridge_scene(
+            const std::filesystem::path& packsDirectory,
+            std::span<const std::string> assetPaths,
+            std::span<const VegetationDrawInstance> instances
+        ) {
+            bridgeRenderer_.set_scene(
+                packsDirectory,
+                assetPaths,
+                instances
+            );
+        }
+
+        void clear_bridge_scene() noexcept {
+            bridgeRenderer_.clear();
+        }
+
+        void set_road_surface(
+            const SurfaceMesh& mesh,
+            const SurfaceMaterial& material
+        ) {
+            roadSurface_.set_mesh(mesh, material);
+        }
+
+        void clear_road_surface() noexcept {
+            roadSurface_.clear();
+        }
+
+        void set_road_surface_visible(bool visible) noexcept {
+            roadSurface_.set_visible(visible);
+            bridgeRenderer_.set_visible(visible);
+        }
+
+        void set_water_surfaces(
+            const SurfaceMesh& openWater,
+            const SurfaceMaterial& openMaterial,
+            const SurfaceMesh& marsh,
+            const SurfaceMaterial& marshMaterial
+        ) {
+            openWaterSurface_.set_mesh(openWater, openMaterial);
+            marshSurface_.set_mesh(marsh, marshMaterial);
+        }
+
+        void clear_water_surfaces() noexcept {
+            openWaterSurface_.clear();
+            marshSurface_.clear();
+        }
+
+        void set_water_surfaces_visible(bool visible) noexcept {
+            openWaterSurface_.set_visible(visible);
+            marshSurface_.set_visible(visible);
+        }
+
+        [[nodiscard]] const VegetationRenderStats&
+        bridge_render_stats() const noexcept {
+            return bridgeRenderer_.stats();
+        }
+
     private:
         struct ChunkLevel {
             Microsoft::WRL::ComPtr<ID3D11Buffer> vertices;
@@ -193,7 +251,11 @@ namespace engine::renderer {
 
         TerrainMaterials materials_;
 
+        SurfaceRenderer roadSurface_;
+        SurfaceRenderer openWaterSurface_;
+        SurfaceRenderer marshSurface_;
         VegetationRenderer vegetationRenderer_;
+        VegetationRenderer bridgeRenderer_;
     };
 
 }

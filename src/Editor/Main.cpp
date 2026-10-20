@@ -12,9 +12,14 @@
 #include "Editor/WorldGenerator/TerrainReliefPanel.h"
 #include "Editor/WorldGenerator/BiomeMaterialsPanel.h"
 #include "Editor/WorldGenerator/VegetationPanel.h"
+#include "Editor/WorldGenerator/WorldGeneratorPanel.h"
 
 #include "Editor/UI/EditorWorkspace.h"
+#include "Editor/UI/EditorShell.h"
+#include "Editor/UI/ContentDrawer.h"
 #include "Editor/UI/MapInspectorPanel.h"
+#include "Editor/UI/OutputLog.h"
+#include "Editor/UI/WorldInfoPanel.h"
 #include "Editor/UI/WorldOutlinerPanel.h"
 
 #include "imgui.h"
@@ -203,55 +208,6 @@ namespace {
         std::string iniPath_;
     };
 
-    void draw_main_menu(bool& resetLayout) {
-        if (!ImGui::BeginMainMenuBar()) {
-            return;
-        }
-
-        ImGui::TextColored(
-            ImVec4(0.38f, 0.85f, 0.74f, 1.0f),
-            "WORLD EDITOR"
-        );
-
-        ImGui::Separator();
-
-        if (ImGui::BeginMenu("View")) {
-            if (ImGui::MenuItem("Reset Workspace")) {
-                resetLayout = true;
-            }
-
-            ImGui::Separator();
-
-            if (ImGui::MenuItem("Terrain Tools")) {
-                ImGui::SetWindowFocus("Terrain Tools");
-            }
-
-            if (ImGui::MenuItem("Map Layout")) {
-                ImGui::SetWindowFocus("Map Layout");
-            }
-
-            if (ImGui::MenuItem("Map Inspector")) {
-                ImGui::SetWindowFocus("Map Inspector");
-            }
-
-            if (ImGui::MenuItem("World Storage")) {
-                ImGui::SetWindowFocus("World Storage");
-            }
-
-            if (ImGui::MenuItem("World Outliner")) {
-                ImGui::SetWindowFocus("World Outliner");
-            }
-
-            if (ImGui::MenuItem("Vegetation Generator")) {
-                ImGui::SetWindowFocus("Vegetation Generator");
-            }
-
-            ImGui::EndMenu();
-        }
-
-        ImGui::EndMainMenuBar();
-    }
-
     void draw_terrain_tools(
         world_editor::terrain::Heightfield& terrain,
         world_editor::terrain::Settings& settings,
@@ -430,7 +386,8 @@ int main() {
             window.handle()
         );
 
-        bool resetLayout = !std::filesystem::exists(
+        editor::ui::EditorShellState shell;
+        shell.resetLayout = !std::filesystem::exists(
             editor::paths::imgui_settings_path()
         );
 
@@ -450,9 +407,15 @@ int main() {
         editor::world_generator::TerrainReliefPanel reliefPanel;
         editor::world_generator::BiomeMaterialsPanel biomePanel;
         editor::world_generator::VegetationPanel vegetationPanel;
-        
+        editor::world_generator::WorldGeneratorPanel worldGeneratorPanel;
+
         editor::ui::WorldOutlinerPanel outlinerPanel;
         editor::ui::MapInspectorPanel inspectorPanel;
+        editor::ui::ContentDrawer contentDrawer;
+        editor::ui::OutputLog outputLog;
+        outputLog.add("Editor workspace ready");
+        auto previousMode = shell.mode;
+        auto previousPage = shell.generatorPage;
 
         world_editor::terrain::Settings settings;
         world_editor::terrain::Settings activeSettings = settings;
@@ -522,44 +485,72 @@ int main() {
             ImGui_ImplWin32_NewFrame();
             ImGui::NewFrame();
 
-            draw_main_menu(resetLayout);
-            editor::ui::draw_editor_workspace(resetLayout);
+            editor::ui::draw_editor_menu(shell);
+            editor::ui::draw_editor_workspace(shell.resetLayout);
 
-            draw_terrain_tools(
-                terrain,
-                settings,
-                activeSettings,
-                viewport,
-                mapPanel,
-                reliefPanel
-            );
+            if (shell.mode != previousMode ||
+                shell.generatorPage != previousPage) {
+                outputLog.add("Editor mode changed");
+                previousMode = shell.mode;
+                previousPage = shell.generatorPage;
+            }
 
-            mapPanel.draw(
-                terrain,
-                settings,
-                activeSettings,
-                viewport,
-                storagePanel,
-                reliefPanel
-            );
-
-            biomePanel.draw(
-                terrain,
-                activeSettings,
-                viewport,
-                mapPanel.generation_seeds()
-            );
-
-            vegetationPanel.draw(
-                terrain,
-                biomePanel.active_layer(),
-                biomePanel.source_fingerprint(),
-                viewport,
-                mapPanel.generation_seeds()
-            );
+            if (shell.mode == editor::ui::EditorMode::Edit) {
+                draw_terrain_tools(
+                    terrain,
+                    settings,
+                    activeSettings,
+                    viewport,
+                    mapPanel,
+                    reliefPanel
+                );
+            } else if (shell.mode == editor::ui::EditorMode::Generator) {
+                switch (shell.generatorPage) {
+                case editor::ui::GeneratorPage::World:
+                    worldGeneratorPanel.draw(
+                        terrain,
+                        settings,
+                        activeSettings,
+                        viewport,
+                        mapPanel,
+                        biomePanel,
+                        reliefPanel,
+                        outputLog
+                    );
+                    break;
+                case editor::ui::GeneratorPage::Layout:
+                    mapPanel.draw(
+                        terrain,
+                        settings,
+                        activeSettings,
+                        viewport,
+                        storagePanel,
+                        reliefPanel
+                    );
+                    break;
+                case editor::ui::GeneratorPage::Biomes:
+                    biomePanel.draw(
+                        terrain,
+                        activeSettings,
+                        viewport,
+                        mapPanel.generation_seeds()
+                    );
+                    break;
+                case editor::ui::GeneratorPage::Vegetation:
+                    vegetationPanel.draw(
+                        terrain,
+                        biomePanel.active_layer(),
+                        biomePanel.source_fingerprint(),
+                        viewport,
+                        mapPanel.generation_seeds()
+                    );
+                    break;
+                }
+            }
 
             outlinerPanel.draw(viewport);
             inspectorPanel.draw(viewport);
+            editor::ui::draw_world_info(viewport);
 
             storagePanel.draw(
                 terrain,
@@ -571,10 +562,21 @@ int main() {
                 biomePanel
             );
 
+            if (shell.contentDrawerVisible) {
+                contentDrawer.draw();
+            }
+
+            if (shell.outputLogVisible) {
+                outputLog.draw();
+            }
+
             mapPanel.synchronize(viewport, activeSettings);
             biomePanel.synchronize(viewport, mapPanel.generation_seeds(), activeSettings);
             vegetationPanel.synchronize(viewport, mapPanel.generation_seeds());
 
+            viewport.set_selection_enabled(
+                shell.mode == editor::ui::EditorMode::Selection
+            );
             viewport.draw();
 
             ImGui::Render();
@@ -586,6 +588,10 @@ int main() {
             );
 
             graphics.present();
+
+            if (shell.exitRequested) {
+                running = false;
+            }
         }
 
         return 0;

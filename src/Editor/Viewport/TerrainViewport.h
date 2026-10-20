@@ -80,6 +80,10 @@ namespace editor::viewport {
 
         void select(ui::MapSelection selection) noexcept;
 
+        void set_selection_enabled(bool enabled) noexcept {
+            selectionEnabled_ = enabled;
+        }
+
         void focus_selection();
 
         void set_hydrology(
@@ -126,6 +130,11 @@ namespace editor::viewport {
             return renderer_.vegetation_render_stats();
         }
 
+        [[nodiscard]] const engine::renderer::VegetationRenderStats&
+        bridge_render_stats() const noexcept {
+            return renderer_.bridge_render_stats();
+        }
+
     private:
         void reset_camera();
 
@@ -155,8 +164,10 @@ namespace editor::viewport {
 
         std::optional<world_editor::world_generator::MapLayout> mapLayout_;
         std::optional<world_editor::biome::HydrologyLayer> hydrology_;
+        std::optional<world_editor::terrain::Heightfield> surfaceTerrain_;
 
         ui::MapSelection selection_;
+        bool selectionEnabled_ = true;
 
         std::optional<world_editor::vegetation::VegetationLayer> vegetation_;
         bool vegetationVisible_ = true;

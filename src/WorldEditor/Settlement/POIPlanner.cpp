@@ -6,7 +6,6 @@
 #include <array>
 #include <cmath>
 #include <limits>
-#include <numbers>
 #include <stdexcept>
 #include <string>
 
@@ -145,14 +144,8 @@ namespace world_editor::settlement {
                 }
             }
 
-            const float maximumEarthwork = std::max(
-                24.0f,
-                std::min(spec.widthMeters, spec.depthMeters) *
-                    std::tan(spec.maxSlopeDegrees * 2.0f *
-                        std::numbers::pi_v<float> / 180.0f)
-            );
-
-            return maximumHeight - minimumHeight <= maximumEarthwork;
+            return maximumHeight - minimumHeight <=
+                maximum_earthwork_height(spec);
         }
 
         [[nodiscard]] bool try_place(

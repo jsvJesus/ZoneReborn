@@ -31,4 +31,8 @@ namespace world_editor::settlement {
 
     [[nodiscard]] POISpecification specification(POIType type);
 
+    [[nodiscard]] float maximum_earthwork_height(
+        const POISpecification& specification
+    ) noexcept;
+
 }

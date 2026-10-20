@@ -99,31 +99,12 @@ namespace editor::world_generator {
             ImVec2(-1.0f, 42.0f)
         )) {
             try {
-                if (biome::terrain_source_fingerprint(terrain) !=
-                    viewport.terrain_fingerprint()) {
-                    clear(viewport);
-                    throw std::runtime_error("Terrain heights changed. Apply Terrain first.");
-                }
-
-                auto generated = biome::generate_biomes(
+                generate(
                     terrain,
-                    viewport.hydrology(),
-                    pending_
+                    activeSettings,
+                    viewport,
+                    seeds
                 );
-
-                viewport.set_biomes(generated);
-
-                sourceFingerprint_ =
-                    biome::biome_source_fingerprint(
-                        terrain,
-                        viewport.hydrology()
-                    );
-
-                active_ = std::move(generated);
-                sourceRevisions_ = viewport.layer_revisions();
-
-                status_ = "Biome materials applied";
-                hasError_ = false;
             } catch (const std::exception& error) {
                 status_ = error.what();
                 hasError_ = true;
@@ -158,6 +139,44 @@ namespace editor::world_generator {
         }
 
         ImGui::End();
+    }
+
+    void BiomeMaterialsPanel::generate(
+        const world_editor::terrain::Heightfield& terrain,
+        const world_editor::terrain::Settings& activeSettings,
+        viewport::TerrainViewport& viewport,
+        const world_editor::world_generator::GenerationSeeds& seeds
+    ) {
+        synchronize(viewport, seeds, activeSettings);
+
+        if (!terrain.valid() || viewport.is_streaming() ||
+            activeSettings.seed != seeds.terrain) {
+            throw std::runtime_error("Biome generation requires matching Terrain");
+        }
+
+        if (biome::terrain_source_fingerprint(terrain) !=
+            viewport.terrain_fingerprint()) {
+            clear(viewport);
+            throw std::runtime_error("Terrain heights changed. Apply Terrain first.");
+        }
+
+        auto generated = biome::generate_biomes(
+            terrain,
+            viewport.hydrology(),
+            pending_
+        );
+
+        viewport.set_biomes(generated);
+
+        sourceFingerprint_ = biome::biome_source_fingerprint(
+            terrain,
+            viewport.hydrology()
+        );
+
+        active_ = std::move(generated);
+        sourceRevisions_ = viewport.layer_revisions();
+        status_ = "Biome materials applied";
+        hasError_ = false;
     }
 
     void BiomeMaterialsPanel::clear(viewport::TerrainViewport& viewport) {

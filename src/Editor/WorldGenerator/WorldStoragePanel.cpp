@@ -65,7 +65,7 @@ namespace editor::world_generator {
         TerrainReliefPanel& reliefPanel,
         BiomeMaterialsPanel& biomePanel
     ) {
-        ImGui::Begin("World Storage");
+        ImGui::Begin("World Settings");
 
         ImGui::TextColored(
             ImVec4(0.38f, 0.85f, 0.74f, 1.0f),
@@ -124,6 +124,13 @@ namespace editor::world_generator {
                     directory
                 );
 
+                mapPanel.save_layout_for_world(
+                    terrain,
+                    activeSettings,
+                    viewport,
+                    directory
+                );
+
                 status_ = "World saved";
                 hasError_ = false;
             } catch (const std::exception& error) {
@@ -162,6 +169,13 @@ namespace editor::world_generator {
                     viewport,
                     directory
                 );
+
+                const bool layoutRestored = mapPanel.restore_layout_from_world(
+                    terrain,
+                    activeSettings,
+                    viewport,
+                    directory
+                );
                 
                 const bool biomesRestored = biomePanel.restore_from_world(
                     activeSettings,
@@ -179,6 +193,10 @@ namespace editor::world_generator {
 
                 if (waterRestored) {
                     status_ += " + Hydrology";
+                }
+
+                if (layoutRestored) {
+                    status_ += " + Layout";
                 }
 
                 if (biomesRestored) {
@@ -220,11 +238,15 @@ namespace editor::world_generator {
                 const bool hasBiomes = std::filesystem::exists(
                     world_editor::biome::biome_file_path(directory)
                 );
+                std::filesystem::path layoutPath = directory;
+                layoutPath += L".zlayout";
+                const bool hasLayout = std::filesystem::exists(layoutPath);
 
                 bool waterRestored = false;
+                bool layoutRestored = false;
                 bool biomesRestored = false;
 
-                if (hasWater || hasRelief || hasBiomes) {
+                if (hasWater || hasRelief || hasBiomes || hasLayout) {
                     reliefPanel.restore_from_world(
                         source.terrain,
                         directory
@@ -232,6 +254,15 @@ namespace editor::world_generator {
 
                     if (hasWater) {
                         waterRestored = mapPanel.restore_hydrology(
+                            source.terrain,
+                            source.settings,
+                            viewport,
+                            directory
+                        );
+                    }
+
+                    if (hasLayout) {
+                        layoutRestored = mapPanel.restore_layout_from_world(
                             source.terrain,
                             source.settings,
                             viewport,
@@ -259,6 +290,10 @@ namespace editor::world_generator {
 
                 if (waterRestored) {
                     status_ += " + Hydrology";
+                }
+
+                if (layoutRestored) {
+                    status_ += " + Layout";
                 }
 
                 if (biomesRestored) {

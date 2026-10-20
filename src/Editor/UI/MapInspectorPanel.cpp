@@ -4,6 +4,7 @@
 #include "Editor/Viewport/TerrainViewport.h"
 
 #include "WorldEditor/Road/RoadGraph.h"
+#include "WorldEditor/Road/RoadCrossings.h"
 #include "WorldEditor/Settlement/POIPlacement.h"
 
 #include "imgui.h"
@@ -194,7 +195,7 @@ namespace editor::ui {
     void MapInspectorPanel::draw(
         const viewport::TerrainViewport& viewport
     ) const {
-        if (!ImGui::Begin("Map Inspector")) {
+        if (!ImGui::Begin("Details")) {
             ImGui::End();
             return;
         }
@@ -245,6 +246,40 @@ namespace editor::ui {
                     layout->roads.edges.size()
                 )
             );
+
+            const auto crossings = road::find_crossings(layout->roads);
+            const auto metalBridges = static_cast<std::size_t>(std::count_if(
+                crossings.begin(),
+                crossings.end(),
+                [](const road::RoadCrossing& crossing) {
+                    return crossing.kind ==
+                        road::CrossingKind::MetalBridge;
+                }
+            ));
+
+            ImGui::Text(
+                "Bridges: %zu wood / %zu metal",
+                crossings.size() - metalBridges,
+                metalBridges
+            );
+
+            if (!crossings.empty()) {
+                const auto& bridgeStats = viewport.bridge_render_stats();
+
+                ImGui::Text(
+                    "Bridge sections: %u",
+                    bridgeStats.renderedInstances
+                );
+
+                if (bridgeStats.failedVariants > 0 &&
+                    ImGui::TreeNode("Bridge import errors")) {
+                    for (const auto& error : bridgeStats.failedPaths) {
+                        ImGui::TextWrapped("%s", error.c_str());
+                    }
+
+                    ImGui::TreePop();
+                }
+            }
 
             const bool connected = road::is_connected(
                 layout->roads
@@ -330,12 +365,12 @@ namespace editor::ui {
             );
 
             ImGui::Text(
-                "Allowed slope: %.1f deg",
-                spec.maxSlopeDegrees
+                "Max footprint height range: %.1f m",
+                settlement::maximum_earthwork_height(spec)
             );
 
             ImGui::TextDisabled(
-                "Slope value shown is a placement limit."
+                "The generated platform is levelled after placement."
             );
         } else if (selection.kind == MapSelectionKind::Exit) {
             const auto it = std::find_if(

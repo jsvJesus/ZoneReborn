@@ -1,26 +1,31 @@
 #include "Editor/Viewport/TerrainViewport.h"
 
+#include "Editor/Core/Paths.h"
+#include "Editor/Viewport/BridgeScene.h"
 #include "Editor/Viewport/CameraNavigation.h"
+#include "Editor/Viewport/HydrologyOverlay.h"
 #include "Editor/Viewport/MapLayoutOverlay.h"
 #include "Editor/Viewport/MapLayoutPicking.h"
+#include "Editor/Viewport/VegetationOverlay.h"
 #include "Editor/Viewport/ViewportStatusBar.h"
 #include "Editor/Viewport/ViewportToolbar.h"
-#include "Editor/Viewport/HydrologyOverlay.h"
-#include "Editor/Viewport/VegetationOverlay.h"
 
-#include "Editor/Core/Paths.h"
 #include "WorldEditor/Biome/BiomeStorage.h"
+#include "WorldEditor/Biome/WaterSurface.h"
+#include "WorldEditor/Road/RoadSurface.h"
 #include "WorldEditor/WorldGenerator/MapLayoutFingerprint.h"
 
 #include "imgui.h"
 
-#include <array>
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <span>
 #include <stdexcept>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -93,7 +98,9 @@ namespace editor::viewport {
         ++revisions_.hydrology;
         ++revisions_.layout;
         mapLayout_.reset();
+        renderer_.clear_bridge_scene();
         hydrology_.reset();
+        surfaceTerrain_ = terrain;
         clear_biomes();
         selection_ = {};
 
@@ -145,7 +152,9 @@ namespace editor::viewport {
         ++revisions_.hydrology;
         ++revisions_.layout;
         mapLayout_.reset();
+        renderer_.clear_bridge_scene();
         hydrology_.reset();
+        surfaceTerrain_ = source;
         clear_biomes();
         selection_ = {};
 
@@ -171,10 +180,33 @@ namespace editor::viewport {
         }
 
         if (layout) {
+            const auto packs = editor::paths::packs_directory();
+            const auto roadSurface = world_editor::road::build_road_surface(
+                layout->roads,
+                packs / "models/roads_segments/dirt01.primitives"
+            );
+
+            renderer_.set_road_surface(
+                roadSurface,
+                {
+                    packs / "models/roads_segments/road_dirt0048.dds",
+                    packs / "models/roads_segments/road_dirt0048_norm.dds"
+                }
+            );
+
+            const auto bridges = build_bridge_scene(layout->roads);
+
+            renderer_.set_bridge_scene(
+                packs,
+                bridges.assetPaths,
+                bridges.instances
+            );
             mapLayout_ = *layout;
         } else {
             // reset
             mapLayout_.reset();
+            renderer_.clear_road_surface();
+            renderer_.clear_bridge_scene();
         }
 
         ++revisions_.layout;
@@ -204,10 +236,37 @@ namespace editor::viewport {
         );
 
         if (water) {
+            if (!surfaceTerrain_) {
+                throw std::logic_error("Water surface requires Terrain");
+            }
+
+            const auto surfaces = world_editor::biome::build_water_surfaces(
+                *water, *surfaceTerrain_
+            );
+            const auto textures = editor::paths::packs_directory() /
+                "textures";
+
+            renderer_.set_water_surfaces(
+                surfaces.openWater,
+                {
+                    textures / "water_norm/water.dds",
+                    textures / "water_norm/water_normal.dds",
+                    {0.32f, 0.65f, 0.83f},
+                    true
+                },
+                surfaces.marsh,
+                {
+                    textures / "landscape/water/swamp_water.dds",
+                    textures / "landscape/water/swamp_water_norm.dds",
+                    {0.48f, 0.66f, 0.55f},
+                    true
+                }
+            );
             hydrology_ = *water;
         } else {
             // reset
             hydrology_.reset();
+            renderer_.clear_water_surfaces();
         }
 
         sourceFingerprint_ = fingerprint;
@@ -461,6 +520,11 @@ namespace editor::viewport {
             yaw_ = 0.0f;
         }
 
+        if (actions.perspectiveView) {
+            pitch_ = 0.7f;
+            yaw_ = 0.75f;
+        }
+
         renderer_.set_wireframe(toolbar_.wireframe);
         renderer_.set_frustum_culling(
             toolbar_.frustumCulling
@@ -544,7 +608,9 @@ namespace editor::viewport {
 
             const auto projection =
                 DirectX::XMMatrixPerspectiveFovLH(
-                    DirectX::XMConvertToRadians(60.0f),
+                    DirectX::XMConvertToRadians(
+                        toolbar_.fieldOfViewDegrees
+                    ),
                     aspect,
                     0.5f,
                     30000.0f
@@ -557,6 +623,9 @@ namespace editor::viewport {
                     renderer_
                 );
             }
+
+            renderer_.set_road_surface_visible(toolbar_.roadSurface);
+            renderer_.set_water_surfaces_visible(toolbar_.layers.water);
 
             renderer_.render(
                 view * projection,
@@ -580,7 +649,7 @@ namespace editor::viewport {
             const bool imageHovered = ImGui::IsItemHovered();
             const ImVec2 imagePosition = ImGui::GetItemRectMin();
             const ImVec2 imageSize = ImGui::GetItemRectSize();
-            
+
             if (vegetationVisible_ && vegetation_) {
                 draw_vegetation_overlay(
                     *vegetation_,
@@ -591,7 +660,7 @@ namespace editor::viewport {
                 );
             }
 
-            if (hydrology_ && toolbar_.layers.water) {
+            if (hydrology_ && toolbar_.waterGuides) {
                 draw_hydrology_overlay(
                     *hydrology_,
                     ImGui::GetWindowDrawList(),
@@ -602,7 +671,7 @@ namespace editor::viewport {
             }
 
             if (toolbar_.showLayout && mapLayout_) {
-                if (imageHovered &&
+                if (selectionEnabled_ && imageHovered &&
                     ImGui::IsMouseClicked(
                         ImGuiMouseButton_Left
                     )) {

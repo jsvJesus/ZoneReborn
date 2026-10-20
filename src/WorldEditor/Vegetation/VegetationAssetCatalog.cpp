@@ -1,4 +1,5 @@
 #include "WorldEditor/Vegetation/VegetationAssetCatalog.h"
+#include "WorldEditor/Vegetation/SpeedTreeSourceCatalog.h"
 
 #include <algorithm>
 #include <cctype>
@@ -117,6 +118,7 @@ namespace world_editor::vegetation {
                 entries.end(),
                 [](const VegetationCatalogEntry& entry) {
                     return entry.enabled &&
+                        entry.biomeMask != 0 &&
                         entry.kind !=
                             VegetationKind::Unclassified &&
                         entry.weight > 0.0f;
@@ -195,9 +197,11 @@ namespace world_editor::vegetation {
                 name
             );
 
-            entry.habitat = classify_habitat(
-                lowercase(entry.relativePath),
-                entry.kind
+            entry.biomeMask = vegetation_biome_mask(
+                classify_habitat(
+                    lowercase(entry.relativePath),
+                    entry.kind
+                )
             );
 
             entry.enabled =
@@ -207,6 +211,22 @@ namespace world_editor::vegetation {
             catalog.entries.push_back(
                 std::move(entry)
             );
+        }
+
+        if (std::filesystem::is_directory(packsDirectory / "speedtree")) {
+            for (const auto& source :
+                 scan_speedtree_sources(packsDirectory)) {
+                if (!source.renderableMesh) {
+                    continue;
+                }
+
+                VegetationCatalogEntry entry;
+                entry.relativePath = source.meshRelativePath;
+                entry.kind = source.kind;
+                entry.biomeMask = vegetation_biome_mask(source.habitat);
+                entry.enabled = true;
+                catalog.entries.push_back(std::move(entry));
+            }
         }
 
         // Stable ordering is essential for deterministic

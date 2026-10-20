@@ -19,6 +19,20 @@ namespace world_editor::vegetation {
         Wetland
     };
 
+    constexpr std::uint8_t allVegetationBiomes = 0x1f;
+
+    [[nodiscard]] constexpr std::uint8_t vegetation_biome_mask(
+        VegetationHabitat habitat
+    ) noexcept {
+        if (habitat == VegetationHabitat::Any) {
+            return allVegetationBiomes;
+        }
+
+        return static_cast<std::uint8_t>(
+            1u << (static_cast<unsigned>(habitat) - 1u)
+        );
+    }
+
     struct VegetationCatalogEntry {
         // Path relative to bin/packs.
         std::string relativePath;
@@ -26,8 +40,8 @@ namespace world_editor::vegetation {
         VegetationKind kind =
             VegetationKind::Unclassified;
 
-        VegetationHabitat habitat =
-            VegetationHabitat::Any;
+        // Grassland, Forest, Sandy, Rocky, Wetland in bit order.
+        std::uint8_t biomeMask = allVegetationBiomes;
 
         float weight = 1.0f;
 

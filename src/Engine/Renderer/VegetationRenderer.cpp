@@ -30,7 +30,9 @@ namespace engine::renderer {
             float z;
 
             float yaw;
-            float scale;
+            float scaleX;
+            float scaleY;
+            float scaleZ;
         };
 
         struct CameraConstants {
@@ -41,7 +43,7 @@ namespace engine::renderer {
             DirectX::XMFLOAT4 parameters;
         };
 
-        static_assert(sizeof(InstanceData) == 20);
+        static_assert(sizeof(InstanceData) == 28);
         static_assert(sizeof(MaterialConstants) == 16);
         static_assert(sizeof(assets::PrimitivesVertex) == 20);
 
@@ -66,7 +68,8 @@ namespace engine::renderer {
                 float2 uv : TEXCOORD0;
 
                 float3 instancePosition : INSTANCE_POSITION;
-                float2 yawScale : INSTANCE_ROT_SCALE;
+                float yaw : INSTANCE_YAW;
+                float3 scale : INSTANCE_SCALE;
             };
 
             struct PixelInput
@@ -80,13 +83,12 @@ namespace engine::renderer {
             {
                 PixelInput output;
 
-                float angle = input.yawScale.x;
-                float scale = input.yawScale.y;
+                float angle = input.yaw;
 
                 float s = sin(angle);
                 float c = cos(angle);
 
-                float3 local = input.position * scale;
+                float3 local = input.position * input.scale;
 
                 float3 world;
 
@@ -247,7 +249,8 @@ namespace engine::renderer {
         }
 
         [[nodiscard]] bool safe_asset_path(
-            const std::string& text
+            const std::string& text,
+            const std::string& allowedPrefix
         ) {
             const std::filesystem::path path(text);
 
@@ -266,16 +269,18 @@ namespace engine::renderer {
 
             return path.lexically_normal()
                 .generic_string()
-                .starts_with("models/flora/");
+                .starts_with(allowedPrefix);
         }
 
     }
 
     VegetationRenderer::VegetationRenderer(
         ID3D11Device* device,
-        ID3D11DeviceContext* context
+        ID3D11DeviceContext* context,
+        std::string allowedPrefix
     ) : device_(device),
-        context_(context) {
+        context_(context),
+        allowedPrefix_(std::move(allowedPrefix)) {
         if (!device_ || !context_) {
             throw std::invalid_argument(
                 "Invalid vegetation DirectX device"
@@ -336,9 +341,15 @@ namespace engine::renderer {
                 D3D11_INPUT_PER_INSTANCE_DATA, 1
             },
             {
-                "INSTANCE_ROT_SCALE", 0,
-                DXGI_FORMAT_R32G32_FLOAT,
+                "INSTANCE_YAW", 0,
+                DXGI_FORMAT_R32_FLOAT,
                 1, 12,
+                D3D11_INPUT_PER_INSTANCE_DATA, 1
+            },
+            {
+                "INSTANCE_SCALE", 0,
+                DXGI_FORMAT_R32G32B32_FLOAT,
+                1, 16,
                 D3D11_INPUT_PER_INSTANCE_DATA, 1
             }
         };
@@ -346,7 +357,7 @@ namespace engine::renderer {
         check(
             device_->CreateInputLayout(
                 layout,
-                4,
+                5,
                 vertexCode->GetBufferPointer(),
                 vertexCode->GetBufferSize(),
                 inputLayout_.GetAddressOf()
@@ -452,8 +463,14 @@ namespace engine::renderer {
                 !std::isfinite(instance.y) ||
                 !std::isfinite(instance.z) ||
                 !std::isfinite(instance.scale) ||
+                !std::isfinite(instance.scaleX) ||
+                !std::isfinite(instance.scaleY) ||
+                !std::isfinite(instance.scaleZ) ||
                 !std::isfinite(instance.yawRadians) ||
-                instance.scale <= 0.0f) {
+                instance.scale <= 0.0f ||
+                instance.scaleX <= 0.0f ||
+                instance.scaleY <= 0.0f ||
+                instance.scaleZ <= 0.0f) {
                 continue;
             }
 
@@ -462,7 +479,9 @@ namespace engine::renderer {
                 instance.y,
                 instance.z,
                 instance.yawRadians,
-                instance.scale
+                instance.scale * instance.scaleX,
+                instance.scale * instance.scaleY,
+                instance.scale * instance.scaleZ
             });
         }
 
@@ -500,7 +519,13 @@ namespace engine::renderer {
         newBatches.reserve(order.size());
 
         for (const std::uint32_t id : order) {
-            if (!safe_asset_path(assetPaths[id])) {
+            const std::string assetPrefix =
+                allowedPrefix_ == "models/flora/" &&
+                assetPaths[id].starts_with("speedtree/")
+                    ? "speedtree/"
+                    : allowedPrefix_;
+
+            if (!safe_asset_path(assetPaths[id], assetPrefix)) {
                 ++newStats.failedVariants;
 
                 newStats.failedPaths.push_back(
@@ -518,7 +543,8 @@ namespace engine::renderer {
                 const auto materialSet =
                     assets::load_visual_materials(
                         packsDirectory,
-                        assetPaths[id]
+                        assetPaths[id],
+                        assetPrefix
                     );
 
                 if (materialSet.materials.size() !=

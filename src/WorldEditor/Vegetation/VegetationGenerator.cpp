@@ -367,32 +367,15 @@ namespace world_editor::vegetation {
 
         using AssetPools = std::array<std::array<WeightedAssetPool, 5>, 3>;
 
-        [[nodiscard]] bool matches_habitat(
-            VegetationHabitat habitat,
+        [[nodiscard]] bool matches_biome_mask(
+            std::uint8_t mask,
             biome::BiomeKind biomeKind
         ) noexcept {
-            if (habitat == VegetationHabitat::Any) {
-                return true;
-            }
+            const auto bit = static_cast<std::uint8_t>(
+                1u << static_cast<unsigned>(biomeKind)
+            );
 
-            switch (biomeKind) {
-            case biome::BiomeKind::Grassland:
-                return habitat == VegetationHabitat::Grassland;
-
-            case biome::BiomeKind::Forest:
-                return habitat == VegetationHabitat::Forest;
-
-            case biome::BiomeKind::Sandy:
-                return habitat == VegetationHabitat::Sandy;
-
-            case biome::BiomeKind::Rocky:
-                return habitat == VegetationHabitat::Rocky;
-
-            case biome::BiomeKind::Wetland:
-                return habitat == VegetationHabitat::Wetland;
-            }
-
-            return false;
+            return (mask & bit) != 0;
         }
 
         [[nodiscard]] AssetPools build_asset_pools(
@@ -423,8 +406,8 @@ namespace world_editor::vegetation {
                                 kind ||
                             !std::isfinite(entry.weight) ||
                             entry.weight <= 0.0f ||
-                            !matches_habitat(
-                                entry.habitat,
+                            !matches_biome_mask(
+                                entry.biomeMask,
                                 biomeKind
                             )) {
                             continue;

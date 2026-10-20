@@ -2,7 +2,6 @@
 
 #include "Editor/Viewport/TerrainWorldStreamer.h"
 
-#include <imgui_internal.h>
 #include "imgui.h"
 
 namespace editor::viewport {
@@ -13,6 +12,10 @@ namespace editor::viewport {
             if (!ImGui::BeginPopup("ViewportLayersPopup")) {
                 return;
             }
+
+            ImGui::SeparatorText("Surfaces");
+            ImGui::Checkbox("Road Surface", &state.roadSurface);
+            ImGui::Checkbox("Water Surface", &state.layers.water);
 
             ImGui::SeparatorText("Map Layout");
 
@@ -50,8 +53,8 @@ namespace editor::viewport {
             ImGui::SeparatorText("Hydrology");
 
             ImGui::Checkbox(
-                "Water / Marshes",
-                &state.layers.water
+                "Hydrology Guides",
+                &state.waterGuides
             );
 
             ImGui::EndPopup();
@@ -67,10 +70,13 @@ namespace editor::viewport {
 
             ImGui::SeparatorText("Rendering");
 
-            ImGui::Checkbox(
-                "Wireframe",
-                &state.wireframe
-            );
+            if (ImGui::MenuItem("Lit", nullptr, !state.wireframe)) {
+                state.wireframe = false;
+            }
+
+            if (ImGui::MenuItem("Wireframe", nullptr, state.wireframe)) {
+                state.wireframe = true;
+            }
 
             ImGui::Checkbox(
                 "Frustum Culling",
@@ -123,10 +129,31 @@ namespace editor::viewport {
             ImGui::EndPopup();
         }
 
-        void draw_camera(ViewportToolbarState& state) {
+        void draw_camera(
+            ViewportToolbarState& state,
+            ViewportToolbarActions& actions
+        ) {
             if (!ImGui::BeginPopup("ViewportCameraPopup")) {
                 return;
             }
+
+            if (ImGui::MenuItem("Perspective")) {
+                actions.perspectiveView = true;
+            }
+
+            if (ImGui::MenuItem("Top View")) {
+                actions.topView = true;
+            }
+
+            ImGui::Separator();
+            ImGui::SetNextItemWidth(180.0f);
+            ImGui::SliderFloat(
+                "Field of View",
+                &state.fieldOfViewDegrees,
+                30.0f,
+                100.0f,
+                "%.0f deg"
+            );
 
             ImGui::SeparatorText("Camera Sensitivity");
 
@@ -199,33 +226,25 @@ namespace editor::viewport {
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Top")) {
-            actions.topView = true;
-        }
-
-        ImGui::SameLine();
-        ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
-        ImGui::SameLine();
-
-        if (ImGui::Button("Layers")) {
-            ImGui::OpenPopup("ViewportLayersPopup");
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Display")) {
+        if (ImGui::Button(state.wireframe ? "Wireframe" : "Lit")) {
             ImGui::OpenPopup("ViewportDisplayPopup");
         }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Camera")) {
+        if (ImGui::Button("Show")) {
+            ImGui::OpenPopup("ViewportLayersPopup");
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Perspective")) {
             ImGui::OpenPopup("ViewportCameraPopup");
         }
 
         draw_layers(state);
         draw_display(state, streamer);
-        draw_camera(state);
+        draw_camera(state, actions);
 
         return actions;
     }

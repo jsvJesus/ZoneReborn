@@ -93,6 +93,7 @@
     <ClCompile Include="Core\Engine.cpp" />
     <ClCompile Include="Renderer\Device.cpp" />
     <ClCompile Include="Renderer\Frustum.cpp" />
+    <ClCompile Include="Renderer\SurfaceRenderer.cpp" />
     <ClCompile Include="Renderer\TerrainChunkMesh.cpp" />
     <ClCompile Include="Renderer\TerrainMaterials.cpp" />
     <ClCompile Include="Renderer\TerrainRenderer.cpp" />
@@ -107,6 +108,8 @@
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Renderer\Device.h" />
     <ClInclude Include="Renderer\Frustum.h" />
+    <ClInclude Include="Renderer\SurfaceMesh.h" />
+    <ClInclude Include="Renderer\SurfaceRenderer.h" />
     <ClInclude Include="Renderer\TerrainChunkMesh.h" />
     <ClInclude Include="Renderer\TerrainMaterials.h" />
     <ClInclude Include="Renderer\TerrainRenderer.h" />

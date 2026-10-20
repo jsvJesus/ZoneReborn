@@ -25,6 +25,18 @@ namespace editor::world_generator {
             const world_editor::world_generator::GenerationSeeds& seeds
         );
 
+        void generate(
+            const world_editor::terrain::Heightfield& terrain,
+            const world_editor::terrain::Settings& activeSettings,
+            viewport::TerrainViewport& viewport,
+            const world_editor::world_generator::GenerationSeeds& seeds
+        );
+
+        [[nodiscard]] world_editor::biome::BiomeSettings&
+        generation_settings() noexcept {
+            return pending_;
+        }
+
         void clear(viewport::TerrainViewport& viewport);
 
         void synchronize(

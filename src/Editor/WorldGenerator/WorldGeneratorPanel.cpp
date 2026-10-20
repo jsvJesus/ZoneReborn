@@ -1,0 +1,271 @@
+#include "Editor/WorldGenerator/WorldGeneratorPanel.h"
+
+#include "Editor/UI/OutputLog.h"
+#include "Editor/Viewport/TerrainViewport.h"
+#include "Editor/WorldGenerator/BiomeMaterialsPanel.h"
+#include "Editor/WorldGenerator/MapLayoutPanel.h"
+#include "Editor/WorldGenerator/TerrainReliefPanel.h"
+
+#include "WorldEditor/WorldGenerator/MapGenerationSettings.h"
+
+#include "imgui.h"
+
+#include <cstdint>
+#include <exception>
+#include <stdexcept>
+#include <utility>
+
+namespace editor::world_generator {
+
+    namespace {
+
+        namespace terrain = world_editor::terrain;
+        namespace wg = world_editor::world_generator;
+
+        [[nodiscard]] int map_size_index(wg::MapSize size) noexcept {
+            switch (size) {
+            case wg::MapSize::Small:
+                return 0;
+            case wg::MapSize::Medium:
+                return 1;
+            case wg::MapSize::Large:
+                return 2;
+            case wg::MapSize::ExtraLarge:
+                return 3;
+            }
+
+            return 2;
+        }
+
+    }
+
+    void WorldGeneratorPanel::draw(
+        terrain::Heightfield& heightfield,
+        terrain::Settings& settings,
+        terrain::Settings& activeSettings,
+        viewport::TerrainViewport& viewport,
+        MapLayoutPanel& mapPanel,
+        BiomeMaterialsPanel& biomePanel,
+        TerrainReliefPanel& reliefPanel,
+        ui::OutputLog& outputLog
+    ) {
+        if (!ImGui::Begin("World Generator")) {
+            ImGui::End();
+            return;
+        }
+
+        auto& map = mapPanel.generation_settings();
+        auto& water = mapPanel.hydrology_settings();
+        auto& biome = biomePanel.generation_settings();
+
+        ImGui::TextUnformatted("GENERATE MAP");
+        ImGui::TextDisabled("Choose layers, then generate in dependency order.");
+        ImGui::Separator();
+
+        constexpr const char* sizes[] = {
+            "512 x 512 m",
+            "1024 x 1024 m",
+            "2048 x 2048 m",
+            "4096 x 4096 m"
+        };
+        constexpr wg::MapSize mapSizes[] = {
+            wg::MapSize::Small,
+            wg::MapSize::Medium,
+            wg::MapSize::Large,
+            wg::MapSize::ExtraLarge
+        };
+
+        int selectedSize = map_size_index(map.mapSize);
+
+        if (ImGui::Combo(
+            "Map Size",
+            &selectedSize,
+            sizes,
+            IM_ARRAYSIZE(sizes)
+        )) {
+            map.mapSize = mapSizes[selectedSize];
+        }
+
+        if (ImGui::CollapsingHeader(
+            "Terrain",
+            ImGuiTreeNodeFlags_DefaultOpen
+        )) {
+            ImGui::Checkbox("Generate Terrain", &terrainEnabled_);
+            ImGui::InputScalar(
+                "Terrain Seed",
+                ImGuiDataType_U32,
+                &map.seeds.terrain
+            );
+            ImGui::SliderFloat(
+                "Relief",
+                &settings.reliefMeters,
+                2.0f,
+                50.0f,
+                "%.1f m"
+            );
+            reliefPanel.draw();
+        }
+
+        if (ImGui::CollapsingHeader("Hydrology")) {
+            ImGui::Checkbox("Generate Hydrology", &hydrologyEnabled_);
+            ImGui::InputScalar(
+                "Water Seed",
+                ImGuiDataType_U32,
+                &map.seeds.water
+            );
+            ImGui::Checkbox("River", &water.riverEnabled);
+            ImGui::SliderFloat(
+                "River Width",
+                &water.riverWidthMeters,
+                16.0f,
+                96.0f,
+                "%.0f m"
+            );
+
+            int lakeCount = static_cast<int>(water.lakeCount);
+
+            if (ImGui::SliderInt("Lake Count", &lakeCount, 0, 8)) {
+                water.lakeCount = static_cast<std::uint32_t>(lakeCount);
+            }
+        }
+
+        if (ImGui::CollapsingHeader("Roads, POI and Exits")) {
+            ImGui::Checkbox("Generate Layout", &layoutEnabled_);
+            ImGui::InputScalar(
+                "Location Seed",
+                ImGuiDataType_U32,
+                &map.seeds.location
+            );
+            ImGui::InputScalar(
+                "Road Seed",
+                ImGuiDataType_U32,
+                &map.seeds.road
+            );
+            ImGui::InputScalar(
+                "POI Count",
+                ImGuiDataType_U32,
+                &map.poiCount
+            );
+            ImGui::InputScalar(
+                "Exit Count",
+                ImGuiDataType_U32,
+                &map.exitCount
+            );
+        }
+
+        if (ImGui::CollapsingHeader("Biomes and Materials")) {
+            ImGui::Checkbox("Generate Biomes", &biomesEnabled_);
+            ImGui::InputScalar(
+                "Biome Seed",
+                ImGuiDataType_U32,
+                &map.seeds.biome
+            );
+            ImGui::SliderFloat(
+                "Moisture",
+                &biome.moisture,
+                0.0f,
+                1.0f,
+                "%.2f"
+            );
+            ImGui::SliderFloat(
+                "Forest Coverage",
+                &biome.forestCoverage,
+                0.0f,
+                1.0f,
+                "%.2f"
+            );
+        }
+
+        ImGui::Separator();
+        ImGui::BeginDisabled(viewport.is_streaming());
+
+        if (ImGui::Button("Generate Map", ImVec2(-1.0f, 42.0f))) {
+            try {
+                if (!terrainEnabled_ && !hydrologyEnabled_ &&
+                    !layoutEnabled_ && !biomesEnabled_) {
+                    throw std::runtime_error(
+                        "Select at least one layer to generate"
+                    );
+                }
+
+                const auto mapMeters = wg::map_size_meters(map.mapSize);
+                const auto samples = mapMeters / 8 + 1;
+
+                if (terrainEnabled_) {
+                    terrain::Settings next = settings;
+                    next.samplesX = samples;
+                    next.samplesZ = samples;
+                    next.spacingMeters = 8.0f;
+                    next.seed = map.seeds.terrain;
+
+                    auto generated = reliefPanel.generate(next);
+                    viewport.set_terrain(generated);
+                    heightfield = std::move(generated);
+                    settings = next;
+                    activeSettings = next;
+                    mapPanel.clear(viewport);
+                    biomePanel.clear(viewport);
+                    outputLog.add("Terrain generated");
+                } else if (!heightfield.valid() ||
+                    heightfield.samplesX != samples ||
+                    heightfield.samplesZ != samples ||
+                    heightfield.spacingMeters != 8.0f ||
+                    activeSettings.seed != map.seeds.terrain) {
+                    throw std::runtime_error(
+                        "Active Terrain does not match map size or Terrain Seed"
+                    );
+                }
+
+                if (hydrologyEnabled_) {
+                    mapPanel.generate_hydrology(
+                        heightfield,
+                        activeSettings,
+                        viewport
+                    );
+                    outputLog.add("Hydrology generated");
+                }
+
+                if (layoutEnabled_) {
+                    mapPanel.generate_layout(
+                        heightfield,
+                        activeSettings,
+                        viewport
+                    );
+                    outputLog.add("Roads and POI generated");
+                }
+
+                if (biomesEnabled_) {
+                    biomePanel.generate(
+                        heightfield,
+                        activeSettings,
+                        viewport,
+                        map.seeds
+                    );
+                    outputLog.add("Biomes generated");
+                }
+
+                status_ = "Selected layers generated";
+                hasError_ = false;
+            } catch (const std::exception& error) {
+                status_ = error.what();
+                hasError_ = true;
+                outputLog.add(status_);
+            }
+        }
+
+        ImGui::EndDisabled();
+
+        if (!status_.empty()) {
+            ImGui::TextColored(
+                hasError_
+                    ? ImVec4(1.0f, 0.48f, 0.42f, 1.0f)
+                    : ImVec4(0.35f, 0.67f, 0.98f, 1.0f),
+                "%s",
+                status_.c_str()
+            );
+        }
+
+        ImGui::End();
+    }
+
+}

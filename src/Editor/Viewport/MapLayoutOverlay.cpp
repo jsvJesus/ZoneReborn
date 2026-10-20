@@ -1,5 +1,7 @@
 #include "Editor/Viewport/MapLayoutOverlay.h"
 
+#include "WorldEditor/Road/RoadCrossings.h"
+
 #include <cmath>
 #include <cstddef>
 #include <cstdio>
@@ -15,7 +17,7 @@ namespace editor::viewport {
             IM_COL32(231, 184, 104, 255);
 
         constexpr ImU32 crossingColor =
-            IM_COL32(255, 115, 96, 255);
+            IM_COL32(178, 204, 211, 255);
 
         constexpr ImU32 exitColor =
             IM_COL32(255, 139, 96, 255);
@@ -160,6 +162,37 @@ namespace editor::viewport {
                     );
                 }
             }
+
+            if (layers.labels) {
+                for (const auto& crossing :
+                     world_editor::road::find_crossings(layout.roads)) {
+                    const auto& route =
+                        layout.roads.edges[crossing.edgeIndex].route;
+                    const auto& first = route[crossing.firstPoint];
+                    const auto& last = route[crossing.lastPoint];
+                    ImVec2 center;
+
+                    if (project(
+                        viewProjection,
+                        (first.x + last.x) * 0.5f,
+                        (first.y + last.y) * 0.5f + 5.0f,
+                        (first.z + last.z) * 0.5f,
+                        imagePosition,
+                        imageSize,
+                        center
+                    )) {
+                        draw_label(
+                            drawList,
+                            center,
+                            crossing.kind ==
+                                world_editor::road::CrossingKind::MetalBridge
+                                ? "METAL BRIDGE"
+                                : "WOOD BRIDGE",
+                            crossingColor
+                        );
+                    }
+                }
+            }
         }
 
         if (layers.poi) {
@@ -291,7 +324,8 @@ namespace editor::viewport {
                 }
             }
 
-            drawList->PopClipRect();
         }
+
+        drawList->PopClipRect();
     }
 }

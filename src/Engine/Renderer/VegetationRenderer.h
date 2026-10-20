@@ -21,6 +21,9 @@ namespace engine::renderer {
 
         float yawRadians = 0.0f;
         float scale = 1.0f;
+        float scaleX = 1.0f;
+        float scaleY = 1.0f;
+        float scaleZ = 1.0f;
 
         std::uint32_t kind = 0;
     };
@@ -42,7 +45,8 @@ namespace engine::renderer {
     public:
         VegetationRenderer(
             ID3D11Device* device,
-            ID3D11DeviceContext* context
+            ID3D11DeviceContext* context,
+            std::string allowedPrefix = "models/flora/"
         );
 
         void set_scene(
@@ -98,6 +102,7 @@ namespace engine::renderer {
 
         ID3D11Device* device_ = nullptr;
         ID3D11DeviceContext* context_ = nullptr;
+        std::string allowedPrefix_;
 
         Microsoft::WRL::ComPtr<ID3D11VertexShader>
             vertexShader_;

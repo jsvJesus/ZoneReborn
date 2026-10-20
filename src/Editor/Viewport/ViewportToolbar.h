@@ -10,6 +10,8 @@ namespace editor::viewport {
         ViewportLayers layers;
 
         bool showLayout = true;
+        bool roadSurface = true;
+        bool waterGuides = false;
         bool wireframe = false;
         bool frustumCulling = true;
         bool automaticLod = true;
@@ -20,12 +22,14 @@ namespace editor::viewport {
         float orbitSpeed = 1.0f;
         float panSpeed = 1.0f;
         float zoomSpeed = 1.0f;
+        float fieldOfViewDegrees = 60.0f;
     };
 
     struct ViewportToolbarActions {
         bool resetCamera = false;
         bool focusSelection = false;
         bool topView = false;
+        bool perspectiveView = false;
     };
 
     [[nodiscard]] ViewportToolbarActions draw_viewport_toolbar(

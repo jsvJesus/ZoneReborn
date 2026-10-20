@@ -153,7 +153,8 @@ namespace engine::assets {
 
     VisualMaterialSet load_visual_materials(
         const std::filesystem::path& packsDirectory,
-        const std::filesystem::path& primitivesRelativePath
+        const std::filesystem::path& primitivesRelativePath,
+        const std::string& allowedPrefix
     ) {
         const auto primitivesPath =
             resource_path(
@@ -161,10 +162,10 @@ namespace engine::assets {
             );
 
         if (!primitivesPath.generic_string().starts_with(
-                "models/flora/"
+                allowedPrefix
             ) || primitivesPath.extension() != ".primitives") {
             throw std::invalid_argument(
-                "Expected models/flora/*.primitives"
+                "Primitives path is outside the allowed model directory"
             );
         }
 
@@ -200,7 +201,7 @@ namespace engine::assets {
 
         if (result.visualPath.extension() != ".visual" ||
             !result.visualPath.generic_string().starts_with(
-                "models/flora/"
+                allowedPrefix
             )) {
             throw std::runtime_error(
                 "Unsupported visual resource path"

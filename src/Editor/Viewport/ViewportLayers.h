@@ -4,7 +4,7 @@ namespace editor::viewport {
 
     struct ViewportLayers {
         bool poi = true;
-        bool roads = true;
+        bool roads = false;
         bool exits = true;
         bool labels = true;
         bool water = true;

@@ -1,5 +1,7 @@
 #include "WorldEditor/Terrain/TerrainCorrection.h"
 
+#include "WorldEditor/Road/RoadCrossings.h"
+
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -14,7 +16,8 @@ namespace world_editor::terrain {
 
         constexpr float roadHalfWidth = 7.0f;
         constexpr float roadShoulder = 24.0f;
-        constexpr float bridgeClearance = 2.5f;
+        constexpr float woodBridgeClearance = 2.5f;
+        constexpr float metalBridgeClearance = 1.2f;
         constexpr float bridgeApproach = 64.0f;
 
         [[nodiscard]] float smooth(float value) noexcept {
@@ -97,7 +100,12 @@ namespace world_editor::terrain {
             std::vector<float> weighted(result.heights.size(), 0.0f);
             std::vector<float> weights(result.heights.size(), 0.0f);
 
-            for (auto& edge : layout.roads.edges) {
+            const auto crossings = road::find_crossings(layout.roads);
+
+            for (std::size_t edgeIndex = 0;
+                 edgeIndex < layout.roads.edges.size();
+                 ++edgeIndex) {
+                auto& edge = layout.roads.edges[edgeIndex];
                 auto& route = edge.route;
 
                 if (route.size() < 2) {
@@ -142,14 +150,30 @@ namespace world_editor::terrain {
                         continue;
                     }
 
+                    const auto crossing = std::find_if(
+                        crossings.begin(),
+                        crossings.end(),
+                        [edgeIndex, first, i](const road::RoadCrossing& item) {
+                            return item.edgeIndex == edgeIndex &&
+                                item.firstPoint + 1 == first &&
+                                item.lastPoint == i;
+                        }
+                    );
+                    const float clearance = crossing != crossings.end() &&
+                        crossing->kind == road::CrossingKind::MetalBridge
+                            ? metalBridgeClearance
+                            : woodBridgeClearance;
                     const float deck = std::max(
                         profile[first - 1],
                         profile[i]
-                    ) + bridgeClearance;
+                    ) + clearance;
 
                     for (std::size_t j = first; j < i; ++j) {
                         profile[j] = deck;
                     }
+
+                    profile[first - 1] = deck;
+                    profile[i] = deck;
 
                     for (std::size_t j = first; j-- > 0;) {
                         const float distance = route[first].distanceMeters -

@@ -89,9 +89,11 @@
     <ClCompile Include="Biome\BiomeStorage.cpp" />
     <ClCompile Include="Biome\Hydrology.cpp" />
     <ClCompile Include="Biome\HydrologyStorage.cpp" />
+    <ClCompile Include="Biome\WaterSurface.cpp" />
     <ClCompile Include="Road\RoadGraph.cpp" />
     <ClCompile Include="Road\RoadCrossings.cpp" />
     <ClCompile Include="Road\RoadRouting.cpp" />
+    <ClCompile Include="Road\RoadSurface.cpp" />
     <ClCompile Include="Settlement\POIPlacement.cpp" />
     <ClCompile Include="Settlement\POIPlanner.cpp" />
     <ClCompile Include="Terrain\Noise.cpp" />
@@ -104,6 +106,7 @@
     <ClCompile Include="Terrain\TerrainReliefStorage.cpp" />
     <ClCompile Include="Terrain\TerrainWorldStorage.cpp" />
     <ClCompile Include="Vegetation\VegetationAssetCatalog.cpp" />
+    <ClCompile Include="Vegetation\SpeedTreeSourceCatalog.cpp" />
     <ClCompile Include="Vegetation\VegetationGenerator.cpp" />
     <ClCompile Include="WorldEditor.cpp" />
     <ClCompile Include="WorldGenerator\MapLayoutGenerator.cpp" />
@@ -115,9 +118,11 @@
     <ClInclude Include="Biome\BiomeStorage.h" />
     <ClInclude Include="Biome\Hydrology.h" />
     <ClInclude Include="Biome\HydrologyStorage.h" />
+    <ClInclude Include="Biome\WaterSurface.h" />
     <ClInclude Include="Road\RoadGraph.h" />
     <ClInclude Include="Road\RoadCrossings.h" />
     <ClInclude Include="Road\RoadRouting.h" />
+    <ClInclude Include="Road\RoadSurface.h" />
     <ClInclude Include="Settlement\POIPlacement.h" />
     <ClInclude Include="Settlement\POIPlanner.h" />
     <ClInclude Include="Terrain\Noise.h" />
@@ -129,6 +134,7 @@
     <ClInclude Include="Terrain\TerrainReliefStorage.h" />
     <ClInclude Include="Terrain\TerrainWorldStorage.h" />
     <ClInclude Include="Vegetation\VegetationAssetCatalog.h" />
+    <ClInclude Include="Vegetation\SpeedTreeSourceCatalog.h" />
     <ClInclude Include="Vegetation\VegetationGenerator.h" />
     <ClInclude Include="WorldEditor.h" />
     <ClInclude Include="WorldGenerator\DeterministicRandom.h" />

@@ -216,6 +216,92 @@ namespace editor::world_generator {
         return true;
     }
 
+    void MapLayoutPanel::save_layout_for_world(
+        const terrain::Heightfield& heightfield,
+        const terrain::Settings& settings,
+        viewport::TerrainViewport& viewport,
+        const std::filesystem::path& directory
+    ) {
+        validate_sources(heightfield, settings, viewport);
+
+        if (!layout_) {
+            std::filesystem::remove(layout_path(directory));
+            std::filesystem::remove(correction_path(directory));
+            return;
+        }
+
+        if (!sourceTerrain_ ||
+            !same_terrain(*sourceTerrain_, settings)) {
+            throw std::runtime_error(
+                "Map Layout Terrain settings changed. Regenerate Layout."
+            );
+        }
+
+        if (baseTerrain_) {
+            terrain::save_correction_base(
+                *baseTerrain_,
+                heightfield,
+                correction_path(directory)
+            );
+        } else {
+            std::filesystem::remove(correction_path(directory));
+        }
+
+        wg::save_map_layout(
+            *layout_,
+            *sourceTerrain_,
+            layout_path(directory)
+        );
+    }
+
+    bool MapLayoutPanel::restore_layout_from_world(
+        const terrain::Heightfield& heightfield,
+        const terrain::Settings& settings,
+        viewport::TerrainViewport& viewport,
+        const std::filesystem::path& directory
+    ) {
+        if (!std::filesystem::exists(layout_path(directory))) {
+            return false;
+        }
+
+        auto loaded = wg::load_map_layout(
+            layout_path(directory),
+            settings,
+            viewport.source_fingerprint()
+        );
+
+        if (viewport.hydrology() &&
+            viewport.hydrology()->settings.seed !=
+                loaded.settings.seeds.water) {
+            throw std::runtime_error(
+                "Load matching Hydrology before Map Layout."
+            );
+        }
+
+        std::optional<terrain::Heightfield> restoredBase;
+
+        if (std::filesystem::exists(correction_path(directory))) {
+            restoredBase = terrain::load_correction_base(
+                heightfield,
+                correction_path(directory)
+            );
+        }
+
+        viewport.set_map_layout(&loaded);
+
+        layout_ = std::move(loaded);
+        sourceTerrain_ = settings;
+        settings_ = layout_->settings;
+        layoutSource_ = viewport.layer_revisions();
+        baseTerrain_ = std::move(restoredBase);
+        correctedTerrainRevision_ = baseTerrain_
+            ? viewport.layer_revisions().terrain : 0;
+
+        status_ = "Map Layout loaded";
+        hasError_ = false;
+        return true;
+    }
+
     void MapLayoutPanel::clear(
         viewport::TerrainViewport& viewport
     ) {
@@ -316,6 +402,107 @@ namespace editor::world_generator {
             clear_layout(viewport);
             throw std::runtime_error("Map Layout source changed. Regenerate Map Layout.");
         }
+    }
+
+    void MapLayoutPanel::generate_hydrology(
+        terrain::Heightfield& heightfield,
+        const terrain::Settings& activeSettings,
+        viewport::TerrainViewport& viewport
+    ) {
+        validate_sources(heightfield, activeSettings, viewport);
+        hydrologySettings_.seed = settings_.seeds.water;
+
+        const terrain::Heightfield& source = baseTerrain_
+            ? *baseTerrain_ : heightfield;
+
+        auto generated = world_editor::biome::generate_hydrology(
+            source,
+            hydrologySettings_
+        );
+
+        if (baseTerrain_) {
+            viewport.set_terrain(*baseTerrain_);
+            heightfield = std::move(*baseTerrain_);
+            baseTerrain_.reset();
+            correctedTerrainRevision_ = 0;
+        }
+
+        clear(viewport);
+        hydrology_ = std::move(generated);
+        sourceHydrologyTerrain_ = activeSettings;
+
+        viewport.set_hydrology(&*hydrology_);
+        hydrologySource_ = viewport.layer_revisions();
+        hydrologyTerrainFingerprint_ = viewport.terrain_fingerprint();
+        status_ = "Hydrology generated";
+        hasError_ = false;
+    }
+
+    void MapLayoutPanel::generate_layout(
+        terrain::Heightfield& heightfield,
+        const terrain::Settings& activeSettings,
+        viewport::TerrainViewport& viewport
+    ) {
+        validate_sources(heightfield, activeSettings, viewport);
+        settings_.seeds.terrain = activeSettings.seed;
+
+        const world_editor::biome::HydrologyLayer* water =
+            hydrology_ ? &*hydrology_ : nullptr;
+
+        if (water) {
+            const auto& active = water->settings;
+
+            if (active.seed != settings_.seeds.water ||
+                active.riverEnabled != hydrologySettings_.riverEnabled ||
+                active.lakeCount != hydrologySettings_.lakeCount ||
+                active.riverWidthMeters != hydrologySettings_.riverWidthMeters ||
+                active.marshWidthMeters != hydrologySettings_.marshWidthMeters ||
+                active.riverShape != hydrologySettings_.riverShape ||
+                active.lakeSeparationMeters !=
+                    hydrologySettings_.lakeSeparationMeters) {
+                throw std::runtime_error(
+                    "Hydrology settings changed. Regenerate Hydrology before Map Layout."
+                );
+            }
+        }
+
+        const terrain::Heightfield& source = baseTerrain_
+            ? *baseTerrain_ : heightfield;
+
+        auto generated = wg::generate_layout(
+            settings_,
+            source,
+            water
+        );
+
+        auto corrected = terrain::correct_for_layout(
+            source,
+            generated,
+            water
+        );
+
+        if (!baseTerrain_) {
+            baseTerrain_ = heightfield;
+        }
+
+        viewport.set_terrain(corrected);
+        heightfield = std::move(corrected);
+        correctedTerrainRevision_ = viewport.layer_revisions().terrain;
+
+        if (hydrology_) {
+            viewport.set_hydrology(&*hydrology_);
+            hydrologySource_ = viewport.layer_revisions();
+            hydrologyTerrainFingerprint_ = viewport.terrain_fingerprint();
+        }
+
+        generated.sourceFingerprint = viewport.source_fingerprint();
+        viewport.set_map_layout(&generated);
+
+        layout_ = std::move(generated);
+        sourceTerrain_ = activeSettings;
+        layoutSource_ = viewport.layer_revisions();
+        status_ = "Map Layout generated; Terrain corrected for roads and POIs";
+        hasError_ = false;
     }
 
     void MapLayoutPanel::draw(
@@ -624,38 +811,11 @@ namespace editor::world_generator {
                 ImVec2(-1.0f, 38.0f)
             )) {
                 try {
-                    validate_sources(heightfield, activeSettings, viewport);
-
-                    hydrologySettings_.seed =
-                        settings_.seeds.water;
-
-                    const terrain::Heightfield& hydrologySource = baseTerrain_
-                        ? *baseTerrain_ : heightfield;
-
-                    auto generated =
-                        world_editor::biome::generate_hydrology(
-                            hydrologySource,
-                            hydrologySettings_
-                        );
-
-                    if (baseTerrain_) {
-                        viewport.set_terrain(*baseTerrain_);
-                        heightfield = std::move(*baseTerrain_);
-                        baseTerrain_.reset();
-                        correctedTerrainRevision_ = 0;
-                    }
-
-                    clear(viewport);
-
-                    hydrology_ = std::move(generated);
-                    sourceHydrologyTerrain_ = activeSettings;
-
-                    viewport.set_hydrology(&*hydrology_);
-                    hydrologySource_ = viewport.layer_revisions();
-                    hydrologyTerrainFingerprint_ = viewport.terrain_fingerprint();
-
-                    status_ = "Hydrology generated";
-                    hasError_ = false;
+                    generate_hydrology(
+                        heightfield,
+                        activeSettings,
+                        viewport
+                    );
                 } catch (const std::exception& error) {
                     status_ = error.what();
                     hasError_ = true;
@@ -697,74 +857,11 @@ namespace editor::world_generator {
             ImVec2(-1.0f, 42.0f)
         )) {
             try {
-                validate_sources(heightfield, activeSettings, viewport);
-                settings_.seeds.terrain = activeSettings.seed;
-
-                const world_editor::biome::HydrologyLayer* water = hydrology_ ? &*hydrology_ : nullptr;
-
-                if (water) {
-                    const auto& active = water->settings;
-
-                    if (active.seed != settings_.seeds.water ||
-                        active.riverEnabled !=
-                            hydrologySettings_.riverEnabled ||
-                        active.lakeCount !=
-                            hydrologySettings_.lakeCount ||
-                        active.riverWidthMeters !=
-                            hydrologySettings_.riverWidthMeters ||
-                        active.marshWidthMeters !=
-                            hydrologySettings_.marshWidthMeters ||
-                        active.riverShape !=
-                            hydrologySettings_.riverShape ||
-                        active.lakeSeparationMeters !=
-                            hydrologySettings_.lakeSeparationMeters
-                    )
-                        {
-                        throw std::runtime_error(
-                            "Hydrology settings changed. "
-                            "Regenerate Hydrology before Map Layout."
-                        );
-                            }
-                }
-
-                const terrain::Heightfield& layoutSource = baseTerrain_
-                    ? *baseTerrain_ : heightfield;
-
-                auto generated = wg::generate_layout(
-                    settings_,
-                    layoutSource,
-                    water
+                generate_layout(
+                    heightfield,
+                    activeSettings,
+                    viewport
                 );
-
-                auto corrected = terrain::correct_for_layout(
-                    layoutSource,
-                    generated,
-                    water
-                );
-
-                if (!baseTerrain_) {
-                    baseTerrain_ = heightfield;
-                }
-
-                viewport.set_terrain(corrected);
-                heightfield = std::move(corrected);
-                correctedTerrainRevision_ = viewport.layer_revisions().terrain;
-
-                if (hydrology_) {
-                    viewport.set_hydrology(&*hydrology_);
-                    hydrologySource_ = viewport.layer_revisions();
-                    hydrologyTerrainFingerprint_ = viewport.terrain_fingerprint();
-                }
-
-                generated.sourceFingerprint = viewport.source_fingerprint();
-                viewport.set_map_layout(&generated);
-
-                layout_ = std::move(generated);
-                sourceTerrain_ = activeSettings;
-                layoutSource_ = viewport.layer_revisions();
-
-                status_ = "Map Layout generated; Terrain corrected for roads and POIs";
-                hasError_ = false;
             } catch (const std::exception& error) {
                 status_ = error.what();
                 hasError_ = true;
@@ -782,21 +879,13 @@ namespace editor::world_generator {
 
         if (ImGui::Button("Save Layout")) {
             try {
-                validate_sources(heightfield, activeSettings, viewport);
-
-                if (!layout_) {
-                    throw std::runtime_error("Regenerate Map Layout before saving.");
-                }
-
                 const auto directory = storage.world_directory();
-
                 const auto savedWorld = terrain::load_world(directory);
-                const auto& savedTerrain = savedWorld.settings;
 
-                if (!sourceTerrain_ ||
-                    !same_terrain(*sourceTerrain_, savedTerrain) ||
-                    world_editor::biome::terrain_source_fingerprint(savedWorld.terrain) !=
-                        viewport.terrain_fingerprint()) {
+                if (!same_terrain(savedWorld.settings, activeSettings) ||
+                    world_editor::biome::terrain_source_fingerprint(
+                        savedWorld.terrain
+                    ) != viewport.terrain_fingerprint()) {
                     throw std::runtime_error(
                         "Save matching Terrain World first"
                     );
@@ -807,21 +896,11 @@ namespace editor::world_generator {
                     activeSettings,
                     directory
                 );
-
-                if (baseTerrain_) {
-                    terrain::save_correction_base(
-                        *baseTerrain_,
-                        heightfield,
-                        correction_path(directory)
-                    );
-                } else {
-                    std::filesystem::remove(correction_path(directory));
-                }
-
-                wg::save_map_layout(
-                    *layout_,
-                    *sourceTerrain_,
-                    layout_path(directory)
+                save_layout_for_world(
+                    heightfield,
+                    activeSettings,
+                    viewport,
+                    directory
                 );
 
                 status_ = "Map Layout and Hydrology saved";
@@ -838,7 +917,6 @@ namespace editor::world_generator {
         if (ImGui::Button("Load Layout")) {
             try {
                 const auto directory = storage.world_directory();
-
                 const auto savedTerrain =
                     terrain::read_world_settings(directory);
 
@@ -848,35 +926,14 @@ namespace editor::world_generator {
                     );
                 }
 
-                auto loaded = wg::load_map_layout(
-                    layout_path(directory),
+                if (!restore_layout_from_world(
+                    heightfield,
                     savedTerrain,
-                    viewport.source_fingerprint()
-                );
-
-                if (viewport.hydrology() &&
-                    viewport.hydrology()->settings.seed != loaded.settings.seeds.water) {
-                    throw std::runtime_error("Load matching Hydrology before Map Layout.");
+                    viewport,
+                    directory
+                )) {
+                    throw std::runtime_error("No saved Map Layout");
                 }
-
-                std::optional<terrain::Heightfield> restoredBase;
-
-                if (std::filesystem::exists(correction_path(directory))) {
-                    restoredBase = terrain::load_correction_base(
-                        heightfield,
-                        correction_path(directory)
-                    );
-                }
-
-                viewport.set_map_layout(&loaded);
-
-                layout_ = std::move(loaded);
-                sourceTerrain_ = savedTerrain;
-                settings_ = layout_->settings;
-                layoutSource_ = viewport.layer_revisions();
-                baseTerrain_ = std::move(restoredBase);
-                correctedTerrainRevision_ = baseTerrain_
-                    ? viewport.layer_revisions().terrain : 0;
 
                 status_ = "Map Layout loaded";
                 hasError_ = false;

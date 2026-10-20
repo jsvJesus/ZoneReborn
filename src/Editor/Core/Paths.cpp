@@ -41,7 +41,7 @@ namespace editor::paths {
     }
 
     std::filesystem::path imgui_settings_path() {
-        return executable_directory() / "imgui.ini";
+        return executable_directory() / "imgui_v3.ini";
     }
 
     std::filesystem::path packs_directory() {
