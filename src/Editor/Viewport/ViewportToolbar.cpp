@@ -129,23 +129,33 @@ namespace editor::viewport {
             ImGui::EndPopup();
         }
 
-        void draw_camera(
-            ViewportToolbarState& state,
-            ViewportToolbarActions& actions
-        ) {
+        void draw_camera(ViewportToolbarState& state) {
             if (!ImGui::BeginPopup("ViewportCameraPopup")) {
                 return;
             }
 
-            if (ImGui::MenuItem("Perspective")) {
-                actions.perspectiveView = true;
+            if (ImGui::MenuItem("Perspective", nullptr,
+                state.cameraView == CameraView::Perspective)) {
+                state.cameraView = CameraView::Perspective;
             }
 
-            if (ImGui::MenuItem("Top View")) {
-                actions.topView = true;
+            if (ImGui::MenuItem("Top", nullptr,
+                state.cameraView == CameraView::Top)) {
+                state.cameraView = CameraView::Top;
+            }
+
+            if (ImGui::MenuItem("Front", nullptr,
+                state.cameraView == CameraView::Front)) {
+                state.cameraView = CameraView::Front;
+            }
+
+            if (ImGui::MenuItem("Right", nullptr,
+                state.cameraView == CameraView::Right)) {
+                state.cameraView = CameraView::Right;
             }
 
             ImGui::Separator();
+            ImGui::BeginDisabled(state.cameraView != CameraView::Perspective);
             ImGui::SetNextItemWidth(180.0f);
             ImGui::SliderFloat(
                 "Field of View",
@@ -154,6 +164,7 @@ namespace editor::viewport {
                 100.0f,
                 "%.0f deg"
             );
+            ImGui::EndDisabled();
 
             ImGui::SeparatorText("Camera Sensitivity");
 
@@ -189,12 +200,13 @@ namespace editor::viewport {
 
             ImGui::Separator();
 
-            ImGui::TextDisabled("RMB: Orbit");
+            ImGui::TextDisabled("RMB: Orbit / Pan in orthographic views");
             ImGui::TextDisabled("MMB: Pan");
             ImGui::TextDisabled("Wheel: Zoom");
             ImGui::TextDisabled("WASD: Move");
             ImGui::TextDisabled("F: Focus selection");
             ImGui::TextDisabled("Home: Reset camera");
+            ImGui::TextDisabled("Esc: Clear selection");
             ImGui::TextDisabled("Shift: Fast movement");
             ImGui::TextDisabled("Ctrl: Precise movement");
 
@@ -238,13 +250,21 @@ namespace editor::viewport {
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Perspective")) {
+        const char* viewName = state.cameraView == CameraView::Top
+            ? "Top"
+            : state.cameraView == CameraView::Front
+                ? "Front"
+                : state.cameraView == CameraView::Right
+                    ? "Right"
+                    : "Perspective";
+
+        if (ImGui::Button(viewName)) {
             ImGui::OpenPopup("ViewportCameraPopup");
         }
 
         draw_layers(state);
         draw_display(state, streamer);
-        draw_camera(state, actions);
+        draw_camera(state);
 
         return actions;
     }

@@ -109,6 +109,7 @@
     <ClCompile Include="Viewport\ViewportStatusBar.cpp" />
     <ClCompile Include="Viewport\ViewportToolbar.cpp" />
     <ClCompile Include="WorldGenerator\BiomeMaterialsPanel.cpp" />
+    <ClCompile Include="WorldGenerator\VegetationCatalogStorage.cpp" />
     <ClCompile Include="WorldGenerator\MapLayoutPanel.cpp" />
     <ClCompile Include="WorldGenerator\TerrainReliefPanel.cpp" />
     <ClCompile Include="WorldGenerator\VegetationPanel.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="Viewport\ViewportStatusBar.h" />
     <ClInclude Include="Viewport\ViewportToolbar.h" />
     <ClInclude Include="WorldGenerator\BiomeMaterialsPanel.h" />
+    <ClInclude Include="WorldGenerator\VegetationCatalogStorage.h" />
     <ClInclude Include="WorldGenerator\LayerRevisions.h" />
     <ClInclude Include="WorldGenerator\MapLayoutPanel.h" />
     <ClInclude Include="WorldGenerator\TerrainReliefPanel.h" />

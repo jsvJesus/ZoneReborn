@@ -45,6 +45,7 @@ namespace editor::ui {
             float maximum
         ) {
             const float length = edge.route.back().distanceMeters;
+            const float profileLength = (std::max)(length, 1.0f);
 
             ImGui::Text("Height profile: 0 - %.0f m", length);
 
@@ -67,7 +68,7 @@ namespace editor::ui {
             const float range = (std::max)(maximum - minimum, 1.0f);
 
             const auto position = [&](const road::RoadRoutePoint& point) {
-                const float progress = point.distanceMeters / length;
+                const float progress = point.distanceMeters / profileLength;
 
                 return ImVec2(
                     origin.x + (reverse ? 1.0f - progress : progress) * size.x,
@@ -300,6 +301,59 @@ namespace editor::ui {
                 "Select a location or an exit in "
                 "World Outliner or Terrain Viewport."
             );
+
+            ImGui::End();
+            return;
+        }
+
+        if (selection.kind == MapSelectionKind::Road) {
+            if (selection.id >= layout->roads.edges.size()) {
+                ImGui::TextDisabled("Selected road not found");
+                ImGui::End();
+                return;
+            }
+
+            const auto& edge = layout->roads.edges[selection.id];
+            ImGui::Text("Road %u", selection.id + 1);
+
+            if (edge.from < layout->roads.nodes.size() &&
+                edge.to < layout->roads.nodes.size()) {
+                const auto& from = layout->roads.nodes[edge.from];
+                const auto& to = layout->roads.nodes[edge.to];
+
+                ImGui::Text("From: %s %u",
+                    from.kind == road::RoadNodeKind::POI ? "POI" : "Exit",
+                    from.referenceId + 1);
+                ImGui::Text("To: %s %u",
+                    to.kind == road::RoadNodeKind::POI ? "POI" : "Exit",
+                    to.referenceId + 1);
+            }
+
+            ImGui::SeparatorText("Route");
+            ImGui::Text("Points: %zu", edge.route.size());
+
+            if (edge.route.size() >= 2) {
+                float minimum = edge.route.front().y;
+                float maximum = minimum;
+                float maximumSlope = 0.0f;
+                std::uint32_t waterPoints = 0;
+
+                for (const auto& point : edge.route) {
+                    minimum = (std::min)(minimum, point.y);
+                    maximum = (std::max)(maximum, point.y);
+                    maximumSlope = (std::max)(maximumSlope, point.slopeDegrees);
+
+                    if (point.water != biome::WaterKind::Dry) {
+                        ++waterPoints;
+                    }
+                }
+
+                ImGui::Text("Length: %.0f m", edge.route.back().distanceMeters);
+                ImGui::Text("Elevation: %.1f - %.1f m", minimum, maximum);
+                ImGui::Text("Max slope: %.1f deg", maximumSlope);
+                ImGui::Text("Water samples: %u", waterPoints);
+                draw_height_profile(edge, false, minimum - 1.0f, maximum + 1.0f);
+            }
 
             ImGui::End();
             return;

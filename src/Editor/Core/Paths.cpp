@@ -44,6 +44,10 @@ namespace editor::paths {
         return executable_directory() / "imgui_v3.ini";
     }
 
+    std::filesystem::path vegetation_settings_path() {
+        return executable_directory() / "vegetation_catalog.cfg";
+    }
+
     std::filesystem::path packs_directory() {
         return executable_directory().parent_path() / "packs";
     }

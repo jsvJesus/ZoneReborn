@@ -6,6 +6,13 @@ namespace editor::viewport {
 
     class TerrainWorldStreamer;
 
+    enum class CameraView {
+        Perspective,
+        Top,
+        Front,
+        Right
+    };
+
     struct ViewportToolbarState {
         ViewportLayers layers;
 
@@ -23,13 +30,12 @@ namespace editor::viewport {
         float panSpeed = 1.0f;
         float zoomSpeed = 1.0f;
         float fieldOfViewDegrees = 60.0f;
+        CameraView cameraView = CameraView::Perspective;
     };
 
     struct ViewportToolbarActions {
         bool resetCamera = false;
         bool focusSelection = false;
-        bool topView = false;
-        bool perspectiveView = false;
     };
 
     [[nodiscard]] ViewportToolbarActions draw_viewport_toolbar(

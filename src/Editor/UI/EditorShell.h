@@ -22,6 +22,8 @@ namespace editor::ui {
         bool exitRequested = false;
         bool contentDrawerVisible = true;
         bool outputLogVisible = true;
+        bool focusSelection = false;
+        bool clearSelection = false;
     };
 
     void draw_editor_menu(EditorShellState& state);

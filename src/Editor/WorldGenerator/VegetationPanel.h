@@ -2,16 +2,15 @@
 
 #include "WorldEditor/Vegetation/VegetationAssetCatalog.h"
 #include "WorldEditor/Vegetation/VegetationGenerator.h"
-#include "WorldEditor/Vegetation/SpeedTreeSourceCatalog.h"
 #include "WorldEditor/WorldGenerator/MapGenerationSettings.h"
 #include "Editor/WorldGenerator/LayerRevisions.h"
+#include "Editor/WorldGenerator/VegetationCatalogStorage.h"
 
 #include <array>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
 #include <string>
-#include <vector>
 
 namespace editor::viewport {
     class TerrainViewport;
@@ -21,6 +20,8 @@ namespace editor::world_generator {
 
     class VegetationPanel final {
     public:
+        ~VegetationPanel();
+
         void draw(
             const world_editor::terrain::Heightfield& terrain,
             const world_editor::biome::BiomeLayer* biomes,
@@ -48,11 +49,12 @@ namespace editor::world_generator {
             viewport::TerrainViewport& viewport
         );
 
+        void persist_preferences();
+
         world_editor::vegetation::VegetationSettings pending_;
 
         world_editor::vegetation::VegetationAssetCatalog catalog_;
-        std::vector<world_editor::vegetation::SpeedTreeSource>
-            speedTreeSources_;
+        VegetationCatalogPreferences preferences_;
 
         std::optional<
             world_editor::vegetation::VegetationLayer
@@ -63,11 +65,13 @@ namespace editor::world_generator {
         std::size_t usedVariants_ = 0;
 
         bool catalogInitialized_ = false;
-        bool speedTreeScanned_ = false;
+        bool preferencesDirty_ = false;
+        bool preferencesSaveFailed_ = false;
         bool showPreview_ = true;
         bool showGeometry_ = false;
 
         char assetFilter_[128]{};
+        int selectedSource_ = 0;
         int selectedHabitat_ = 0;
         int selectedKind_ = 0;
 

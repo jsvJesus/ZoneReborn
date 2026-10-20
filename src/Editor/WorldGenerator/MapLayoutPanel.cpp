@@ -1,14 +1,12 @@
 #include "Editor/WorldGenerator/MapLayoutPanel.h"
 
 #include "Editor/Viewport/TerrainViewport.h"
-#include "Editor/WorldGenerator/TerrainReliefPanel.h"
 #include "Editor/WorldGenerator/WorldStoragePanel.h"
 
 #include "WorldEditor/Biome/BiomeStorage.h"
 #include "WorldEditor/Biome/Hydrology.h"
 #include "WorldEditor/Biome/HydrologyStorage.h"
 #include "WorldEditor/Terrain/TerrainCorrection.h"
-#include "WorldEditor/Terrain/TerrainGenerator.h"
 #include "WorldEditor/Terrain/TerrainWorldStorage.h"
 #include "WorldEditor/WorldGenerator/MapLayoutStorage.h"
 
@@ -506,19 +504,17 @@ namespace editor::world_generator {
     }
 
     void MapLayoutPanel::draw(
-        terrain::Heightfield& heightfield,
-        terrain::Settings& terrainSettings,
-        terrain::Settings& activeSettings,
+        const terrain::Heightfield& heightfield,
+        const terrain::Settings& activeSettings,
         viewport::TerrainViewport& viewport,
-        const WorldStoragePanel& storage,
-        TerrainReliefPanel& reliefPanel
+        const WorldStoragePanel& storage
     ) {
         synchronize(viewport, activeSettings);
         ImGui::Begin("Map Layout");
 
         ImGui::TextColored(
             ImVec4(0.38f, 0.85f, 0.74f, 1.0f),
-            "AUTO MAP LAYOUT GENERATOR"
+            "MAP LAYOUT SETTINGS"
         );
 
         ImGui::TextDisabled(
@@ -682,43 +678,13 @@ namespace editor::world_generator {
         if (!matchingTerrain) {
             ImGui::TextWrapped(
                 "The active Terrain does not match "
-                "the selected Map size or TerrainSeed."
+                "the selected Map size or TerrainSeed. "
+                "Select Terrain in World Generator."
             );
-
-            if (ImGui::Button(
-                "Generate Matching Terrain",
-                ImVec2(-1.0f, 38.0f)
-            )) {
-                try {
-                    terrain::Settings next = terrainSettings;
-
-                    next.samplesX = samples;
-                    next.samplesZ = samples;
-                    next.spacingMeters = 8.0f;
-                    next.seed = settings_.seeds.terrain;
-
-                    auto generated = reliefPanel.generate(next);
-
-                    viewport.set_terrain(generated);
-
-                    heightfield = std::move(generated);
-                    terrainSettings = next;
-                    activeSettings = next;
-
-                    clear(viewport);
-
-                    status_ = "Matching Terrain generated";
-                    hasError_ = false;
-                } catch (const std::exception& error) {
-                    status_ = error.what();
-                    hasError_ = true;
-                }
-            }
         }
 
-        ImGui::BeginDisabled(
-            viewport.is_streaming() ||
-            !matchingTerrain
+        ImGui::TextDisabled(
+            "Use World Generator to generate selected layers."
         );
 
         if (ImGui::CollapsingHeader(
@@ -800,29 +766,7 @@ namespace editor::world_generator {
                 "%.0f m"
             );
 
-            ImGui::BeginDisabled(
-                viewport.is_streaming() || !matchingTerrain
-            );
-
             synchronize(viewport, activeSettings);
-
-            if (ImGui::Button(
-                "Generate Hydrology",
-                ImVec2(-1.0f, 38.0f)
-            )) {
-                try {
-                    generate_hydrology(
-                        heightfield,
-                        activeSettings,
-                        viewport
-                    );
-                } catch (const std::exception& error) {
-                    status_ = error.what();
-                    hasError_ = true;
-                }
-            }
-
-            ImGui::EndDisabled();
 
             if (hydrology_) {
                 ImGui::Text(
@@ -851,24 +795,6 @@ namespace editor::world_generator {
                 );
             }
         }
-
-        if (ImGui::Button(
-            "Generate Map Layout",
-            ImVec2(-1.0f, 42.0f)
-        )) {
-            try {
-                generate_layout(
-                    heightfield,
-                    activeSettings,
-                    viewport
-                );
-            } catch (const std::exception& error) {
-                status_ = error.what();
-                hasError_ = true;
-            }
-        }
-
-        ImGui::EndDisabled();
 
         ImGui::Spacing();
         ImGui::Separator();

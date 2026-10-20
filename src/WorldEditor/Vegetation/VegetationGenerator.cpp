@@ -402,6 +402,7 @@ namespace world_editor::vegetation {
                             catalog.entries[assetIndex];
 
                         if (!entry.enabled ||
+                            entry.lodVariant ||
                             static_cast<std::size_t>(entry.kind) !=
                                 kind ||
                             !std::isfinite(entry.weight) ||

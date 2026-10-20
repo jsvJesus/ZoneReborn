@@ -71,7 +71,8 @@ namespace engine::renderer {
         }
 
         void render(
-            DirectX::FXMMATRIX viewProjection
+            DirectX::FXMMATRIX viewProjection,
+            const DirectX::XMFLOAT3& cameraPosition
         );
 
     private:
@@ -96,6 +97,8 @@ namespace engine::renderer {
             std::vector<MaterialGroup> materials;
 
             UINT instanceCount = 0;
+            bool cameraFacing = false;
+            float diffuseScale = 0.0f;
         };
 
         void create_pipeline();

@@ -19,7 +19,6 @@ namespace editor::world_generator {
     }
 
     void BiomeMaterialsPanel::draw(
-        const world_editor::terrain::Heightfield& terrain,
         const world_editor::terrain::Settings& activeSettings,
         viewport::TerrainViewport& viewport,
         const world_editor::world_generator::GenerationSeeds& seeds
@@ -30,7 +29,7 @@ namespace editor::world_generator {
 
         ImGui::TextColored(
             ImVec4(0.38f, 0.85f, 0.74f, 1.0f),
-            "BIOME GENERATOR"
+            "BIOME SETTINGS"
         );
 
         ImGui::TextDisabled(
@@ -86,32 +85,11 @@ namespace editor::world_generator {
                 "Streaming mode: use saved Biome data. "
                 "Switch to Load World to regenerate."
             );
+        } else {
+            ImGui::TextDisabled(
+                "Select Biomes in World Generator to apply these settings."
+            );
         }
-
-        ImGui::BeginDisabled(
-            !terrain.valid() ||
-            activeSettings.seed != seeds.terrain ||
-            viewport.is_streaming()
-        );
-
-        if (ImGui::Button(
-            "Generate Biomes + Apply Materials",
-            ImVec2(-1.0f, 42.0f)
-        )) {
-            try {
-                generate(
-                    terrain,
-                    activeSettings,
-                    viewport,
-                    seeds
-                );
-            } catch (const std::exception& error) {
-                status_ = error.what();
-                hasError_ = true;
-            }
-        }
-
-        ImGui::EndDisabled();
 
         if (active_) {
             ImGui::Separator();

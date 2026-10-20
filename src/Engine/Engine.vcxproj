@@ -85,6 +85,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Assets\CompiledTreeLoader.cpp" />
     <ClCompile Include="Assets\DDSTextureLoader.cpp" />
     <ClCompile Include="Assets\PackedSection.cpp" />
     <ClCompile Include="Assets\PrimitivesMeshLoader.cpp" />
@@ -100,6 +101,7 @@
     <ClCompile Include="Renderer\VegetationRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Assets\CompiledTreeLoader.h" />
     <ClInclude Include="Assets\DDSTextureLoader.h" />
     <ClInclude Include="Assets\PackedSection.h" />
     <ClInclude Include="Assets\PrimitivesMeshLoader.h" />

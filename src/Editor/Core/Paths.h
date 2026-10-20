@@ -12,6 +12,8 @@ namespace editor::paths {
 
     [[nodiscard]] std::filesystem::path imgui_settings_path();
 
+    [[nodiscard]] std::filesystem::path vegetation_settings_path();
+
     [[nodiscard]] std::filesystem::path packs_directory();
 
 }

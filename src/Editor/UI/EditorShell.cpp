@@ -6,16 +6,6 @@ namespace editor::ui {
 
     namespace {
 
-        void mode_item(
-            EditorShellState& state,
-            const char* label,
-            EditorMode mode
-        ) {
-            if (ImGui::MenuItem(label, nullptr, state.mode == mode)) {
-                state.mode = mode;
-            }
-        }
-
         void mode_button(
             EditorShellState& state,
             const char* label,
@@ -98,9 +88,14 @@ namespace editor::ui {
         }
 
         if (ImGui::BeginMenu("Edit")) {
-            mode_item(state, "Selection Mode", EditorMode::Selection);
-            mode_item(state, "Generator Mode", EditorMode::Generator);
-            mode_item(state, "Edit Mode", EditorMode::Edit);
+            if (ImGui::MenuItem("Focus Selected", "F")) {
+                state.focusSelection = true;
+            }
+
+            if (ImGui::MenuItem("Clear Selection", "Esc")) {
+                state.clearSelection = true;
+            }
+
             ImGui::EndMenu();
         }
 
@@ -135,11 +130,13 @@ namespace editor::ui {
         }
 
         ImGui::Separator();
+        ImGui::PushID("EditorModes");
         mode_button(state, "Selection", EditorMode::Selection);
         ImGui::SameLine();
         mode_button(state, "Generator", EditorMode::Generator);
         ImGui::SameLine();
         mode_button(state, "Edit", EditorMode::Edit);
+        ImGui::PopID();
 
         if (state.mode == EditorMode::Generator) {
             ImGui::Separator();

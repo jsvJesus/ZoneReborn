@@ -32,7 +32,6 @@
 #include <filesystem>
 #include <stdexcept>
 #include <string>
-#include <utility>
 
 extern "C++" IMGUI_IMPL_API LRESULT
 ImGui_ImplWin32_WndProcHandler(
@@ -209,9 +208,8 @@ namespace {
     };
 
     void draw_terrain_tools(
-        world_editor::terrain::Heightfield& terrain,
+        const world_editor::terrain::Heightfield& terrain,
         world_editor::terrain::Settings& settings,
-        world_editor::terrain::Settings& activeSettings,
         editor::viewport::TerrainViewport& viewport,
         editor::world_generator::MapLayoutPanel& mapPanel,
         editor::world_generator::TerrainReliefPanel& reliefPanel
@@ -223,7 +221,7 @@ namespace {
 
         ImGui::TextColored(
             ImVec4(0.38f, 0.85f, 0.74f, 1.0f),
-            "TERRAIN GENERATOR"
+            "TERRAIN SETTINGS"
         );
 
         ImGui::TextDisabled(
@@ -272,27 +270,9 @@ namespace {
 
         ImGui::Separator();
 
-        if (ImGui::Button(
-            "Generate Terrain",
-            ImVec2(-1.0f, 40.0f)
-        )) {
-            try {
-                auto generated = reliefPanel.generate(settings);
-
-                viewport.set_terrain(generated);
-
-                terrain = std::move(generated);
-                activeSettings = settings;
-
-                mapPanel.clear(viewport);
-
-                status = "Terrain generated";
-                hasError = false;
-            } catch (const std::exception& error) {
-                status = error.what();
-                hasError = true;
-            }
-        }
+        ImGui::TextDisabled(
+            "Select Terrain in World Generator to apply these settings."
+        );
 
         ImGui::BeginDisabled(viewport.is_streaming());
 
@@ -416,6 +396,8 @@ int main() {
         outputLog.add("Editor workspace ready");
         auto previousMode = shell.mode;
         auto previousPage = shell.generatorPage;
+        auto previousSelection = viewport.selection();
+        auto previousCameraView = viewport.camera_view();
 
         world_editor::terrain::Settings settings;
         world_editor::terrain::Settings activeSettings = settings;
@@ -488,10 +470,35 @@ int main() {
             editor::ui::draw_editor_menu(shell);
             editor::ui::draw_editor_workspace(shell.resetLayout);
 
-            if (shell.mode != previousMode ||
-                shell.generatorPage != previousPage) {
-                outputLog.add("Editor mode changed");
+            if (shell.focusSelection) {
+                viewport.focus_selection();
+                shell.focusSelection = false;
+            }
+
+            if (shell.clearSelection) {
+                viewport.select({});
+                shell.clearSelection = false;
+            }
+
+            if (shell.mode != previousMode) {
+                const char* modeName = shell.mode == editor::ui::EditorMode::Selection
+                    ? "Selection"
+                    : shell.mode == editor::ui::EditorMode::Edit
+                        ? "Edit"
+                        : "Generator";
+                outputLog.add(std::string("Mode: ") + modeName);
                 previousMode = shell.mode;
+            }
+
+            if (shell.generatorPage != previousPage) {
+                const char* pageName = shell.generatorPage == editor::ui::GeneratorPage::Layout
+                    ? "Layout"
+                    : shell.generatorPage == editor::ui::GeneratorPage::Biomes
+                        ? "Biomes"
+                        : shell.generatorPage == editor::ui::GeneratorPage::Vegetation
+                            ? "Vegetation"
+                            : "World";
+                outputLog.add(std::string("Generator page: ") + pageName);
                 previousPage = shell.generatorPage;
             }
 
@@ -499,7 +506,6 @@ int main() {
                 draw_terrain_tools(
                     terrain,
                     settings,
-                    activeSettings,
                     viewport,
                     mapPanel,
                     reliefPanel
@@ -521,16 +527,13 @@ int main() {
                 case editor::ui::GeneratorPage::Layout:
                     mapPanel.draw(
                         terrain,
-                        settings,
                         activeSettings,
                         viewport,
-                        storagePanel,
-                        reliefPanel
+                        storagePanel
                     );
                     break;
                 case editor::ui::GeneratorPage::Biomes:
                     biomePanel.draw(
-                        terrain,
                         activeSettings,
                         viewport,
                         mapPanel.generation_seeds()
@@ -578,6 +581,39 @@ int main() {
                 shell.mode == editor::ui::EditorMode::Selection
             );
             viewport.draw();
+
+            const auto selection = viewport.selection();
+
+            if (selection.kind != previousSelection.kind ||
+                selection.id != previousSelection.id) {
+                if (selection.valid()) {
+                    const char* kind = selection.kind == editor::ui::MapSelectionKind::POI
+                        ? "POI "
+                        : selection.kind == editor::ui::MapSelectionKind::Road
+                            ? "Road "
+                            : "Exit ";
+                    outputLog.add(std::string("Selected ") + kind +
+                        std::to_string(selection.id + 1));
+                } else {
+                    outputLog.add("Selection cleared");
+                }
+
+                previousSelection = selection;
+            }
+
+            const auto cameraView = viewport.camera_view();
+
+            if (cameraView != previousCameraView) {
+                const char* name = cameraView == editor::viewport::CameraView::Top
+                    ? "Top"
+                    : cameraView == editor::viewport::CameraView::Front
+                        ? "Front"
+                        : cameraView == editor::viewport::CameraView::Right
+                            ? "Right"
+                            : "Perspective";
+                outputLog.add(std::string("Camera: ") + name);
+                previousCameraView = cameraView;
+            }
 
             ImGui::Render();
 

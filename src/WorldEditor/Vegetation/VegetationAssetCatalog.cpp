@@ -2,6 +2,7 @@
 #include "WorldEditor/Vegetation/SpeedTreeSourceCatalog.h"
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <stdexcept>
 #include <string>
@@ -41,6 +42,22 @@ namespace world_editor::vegetation {
             return contains(name, "_lod") ||
                 name.starts_with("lod_") ||
                 name.ends_with("_lod");
+        }
+
+        [[nodiscard]] bool default_speedtree_model(
+            std::string_view path
+        ) noexcept {
+            constexpr std::array<std::string_view, 5> defaults = {
+                "speedtree/broadleaves/Bush/bush_birch/Bush_Birch.spt",
+                "speedtree/bushes/LowBush/LowBush.spt",
+                "speedtree/conifers/Picea/Furtree_Small_01_1.spt",
+                "speedtree/conifers/ScotsPine/ScotsPine_RT01.spt",
+                "speedtree/shrubs_flowers/CattailAndPampasGrassNew/PampasGrass_01.spt"
+            };
+
+            return std::find(
+                defaults.begin(), defaults.end(), path
+            ) != defaults.end();
         }
 
         [[nodiscard]] VegetationKind classify_kind(
@@ -118,6 +135,7 @@ namespace world_editor::vegetation {
                 entries.end(),
                 [](const VegetationCatalogEntry& entry) {
                     return entry.enabled &&
+                        !entry.lodVariant &&
                         entry.biomeMask != 0 &&
                         entry.kind !=
                             VegetationKind::Unclassified &&
@@ -125,6 +143,39 @@ namespace world_editor::vegetation {
                 }
             )
         );
+    }
+
+    std::size_t VegetationAssetCatalog::enabled_count(
+        VegetationAssetSource source
+    ) const noexcept {
+        return static_cast<std::size_t>(
+            std::count_if(
+                entries.begin(),
+                entries.end(),
+                [source](const VegetationCatalogEntry& entry) {
+                    return entry.source == source &&
+                        entry.enabled &&
+                        !entry.lodVariant &&
+                        entry.biomeMask != 0 &&
+                        entry.kind != VegetationKind::Unclassified &&
+                        entry.weight > 0.0f;
+                }
+            )
+        );
+    }
+
+    VegetationAssetCatalog VegetationAssetCatalog::for_source(
+        VegetationAssetSource source
+    ) const {
+        VegetationAssetCatalog selected;
+
+        for (const auto& entry : entries) {
+            if (entry.source == source && !entry.lodVariant) {
+                selected.entries.push_back(entry);
+            }
+        }
+
+        return selected;
     }
 
     VegetationAssetCatalog scan_vegetation_catalog(
@@ -181,6 +232,10 @@ namespace world_editor::vegetation {
                 file.path().stem().string()
             );
 
+            if (is_lod(name)) {
+                continue;
+            }
+
             const std::string folder = lowercase(
                 relativeFlora.begin()->string()
             );
@@ -189,8 +244,6 @@ namespace world_editor::vegetation {
 
             entry.relativePath =
                 relativePacks.generic_string();
-
-            entry.lodVariant = is_lod(name);
 
             entry.kind = classify_kind(
                 folder,
@@ -205,7 +258,6 @@ namespace world_editor::vegetation {
             );
 
             entry.enabled =
-                !entry.lodVariant &&
                 entry.kind != VegetationKind::Unclassified;
 
             catalog.entries.push_back(
@@ -216,15 +268,26 @@ namespace world_editor::vegetation {
         if (std::filesystem::is_directory(packsDirectory / "speedtree")) {
             for (const auto& source :
                  scan_speedtree_sources(packsDirectory)) {
-                if (!source.renderableMesh) {
+                if (!source.renderableMesh && !source.compiledTree) {
+                    continue;
+                }
+
+                if (is_lod(lowercase(
+                    std::filesystem::path(source.relativePath)
+                        .stem().string()
+                ))) {
                     continue;
                 }
 
                 VegetationCatalogEntry entry;
-                entry.relativePath = source.meshRelativePath;
+                entry.source = VegetationAssetSource::SpeedTree;
+                entry.relativePath = source.compiledTree
+                    ? source.relativePath
+                    : source.meshRelativePath;
                 entry.kind = source.kind;
                 entry.biomeMask = vegetation_biome_mask(source.habitat);
-                entry.enabled = true;
+                entry.enabled = source.compiledTree &&
+                    default_speedtree_model(source.relativePath);
                 catalog.entries.push_back(std::move(entry));
             }
         }

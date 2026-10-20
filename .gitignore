@@ -31,6 +31,8 @@ __pycache__/
 # Generated local terrain worlds
 bin/Editor/worlds/
 bin/Editor/generated/
+bin/Editor/vegetation_catalog.cfg
+bin/Editor/vegetation_catalog.cfg.*.tmp
 
 # Full client resources intentionally do not belong in this source archive.
 src/.vs/

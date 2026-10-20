@@ -1,6 +1,9 @@
 #include "Editor/Viewport/MapLayoutPicking.h"
 
+#include <algorithm>
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <cmath>
 #include <limits>
 
@@ -132,6 +135,32 @@ namespace editor::viewport {
             return dx * dx + dy * dy;
         }
 
+        [[nodiscard]] float segment_distance_squared(
+            const ImVec2& point,
+            const ImVec2& first,
+            const ImVec2& last
+        ) noexcept {
+            const float dx = last.x - first.x;
+            const float dy = last.y - first.y;
+            const float lengthSquared = dx * dx + dy * dy;
+
+            if (lengthSquared <= 0.001f) {
+                return distance_squared(point, first);
+            }
+
+            const float progress = std::clamp(
+                ((point.x - first.x) * dx +
+                 (point.y - first.y) * dy) / lengthSquared,
+                0.0f,
+                1.0f
+            );
+
+            return distance_squared(
+                point,
+                ImVec2(first.x + progress * dx, first.y + progress * dy)
+            );
+        }
+
     }
 
     ui::MapSelection pick_map_layout(
@@ -220,6 +249,10 @@ namespace editor::viewport {
         for (const auto& poi : layout.pois) {
             std::array<ImVec2, 4> corners{};
 
+            if (!layers.poi) {
+                continue;
+            }
+
             if (!project_poi(
                 poi,
                 imagePosition,
@@ -236,6 +269,47 @@ namespace editor::viewport {
                     poi.id
                 };
             }
+        }
+
+        if (layers.roads) {
+            float nearestRoad = 9.0f * 9.0f;
+            ui::MapSelection roadSelection;
+
+            for (std::size_t edgeIndex = 0;
+                 edgeIndex < layout.roads.edges.size();
+                 ++edgeIndex) {
+                const auto& route = layout.roads.edges[edgeIndex].route;
+
+                for (std::size_t pointIndex = 1;
+                     pointIndex < route.size();
+                     ++pointIndex) {
+                    const auto& first = route[pointIndex - 1];
+                    const auto& last = route[pointIndex];
+                    ImVec2 a{};
+                    ImVec2 b{};
+
+                    if (!project(viewProjection, first.x, first.y + 3.0f,
+                        first.z, imagePosition, imageSize, a) ||
+                        !project(viewProjection, last.x, last.y + 3.0f,
+                        last.z, imagePosition, imageSize, b)) {
+                        continue;
+                    }
+
+                    const float distance = segment_distance_squared(
+                        mousePosition, a, b
+                    );
+
+                    if (distance < nearestRoad) {
+                        nearestRoad = distance;
+                        roadSelection = {
+                            ui::MapSelectionKind::Road,
+                            static_cast<std::uint32_t>(edgeIndex)
+                        };
+                    }
+                }
+            }
+
+            return roadSelection;
         }
 
         return {};
@@ -346,6 +420,26 @@ namespace editor::viewport {
                 }
 
                 break;
+            }
+        } else if (selection.kind == ui::MapSelectionKind::Road &&
+            selection.id < layout.roads.edges.size()) {
+            const auto& route = layout.roads.edges[selection.id].route;
+
+            for (std::size_t i = 1; i < route.size(); ++i) {
+                const auto& first = route[i - 1];
+                const auto& last = route[i];
+                ImVec2 a{};
+                ImVec2 b{};
+
+                if (!project(viewProjection, first.x, first.y + 3.0f,
+                    first.z, imagePosition, imageSize, a) ||
+                    !project(viewProjection, last.x, last.y + 3.0f,
+                    last.z, imagePosition, imageSize, b)) {
+                    continue;
+                }
+
+                drawList->AddLine(a, b, selectedShadow, 8.0f);
+                drawList->AddLine(a, b, selectedColor, 4.0f);
             }
         }
 

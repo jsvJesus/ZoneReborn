@@ -855,9 +855,9 @@ namespace engine::renderer
         stats_.drawCalls += openWaterSurface_.render(viewProjection);
         stats_.drawCalls += marshSurface_.render(viewProjection);
         stats_.drawCalls += roadSurface_.render(viewProjection);
-        bridgeRenderer_.render(viewProjection);
+        bridgeRenderer_.render(viewProjection, cameraPosition);
         stats_.drawCalls += bridgeRenderer_.stats().drawCalls;
-        vegetationRenderer_.render(viewProjection);
+        vegetationRenderer_.render(viewProjection, cameraPosition);
 
         context_->OMSetRenderTargets(
             0,

@@ -45,6 +45,7 @@ namespace editor::viewport {
         distance_ = homeDistance_;
         yaw_ = 0.75f;
         pitch_ = 0.7f;
+        toolbar_.cameraView = CameraView::Perspective;
     }
 
     void TerrainViewport::set_terrain(
@@ -438,6 +439,8 @@ namespace editor::viewport {
                     return exit.id == selection.id;
                 }
             );
+        } else if (selection.kind == ui::MapSelectionKind::Road) {
+            exists = selection.id < mapLayout_->roads.edges.size();
         }
 
         selection_ = exists
@@ -492,6 +495,24 @@ namespace editor::viewport {
                 return;
             }
         }
+
+        if (selection_.kind == ui::MapSelectionKind::Road) {
+            const auto& edge = mapLayout_->roads.edges[selection_.id];
+
+            if (edge.route.empty()) {
+                return;
+            }
+
+            const auto& midpoint = edge.route[edge.route.size() / 2];
+            targetX_ = midpoint.x;
+            targetY_ = midpoint.y;
+            targetZ_ = midpoint.z;
+            distance_ = std::clamp(
+                edge.route.back().distanceMeters * 0.8f,
+                120.0f,
+                30000.0f
+            );
+        }
     }
 
     void TerrainViewport::draw() {
@@ -513,16 +534,6 @@ namespace editor::viewport {
 
         if (actions.focusSelection) {
             focus_selection();
-        }
-
-        if (actions.topView) {
-            pitch_ = 1.48f;
-            yaw_ = 0.0f;
-        }
-
-        if (actions.perspectiveView) {
-            pitch_ = 0.7f;
-            yaw_ = 0.75f;
         }
 
         renderer_.set_wireframe(toolbar_.wireframe);
@@ -570,14 +581,33 @@ namespace editor::viewport {
             const float horizontal =
                 std::cos(pitch_) * distance_;
 
-            const float eyeX =
+            float eyeX =
                 targetX_ + std::sin(yaw_) * horizontal;
 
-            const float eyeY =
+            float eyeY =
                 targetY_ + std::sin(pitch_) * distance_;
 
-            const float eyeZ =
+            float eyeZ =
                 targetZ_ + std::cos(yaw_) * horizontal;
+
+            DirectX::XMVECTOR up = DirectX::XMVectorSet(
+                0.0f, 1.0f, 0.0f, 0.0f
+            );
+
+            if (toolbar_.cameraView == CameraView::Top) {
+                eyeX = targetX_;
+                eyeY = targetY_ + distance_;
+                eyeZ = targetZ_;
+                up = DirectX::XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+            } else if (toolbar_.cameraView == CameraView::Front) {
+                eyeX = targetX_;
+                eyeY = targetY_;
+                eyeZ = targetZ_ - distance_;
+            } else if (toolbar_.cameraView == CameraView::Right) {
+                eyeX = targetX_ + distance_;
+                eyeY = targetY_;
+                eyeZ = targetZ_;
+            }
 
             const auto eye = DirectX::XMVectorSet(
                 eyeX,
@@ -593,27 +623,24 @@ namespace editor::viewport {
                 1.0f
             );
 
-            const auto up = DirectX::XMVectorSet(
-                0.0f,
-                1.0f,
-                0.0f,
-                0.0f
-            );
-
             const auto view = DirectX::XMMatrixLookAtLH(
                 eye,
                 target,
                 up
             );
 
-            const auto projection =
-                DirectX::XMMatrixPerspectiveFovLH(
-                    DirectX::XMConvertToRadians(
-                        toolbar_.fieldOfViewDegrees
-                    ),
+            const auto projection = toolbar_.cameraView == CameraView::Perspective
+                ? DirectX::XMMatrixPerspectiveFovLH(
+                    DirectX::XMConvertToRadians(toolbar_.fieldOfViewDegrees),
                     aspect,
                     0.5f,
-                    30000.0f
+                    60000.0f
+                )
+                : DirectX::XMMatrixOrthographicLH(
+                    distance_ * 1.4f * aspect,
+                    distance_ * 1.4f,
+                    0.5f,
+                    60000.0f
                 );
 
             if (streamer_) {
@@ -700,7 +727,10 @@ namespace editor::viewport {
                         toolbar_.layers.poi) ||
                     (selection_.kind ==
                         ui::MapSelectionKind::Exit &&
-                        toolbar_.layers.exits);
+                        toolbar_.layers.exits) ||
+                    (selection_.kind ==
+                        ui::MapSelectionKind::Road &&
+                        toolbar_.layers.roads);
 
                 if (selectionVisible) {
                     draw_map_selection(
@@ -725,6 +755,11 @@ namespace editor::viewport {
                     if (ImGui::IsKeyPressed(ImGuiKey_F)) {
                         focus_selection();
                     }
+
+                    if (selectionEnabled_ &&
+                        ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+                        select({});
+                    }
                 }
 
                 update_camera_navigation(
@@ -734,7 +769,8 @@ namespace editor::viewport {
                         targetZ_,
                         yaw_,
                         pitch_,
-                        distance_
+                        distance_,
+                        toolbar_.cameraView
                     },
                     {
                         toolbar_.orbitSpeed,

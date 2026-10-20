@@ -1,5 +1,6 @@
 #include "Engine/Renderer/VegetationRenderer.h"
 
+#include "Engine/Assets/CompiledTreeLoader.h"
 #include "Engine/Assets/DDSTextureLoader.h"
 #include "Engine/Assets/PrimitivesMeshLoader.h"
 #include "Engine/Assets/VisualMaterialLoader.h"
@@ -37,6 +38,7 @@ namespace engine::renderer {
 
         struct CameraConstants {
             DirectX::XMFLOAT4X4 viewProjection;
+            DirectX::XMFLOAT4 cameraPosition;
         };
 
         struct MaterialConstants {
@@ -52,6 +54,7 @@ namespace engine::renderer {
             cbuffer CameraConstants : register(b0)
             {
                 float4x4 viewProjection;
+                float4 cameraPosition;
             };
 
             cbuffer MaterialConstants : register(b1)
@@ -92,19 +95,24 @@ namespace engine::renderer {
 
                 float3 world;
 
-                world.x =
-                    local.x * c +
-                    local.z * s +
-                    input.instancePosition.x;
+                if (materialParameters.z > 0.5f)
+                {
+                    float2 towardCamera = cameraPosition.xz -
+                        input.instancePosition.xz;
+                    towardCamera /= max(length(towardCamera), 0.001f);
+                    float2 right = float2(towardCamera.y, -towardCamera.x);
 
-                world.y =
-                    local.y +
-                    input.instancePosition.y;
-
-                world.z =
-                    -local.x * s +
-                    local.z * c +
-                    input.instancePosition.z;
+                    world.xz = input.instancePosition.xz + right * local.z;
+                    world.y = input.instancePosition.y + local.y;
+                }
+                else
+                {
+                    world.x = local.x * c + local.z * s +
+                        input.instancePosition.x;
+                    world.y = local.y + input.instancePosition.y;
+                    world.z = -local.x * s + local.z * c +
+                        input.instancePosition.z;
+                }
 
                 output.worldPosition = world;
                 output.uv = input.uv;
@@ -128,6 +136,14 @@ namespace engine::renderer {
                 {
                     clip(
                         albedo.a - materialParameters.x
+                    );
+                }
+
+                if (materialParameters.w > 0.5f)
+                {
+                    return float4(
+                        saturate(albedo.rgb * materialParameters.w),
+                        1.0f
                     );
                 }
 
@@ -254,10 +270,15 @@ namespace engine::renderer {
         ) {
             const std::filesystem::path path(text);
 
+            const bool supportedExtension =
+                path.extension() == ".primitives" ||
+                (allowedPrefix == "speedtree/" &&
+                    path.extension() == ".spt");
+
             if (path.empty() ||
                 path.is_absolute() ||
                 path.has_root_name() ||
-                path.extension() != ".primitives") {
+                !supportedExtension) {
                 return false;
             }
 
@@ -536,16 +557,28 @@ namespace engine::renderer {
             }
 
             try {
-                const auto mesh = assets::load_primitives_mesh(
-                    packsDirectory / assetPaths[id]
-                );
+                assets::PrimitivesMesh mesh;
+                assets::VisualMaterialSet materialSet;
+                bool cameraFacing = false;
 
-                const auto materialSet =
-                    assets::load_visual_materials(
+                if (assetPaths[id].ends_with(".spt")) {
+                    auto tree = assets::load_compiled_tree(
+                        packsDirectory,
+                        assetPaths[id]
+                    );
+                    mesh = std::move(tree.mesh);
+                    materialSet = std::move(tree.materials);
+                    cameraFacing = tree.cameraFacing;
+                } else {
+                    mesh = assets::load_primitives_mesh(
+                        packsDirectory / assetPaths[id]
+                    );
+                    materialSet = assets::load_visual_materials(
                         packsDirectory,
                         assetPaths[id],
                         assetPrefix
                     );
+                }
 
                 if (materialSet.materials.size() !=
                     mesh.groups.size()) {
@@ -555,6 +588,10 @@ namespace engine::renderer {
                 }
 
                 Batch batch;
+                batch.cameraFacing = cameraFacing;
+                batch.diffuseScale = assetPaths[id].starts_with("speedtree/")
+                    ? 1.6f
+                    : (allowedPrefix_ == "models/flora/" ? 1.0f : 0.0f);
 
                 batch.vertices = create_buffer(
                     device_,
@@ -691,7 +728,8 @@ namespace engine::renderer {
     }
 
     void VegetationRenderer::render(
-        DirectX::FXMMATRIX viewProjection
+        DirectX::FXMMATRIX viewProjection,
+        const DirectX::XMFLOAT3& cameraPosition
     ) {
         stats_.drawCalls = 0;
 
@@ -707,6 +745,13 @@ namespace engine::renderer {
                 viewProjection
             )
         );
+
+        camera.cameraPosition = {
+            cameraPosition.x,
+            cameraPosition.y,
+            cameraPosition.z,
+            1.0f
+        };
 
         context_->UpdateSubresource(
             cameraConstants_.Get(),
@@ -750,6 +795,12 @@ namespace engine::renderer {
             0,
             1,
             &cameraBuffer
+        );
+
+        context_->VSSetConstantBuffers(
+            1,
+            1,
+            &materialBuffer
         );
 
         context_->PSSetConstantBuffers(
@@ -798,8 +849,8 @@ namespace engine::renderer {
                 material.parameters = {
                     group.alphaReference,
                     group.alphaTest ? 1.0f : 0.0f,
-                    0.0f,
-                    0.0f
+                    batch.cameraFacing ? 1.0f : 0.0f,
+                    batch.diffuseScale
                 };
 
                 context_->UpdateSubresource(
@@ -855,6 +906,12 @@ namespace engine::renderer {
         );
 
         context_->PSSetConstantBuffers(
+            1,
+            1,
+            &emptyBuffer
+        );
+
+        context_->VSSetConstantBuffers(
             1,
             1,
             &emptyBuffer

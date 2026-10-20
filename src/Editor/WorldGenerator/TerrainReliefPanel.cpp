@@ -114,7 +114,7 @@ namespace editor::world_generator {
         );
 
         ImGui::TextDisabled(
-            "Changes apply after Generate Terrain."
+            "Select Terrain in World Generator to apply changes."
         );
     }
 

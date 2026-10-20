@@ -19,7 +19,6 @@ namespace editor::world_generator {
     class BiomeMaterialsPanel final {
     public:
         void draw(
-            const world_editor::terrain::Heightfield& terrain,
             const world_editor::terrain::Settings& activeSettings,
             viewport::TerrainViewport& viewport,
             const world_editor::world_generator::GenerationSeeds& seeds

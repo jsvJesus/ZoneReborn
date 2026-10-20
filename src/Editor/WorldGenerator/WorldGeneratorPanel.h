@@ -32,10 +32,10 @@ namespace editor::world_generator {
         );
 
     private:
-        bool terrainEnabled_ = true;
-        bool hydrologyEnabled_ = true;
-        bool layoutEnabled_ = true;
-        bool biomesEnabled_ = true;
+        bool terrainEnabled_ = false;
+        bool hydrologyEnabled_ = false;
+        bool layoutEnabled_ = false;
+        bool biomesEnabled_ = false;
         std::string status_;
         bool hasError_ = false;
     };

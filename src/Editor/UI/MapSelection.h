@@ -7,7 +7,8 @@ namespace editor::ui {
     enum class MapSelectionKind : std::uint8_t {
         None,
         POI,
-        Exit
+        Exit,
+        Road
     };
 
     struct MapSelection {

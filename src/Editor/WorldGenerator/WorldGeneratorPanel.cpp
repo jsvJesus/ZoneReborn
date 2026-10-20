@@ -62,6 +62,40 @@ namespace editor::world_generator {
         ImGui::TextDisabled("Choose layers, then generate in dependency order.");
         ImGui::Separator();
 
+        ImGui::SeparatorText("Layers to Generate");
+        ImGui::Checkbox("Terrain##GenerateLayer", &terrainEnabled_);
+        ImGui::Checkbox("Hydrology##GenerateLayer", &hydrologyEnabled_);
+        ImGui::Checkbox("Roads, POI and Exits##GenerateLayer", &layoutEnabled_);
+        ImGui::Checkbox("Biomes and Materials##GenerateLayer", &biomesEnabled_);
+
+        const bool hasSelection = terrainEnabled_ || hydrologyEnabled_ ||
+            layoutEnabled_ || biomesEnabled_;
+
+        if (terrainEnabled_) {
+            ImGui::TextWrapped(
+                "Terrain resets existing water, roads, biomes and vegetation. "
+                "Select dependent layers to rebuild them in the same run."
+            );
+        } else if (hydrologyEnabled_) {
+            ImGui::TextWrapped(
+                "Hydrology resets existing roads, biomes and vegetation. "
+                "Select dependent layers to rebuild them in the same run."
+            );
+        } else if (layoutEnabled_) {
+            ImGui::TextWrapped(
+                "Road and POI changes reset existing biomes and vegetation. "
+                "Select Biomes to rebuild them in the same run."
+            );
+        } else if (biomesEnabled_) {
+            ImGui::TextWrapped(
+                "Biome changes reset existing vegetation."
+            );
+        } else {
+            ImGui::TextDisabled("Select at least one layer.");
+        }
+
+        ImGui::SeparatorText("Generation Settings");
+
         constexpr const char* sizes[] = {
             "512 x 512 m",
             "1024 x 1024 m",
@@ -90,7 +124,6 @@ namespace editor::world_generator {
             "Terrain",
             ImGuiTreeNodeFlags_DefaultOpen
         )) {
-            ImGui::Checkbox("Generate Terrain", &terrainEnabled_);
             ImGui::InputScalar(
                 "Terrain Seed",
                 ImGuiDataType_U32,
@@ -107,7 +140,6 @@ namespace editor::world_generator {
         }
 
         if (ImGui::CollapsingHeader("Hydrology")) {
-            ImGui::Checkbox("Generate Hydrology", &hydrologyEnabled_);
             ImGui::InputScalar(
                 "Water Seed",
                 ImGuiDataType_U32,
@@ -130,7 +162,6 @@ namespace editor::world_generator {
         }
 
         if (ImGui::CollapsingHeader("Roads, POI and Exits")) {
-            ImGui::Checkbox("Generate Layout", &layoutEnabled_);
             ImGui::InputScalar(
                 "Location Seed",
                 ImGuiDataType_U32,
@@ -154,7 +185,6 @@ namespace editor::world_generator {
         }
 
         if (ImGui::CollapsingHeader("Biomes and Materials")) {
-            ImGui::Checkbox("Generate Biomes", &biomesEnabled_);
             ImGui::InputScalar(
                 "Biome Seed",
                 ImGuiDataType_U32,
@@ -177,17 +207,10 @@ namespace editor::world_generator {
         }
 
         ImGui::Separator();
-        ImGui::BeginDisabled(viewport.is_streaming());
+        ImGui::BeginDisabled(viewport.is_streaming() || !hasSelection);
 
         if (ImGui::Button("Generate Map", ImVec2(-1.0f, 42.0f))) {
             try {
-                if (!terrainEnabled_ && !hydrologyEnabled_ &&
-                    !layoutEnabled_ && !biomesEnabled_) {
-                    throw std::runtime_error(
-                        "Select at least one layer to generate"
-                    );
-                }
-
                 const auto mapMeters = wg::map_size_meters(map.mapSize);
                 const auto samples = mapMeters / 8 + 1;
 
@@ -246,10 +269,14 @@ namespace editor::world_generator {
 
                 status_ = "Selected layers generated";
                 hasError_ = false;
+                terrainEnabled_ = false;
+                hydrologyEnabled_ = false;
+                layoutEnabled_ = false;
+                biomesEnabled_ = false;
             } catch (const std::exception& error) {
                 status_ = error.what();
                 hasError_ = true;
-                outputLog.add(status_);
+                outputLog.add(status_, ui::LogLevel::Error);
             }
         }
 

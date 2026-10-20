@@ -73,6 +73,9 @@ namespace world_editor::vegetation {
             } else if (contains(path, "dry") ||
                 contains(path, "yellow")) {
                 item.habitat = VegetationHabitat::Sandy;
+            } else if (contains(path, "grass") ||
+                contains(path, "flower")) {
+                item.habitat = VegetationHabitat::Grassland;
             } else {
                 item.habitat = VegetationHabitat::Forest;
             }

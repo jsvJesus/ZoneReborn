@@ -12,7 +12,6 @@
 #include <filesystem>
 #include <stdexcept>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -44,6 +43,11 @@ namespace editor::world_generator {
             "Bushes",
             "Trees",
             "Unclassified"
+        };
+
+        constexpr const char* sourceNames[] = {
+            "SpeedTree (.spt)",
+            "Flora (.primitives)"
         };
 
         [[nodiscard]] std::string lowercase(
@@ -100,6 +104,33 @@ namespace editor::world_generator {
 
     }
 
+    VegetationPanel::~VegetationPanel() {
+        if (!preferencesDirty_) {
+            return;
+        }
+
+        try {
+            save_vegetation_preferences(
+                preferences_, editor::paths::vegetation_settings_path()
+            );
+        } catch (...) {
+        }
+    }
+
+    void VegetationPanel::persist_preferences() {
+        try {
+            save_vegetation_preferences(
+                preferences_, editor::paths::vegetation_settings_path()
+            );
+            preferencesDirty_ = false;
+            preferencesSaveFailed_ = false;
+        } catch (const std::exception& error) {
+            status_ = error.what();
+            hasError_ = true;
+            preferencesSaveFailed_ = true;
+        }
+    }
+
     void VegetationPanel::invalidate(
         viewport::TerrainViewport& viewport
     ) {
@@ -144,40 +175,10 @@ namespace editor::world_generator {
             editor::paths::packs_directory()
         );
 
-        // Preserve manual category, biome assignments, weight and
-        // enabled state when the catalog is rescanned.
-        std::unordered_map<
-            std::string,
-            vegetation::VegetationCatalogEntry
-        > previous;
-
-        previous.reserve(catalog_.entries.size());
-
-        for (const auto& entry : catalog_.entries) {
-            previous.emplace(
-                entry.relativePath,
-                entry
-            );
-        }
-
-        for (auto& entry : updated.entries) {
-            const auto found = previous.find(
-                entry.relativePath
-            );
-
-            if (found == previous.end()) {
-                continue;
-            }
-
-            entry.kind = found->second.kind;
-            entry.biomeMask = found->second.biomeMask;
-            entry.weight = found->second.weight;
-            entry.enabled = found->second.enabled;
-        }
+        preferences_.apply(updated);
 
         catalog_ = std::move(updated);
         catalogInitialized_ = true;
-        speedTreeScanned_ = false;
 
         invalidate(viewport);
 
@@ -197,21 +198,27 @@ namespace editor::world_generator {
         if (!catalogInitialized_) {
             catalogInitialized_ = true;
 
+            std::string loadError;
+
+            try {
+                if (auto saved = load_vegetation_preferences(
+                    editor::paths::vegetation_settings_path()
+                )) {
+                    preferences_ = std::move(*saved);
+                    selectedSource_ = preferences_.source ==
+                        vegetation::VegetationAssetSource::SpeedTree ? 0 : 1;
+                }
+            } catch (const std::exception& error) {
+                loadError = error.what();
+            }
+
             try {
                 refresh_catalog(viewport);
-            } catch (const std::exception& error) {
-                status_ = error.what();
-                hasError_ = true;
-            }
-        }
 
-        if (!speedTreeScanned_) {
-            speedTreeScanned_ = true;
-
-            try {
-                speedTreeSources_ = vegetation::scan_speedtree_sources(
-                    editor::paths::packs_directory()
-                );
+                if (!loadError.empty()) {
+                    status_ = loadError;
+                    hasError_ = true;
+                }
             } catch (const std::exception& error) {
                 status_ = error.what();
                 hasError_ = true;
@@ -318,6 +325,27 @@ namespace editor::world_generator {
 
         ImGui::Separator();
 
+        if (ImGui::Combo(
+            "Model Source",
+            &selectedSource_,
+            sourceNames,
+            IM_ARRAYSIZE(sourceNames)
+        )) {
+            invalidate(viewport);
+            status_ = "Model source changed. Regenerate vegetation.";
+            hasError_ = false;
+        }
+
+        const auto selectedSource = selectedSource_ == 0
+            ? vegetation::VegetationAssetSource::SpeedTree
+            : vegetation::VegetationAssetSource::Flora;
+
+        if (preferences_.source != selectedSource) {
+            preferences_.source = selectedSource;
+            preferencesDirty_ = true;
+            preferencesSaveFailed_ = false;
+        }
+
         if (ImGui::CollapsingHeader(
             "Asset Catalog",
             ImGuiTreeNodeFlags_DefaultOpen
@@ -338,8 +366,10 @@ namespace editor::world_generator {
 
             if (ImGui::Button("Uncheck All")) {
                 for (auto& entry : catalog_.entries) {
-                    if (entry.enabled) {
+                    if (entry.source == selectedSource &&
+                        entry.enabled) {
                         entry.enabled = false;
+                        preferences_.remember(entry);
                         catalogChanged = true;
                     }
                 }
@@ -360,7 +390,8 @@ namespace editor::world_generator {
                     );
 
                 for (auto& entry : catalog_.entries) {
-                    if (entry.lodVariant ||
+                    if (entry.source != selectedSource ||
+                        entry.lodVariant ||
                         entry.kind == vegetation::VegetationKind::Unclassified ||
                         entry.weight <= 0.0f) {
                         continue;
@@ -373,10 +404,12 @@ namespace editor::world_generator {
                                 : entry.biomeMask)
                             : selectedMask;
                         entry.enabled = true;
+                        preferences_.remember(entry);
                         catalogChanged = true;
                     } else if (selectedHabitat_ != 0 &&
                         (entry.biomeMask & selectedMask) == 0) {
                         entry.biomeMask |= selectedMask;
+                        preferences_.remember(entry);
                         catalogChanged = true;
                     }
                 }
@@ -384,14 +417,17 @@ namespace editor::world_generator {
 
             ImGui::EndDisabled();
 
-            std::size_t lodCount = 0;
+            std::size_t modelCount = 0;
             std::size_t unclassifiedCount = 0;
             std::size_t checkedCount = 0;
 
             for (const auto& entry : catalog_.entries) {
-                if (entry.lodVariant) {
-                    ++lodCount;
+                if (entry.source != selectedSource ||
+                    entry.lodVariant) {
+                    continue;
                 }
+
+                ++modelCount;
 
                 if (entry.kind ==
                     vegetation::VegetationKind::Unclassified) {
@@ -404,13 +440,13 @@ namespace editor::world_generator {
             }
 
             ImGui::Text(
-                "Found .primitives: %zu",
-                catalog_.entries.size()
+                "Found models: %zu",
+                modelCount
             );
 
             ImGui::Text(
                 "Enabled variants: %zu",
-                catalog_.enabled_count()
+                catalog_.enabled_count(selectedSource)
             );
 
             ImGui::Text(
@@ -419,13 +455,8 @@ namespace editor::world_generator {
             );
 
             ImGui::Text(
-                "LOD files: %zu | Unclassified: %zu",
-                lodCount,
+                "Unclassified: %zu",
                 unclassifiedCount
-            );
-
-            ImGui::TextDisabled(
-                "LOD variants are disabled by default."
             );
 
             ImGui::SeparatorText("Biome Asset Selection");
@@ -478,6 +509,11 @@ namespace editor::world_generator {
                  ++i) {
                 auto& entry = catalog_.entries[i];
 
+                if (entry.source != selectedSource ||
+                    entry.lodVariant) {
+                    continue;
+                }
+
                 if (selectedKind_ != 0 &&
                     static_cast<int>(entry.kind) !=
                         selectedKind_ - 1) {
@@ -520,6 +556,7 @@ namespace editor::world_generator {
                     }
 
                     catalogChanged = true;
+                    preferences_.remember(entry);
                 }
 
                 ImGui::SameLine();
@@ -553,6 +590,7 @@ namespace editor::world_generator {
                         );
 
                     catalogChanged = true;
+                    preferences_.remember(entry);
                 }
 
                 ImGui::SameLine();
@@ -568,6 +606,7 @@ namespace editor::world_generator {
                     "%.2f"
                 )) {
                     catalogChanged = true;
+                    preferences_.remember(entry);
                 }
 
                 if (selectedHabitat_ == 0) {
@@ -590,11 +629,6 @@ namespace editor::world_generator {
                     }
                 }
 
-                if (entry.lodVariant) {
-                    ImGui::SameLine();
-                    ImGui::TextDisabled("LOD");
-                }
-
                 ImGui::Separator();
                 ImGui::PopID();
             }
@@ -606,6 +640,8 @@ namespace editor::world_generator {
             );
 
             if (catalogChanged) {
+                preferencesDirty_ = true;
+                preferencesSaveFailed_ = false;
                 invalidate(viewport);
 
                 status_ =
@@ -613,71 +649,6 @@ namespace editor::world_generator {
 
                 hasError_ = false;
             }
-        }
-
-        if (ImGui::CollapsingHeader("SpeedTree Sources")) {
-            if (ImGui::Button("Rescan SpeedTree")) {
-                try {
-                    speedTreeSources_ = vegetation::scan_speedtree_sources(
-                        editor::paths::packs_directory()
-                    );
-                    status_ = "SpeedTree sources scanned";
-                    hasError_ = false;
-                } catch (const std::exception& error) {
-                    status_ = error.what();
-                    hasError_ = true;
-                }
-            }
-
-            const auto converted = std::count_if(
-                speedTreeSources_.begin(),
-                speedTreeSources_.end(),
-                [](const vegetation::SpeedTreeSource& source) {
-                    return source.renderableMesh;
-                }
-            );
-
-            ImGui::Text(
-                "Native SPT: %zu | Existing meshes: %zu",
-                speedTreeSources_.size(),
-                static_cast<std::size_t>(converted)
-            );
-            ImGui::TextDisabled(
-                "Converted meshes are usable; native SPT still needs import."
-            );
-            ImGui::BeginChild(
-                "##speedtree_sources",
-                ImVec2(0.0f, 210.0f),
-                true
-            );
-
-            const std::string filter = lowercase(assetFilter_);
-
-            for (const auto& source : speedTreeSources_) {
-                if (selectedKind_ != 0 &&
-                    static_cast<int>(source.kind) != selectedKind_ - 1) {
-                    continue;
-                }
-
-                if (selectedHabitat_ != 0 &&
-                    static_cast<int>(source.habitat) != selectedHabitat_) {
-                    continue;
-                }
-
-                if (!filter.empty() &&
-                    lowercase(source.relativePath).find(filter) ==
-                        std::string::npos) {
-                    continue;
-                }
-
-                ImGui::TextDisabled(
-                    "%s  %s",
-                    source.renderableMesh ? "[Mesh]" : "[SPT]",
-                    source.relativePath.c_str()
-                );
-            }
-
-            ImGui::EndChild();
         }
 
         ImGui::Spacing();
@@ -694,9 +665,9 @@ namespace editor::world_generator {
             );
         }
 
-        if (catalog_.enabled_count() == 0) {
+        if (catalog_.enabled_count(selectedSource) == 0) {
             ImGui::TextWrapped(
-                "No usable Flora selected. Click Enable Classified, "
+                "No usable models selected. Click Enable Classified, "
                 "or set checked models to Grass, Bush or Tree "
                 "with a weight above zero."
             );
@@ -706,7 +677,7 @@ namespace editor::world_generator {
             !terrain.valid() ||
             !biomes ||
             viewport.is_streaming() ||
-            catalog_.enabled_count() == 0
+            catalog_.enabled_count(selectedSource) == 0
         );
 
         if (ImGui::Button(
@@ -739,7 +710,7 @@ namespace editor::world_generator {
                         viewport.hydrology(),
                         layout,
                         settings,
-                        catalog_
+                        catalog_.for_source(selectedSource)
                     );
 
                 verify_used_assets(generated);
@@ -828,7 +799,7 @@ namespace editor::world_generator {
             );
 
             ImGui::TextDisabled(
-                "Vegetation persistence is a separate step."
+                "Model selections are saved; generated placement is separate."
             );
         }
 
@@ -885,8 +856,14 @@ namespace editor::world_generator {
         );
 
         ImGui::TextDisabled(
-            "Real .primitives geometry, diagnostic materials"
+            "Flora .primitives / SpeedTree .spt + .ctree"
         );
+
+        if (preferencesDirty_ &&
+            !preferencesSaveFailed_ &&
+            !ImGui::IsAnyItemActive()) {
+            persist_preferences();
+        }
 
         if (!status_.empty()) {
             ImGui::TextColored(

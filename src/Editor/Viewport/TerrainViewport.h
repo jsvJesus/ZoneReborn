@@ -86,6 +86,10 @@ namespace editor::viewport {
 
         void focus_selection();
 
+        [[nodiscard]] CameraView camera_view() const noexcept {
+            return toolbar_.cameraView;
+        }
+
         void set_hydrology(
             const world_editor::biome::HydrologyLayer* water
         );

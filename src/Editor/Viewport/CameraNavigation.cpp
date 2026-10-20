@@ -13,7 +13,8 @@ namespace editor::viewport {
         const float orbitSensitivity =
             0.005f * settings.orbitSpeed;
 
-        if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
+        if (camera.view == CameraView::Perspective &&
+            ImGui::IsMouseDown(ImGuiMouseButton_Right)) {
             camera.yaw +=
                 io.MouseDelta.x * orbitSensitivity;
 
@@ -31,7 +32,9 @@ namespace editor::viewport {
         const float forwardX = -std::sin(camera.yaw);
         const float forwardZ = -std::cos(camera.yaw);
 
-        if (ImGui::IsMouseDown(ImGuiMouseButton_Middle)) {
+        if (ImGui::IsMouseDown(ImGuiMouseButton_Middle) ||
+            (camera.view != CameraView::Perspective &&
+             ImGui::IsMouseDown(ImGuiMouseButton_Right))) {
             float speed =
                 camera.distance * 0.0015f * settings.panSpeed;
 
@@ -41,11 +44,21 @@ namespace editor::viewport {
                 speed *= 0.25f;
             }
 
-            camera.targetX -= io.MouseDelta.x * rightX * speed;
-            camera.targetZ -= io.MouseDelta.x * rightZ * speed;
-
-            camera.targetX -= io.MouseDelta.y * forwardX * speed;
-            camera.targetZ -= io.MouseDelta.y * forwardZ * speed;
+            if (camera.view == CameraView::Top) {
+                camera.targetX -= io.MouseDelta.x * speed;
+                camera.targetZ += io.MouseDelta.y * speed;
+            } else if (camera.view == CameraView::Front) {
+                camera.targetX -= io.MouseDelta.x * speed;
+                camera.targetY += io.MouseDelta.y * speed;
+            } else if (camera.view == CameraView::Right) {
+                camera.targetZ -= io.MouseDelta.x * speed;
+                camera.targetY += io.MouseDelta.y * speed;
+            } else {
+                camera.targetX -= io.MouseDelta.x * rightX * speed;
+                camera.targetZ -= io.MouseDelta.x * rightZ * speed;
+                camera.targetX -= io.MouseDelta.y * forwardX * speed;
+                camera.targetZ -= io.MouseDelta.y * forwardZ * speed;
+            }
         }
 
         if (io.MouseWheel != 0.0f) {
@@ -109,13 +122,23 @@ namespace editor::viewport {
         const float distance =
             speed * std::clamp(io.DeltaTime, 0.0f, 0.1f);
 
-        camera.targetX += (
-            rightX * axisX + forwardX * axisZ
-        ) * distance;
-
-        camera.targetZ += (
-            rightZ * axisX + forwardZ * axisZ
-        ) * distance;
+        if (camera.view == CameraView::Top) {
+            camera.targetX += axisX * distance;
+            camera.targetZ += axisZ * distance;
+        } else if (camera.view == CameraView::Front) {
+            camera.targetX += axisX * distance;
+            camera.targetY += axisZ * distance;
+        } else if (camera.view == CameraView::Right) {
+            camera.targetZ += axisX * distance;
+            camera.targetY += axisZ * distance;
+        } else {
+            camera.targetX += (
+                rightX * axisX + forwardX * axisZ
+            ) * distance;
+            camera.targetZ += (
+                rightZ * axisX + forwardZ * axisZ
+            ) * distance;
+        }
     }
 
 }

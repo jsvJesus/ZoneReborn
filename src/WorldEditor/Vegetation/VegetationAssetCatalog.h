@@ -21,6 +21,11 @@ namespace world_editor::vegetation {
 
     constexpr std::uint8_t allVegetationBiomes = 0x1f;
 
+    enum class VegetationAssetSource : std::uint8_t {
+        Flora,
+        SpeedTree
+    };
+
     [[nodiscard]] constexpr std::uint8_t vegetation_biome_mask(
         VegetationHabitat habitat
     ) noexcept {
@@ -47,12 +52,20 @@ namespace world_editor::vegetation {
 
         bool enabled = false;
         bool lodVariant = false;
+        VegetationAssetSource source = VegetationAssetSource::Flora;
     };
 
     struct VegetationAssetCatalog {
         std::vector<VegetationCatalogEntry> entries;
 
         [[nodiscard]] std::size_t enabled_count() const noexcept;
+        [[nodiscard]] std::size_t enabled_count(
+            VegetationAssetSource source
+        ) const noexcept;
+
+        [[nodiscard]] VegetationAssetCatalog for_source(
+            VegetationAssetSource source
+        ) const;
     };
 
     [[nodiscard]] VegetationAssetCatalog scan_vegetation_catalog(

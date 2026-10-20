@@ -1,6 +1,7 @@
 #pragma once
 
 #include "imgui.h"
+#include "Editor/Viewport/ViewportToolbar.h"
 
 namespace editor::viewport {
 
@@ -12,6 +13,7 @@ namespace editor::viewport {
         float& yaw;
         float& pitch;
         float& distance;
+        CameraView view;
     };
 
     struct CameraNavigationSettings {
